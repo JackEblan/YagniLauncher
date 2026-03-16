@@ -53,7 +53,6 @@ import com.eblan.launcher.domain.usecase.grid.MoveFolderGridItemOutsideFolderUse
 import com.eblan.launcher.domain.usecase.grid.MoveFolderGridItemUseCase
 import com.eblan.launcher.domain.usecase.grid.MoveGridItemUseCase
 import com.eblan.launcher.domain.usecase.grid.ResizeGridItemUseCase
-import com.eblan.launcher.domain.usecase.grid.ShowFolderWhenDraggingUseCase
 import com.eblan.launcher.domain.usecase.grid.UpdateGridItemsAfterMoveUseCase
 import com.eblan.launcher.domain.usecase.grid.UpdateGridItemsAfterResizeUseCase
 import com.eblan.launcher.domain.usecase.iconpack.GetIconPackFilePathsUseCase
@@ -116,7 +115,6 @@ internal class HomeViewModel @Inject constructor(
     private val moveFolderGridItemUseCase: MoveFolderGridItemUseCase,
     private val moveFolderGridItemOutsideFolderUseCase: MoveFolderGridItemOutsideFolderUseCase,
     private val applicationInfoGridItemRepository: ApplicationInfoGridItemRepository,
-    private val showFolderWhenDraggingUseCase: ShowFolderWhenDraggingUseCase,
 ) : ViewModel() {
     private val _isCache = MutableStateFlow(false)
 
@@ -687,25 +685,6 @@ internal class HomeViewModel @Inject constructor(
                 movingApplicationInfoGridItem = movingApplicationInfoGridItem,
                 applicationInfoGridItems = applicationInfoGridItems,
             )
-        }
-    }
-
-    fun showFolderWhenDragging(
-        id: String,
-        conflictingGridItem: GridItem,
-        movingGridItem: GridItem,
-    ) {
-        viewModelScope.launch {
-            moveGridItemJob?.cancelAndJoin()
-
-            showFolderWhenDraggingUseCase(
-                conflictingGridItem = conflictingGridItem,
-                movingGridItem = movingGridItem,
-            )
-
-            _folderGridItemId.update {
-                id
-            }
         }
     }
 

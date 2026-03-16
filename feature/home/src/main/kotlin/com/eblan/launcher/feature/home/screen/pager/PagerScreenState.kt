@@ -163,11 +163,6 @@ internal class PagerScreenState(
         gridItem: GridItem,
         appWidgetId: Int,
     ) -> Unit,
-    private val onShowFolderWhenDragging: (
-        id: String,
-        conflictingGridItem: GridItem,
-        movingGridItem: GridItem,
-    ) -> Unit,
     private val onUpdateFolderGridItemId: (String?) -> Unit,
     private val onDraggingGridItem: (List<GridItem>) -> Unit,
 ) {
@@ -546,7 +541,7 @@ internal class PagerScreenState(
             screenHeight = screenHeight,
             screenWidth = screenWidth,
             lockMovement = experimentalSettings.lockMovement,
-            onShowFolderWhenDragging = onShowFolderWhenDragging,
+            onUpdateFolderGridItemId = onUpdateFolderGridItemId,
             onUpdateFolderPopupBounds = { intOffset, intSize ->
                 lastFolderPopupX = intOffset.x
                 lastFolderPopupY = intOffset.y
@@ -1386,11 +1381,6 @@ internal class PagerScreenState(
             onDragEndAfterMove: (MoveGridItemResult) -> Unit,
             onDragEndAfterMoveFolder: () -> Unit,
             onDeleteWidgetGridItemCache: (gridItem: GridItem, appWidgetId: Int) -> Unit,
-            onShowFolderWhenDragging: (
-                id: String,
-                conflictingGridItem: GridItem,
-                movingGridItem: GridItem,
-            ) -> Unit,
             onUpdateFolderGridItemId: (String?) -> Unit,
             onDraggingGridItem: (List<GridItem>) -> Unit,
         ): Saver<PagerScreenState, *> = listSaver(
@@ -1438,7 +1428,6 @@ internal class PagerScreenState(
                     onDragEndAfterMove = onDragEndAfterMove,
                     onDragEndAfterMoveFolder = onDragEndAfterMoveFolder,
                     onDeleteWidgetGridItemCache = onDeleteWidgetGridItemCache,
-                    onShowFolderWhenDragging = onShowFolderWhenDragging,
                     onUpdateFolderGridItemId = onUpdateFolderGridItemId,
                     onDraggingGridItem = onDraggingGridItem,
                 )
@@ -1491,11 +1480,6 @@ internal fun rememberPagerScreenState(
         gridHeight: Int,
     ) -> Unit,
     onResetPinGridItem: () -> Unit,
-    onShowFolderWhenDragging: (
-        id: String,
-        conflictingGridItem: GridItem,
-        movingGridItem: GridItem,
-    ) -> Unit,
     onUpdateFolderGridItemId: (String?) -> Unit,
 ): PagerScreenState {
     val scope = rememberCoroutineScope()
@@ -1548,7 +1532,6 @@ internal fun rememberPagerScreenState(
             onDragEndAfterMove = onDragEndAfterMove,
             onDragEndAfterMoveFolder = onDragEndAfterMoveFolder,
             onDeleteWidgetGridItemCache = onDeleteWidgetGridItemCache,
-            onShowFolderWhenDragging = onShowFolderWhenDragging,
             onUpdateFolderGridItemId = onUpdateFolderGridItemId,
             onDraggingGridItem = onDraggingGridItem,
         ),
@@ -1586,7 +1569,6 @@ internal fun rememberPagerScreenState(
             onDragEndAfterMove = onDragEndAfterMove,
             onDragEndAfterMoveFolder = onDragEndAfterMoveFolder,
             onDeleteWidgetGridItemCache = onDeleteWidgetGridItemCache,
-            onShowFolderWhenDragging = onShowFolderWhenDragging,
             onUpdateFolderGridItemId = onUpdateFolderGridItemId,
             onDraggingGridItem = onDraggingGridItem,
         )
