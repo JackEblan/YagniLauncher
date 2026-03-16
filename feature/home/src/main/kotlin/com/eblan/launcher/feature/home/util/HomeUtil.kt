@@ -172,6 +172,67 @@ internal fun onDoubleTap(
     }
 }
 
+internal fun onLongPress(
+    scope: CoroutineScope,
+    graphicsLayer: GraphicsLayer,
+    intOffset: IntOffset,
+    intSize: IntSize,
+    gridItemSource: GridItemSource,
+    sharedElementKey: SharedElementKey,
+    onUpdateGridItemSource: (GridItemSource) -> Unit,
+    onUpdateImageBitmap: (ImageBitmap) -> Unit,
+    onUpdateIsLongPress: (Boolean) -> Unit,
+    onUpdateOverlayBounds: (
+        intOffset: IntOffset,
+        intSize: IntSize,
+    ) -> Unit,
+    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
+    onShowGridItemPopup: (
+        intOffset: IntOffset,
+        intSize: IntSize,
+    ) -> Unit,
+    onUpdateAssociate: (Associate) -> Unit,
+) {
+    scope.launch {
+        onUpdateGridItemSource(gridItemSource)
+
+        onUpdateAssociate(gridItemSource.gridItem.associate)
+
+        onUpdateImageBitmap(graphicsLayer.toImageBitmap())
+
+        onUpdateOverlayBounds(
+            intOffset,
+            intSize,
+        )
+
+        onUpdateSharedElementKey(sharedElementKey)
+
+        onUpdateIsLongPress(true)
+
+        onShowGridItemPopup(
+            intOffset,
+            intSize,
+        )
+    }
+}
+
+internal fun handleDrag(
+    drag: Drag,
+    isSelected: Boolean,
+    isLongPress: Boolean,
+    onUpdateIsDragging: (Boolean) -> Unit,
+    onDismissGridItemPopup: () -> Unit,
+    onDraggingGridItem: () -> Unit,
+) {
+    if (drag == Drag.Dragging && isSelected && isLongPress) {
+        onUpdateIsDragging(true)
+
+        onDismissGridItemPopup()
+
+        onDraggingGridItem()
+    }
+}
+
 internal val PAGE_INDICATOR_HEIGHT = 30.dp
 internal val DRAG_HANDLE_SIZE = 30.dp
 internal val FOLDER_GRID_PADDING = 10.dp

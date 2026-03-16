@@ -760,7 +760,6 @@ internal fun PagerScreen(
                             onShowGridItemPopup = pagerScreenState::showGridItemPopup,
                             onDismissGridItemPopup = pagerScreenState::dismissGridItemPopup,
                             onUpdateAssociate = pagerScreenState::updateAssociate,
-                            onUpdateSelectedGridItem = pagerScreenState::updateSelectedGridItem,
                         )
                     },
                 )
@@ -884,15 +883,13 @@ internal fun PagerScreen(
                             onShowGridItemPopup = pagerScreenState::showGridItemPopup,
                             onDismissGridItemPopup = pagerScreenState::dismissGridItemPopup,
                             onUpdateAssociate = pagerScreenState::updateAssociate,
-                            onUpdateSelectedGridItem = pagerScreenState::updateSelectedGridItem,
                         )
                     },
                 )
             }
         }
 
-        if (pagerScreenState.selectedGridItem != null &&
-            pagerScreenState.showGridItemPopup &&
+        if (pagerScreenState.showGridItemPopup &&
             pagerScreenState.popupIntOffset != null &&
             pagerScreenState.popupIntSize != null
         ) {
@@ -901,7 +898,7 @@ internal fun PagerScreen(
                 drag = pagerScreenState.drag,
                 eblanAppWidgetProviderInfosGroup = eblanAppWidgetProviderInfosGroup,
                 eblanShortcutInfosGroup = eblanShortcutInfosGroup,
-                gridItem = pagerScreenState.selectedGridItem,
+                gridItem = pagerScreenState.gridItemSource?.gridItem,
                 gridItemSettings = homeSettings.gridItemSettings,
                 hasShortcutHostPermission = hasShortcutHostPermission,
                 paddingValues = paddingValues,

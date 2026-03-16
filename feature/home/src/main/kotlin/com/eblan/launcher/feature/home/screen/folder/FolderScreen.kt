@@ -53,7 +53,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
@@ -92,11 +91,11 @@ import com.eblan.launcher.feature.home.util.getGridItemTextColor
 import com.eblan.launcher.feature.home.util.getHorizontalAlignment
 import com.eblan.launcher.feature.home.util.getSystemTextColor
 import com.eblan.launcher.feature.home.util.getVerticalArrangement
+import com.eblan.launcher.feature.home.util.handleDrag
 import com.eblan.launcher.feature.home.util.onDoubleTap
+import com.eblan.launcher.feature.home.util.onLongPress
 import com.eblan.launcher.ui.local.LocalLauncherApps
 import com.eblan.launcher.ui.local.LocalSettings
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
 @Composable
 internal fun SharedTransitionScope.FolderScreen(
@@ -212,7 +211,7 @@ internal fun SharedTransitionScope.FolderScreen(
                                 FolderGridItemContent(
                                     drag = drag,
                                     folderGridItem = folderGridItem,
-                                    applicationInfoGridItem = applicationInfoGridItem,
+                                    gridItem = applicationInfoGridItem,
                                     gridItemSettings = gridItemSettings,
                                     gridItemSource = gridItemSource,
                                     iconPackFilePaths = iconPackFilePaths,
@@ -306,7 +305,7 @@ private fun SharedTransitionScope.FolderGridItemContent(
     modifier: Modifier = Modifier,
     drag: Drag,
     folderGridItem: GridItem,
-    applicationInfoGridItem: ApplicationInfoGridItem,
+    gridItem: ApplicationInfoGridItem,
     gridItemSettings: GridItemSettings,
     gridItemSource: GridItemSource?,
     iconPackFilePaths: Map<String, String>,
@@ -339,19 +338,19 @@ private fun SharedTransitionScope.FolderGridItemContent(
 
     val gridItemSourceFolder = gridItemSource as? GridItemSource.Folder
 
-    val isSelected =
-        gridItemSourceFolder != null && applicationInfoGridItem.id == gridItemSourceFolder.applicationInfoGridItem.id
+    val isSelected = gridItemSourceFolder != null &&
+        gridItem.id == gridItemSourceFolder.applicationInfoGridItem.id
 
-    val currentGridItemSettings = if (applicationInfoGridItem.override) {
-        applicationInfoGridItem.gridItemSettings
+    val currentGridItemSettings = if (gridItem.override) {
+        gridItem.gridItemSettings
     } else {
         gridItemSettings
     }
 
-    val currentTextColor = if (applicationInfoGridItem.override) {
+    val currentTextColor = if (gridItem.override) {
         getGridItemTextColor(
-            gridItemCustomTextColor = applicationInfoGridItem.gridItemSettings.customTextColor,
-            gridItemTextColor = applicationInfoGridItem.gridItemSettings.textColor,
+            gridItemCustomTextColor = gridItem.gridItemSettings.customTextColor,
+            gridItemTextColor = gridItem.gridItemSettings.textColor,
             systemCustomTextColor = gridItemSettings.customTextColor,
             systemTextColor = textColor,
         )
@@ -378,12 +377,13 @@ private fun SharedTransitionScope.FolderGridItemContent(
 
     val maxLines = if (currentGridItemSettings.singleLineLabel) 1 else Int.MAX_VALUE
 
-    val icon =
-        iconPackFilePaths[applicationInfoGridItem.componentName] ?: applicationInfoGridItem.icon
+    val icon = iconPackFilePaths[gridItem.componentName] ?: gridItem.icon
 
     val hasNotifications =
-        statusBarNotifications[applicationInfoGridItem.packageName] != null && (statusBarNotifications[applicationInfoGridItem.packageName]
-            ?: 0) > 0
+        statusBarNotifications[gridItem.packageName] != null && (
+            statusBarNotifications[gridItem.packageName]
+                ?: 0
+            ) > 0
 
     val hasInteraction = isSelected && isLongPress && (drag == Drag.Start || drag == Drag.Dragging)
 
@@ -408,7 +408,7 @@ private fun SharedTransitionScope.FolderGridItemContent(
                         {
                             onDoubleTap(
                                 context = context,
-                                doubleTap = applicationInfoGridItem.doubleTap,
+                                doubleTap = gridItem.doubleTap,
                                 launcherApps = launcherApps,
                                 scope = scope,
                                 onOpenAppDrawer = onOpenAppDrawer,
@@ -424,8 +424,14 @@ private fun SharedTransitionScope.FolderGridItemContent(
                                 graphicsLayer = graphicsLayer,
                                 intOffset = intOffset,
                                 intSize = intSize,
-                                folderGridItem = folderGridItem,
-                                applicationInfoGridItem = applicationInfoGridItem,
+                                gridItemSource = GridItemSource.Folder(
+                                    gridItem = folderGridItem,
+                                    applicationInfoGridItem = gridItem,
+                                ),
+                                sharedElementKey = SharedElementKey(
+                                    id = gridItem.id,
+                                    parent = SharedElementKey.Parent.Folder,
+                                ),
                                 onUpdateGridItemSource = onUpdateGridItemSource,
                                 onUpdateImageBitmap = onUpdateImageBitmap,
                                 onUpdateIsLongPress = onUpdateIsLongPress,
@@ -441,8 +447,8 @@ private fun SharedTransitionScope.FolderGridItemContent(
                     onTap = if (!isLongPress) {
                         {
                             launcherApps.startMainActivity(
-                                serialNumber = applicationInfoGridItem.serialNumber,
-                                componentName = applicationInfoGridItem.componentName,
+                                serialNumber = gridItem.serialNumber,
+                                componentName = gridItem.componentName,
                                 sourceBounds = Rect(
                                     intOffset.x,
                                     intOffset.y,
@@ -457,8 +463,8 @@ private fun SharedTransitionScope.FolderGridItemContent(
                 )
             }
             .swipeGestures(
-                swipeDown = applicationInfoGridItem.swipeDown,
-                swipeUp = applicationInfoGridItem.swipeUp,
+                swipeDown = gridItem.swipeDown,
+                swipeUp = gridItem.swipeUp,
                 onOpenAppDrawer = onOpenAppDrawer,
             )
             .fillMaxSize()
@@ -474,15 +480,14 @@ private fun SharedTransitionScope.FolderGridItemContent(
         if (!hasInteraction) {
             Box(modifier = Modifier.size(currentGridItemSettings.iconSize.dp)) {
                 AsyncImage(
-                    model = Builder(LocalContext.current).data(
-                        applicationInfoGridItem.customIcon ?: icon,
-                    ).addLastModifiedToFileCacheKey(true).build(),
+                    model = Builder(LocalContext.current).data(gridItem.customIcon ?: icon)
+                        .addLastModifiedToFileCacheKey(true).build(),
                     contentDescription = null,
                     modifier = Modifier
                         .sharedElementWithCallerManagedVisibility(
                             rememberSharedContentState(
                                 key = SharedElementKey(
-                                    id = applicationInfoGridItem.id,
+                                    id = gridItem.id,
                                     parent = SharedElementKey.Parent.Folder,
                                 ),
                             ),
@@ -515,7 +520,7 @@ private fun SharedTransitionScope.FolderGridItemContent(
                     )
                 }
 
-                if (applicationInfoGridItem.serialNumber != 0L) {
+                if (gridItem.serialNumber != 0L) {
                     ElevatedCard(
                         modifier = Modifier
                             .size((currentGridItemSettings.iconSize * 0.4).dp)
@@ -531,7 +536,7 @@ private fun SharedTransitionScope.FolderGridItemContent(
             }
             if (currentGridItemSettings.showLabel) {
                 Text(
-                    text = applicationInfoGridItem.customLabel ?: applicationInfoGridItem.label,
+                    text = gridItem.customLabel ?: gridItem.label,
                     color = currentTextColor,
                     textAlign = TextAlign.Center,
                     maxLines = maxLines,
@@ -540,76 +545,5 @@ private fun SharedTransitionScope.FolderGridItemContent(
                 )
             }
         }
-    }
-}
-
-private fun onLongPress(
-    scope: CoroutineScope,
-    graphicsLayer: GraphicsLayer,
-    intOffset: IntOffset,
-    intSize: IntSize,
-    folderGridItem: GridItem,
-    applicationInfoGridItem: ApplicationInfoGridItem,
-    onUpdateGridItemSource: (GridItemSource) -> Unit,
-    onUpdateImageBitmap: (ImageBitmap) -> Unit,
-    onUpdateIsLongPress: (Boolean) -> Unit,
-    onUpdateOverlayBounds: (
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) -> Unit,
-    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onShowGridItemPopup: (
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) -> Unit,
-    onUpdateAssociate: (Associate) -> Unit,
-) {
-    scope.launch {
-        onUpdateGridItemSource(
-            GridItemSource.Folder(
-                gridItem = folderGridItem,
-                applicationInfoGridItem = applicationInfoGridItem,
-            ),
-        )
-
-        onUpdateAssociate(folderGridItem.associate)
-
-        onUpdateImageBitmap(graphicsLayer.toImageBitmap())
-
-        onUpdateOverlayBounds(
-            intOffset,
-            intSize,
-        )
-
-        onUpdateSharedElementKey(
-            SharedElementKey(
-                id = applicationInfoGridItem.id,
-                parent = SharedElementKey.Parent.Folder,
-            ),
-        )
-
-        onUpdateIsLongPress(true)
-
-        onShowGridItemPopup(
-            intOffset,
-            intSize,
-        )
-    }
-}
-
-private fun handleDrag(
-    drag: Drag,
-    isSelected: Boolean,
-    isLongPress: Boolean,
-    onUpdateIsDragging: (Boolean) -> Unit,
-    onDismissGridItemPopup: () -> Unit,
-    onDraggingGridItem: () -> Unit,
-) {
-    if (drag == Drag.Dragging && isSelected && isLongPress) {
-        onUpdateIsDragging(true)
-
-        onDismissGridItemPopup()
-
-        onDraggingGridItem()
     }
 }

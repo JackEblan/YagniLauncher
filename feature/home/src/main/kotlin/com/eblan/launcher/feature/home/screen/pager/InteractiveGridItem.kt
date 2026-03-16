@@ -48,7 +48,6 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
@@ -81,12 +80,13 @@ import com.eblan.launcher.feature.home.util.getGridItemTextColor
 import com.eblan.launcher.feature.home.util.getHorizontalAlignment
 import com.eblan.launcher.feature.home.util.getSystemTextColor
 import com.eblan.launcher.feature.home.util.getVerticalArrangement
+import com.eblan.launcher.feature.home.util.handleDrag
 import com.eblan.launcher.feature.home.util.onDoubleTap
+import com.eblan.launcher.feature.home.util.onLongPress
 import com.eblan.launcher.ui.local.LocalAppWidgetHost
 import com.eblan.launcher.ui.local.LocalAppWidgetManager
 import com.eblan.launcher.ui.local.LocalLauncherApps
 import com.eblan.launcher.ui.local.LocalSettings
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -131,7 +131,6 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
     ) -> Unit,
     onDismissGridItemPopup: () -> Unit,
     onUpdateAssociate: (Associate) -> Unit,
-    onUpdateSelectedGridItem: (GridItem) -> Unit,
 ) {
     val isSelected = gridItemSource != null && gridItem.id == gridItemSource.gridItem.id
 
@@ -181,7 +180,6 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
                 onShowGridItemPopup = onShowGridItemPopup,
                 onDismissGridItemPopup = onDismissGridItemPopup,
                 onUpdateAssociate = onUpdateAssociate,
-                onUpdateSelectedGridItem = onUpdateSelectedGridItem,
             )
         }
 
@@ -205,7 +203,6 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
                 onShowGridItemPopup = onShowGridItemPopup,
                 onDismissGridItemPopup = onDismissGridItemPopup,
                 onUpdateAssociate = onUpdateAssociate,
-                onUpdateSelectedGridItem = onUpdateSelectedGridItem,
             )
         }
 
@@ -233,7 +230,6 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
                 onShowGridItemPopup = onShowGridItemPopup,
                 onDismissGridItemPopup = onDismissGridItemPopup,
                 onUpdateAssociate = onUpdateAssociate,
-                onUpdateSelectedGridItem = onUpdateSelectedGridItem,
             )
         }
 
@@ -261,7 +257,6 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
                 onShowGridItemPopup = onShowGridItemPopup,
                 onDismissGridItemPopup = onDismissGridItemPopup,
                 onUpdateAssociate = onUpdateAssociate,
-                onUpdateSelectedGridItem = onUpdateSelectedGridItem,
             )
         }
 
@@ -288,7 +283,6 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
                 onShowGridItemPopup = onShowGridItemPopup,
                 onDismissGridItemPopup = onDismissGridItemPopup,
                 onUpdateAssociate = onUpdateAssociate,
-                onUpdateSelectedGridItem = onUpdateSelectedGridItem,
             )
         }
     }
@@ -329,7 +323,6 @@ private fun SharedTransitionScope.InteractiveApplicationInfoGridItem(
     ) -> Unit,
     onDismissGridItemPopup: () -> Unit,
     onUpdateAssociate: (Associate) -> Unit,
-    onUpdateSelectedGridItem: (GridItem) -> Unit,
 ) {
     val launcherApps = LocalLauncherApps.current
 
@@ -357,9 +350,9 @@ private fun SharedTransitionScope.InteractiveApplicationInfoGridItem(
 
     val hasNotifications =
         statusBarNotifications[data.packageName] != null && (
-                statusBarNotifications[data.packageName]
-                    ?: 0
-                ) > 0
+            statusBarNotifications[data.packageName]
+                ?: 0
+            ) > 0
 
     val hasInteraction = isSelected && isLongPress && (drag == Drag.Start || drag == Drag.Dragging)
 
@@ -370,11 +363,9 @@ private fun SharedTransitionScope.InteractiveApplicationInfoGridItem(
             drag = drag,
             isSelected = isSelected,
             isLongPress = isLongPress,
-            gridItem = gridItem,
             onUpdateIsDragging = onUpdateIsDragging,
             onDismissGridItemPopup = onDismissGridItemPopup,
             onDraggingGridItem = onDraggingGridItem,
-            onUpdateGridItemSource = onUpdateGridItemSource,
         )
     }
 
@@ -402,14 +393,18 @@ private fun SharedTransitionScope.InteractiveApplicationInfoGridItem(
                                 graphicsLayer = graphicsLayer,
                                 intOffset = intOffset,
                                 intSize = intSize,
-                                gridItem = gridItem,
+                                gridItemSource = GridItemSource.Existing(gridItem = gridItem),
+                                sharedElementKey = SharedElementKey(
+                                    id = gridItem.id,
+                                    parent = SharedElementKey.Parent.Grid,
+                                ),
+                                onUpdateGridItemSource = onUpdateGridItemSource,
                                 onUpdateImageBitmap = onUpdateImageBitmap,
                                 onUpdateIsLongPress = onUpdateIsLongPress,
                                 onUpdateOverlayBounds = onUpdateOverlayBounds,
                                 onUpdateSharedElementKey = onUpdateSharedElementKey,
                                 onShowGridItemPopup = onShowGridItemPopup,
                                 onUpdateAssociate = onUpdateAssociate,
-                                onUpdateSelectedGridItem = onUpdateSelectedGridItem,
                             )
                         }
                     } else {
@@ -543,7 +538,6 @@ private fun SharedTransitionScope.InteractiveWidgetGridItem(
     ) -> Unit,
     onDismissGridItemPopup: () -> Unit,
     onUpdateAssociate: (Associate) -> Unit,
-    onUpdateSelectedGridItem: (GridItem) -> Unit,
 ) {
     var intOffset by remember { mutableStateOf(IntOffset.Zero) }
 
@@ -568,11 +562,9 @@ private fun SharedTransitionScope.InteractiveWidgetGridItem(
             drag = drag,
             isSelected = isSelected,
             isLongPress = isLongPress,
-            gridItem = gridItem,
             onUpdateIsDragging = onUpdateIsDragging,
             onDismissGridItemPopup = onDismissGridItemPopup,
             onDraggingGridItem = onDraggingGridItem,
-            onUpdateGridItemSource = onUpdateGridItemSource,
         )
     }
 
@@ -623,14 +615,18 @@ private fun SharedTransitionScope.InteractiveWidgetGridItem(
                                     graphicsLayer = graphicsLayer,
                                     intOffset = intOffset,
                                     intSize = intSize,
-                                    gridItem = gridItem,
+                                    gridItemSource = GridItemSource.Existing(gridItem = gridItem),
+                                    sharedElementKey = SharedElementKey(
+                                        id = gridItem.id,
+                                        parent = SharedElementKey.Parent.Grid,
+                                    ),
+                                    onUpdateGridItemSource = onUpdateGridItemSource,
                                     onUpdateImageBitmap = onUpdateImageBitmap,
                                     onUpdateIsLongPress = onUpdateIsLongPress,
                                     onUpdateOverlayBounds = onUpdateOverlayBounds,
                                     onUpdateSharedElementKey = onUpdateSharedElementKey,
                                     onShowGridItemPopup = onShowGridItemPopup,
                                     onUpdateAssociate = onUpdateAssociate,
-                                    onUpdateSelectedGridItem = onUpdateSelectedGridItem,
                                 )
 
                                 true
@@ -684,7 +680,6 @@ private fun SharedTransitionScope.InteractiveShortcutInfoGridItem(
     ) -> Unit,
     onDismissGridItemPopup: () -> Unit,
     onUpdateAssociate: (Associate) -> Unit,
-    onUpdateSelectedGridItem: (GridItem) -> Unit,
 ) {
     val launcherApps = LocalLauncherApps.current
 
@@ -721,11 +716,9 @@ private fun SharedTransitionScope.InteractiveShortcutInfoGridItem(
             drag = drag,
             isSelected = isSelected,
             isLongPress = isLongPress,
-            gridItem = gridItem,
             onUpdateIsDragging = onUpdateIsDragging,
             onDismissGridItemPopup = onDismissGridItemPopup,
             onDraggingGridItem = onDraggingGridItem,
-            onUpdateGridItemSource = onUpdateGridItemSource,
         )
     }
 
@@ -753,14 +746,18 @@ private fun SharedTransitionScope.InteractiveShortcutInfoGridItem(
                                 graphicsLayer = graphicsLayer,
                                 intOffset = intOffset,
                                 intSize = intSize,
-                                gridItem = gridItem,
+                                gridItemSource = GridItemSource.Existing(gridItem = gridItem),
+                                sharedElementKey = SharedElementKey(
+                                    id = gridItem.id,
+                                    parent = SharedElementKey.Parent.Grid,
+                                ),
+                                onUpdateGridItemSource = onUpdateGridItemSource,
                                 onUpdateImageBitmap = onUpdateImageBitmap,
                                 onUpdateIsLongPress = onUpdateIsLongPress,
                                 onUpdateOverlayBounds = onUpdateOverlayBounds,
                                 onUpdateSharedElementKey = onUpdateSharedElementKey,
                                 onShowGridItemPopup = onShowGridItemPopup,
                                 onUpdateAssociate = onUpdateAssociate,
-                                onUpdateSelectedGridItem = onUpdateSelectedGridItem,
                             )
                         }
                     } else {
@@ -885,7 +882,6 @@ private fun SharedTransitionScope.InteractiveFolderGridItem(
     ) -> Unit,
     onDismissGridItemPopup: () -> Unit,
     onUpdateAssociate: (Associate) -> Unit,
-    onUpdateSelectedGridItem: (GridItem) -> Unit,
 ) {
     val launcherApps = LocalLauncherApps.current
 
@@ -916,11 +912,9 @@ private fun SharedTransitionScope.InteractiveFolderGridItem(
             drag = drag,
             isSelected = isSelected,
             isLongPress = isLongPress,
-            gridItem = gridItem,
             onUpdateIsDragging = onUpdateIsDragging,
             onDismissGridItemPopup = onDismissGridItemPopup,
             onDraggingGridItem = onDraggingGridItem,
-            onUpdateGridItemSource = onUpdateGridItemSource,
         )
     }
 
@@ -948,14 +942,18 @@ private fun SharedTransitionScope.InteractiveFolderGridItem(
                                 graphicsLayer = graphicsLayer,
                                 intOffset = intOffset,
                                 intSize = intSize,
-                                gridItem = gridItem,
+                                gridItemSource = GridItemSource.Existing(gridItem = gridItem),
+                                sharedElementKey = SharedElementKey(
+                                    id = gridItem.id,
+                                    parent = SharedElementKey.Parent.Grid,
+                                ),
+                                onUpdateGridItemSource = onUpdateGridItemSource,
                                 onUpdateImageBitmap = onUpdateImageBitmap,
                                 onUpdateIsLongPress = onUpdateIsLongPress,
                                 onUpdateOverlayBounds = onUpdateOverlayBounds,
                                 onUpdateSharedElementKey = onUpdateSharedElementKey,
                                 onShowGridItemPopup = onShowGridItemPopup,
                                 onUpdateAssociate = onUpdateAssociate,
-                                onUpdateSelectedGridItem = onUpdateSelectedGridItem,
                             )
                         }
                     } else {
@@ -1103,7 +1101,6 @@ private fun SharedTransitionScope.InteractiveShortcutConfigGridItem(
     ) -> Unit,
     onDismissGridItemPopup: () -> Unit,
     onUpdateAssociate: (Associate) -> Unit,
-    onUpdateSelectedGridItem: (GridItem) -> Unit,
 ) {
     val launcherApps = LocalLauncherApps.current
 
@@ -1170,11 +1167,9 @@ private fun SharedTransitionScope.InteractiveShortcutConfigGridItem(
             drag = drag,
             isSelected = isSelected,
             isLongPress = isLongPress,
-            gridItem = gridItem,
             onUpdateIsDragging = onUpdateIsDragging,
             onDismissGridItemPopup = onDismissGridItemPopup,
             onDraggingGridItem = onDraggingGridItem,
-            onUpdateGridItemSource = onUpdateGridItemSource,
         )
     }
 
@@ -1202,14 +1197,18 @@ private fun SharedTransitionScope.InteractiveShortcutConfigGridItem(
                                 graphicsLayer = graphicsLayer,
                                 intOffset = intOffset,
                                 intSize = intSize,
-                                gridItem = gridItem,
+                                gridItemSource = GridItemSource.Existing(gridItem = gridItem),
+                                sharedElementKey = SharedElementKey(
+                                    id = gridItem.id,
+                                    parent = SharedElementKey.Parent.Grid,
+                                ),
+                                onUpdateGridItemSource = onUpdateGridItemSource,
                                 onUpdateImageBitmap = onUpdateImageBitmap,
                                 onUpdateIsLongPress = onUpdateIsLongPress,
                                 onUpdateOverlayBounds = onUpdateOverlayBounds,
                                 onUpdateSharedElementKey = onUpdateSharedElementKey,
                                 onShowGridItemPopup = onShowGridItemPopup,
                                 onUpdateAssociate = onUpdateAssociate,
-                                onUpdateSelectedGridItem = onUpdateSelectedGridItem,
                             )
                         }
                     } else {
@@ -1296,75 +1295,5 @@ private fun SharedTransitionScope.InteractiveShortcutConfigGridItem(
                 )
             }
         }
-    }
-}
-
-private fun onLongPress(
-    scope: CoroutineScope,
-    graphicsLayer: GraphicsLayer,
-    intOffset: IntOffset,
-    intSize: IntSize,
-    gridItem: GridItem,
-    onUpdateImageBitmap: (ImageBitmap) -> Unit,
-    onUpdateIsLongPress: (Boolean) -> Unit,
-    onUpdateOverlayBounds: (
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) -> Unit,
-    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onShowGridItemPopup: (
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) -> Unit,
-    onUpdateAssociate: (Associate) -> Unit,
-    onUpdateSelectedGridItem: (GridItem) -> Unit,
-) {
-    scope.launch {
-        onUpdateSelectedGridItem(gridItem)
-
-        onUpdateAssociate(gridItem.associate)
-
-        onUpdateImageBitmap(graphicsLayer.toImageBitmap())
-
-        onUpdateOverlayBounds(
-            intOffset,
-            intSize,
-        )
-
-        onUpdateSharedElementKey(
-            SharedElementKey(
-                id = gridItem.id,
-                parent = SharedElementKey.Parent.Grid,
-            ),
-        )
-
-        onUpdateIsLongPress(true)
-
-        onShowGridItemPopup(
-            intOffset,
-            intSize,
-        )
-    }
-}
-
-private fun handleDrag(
-    drag: Drag,
-    isSelected: Boolean,
-    isLongPress: Boolean,
-    gridItem: GridItem,
-    onUpdateIsDragging: (Boolean) -> Unit,
-    onDismissGridItemPopup: () -> Unit,
-    onDraggingGridItem: () -> Unit,
-    onUpdateGridItemSource: (GridItemSource) -> Unit,
-) {
-    if (drag == Drag.Dragging && isSelected && isLongPress) {
-        onUpdateGridItemSource(GridItemSource.Existing(gridItem = gridItem))
-
-        onUpdateIsDragging(true)
-
-        onDismissGridItemPopup()
-
-        onDraggingGridItem()
-
     }
 }
