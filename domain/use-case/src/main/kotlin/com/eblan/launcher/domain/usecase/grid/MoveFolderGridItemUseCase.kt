@@ -93,18 +93,14 @@ class MoveFolderGridItemUseCase @Inject constructor(
 
             val (columns, rows) = getGridDimension(count = firstPageGridItems.size)
 
-            val newData = folderData.copy(
-                gridItems = gridItems,
-                gridItemsByPage = gridItemsByPage,
-                columns = columns,
-                rows = rows,
-            )
-
-            gridCacheRepository.deleteGridItemById(id = movingApplicationInfoGridItem.id)
-
             gridCacheRepository.updateGridItemData(
                 id = folderGridItem.id,
-                data = newData,
+                data = folderData.copy(
+                    gridItems = gridItems,
+                    gridItemsByPage = gridItemsByPage,
+                    columns = columns,
+                    rows = rows,
+                ),
             )
         }
     }

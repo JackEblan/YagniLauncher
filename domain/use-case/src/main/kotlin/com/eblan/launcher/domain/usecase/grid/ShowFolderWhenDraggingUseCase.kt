@@ -24,7 +24,6 @@ import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.repository.GridCacheRepository
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -91,16 +90,14 @@ class ShowFolderWhenDraggingUseCase @Inject constructor(
 
             val (columns, rows) = getGridDimension(count = firstPageGridItems.size)
 
-            val newData = conflictingData.copy(
-                gridItems = gridItems,
-                gridItemsByPage = gridItemsByPage,
-                columns = columns,
-                rows = rows,
-            )
-
             gridCacheRepository.updateGridItemData(
                 id = conflictingGridItem.id,
-                data = newData,
+                data = conflictingData.copy(
+                    gridItems = gridItems,
+                    gridItemsByPage = gridItemsByPage,
+                    columns = columns,
+                    rows = rows,
+                ),
             )
         }
     }

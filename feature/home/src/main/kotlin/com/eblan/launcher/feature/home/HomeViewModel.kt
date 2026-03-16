@@ -634,10 +634,6 @@ internal class HomeViewModel @Inject constructor(
     ) {
         moveGridItemJob?.cancel()
 
-        _moveGridItemResult.update {
-            null
-        }
-
         moveGridItemJob = viewModelScope.launch {
             moveFolderGridItemUseCase(
                 folderGridItem = folderGridItem,
@@ -654,9 +650,15 @@ internal class HomeViewModel @Inject constructor(
         }
     }
 
-    fun resetGridCacheAfterMoveFolder() {
+    fun resetGridCacheAfterMoveFolder(id: String) {
         viewModelScope.launch {
             moveGridItemJob?.cancelAndJoin()
+
+            _moveGridItemResult.update {
+                null
+            }
+
+            gridCacheRepository.deleteGridItemById(id = id)
 
             gridRepository.updateGridItems(gridItems = gridCacheRepository.gridItemsCache.first())
 

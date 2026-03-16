@@ -158,7 +158,7 @@ internal class PagerScreenState(
     private val onDeleteGridItemCache: (GridItem) -> Unit,
     private val onDragCancelAfterMove: () -> Unit,
     private val onDragEndAfterMove: (MoveGridItemResult) -> Unit,
-    private val onDragEndAfterMoveFolder: () -> Unit,
+    private val onDragEndAfterMoveFolder: (String) -> Unit,
     private val onDeleteWidgetGridItemCache: (
         gridItem: GridItem,
         appWidgetId: Int,
@@ -1384,7 +1384,7 @@ internal class PagerScreenState(
             onDeleteGridItemCache: (GridItem) -> Unit,
             onDragCancelAfterMove: () -> Unit,
             onDragEndAfterMove: (MoveGridItemResult) -> Unit,
-            onDragEndAfterMoveFolder: () -> Unit,
+            onDragEndAfterMoveFolder: (String) -> Unit,
             onDeleteWidgetGridItemCache: (gridItem: GridItem, appWidgetId: Int) -> Unit,
             onShowFolderWhenDragging: (
                 id: String,
@@ -1461,7 +1461,7 @@ internal fun rememberPagerScreenState(
     ) -> Unit,
     onDragCancelAfterMove: () -> Unit,
     onDragEndAfterMove: (MoveGridItemResult) -> Unit,
-    onDragEndAfterMoveFolder: () -> Unit,
+    onDragEndAfterMoveFolder: (String) -> Unit,
     onDraggingGridItem: (List<GridItem>) -> Unit,
     onGetPinGridItem: (PinItemRequestType) -> Unit,
     onMoveFolderGridItem: (
