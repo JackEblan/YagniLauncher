@@ -103,6 +103,7 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
     isScrollInProgress: Boolean,
     statusBarNotifications: Map<String, Int>,
     textColor: TextColor,
+    isOpenFolder: Boolean,
     onDraggingGridItem: () -> Unit,
     onOpenAppDrawer: () -> Unit,
     onTapApplicationInfo: (
@@ -168,6 +169,7 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
                 isSelected = isSelected,
                 statusBarNotifications = statusBarNotifications,
                 textColor = currentTextColor,
+                isOpenFolder = isOpenFolder,
                 onDraggingGridItem = onDraggingGridItem,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onTapApplicationInfo = onTapApplicationInfo,
@@ -302,6 +304,7 @@ private fun SharedTransitionScope.InteractiveApplicationInfoGridItem(
     isSelected: Boolean,
     statusBarNotifications: Map<String, Int>,
     textColor: Color,
+    isOpenFolder: Boolean,
     onDraggingGridItem: () -> Unit,
     onOpenAppDrawer: () -> Unit,
     onTapApplicationInfo: (
@@ -357,6 +360,8 @@ private fun SharedTransitionScope.InteractiveApplicationInfoGridItem(
     val hasInteraction = isSelected && isLongPress && (drag == Drag.Start || drag == Drag.Dragging)
 
     val isVisibleWhiteBox = isSelected && drag == Drag.Dragging
+
+    val isInsideOpenFolder = isSelected && isOpenFolder
 
     LaunchedEffect(key1 = drag) {
         handleDrag(
@@ -439,7 +444,7 @@ private fun SharedTransitionScope.InteractiveApplicationInfoGridItem(
         horizontalAlignment = horizontalAlignment,
         verticalArrangement = verticalArrangement,
     ) {
-        if (!hasInteraction) {
+        if (!hasInteraction && !isInsideOpenFolder) {
             Box(modifier = Modifier.size(gridItemSettings.iconSize.dp)) {
                 AsyncImage(
                     model = Builder(LocalContext.current).data(data.customIcon ?: icon)
