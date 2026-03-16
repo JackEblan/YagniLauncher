@@ -367,7 +367,9 @@ private fun SharedTransitionScope.InteractiveApplicationInfoGridItem(
 
     val alpha = if (
         isFolderOpen &&
-        moveGridItemResult?.isSuccess == true &&
+        moveGridItemResult != null &&
+        moveGridItemResult.isSuccess &&
+        moveGridItemResult.conflictingGridItem?.data is GridItemData.Folder &&
         moveGridItemResult.movingGridItem.id == gridItem.id &&
         drag != Drag.Dragging
     ) {
