@@ -82,6 +82,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.round
 import coil3.compose.AsyncImage
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
+import com.eblan.launcher.domain.model.Associate
 import com.eblan.launcher.domain.model.EblanAppWidgetProviderInfo
 import com.eblan.launcher.domain.model.EblanApplicationInfoGroup
 import com.eblan.launcher.domain.model.GridItemSettings
@@ -129,6 +130,7 @@ internal fun WidgetScreen(
     onUpdateIsLongPressAndIsDragging: () -> Unit,
     onVerticalDrag: (Float) -> Unit,
     onDragEnd: (Float) -> Unit,
+    onUpdateAssociate: (Associate) -> Unit,
 ) {
     Surface(
         modifier = modifier
@@ -161,6 +163,7 @@ internal fun WidgetScreen(
             onUpdateGridItemSource = onUpdateGridItemSource,
             onUpdateSharedElementKey = onUpdateSharedElementKey,
             onUpdateIsLongPressAndIsDragging = onUpdateIsLongPressAndIsDragging,
+            onUpdateAssociate = onUpdateAssociate,
         )
     }
 }
@@ -193,6 +196,7 @@ private fun Success(
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onUpdateIsLongPressAndIsDragging: () -> Unit,
+    onUpdateAssociate: (Associate) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
 
@@ -317,6 +321,7 @@ private fun Success(
                         onUpdateSharedElementKey = onUpdateSharedElementKey,
                         onDismiss = onDismiss,
                         onUpdateIsLongPressAndIsDragging = onUpdateIsLongPressAndIsDragging,
+                        onUpdateAssociate = onUpdateAssociate,
                     )
                 }
             }
@@ -347,6 +352,7 @@ private fun EblanApplicationInfoItem(
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onDismiss: () -> Unit,
     onUpdateIsLongPressAndIsDragging: () -> Unit,
+    onUpdateAssociate: (Associate) -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -408,6 +414,7 @@ private fun EblanApplicationInfoItem(
                     onUpdateSharedElementKey = onUpdateSharedElementKey,
                     onDismiss = onDismiss,
                     onUpdateIsLongPressAndIsDragging = onUpdateIsLongPressAndIsDragging,
+                    onUpdateAssociate = onUpdateAssociate,
                 )
             }
         }
@@ -436,6 +443,7 @@ private fun EblanAppWidgetProviderInfoItem(
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onDismiss: () -> Unit,
     onUpdateIsLongPressAndIsDragging: () -> Unit,
+    onUpdateAssociate: (Associate) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
 
@@ -457,31 +465,31 @@ private fun EblanAppWidgetProviderInfoItem(
                         scope.launch {
                             onUpdateImageBitmap(graphicsLayer.toImageBitmap())
 
-                            onUpdateGridItemSource(
-                                GridItemSource.New(
-                                    gridItem = getWidgetGridItem(
-                                        componentName = eblanAppWidgetProviderInfo.componentName,
-                                        configure = eblanAppWidgetProviderInfo.configure,
-                                        gridItemSettings = gridItemSettings,
-                                        icon = eblanAppWidgetProviderInfo.applicationIcon,
-                                        id = id,
-                                        label = eblanAppWidgetProviderInfo.applicationLabel,
-                                        maxResizeHeight = eblanAppWidgetProviderInfo.maxResizeHeight,
-                                        maxResizeWidth = eblanAppWidgetProviderInfo.maxResizeWidth,
-                                        minHeight = eblanAppWidgetProviderInfo.minHeight,
-                                        minResizeHeight = eblanAppWidgetProviderInfo.minResizeHeight,
-                                        minResizeWidth = eblanAppWidgetProviderInfo.minResizeWidth,
-                                        minWidth = eblanAppWidgetProviderInfo.minWidth,
-                                        packageName = eblanAppWidgetProviderInfo.packageName,
-                                        page = currentPage,
-                                        preview = eblanAppWidgetProviderInfo.preview,
-                                        resizeMode = eblanAppWidgetProviderInfo.resizeMode,
-                                        serialNumber = eblanAppWidgetProviderInfo.serialNumber,
-                                        targetCellHeight = eblanAppWidgetProviderInfo.targetCellHeight,
-                                        targetCellWidth = eblanAppWidgetProviderInfo.targetCellWidth,
-                                    ),
-                                ),
+                            val gridItem = getWidgetGridItem(
+                                componentName = eblanAppWidgetProviderInfo.componentName,
+                                configure = eblanAppWidgetProviderInfo.configure,
+                                gridItemSettings = gridItemSettings,
+                                icon = eblanAppWidgetProviderInfo.applicationIcon,
+                                id = id,
+                                label = eblanAppWidgetProviderInfo.applicationLabel,
+                                maxResizeHeight = eblanAppWidgetProviderInfo.maxResizeHeight,
+                                maxResizeWidth = eblanAppWidgetProviderInfo.maxResizeWidth,
+                                minHeight = eblanAppWidgetProviderInfo.minHeight,
+                                minResizeHeight = eblanAppWidgetProviderInfo.minResizeHeight,
+                                minResizeWidth = eblanAppWidgetProviderInfo.minResizeWidth,
+                                minWidth = eblanAppWidgetProviderInfo.minWidth,
+                                packageName = eblanAppWidgetProviderInfo.packageName,
+                                page = currentPage,
+                                preview = eblanAppWidgetProviderInfo.preview,
+                                resizeMode = eblanAppWidgetProviderInfo.resizeMode,
+                                serialNumber = eblanAppWidgetProviderInfo.serialNumber,
+                                targetCellHeight = eblanAppWidgetProviderInfo.targetCellHeight,
+                                targetCellWidth = eblanAppWidgetProviderInfo.targetCellWidth,
                             )
+
+                            onUpdateGridItemSource(GridItemSource.New(gridItem = gridItem))
+
+                            onUpdateAssociate(gridItem.associate)
 
                             onUpdateOverlayBounds(
                                 intOffset,

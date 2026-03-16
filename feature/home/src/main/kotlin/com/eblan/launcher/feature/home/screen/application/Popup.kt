@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
+import com.eblan.launcher.domain.model.Associate
 import com.eblan.launcher.domain.model.EblanAppWidgetProviderInfo
 import com.eblan.launcher.domain.model.EblanApplicationInfo
 import com.eblan.launcher.domain.model.EblanApplicationInfoGroup
@@ -87,6 +88,7 @@ internal fun ApplicationInfoPopup(
     ) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onWidgets: (EblanApplicationInfoGroup) -> Unit,
+    onUpdateAssociate: (Associate) -> Unit,
 ) {
     requireNotNull(eblanApplicationInfo)
 
@@ -181,6 +183,7 @@ internal fun ApplicationInfoPopup(
 
                     onDismissRequest()
                 },
+                onUpdateAssociate = onUpdateAssociate,
             )
         },
     ) { measurables, constraints ->
@@ -234,6 +237,7 @@ private fun ApplicationInfoMenu(
     ) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onWidgets: () -> Unit,
+    onUpdateAssociate: (Associate) -> Unit,
 ) {
     Surface(
         modifier = modifier.padding(5.dp),
@@ -259,6 +263,7 @@ private fun ApplicationInfoMenu(
                         onUpdateImageBitmap = onUpdateImageBitmap,
                         onUpdateOverlayBounds = onUpdateOverlayBounds,
                         onUpdateSharedElementKey = onUpdateSharedElementKey,
+                        onUpdateAssociate = onUpdateAssociate,
                     )
 
                     Spacer(modifier = Modifier.height(5.dp))

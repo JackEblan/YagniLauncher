@@ -1022,8 +1022,10 @@ internal class PagerScreenState(
 
     fun updateGridItemSource(value: GridItemSource) {
         gridItemSource = value
+    }
 
-        associate = value.gridItem.associate
+    fun updateAssociate(value: Associate) {
+        associate = value
     }
 
     fun updateOverlayImageBitmap(value: ImageBitmap?) {

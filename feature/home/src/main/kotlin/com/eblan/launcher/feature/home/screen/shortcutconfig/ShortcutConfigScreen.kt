@@ -139,6 +139,7 @@ internal fun ShortcutConfigScreen(
     onUpdateIsLongPressAndIsDragging: () -> Unit,
     onVerticalDrag: (Float) -> Unit,
     onDragEnd: (Float) -> Unit,
+    onUpdateAssociate: (Associate) -> Unit,
 ) {
     BackHandler(enabled = offsetY < screenHeight.toFloat()) {
         onDismiss()
@@ -171,6 +172,7 @@ internal fun ShortcutConfigScreen(
             onUpdateGridItemSource = onUpdateGridItemSource,
             onUpdateSharedElementKey = onUpdateSharedElementKey,
             onUpdateIsLongPressAndIsDragging = onUpdateIsLongPressAndIsDragging,
+            onUpdateAssociate = onUpdateAssociate,
         )
     }
 }
@@ -198,6 +200,7 @@ private fun Success(
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onUpdateIsLongPressAndIsDragging: () -> Unit,
+    onUpdateAssociate: (Associate) -> Unit,
 ) {
     val horizontalPagerState = rememberPagerState(
         pageCount = {
@@ -290,6 +293,7 @@ private fun Success(
                     onUpdateSharedElementKey = onUpdateSharedElementKey,
                     onDismiss = onDismiss,
                     onUpdateIsLongPressAndIsDragging = onUpdateIsLongPressAndIsDragging,
+                    onUpdateAssociate = onUpdateAssociate,
                 )
             }
         } else {
@@ -309,6 +313,7 @@ private fun Success(
                 onUpdateSharedElementKey = onUpdateSharedElementKey,
                 onDismiss = onDismiss,
                 onUpdateIsLongPressAndIsDragging = onUpdateIsLongPressAndIsDragging,
+                onUpdateAssociate = onUpdateAssociate,
             )
         }
     }
@@ -362,6 +367,7 @@ private fun EblanShortcutConfigsPage(
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onDismiss: () -> Unit,
     onUpdateIsLongPressAndIsDragging: () -> Unit,
+    onUpdateAssociate: (Associate) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
 
@@ -440,6 +446,7 @@ private fun EblanShortcutConfigsPage(
                         onUpdateSharedElementKey = onUpdateSharedElementKey,
                         onDismiss = onDismiss,
                         onUpdateIsLongPressAndIsDragging = onUpdateIsLongPressAndIsDragging,
+                        onUpdateAssociate = onUpdateAssociate,
                     )
                 }
             }
@@ -466,6 +473,7 @@ private fun EblanApplicationInfoItem(
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onDismiss: () -> Unit,
     onUpdateIsLongPressAndIsDragging: () -> Unit,
+    onUpdateAssociate: (Associate) -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -523,6 +531,7 @@ private fun EblanApplicationInfoItem(
                     onUpdateSharedElementKey = onUpdateSharedElementKey,
                     onDismiss = onDismiss,
                     onUpdateIsLongPressAndIsDragging = onUpdateIsLongPressAndIsDragging,
+                    onUpdateAssociate = onUpdateAssociate,
                 )
             }
         }
@@ -547,6 +556,7 @@ private fun EblanShortcutConfigItem(
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onDismiss: () -> Unit,
     onUpdateIsLongPressAndIsDragging: () -> Unit,
+    onUpdateAssociate: (Associate) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
 
@@ -579,37 +589,37 @@ private fun EblanShortcutConfigItem(
                                 customLabel = null,
                             )
 
-                            onUpdateGridItemSource(
-                                GridItemSource.New(
-                                    gridItem = GridItem(
-                                        id = id,
-                                        page = currentPage,
-                                        startColumn = -1,
-                                        startRow = -1,
-                                        columnSpan = 1,
-                                        rowSpan = 1,
-                                        data = data,
-                                        associate = Associate.Grid,
-                                        override = false,
-                                        gridItemSettings = gridItemSettings,
-                                        doubleTap = EblanAction(
-                                            eblanActionType = EblanActionType.None,
-                                            serialNumber = 0L,
-                                            componentName = "",
-                                        ),
-                                        swipeUp = EblanAction(
-                                            eblanActionType = EblanActionType.None,
-                                            serialNumber = 0L,
-                                            componentName = "",
-                                        ),
-                                        swipeDown = EblanAction(
-                                            eblanActionType = EblanActionType.None,
-                                            serialNumber = 0L,
-                                            componentName = "",
-                                        ),
-                                    ),
+                            val gridItem = GridItem(
+                                id = id,
+                                page = currentPage,
+                                startColumn = -1,
+                                startRow = -1,
+                                columnSpan = 1,
+                                rowSpan = 1,
+                                data = data,
+                                associate = Associate.Grid,
+                                override = false,
+                                gridItemSettings = gridItemSettings,
+                                doubleTap = EblanAction(
+                                    eblanActionType = EblanActionType.None,
+                                    serialNumber = 0L,
+                                    componentName = "",
+                                ),
+                                swipeUp = EblanAction(
+                                    eblanActionType = EblanActionType.None,
+                                    serialNumber = 0L,
+                                    componentName = "",
+                                ),
+                                swipeDown = EblanAction(
+                                    eblanActionType = EblanActionType.None,
+                                    serialNumber = 0L,
+                                    componentName = "",
                                 ),
                             )
+
+                            onUpdateGridItemSource(GridItemSource.New(gridItem = gridItem))
+
+                            onUpdateAssociate(gridItem.associate)
 
                             onUpdateImageBitmap(graphicsLayer.toImageBitmap())
 

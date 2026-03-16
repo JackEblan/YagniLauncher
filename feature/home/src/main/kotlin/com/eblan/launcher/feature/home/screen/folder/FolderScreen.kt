@@ -72,6 +72,7 @@ import coil3.request.ImageRequest.Builder
 import coil3.request.addLastModifiedToFileCacheKey
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.ApplicationInfoGridItem
+import com.eblan.launcher.domain.model.Associate
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.GridItemSettings
@@ -131,6 +132,7 @@ internal fun SharedTransitionScope.FolderScreen(
         intSize: IntSize,
     ) -> Unit,
     onDismissGridItemPopup: () -> Unit,
+    onUpdateAssociate: (Associate) -> Unit,
 ) {
     if (folderPopupIntOffset == null || folderPopupIntSize == null) return
 
@@ -226,6 +228,7 @@ internal fun SharedTransitionScope.FolderScreen(
                                     onUpdateSharedElementKey = onUpdateSharedElementKey,
                                     onShowGridItemPopup = onShowGridItemPopup,
                                     onDismissGridItemPopup = onDismissGridItemPopup,
+                                    onUpdateAssociate = onUpdateAssociate,
                                 )
                             },
                         )
@@ -325,6 +328,7 @@ private fun SharedTransitionScope.FolderGridItemContent(
         intSize: IntSize,
     ) -> Unit,
     onDismissGridItemPopup: () -> Unit,
+    onUpdateAssociate: (Associate) -> Unit,
 ) {
     val launcherApps = LocalLauncherApps.current
 
@@ -434,6 +438,7 @@ private fun SharedTransitionScope.FolderGridItemContent(
                                 onUpdateOverlayBounds = onUpdateOverlayBounds,
                                 onUpdateSharedElementKey = onUpdateSharedElementKey,
                                 onShowGridItemPopup = onShowGridItemPopup,
+                                onUpdateAssociate = onUpdateAssociate,
                             )
                         }
                     } else {

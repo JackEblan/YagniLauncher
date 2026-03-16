@@ -63,6 +63,7 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.round
 import coil3.compose.AsyncImage
+import com.eblan.launcher.domain.model.Associate
 import com.eblan.launcher.domain.model.EblanAppWidgetProviderInfo
 import com.eblan.launcher.domain.model.EblanApplicationInfoGroup
 import com.eblan.launcher.domain.model.GridItemSettings
@@ -103,6 +104,7 @@ internal fun AppWidgetScreen(
     onUpdateIsLongPressAndIsDragging: () -> Unit,
     onVerticalDrag: (Float) -> Unit,
     onDragEnd: () -> Unit,
+    onUpdateAssociate: (Associate) -> Unit,
 ) {
     if (eblanApplicationInfoGroup == null) return
 
@@ -170,6 +172,7 @@ internal fun AppWidgetScreen(
                 onDismiss = onDismiss,
                 onDismissApplicationScreen = onDismissApplicationScreen,
                 onUpdateIsLongPressAndIsDragging = onUpdateIsLongPressAndIsDragging,
+                onUpdateAssociate = onUpdateAssociate,
             )
         }
     }
@@ -196,6 +199,7 @@ private fun Success(
     onDismiss: () -> Unit,
     onDismissApplicationScreen: () -> Unit,
     onUpdateIsLongPressAndIsDragging: () -> Unit,
+    onUpdateAssociate: (Associate) -> Unit,
 ) {
     val lazyListState = rememberLazyListState()
 
@@ -238,6 +242,7 @@ private fun Success(
                     onDismiss = onDismiss,
                     onDismissApplicationScreen = onDismissApplicationScreen,
                     onUpdateIsLongPressAndIsDragging = onUpdateIsLongPressAndIsDragging,
+                    onUpdateAssociate = onUpdateAssociate,
                 )
             }
         }
@@ -267,6 +272,7 @@ private fun EblanAppWidgetProviderInfoItem(
     onDismiss: () -> Unit,
     onDismissApplicationScreen: () -> Unit,
     onUpdateIsLongPressAndIsDragging: () -> Unit,
+    onUpdateAssociate: (Associate) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
 
@@ -286,31 +292,31 @@ private fun EblanAppWidgetProviderInfoItem(
                 detectTapGestures(
                     onLongPress = {
                         scope.launch {
-                            onUpdateGridItemSource(
-                                GridItemSource.New(
-                                    gridItem = getWidgetGridItem(
-                                        componentName = eblanAppWidgetProviderInfo.componentName,
-                                        configure = eblanAppWidgetProviderInfo.configure,
-                                        gridItemSettings = gridItemSettings,
-                                        icon = eblanAppWidgetProviderInfo.applicationIcon,
-                                        id = id,
-                                        label = eblanAppWidgetProviderInfo.applicationLabel,
-                                        maxResizeHeight = eblanAppWidgetProviderInfo.maxResizeHeight,
-                                        maxResizeWidth = eblanAppWidgetProviderInfo.maxResizeWidth,
-                                        minHeight = eblanAppWidgetProviderInfo.minHeight,
-                                        minResizeHeight = eblanAppWidgetProviderInfo.minResizeHeight,
-                                        minResizeWidth = eblanAppWidgetProviderInfo.minResizeWidth,
-                                        minWidth = eblanAppWidgetProviderInfo.minWidth,
-                                        packageName = eblanAppWidgetProviderInfo.packageName,
-                                        page = currentPage,
-                                        preview = eblanAppWidgetProviderInfo.preview,
-                                        resizeMode = eblanAppWidgetProviderInfo.resizeMode,
-                                        serialNumber = eblanAppWidgetProviderInfo.serialNumber,
-                                        targetCellHeight = eblanAppWidgetProviderInfo.targetCellHeight,
-                                        targetCellWidth = eblanAppWidgetProviderInfo.targetCellWidth,
-                                    ),
-                                ),
+                            val gridItem = getWidgetGridItem(
+                                componentName = eblanAppWidgetProviderInfo.componentName,
+                                configure = eblanAppWidgetProviderInfo.configure,
+                                gridItemSettings = gridItemSettings,
+                                icon = eblanAppWidgetProviderInfo.applicationIcon,
+                                id = id,
+                                label = eblanAppWidgetProviderInfo.applicationLabel,
+                                maxResizeHeight = eblanAppWidgetProviderInfo.maxResizeHeight,
+                                maxResizeWidth = eblanAppWidgetProviderInfo.maxResizeWidth,
+                                minHeight = eblanAppWidgetProviderInfo.minHeight,
+                                minResizeHeight = eblanAppWidgetProviderInfo.minResizeHeight,
+                                minResizeWidth = eblanAppWidgetProviderInfo.minResizeWidth,
+                                minWidth = eblanAppWidgetProviderInfo.minWidth,
+                                packageName = eblanAppWidgetProviderInfo.packageName,
+                                page = currentPage,
+                                preview = eblanAppWidgetProviderInfo.preview,
+                                resizeMode = eblanAppWidgetProviderInfo.resizeMode,
+                                serialNumber = eblanAppWidgetProviderInfo.serialNumber,
+                                targetCellHeight = eblanAppWidgetProviderInfo.targetCellHeight,
+                                targetCellWidth = eblanAppWidgetProviderInfo.targetCellWidth,
                             )
+
+                            onUpdateGridItemSource(GridItemSource.New(gridItem = gridItem))
+
+                            onUpdateAssociate(gridItem.associate)
 
                             onUpdateImageBitmap(graphicsLayer.toImageBitmap())
 

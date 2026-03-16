@@ -761,6 +761,7 @@ internal fun PagerScreen(
                             onUpdateSharedElementKey = pagerScreenState::updateSharedElementKey,
                             onShowGridItemPopup = pagerScreenState::showGridItemPopup,
                             onDismissGridItemPopup = pagerScreenState::dismissGridItemPopup,
+                            onUpdateAssociate = pagerScreenState::updateAssociate,
                         )
                     },
                 )
@@ -885,6 +886,7 @@ internal fun PagerScreen(
                             onUpdateSharedElementKey = pagerScreenState::updateSharedElementKey,
                             onShowGridItemPopup = pagerScreenState::showGridItemPopup,
                             onDismissGridItemPopup = pagerScreenState::dismissGridItemPopup,
+                            onUpdateAssociate = pagerScreenState::updateAssociate,
                         )
                     },
                 )
@@ -975,6 +977,7 @@ internal fun PagerScreen(
                 onUpdateOverlayBounds = pagerScreenState::updateOverlayBounds,
                 onUpdateSharedElementKey = pagerScreenState::updateSharedElementKey,
                 onWidgets = pagerScreenState::openAppWidgetScreen,
+                onUpdateAssociate = pagerScreenState::updateAssociate,
             )
         }
 
@@ -1033,6 +1036,7 @@ internal fun PagerScreen(
                 onUpdateSharedElementKey = pagerScreenState::updateSharedElementKey,
                 onShowGridItemPopup = pagerScreenState::showFolderGridItemPopup,
                 onDismissGridItemPopup = pagerScreenState::dismissFolderGridItemPopup,
+                onUpdateAssociate = pagerScreenState::updateAssociate,
             )
         }
 
@@ -1103,6 +1107,7 @@ internal fun PagerScreen(
                         y = 0,
                     )
                 },
+                onUpdateAssociate = pagerScreenState::updateAssociate,
             )
         }
 
@@ -1152,6 +1157,7 @@ internal fun PagerScreen(
                 onDraggingShortcutInfoGridItem = {
                     pagerScreenState.draggingShortcutInfoGridItem(gridItems = gridItems)
                 },
+                onUpdateAssociate = pagerScreenState::updateAssociate,
             )
         }
 
@@ -1189,6 +1195,7 @@ internal fun PagerScreen(
                     )
                 }
             },
+            onUpdateAssociate = pagerScreenState::updateAssociate,
         )
 
         ShortcutConfigScreen(
@@ -1222,6 +1229,7 @@ internal fun PagerScreen(
                     )
                 }
             },
+            onUpdateAssociate = pagerScreenState::updateAssociate,
         )
 
         AppWidgetScreen(
@@ -1257,6 +1265,7 @@ internal fun PagerScreen(
                     )
                 }
             },
+            onUpdateAssociate = pagerScreenState::updateAssociate,
         )
 
         if (pagerScreenState.isResizing && pagerScreenState.gridItemSource != null) {
