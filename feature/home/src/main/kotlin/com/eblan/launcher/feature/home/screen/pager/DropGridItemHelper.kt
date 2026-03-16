@@ -55,7 +55,7 @@ internal suspend fun handleDropGridItem(
     isLongPress: Boolean,
     moveGridItemResult: MoveGridItemResult?,
     lockMovement: Boolean,
-    onDeleteGridItemCache: (GridItem) -> Unit,
+    onResetGridCacheAfterDeleteGridItemCache: (GridItem) -> Unit,
     onDragCancelAfterMove: () -> Unit,
     onDragEndAfterMove: (MoveGridItemResult) -> Unit,
     onDragEndAfterMoveFolder: () -> Unit,
@@ -142,7 +142,7 @@ internal suspend fun handleDropGridItem(
                             androidUserManagerWrapper = androidUserManagerWrapper,
                             data = data,
                             gridItem = gridItemSource.gridItem,
-                            onDeleteGridItemCache = onDeleteGridItemCache,
+                            onResetGridCacheAfterDeleteGridItemCache = onResetGridCacheAfterDeleteGridItemCache,
                             onLaunchShortcutConfigIntent = onLaunchShortcutConfigIntent,
                             onLaunchShortcutConfigIntentSenderRequest = onLaunchShortcutConfigIntentSenderRequest,
                         )
@@ -186,7 +186,7 @@ internal suspend fun handleDropGridItem(
                             gridItem = gridItemSource.gridItem,
                             moveGridItemResult = moveGridItemResult,
                             pinItemRequest = gridItemSource.pinItemRequest,
-                            onDeleteGridItemCache = onDeleteGridItemCache,
+                            onDeleteGridItemCache = onResetGridCacheAfterDeleteGridItemCache,
                             onDragEndAfterMove = onDragEndAfterMove,
                         )
                     }
@@ -304,7 +304,7 @@ internal fun handleDeleteAppWidgetId(
     appWidgetId: Int,
     deleteAppWidgetId: Boolean,
     gridItemSource: GridItemSource?,
-    onDeleteWidgetGridItemCache: (
+    onResetGridCacheAfterDeleteWidgetGridItemCache: (
         gridItem: GridItem,
         appWidgetId: Int,
     ) -> Unit,
@@ -316,7 +316,7 @@ internal fun handleDeleteAppWidgetId(
 
     check(gridItemSource.gridItem.data is GridItemData.Widget)
 
-    onDeleteWidgetGridItemCache(gridItemSource.gridItem, appWidgetId)
+    onResetGridCacheAfterDeleteWidgetGridItemCache(gridItemSource.gridItem, appWidgetId)
 
     onResetAppWidgetId()
 }
@@ -591,7 +591,7 @@ private suspend fun onDragEndShortcutConfig(
     androidUserManagerWrapper: AndroidUserManagerWrapper,
     data: GridItemData.ShortcutConfig,
     gridItem: GridItem,
-    onDeleteGridItemCache: (GridItem) -> Unit,
+    onResetGridCacheAfterDeleteGridItemCache: (GridItem) -> Unit,
     onLaunchShortcutConfigIntent: (Intent) -> Unit,
     onLaunchShortcutConfigIntentSenderRequest: (IntentSenderRequest) -> Unit,
 ) {
@@ -606,7 +606,7 @@ private suspend fun onDragEndShortcutConfig(
         try {
             onLaunchShortcutConfigIntent(intent)
         } catch (_: ActivityNotFoundException) {
-            onDeleteGridItemCache(gridItem)
+            onResetGridCacheAfterDeleteGridItemCache(gridItem)
         }
     } else {
         val shortcutConfigIntent = androidLauncherAppsWrapper.getShortcutConfigIntent(
@@ -620,7 +620,7 @@ private suspend fun onDragEndShortcutConfig(
 
             onLaunchShortcutConfigIntentSenderRequest(intentSenderRequest)
         } else {
-            onDeleteGridItemCache(gridItem)
+            onResetGridCacheAfterDeleteGridItemCache(gridItem)
         }
     }
 }

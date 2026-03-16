@@ -143,8 +143,8 @@ internal fun PagerScreen(
     resizeGridItem: GridItem?,
     onDeleteApplicationInfoGridItem: (ApplicationInfoGridItem) -> Unit,
     onDeleteGridItem: (GridItem) -> Unit,
-    onDeleteGridItemCache: (GridItem) -> Unit,
-    onDeleteWidgetGridItemCache: (
+    onResetGridCacheAfterDeleteGridItemCache: (GridItem) -> Unit,
+    onResetGridCacheAfterDeleteWidgetGridItemCache: (
         gridItem: GridItem,
         appWidgetId: Int,
     ) -> Unit,
@@ -247,8 +247,8 @@ internal fun PagerScreen(
         screenHeight = screenHeight,
         screenWidth = screenWidth,
         experimentalSettings = experimentalSettings,
-        onDeleteGridItemCache = onDeleteGridItemCache,
-        onDeleteWidgetGridItemCache = onDeleteWidgetGridItemCache,
+        onResetGridCacheAfterDeleteGridItemCache = onResetGridCacheAfterDeleteGridItemCache,
+        onResetGridCacheAfterDeleteWidgetGridItemCache = onResetGridCacheAfterDeleteWidgetGridItemCache,
         onDragCancelAfterMove = onDragCancelAfterMove,
         onDragEndAfterMove = onDragEndAfterMove,
         onDragEndAfterMoveFolder = onDragEndAfterMoveFolder,
@@ -314,7 +314,7 @@ internal fun PagerScreen(
                 gridItemSource = pagerScreenState.gridItemSource,
                 moveGridItemResult = moveGridItemResult,
                 result = result,
-                onDeleteGridItemCache = onDeleteGridItemCache,
+                onDeleteGridItemCache = onResetGridCacheAfterDeleteGridItemCache,
                 onUpdateShortcutConfigGridItemDataCache = onUpdateShortcutConfigGridItemDataCache,
             )
         }
@@ -332,7 +332,7 @@ internal fun PagerScreen(
                 gridItemSource = pagerScreenState.gridItemSource,
                 moveGridItemResult = moveGridItemResult,
                 result = result,
-                onDeleteGridItemCache = onDeleteGridItemCache,
+                onDeleteGridItemCache = onResetGridCacheAfterDeleteGridItemCache,
                 onUpdateShortcutConfigIntoShortcutInfoGridItem = onUpdateShortcutConfigIntoShortcutInfoGridItem,
             )
         }
@@ -479,8 +479,8 @@ internal fun PagerScreen(
             gridItemSource = pagerScreenState.gridItemSource,
             moveGridItemResult = moveGridItemResult,
             updatedWidgetGridItem = pagerScreenState.updatedWidgetGridItem,
-            onDeleteGridItemCache = onDeleteGridItemCache,
-            onDeleteWidgetGridItemCache = onDeleteWidgetGridItemCache,
+            onDeleteGridItemCache = onResetGridCacheAfterDeleteGridItemCache,
+            onDeleteWidgetGridItemCache = onResetGridCacheAfterDeleteWidgetGridItemCache,
             onDragEndAfterMoveWidgetGridItem = onDragEndAfterMoveWidgetGridItem,
         )
     }
@@ -518,7 +518,7 @@ internal fun PagerScreen(
             moveGridItemResult = moveGridItemResult,
             resultCode = configureResultCode,
             updatedGridItem = pagerScreenState.updatedWidgetGridItem,
-            onDeleteWidgetGridItemCache = onDeleteWidgetGridItemCache,
+            onDeleteWidgetGridItemCache = onResetGridCacheAfterDeleteWidgetGridItemCache,
             onDragEndAfterMoveWidgetGridItem = onDragEndAfterMoveWidgetGridItem,
             onResetConfigureResultCode = onResetConfigureResultCode,
         )

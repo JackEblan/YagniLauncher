@@ -342,7 +342,7 @@ internal class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             moveGridItemJob?.cancelAndJoin()
 
-            _resizeGridItem.update {
+            _moveGridItemResult.update {
                 null
             }
 
@@ -429,8 +429,14 @@ internal class HomeViewModel @Inject constructor(
         }
     }
 
-    fun deleteGridItemCache(gridItem: GridItem) {
+    fun resetGridCacheAfterDeleteGridItemCache(gridItem: GridItem) {
         viewModelScope.launch {
+            moveGridItemJob?.cancelAndJoin()
+
+            _moveGridItemResult.update {
+                null
+            }
+
             gridCacheRepository.deleteGridItemById(id = gridItem.id)
 
             gridRepository.updateGridItems(gridItems = gridCacheRepository.gridItemsCache.first())
@@ -441,20 +447,22 @@ internal class HomeViewModel @Inject constructor(
         }
     }
 
-    fun deleteWidgetGridItemCache(
+    fun resetGridCacheAfterDeleteWidgetGridItemCache(
         gridItem: GridItem,
         appWidgetId: Int,
     ) {
         viewModelScope.launch {
+            moveGridItemJob?.cancelAndJoin()
+
+            _moveGridItemResult.update {
+                null
+            }
+
             appWidgetHostWrapper.deleteAppWidgetId(appWidgetId = appWidgetId)
 
             gridCacheRepository.deleteGridItemById(id = gridItem.id)
 
             gridRepository.updateGridItems(gridItems = gridCacheRepository.gridItemsCache.first())
-
-            _moveGridItemResult.update {
-                null
-            }
 
             _isCache.update {
                 false
