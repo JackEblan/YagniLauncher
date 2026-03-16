@@ -353,9 +353,9 @@ private fun SharedTransitionScope.InteractiveApplicationInfoGridItem(
 
     val hasNotifications =
         statusBarNotifications[data.packageName] != null && (
-            statusBarNotifications[data.packageName]
-                ?: 0
-            ) > 0
+                statusBarNotifications[data.packageName]
+                    ?: 0
+                ) > 0
 
     val hasInteraction = isSelected && isLongPress && (drag == Drag.Start || drag == Drag.Dragging)
 
@@ -643,7 +643,34 @@ private fun SharedTransitionScope.InteractiveWidgetGridItem(
                 AsyncImage(
                     model = data.preview ?: data.icon,
                     contentDescription = null,
-                    modifier = commonModifier,
+                    modifier = commonModifier.pointerInput(key1 = drag) {
+                        detectTapGestures(
+                            onLongPress = if (!isLongPress) {
+                                {
+                                    onLongPress(
+                                        scope = scope,
+                                        graphicsLayer = graphicsLayer,
+                                        intOffset = intOffset,
+                                        intSize = intSize,
+                                        gridItemSource = GridItemSource.Existing(gridItem = gridItem),
+                                        sharedElementKey = SharedElementKey(
+                                            id = gridItem.id,
+                                            parent = SharedElementKey.Parent.Grid,
+                                        ),
+                                        onUpdateGridItemSource = onUpdateGridItemSource,
+                                        onUpdateImageBitmap = onUpdateImageBitmap,
+                                        onUpdateIsLongPress = onUpdateIsLongPress,
+                                        onUpdateOverlayBounds = onUpdateOverlayBounds,
+                                        onUpdateSharedElementKey = onUpdateSharedElementKey,
+                                        onShowGridItemPopup = onShowGridItemPopup,
+                                        onUpdateAssociate = onUpdateAssociate,
+                                    )
+                                }
+                            } else {
+                                null
+                            },
+                        )
+                    },
                 )
             }
         }
