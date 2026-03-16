@@ -58,7 +58,7 @@ internal suspend fun handleDropGridItem(
     onDeleteGridItemCache: (GridItem) -> Unit,
     onDragCancelAfterMove: () -> Unit,
     onDragEndAfterMove: (MoveGridItemResult) -> Unit,
-    onDragEndAfterMoveFolder: (String) -> Unit,
+    onDragEndAfterMoveFolder: () -> Unit,
     onLaunchShortcutConfigIntent: (Intent) -> Unit,
     onLaunchShortcutConfigIntentSenderRequest: (IntentSenderRequest) -> Unit,
     onLaunchWidgetIntent: (Intent) -> Unit,
@@ -232,7 +232,7 @@ internal suspend fun handleDropGridItem(
 
                 onUpdateIsDragging(false)
 
-                onDragEndAfterMoveFolder(gridItemSource.gridItem.id)
+                onDragEndAfterMoveFolder()
             }
         }
     }
