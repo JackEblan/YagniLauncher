@@ -165,6 +165,7 @@ internal class PagerScreenState(
     ) -> Unit,
     private val onUpdateFolderGridItemId: (String?) -> Unit,
     private val onDraggingGridItem: (List<GridItem>) -> Unit,
+    private val onUpdateGridItemSource: (GridItemSource) -> Unit,
 ) {
     private var lastSwipeUpY by mutableFloatStateOf(initialSwipeUpY)
 
@@ -227,9 +228,6 @@ internal class PagerScreenState(
         private set
 
     var folderPageDirection by mutableStateOf<PageDirection?>(null)
-        private set
-
-    var gridItemSource by mutableStateOf<GridItemSource?>(null)
         private set
 
     var dragIntOffset by mutableStateOf(IntOffset.Zero)
@@ -401,9 +399,7 @@ internal class PagerScreenState(
 
                 onDraggingGridItem(gridItems)
             },
-            onUpdateGridItemSource = { newGridItemSource ->
-                gridItemSource = newGridItemSource
-            },
+            onUpdateGridItemSource = onUpdateGridItemSource,
         )
     }
 
@@ -417,6 +413,7 @@ internal class PagerScreenState(
         isDockScrollInProgress: Boolean,
         lockMovement: Boolean,
         paddingValues: PaddingValues,
+        gridItemSource: GridItemSource?,
     ) {
         handleDragGridItem(
             columns = homeSettings.columns,
@@ -448,11 +445,7 @@ internal class PagerScreenState(
             onUpdateAssociate = { newAssociate ->
                 associate = newAssociate
             },
-            onUpdateGridItemSource = { newGridItemSource ->
-                gridItemSource = newGridItemSource
-
-                associate = newGridItemSource.gridItem.associate
-            },
+            onUpdateGridItemSource = onUpdateGridItemSource,
             onUpdateSharedElementKey = { newSharedElementKey ->
                 sharedElementKey = newSharedElementKey
             },
@@ -464,6 +457,7 @@ internal class PagerScreenState(
         onLaunchShortcutConfigIntent: (Intent) -> Unit,
         onLaunchShortcutConfigIntentSenderRequest: (IntentSenderRequest) -> Unit,
         onLaunchWidgetIntent: (Intent) -> Unit,
+        gridItemSource: GridItemSource?,
     ) {
         handleDropGridItem(
             androidAppWidgetHostWrapper = androidAppWidgetHostWrapper,
@@ -505,7 +499,7 @@ internal class PagerScreenState(
         )
     }
 
-    fun handleDeleteAppWidgetIdEffect() {
+    fun handleDeleteAppWidgetIdEffect(gridItemSource: GridItemSource?) {
         handleDeleteAppWidgetId(
             appWidgetId = lastAppWidgetId,
             deleteAppWidgetId = deleteAppWidgetId,
@@ -524,6 +518,7 @@ internal class PagerScreenState(
         dockHeight: Dp,
         moveGridItemResult: MoveGridItemResult?,
         paddingValues: PaddingValues,
+        gridItemSource: GridItemSource?,
     ) {
         handleConflictingGridItem(
             columns = homeSettings.columns,
@@ -553,9 +548,7 @@ internal class PagerScreenState(
 
                 folderPopupIntSize = intSize
             },
-            onUpdateGridItemSource = { newGridItemSource ->
-                gridItemSource = newGridItemSource
-            },
+            onUpdateGridItemSource = onUpdateGridItemSource,
             onUpdateSharedElementKey = { newSharedElementKey ->
                 sharedElementKey = newSharedElementKey
             },
@@ -566,6 +559,7 @@ internal class PagerScreenState(
         density: Density,
         folderGridItem: GridItem?,
         paddingValues: PaddingValues,
+        gridItemSource: GridItemSource?,
     ) {
         handleAnimateScrollToPage(
             associate = associate,
@@ -655,7 +649,10 @@ internal class PagerScreenState(
         )
     }
 
-    fun handleAppWidgetLauncherResult(result: ActivityResult) {
+    fun handleAppWidgetLauncherResult(
+        gridItemSource: GridItemSource?,
+        result: ActivityResult,
+    ) {
         handleAppWidgetLauncherResult(
             androidAppWidgetManagerWrapper = androidAppWidgetManagerWrapper,
             gridItemSource = gridItemSource,
@@ -1020,10 +1017,6 @@ internal class PagerScreenState(
         isResizing = value
     }
 
-    fun updateGridItemSource(value: GridItemSource) {
-        gridItemSource = value
-    }
-
     fun updateAssociate(value: Associate) {
         associate = value
     }
@@ -1385,6 +1378,7 @@ internal class PagerScreenState(
             onResetGridCacheAfterDeleteWidgetGridItemCache: (gridItem: GridItem, appWidgetId: Int) -> Unit,
             onUpdateFolderGridItemId: (String?) -> Unit,
             onDraggingGridItem: (List<GridItem>) -> Unit,
+            onUpdateGridItemSource: (GridItemSource) -> Unit,
         ): Saver<PagerScreenState, *> = listSaver(
             save = {
                 listOf(
@@ -1432,6 +1426,7 @@ internal class PagerScreenState(
                     onResetGridCacheAfterDeleteWidgetGridItemCache = onResetGridCacheAfterDeleteWidgetGridItemCache,
                     onUpdateFolderGridItemId = onUpdateFolderGridItemId,
                     onDraggingGridItem = onDraggingGridItem,
+                    onUpdateGridItemSource = onUpdateGridItemSource,
                 )
             },
         )
@@ -1483,6 +1478,7 @@ internal fun rememberPagerScreenState(
     ) -> Unit,
     onResetPinGridItem: () -> Unit,
     onUpdateFolderGridItemId: (String?) -> Unit,
+    onUpdateGridItemSource: (GridItemSource) -> Unit,
 ): PagerScreenState {
     val scope = rememberCoroutineScope()
 
@@ -1536,6 +1532,7 @@ internal fun rememberPagerScreenState(
             onResetGridCacheAfterDeleteWidgetGridItemCache = onResetGridCacheAfterDeleteWidgetGridItemCache,
             onUpdateFolderGridItemId = onUpdateFolderGridItemId,
             onDraggingGridItem = onDraggingGridItem,
+            onUpdateGridItemSource = onUpdateGridItemSource,
         ),
     ) {
         PagerScreenState(
@@ -1573,6 +1570,7 @@ internal fun rememberPagerScreenState(
             onResetGridCacheAfterDeleteWidgetGridItemCache = onResetGridCacheAfterDeleteWidgetGridItemCache,
             onUpdateFolderGridItemId = onUpdateFolderGridItemId,
             onDraggingGridItem = onDraggingGridItem,
+            onUpdateGridItemSource = onUpdateGridItemSource,
         )
     }
 }

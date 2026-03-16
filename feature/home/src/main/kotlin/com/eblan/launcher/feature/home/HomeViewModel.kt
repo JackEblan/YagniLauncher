@@ -419,6 +419,10 @@ internal class HomeViewModel @Inject constructor(
             _isCache.update {
                 false
             }
+
+            _gridItemSource.update {
+                null
+            }
         }
     }
 

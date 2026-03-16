@@ -60,6 +60,7 @@ import com.eblan.launcher.domain.model.HomeData
 import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.domain.model.PageItem
 import com.eblan.launcher.domain.model.PinItemRequestType
+import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.HomeUiState
 import com.eblan.launcher.feature.home.model.Screen
 import com.eblan.launcher.feature.home.screen.editpage.EditPageScreen
@@ -111,6 +112,8 @@ internal fun HomeRoute(
 
     val resizeGridItem by viewModel.resizeGridItem.collectAsStateWithLifecycle()
 
+    val gridItemSource by viewModel.gridItemSource.collectAsStateWithLifecycle()
+
     HomeScreen(
         modifier = modifier,
         configureResultCode = configureResultCode,
@@ -128,6 +131,7 @@ internal fun HomeRoute(
         pinGridItem = pinGridItem,
         screen = screen,
         resizeGridItem = resizeGridItem,
+        gridItemSource = gridItemSource,
         onCancelGridCache = viewModel::cancelGridCache,
         onDeleteApplicationInfoGridItem = viewModel::deleteApplicationInfoGridItem,
         onDeleteGridItem = viewModel::deleteGridItem,
@@ -162,6 +166,7 @@ internal fun HomeRoute(
         onUpdateScreen = viewModel::updateScreen,
         onUpdateShortcutConfigGridItemDataCache = viewModel::updateShortcutConfigGridItemDataCache,
         onUpdateShortcutConfigIntoShortcutInfoGridItem = viewModel::updateShortcutConfigIntoShortcutInfoGridItem,
+        onUpdateGridItemSource = viewModel::updateGridItemSource,
     )
 }
 
@@ -184,6 +189,7 @@ internal fun HomeScreen(
     pinGridItem: GridItem?,
     screen: Screen,
     resizeGridItem: GridItem?,
+    gridItemSource: GridItemSource?,
     onCancelGridCache: () -> Unit,
     onDeleteApplicationInfoGridItem: (ApplicationInfoGridItem) -> Unit,
     onDeleteGridItem: (GridItem) -> Unit,
@@ -267,6 +273,7 @@ internal fun HomeScreen(
         moveGridItemResult: MoveGridItemResult,
         pinItemRequestType: PinItemRequestType.ShortcutInfo,
     ) -> Unit,
+    onUpdateGridItemSource: (GridItemSource) -> Unit,
 ) {
     val paddingValues = WindowInsets.safeDrawing.asPaddingValues()
 
@@ -299,6 +306,7 @@ internal fun HomeScreen(
                 screenHeight = screenIntSize.height,
                 screenWidth = screenIntSize.width,
                 resizeGridItem = resizeGridItem,
+                gridItemSource = gridItemSource,
                 onCancelGridCache = onCancelGridCache,
                 onDeleteApplicationInfoGridItem = onDeleteApplicationInfoGridItem,
                 onDeleteGridItem = onDeleteGridItem,
@@ -333,6 +341,7 @@ internal fun HomeScreen(
                 onUpdateScreen = onUpdateScreen,
                 onUpdateShortcutConfigGridItemDataCache = onUpdateShortcutConfigGridItemDataCache,
                 onUpdateShortcutConfigIntoShortcutInfoGridItem = onUpdateShortcutConfigIntoShortcutInfoGridItem,
+                onUpdateGridItemSource = onUpdateGridItemSource,
             )
         }
     }
@@ -360,6 +369,7 @@ private fun Success(
     screenHeight: Int,
     screenWidth: Int,
     resizeGridItem: GridItem?,
+    gridItemSource: GridItemSource?,
     onCancelGridCache: () -> Unit,
     onDeleteApplicationInfoGridItem: (ApplicationInfoGridItem) -> Unit,
     onDeleteGridItem: (GridItem) -> Unit,
@@ -443,6 +453,7 @@ private fun Success(
         moveGridItemResult: MoveGridItemResult,
         pinItemRequestType: PinItemRequestType.ShortcutInfo,
     ) -> Unit,
+    onUpdateGridItemSource: (GridItemSource) -> Unit,
 ) {
     val activity = LocalActivity.current
 
@@ -485,6 +496,7 @@ private fun Success(
                     screenWidth = screenWidth,
                     textColor = homeData.textColor,
                     resizeGridItem = resizeGridItem,
+                    gridItemSource = gridItemSource,
                     onDeleteApplicationInfoGridItem = onDeleteApplicationInfoGridItem,
                     onDeleteGridItem = onDeleteGridItem,
                     onResetGridCacheAfterDeleteGridItemCache = onResetGridCacheAfterDeleteGridItemCache,
@@ -518,6 +530,7 @@ private fun Success(
                     onUpdateFolderGridItemId = onUpdateFolderGridItemId,
                     onUpdateShortcutConfigGridItemDataCache = onUpdateShortcutConfigGridItemDataCache,
                     onUpdateShortcutConfigIntoShortcutInfoGridItem = onUpdateShortcutConfigIntoShortcutInfoGridItem,
+                    onUpdateGridItemSource = onUpdateGridItemSource,
                 )
             }
 

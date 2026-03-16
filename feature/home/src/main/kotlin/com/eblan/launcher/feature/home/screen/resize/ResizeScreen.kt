@@ -44,7 +44,7 @@ import com.eblan.launcher.feature.home.util.PAGE_INDICATOR_HEIGHT
 @Composable
 internal fun ResizeScreen(
     modifier: Modifier = Modifier,
-    gridItem: GridItem?,
+    gridItem: GridItem,
     homeSettings: HomeSettings,
     lockMovement: Boolean,
     paddingValues: PaddingValues,
@@ -59,8 +59,6 @@ internal fun ResizeScreen(
     ) -> Unit,
     onUpdateIsResizing: (Boolean) -> Unit,
 ) {
-    requireNotNull(gridItem)
-
     val density = LocalDensity.current
 
     val dockHeight = homeSettings.dockHeight.dp
