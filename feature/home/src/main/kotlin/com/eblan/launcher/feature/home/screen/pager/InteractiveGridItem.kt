@@ -134,6 +134,8 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
 ) {
     val isSelected = gridItemSource != null && gridItem.id == gridItemSource.gridItem.id
 
+    val isFolderSource = isSelected && gridItemSource is GridItemSource.Folder
+
     val currentGridItemSettings = if (gridItem.override) {
         gridItem.gridItemSettings
     } else {
@@ -163,6 +165,7 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
                 gridItem = gridItem,
                 gridItemSettings = currentGridItemSettings,
                 iconPackFilePaths = iconPackFilePaths,
+                isFolderSource = isFolderSource,
                 isLongPress = isLongPress,
                 isScrollInProgress = isScrollInProgress,
                 isSelected = isSelected,
@@ -297,6 +300,7 @@ private fun SharedTransitionScope.InteractiveApplicationInfoGridItem(
     gridItem: GridItem,
     gridItemSettings: GridItemSettings,
     iconPackFilePaths: Map<String, String>,
+    isFolderSource: Boolean,
     isLongPress: Boolean,
     isScrollInProgress: Boolean,
     isSelected: Boolean,
@@ -354,7 +358,7 @@ private fun SharedTransitionScope.InteractiveApplicationInfoGridItem(
                 ?: 0
             ) > 0
 
-    val hasInteraction = isSelected && isLongPress && (drag == Drag.Start || drag == Drag.Dragging)
+    val hasInteraction = isFolderSource || (isSelected && isLongPress && (drag == Drag.Start || drag == Drag.Dragging))
 
     val isVisibleWhiteBox = isSelected && drag == Drag.Dragging
 
