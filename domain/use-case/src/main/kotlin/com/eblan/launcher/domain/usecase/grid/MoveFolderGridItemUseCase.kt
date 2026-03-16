@@ -100,6 +100,8 @@ class MoveFolderGridItemUseCase @Inject constructor(
                 rows = rows,
             )
 
+            gridCacheRepository.deleteGridItemById(id = movingApplicationInfoGridItem.id)
+
             gridCacheRepository.updateGridItemData(
                 id = folderGridItem.id,
                 data = newData,

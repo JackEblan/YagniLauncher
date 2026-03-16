@@ -22,6 +22,7 @@ import com.eblan.launcher.domain.common.dispatcher.EblanDispatchers
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -51,10 +52,10 @@ internal class DefaultGridCacheDataSource @Inject constructor(@param:Dispatcher(
         }
     }
 
-    override fun deleteGridItem(gridItem: GridItem) {
+    override fun deleteGridItemById(id: String) {
         _gridItemsCache.update { currentGridCacheItems ->
             currentGridCacheItems.toMutableList().apply {
-                removeIf { it.id == gridItem.id }
+                removeIf { it.id == id }
             }
         }
     }
@@ -63,7 +64,11 @@ internal class DefaultGridCacheDataSource @Inject constructor(@param:Dispatcher(
         withContext(defaultDispatcher) {
             _gridItemsCache.update { currentGridCacheItems ->
                 currentGridCacheItems.toMutableList().apply {
-                    val index = indexOfFirst { it.id == id }
+                    val index = indexOfFirst {
+                        ensureActive()
+
+                        it.id == id
+                    }
 
                     if (index != -1) {
                         set(index, get(index).copy(data = data))
@@ -78,7 +83,13 @@ internal class DefaultGridCacheDataSource @Inject constructor(@param:Dispatcher(
             _gridItemsCache.update { currentGridCacheItems ->
                 currentGridCacheItems.toMutableList().apply {
                     gridItems.forEach { gridItem ->
-                        val index = indexOfFirst { it.id == gridItem.id }
+                        ensureActive()
+
+                        val index = indexOfFirst {
+                            ensureActive()
+
+                            it.id == gridItem.id
+                        }
 
                         if (index != -1) {
                             if (get(index) != gridItem) {

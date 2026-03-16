@@ -122,7 +122,7 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
         gridItems.remove(movingGridItem)
 
         gridCacheRepository.updateGridItemData(id = conflictingGridItem.id, data = conflictingData)
-        gridCacheRepository.deleteGridItem(gridItem = movingGridItem)
+        gridCacheRepository.deleteGridItemById(id = movingGridItem.id)
 
         applicationInfoGridItemRepository.deleteApplicationInfoGridItemById(id = movingGridItem.id)
     }
@@ -180,8 +180,8 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
         gridItems.remove(movingGridItem)
         gridItems.add(newGridItem)
 
-        gridCacheRepository.deleteGridItem(gridItem = conflictingGridItem)
-        gridCacheRepository.deleteGridItem(gridItem = movingGridItem)
+        gridCacheRepository.deleteGridItemById(id = conflictingGridItem.id)
+        gridCacheRepository.deleteGridItemById(id = movingGridItem.id)
         gridCacheRepository.insertGridItem(gridItem = newGridItem)
 
         applicationInfoGridItemRepository.deleteApplicationInfoGridItemById(id = conflictingGridItem.id)

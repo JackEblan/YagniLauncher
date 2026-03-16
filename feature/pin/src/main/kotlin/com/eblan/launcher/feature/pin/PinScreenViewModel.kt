@@ -136,11 +136,11 @@ class PinScreenViewModel @Inject constructor(
                 is GridItemData.Widget -> {
                     appWidgetHostWrapper.deleteAppWidgetId(appWidgetId = data.appWidgetId)
 
-                    gridCacheRepository.deleteGridItem(gridItem = gridItem)
+                    gridCacheRepository.deleteGridItemById(id = gridItem.id)
                 }
 
                 else -> {
-                    gridCacheRepository.deleteGridItem(gridItem = gridItem)
+                    gridCacheRepository.deleteGridItemById(id = gridItem.id)
                 }
             }
 
