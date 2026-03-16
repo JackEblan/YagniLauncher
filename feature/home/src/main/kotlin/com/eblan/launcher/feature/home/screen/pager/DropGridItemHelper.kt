@@ -72,59 +72,54 @@ internal suspend fun handleDropGridItem(
         return
     }
 
+    fun resetState() {
+        onUpdateIsLongPress(false)
+
+        onUpdateIsDragging(false)
+    }
+
+    fun cancel() {
+        resetState()
+
+        onDragCancelAfterMove()
+
+        onToast()
+    }
+
+    val dragFailed =
+        drag == Drag.Cancel ||
+            moveGridItemResult == null ||
+            !moveGridItemResult.isSuccess
+
     when (gridItemSource) {
         is GridItemSource.Existing -> {
-            if (lockMovement) {
+            if (lockMovement) return cancel()
+
+            if (isLongPress && !isDragging) {
                 onUpdateIsLongPress(false)
 
-                onUpdateIsDragging(false)
+                return
+            }
 
-                onDragCancelAfterMove()
+            if (isLongPress && dragFailed) return cancel()
 
-                onToast()
-            } else if (isLongPress && !isDragging) {
-                onUpdateIsLongPress(false)
-            } else if (isLongPress && (drag == Drag.Cancel || moveGridItemResult == null || !moveGridItemResult.isSuccess)) {
-                onUpdateIsLongPress(false)
-
-                onUpdateIsDragging(false)
-
-                onDragCancelAfterMove()
-
-                onToast()
-            } else if (isLongPress && moveGridItemResult != null) {
-                onUpdateIsLongPress(false)
-
-                onUpdateIsDragging(false)
+            if (isLongPress && moveGridItemResult != null) {
+                resetState()
 
                 onDragEndAfterMove(moveGridItemResult)
             }
         }
 
         is GridItemSource.New -> {
-            if (lockMovement) {
-                onUpdateIsLongPress(false)
+            if (lockMovement) return cancel()
 
-                onUpdateIsDragging(false)
+            if (isLongPress && isDragging && dragFailed) return cancel()
 
-                onDragCancelAfterMove()
-
-                onToast()
-            } else if (isLongPress && isDragging && (drag == Drag.Cancel || moveGridItemResult == null || !moveGridItemResult.isSuccess)) {
-                onUpdateIsLongPress(false)
-
-                onUpdateIsDragging(false)
-
-                onDragCancelAfterMove()
-
-                onToast()
-            } else if (isLongPress && isDragging && moveGridItemResult != null) {
-                onUpdateIsLongPress(false)
-
-                onUpdateIsDragging(false)
+            if (isLongPress && isDragging && moveGridItemResult != null) {
+                resetState()
 
                 when (val data = gridItemSource.gridItem.data) {
-                    is GridItemData.Widget -> {
+                    is GridItemData.Widget ->
                         onDragEndWidget(
                             androidAppWidgetHostWrapper = androidAppWidgetHostWrapper,
                             androidAppWidgetManagerWrapper = androidAppWidgetManagerWrapper,
@@ -134,9 +129,8 @@ internal suspend fun handleDropGridItem(
                             onUpdateAppWidgetId = onUpdateAppWidgetId,
                             onUpdateWidgetGridItem = onUpdateWidgetGridItem,
                         )
-                    }
 
-                    is GridItemData.ShortcutConfig -> {
+                    is GridItemData.ShortcutConfig ->
                         onDragEndShortcutConfig(
                             androidLauncherAppsWrapper = androidLauncherAppsWrapper,
                             androidUserManagerWrapper = androidUserManagerWrapper,
@@ -146,42 +140,26 @@ internal suspend fun handleDropGridItem(
                             onLaunchShortcutConfigIntent = onLaunchShortcutConfigIntent,
                             onLaunchShortcutConfigIntentSenderRequest = onLaunchShortcutConfigIntentSenderRequest,
                         )
-                    }
 
                     is GridItemData.ApplicationInfo,
                     is GridItemData.Folder,
                     is GridItemData.ShortcutInfo,
-                    -> {
+                    ->
                         onDragEndAfterMove(moveGridItemResult)
-                    }
                 }
             }
         }
 
         is GridItemSource.Pin -> {
-            if (lockMovement) {
-                onUpdateIsLongPress(false)
+            if (lockMovement) return cancel()
 
-                onUpdateIsDragging(false)
+            if (isLongPress && isDragging && dragFailed) return cancel()
 
-                onDragCancelAfterMove()
-
-                onToast()
-            } else if (isDragging && isLongPress && (drag == Drag.Cancel || moveGridItemResult == null || !moveGridItemResult.isSuccess)) {
-                onUpdateIsLongPress(false)
-
-                onUpdateIsDragging(false)
-
-                onDragCancelAfterMove()
-
-                onToast()
-            } else if (isDragging && isLongPress && moveGridItemResult != null) {
-                onUpdateIsLongPress(false)
-
-                onUpdateIsDragging(false)
+            if (isLongPress && isDragging && moveGridItemResult != null) {
+                resetState()
 
                 when (val data = gridItemSource.gridItem.data) {
-                    is GridItemData.ShortcutInfo -> {
+                    is GridItemData.ShortcutInfo ->
                         onDragEndPinShortcut(
                             gridItem = gridItemSource.gridItem,
                             moveGridItemResult = moveGridItemResult,
@@ -189,9 +167,8 @@ internal suspend fun handleDropGridItem(
                             onDeleteGridItemCache = onResetGridCacheAfterDeleteGridItemCache,
                             onDragEndAfterMove = onDragEndAfterMove,
                         )
-                    }
 
-                    is GridItemData.Widget -> {
+                    is GridItemData.Widget ->
                         onDragEndWidget(
                             androidAppWidgetHostWrapper = androidAppWidgetHostWrapper,
                             androidAppWidgetManagerWrapper = androidAppWidgetManagerWrapper,
@@ -201,36 +178,23 @@ internal suspend fun handleDropGridItem(
                             onUpdateAppWidgetId = onUpdateAppWidgetId,
                             onUpdateWidgetGridItem = onUpdateWidgetGridItem,
                         )
-                    }
 
-                    else -> error("Expected GridItemData.ShortcutInfo or GridItemData.Widget")
+                    else -> error("Expected ShortcutInfo or Widget")
                 }
             }
         }
 
         is GridItemSource.Folder -> {
-            if (lockMovement) {
+            val shouldCancel = lockMovement || drag == Drag.Cancel
+            val longPressWithoutDrag = isLongPress && !isDragging
+            val shouldFinishDrag = isLongPress && isDragging && !shouldCancel
+
+            if (shouldCancel) {
+                cancel()
+            } else if (longPressWithoutDrag) {
                 onUpdateIsLongPress(false)
-
-                onUpdateIsDragging(false)
-
-                onDragCancelAfterMove()
-
-                onToast()
-            } else if (isLongPress && !isDragging) {
-                onUpdateIsLongPress(false)
-            } else if (isLongPress && drag == Drag.Cancel) {
-                onUpdateIsLongPress(false)
-
-                onUpdateIsDragging(false)
-
-                onDragCancelAfterMove()
-
-                onToast()
-            } else if (isLongPress) {
-                onUpdateIsLongPress(false)
-
-                onUpdateIsDragging(false)
+            } else if (shouldFinishDrag) {
+                resetState()
 
                 onDragEndAfterMoveFolder(moveGridItemResult)
             }
