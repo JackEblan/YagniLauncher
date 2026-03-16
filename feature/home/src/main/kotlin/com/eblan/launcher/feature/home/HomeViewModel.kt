@@ -135,6 +135,8 @@ internal class HomeViewModel @Inject constructor(
 
     private val defaultDelay = 500L
 
+    private val moveDelay = 100L
+
     private val _editPageData = MutableStateFlow<EditPageData?>(null)
 
     val editPageData = _editPageData.asStateFlow()
@@ -245,6 +247,8 @@ internal class HomeViewModel @Inject constructor(
         moveGridItemJob?.cancel()
 
         moveGridItemJob = viewModelScope.launch {
+            delay(moveDelay)
+
             _moveGridItemResult.update {
                 moveGridItemUseCase(
                     movingGridItem = movingGridItem,
@@ -267,6 +271,8 @@ internal class HomeViewModel @Inject constructor(
         moveGridItemJob?.cancel()
 
         moveGridItemJob = viewModelScope.launch {
+            delay(moveDelay)
+
             _resizeGridItem.update {
                 resizeGridItemUseCase(
                     resizingGridItem = resizingGridItem,
@@ -670,6 +676,8 @@ internal class HomeViewModel @Inject constructor(
         moveGridItemJob?.cancel()
 
         moveGridItemJob = viewModelScope.launch {
+            delay(moveDelay)
+
             moveFolderGridItemUseCase(
                 folderGridItem = folderGridItem,
                 applicationInfoGridItems = applicationInfoGridItems,

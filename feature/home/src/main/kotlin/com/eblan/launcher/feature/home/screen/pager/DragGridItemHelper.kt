@@ -207,8 +207,6 @@ internal suspend fun handleDragGridItem(
         return
     }
 
-    delay(100L)
-
     val leftPadding = with(density) {
         paddingValues.calculateStartPadding(LayoutDirection.Ltr).roundToPx()
     }
