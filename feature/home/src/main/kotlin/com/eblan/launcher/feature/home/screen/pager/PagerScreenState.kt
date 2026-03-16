@@ -259,6 +259,9 @@ internal class PagerScreenState(
     var associate by mutableStateOf<Associate?>(null)
         private set
 
+    var selectedGridItem by mutableStateOf<GridItem?>(null)
+        private set
+
     val swipeUpY = Animatable(initialSwipeUpY)
 
     val swipeDownY = Animatable(initialSwipeDownY)
@@ -982,6 +985,8 @@ internal class PagerScreenState(
     }
 
     fun dismissGridItemPopup() {
+        selectedGridItem = null
+
         popupIntOffset = null
 
         popupIntSize = null
@@ -1046,6 +1051,10 @@ internal class PagerScreenState(
 
     fun updateStatusBarNotifications(value: Map<String, Int>) {
         statusBarNotifications = value
+    }
+
+    fun updateSelectedGridItem(value: GridItem){
+        selectedGridItem = value
     }
 
     fun handleIsPressHome() {
