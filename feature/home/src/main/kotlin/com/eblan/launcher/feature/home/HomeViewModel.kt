@@ -662,16 +662,16 @@ internal class HomeViewModel @Inject constructor(
 
             _moveGridItemResult.value?.movingGridItem?.id?.let { id ->
                 gridCacheRepository.deleteGridItemById(id = id)
+
+                _moveGridItemResult.update {
+                    null
+                }
             }
 
             gridRepository.updateGridItems(gridItems = gridCacheRepository.gridItemsCache.first())
 
             _isCache.update {
                 false
-            }
-
-            _moveGridItemResult.update {
-                null
             }
         }
     }

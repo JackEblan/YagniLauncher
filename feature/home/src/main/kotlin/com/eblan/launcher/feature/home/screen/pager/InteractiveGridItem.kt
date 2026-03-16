@@ -70,7 +70,6 @@ import com.eblan.launcher.domain.model.Associate
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.GridItemSettings
-import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.domain.model.TextColor
 import com.eblan.launcher.feature.home.component.modifier.swipeGestures
 import com.eblan.launcher.feature.home.component.modifier.whiteBox
@@ -104,8 +103,6 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
     isScrollInProgress: Boolean,
     statusBarNotifications: Map<String, Int>,
     textColor: TextColor,
-    isFolderOpen: Boolean,
-    moveGridItemResult: MoveGridItemResult?,
     onDraggingGridItem: () -> Unit,
     onOpenAppDrawer: () -> Unit,
     onTapApplicationInfo: (
@@ -171,8 +168,6 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
                 isSelected = isSelected,
                 statusBarNotifications = statusBarNotifications,
                 textColor = currentTextColor,
-                isFolderOpen = isFolderOpen,
-                moveGridItemResult = moveGridItemResult,
                 onDraggingGridItem = onDraggingGridItem,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onTapApplicationInfo = onTapApplicationInfo,
@@ -307,8 +302,6 @@ private fun SharedTransitionScope.InteractiveApplicationInfoGridItem(
     isSelected: Boolean,
     statusBarNotifications: Map<String, Int>,
     textColor: Color,
-    isFolderOpen: Boolean,
-    moveGridItemResult: MoveGridItemResult?,
     onDraggingGridItem: () -> Unit,
     onOpenAppDrawer: () -> Unit,
     onTapApplicationInfo: (
@@ -364,19 +357,6 @@ private fun SharedTransitionScope.InteractiveApplicationInfoGridItem(
     val hasInteraction = isSelected && isLongPress && (drag == Drag.Start || drag == Drag.Dragging)
 
     val isVisibleWhiteBox = isSelected && drag == Drag.Dragging
-
-    val alpha = if (
-        isFolderOpen &&
-        moveGridItemResult != null &&
-        moveGridItemResult.isSuccess &&
-        moveGridItemResult.conflictingGridItem?.data is GridItemData.Folder &&
-        moveGridItemResult.movingGridItem.id == gridItem.id &&
-        drag != Drag.Dragging
-    ) {
-        0f
-    } else {
-        1f
-    }
 
     LaunchedEffect(key1 = drag) {
         handleDrag(
@@ -455,8 +435,7 @@ private fun SharedTransitionScope.InteractiveApplicationInfoGridItem(
                 color = Color(gridItemSettings.customBackgroundColor),
                 shape = RoundedCornerShape(size = gridItemSettings.cornerRadius.dp),
             )
-            .whiteBox(textColor = textColor, visible = isVisibleWhiteBox)
-            .alpha(alpha),
+            .whiteBox(textColor = textColor, visible = isVisibleWhiteBox),
         horizontalAlignment = horizontalAlignment,
         verticalArrangement = verticalArrangement,
     ) {
