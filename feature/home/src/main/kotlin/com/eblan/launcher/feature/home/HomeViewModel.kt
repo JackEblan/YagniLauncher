@@ -359,6 +359,10 @@ internal class HomeViewModel @Inject constructor(
                 null
             }
 
+            _resizeGridItem.update {
+                null
+            }
+
             updateGridItemsAfterResizeUseCase(resizingGridItem = resizingGridItem)
 
             _isCache.update {
