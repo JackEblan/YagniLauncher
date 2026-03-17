@@ -207,7 +207,7 @@ fun GridItemSettings(
             },
             onUpdateClick = {
                 try {
-                    onUpdateGridItemSettings(gridItemSettings.copy(iconSize = value.toInt()))
+                    onUpdateGridItemSettings(gridItemSettings.copy(iconSize = value.toInt().coerceAtLeast(1)))
 
                     showIconSizeDialog = false
                 } catch (_: NumberFormatException) {
@@ -257,7 +257,7 @@ fun GridItemSettings(
             },
             onUpdateClick = {
                 try {
-                    onUpdateGridItemSettings(gridItemSettings.copy(textSize = value.toInt()))
+                    onUpdateGridItemSettings(gridItemSettings.copy(textSize = value.toInt().coerceAtLeast(1)))
 
                     showTextSizeDialog = false
                 } catch (_: NumberFormatException) {
