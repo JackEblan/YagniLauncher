@@ -108,6 +108,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.round
 import androidx.compose.ui.unit.sp
 import coil3.compose.rememberAsyncImagePainter
+import coil3.compose.rememberConstraintsSizeResolver
 import coil3.request.ImageRequest
 import coil3.request.addLastModifiedToFileCacheKey
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
@@ -1012,10 +1013,14 @@ private fun SharedTransitionScope.EblanApplicationInfoItem(
 
     val hasInteraction = isLongPress && (drag == Drag.Start || drag == Drag.Dragging)
 
+    val sizeResolver = rememberConstraintsSizeResolver()
+
     val painter = rememberAsyncImagePainter(
         model = ImageRequest.Builder(LocalContext.current)
             .data(eblanApplicationInfo.customIcon ?: icon)
-            .addLastModifiedToFileCacheKey(true).build(),
+            .addLastModifiedToFileCacheKey(true)
+            .size(sizeResolver)
+            .build(),
     )
 
     LaunchedEffect(key1 = drag) {
@@ -1145,6 +1150,7 @@ private fun SharedTransitionScope.EblanApplicationInfoItem(
                     painter = painter,
                     contentDescription = null,
                     modifier = Modifier
+                        .then(sizeResolver)
                         .matchParentSize()
                         .drawWithContent {
                             graphicsLayer.record {

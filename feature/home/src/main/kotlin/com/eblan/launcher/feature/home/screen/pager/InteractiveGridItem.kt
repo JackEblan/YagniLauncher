@@ -65,6 +65,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import coil3.compose.AsyncImage
 import coil3.compose.rememberAsyncImagePainter
+import coil3.compose.rememberConstraintsSizeResolver
 import coil3.request.ImageRequest.Builder
 import coil3.request.addLastModifiedToFileCacheKey
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
@@ -359,9 +360,9 @@ private fun SharedTransitionScope.InteractiveApplicationInfoGridItem(
 
     val hasNotifications =
         statusBarNotifications[data.packageName] != null && (
-            statusBarNotifications[data.packageName]
-                ?: 0
-            ) > 0
+                statusBarNotifications[data.packageName]
+                    ?: 0
+                ) > 0
 
     val hasInteraction = isSelected && isLongPress && (drag == Drag.Start || drag == Drag.Dragging)
 
@@ -369,9 +370,13 @@ private fun SharedTransitionScope.InteractiveApplicationInfoGridItem(
 
     val isGesture = !isLongPress && !isCache
 
+    val sizeResolver = rememberConstraintsSizeResolver()
+
     val painter = rememberAsyncImagePainter(
         model = Builder(LocalContext.current).data(data.customIcon ?: icon)
-            .addLastModifiedToFileCacheKey(true).build(),
+            .addLastModifiedToFileCacheKey(true)
+            .size(sizeResolver)
+            .build(),
     )
 
     LaunchedEffect(key1 = drag) {
@@ -461,6 +466,7 @@ private fun SharedTransitionScope.InteractiveApplicationInfoGridItem(
                     painter = painter,
                     contentDescription = null,
                     modifier = Modifier
+                        .then(sizeResolver)
                         .matchParentSize()
                         .drawWithContent {
                             graphicsLayer.record {
@@ -759,6 +765,8 @@ private fun SharedTransitionScope.InteractiveShortcutInfoGridItem(
 
     val isGesture = !isLongPress && !isCache
 
+    val sizeResolver = rememberConstraintsSizeResolver()
+
     val painter = rememberAsyncImagePainter(model = customIcon)
 
     LaunchedEffect(key1 = drag) {
@@ -850,6 +858,7 @@ private fun SharedTransitionScope.InteractiveShortcutInfoGridItem(
                 Image(
                     painter = painter,
                     modifier = Modifier
+                        .then(sizeResolver)
                         .matchParentSize()
                         .alpha(alpha)
                         .drawWithContent {
@@ -1218,9 +1227,13 @@ private fun SharedTransitionScope.InteractiveShortcutConfigGridItem(
 
     val isGesture = !isLongPress && !isCache
 
+    val sizeResolver = rememberConstraintsSizeResolver()
+
     val painter = rememberAsyncImagePainter(
         model = Builder(LocalContext.current).data(icon)
-            .addLastModifiedToFileCacheKey(true).build(),
+            .addLastModifiedToFileCacheKey(true)
+            .size(sizeResolver)
+            .build(),
     )
 
     LaunchedEffect(key1 = drag) {
@@ -1305,6 +1318,7 @@ private fun SharedTransitionScope.InteractiveShortcutConfigGridItem(
                     painter = painter,
                     contentDescription = null,
                     modifier = Modifier
+                        .then(sizeResolver)
                         .matchParentSize()
                         .drawWithContent {
                             graphicsLayer.record {
