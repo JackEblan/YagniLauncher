@@ -230,6 +230,8 @@ internal fun handleDrag(
         onDismissGridItemPopup()
 
         onDraggingGridItem()
+    } else if (drag == Drag.Cancel && isSelected && isLongPress) {
+        onDismissGridItemPopup()
     }
 }
 

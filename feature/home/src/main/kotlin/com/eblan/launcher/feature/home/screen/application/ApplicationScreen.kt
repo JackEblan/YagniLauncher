@@ -23,6 +23,7 @@ import android.os.UserHandle
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
@@ -106,7 +107,8 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.round
 import androidx.compose.ui.unit.sp
-import coil3.compose.AsyncImage
+import coil3.compose.rememberAsyncImagePainter
+import coil3.compose.rememberConstraintsSizeResolver
 import coil3.request.ImageRequest
 import coil3.request.addLastModifiedToFileCacheKey
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
@@ -894,12 +896,12 @@ private fun SharedTransitionScope.EblanApplicationInfos(
                         paddingValues = paddingValues,
                         privateEblanApplicationInfos = getEblanApplicationInfosByLabel.privateEblanApplicationInfos,
                         privateEblanUser = getEblanApplicationInfosByLabel.privateEblanUser,
-                        onUpdateGridItemSource = onUpdateGridItemSource,
                         onUpdateIsQuietModeEnabled = { newIsQuiteModeEnabled ->
                             isQuietModeEnabled = newIsQuiteModeEnabled
                         },
                         onUpdateOverlayBounds = onUpdateOverlayBounds,
                         onUpdatePopupMenu = onUpdatePopupMenu,
+                        onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
                     )
                 }
 
@@ -1011,70 +1013,92 @@ private fun SharedTransitionScope.EblanApplicationInfoItem(
 
     val hasInteraction = isLongPress && (drag == Drag.Start || drag == Drag.Dragging)
 
+    val sizeResolver = rememberConstraintsSizeResolver()
+
+    val painter = rememberAsyncImagePainter(
+        model = ImageRequest.Builder(LocalContext.current)
+            .data(eblanApplicationInfo.customIcon ?: icon)
+            .addLastModifiedToFileCacheKey(true)
+            .size(sizeResolver)
+            .build(),
+    )
+
     LaunchedEffect(key1 = drag) {
-        if (drag == Drag.Dragging && isLongPress) {
-            onUpdatePopupMenu(false)
+        when (drag) {
+            Drag.Dragging if isLongPress -> {
+                onUpdatePopupMenu(false)
 
-            onDismiss()
+                onDismiss()
 
-            val pagerScreenId = Uuid.random().toHexString()
+                val pagerScreenId = Uuid.random().toHexString()
 
-            val data = GridItemData.ApplicationInfo(
-                serialNumber = eblanApplicationInfo.serialNumber,
-                componentName = eblanApplicationInfo.componentName,
-                packageName = eblanApplicationInfo.packageName,
-                icon = eblanApplicationInfo.icon,
-                label = eblanApplicationInfo.label,
-                customIcon = eblanApplicationInfo.customIcon,
-                customLabel = eblanApplicationInfo.customLabel,
-                index = -1,
-                folderId = null,
-            )
+                val data = GridItemData.ApplicationInfo(
+                    serialNumber = eblanApplicationInfo.serialNumber,
+                    componentName = eblanApplicationInfo.componentName,
+                    packageName = eblanApplicationInfo.packageName,
+                    icon = eblanApplicationInfo.icon,
+                    label = eblanApplicationInfo.label,
+                    customIcon = eblanApplicationInfo.customIcon,
+                    customLabel = eblanApplicationInfo.customLabel,
+                    index = -1,
+                    folderId = null,
+                )
 
-            val gridItem = GridItem(
-                id = pagerScreenId,
-                page = currentPage,
-                startColumn = -1,
-                startRow = -1,
-                columnSpan = 1,
-                rowSpan = 1,
-                data = data,
-                associate = Associate.Grid,
-                override = false,
-                gridItemSettings = appDrawerSettings.gridItemSettings,
-                doubleTap = EblanAction(
-                    eblanActionType = EblanActionType.None,
-                    serialNumber = 0L,
-                    componentName = "",
-                ),
-                swipeUp = EblanAction(
-                    eblanActionType = EblanActionType.None,
-                    serialNumber = 0L,
-                    componentName = "",
-                ),
-                swipeDown = EblanAction(
-                    eblanActionType = EblanActionType.None,
-                    serialNumber = 0L,
-                    componentName = "",
-                ),
-            )
-
-            onUpdateGridItemSource(GridItemSource.New(gridItem = gridItem))
-
-            onUpdateAssociate(gridItem.associate)
-
-            onUpdateSharedElementKey(
-                SharedElementKey(
+                val gridItem = GridItem(
                     id = pagerScreenId,
-                    parent = SharedElementKey.Parent.Grid,
-                ),
-            )
+                    page = currentPage,
+                    startColumn = -1,
+                    startRow = -1,
+                    columnSpan = 1,
+                    rowSpan = 1,
+                    data = data,
+                    associate = Associate.Grid,
+                    override = false,
+                    gridItemSettings = appDrawerSettings.gridItemSettings,
+                    doubleTap = EblanAction(
+                        eblanActionType = EblanActionType.None,
+                        serialNumber = 0L,
+                        componentName = "",
+                    ),
+                    swipeUp = EblanAction(
+                        eblanActionType = EblanActionType.None,
+                        serialNumber = 0L,
+                        componentName = "",
+                    ),
+                    swipeDown = EblanAction(
+                        eblanActionType = EblanActionType.None,
+                        serialNumber = 0L,
+                        componentName = "",
+                    ),
+                )
 
-            onUpdateIsLongPressAndIsDragging()
+                onUpdateGridItemSource(GridItemSource.New(gridItem = gridItem))
 
-            onDraggingGridItem()
-        } else if ((drag == Drag.End || drag == Drag.Cancel) && isLongPress) {
-            isLongPress = false
+                onUpdateAssociate(gridItem.associate)
+
+                onUpdateSharedElementKey(
+                    SharedElementKey(
+                        id = pagerScreenId,
+                        parent = SharedElementKey.Parent.Grid,
+                    ),
+                )
+
+                onUpdateIsLongPressAndIsDragging()
+
+                onDraggingGridItem()
+            }
+
+            Drag.Cancel if isLongPress -> {
+                onUpdatePopupMenu(false)
+
+                isLongPress = false
+            }
+
+            Drag.End if isLongPress -> {
+                isLongPress = false
+            }
+
+            else -> Unit
         }
     }
 
@@ -1134,12 +1158,11 @@ private fun SharedTransitionScope.EblanApplicationInfoItem(
     ) {
         if (!hasInteraction) {
             Box(modifier = Modifier.size(appDrawerSettings.gridItemSettings.iconSize.dp)) {
-                AsyncImage(
-                    model = ImageRequest.Builder(LocalContext.current)
-                        .data(eblanApplicationInfo.customIcon ?: icon)
-                        .addLastModifiedToFileCacheKey(true).build(),
+                Image(
+                    painter = painter,
                     contentDescription = null,
                     modifier = Modifier
+                        .then(sizeResolver)
                         .matchParentSize()
                         .drawWithContent {
                             graphicsLayer.record {
@@ -1160,7 +1183,7 @@ private fun SharedTransitionScope.EblanApplicationInfoItem(
                                     parent = SharedElementKey.Parent.SwipeY,
                                 ),
                             ),
-                            visible = true,
+                            visible = drag == Drag.None || drag == Drag.Cancel || drag == Drag.End,
                         ),
                 )
 

@@ -70,16 +70,10 @@ import coil3.request.ImageRequest
 import coil3.request.addLastModifiedToFileCacheKey
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.AppDrawerSettings
-import com.eblan.launcher.domain.model.Associate
-import com.eblan.launcher.domain.model.EblanAction
-import com.eblan.launcher.domain.model.EblanActionType
 import com.eblan.launcher.domain.model.EblanApplicationInfo
 import com.eblan.launcher.domain.model.EblanUser
-import com.eblan.launcher.domain.model.GridItem
-import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.ManagedProfileResult
 import com.eblan.launcher.feature.home.model.Drag
-import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.util.getHorizontalAlignment
 import com.eblan.launcher.feature.home.util.getSystemTextColor
 import com.eblan.launcher.feature.home.util.getVerticalArrangement
@@ -87,7 +81,6 @@ import com.eblan.launcher.ui.local.LocalLauncherApps
 import com.eblan.launcher.ui.local.LocalPackageManager
 import com.eblan.launcher.ui.local.LocalUserManager
 import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 internal fun LazyGridScope.privateSpace(
     appDrawerSettings: AppDrawerSettings,
@@ -98,13 +91,13 @@ internal fun LazyGridScope.privateSpace(
     paddingValues: PaddingValues,
     privateEblanApplicationInfos: List<EblanApplicationInfo>,
     privateEblanUser: EblanUser?,
-    onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateIsQuietModeEnabled: (Boolean) -> Unit,
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
     ) -> Unit,
     onUpdatePopupMenu: (Boolean) -> Unit,
+    onUpdateEblanApplicationInfo: (EblanApplicationInfo) -> Unit,
 ) {
     if (privateEblanUser == null || privateEblanUser.isPrivateSpaceEntryPointHidden) return
 
@@ -125,9 +118,9 @@ internal fun LazyGridScope.privateSpace(
                 eblanApplicationInfo = eblanApplicationInfo,
                 iconPackFilePaths = iconPackFilePaths,
                 paddingValues = paddingValues,
-                onUpdateGridItemSource = onUpdateGridItemSource,
                 onUpdateOverlayBounds = onUpdateOverlayBounds,
                 onUpdatePopupMenu = onUpdatePopupMenu,
+                onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
             )
         }
     }
@@ -229,12 +222,12 @@ private fun PrivateSpaceEblanApplicationInfoItem(
     eblanApplicationInfo: EblanApplicationInfo,
     iconPackFilePaths: Map<String, String>,
     paddingValues: PaddingValues,
-    onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
     ) -> Unit,
     onUpdatePopupMenu: (Boolean) -> Unit,
+    onUpdateEblanApplicationInfo: (EblanApplicationInfo) -> Unit,
 ) {
     var intOffset by remember { mutableStateOf(IntOffset.Zero) }
 
@@ -269,7 +262,13 @@ private fun PrivateSpaceEblanApplicationInfoItem(
         paddingValues.calculateTopPadding().roundToPx()
     }
 
-    val id = remember { Uuid.random().toHexString() }
+    var isLongPress by remember { mutableStateOf(false) }
+
+    LaunchedEffect(key1 = drag) {
+        if (drag == Drag.Cancel && isLongPress) {
+            onUpdatePopupMenu(false)
+        }
+    }
 
     Column(
         modifier = modifier
@@ -292,49 +291,7 @@ private fun PrivateSpaceEblanApplicationInfoItem(
                         )
                     },
                     onLongPress = {
-                        val data = GridItemData.ApplicationInfo(
-                            serialNumber = eblanApplicationInfo.serialNumber,
-                            componentName = eblanApplicationInfo.componentName,
-                            packageName = eblanApplicationInfo.packageName,
-                            icon = eblanApplicationInfo.icon,
-                            label = eblanApplicationInfo.label,
-                            customIcon = eblanApplicationInfo.customIcon,
-                            customLabel = eblanApplicationInfo.customLabel,
-                            index = -1,
-                            folderId = null,
-                        )
-
-                        onUpdateGridItemSource(
-                            GridItemSource.New(
-                                gridItem = GridItem(
-                                    id = id,
-                                    page = -1,
-                                    startColumn = -1,
-                                    startRow = -1,
-                                    columnSpan = 1,
-                                    rowSpan = 1,
-                                    data = data,
-                                    associate = Associate.Grid,
-                                    override = false,
-                                    gridItemSettings = appDrawerSettings.gridItemSettings,
-                                    doubleTap = EblanAction(
-                                        eblanActionType = EblanActionType.None,
-                                        serialNumber = 0L,
-                                        componentName = "",
-                                    ),
-                                    swipeUp = EblanAction(
-                                        eblanActionType = EblanActionType.None,
-                                        serialNumber = 0L,
-                                        componentName = "",
-                                    ),
-                                    swipeDown = EblanAction(
-                                        eblanActionType = EblanActionType.None,
-                                        serialNumber = 0L,
-                                        componentName = "",
-                                    ),
-                                ),
-                            ),
-                        )
+                        onUpdateEblanApplicationInfo(eblanApplicationInfo)
 
                         onUpdateOverlayBounds(
                             intOffset,
@@ -342,6 +299,8 @@ private fun PrivateSpaceEblanApplicationInfoItem(
                         )
 
                         onUpdatePopupMenu(true)
+
+                        isLongPress = true
                     },
                 )
             }
