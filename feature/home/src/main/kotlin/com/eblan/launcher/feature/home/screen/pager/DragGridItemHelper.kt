@@ -143,7 +143,7 @@ internal fun handleAnimateScrollToPage(
     }
 }
 
-internal suspend fun handleDragGridItem(
+internal fun handleDragGridItem(
     columns: Int,
     currentPage: Int,
     density: Density,
