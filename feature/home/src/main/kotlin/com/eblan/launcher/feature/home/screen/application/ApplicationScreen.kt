@@ -23,6 +23,7 @@ import android.os.UserHandle
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
@@ -106,7 +107,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.round
 import androidx.compose.ui.unit.sp
-import coil3.compose.AsyncImage
+import coil3.compose.rememberAsyncImagePainter
 import coil3.request.ImageRequest
 import coil3.request.addLastModifiedToFileCacheKey
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
@@ -1011,6 +1012,12 @@ private fun SharedTransitionScope.EblanApplicationInfoItem(
 
     val hasInteraction = isLongPress && (drag == Drag.Start || drag == Drag.Dragging)
 
+    val painter = rememberAsyncImagePainter(
+        model = ImageRequest.Builder(LocalContext.current)
+            .data(eblanApplicationInfo.customIcon ?: icon)
+            .addLastModifiedToFileCacheKey(true).build(),
+    )
+
     LaunchedEffect(key1 = drag) {
         if (drag == Drag.Dragging && isLongPress) {
             onUpdatePopupMenu(false)
@@ -1134,10 +1141,8 @@ private fun SharedTransitionScope.EblanApplicationInfoItem(
     ) {
         if (!hasInteraction) {
             Box(modifier = Modifier.size(appDrawerSettings.gridItemSettings.iconSize.dp)) {
-                AsyncImage(
-                    model = ImageRequest.Builder(LocalContext.current)
-                        .data(eblanApplicationInfo.customIcon ?: icon)
-                        .addLastModifiedToFileCacheKey(true).build(),
+                Image(
+                    painter = painter,
                     contentDescription = null,
                     modifier = Modifier
                         .matchParentSize()

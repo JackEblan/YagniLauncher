@@ -19,6 +19,7 @@ package com.eblan.launcher.feature.home.screen.pager
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -63,6 +64,7 @@ import androidx.compose.ui.unit.round
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import coil3.compose.AsyncImage
+import coil3.compose.rememberAsyncImagePainter
 import coil3.request.ImageRequest.Builder
 import coil3.request.addLastModifiedToFileCacheKey
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
@@ -367,6 +369,11 @@ private fun SharedTransitionScope.InteractiveApplicationInfoGridItem(
 
     val isGesture = !isLongPress && !isCache
 
+    val painter = rememberAsyncImagePainter(
+        model = Builder(LocalContext.current).data(data.customIcon ?: icon)
+            .addLastModifiedToFileCacheKey(true).build(),
+    )
+
     LaunchedEffect(key1 = drag) {
         handleDrag(
             drag = drag,
@@ -450,9 +457,8 @@ private fun SharedTransitionScope.InteractiveApplicationInfoGridItem(
     ) {
         if (!hasInteraction) {
             Box(modifier = Modifier.size(gridItemSettings.iconSize.dp)) {
-                AsyncImage(
-                    model = Builder(LocalContext.current).data(data.customIcon ?: icon)
-                        .addLastModifiedToFileCacheKey(true).build(),
+                Image(
+                    painter = painter,
                     contentDescription = null,
                     modifier = Modifier
                         .matchParentSize()
@@ -753,6 +759,8 @@ private fun SharedTransitionScope.InteractiveShortcutInfoGridItem(
 
     val isGesture = !isLongPress && !isCache
 
+    val painter = rememberAsyncImagePainter(model = customIcon)
+
     LaunchedEffect(key1 = drag) {
         handleDrag(
             drag = drag,
@@ -839,8 +847,8 @@ private fun SharedTransitionScope.InteractiveShortcutInfoGridItem(
     ) {
         if (!hasInteraction) {
             Box(modifier = Modifier.size(gridItemSettings.iconSize.dp)) {
-                AsyncImage(
-                    model = customIcon,
+                Image(
+                    painter = painter,
                     modifier = Modifier
                         .matchParentSize()
                         .alpha(alpha)
@@ -1210,6 +1218,11 @@ private fun SharedTransitionScope.InteractiveShortcutConfigGridItem(
 
     val isGesture = !isLongPress && !isCache
 
+    val painter = rememberAsyncImagePainter(
+        model = Builder(LocalContext.current).data(icon)
+            .addLastModifiedToFileCacheKey(true).build(),
+    )
+
     LaunchedEffect(key1 = drag) {
         handleDrag(
             drag = drag,
@@ -1288,9 +1301,8 @@ private fun SharedTransitionScope.InteractiveShortcutConfigGridItem(
     ) {
         if (!hasInteraction) {
             Box(modifier = Modifier.size(gridItemSettings.iconSize.dp)) {
-                AsyncImage(
-                    model = Builder(LocalContext.current).data(icon)
-                        .addLastModifiedToFileCacheKey(true).build(),
+                Image(
+                    painter = painter,
                     contentDescription = null,
                     modifier = Modifier
                         .matchParentSize()

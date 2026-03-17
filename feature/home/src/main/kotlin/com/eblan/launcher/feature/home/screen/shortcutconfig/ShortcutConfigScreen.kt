@@ -566,13 +566,13 @@ private fun EblanShortcutConfigItem(
 
     val graphicsLayer = rememberGraphicsLayer()
 
-    val id = remember { Uuid.random().toHexString() }
-
     Column(
         modifier = modifier
             .pointerInput(key1 = drag) {
                 detectTapGestures(
                     onLongPress = {
+                        val id = Uuid.random().toHexString()
+
                         scope.launch {
                             val data = GridItemData.ShortcutConfig(
                                 serialNumber = eblanShortcutConfig.serialNumber,
