@@ -1171,7 +1171,7 @@ private fun SharedTransitionScope.EblanApplicationInfoItem(
                                     parent = SharedElementKey.Parent.SwipeY,
                                 ),
                             ),
-                            visible = true,
+                            visible = drag == Drag.None || drag == Drag.Cancel || drag == Drag.End,
                         ),
                 )
 

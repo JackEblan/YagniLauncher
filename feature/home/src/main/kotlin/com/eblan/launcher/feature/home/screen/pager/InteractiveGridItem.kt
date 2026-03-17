@@ -360,9 +360,9 @@ private fun SharedTransitionScope.InteractiveApplicationInfoGridItem(
 
     val hasNotifications =
         statusBarNotifications[data.packageName] != null && (
-                statusBarNotifications[data.packageName]
-                    ?: 0
-                ) > 0
+            statusBarNotifications[data.packageName]
+                ?: 0
+            ) > 0
 
     val hasInteraction = isSelected && isLongPress && (drag == Drag.Start || drag == Drag.Dragging)
 
@@ -487,7 +487,7 @@ private fun SharedTransitionScope.InteractiveApplicationInfoGridItem(
                                     parent = SharedElementKey.Parent.Grid,
                                 ),
                             ),
-                            visible = !isScrollInProgress,
+                            visible = !isScrollInProgress && (drag == Drag.None || drag == Drag.Cancel || drag == Drag.End),
                         ),
                 )
 
@@ -619,7 +619,7 @@ private fun SharedTransitionScope.InteractiveWidgetGridItem(
                             parent = SharedElementKey.Parent.Grid,
                         ),
                     ),
-                    visible = !isScrollInProgress,
+                    visible = !isScrollInProgress && (drag == Drag.None || drag == Drag.Cancel || drag == Drag.End),
                 )
 
             if (appWidgetInfo != null) {
@@ -880,7 +880,7 @@ private fun SharedTransitionScope.InteractiveShortcutInfoGridItem(
                                     parent = SharedElementKey.Parent.Grid,
                                 ),
                             ),
-                            visible = !isScrollInProgress,
+                            visible = !isScrollInProgress && (drag == Drag.None || drag == Drag.Cancel || drag == Drag.End),
                         ),
                     contentDescription = null,
                 )
@@ -1067,7 +1067,7 @@ private fun SharedTransitionScope.InteractiveFolderGridItem(
                             parent = SharedElementKey.Parent.Grid,
                         ),
                     ),
-                    visible = !isScrollInProgress,
+                    visible = !isScrollInProgress && (drag == Drag.None || drag == Drag.Cancel || drag == Drag.End),
                 )
 
             if (data.icon != null) {
@@ -1110,7 +1110,7 @@ private fun SharedTransitionScope.InteractiveFolderGridItem(
                                                     parent = SharedElementKey.Parent.Grid,
                                                 ),
                                             ),
-                                            visible = !isScrollInProgress,
+                                            visible = !isScrollInProgress && (drag == Drag.None || drag == Drag.Cancel || drag == Drag.End),
                                         ),
                                 )
                             }
@@ -1339,7 +1339,7 @@ private fun SharedTransitionScope.InteractiveShortcutConfigGridItem(
                                     parent = SharedElementKey.Parent.Grid,
                                 ),
                             ),
-                            visible = !isScrollInProgress,
+                            visible = !isScrollInProgress && (drag == Drag.None || drag == Drag.Cancel || drag == Drag.End),
                         ),
                 )
 
