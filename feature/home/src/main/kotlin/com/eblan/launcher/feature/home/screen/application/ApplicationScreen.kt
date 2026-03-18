@@ -55,7 +55,6 @@ import androidx.compose.foundation.rememberOverscrollEffect
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.input.clearText
 import androidx.compose.foundation.text.input.rememberTextFieldState
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
@@ -1186,20 +1185,6 @@ private fun SharedTransitionScope.EblanApplicationInfoItem(
                             visible = drag == Drag.None || drag == Drag.Cancel || drag == Drag.End,
                         ),
                 )
-
-                if (eblanApplicationInfo.serialNumber != 0L) {
-                    ElevatedCard(
-                        modifier = Modifier
-                            .size((appDrawerSettings.gridItemSettings.iconSize * 0.40).dp)
-                            .align(Alignment.BottomEnd),
-                    ) {
-                        Icon(
-                            imageVector = EblanLauncherIcons.Work,
-                            contentDescription = null,
-                            modifier = Modifier.padding(2.dp),
-                        )
-                    }
-                }
             }
 
             if (appDrawerSettings.gridItemSettings.showLabel) {

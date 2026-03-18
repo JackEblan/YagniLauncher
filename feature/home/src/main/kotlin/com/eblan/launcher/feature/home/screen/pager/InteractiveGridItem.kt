@@ -502,20 +502,6 @@ private fun SharedTransitionScope.InteractiveApplicationInfoGridItem(
                             ),
                     )
                 }
-
-                if (data.serialNumber != 0L) {
-                    ElevatedCard(
-                        modifier = Modifier
-                            .size((gridItemSettings.iconSize * 0.4).dp)
-                            .align(Alignment.BottomEnd),
-                    ) {
-                        Icon(
-                            imageVector = EblanLauncherIcons.Work,
-                            contentDescription = null,
-                            modifier = Modifier.padding(2.dp),
-                        )
-                    }
-                }
             }
 
             if (gridItemSettings.showLabel) {

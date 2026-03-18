@@ -520,7 +520,7 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
     }
 
     private suspend fun LauncherActivityInfo.toLauncherAppsActivityInfo(): LauncherAppsActivityInfo {
-        val activityIcon = getIcon(0).let { drawable ->
+        val activityIcon = getBadgedIcon(0).let { drawable ->
             val directory = fileManager.getFilesDirectory(FileManager.ICONS_DIR)
 
             val file = File(
@@ -552,7 +552,7 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
 
     @RequiresApi(Build.VERSION_CODES.N_MR1)
     private suspend fun ShortcutInfo.toLauncherAppsShortcutInfo(): LauncherAppsShortcutInfo {
-        val icon = getShortcutIconDrawable(this, 0)?.let { drawable ->
+        val icon = launcherApps.getShortcutBadgedIconDrawable(this, 0)?.let { drawable ->
             val directory = fileManager.getFilesDirectory(FileManager.SHORTCUTS_DIR)
 
             val file = File(
