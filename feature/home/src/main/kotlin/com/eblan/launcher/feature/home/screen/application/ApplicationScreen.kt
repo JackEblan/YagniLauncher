@@ -1156,36 +1156,34 @@ private fun SharedTransitionScope.EblanApplicationInfoItem(
         verticalArrangement = verticalArrangement,
     ) {
         if (!hasInteraction) {
-            Box(modifier = Modifier.size(appDrawerSettings.gridItemSettings.iconSize.dp)) {
-                Image(
-                    painter = painter,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .then(sizeResolver)
-                        .matchParentSize()
-                        .drawWithContent {
-                            graphicsLayer.record {
-                                this@drawWithContent.drawContent()
-                            }
-
-                            drawLayer(graphicsLayer)
+            Image(
+                painter = painter,
+                contentDescription = null,
+                modifier = Modifier
+                    .then(sizeResolver)
+                    .size(appDrawerSettings.gridItemSettings.iconSize.dp)
+                    .drawWithContent {
+                        graphicsLayer.record {
+                            this@drawWithContent.drawContent()
                         }
-                        .onGloballyPositioned { layoutCoordinates ->
-                            intOffset = layoutCoordinates.positionInRoot().round()
 
-                            intSize = layoutCoordinates.size
-                        }
-                        .sharedElementWithCallerManagedVisibility(
-                            rememberSharedContentState(
-                                key = SharedElementKey(
-                                    id = applicationScreenId,
-                                    parent = SharedElementKey.Parent.SwipeY,
-                                ),
+                        drawLayer(graphicsLayer)
+                    }
+                    .onGloballyPositioned { layoutCoordinates ->
+                        intOffset = layoutCoordinates.positionInRoot().round()
+
+                        intSize = layoutCoordinates.size
+                    }
+                    .sharedElementWithCallerManagedVisibility(
+                        rememberSharedContentState(
+                            key = SharedElementKey(
+                                id = applicationScreenId,
+                                parent = SharedElementKey.Parent.SwipeY,
                             ),
-                            visible = drag == Drag.None || drag == Drag.Cancel || drag == Drag.End,
                         ),
-                )
-            }
+                        visible = drag == Drag.None || drag == Drag.Cancel || drag == Drag.End,
+                    ),
+            )
 
             if (appDrawerSettings.gridItemSettings.showLabel) {
                 Spacer(modifier = Modifier.height(10.dp))

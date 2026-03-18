@@ -43,7 +43,6 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberOverscrollEffect
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.input.rememberTextFieldState
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
@@ -649,40 +648,24 @@ private fun EblanShortcutConfigItem(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
-        Box(modifier = Modifier.size(gridItemSettings.iconSize.dp)) {
-            AsyncImage(
-                model = eblanShortcutConfig.activityIcon,
-                contentDescription = null,
-                modifier = Modifier
-                    .matchParentSize()
-                    .drawWithContent {
-                        graphicsLayer.record {
-                            this@drawWithContent.drawContent()
-                        }
-
-                        drawLayer(graphicsLayer)
+        AsyncImage(
+            model = eblanShortcutConfig.activityIcon,
+            contentDescription = null,
+            modifier = Modifier
+                .size(gridItemSettings.iconSize.dp)
+                .drawWithContent {
+                    graphicsLayer.record {
+                        this@drawWithContent.drawContent()
                     }
-                    .onGloballyPositioned { layoutCoordinates ->
-                        intOffset = layoutCoordinates.positionInRoot().round()
 
-                        intSize = layoutCoordinates.size
-                    },
-            )
-
-            if (eblanShortcutConfig.serialNumber != 0L) {
-                ElevatedCard(
-                    modifier = Modifier
-                        .size((gridItemSettings.iconSize * 0.40).dp)
-                        .align(Alignment.BottomEnd),
-                ) {
-                    Icon(
-                        imageVector = EblanLauncherIcons.Work,
-                        contentDescription = null,
-                        modifier = Modifier.padding(2.dp),
-                    )
+                    drawLayer(graphicsLayer)
                 }
-            }
-        }
+                .onGloballyPositioned { layoutCoordinates ->
+                    intOffset = layoutCoordinates.positionInRoot().round()
+
+                    intSize = layoutCoordinates.size
+                },
+        )
 
         Spacer(modifier = Modifier.height(10.dp))
 

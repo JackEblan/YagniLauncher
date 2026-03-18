@@ -452,15 +452,7 @@ class ChangePackageUseCase @Inject constructor(
 
                 val icon = deleteEblanShortcutInfo.icon
 
-                val hasNoIconReference = icon != null &&
-                    eblanShortcutInfoRepository.getEblanShortcutInfos()
-                        .none { eblanShortcutInfo ->
-                            currentCoroutineContext().ensureActive()
-
-                            eblanShortcutInfo.icon == icon
-                        }
-
-                if (hasNoIconReference) {
+                if (icon != null) {
                     val iconFile = File(icon)
 
                     if (iconFile.exists()) {
@@ -524,15 +516,7 @@ class ChangePackageUseCase @Inject constructor(
 
                 val activityIcon = deleteEblanShortcutConfig.activityIcon
 
-                val hasNoIconReference = activityIcon != null &&
-                    eblanShortcutConfigRepository.getEblanShortcutConfigs()
-                        .none { eblanShortcutConfig ->
-                            currentCoroutineContext().ensureActive()
-
-                            eblanShortcutConfig.activityIcon == activityIcon
-                        }
-
-                if (hasNoIconReference) {
+                if (activityIcon != null) {
                     val activityIconFile = File(activityIcon)
 
                     if (activityIconFile.exists()) {
