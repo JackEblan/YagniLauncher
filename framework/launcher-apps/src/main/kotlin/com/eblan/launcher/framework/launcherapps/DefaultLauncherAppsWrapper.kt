@@ -520,12 +520,16 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
     }
 
     private suspend fun LauncherActivityInfo.toLauncherAppsActivityInfo(): LauncherAppsActivityInfo {
+        val serialNumber = userManagerWrapper.getSerialNumberForUser(userHandle = user)
+
+        val iconKey = "$serialNumber:${componentName.flattenToString()}"
+
         val activityIcon = getBadgedIcon(0).let { drawable ->
             val directory = fileManager.getFilesDirectory(FileManager.ICONS_DIR)
 
             val file = File(
                 directory,
-                fileManager.getHashedFileName(name = componentName.flattenToString()),
+                fileManager.getHashedFileName(name = iconKey),
             )
 
             imageSerializer.createDrawablePath(drawable = drawable, file = file)
@@ -534,7 +538,7 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
         }
 
         return LauncherAppsActivityInfo(
-            serialNumber = userManagerWrapper.getSerialNumberForUser(userHandle = user),
+            serialNumber = serialNumber,
             componentName = componentName.flattenToString(),
             packageName = applicationInfo.packageName,
             activityIcon = activityIcon,
@@ -552,12 +556,16 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
 
     @RequiresApi(Build.VERSION_CODES.N_MR1)
     private suspend fun ShortcutInfo.toLauncherAppsShortcutInfo(): LauncherAppsShortcutInfo {
+        val serialNumber = userManagerWrapper.getSerialNumberForUser(userHandle = userHandle)
+
+        val shortcutIconKey = "$serialNumber:$id"
+
         val icon = launcherApps.getShortcutBadgedIconDrawable(this, 0)?.let { drawable ->
             val directory = fileManager.getFilesDirectory(FileManager.SHORTCUTS_DIR)
 
             val file = File(
                 directory,
-                fileManager.getHashedFileName(name = id),
+                fileManager.getHashedFileName(name = shortcutIconKey),
             )
 
             imageSerializer.createDrawablePath(drawable = drawable, file = file)
@@ -582,7 +590,7 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
         return LauncherAppsShortcutInfo(
             shortcutId = id,
             packageName = `package`,
-            serialNumber = userManagerWrapper.getSerialNumberForUser(userHandle = userHandle),
+            serialNumber = serialNumber,
             shortLabel = shortLabel.toString(),
             longLabel = longLabel.toString(),
             isEnabled = isEnabled,
