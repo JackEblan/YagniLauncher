@@ -101,7 +101,6 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
     statusBarNotifications: Map<String, Int>,
     textColor: TextColor,
     isCache: Boolean,
-    parent: SharedElementKey.Parent,
     onDraggingGridItem: () -> Unit,
     onOpenAppDrawer: () -> Unit,
     onTapApplicationInfo: (
@@ -168,7 +167,6 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
                 statusBarNotifications = statusBarNotifications,
                 textColor = currentTextColor,
                 isCache = isCache,
-                parent = parent,
                 onDraggingGridItem = onDraggingGridItem,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onTapApplicationInfo = onTapApplicationInfo,
@@ -195,7 +193,6 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
                 isSelected = isSelected,
                 textColor = currentTextColor,
                 isCache = isCache,
-                parent = parent,
                 onDraggingGridItem = onDraggingGridItem,
                 onUpdateGridItemSource = onUpdateGridItemSource,
                 onUpdateImageBitmap = onUpdateImageBitmap,
@@ -222,7 +219,6 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
                 isSelected = isSelected,
                 textColor = currentTextColor,
                 isCache = isCache,
-                parent = parent,
                 onDraggingGridItem = onDraggingGridItem,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onTapShortcutInfo = onTapShortcutInfo,
@@ -251,7 +247,6 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
                 isSelected = isSelected,
                 textColor = currentTextColor,
                 isCache = isCache,
-                parent = parent,
                 onDraggingGridItem = onDraggingGridItem,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onTap = onTapFolderGridItem,
@@ -279,7 +274,6 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
                 isSelected = isSelected,
                 textColor = currentTextColor,
                 isCache = isCache,
-                parent = parent,
                 onDraggingGridItem = onDraggingGridItem,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onTapShortcutConfig = onTapShortcutConfig,
@@ -312,7 +306,6 @@ private fun SharedTransitionScope.InteractiveApplicationInfoGridItem(
     statusBarNotifications: Map<String, Int>,
     textColor: Color,
     isCache: Boolean,
-    parent: SharedElementKey.Parent,
     onDraggingGridItem: () -> Unit,
     onOpenAppDrawer: () -> Unit,
     onTapApplicationInfo: (
@@ -411,7 +404,7 @@ private fun SharedTransitionScope.InteractiveApplicationInfoGridItem(
                                 gridItemSource = GridItemSource.Existing(gridItem = gridItem),
                                 sharedElementKey = SharedElementKey(
                                     id = gridItem.id,
-                                    parent = parent,
+                                    parent = SharedElementKey.Parent.Grid,
                                 ),
                                 onUpdateGridItemSource = onUpdateGridItemSource,
                                 onUpdateImageBitmap = onUpdateImageBitmap,
@@ -483,7 +476,7 @@ private fun SharedTransitionScope.InteractiveApplicationInfoGridItem(
                                 rememberSharedContentState(
                                     key = SharedElementKey(
                                         id = gridItem.id,
-                                        parent = parent,
+                                        parent = SharedElementKey.Parent.Grid,
                                     ),
                                 ),
                                 visible = !isScrollInProgress && (drag == Drag.None || drag == Drag.Cancel || drag == Drag.End),
@@ -533,7 +526,6 @@ private fun SharedTransitionScope.InteractiveWidgetGridItem(
     isSelected: Boolean,
     textColor: Color,
     isCache: Boolean,
-    parent: SharedElementKey.Parent,
     onDraggingGridItem: () -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
@@ -610,7 +602,7 @@ private fun SharedTransitionScope.InteractiveWidgetGridItem(
                         rememberSharedContentState(
                             key = SharedElementKey(
                                 id = gridItem.id,
-                                parent = parent,
+                                parent = SharedElementKey.Parent.Grid,
                             ),
                         ),
                         visible = !isScrollInProgress && (drag == Drag.None || drag == Drag.Cancel || drag == Drag.End),
@@ -640,7 +632,7 @@ private fun SharedTransitionScope.InteractiveWidgetGridItem(
                                 gridItemSource = GridItemSource.Existing(gridItem = gridItem),
                                 sharedElementKey = SharedElementKey(
                                     id = gridItem.id,
-                                    parent = parent,
+                                    parent = SharedElementKey.Parent.Grid,
                                 ),
                                 onUpdateGridItemSource = onUpdateGridItemSource,
                                 onUpdateImageBitmap = onUpdateImageBitmap,
@@ -672,7 +664,7 @@ private fun SharedTransitionScope.InteractiveWidgetGridItem(
                                     gridItemSource = GridItemSource.Existing(gridItem = gridItem),
                                     sharedElementKey = SharedElementKey(
                                         id = gridItem.id,
-                                        parent = parent,
+                                        parent = SharedElementKey.Parent.Grid,
                                     ),
                                     onUpdateGridItemSource = onUpdateGridItemSource,
                                     onUpdateImageBitmap = onUpdateImageBitmap,
@@ -707,7 +699,6 @@ private fun SharedTransitionScope.InteractiveShortcutInfoGridItem(
     isSelected: Boolean,
     textColor: Color,
     isCache: Boolean,
-    parent: SharedElementKey.Parent,
     onDraggingGridItem: () -> Unit,
     onOpenAppDrawer: () -> Unit,
     onTapShortcutInfo: (
@@ -801,7 +792,7 @@ private fun SharedTransitionScope.InteractiveShortcutInfoGridItem(
                                 gridItemSource = GridItemSource.Existing(gridItem = gridItem),
                                 sharedElementKey = SharedElementKey(
                                     id = gridItem.id,
-                                    parent = parent,
+                                    parent = SharedElementKey.Parent.Grid,
                                 ),
                                 onUpdateGridItemSource = onUpdateGridItemSource,
                                 onUpdateImageBitmap = onUpdateImageBitmap,
@@ -875,7 +866,7 @@ private fun SharedTransitionScope.InteractiveShortcutInfoGridItem(
                                 rememberSharedContentState(
                                     key = SharedElementKey(
                                         id = gridItem.id,
-                                        parent = parent,
+                                        parent = SharedElementKey.Parent.Grid,
                                     ),
                                 ),
                                 visible = !isScrollInProgress && (drag == Drag.None || drag == Drag.Cancel || drag == Drag.End),
@@ -925,7 +916,6 @@ private fun SharedTransitionScope.InteractiveFolderGridItem(
     isSelected: Boolean,
     textColor: Color,
     isCache: Boolean,
-    parent: SharedElementKey.Parent,
     onDraggingGridItem: () -> Unit,
     onOpenAppDrawer: () -> Unit,
     onTap: () -> Unit,
@@ -1011,7 +1001,7 @@ private fun SharedTransitionScope.InteractiveFolderGridItem(
                                 gridItemSource = GridItemSource.Existing(gridItem = gridItem),
                                 sharedElementKey = SharedElementKey(
                                     id = gridItem.id,
-                                    parent = parent,
+                                    parent = SharedElementKey.Parent.Grid,
                                 ),
                                 onUpdateGridItemSource = onUpdateGridItemSource,
                                 onUpdateImageBitmap = onUpdateImageBitmap,
@@ -1070,7 +1060,7 @@ private fun SharedTransitionScope.InteractiveFolderGridItem(
                         rememberSharedContentState(
                             key = SharedElementKey(
                                 id = gridItem.id,
-                                parent = parent,
+                                parent = SharedElementKey.Parent.Grid,
                             ),
                         ),
                         visible = !isScrollInProgress && (drag == Drag.None || drag == Drag.Cancel || drag == Drag.End),
@@ -1119,7 +1109,7 @@ private fun SharedTransitionScope.InteractiveFolderGridItem(
                                                 rememberSharedContentState(
                                                     key = SharedElementKey(
                                                         id = applicationInfoFolderGridItem.id,
-                                                        parent = parent,
+                                                        parent = SharedElementKey.Parent.Grid,
                                                     ),
                                                 ),
                                                 visible = !isScrollInProgress && (drag == Drag.None || drag == Drag.Cancel || drag == Drag.End),
@@ -1162,7 +1152,6 @@ private fun SharedTransitionScope.InteractiveShortcutConfigGridItem(
     isSelected: Boolean,
     textColor: Color,
     isCache: Boolean,
-    parent: SharedElementKey.Parent,
     onDraggingGridItem: () -> Unit,
     onOpenAppDrawer: () -> Unit,
     onTapShortcutConfig: (String) -> Unit,
@@ -1284,7 +1273,7 @@ private fun SharedTransitionScope.InteractiveShortcutConfigGridItem(
                                 gridItemSource = GridItemSource.Existing(gridItem = gridItem),
                                 sharedElementKey = SharedElementKey(
                                     id = gridItem.id,
-                                    parent = parent,
+                                    parent = SharedElementKey.Parent.Grid,
                                 ),
                                 onUpdateGridItemSource = onUpdateGridItemSource,
                                 onUpdateImageBitmap = onUpdateImageBitmap,
@@ -1348,7 +1337,7 @@ private fun SharedTransitionScope.InteractiveShortcutConfigGridItem(
                             rememberSharedContentState(
                                 key = SharedElementKey(
                                     id = gridItem.id,
-                                    parent = parent,
+                                    parent = SharedElementKey.Parent.Grid,
                                 ),
                             ),
                             visible = !isScrollInProgress && (drag == Drag.None || drag == Drag.Cancel || drag == Drag.End),

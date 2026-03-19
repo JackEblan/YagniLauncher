@@ -23,7 +23,6 @@ internal data class SharedElementKey(
 ) {
     enum class Parent {
         Grid,
-        Dock,
         SwipeY,
         Folder,
     }

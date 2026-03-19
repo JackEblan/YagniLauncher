@@ -91,7 +91,6 @@ import com.eblan.launcher.feature.home.component.grid.GridLayout
 import com.eblan.launcher.feature.home.component.indicator.PageIndicator
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
-import com.eblan.launcher.feature.home.model.SharedElementKey
 import com.eblan.launcher.feature.home.screen.application.ApplicationScreen
 import com.eblan.launcher.feature.home.screen.folder.FolderScreen
 import com.eblan.launcher.feature.home.screen.resize.ResizeScreen
@@ -714,7 +713,6 @@ internal fun PagerScreen(
                             statusBarNotifications = pagerScreenState.statusBarNotifications,
                             textColor = textColor,
                             isCache = isCache,
-                            parent = SharedElementKey.Parent.Grid,
                             onDraggingGridItem = {
                                 onDraggingGridItem(gridItems)
                             },
@@ -839,7 +837,6 @@ internal fun PagerScreen(
                             statusBarNotifications = pagerScreenState.statusBarNotifications,
                             textColor = textColor,
                             isCache = isCache,
-                            parent = SharedElementKey.Parent.Dock,
                             onDraggingGridItem = {
                                 onDraggingGridItem(gridItems)
                             },
