@@ -106,6 +106,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.round
 import androidx.compose.ui.unit.sp
+import coil3.compose.AsyncImage
 import coil3.compose.rememberAsyncImagePainter
 import coil3.compose.rememberConstraintsSizeResolver
 import coil3.request.ImageRequest
@@ -1012,15 +1013,7 @@ private fun SharedTransitionScope.EblanApplicationInfoItem(
 
     val hasInteraction = isLongPress && (drag == Drag.Start || drag == Drag.Dragging)
 
-    val sizeResolver = rememberConstraintsSizeResolver()
-
-    val painter = rememberAsyncImagePainter(
-        model = ImageRequest.Builder(LocalContext.current)
-            .data(eblanApplicationInfo.customIcon ?: icon)
-            .addLastModifiedToFileCacheKey(true)
-            .size(sizeResolver)
-            .build(),
-    )
+    val alpha = if (hasInteraction) 0f else 1f
 
     LaunchedEffect(key1 = drag) {
         when (drag) {
@@ -1155,48 +1148,56 @@ private fun SharedTransitionScope.EblanApplicationInfoItem(
         horizontalAlignment = horizontalAlignment,
         verticalArrangement = verticalArrangement,
     ) {
-        if (!hasInteraction) {
-            Image(
-                painter = painter,
-                contentDescription = null,
-                modifier = Modifier
-                    .then(sizeResolver)
-                    .size(appDrawerSettings.gridItemSettings.iconSize.dp)
-                    .drawWithContent {
-                        graphicsLayer.record {
-                            this@drawWithContent.drawContent()
-                        }
-
-                        drawLayer(graphicsLayer)
+        AsyncImage(
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(eblanApplicationInfo.customIcon ?: icon)
+                .addLastModifiedToFileCacheKey(true)
+                .build(),
+            contentDescription = null,
+            modifier = Modifier
+                .size(appDrawerSettings.gridItemSettings.iconSize.dp)
+                .alpha(alpha)
+                .drawWithContent {
+                    graphicsLayer.record {
+                        this@drawWithContent.drawContent()
                     }
-                    .onGloballyPositioned { layoutCoordinates ->
-                        intOffset = layoutCoordinates.positionInRoot().round()
 
-                        intSize = layoutCoordinates.size
-                    }
-                    .sharedElementWithCallerManagedVisibility(
-                        rememberSharedContentState(
-                            key = SharedElementKey(
-                                id = applicationScreenId,
-                                parent = SharedElementKey.Parent.SwipeY,
+                    drawLayer(graphicsLayer)
+                }
+                .onGloballyPositioned { layoutCoordinates ->
+                    intOffset = layoutCoordinates.positionInRoot().round()
+
+                    intSize = layoutCoordinates.size
+                }
+                .run {
+                    if (!hasInteraction) {
+                        sharedElementWithCallerManagedVisibility(
+                            rememberSharedContentState(
+                                key = SharedElementKey(
+                                    id = applicationScreenId,
+                                    parent = SharedElementKey.Parent.SwipeY,
+                                ),
                             ),
-                        ),
-                        visible = drag == Drag.None || drag == Drag.Cancel || drag == Drag.End,
-                    ),
+                            visible = drag == Drag.None || drag == Drag.Cancel || drag == Drag.End,
+                        )
+                    } else {
+                        this
+                    }
+                },
+        )
+
+        if (appDrawerSettings.gridItemSettings.showLabel) {
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Text(
+                modifier = Modifier.alpha(alpha),
+                text = eblanApplicationInfo.customLabel ?: eblanApplicationInfo.label,
+                color = textColor,
+                textAlign = TextAlign.Center,
+                maxLines = maxLines,
+                fontSize = appDrawerSettings.gridItemSettings.textSize.sp,
+                overflow = TextOverflow.Ellipsis,
             )
-
-            if (appDrawerSettings.gridItemSettings.showLabel) {
-                Spacer(modifier = Modifier.height(10.dp))
-
-                Text(
-                    text = eblanApplicationInfo.customLabel ?: eblanApplicationInfo.label,
-                    color = textColor,
-                    textAlign = TextAlign.Center,
-                    maxLines = maxLines,
-                    fontSize = appDrawerSettings.gridItemSettings.textSize.sp,
-                    overflow = TextOverflow.Ellipsis,
-                )
-            }
         }
     }
 }

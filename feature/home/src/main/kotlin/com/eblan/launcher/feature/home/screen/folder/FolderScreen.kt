@@ -19,7 +19,6 @@ package com.eblan.launcher.feature.home.screen.folder
 
 import android.graphics.Rect
 import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -37,8 +36,6 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -51,6 +48,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
@@ -69,11 +67,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.round
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
-import coil3.compose.rememberAsyncImagePainter
-import coil3.compose.rememberConstraintsSizeResolver
 import coil3.request.ImageRequest.Builder
 import coil3.request.addLastModifiedToFileCacheKey
-import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.ApplicationInfoGridItem
 import com.eblan.launcher.domain.model.Associate
 import com.eblan.launcher.domain.model.GridItem
@@ -392,14 +387,7 @@ private fun SharedTransitionScope.FolderGridItemContent(
 
     val isVisibleWhiteBox = isSelected && drag == Drag.Dragging
 
-    val sizeResolver = rememberConstraintsSizeResolver()
-
-    val painter = rememberAsyncImagePainter(
-        model = Builder(LocalContext.current).data(gridItem.customIcon ?: icon)
-            .addLastModifiedToFileCacheKey(true)
-            .size(sizeResolver)
-            .build(),
-    )
+    val alpha = if (hasInteraction) 0f else 1f
 
     LaunchedEffect(key1 = drag) {
         handleDrag(
@@ -489,73 +477,68 @@ private fun SharedTransitionScope.FolderGridItemContent(
         horizontalAlignment = horizontalAlignment,
         verticalArrangement = verticalArrangement,
     ) {
-        if (!hasInteraction) {
-            Box(modifier = Modifier.size(currentGridItemSettings.iconSize.dp)) {
-                Image(
-                    painter = painter,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .then(sizeResolver)
-                        .matchParentSize()
-                        .sharedElementWithCallerManagedVisibility(
-                            rememberSharedContentState(
-                                key = SharedElementKey(
-                                    id = gridItem.id,
-                                    parent = SharedElementKey.Parent.Folder,
-                                ),
-                            ),
-                            visible = drag == Drag.None || drag == Drag.Cancel || drag == Drag.End,
-                        )
-                        .drawWithContent {
-                            graphicsLayer.record {
-                                this@drawWithContent.drawContent()
-                            }
-
-                            drawLayer(graphicsLayer)
+        Box(
+            modifier = Modifier
+                .size(currentGridItemSettings.iconSize.dp)
+                .alpha(alpha),
+        ) {
+            AsyncImage(
+                model = Builder(LocalContext.current).data(gridItem.customIcon ?: icon)
+                    .addLastModifiedToFileCacheKey(true)
+                    .build(),
+                contentDescription = null,
+                modifier = Modifier
+                    .matchParentSize()
+                    .drawWithContent {
+                        graphicsLayer.record {
+                            this@drawWithContent.drawContent()
                         }
-                        .onGloballyPositioned { layoutCoordinates ->
-                            intOffset = layoutCoordinates.positionInRoot().round()
 
-                            intSize = layoutCoordinates.size
-                        },
-                )
-
-                if (settings.isNotificationAccessGranted() && hasNotifications) {
-                    Box(
-                        modifier = Modifier
-                            .size((currentGridItemSettings.iconSize * 0.3).dp)
-                            .align(Alignment.TopEnd)
-                            .background(
-                                color = MaterialTheme.colorScheme.primary,
-                                shape = CircleShape,
-                            ),
-                    )
-                }
-
-                if (gridItem.serialNumber != 0L) {
-                    ElevatedCard(
-                        modifier = Modifier
-                            .size((currentGridItemSettings.iconSize * 0.4).dp)
-                            .align(Alignment.BottomEnd),
-                    ) {
-                        Icon(
-                            imageVector = EblanLauncherIcons.Work,
-                            contentDescription = null,
-                            modifier = Modifier.padding(2.dp),
-                        )
+                        drawLayer(graphicsLayer)
                     }
-                }
-            }
-            if (currentGridItemSettings.showLabel) {
-                Text(
-                    text = gridItem.customLabel ?: gridItem.label,
-                    color = currentTextColor,
-                    textAlign = TextAlign.Center,
-                    maxLines = maxLines,
-                    fontSize = currentGridItemSettings.textSize.sp,
-                    overflow = TextOverflow.Ellipsis,
+                    .onGloballyPositioned { layoutCoordinates ->
+                        intOffset = layoutCoordinates.positionInRoot().round()
+
+                        intSize = layoutCoordinates.size
+                    }.run {
+                        if (!hasInteraction) {
+                            sharedElementWithCallerManagedVisibility(
+                                rememberSharedContentState(
+                                    key = SharedElementKey(
+                                        id = gridItem.id,
+                                        parent = SharedElementKey.Parent.Folder,
+                                    ),
+                                ),
+                                visible = drag == Drag.None || drag == Drag.Cancel || drag == Drag.End,
+                            )
+                        } else {
+                            this
+                        }
+                    },
+            )
+
+            if (settings.isNotificationAccessGranted() && hasNotifications) {
+                Box(
+                    modifier = Modifier
+                        .size((currentGridItemSettings.iconSize * 0.3).dp)
+                        .align(Alignment.TopEnd)
+                        .background(
+                            color = MaterialTheme.colorScheme.primary,
+                            shape = CircleShape,
+                        ),
                 )
             }
+        }
+        if (currentGridItemSettings.showLabel) {
+            Text(
+                modifier = Modifier.alpha(alpha),
+                text = gridItem.customLabel ?: gridItem.label,
+                color = currentTextColor,
+                textAlign = TextAlign.Center,
+                maxLines = maxLines,
+                fontSize = currentGridItemSettings.textSize.sp,
+                overflow = TextOverflow.Ellipsis,
+            )
         }
     }
 }
