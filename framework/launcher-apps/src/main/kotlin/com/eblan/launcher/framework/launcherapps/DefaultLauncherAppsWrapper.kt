@@ -558,7 +558,7 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
     private suspend fun ShortcutInfo.toLauncherAppsShortcutInfo(): LauncherAppsShortcutInfo {
         val serialNumber = userManagerWrapper.getSerialNumberForUser(userHandle = userHandle)
 
-        val shortcutIconKey = "$serialNumber:$id"
+        val shortcutIconKey = "$serialNumber:${`package`}:$id"
 
         val icon = launcherApps.getShortcutBadgedIconDrawable(this, 0)?.let { drawable ->
             val directory = fileManager.getFilesDirectory(FileManager.SHORTCUTS_DIR)

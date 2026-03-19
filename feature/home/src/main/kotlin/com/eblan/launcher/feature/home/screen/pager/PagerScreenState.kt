@@ -403,7 +403,7 @@ internal class PagerScreenState(
         )
     }
 
-    suspend fun handleDragGridItemEffect(
+    fun handleDragGridItemEffect(
         currentPage: Int,
         density: Density,
         dockHeight: Dp,
@@ -549,9 +549,6 @@ internal class PagerScreenState(
                 folderPopupIntSize = intSize
             },
             onUpdateGridItemSource = onUpdateGridItemSource,
-            onUpdateSharedElementKey = { newSharedElementKey ->
-                sharedElementKey = newSharedElementKey
-            },
         )
     }
 
