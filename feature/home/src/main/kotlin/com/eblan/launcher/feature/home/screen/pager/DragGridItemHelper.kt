@@ -260,7 +260,6 @@ internal fun handleDragGridItem(
                     safeDrawingWidth = safeDrawingWidth,
                     onMoveGridItem = onMoveGridItem,
                     onUpdateAssociate = onUpdateAssociate,
-                    onUpdateSharedElementKey = onUpdateSharedElementKey,
                 )
             } else {
                 handleDragGridItem(
@@ -276,7 +275,6 @@ internal fun handleDragGridItem(
                     safeDrawingWidth = safeDrawingWidth,
                     onMoveGridItem = onMoveGridItem,
                     onUpdateAssociate = onUpdateAssociate,
-                    onUpdateSharedElementKey = onUpdateSharedElementKey,
                 )
             }
         }
@@ -376,13 +374,6 @@ private fun handleDragFolderGridItem(
         folderDragY in 0..folderGridVisibleHeightPx
 
     if (isInsideFolder) {
-        onUpdateSharedElementKey(
-            SharedElementKey(
-                id = gridItemSourceFolder.applicationInfoGridItem.id,
-                parent = SharedElementKey.Parent.Folder,
-            ),
-        )
-
         onMoveFolderGridItem(
             folderGridItem,
             data.gridItems,
@@ -460,18 +451,10 @@ private fun handleDragGridItem(
         gridHeight: Int,
     ) -> Unit,
     onUpdateAssociate: (Associate) -> Unit,
-    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
 ) {
     val gridItem = requireNotNull(gridItemSource.gridItem)
 
     onUpdateAssociate(Associate.Grid)
-
-    onUpdateSharedElementKey(
-        SharedElementKey(
-            id = gridItem.id,
-            parent = SharedElementKey.Parent.Grid,
-        ),
-    )
 
     val gridHeightWithPadding = safeDrawingHeight - dockHeightPx - pageIndicatorHeightPx
 
@@ -533,18 +516,10 @@ private fun handleDragDockGridItem(
         gridHeight: Int,
     ) -> Unit,
     onUpdateAssociate: (Associate) -> Unit,
-    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
 ) {
     val gridItem = requireNotNull(gridItemSource.gridItem)
 
     onUpdateAssociate(Associate.Dock)
-
-    onUpdateSharedElementKey(
-        SharedElementKey(
-            id = gridItem.id,
-            parent = SharedElementKey.Parent.Dock,
-        ),
-    )
 
     val cellWidth = safeDrawingWidth / dockColumns
 
@@ -608,6 +583,7 @@ internal suspend fun handleConflictingGridItem(
         intSize: IntSize,
     ) -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
+    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
 ) {
     if (drag != Drag.Dragging ||
         gridItemSource == null ||
@@ -731,6 +707,13 @@ internal suspend fun handleConflictingGridItem(
                 index = conflictingData.gridItems.lastIndex + 1,
                 folderId = conflictingData.id,
             ),
+        ),
+    )
+
+    onUpdateSharedElementKey(
+        SharedElementKey(
+            id = moveGridItemResult.movingGridItem.id,
+            parent = SharedElementKey.Parent.Folder,
         ),
     )
 

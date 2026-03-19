@@ -549,6 +549,9 @@ internal class PagerScreenState(
                 folderPopupIntSize = intSize
             },
             onUpdateGridItemSource = onUpdateGridItemSource,
+            onUpdateSharedElementKey = { newSharedElementKey ->
+                sharedElementKey = newSharedElementKey
+            },
         )
     }
 
