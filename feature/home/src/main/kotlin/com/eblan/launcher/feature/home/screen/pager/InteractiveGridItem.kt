@@ -355,15 +355,13 @@ private fun SharedTransitionScope.InteractiveApplicationInfoGridItem(
 
     val hasNotifications =
         statusBarNotifications[data.packageName] != null && (
-            statusBarNotifications[data.packageName]
-                ?: 0
-            ) > 0
+                statusBarNotifications[data.packageName]
+                    ?: 0
+                ) > 0
 
     val hasInteraction = isSelected && isVisibleOverlay
 
     val isVisibleWhiteBox = isSelected && drag == Drag.Dragging
-
-    val isGesture = !isVisibleOverlay && !isCache
 
     val alpha = if (hasInteraction) 0f else 1f
 
@@ -382,7 +380,7 @@ private fun SharedTransitionScope.InteractiveApplicationInfoGridItem(
         modifier = modifier
             .pointerInput(key1 = drag) {
                 detectTapGestures(
-                    onDoubleTap = if (isGesture) {
+                    onDoubleTap = if (!isVisibleOverlay) {
                         {
                             onDoubleTap(
                                 context = context,
@@ -395,7 +393,7 @@ private fun SharedTransitionScope.InteractiveApplicationInfoGridItem(
                     } else {
                         null
                     },
-                    onLongPress = if (isGesture) {
+                    onLongPress = if (!isVisibleOverlay) {
                         {
                             onLongPress(
                                 scope = scope,
@@ -418,7 +416,7 @@ private fun SharedTransitionScope.InteractiveApplicationInfoGridItem(
                     } else {
                         null
                     },
-                    onTap = if (isGesture) {
+                    onTap = if (!isVisibleOverlay) {
                         {
                             scope.launch {
                                 onTapApplicationInfo(
@@ -471,15 +469,21 @@ private fun SharedTransitionScope.InteractiveApplicationInfoGridItem(
 
                         intSize = layoutCoordinates.size
                     }
-                    .sharedElementWithCallerManagedVisibility(
-                        rememberSharedContentState(
-                            key = SharedElementKey(
-                                id = gridItem.id,
-                                parent = parent,
-                            ),
-                        ),
-                        visible = !isScrollInProgress && !isVisibleOverlay,
-                    ),
+                    .run {
+                        if (!hasInteraction) {
+                            sharedElementWithCallerManagedVisibility(
+                                rememberSharedContentState(
+                                    key = SharedElementKey(
+                                        id = gridItem.id,
+                                        parent = parent,
+                                    ),
+                                ),
+                                visible = !isScrollInProgress,
+                            )
+                        } else {
+                            this
+                        }
+                    },
             )
 
             if (settings.isNotificationAccessGranted() && hasNotifications) {
@@ -1034,15 +1038,21 @@ private fun SharedTransitionScope.InteractiveFolderGridItem(
 
                 intSize = layoutCoordinates.size
             }
-            .sharedElementWithCallerManagedVisibility(
-                rememberSharedContentState(
-                    key = SharedElementKey(
-                        id = gridItem.id,
-                        parent = parent,
-                    ),
-                ),
-                visible = !isScrollInProgress && !isVisibleOverlay,
-            )
+            .run {
+                if (!hasInteraction) {
+                    sharedElementWithCallerManagedVisibility(
+                        rememberSharedContentState(
+                            key = SharedElementKey(
+                                id = gridItem.id,
+                                parent = parent,
+                            ),
+                        ),
+                        visible = !isScrollInProgress,
+                    )
+                } else {
+                    this
+                }
+            }
 
         if (data.icon != null) {
             AsyncImage(
@@ -1064,28 +1074,34 @@ private fun SharedTransitionScope.InteractiveFolderGridItem(
                     maxItemsInEachRow = 3,
                     maxLines = 3,
                 ) {
-                    data.previewGridItemsByPage.forEach { applicationInfoFolderGridItem ->
-                        key(applicationInfoFolderGridItem.id) {
+                    data.previewGridItemsByPage.forEach { applicationInfoGridItem ->
+                        key(applicationInfoGridItem.id) {
                             val icon =
-                                iconPackFilePaths[applicationInfoFolderGridItem.componentName]
-                                    ?: applicationInfoFolderGridItem.icon
+                                iconPackFilePaths[applicationInfoGridItem.componentName]
+                                    ?: applicationInfoGridItem.icon
 
                             AsyncImage(
                                 model = Builder(LocalContext.current)
-                                    .data(applicationInfoFolderGridItem.customIcon ?: icon)
+                                    .data(applicationInfoGridItem.customIcon ?: icon)
                                     .addLastModifiedToFileCacheKey(true).build(),
                                 contentDescription = null,
                                 modifier = Modifier
                                     .size((gridItemSettings.iconSize * 0.25).dp)
-                                    .sharedElementWithCallerManagedVisibility(
-                                        rememberSharedContentState(
-                                            key = SharedElementKey(
-                                                id = applicationInfoFolderGridItem.id,
-                                                parent = parent,
-                                            ),
-                                        ),
-                                        visible = !isScrollInProgress && !isVisibleOverlay,
-                                    ),
+                                    .run {
+                                        if (!hasInteraction) {
+                                            sharedElementWithCallerManagedVisibility(
+                                                rememberSharedContentState(
+                                                    key = SharedElementKey(
+                                                        id = applicationInfoGridItem.id,
+                                                        parent = parent,
+                                                    ),
+                                                ),
+                                                visible = !isScrollInProgress,
+                                            )
+                                        } else {
+                                            this
+                                        }
+                                    },
                             )
                         }
                     }
@@ -1305,7 +1321,7 @@ private fun SharedTransitionScope.InteractiveShortcutConfigGridItem(
                             parent = parent,
                         ),
                     ),
-                    visible = !isScrollInProgress && !isVisibleOverlay,
+                    visible = !isScrollInProgress,
                 ),
         )
 
