@@ -70,7 +70,6 @@ import coil3.compose.AsyncImage
 import coil3.request.ImageRequest.Builder
 import coil3.request.addLastModifiedToFileCacheKey
 import com.eblan.launcher.domain.model.ApplicationInfoGridItem
-import com.eblan.launcher.domain.model.Associate
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.GridItemSettings
@@ -131,7 +130,6 @@ internal fun SharedTransitionScope.FolderScreen(
         intSize: IntSize,
     ) -> Unit,
     onDismissGridItemPopup: () -> Unit,
-    onUpdateAssociate: (Associate) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
 ) {
     if (folderPopupIntOffset == null || folderPopupIntSize == null) return
@@ -229,7 +227,6 @@ internal fun SharedTransitionScope.FolderScreen(
                                     onUpdateSharedElementKey = onUpdateSharedElementKey,
                                     onShowGridItemPopup = onShowGridItemPopup,
                                     onDismissGridItemPopup = onDismissGridItemPopup,
-                                    onUpdateAssociate = onUpdateAssociate,
                                     onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                                 )
                             },
@@ -331,7 +328,6 @@ private fun SharedTransitionScope.FolderGridItemContent(
         intSize: IntSize,
     ) -> Unit,
     onDismissGridItemPopup: () -> Unit,
-    onUpdateAssociate: (Associate) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
 ) {
     val launcherApps = LocalLauncherApps.current
@@ -389,7 +385,7 @@ private fun SharedTransitionScope.FolderGridItemContent(
                 ?: 0
             ) > 0
 
-    val hasInteraction = isSelected && isLongPress && (drag == Drag.Start || drag == Drag.Dragging)
+    val hasInteraction = isSelected && isLongPress
 
     val isVisibleWhiteBox = isSelected && drag == Drag.Dragging
 
@@ -444,7 +440,6 @@ private fun SharedTransitionScope.FolderGridItemContent(
                                 onUpdateOverlayBounds = onUpdateOverlayBounds,
                                 onUpdateSharedElementKey = onUpdateSharedElementKey,
                                 onShowGridItemPopup = onShowGridItemPopup,
-                                onUpdateAssociate = onUpdateAssociate,
                                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                             )
                         }
@@ -508,21 +503,15 @@ private fun SharedTransitionScope.FolderGridItemContent(
 
                         intSize = layoutCoordinates.size
                     }
-                    .run {
-                        if (!hasInteraction) {
-                            sharedElementWithCallerManagedVisibility(
-                                rememberSharedContentState(
-                                    key = SharedElementKey(
-                                        id = gridItem.id,
-                                        parent = SharedElementKey.Parent.Folder,
-                                    ),
-                                ),
-                                visible = !isVisibleOverlay,
-                            )
-                        } else {
-                            this
-                        }
-                    },
+                    .sharedElementWithCallerManagedVisibility(
+                        rememberSharedContentState(
+                            key = SharedElementKey(
+                                id = gridItem.id,
+                                parent = SharedElementKey.Parent.Folder,
+                            ),
+                        ),
+                        visible = !hasInteraction && !isVisibleOverlay,
+                    ),
             )
 
             if (settings.isNotificationAccessGranted() && hasNotifications) {

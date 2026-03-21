@@ -46,7 +46,6 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.ApplicationInfoGridItem
-import com.eblan.launcher.domain.model.Associate
 import com.eblan.launcher.domain.model.EblanAppWidgetProviderInfo
 import com.eblan.launcher.domain.model.EblanApplicationInfoGroup
 import com.eblan.launcher.domain.model.EblanShortcutInfo
@@ -87,7 +86,7 @@ internal fun GridItemPopup(
     ) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onWidgets: (EblanApplicationInfoGroup) -> Unit,
-    onUpdateAssociate: (Associate) -> Unit,
+    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
 ) {
     if (gridItem == null || popupIntOffset == null || popupIntSize == null) return
 
@@ -138,7 +137,7 @@ internal fun GridItemPopup(
                 onUpdateOverlayBounds = onUpdateOverlayBounds,
                 onUpdateSharedElementKey = onUpdateSharedElementKey,
                 onWidgets = onWidgets,
-                onUpdateAssociate = onUpdateAssociate,
+                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
             )
         },
     ) { measurables, constraints ->
@@ -197,7 +196,7 @@ internal fun FolderGridItemPopup(
     onDismissRequest: () -> Unit,
     onEdit: (String) -> Unit,
     onDismissFolder: () -> Unit,
-    onUpdateAssociate: (Associate) -> Unit,
+    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
 ) {
     if (popupIntOffset == null || popupIntSize == null) return
 
@@ -288,7 +287,7 @@ internal fun FolderGridItemPopup(
 
                     onDismissFolder()
                 },
-                onUpdateAssociate = onUpdateAssociate,
+                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
             )
         },
     ) { measurables, constraints ->
@@ -348,7 +347,7 @@ private fun GridItemPopupContent(
     ) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onWidgets: (EblanApplicationInfoGroup) -> Unit,
-    onUpdateAssociate: (Associate) -> Unit,
+    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
 ) {
     Surface(
         modifier = modifier.padding(5.dp),
@@ -423,7 +422,7 @@ private fun GridItemPopupContent(
 
                             onDismissRequest()
                         },
-                        onUpdateAssociate = onUpdateAssociate,
+                        onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                     )
                 }
 
@@ -495,7 +494,7 @@ private fun FolderGridItemPopupContent(
     ) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onWidgets: () -> Unit,
-    onUpdateAssociate: (Associate) -> Unit,
+    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
 ) {
     Surface(
         modifier = modifier.width(IntrinsicSize.Max),
@@ -522,7 +521,7 @@ private fun FolderGridItemPopupContent(
                         onUpdateImageBitmap = onUpdateImageBitmap,
                         onUpdateOverlayBounds = onUpdateOverlayBounds,
                         onUpdateSharedElementKey = onUpdateSharedElementKey,
-                        onUpdateAssociate = onUpdateAssociate,
+                        onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                     )
 
                     Spacer(modifier = Modifier.height(5.dp))
@@ -585,7 +584,7 @@ private fun ApplicationInfoGridItemMenu(
     ) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onWidgets: () -> Unit,
-    onUpdateAssociate: (Associate) -> Unit,
+    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
 ) {
     Column(
         modifier = modifier,
@@ -607,7 +606,7 @@ private fun ApplicationInfoGridItemMenu(
                 onUpdateImageBitmap = onUpdateImageBitmap,
                 onUpdateOverlayBounds = onUpdateOverlayBounds,
                 onUpdateSharedElementKey = onUpdateSharedElementKey,
-                onUpdateAssociate = onUpdateAssociate,
+                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
             )
 
             Spacer(modifier = Modifier.height(5.dp))

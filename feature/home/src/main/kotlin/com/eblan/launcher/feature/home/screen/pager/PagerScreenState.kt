@@ -554,9 +554,6 @@ internal class PagerScreenState(
                 folderPopupIntSize = intSize
             },
             onUpdateGridItemSource = onUpdateGridItemSource,
-            onUpdateSharedElementKey = { newSharedElementKey ->
-                sharedElementKey = newSharedElementKey
-            },
         )
     }
 
@@ -1035,10 +1032,6 @@ internal class PagerScreenState(
 
     fun updateIsResizing(value: Boolean) {
         isResizing = value
-    }
-
-    fun updateAssociate(value: Associate) {
-        associate = value
     }
 
     fun updateOverlayImageBitmap(value: ImageBitmap?) {

@@ -138,7 +138,7 @@ internal fun ShortcutConfigScreen(
     onUpdateIsLongPressAndIsDragging: () -> Unit,
     onVerticalDrag: (Float) -> Unit,
     onDragEnd: (Float) -> Unit,
-    onUpdateAssociate: (Associate) -> Unit,
+    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
 ) {
     BackHandler(enabled = offsetY < screenHeight.toFloat()) {
         onDismiss()
@@ -171,7 +171,7 @@ internal fun ShortcutConfigScreen(
             onUpdateGridItemSource = onUpdateGridItemSource,
             onUpdateSharedElementKey = onUpdateSharedElementKey,
             onUpdateIsLongPressAndIsDragging = onUpdateIsLongPressAndIsDragging,
-            onUpdateAssociate = onUpdateAssociate,
+            onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
         )
     }
 }
@@ -199,7 +199,7 @@ private fun Success(
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onUpdateIsLongPressAndIsDragging: () -> Unit,
-    onUpdateAssociate: (Associate) -> Unit,
+    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
 ) {
     val horizontalPagerState = rememberPagerState(
         pageCount = {
@@ -292,7 +292,7 @@ private fun Success(
                     onUpdateSharedElementKey = onUpdateSharedElementKey,
                     onDismiss = onDismiss,
                     onUpdateIsLongPressAndIsDragging = onUpdateIsLongPressAndIsDragging,
-                    onUpdateAssociate = onUpdateAssociate,
+                    onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                 )
             }
         } else {
@@ -312,7 +312,7 @@ private fun Success(
                 onUpdateSharedElementKey = onUpdateSharedElementKey,
                 onDismiss = onDismiss,
                 onUpdateIsLongPressAndIsDragging = onUpdateIsLongPressAndIsDragging,
-                onUpdateAssociate = onUpdateAssociate,
+                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
             )
         }
     }
@@ -366,7 +366,7 @@ private fun EblanShortcutConfigsPage(
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onDismiss: () -> Unit,
     onUpdateIsLongPressAndIsDragging: () -> Unit,
-    onUpdateAssociate: (Associate) -> Unit,
+    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
 
@@ -445,7 +445,7 @@ private fun EblanShortcutConfigsPage(
                         onUpdateSharedElementKey = onUpdateSharedElementKey,
                         onDismiss = onDismiss,
                         onUpdateIsLongPressAndIsDragging = onUpdateIsLongPressAndIsDragging,
-                        onUpdateAssociate = onUpdateAssociate,
+                        onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                     )
                 }
             }
@@ -472,7 +472,7 @@ private fun EblanApplicationInfoItem(
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onDismiss: () -> Unit,
     onUpdateIsLongPressAndIsDragging: () -> Unit,
-    onUpdateAssociate: (Associate) -> Unit,
+    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -530,7 +530,7 @@ private fun EblanApplicationInfoItem(
                     onUpdateSharedElementKey = onUpdateSharedElementKey,
                     onDismiss = onDismiss,
                     onUpdateIsLongPressAndIsDragging = onUpdateIsLongPressAndIsDragging,
-                    onUpdateAssociate = onUpdateAssociate,
+                    onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                 )
             }
         }
@@ -555,7 +555,7 @@ private fun EblanShortcutConfigItem(
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onDismiss: () -> Unit,
     onUpdateIsLongPressAndIsDragging: () -> Unit,
-    onUpdateAssociate: (Associate) -> Unit,
+    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
 
@@ -618,8 +618,6 @@ private fun EblanShortcutConfigItem(
 
                             onUpdateGridItemSource(GridItemSource.New(gridItem = gridItem))
 
-                            onUpdateAssociate(gridItem.associate)
-
                             onUpdateImageBitmap(graphicsLayer.toImageBitmap())
 
                             onUpdateOverlayBounds(
@@ -633,6 +631,8 @@ private fun EblanShortcutConfigItem(
                                     parent = SharedElementKey.Parent.Grid,
                                 ),
                             )
+
+                            onUpdateIsVisibleOverlay(true)
 
                             onDismiss()
 

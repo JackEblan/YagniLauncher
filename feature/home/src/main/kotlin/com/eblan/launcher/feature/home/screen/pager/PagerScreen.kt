@@ -91,6 +91,7 @@ import com.eblan.launcher.feature.home.component.grid.GridLayout
 import com.eblan.launcher.feature.home.component.indicator.PageIndicator
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
+import com.eblan.launcher.feature.home.model.SharedElementKey
 import com.eblan.launcher.feature.home.screen.application.ApplicationScreen
 import com.eblan.launcher.feature.home.screen.folder.FolderScreen
 import com.eblan.launcher.feature.home.screen.resize.ResizeScreen
@@ -733,6 +734,7 @@ internal fun PagerScreen(
                             textColor = textColor,
                             isCache = isCache,
                             isVisibleOverlay = isVisibleOverlay,
+                            parent = SharedElementKey.Parent.Grid,
                             onDraggingGridItem = {
                                 onDraggingGridItem(gridItems)
                             },
@@ -793,7 +795,6 @@ internal fun PagerScreen(
                             onUpdateSharedElementKey = pagerScreenState::updateSharedElementKey,
                             onShowGridItemPopup = pagerScreenState::showGridItemPopup,
                             onDismissGridItemPopup = pagerScreenState::dismissGridItemPopup,
-                            onUpdateAssociate = pagerScreenState::updateAssociate,
                             onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                         )
                     },
@@ -860,6 +861,7 @@ internal fun PagerScreen(
                             textColor = textColor,
                             isCache = isCache,
                             isVisibleOverlay = isVisibleOverlay,
+                            parent = SharedElementKey.Parent.Dock,
                             onDraggingGridItem = {
                                 onDraggingGridItem(gridItems)
                             },
@@ -920,7 +922,6 @@ internal fun PagerScreen(
                             onUpdateSharedElementKey = pagerScreenState::updateSharedElementKey,
                             onShowGridItemPopup = pagerScreenState::showGridItemPopup,
                             onDismissGridItemPopup = pagerScreenState::dismissGridItemPopup,
-                            onUpdateAssociate = pagerScreenState::updateAssociate,
                             onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                         )
                     },
@@ -1011,7 +1012,7 @@ internal fun PagerScreen(
                 onUpdateOverlayBounds = pagerScreenState::updateOverlayBounds,
                 onUpdateSharedElementKey = pagerScreenState::updateSharedElementKey,
                 onWidgets = pagerScreenState::openAppWidgetScreen,
-                onUpdateAssociate = pagerScreenState::updateAssociate,
+                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
             )
         }
 
@@ -1068,7 +1069,6 @@ internal fun PagerScreen(
                 onUpdateSharedElementKey = pagerScreenState::updateSharedElementKey,
                 onShowGridItemPopup = pagerScreenState::showFolderGridItemPopup,
                 onDismissGridItemPopup = pagerScreenState::dismissFolderGridItemPopup,
-                onUpdateAssociate = pagerScreenState::updateAssociate,
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
             )
         }
@@ -1139,7 +1139,7 @@ internal fun PagerScreen(
                         onUpdateFolderGridItemId = onUpdateFolderGridItemId,
                     )
                 },
-                onUpdateAssociate = pagerScreenState::updateAssociate,
+                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
             )
         }
 
@@ -1161,6 +1161,7 @@ internal fun PagerScreen(
                 paddingValues = paddingValues,
                 screenHeight = screenHeight,
                 swipeY = pagerScreenState.swipeY.value,
+                isVisibleOverlay = isVisibleOverlay,
                 onDismiss = pagerScreenState::dismissApplicationScreen,
                 onDragEnd = { remaining ->
                     scope.launch {
@@ -1192,7 +1193,7 @@ internal fun PagerScreen(
                         onDraggingGridItem = onDraggingGridItem,
                     )
                 },
-                onUpdateAssociate = pagerScreenState::updateAssociate,
+                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
             )
         }
 
@@ -1230,7 +1231,7 @@ internal fun PagerScreen(
                     )
                 }
             },
-            onUpdateAssociate = pagerScreenState::updateAssociate,
+            onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
         )
 
         ShortcutConfigScreen(
@@ -1264,7 +1265,7 @@ internal fun PagerScreen(
                     )
                 }
             },
-            onUpdateAssociate = pagerScreenState::updateAssociate,
+            onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
         )
 
         AppWidgetScreen(
@@ -1300,7 +1301,7 @@ internal fun PagerScreen(
                     )
                 }
             },
-            onUpdateAssociate = pagerScreenState::updateAssociate,
+            onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
         )
 
         if (pagerScreenState.isResizing && gridItemSource != null) {

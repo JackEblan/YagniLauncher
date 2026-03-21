@@ -59,8 +59,8 @@ internal fun SharedTransitionScope.OverlayImage(
         DpSize(width = overlayIntSize.width.toDp(), height = overlayIntSize.height.toDp())
     }
 
-    LaunchedEffect(key1 = isVisibleOverlay, key2 = isTransitionActive) {
-        if (!isVisibleOverlay && !isTransitionActive) {
+    LaunchedEffect(key1 = isVisibleOverlay) {
+        if (!isVisibleOverlay) {
             onResetOverlay()
         }
     }

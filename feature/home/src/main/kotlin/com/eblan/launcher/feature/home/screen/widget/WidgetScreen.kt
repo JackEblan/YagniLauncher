@@ -82,7 +82,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.round
 import coil3.compose.AsyncImage
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
-import com.eblan.launcher.domain.model.Associate
 import com.eblan.launcher.domain.model.EblanAppWidgetProviderInfo
 import com.eblan.launcher.domain.model.EblanApplicationInfoGroup
 import com.eblan.launcher.domain.model.GridItemSettings
@@ -130,7 +129,7 @@ internal fun WidgetScreen(
     onUpdateIsLongPressAndIsDragging: () -> Unit,
     onVerticalDrag: (Float) -> Unit,
     onDragEnd: (Float) -> Unit,
-    onUpdateAssociate: (Associate) -> Unit,
+    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
 ) {
     Surface(
         modifier = modifier
@@ -163,7 +162,7 @@ internal fun WidgetScreen(
             onUpdateGridItemSource = onUpdateGridItemSource,
             onUpdateSharedElementKey = onUpdateSharedElementKey,
             onUpdateIsLongPressAndIsDragging = onUpdateIsLongPressAndIsDragging,
-            onUpdateAssociate = onUpdateAssociate,
+            onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
         )
     }
 }
@@ -196,7 +195,7 @@ private fun Success(
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onUpdateIsLongPressAndIsDragging: () -> Unit,
-    onUpdateAssociate: (Associate) -> Unit,
+    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
 
@@ -321,7 +320,7 @@ private fun Success(
                         onUpdateSharedElementKey = onUpdateSharedElementKey,
                         onDismiss = onDismiss,
                         onUpdateIsLongPressAndIsDragging = onUpdateIsLongPressAndIsDragging,
-                        onUpdateAssociate = onUpdateAssociate,
+                        onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                     )
                 }
             }
@@ -352,7 +351,7 @@ private fun EblanApplicationInfoItem(
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onDismiss: () -> Unit,
     onUpdateIsLongPressAndIsDragging: () -> Unit,
-    onUpdateAssociate: (Associate) -> Unit,
+    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -414,7 +413,7 @@ private fun EblanApplicationInfoItem(
                     onUpdateSharedElementKey = onUpdateSharedElementKey,
                     onDismiss = onDismiss,
                     onUpdateIsLongPressAndIsDragging = onUpdateIsLongPressAndIsDragging,
-                    onUpdateAssociate = onUpdateAssociate,
+                    onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                 )
             }
         }
@@ -443,7 +442,7 @@ private fun EblanAppWidgetProviderInfoItem(
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onDismiss: () -> Unit,
     onUpdateIsLongPressAndIsDragging: () -> Unit,
-    onUpdateAssociate: (Associate) -> Unit,
+    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
 
@@ -489,8 +488,6 @@ private fun EblanAppWidgetProviderInfoItem(
 
                             onUpdateGridItemSource(GridItemSource.New(gridItem = gridItem))
 
-                            onUpdateAssociate(gridItem.associate)
-
                             onUpdateOverlayBounds(
                                 intOffset,
                                 intSize,
@@ -502,6 +499,8 @@ private fun EblanAppWidgetProviderInfoItem(
                                     parent = SharedElementKey.Parent.Grid,
                                 ),
                             )
+
+                            onUpdateIsVisibleOverlay(true)
 
                             onDismiss()
 

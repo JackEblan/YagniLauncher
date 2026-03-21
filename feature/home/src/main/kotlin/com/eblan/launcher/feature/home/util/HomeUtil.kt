@@ -31,7 +31,6 @@ import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
-import com.eblan.launcher.domain.model.Associate
 import com.eblan.launcher.domain.model.EblanAction
 import com.eblan.launcher.domain.model.EblanActionType
 import com.eblan.launcher.domain.model.GlobalAction
@@ -191,13 +190,10 @@ internal fun onLongPress(
         intOffset: IntOffset,
         intSize: IntSize,
     ) -> Unit,
-    onUpdateAssociate: (Associate) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
 ) {
     scope.launch {
         onUpdateGridItemSource(gridItemSource)
-
-        onUpdateAssociate(gridItemSource.gridItem.associate)
 
         onUpdateImageBitmap(graphicsLayer.toImageBitmap())
 

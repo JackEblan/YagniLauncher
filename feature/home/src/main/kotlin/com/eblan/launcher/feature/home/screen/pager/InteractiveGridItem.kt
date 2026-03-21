@@ -63,7 +63,6 @@ import androidx.compose.ui.viewinterop.AndroidView
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest.Builder
 import coil3.request.addLastModifiedToFileCacheKey
-import com.eblan.launcher.domain.model.Associate
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.GridItemSettings
@@ -102,6 +101,7 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
     textColor: TextColor,
     isCache: Boolean,
     isVisibleOverlay: Boolean,
+    parent: SharedElementKey.Parent,
     onDraggingGridItem: () -> Unit,
     onOpenAppDrawer: () -> Unit,
     onTapApplicationInfo: (
@@ -129,7 +129,6 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
         intSize: IntSize,
     ) -> Unit,
     onDismissGridItemPopup: () -> Unit,
-    onUpdateAssociate: (Associate) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
 ) {
     val isSelected = gridItemSource != null && gridItem.id == gridItemSource.gridItem.id
@@ -170,6 +169,7 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
                 textColor = currentTextColor,
                 isCache = isCache,
                 isVisibleOverlay = isVisibleOverlay,
+                parent = parent,
                 onDraggingGridItem = onDraggingGridItem,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onTapApplicationInfo = onTapApplicationInfo,
@@ -181,7 +181,6 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
                 onUpdateSharedElementKey = onUpdateSharedElementKey,
                 onShowGridItemPopup = onShowGridItemPopup,
                 onDismissGridItemPopup = onDismissGridItemPopup,
-                onUpdateAssociate = onUpdateAssociate,
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
             )
         }
@@ -198,6 +197,7 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
                 textColor = currentTextColor,
                 isCache = isCache,
                 isVisibleOverlay = isVisibleOverlay,
+                parent = parent,
                 onDraggingGridItem = onDraggingGridItem,
                 onUpdateGridItemSource = onUpdateGridItemSource,
                 onUpdateImageBitmap = onUpdateImageBitmap,
@@ -207,7 +207,6 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
                 onUpdateSharedElementKey = onUpdateSharedElementKey,
                 onShowGridItemPopup = onShowGridItemPopup,
                 onDismissGridItemPopup = onDismissGridItemPopup,
-                onUpdateAssociate = onUpdateAssociate,
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
             )
         }
@@ -226,6 +225,7 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
                 textColor = currentTextColor,
                 isCache = isCache,
                 isVisibleOverlay = isVisibleOverlay,
+                parent = parent,
                 onDraggingGridItem = onDraggingGridItem,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onTapShortcutInfo = onTapShortcutInfo,
@@ -237,7 +237,6 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
                 onUpdateSharedElementKey = onUpdateSharedElementKey,
                 onShowGridItemPopup = onShowGridItemPopup,
                 onDismissGridItemPopup = onDismissGridItemPopup,
-                onUpdateAssociate = onUpdateAssociate,
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
             )
         }
@@ -256,6 +255,7 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
                 textColor = currentTextColor,
                 isCache = isCache,
                 isVisibleOverlay = isVisibleOverlay,
+                parent = parent,
                 onDraggingGridItem = onDraggingGridItem,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onTap = onTapFolderGridItem,
@@ -267,7 +267,7 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
                 onUpdateSharedElementKey = onUpdateSharedElementKey,
                 onShowGridItemPopup = onShowGridItemPopup,
                 onDismissGridItemPopup = onDismissGridItemPopup,
-                onUpdateAssociate = onUpdateAssociate,
+
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
             )
         }
@@ -285,6 +285,7 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
                 textColor = currentTextColor,
                 isCache = isCache,
                 isVisibleOverlay = isVisibleOverlay,
+                parent = parent,
                 onDraggingGridItem = onDraggingGridItem,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onTapShortcutConfig = onTapShortcutConfig,
@@ -296,7 +297,7 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
                 onUpdateSharedElementKey = onUpdateSharedElementKey,
                 onShowGridItemPopup = onShowGridItemPopup,
                 onDismissGridItemPopup = onDismissGridItemPopup,
-                onUpdateAssociate = onUpdateAssociate,
+
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
             )
         }
@@ -319,6 +320,7 @@ private fun SharedTransitionScope.InteractiveApplicationInfoGridItem(
     textColor: Color,
     isCache: Boolean,
     isVisibleOverlay: Boolean,
+    parent: SharedElementKey.Parent,
     onDraggingGridItem: () -> Unit,
     onOpenAppDrawer: () -> Unit,
     onTapApplicationInfo: (
@@ -339,7 +341,6 @@ private fun SharedTransitionScope.InteractiveApplicationInfoGridItem(
         intSize: IntSize,
     ) -> Unit,
     onDismissGridItemPopup: () -> Unit,
-    onUpdateAssociate: (Associate) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
 ) {
     val launcherApps = LocalLauncherApps.current
@@ -372,7 +373,7 @@ private fun SharedTransitionScope.InteractiveApplicationInfoGridItem(
                 ?: 0
             ) > 0
 
-    val hasInteraction = isSelected && isLongPress && (drag == Drag.Start || drag == Drag.Dragging)
+    val hasInteraction = isSelected && isLongPress
 
     val isVisibleWhiteBox = isSelected && drag == Drag.Dragging
 
@@ -418,7 +419,7 @@ private fun SharedTransitionScope.InteractiveApplicationInfoGridItem(
                                 gridItemSource = GridItemSource.Existing(gridItem = gridItem),
                                 sharedElementKey = SharedElementKey(
                                     id = gridItem.id,
-                                    parent = SharedElementKey.Parent.Grid,
+                                    parent = parent,
                                 ),
                                 onUpdateGridItemSource = onUpdateGridItemSource,
                                 onUpdateImageBitmap = onUpdateImageBitmap,
@@ -426,7 +427,6 @@ private fun SharedTransitionScope.InteractiveApplicationInfoGridItem(
                                 onUpdateOverlayBounds = onUpdateOverlayBounds,
                                 onUpdateSharedElementKey = onUpdateSharedElementKey,
                                 onShowGridItemPopup = onShowGridItemPopup,
-                                onUpdateAssociate = onUpdateAssociate,
                                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                             )
                         }
@@ -486,21 +486,15 @@ private fun SharedTransitionScope.InteractiveApplicationInfoGridItem(
 
                         intSize = layoutCoordinates.size
                     }
-                    .run {
-                        if (!hasInteraction) {
-                            sharedElementWithCallerManagedVisibility(
-                                rememberSharedContentState(
-                                    key = SharedElementKey(
-                                        id = gridItem.id,
-                                        parent = SharedElementKey.Parent.Grid,
-                                    ),
-                                ),
-                                visible = !isScrollInProgress && !isVisibleOverlay,
-                            )
-                        } else {
-                            this
-                        }
-                    },
+                    .sharedElementWithCallerManagedVisibility(
+                        rememberSharedContentState(
+                            key = SharedElementKey(
+                                id = gridItem.id,
+                                parent = parent,
+                            ),
+                        ),
+                        visible = !isScrollInProgress && !isVisibleOverlay,
+                    ),
             )
 
             if (settings.isNotificationAccessGranted() && hasNotifications) {
@@ -543,6 +537,7 @@ private fun SharedTransitionScope.InteractiveWidgetGridItem(
     textColor: Color,
     isCache: Boolean,
     isVisibleOverlay: Boolean,
+    parent: SharedElementKey.Parent,
     onDraggingGridItem: () -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
@@ -558,7 +553,6 @@ private fun SharedTransitionScope.InteractiveWidgetGridItem(
         intSize: IntSize,
     ) -> Unit,
     onDismissGridItemPopup: () -> Unit,
-    onUpdateAssociate: (Associate) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
 ) {
     var intOffset by remember { mutableStateOf(IntOffset.Zero) }
@@ -575,7 +569,7 @@ private fun SharedTransitionScope.InteractiveWidgetGridItem(
 
     val scope = rememberCoroutineScope()
 
-    val hasInteraction = isSelected && isLongPress && (drag == Drag.Start || drag == Drag.Dragging)
+    val hasInteraction = isSelected && isLongPress
 
     val isVisibleWhiteBox = isSelected && drag == Drag.Dragging
 
@@ -614,21 +608,15 @@ private fun SharedTransitionScope.InteractiveWidgetGridItem(
 
                 intSize = layoutCoordinates.size
             }
-            .run {
-                if (!hasInteraction) {
-                    sharedElementWithCallerManagedVisibility(
-                        rememberSharedContentState(
-                            key = SharedElementKey(
-                                id = gridItem.id,
-                                parent = SharedElementKey.Parent.Grid,
-                            ),
-                        ),
-                        visible = !isScrollInProgress && !isVisibleOverlay,
-                    )
-                } else {
-                    this
-                }
-            }
+            .sharedElementWithCallerManagedVisibility(
+                rememberSharedContentState(
+                    key = SharedElementKey(
+                        id = gridItem.id,
+                        parent = parent,
+                    ),
+                ),
+                visible = !isScrollInProgress && !hasInteraction && !isVisibleOverlay,
+            )
 
         if (appWidgetInfo != null) {
             AndroidView(
@@ -650,7 +638,7 @@ private fun SharedTransitionScope.InteractiveWidgetGridItem(
                                 gridItemSource = GridItemSource.Existing(gridItem = gridItem),
                                 sharedElementKey = SharedElementKey(
                                     id = gridItem.id,
-                                    parent = SharedElementKey.Parent.Grid,
+                                    parent = parent,
                                 ),
                                 onUpdateGridItemSource = onUpdateGridItemSource,
                                 onUpdateImageBitmap = onUpdateImageBitmap,
@@ -658,7 +646,6 @@ private fun SharedTransitionScope.InteractiveWidgetGridItem(
                                 onUpdateOverlayBounds = onUpdateOverlayBounds,
                                 onUpdateSharedElementKey = onUpdateSharedElementKey,
                                 onShowGridItemPopup = onShowGridItemPopup,
-                                onUpdateAssociate = onUpdateAssociate,
                                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                             )
 
@@ -683,7 +670,7 @@ private fun SharedTransitionScope.InteractiveWidgetGridItem(
                                     gridItemSource = GridItemSource.Existing(gridItem = gridItem),
                                     sharedElementKey = SharedElementKey(
                                         id = gridItem.id,
-                                        parent = SharedElementKey.Parent.Grid,
+                                        parent = parent,
                                     ),
                                     onUpdateGridItemSource = onUpdateGridItemSource,
                                     onUpdateImageBitmap = onUpdateImageBitmap,
@@ -691,7 +678,7 @@ private fun SharedTransitionScope.InteractiveWidgetGridItem(
                                     onUpdateOverlayBounds = onUpdateOverlayBounds,
                                     onUpdateSharedElementKey = onUpdateSharedElementKey,
                                     onShowGridItemPopup = onShowGridItemPopup,
-                                    onUpdateAssociate = onUpdateAssociate,
+
                                     onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                                 )
                             }
@@ -720,6 +707,7 @@ private fun SharedTransitionScope.InteractiveShortcutInfoGridItem(
     textColor: Color,
     isCache: Boolean,
     isVisibleOverlay: Boolean,
+    parent: SharedElementKey.Parent,
     onDraggingGridItem: () -> Unit,
     onOpenAppDrawer: () -> Unit,
     onTapShortcutInfo: (
@@ -741,7 +729,6 @@ private fun SharedTransitionScope.InteractiveShortcutInfoGridItem(
         intSize: IntSize,
     ) -> Unit,
     onDismissGridItemPopup: () -> Unit,
-    onUpdateAssociate: (Associate) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
 ) {
     val launcherApps = LocalLauncherApps.current
@@ -768,7 +755,7 @@ private fun SharedTransitionScope.InteractiveShortcutInfoGridItem(
 
     val customShortLabel = data.customShortLabel ?: data.shortLabel
 
-    val hasInteraction = isSelected && isLongPress && (drag == Drag.Start || drag == Drag.Dragging)
+    val hasInteraction = isSelected && isLongPress
 
     val isVisibleWhiteBox = isSelected && drag == Drag.Dragging
 
@@ -814,7 +801,7 @@ private fun SharedTransitionScope.InteractiveShortcutInfoGridItem(
                                 gridItemSource = GridItemSource.Existing(gridItem = gridItem),
                                 sharedElementKey = SharedElementKey(
                                     id = gridItem.id,
-                                    parent = SharedElementKey.Parent.Grid,
+                                    parent = parent,
                                 ),
                                 onUpdateGridItemSource = onUpdateGridItemSource,
                                 onUpdateImageBitmap = onUpdateImageBitmap,
@@ -822,7 +809,6 @@ private fun SharedTransitionScope.InteractiveShortcutInfoGridItem(
                                 onUpdateOverlayBounds = onUpdateOverlayBounds,
                                 onUpdateSharedElementKey = onUpdateSharedElementKey,
                                 onShowGridItemPopup = onShowGridItemPopup,
-                                onUpdateAssociate = onUpdateAssociate,
                                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                             )
                         }
@@ -883,21 +869,15 @@ private fun SharedTransitionScope.InteractiveShortcutInfoGridItem(
 
                         intSize = layoutCoordinates.size
                     }
-                    .run {
-                        if (!hasInteraction) {
-                            sharedElementWithCallerManagedVisibility(
-                                rememberSharedContentState(
-                                    key = SharedElementKey(
-                                        id = gridItem.id,
-                                        parent = SharedElementKey.Parent.Grid,
-                                    ),
-                                ),
-                                visible = !isScrollInProgress && !isVisibleOverlay,
-                            )
-                        } else {
-                            this
-                        }
-                    },
+                    .sharedElementWithCallerManagedVisibility(
+                        rememberSharedContentState(
+                            key = SharedElementKey(
+                                id = gridItem.id,
+                                parent = parent,
+                            ),
+                        ),
+                        visible = !isScrollInProgress && !isVisibleOverlay,
+                    ),
                 contentDescription = null,
             )
 
@@ -940,6 +920,7 @@ private fun SharedTransitionScope.InteractiveFolderGridItem(
     textColor: Color,
     isCache: Boolean,
     isVisibleOverlay: Boolean,
+    parent: SharedElementKey.Parent,
     onDraggingGridItem: () -> Unit,
     onOpenAppDrawer: () -> Unit,
     onTap: () -> Unit,
@@ -957,7 +938,6 @@ private fun SharedTransitionScope.InteractiveFolderGridItem(
         intSize: IntSize,
     ) -> Unit,
     onDismissGridItemPopup: () -> Unit,
-    onUpdateAssociate: (Associate) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
 ) {
     val launcherApps = LocalLauncherApps.current
@@ -980,7 +960,7 @@ private fun SharedTransitionScope.InteractiveFolderGridItem(
 
     val maxLines = if (gridItemSettings.singleLineLabel) 1 else Int.MAX_VALUE
 
-    val hasInteraction = isSelected && isLongPress && (drag == Drag.Start || drag == Drag.Dragging)
+    val hasInteraction = isSelected && isLongPress
 
     val isVisibleWhiteBox = isSelected && drag == Drag.Dragging
 
@@ -1026,7 +1006,7 @@ private fun SharedTransitionScope.InteractiveFolderGridItem(
                                 gridItemSource = GridItemSource.Existing(gridItem = gridItem),
                                 sharedElementKey = SharedElementKey(
                                     id = gridItem.id,
-                                    parent = SharedElementKey.Parent.Grid,
+                                    parent = parent,
                                 ),
                                 onUpdateGridItemSource = onUpdateGridItemSource,
                                 onUpdateImageBitmap = onUpdateImageBitmap,
@@ -1034,7 +1014,6 @@ private fun SharedTransitionScope.InteractiveFolderGridItem(
                                 onUpdateOverlayBounds = onUpdateOverlayBounds,
                                 onUpdateSharedElementKey = onUpdateSharedElementKey,
                                 onShowGridItemPopup = onShowGridItemPopup,
-                                onUpdateAssociate = onUpdateAssociate,
                                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                             )
                         }
@@ -1086,7 +1065,7 @@ private fun SharedTransitionScope.InteractiveFolderGridItem(
                         rememberSharedContentState(
                             key = SharedElementKey(
                                 id = gridItem.id,
-                                parent = SharedElementKey.Parent.Grid,
+                                parent = parent,
                             ),
                         ),
                         visible = !isScrollInProgress && !isVisibleOverlay,
@@ -1135,7 +1114,7 @@ private fun SharedTransitionScope.InteractiveFolderGridItem(
                                                 rememberSharedContentState(
                                                     key = SharedElementKey(
                                                         id = applicationInfoFolderGridItem.id,
-                                                        parent = SharedElementKey.Parent.Grid,
+                                                        parent = parent,
                                                     ),
                                                 ),
                                                 visible = !isScrollInProgress && !isVisibleOverlay,
@@ -1179,6 +1158,7 @@ private fun SharedTransitionScope.InteractiveShortcutConfigGridItem(
     textColor: Color,
     isCache: Boolean,
     isVisibleOverlay: Boolean,
+    parent: SharedElementKey.Parent,
     onDraggingGridItem: () -> Unit,
     onOpenAppDrawer: () -> Unit,
     onTapShortcutConfig: (String) -> Unit,
@@ -1196,7 +1176,6 @@ private fun SharedTransitionScope.InteractiveShortcutConfigGridItem(
         intSize: IntSize,
     ) -> Unit,
     onDismissGridItemPopup: () -> Unit,
-    onUpdateAssociate: (Associate) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
 ) {
     val launcherApps = LocalLauncherApps.current
@@ -1255,7 +1234,7 @@ private fun SharedTransitionScope.InteractiveShortcutConfigGridItem(
         }
     }
 
-    val hasInteraction = isSelected && isLongPress && (drag == Drag.Start || drag == Drag.Dragging)
+    val hasInteraction = isSelected && isLongPress
 
     val isVisibleWhiteBox = isSelected && drag == Drag.Dragging
 
@@ -1301,7 +1280,7 @@ private fun SharedTransitionScope.InteractiveShortcutConfigGridItem(
                                 gridItemSource = GridItemSource.Existing(gridItem = gridItem),
                                 sharedElementKey = SharedElementKey(
                                     id = gridItem.id,
-                                    parent = SharedElementKey.Parent.Grid,
+                                    parent = parent,
                                 ),
                                 onUpdateGridItemSource = onUpdateGridItemSource,
                                 onUpdateImageBitmap = onUpdateImageBitmap,
@@ -1309,7 +1288,6 @@ private fun SharedTransitionScope.InteractiveShortcutConfigGridItem(
                                 onUpdateOverlayBounds = onUpdateOverlayBounds,
                                 onUpdateSharedElementKey = onUpdateSharedElementKey,
                                 onShowGridItemPopup = onShowGridItemPopup,
-                                onUpdateAssociate = onUpdateAssociate,
                                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                             )
                         }
@@ -1366,7 +1344,7 @@ private fun SharedTransitionScope.InteractiveShortcutConfigGridItem(
                             rememberSharedContentState(
                                 key = SharedElementKey(
                                     id = gridItem.id,
-                                    parent = SharedElementKey.Parent.Grid,
+                                    parent = parent,
                                 ),
                             ),
                             visible = !isScrollInProgress && !isVisibleOverlay,

@@ -82,7 +82,7 @@ internal fun ShortcutInfoMenu(
         intSize: IntSize,
     ) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onUpdateAssociate: (Associate) -> Unit,
+    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
 ) {
     Column(
         modifier = modifier
@@ -105,7 +105,7 @@ internal fun ShortcutInfoMenu(
                 onUpdateImageBitmap = onUpdateImageBitmap,
                 onUpdateOverlayBounds = onUpdateOverlayBounds,
                 onUpdateSharedElementKey = onUpdateSharedElementKey,
-                onUpdateAssociate = onUpdateAssociate,
+                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
             )
         }
     }
@@ -129,7 +129,7 @@ private fun ShortcutInfoMenuItem(
         intSize: IntSize,
     ) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onUpdateAssociate: (Associate) -> Unit,
+    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
 ) {
     var intOffset by remember { mutableStateOf(IntOffset.Zero) }
 
@@ -218,8 +218,6 @@ private fun ShortcutInfoMenuItem(
 
                                     onUpdateGridItemSource(GridItemSource.New(gridItem = gridItem))
 
-                                    onUpdateAssociate(gridItem.associate)
-
                                     onUpdateImageBitmap(graphicsLayer.toImageBitmap())
 
                                     onUpdateOverlayBounds(
@@ -233,6 +231,8 @@ private fun ShortcutInfoMenuItem(
                                             parent = SharedElementKey.Parent.Grid,
                                         ),
                                     )
+
+                                    onUpdateIsVisibleOverlay(true)
 
                                     onDraggingShortcutInfoGridItem()
 
