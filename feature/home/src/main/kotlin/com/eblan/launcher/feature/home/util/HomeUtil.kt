@@ -192,6 +192,7 @@ internal fun onLongPress(
         intSize: IntSize,
     ) -> Unit,
     onUpdateAssociate: (Associate) -> Unit,
+    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
 ) {
     scope.launch {
         onUpdateGridItemSource(gridItemSource)
@@ -206,6 +207,8 @@ internal fun onLongPress(
         )
 
         onUpdateSharedElementKey(sharedElementKey)
+
+        onUpdateIsVisibleOverlay(true)
 
         onUpdateIsLongPress(true)
 

@@ -237,6 +237,10 @@ internal class HomeViewModel @Inject constructor(
 
     val gridItemSource = _gridItemSource.asStateFlow()
 
+    private val _isVisibleOverlay = MutableStateFlow(false)
+
+    val isVisibleOverlay = _isVisibleOverlay.asStateFlow()
+
     fun moveGridItem(
         movingGridItem: GridItem,
         x: Int,
@@ -389,6 +393,10 @@ internal class HomeViewModel @Inject constructor(
                 false
             }
 
+            _isVisibleOverlay.update {
+                false
+            }
+
             _gridItemSource.update {
                 null
             }
@@ -429,6 +437,10 @@ internal class HomeViewModel @Inject constructor(
             }
 
             _isCache.update {
+                false
+            }
+
+            _isVisibleOverlay.update {
                 false
             }
 
@@ -717,6 +729,10 @@ internal class HomeViewModel @Inject constructor(
                 false
             }
 
+            _isVisibleOverlay.update {
+                false
+            }
+
             _gridItemSource.update {
                 null
             }
@@ -752,6 +768,12 @@ internal class HomeViewModel @Inject constructor(
     fun updateGridItemSource(gridItemSource: GridItemSource) {
         _gridItemSource.update {
             gridItemSource
+        }
+    }
+
+    fun updateIsVisibleOverlay(isVisibleOverlay: Boolean) {
+        _isVisibleOverlay.update {
+            isVisibleOverlay
         }
     }
 }

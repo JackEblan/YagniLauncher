@@ -144,6 +144,7 @@ internal fun PagerScreen(
     resizeGridItem: GridItem?,
     gridItemSource: GridItemSource?,
     isCache: Boolean,
+    isVisibleOverlay: Boolean,
     onDeleteApplicationInfoGridItem: (ApplicationInfoGridItem) -> Unit,
     onDeleteGridItem: (GridItem) -> Unit,
     onResetGridCacheAfterDeleteGridItemCache: (GridItem) -> Unit,
@@ -222,6 +223,7 @@ internal fun PagerScreen(
         pinItemRequestType: PinItemRequestType.ShortcutInfo,
     ) -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
+    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
 ) {
     val context = LocalContext.current
 
@@ -251,19 +253,8 @@ internal fun PagerScreen(
         screenHeight = screenHeight,
         screenWidth = screenWidth,
         experimentalSettings = experimentalSettings,
-        onResetGridCacheAfterDeleteGridItemCache = onResetGridCacheAfterDeleteGridItemCache,
-        onResetGridCacheAfterDeleteWidgetGridItemCache = onResetGridCacheAfterDeleteWidgetGridItemCache,
-        onDragCancelAfterMove = onDragCancelAfterMove,
-        onDragEndAfterMove = onDragEndAfterMove,
-        onDragEndAfterMoveFolder = onDragEndAfterMoveFolder,
-        onDraggingGridItem = onDraggingGridItem,
         onGetPinGridItem = onGetPinGridItem,
-        onMoveFolderGridItem = onMoveFolderGridItem,
-        onMoveFolderGridItemOutsideFolder = onMoveFolderGridItemOutsideFolder,
-        onMoveGridItem = onMoveGridItem,
         onResetPinGridItem = onResetPinGridItem,
-        onUpdateFolderGridItemId = onUpdateFolderGridItemId,
-        onUpdateGridItemSource = onUpdateGridItemSource,
     )
 
     val dockHeight = homeSettings.dockHeight.dp
@@ -441,6 +432,7 @@ internal fun PagerScreen(
             gridItems = gridItems,
             pinGridItem = pinGridItem,
             onDraggingGridItem = onDraggingGridItem,
+            onUpdateGridItemSource = onUpdateGridItemSource,
         )
     }
 
@@ -465,6 +457,10 @@ internal fun PagerScreen(
             lockMovement = lockMovement,
             paddingValues = paddingValues,
             gridItemSource = gridItemSource,
+            onMoveFolderGridItem = onMoveFolderGridItem,
+            onMoveFolderGridItemOutsideFolder = onMoveFolderGridItemOutsideFolder,
+            onMoveGridItem = onMoveGridItem,
+            onUpdateGridItemSource = onUpdateGridItemSource,
         )
     }
 
@@ -475,11 +471,19 @@ internal fun PagerScreen(
             onLaunchShortcutConfigIntentSenderRequest = shortcutConfigIntentSenderLauncher::launch,
             onLaunchWidgetIntent = appWidgetLauncher::launch,
             gridItemSource = gridItemSource,
+            onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+            onResetGridCacheAfterDeleteGridItemCache = onResetGridCacheAfterDeleteGridItemCache,
+            onDragCancelAfterMove = onDragCancelAfterMove,
+            onDragEndAfterMove = onDragEndAfterMove,
+            onDragEndAfterMoveFolder = onDragEndAfterMoveFolder,
         )
     }
 
     LaunchedEffect(key1 = pagerScreenState.deleteAppWidgetId) {
-        pagerScreenState.handleDeleteAppWidgetIdEffect(gridItemSource = gridItemSource)
+        pagerScreenState.handleDeleteAppWidgetIdEffect(
+            gridItemSource = gridItemSource,
+            onResetGridCacheAfterDeleteWidgetGridItemCache = onResetGridCacheAfterDeleteWidgetGridItemCache,
+        )
     }
 
     LaunchedEffect(key1 = pagerScreenState.updatedWidgetGridItem) {
@@ -513,6 +517,9 @@ internal fun PagerScreen(
             moveGridItemResult = moveGridItemResult,
             paddingValues = paddingValues,
             gridItemSource = gridItemSource,
+            onUpdateFolderGridItemId = onUpdateFolderGridItemId,
+            onUpdateGridItemSource = onUpdateGridItemSource,
+
         )
     }
 
@@ -725,6 +732,7 @@ internal fun PagerScreen(
                             statusBarNotifications = pagerScreenState.statusBarNotifications,
                             textColor = textColor,
                             isCache = isCache,
+                            isVisibleOverlay = isVisibleOverlay,
                             onDraggingGridItem = {
                                 onDraggingGridItem(gridItems)
                             },
@@ -752,6 +760,7 @@ internal fun PagerScreen(
                                     width = width,
                                     x = x,
                                     y = y,
+                                    onUpdateFolderGridItemId = onUpdateFolderGridItemId,
                                 )
                             },
                             onTapShortcutConfig = { uri ->
@@ -785,6 +794,7 @@ internal fun PagerScreen(
                             onShowGridItemPopup = pagerScreenState::showGridItemPopup,
                             onDismissGridItemPopup = pagerScreenState::dismissGridItemPopup,
                             onUpdateAssociate = pagerScreenState::updateAssociate,
+                            onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                         )
                     },
                 )
@@ -849,6 +859,7 @@ internal fun PagerScreen(
                             statusBarNotifications = pagerScreenState.statusBarNotifications,
                             textColor = textColor,
                             isCache = isCache,
+                            isVisibleOverlay = isVisibleOverlay,
                             onDraggingGridItem = {
                                 onDraggingGridItem(gridItems)
                             },
@@ -876,6 +887,7 @@ internal fun PagerScreen(
                                     width = width,
                                     x = x,
                                     y = y + dockTopLeft,
+                                    onUpdateFolderGridItemId = onUpdateFolderGridItemId,
                                 )
                             },
                             onTapShortcutConfig = { uri ->
@@ -909,6 +921,7 @@ internal fun PagerScreen(
                             onShowGridItemPopup = pagerScreenState::showGridItemPopup,
                             onDismissGridItemPopup = pagerScreenState::dismissGridItemPopup,
                             onUpdateAssociate = pagerScreenState::updateAssociate,
+                            onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                         )
                     },
                 )
@@ -930,7 +943,10 @@ internal fun PagerScreen(
                 onDeleteGridItem = onDeleteGridItem,
                 onDismissRequest = pagerScreenState::dismissGridItemPopup,
                 onDraggingShortcutInfoGridItem = {
-                    pagerScreenState.draggingShortcutInfoGridItem(gridItems = gridItems)
+                    pagerScreenState.draggingShortcutInfoGridItem(
+                        gridItems = gridItems,
+                        onDraggingGridItem = onDraggingGridItem,
+                    )
                 },
                 onEdit = onEditGridItem,
                 onInfo = { serialNumber, componentName ->
@@ -956,7 +972,10 @@ internal fun PagerScreen(
                     }
                 },
                 onResize = {
-                    pagerScreenState.resize(gridItems = gridItems)
+                    pagerScreenState.resize(
+                        gridItems = gridItems,
+                        onDraggingGridItem = onDraggingGridItem,
+                    )
                 },
                 onTapShortcutInfo = { serialNumber, packageName, shortcutId ->
                     val popupIntOffsetX = pagerScreenState.popupIntOffset?.x
@@ -1033,7 +1052,10 @@ internal fun PagerScreen(
                 safeDrawingWidth = safeDrawingWidth,
                 statusBarNotifications = pagerScreenState.statusBarNotifications,
                 textColor = textColor,
-                onDismissRequest = pagerScreenState::dismissFolder,
+                isVisibleOverlay = isVisibleOverlay,
+                onDismissRequest = {
+                    pagerScreenState.dismissFolder(onUpdateFolderGridItemId = onUpdateFolderGridItemId)
+                },
                 onDraggingGridItem = {
                     onDraggingGridItem(gridItems)
                 },
@@ -1047,6 +1069,7 @@ internal fun PagerScreen(
                 onShowGridItemPopup = pagerScreenState::showFolderGridItemPopup,
                 onDismissGridItemPopup = pagerScreenState::dismissFolderGridItemPopup,
                 onUpdateAssociate = pagerScreenState::updateAssociate,
+                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
             )
         }
 
@@ -1067,7 +1090,10 @@ internal fun PagerScreen(
                 gridItemSettings = homeSettings.gridItemSettings,
                 hasShortcutHostPermission = hasShortcutHostPermission,
                 onDraggingShortcutInfoGridItem = {
-                    pagerScreenState.draggingShortcutInfoGridItem(gridItems = gridItems)
+                    pagerScreenState.draggingShortcutInfoGridItem(
+                        gridItems = gridItems,
+                        onDraggingGridItem = onDraggingGridItem,
+                    )
                 },
                 onTapShortcutInfo = { serialNumber, packageName, shortcutId ->
                     val popupIntOffsetX = pagerScreenState.popupIntOffset?.x
@@ -1110,6 +1136,7 @@ internal fun PagerScreen(
                         width = 0,
                         x = 0,
                         y = 0,
+                        onUpdateFolderGridItemId = onUpdateFolderGridItemId,
                     )
                 },
                 onUpdateAssociate = pagerScreenState::updateAssociate,
@@ -1160,7 +1187,10 @@ internal fun PagerScreen(
                 onVerticalDrag = pagerScreenState::verticalDragApplicationScreen,
                 onWidgets = pagerScreenState::openAppWidgetScreen,
                 onDraggingShortcutInfoGridItem = {
-                    pagerScreenState.draggingShortcutInfoGridItem(gridItems = gridItems)
+                    pagerScreenState.draggingShortcutInfoGridItem(
+                        gridItems = gridItems,
+                        onDraggingGridItem = onDraggingGridItem,
+                    )
                 },
                 onUpdateAssociate = pagerScreenState::updateAssociate,
             )
@@ -1294,6 +1324,7 @@ internal fun PagerScreen(
             overlayIntOffset = pagerScreenState.overlayIntOffset,
             overlayIntSize = pagerScreenState.overlayIntSize,
             sharedElementKey = pagerScreenState.sharedElementKey,
+            isVisibleOverlay = isVisibleOverlay,
             onResetOverlay = pagerScreenState::resetOverlay,
         )
     }

@@ -67,6 +67,7 @@ internal suspend fun handleDropGridItem(
     onUpdateIsDragging: (Boolean) -> Unit,
     onUpdateIsLongPress: (Boolean) -> Unit,
     onUpdateWidgetGridItem: (GridItem) -> Unit,
+    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
 ) {
     if (drag == Drag.None || drag == Drag.Start || drag == Drag.Dragging || gridItemSource == null) {
         return
@@ -97,6 +98,8 @@ internal suspend fun handleDropGridItem(
 
             if (isLongPress && !isDragging) {
                 onUpdateIsLongPress(false)
+
+                onUpdateIsVisibleOverlay(false)
 
                 return
             }

@@ -113,6 +113,7 @@ internal fun SharedTransitionScope.FolderScreen(
     safeDrawingWidth: Int,
     statusBarNotifications: Map<String, Int>,
     textColor: TextColor,
+    isVisibleOverlay: Boolean,
     onDismissRequest: () -> Unit,
     onDraggingGridItem: () -> Unit,
     onOpenAppDrawer: () -> Unit,
@@ -131,6 +132,7 @@ internal fun SharedTransitionScope.FolderScreen(
     ) -> Unit,
     onDismissGridItemPopup: () -> Unit,
     onUpdateAssociate: (Associate) -> Unit,
+    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
 ) {
     if (folderPopupIntOffset == null || folderPopupIntSize == null) return
 
@@ -216,6 +218,7 @@ internal fun SharedTransitionScope.FolderScreen(
                                     isLongPress = isLongPress,
                                     statusBarNotifications = statusBarNotifications,
                                     textColor = textColor,
+                                    isVisibleOverlay = isVisibleOverlay,
                                     onDraggingGridItem = onDraggingGridItem,
                                     onOpenAppDrawer = onOpenAppDrawer,
                                     onUpdateGridItemSource = onUpdateGridItemSource,
@@ -227,6 +230,7 @@ internal fun SharedTransitionScope.FolderScreen(
                                     onShowGridItemPopup = onShowGridItemPopup,
                                     onDismissGridItemPopup = onDismissGridItemPopup,
                                     onUpdateAssociate = onUpdateAssociate,
+                                    onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                                 )
                             },
                         )
@@ -310,6 +314,7 @@ private fun SharedTransitionScope.FolderGridItemContent(
     isLongPress: Boolean,
     statusBarNotifications: Map<String, Int>,
     textColor: TextColor,
+    isVisibleOverlay: Boolean,
     onDraggingGridItem: () -> Unit,
     onOpenAppDrawer: () -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
@@ -327,6 +332,7 @@ private fun SharedTransitionScope.FolderGridItemContent(
     ) -> Unit,
     onDismissGridItemPopup: () -> Unit,
     onUpdateAssociate: (Associate) -> Unit,
+    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
 ) {
     val launcherApps = LocalLauncherApps.current
 
@@ -439,6 +445,7 @@ private fun SharedTransitionScope.FolderGridItemContent(
                                 onUpdateSharedElementKey = onUpdateSharedElementKey,
                                 onShowGridItemPopup = onShowGridItemPopup,
                                 onUpdateAssociate = onUpdateAssociate,
+                                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                             )
                         }
                     } else {
@@ -500,21 +507,16 @@ private fun SharedTransitionScope.FolderGridItemContent(
                         intOffset = layoutCoordinates.positionInRoot().round()
 
                         intSize = layoutCoordinates.size
-                    }.run {
-                        if (!hasInteraction) {
-                            sharedElementWithCallerManagedVisibility(
-                                rememberSharedContentState(
-                                    key = SharedElementKey(
-                                        id = gridItem.id,
-                                        parent = SharedElementKey.Parent.Folder,
-                                    ),
-                                ),
-                                visible = drag == Drag.None || drag == Drag.Cancel || drag == Drag.End,
-                            )
-                        } else {
-                            this
-                        }
-                    },
+                    }
+                    .sharedElementWithCallerManagedVisibility(
+                        rememberSharedContentState(
+                            key = SharedElementKey(
+                                id = gridItem.id,
+                                parent = SharedElementKey.Parent.Folder,
+                            ),
+                        ),
+                        visible = !isVisibleOverlay,
+                    ),
             )
 
             if (settings.isNotificationAccessGranted() && hasNotifications) {
