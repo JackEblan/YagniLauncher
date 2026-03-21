@@ -1059,21 +1059,15 @@ private fun SharedTransitionScope.InteractiveFolderGridItem(
 
                 intSize = layoutCoordinates.size
             }
-            .run {
-                if (!hasInteraction) {
-                    sharedElementWithCallerManagedVisibility(
-                        rememberSharedContentState(
-                            key = SharedElementKey(
-                                id = gridItem.id,
-                                parent = parent,
-                            ),
-                        ),
-                        visible = !isScrollInProgress && !isVisibleOverlay,
-                    )
-                } else {
-                    this
-                }
-            }
+            .sharedElementWithCallerManagedVisibility(
+                rememberSharedContentState(
+                    key = SharedElementKey(
+                        id = gridItem.id,
+                        parent = parent,
+                    ),
+                ),
+                visible = !isScrollInProgress && !isVisibleOverlay,
+            )
 
         if (data.icon != null) {
             AsyncImage(
@@ -1108,21 +1102,15 @@ private fun SharedTransitionScope.InteractiveFolderGridItem(
                                 contentDescription = null,
                                 modifier = Modifier
                                     .size((gridItemSettings.iconSize * 0.25).dp)
-                                    .run {
-                                        if (!hasInteraction) {
-                                            sharedElementWithCallerManagedVisibility(
-                                                rememberSharedContentState(
-                                                    key = SharedElementKey(
-                                                        id = applicationInfoFolderGridItem.id,
-                                                        parent = parent,
-                                                    ),
-                                                ),
-                                                visible = !isScrollInProgress && !isVisibleOverlay,
-                                            )
-                                        } else {
-                                            this
-                                        }
-                                    },
+                                    .sharedElementWithCallerManagedVisibility(
+                                        rememberSharedContentState(
+                                            key = SharedElementKey(
+                                                id = applicationInfoFolderGridItem.id,
+                                                parent = parent,
+                                            ),
+                                        ),
+                                        visible = !isScrollInProgress && !isVisibleOverlay,
+                                    ),
                             )
                         }
                     }
