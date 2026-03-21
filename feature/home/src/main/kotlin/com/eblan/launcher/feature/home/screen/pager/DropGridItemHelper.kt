@@ -73,7 +73,7 @@ internal suspend fun handleDropGridItem(
         return
     }
 
-    fun resetOverlayIfOnlyLongPress() {
+    fun resetOverlayOnlyIfLongPress() {
         onUpdateIsLongPress(false)
 
         onUpdateIsVisibleOverlay(false)
@@ -103,7 +103,7 @@ internal suspend fun handleDropGridItem(
             if (lockMovement) return cancel()
 
             if (isLongPress && !isDragging) {
-                resetOverlayIfOnlyLongPress()
+                resetOverlayOnlyIfLongPress()
 
                 return
             }
@@ -203,7 +203,7 @@ internal suspend fun handleDropGridItem(
             if (shouldCancel) {
                 cancel()
             } else if (longPressWithoutDrag) {
-                resetOverlayIfOnlyLongPress()
+                resetOverlayOnlyIfLongPress()
             } else if (shouldFinishDrag) {
                 resetState()
 

@@ -493,7 +493,7 @@ private fun SharedTransitionScope.InteractiveApplicationInfoGridItem(
                                 parent = parent,
                             ),
                         ),
-                        visible = !isScrollInProgress && !isVisibleOverlay,
+                        visible = !isScrollInProgress && !hasInteraction && !isVisibleOverlay,
                     ),
             )
 
@@ -876,7 +876,7 @@ private fun SharedTransitionScope.InteractiveShortcutInfoGridItem(
                                 parent = parent,
                             ),
                         ),
-                        visible = !isScrollInProgress && !isVisibleOverlay,
+                        visible = !isScrollInProgress && !hasInteraction && !isVisibleOverlay,
                     ),
                 contentDescription = null,
             )
@@ -1066,7 +1066,7 @@ private fun SharedTransitionScope.InteractiveFolderGridItem(
                         parent = parent,
                     ),
                 ),
-                visible = !isScrollInProgress && !isVisibleOverlay,
+                visible = !isScrollInProgress && !hasInteraction && !isVisibleOverlay,
             )
 
         if (data.icon != null) {
@@ -1109,7 +1109,7 @@ private fun SharedTransitionScope.InteractiveFolderGridItem(
                                                 parent = parent,
                                             ),
                                         ),
-                                        visible = !isScrollInProgress && !isVisibleOverlay,
+                                        visible = !isScrollInProgress && !hasInteraction && !isVisibleOverlay,
                                     ),
                             )
                         }
@@ -1326,21 +1326,15 @@ private fun SharedTransitionScope.InteractiveShortcutConfigGridItem(
 
                     intSize = layoutCoordinates.size
                 }
-                .run {
-                    if (!hasInteraction) {
-                        sharedElementWithCallerManagedVisibility(
-                            rememberSharedContentState(
-                                key = SharedElementKey(
-                                    id = gridItem.id,
-                                    parent = parent,
-                                ),
-                            ),
-                            visible = !isScrollInProgress && !isVisibleOverlay,
-                        )
-                    } else {
-                        this
-                    }
-                },
+                .sharedElementWithCallerManagedVisibility(
+                    rememberSharedContentState(
+                        key = SharedElementKey(
+                            id = gridItem.id,
+                            parent = parent,
+                        ),
+                    ),
+                    visible = !isScrollInProgress && !hasInteraction && !isVisibleOverlay,
+                ),
         )
 
         if (gridItemSettings.showLabel) {
