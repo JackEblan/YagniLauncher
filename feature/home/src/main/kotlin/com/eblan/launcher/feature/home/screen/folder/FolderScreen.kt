@@ -106,20 +106,19 @@ internal fun SharedTransitionScope.FolderScreen(
     gridItemSource: GridItemSource?,
     homeSettings: HomeSettings,
     iconPackFilePaths: Map<String, String>,
-    isLongPress: Boolean,
     paddingValues: PaddingValues,
     safeDrawingHeight: Int,
     safeDrawingWidth: Int,
     statusBarNotifications: Map<String, Int>,
     textColor: TextColor,
     isVisibleOverlay: Boolean,
+    isCache: Boolean,
     onDismissRequest: () -> Unit,
     onDraggingGridItem: () -> Unit,
     onOpenAppDrawer: () -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
-    onUpdateIsLongPress: (Boolean) -> Unit,
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
@@ -213,16 +212,15 @@ internal fun SharedTransitionScope.FolderScreen(
                                     gridItemSettings = gridItemSettings,
                                     gridItemSource = gridItemSource,
                                     iconPackFilePaths = iconPackFilePaths,
-                                    isLongPress = isLongPress,
                                     statusBarNotifications = statusBarNotifications,
                                     textColor = textColor,
                                     isVisibleOverlay = isVisibleOverlay,
+                                    isCache = isCache,
                                     onDraggingGridItem = onDraggingGridItem,
                                     onOpenAppDrawer = onOpenAppDrawer,
                                     onUpdateGridItemSource = onUpdateGridItemSource,
                                     onUpdateImageBitmap = onUpdateImageBitmap,
                                     onUpdateIsDragging = onUpdateIsDragging,
-                                    onUpdateIsLongPress = onUpdateIsLongPress,
                                     onUpdateOverlayBounds = onUpdateOverlayBounds,
                                     onUpdateSharedElementKey = onUpdateSharedElementKey,
                                     onShowGridItemPopup = onShowGridItemPopup,
@@ -308,16 +306,15 @@ private fun SharedTransitionScope.FolderGridItemContent(
     gridItemSettings: GridItemSettings,
     gridItemSource: GridItemSource?,
     iconPackFilePaths: Map<String, String>,
-    isLongPress: Boolean,
     statusBarNotifications: Map<String, Int>,
     textColor: TextColor,
     isVisibleOverlay: Boolean,
+    isCache: Boolean,
     onDraggingGridItem: () -> Unit,
     onOpenAppDrawer: () -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
-    onUpdateIsLongPress: (Boolean) -> Unit,
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
@@ -385,17 +382,19 @@ private fun SharedTransitionScope.FolderGridItemContent(
                 ?: 0
             ) > 0
 
-    val hasInteraction = isSelected && isLongPress
+    val hasInteraction = isSelected && isVisibleOverlay
 
     val isVisibleWhiteBox = isSelected && drag == Drag.Dragging
 
     val alpha = if (hasInteraction) 0f else 1f
 
+    val isGesture = !isVisibleOverlay && !isCache
+
     LaunchedEffect(key1 = drag) {
         handleDrag(
             drag = drag,
             isSelected = isSelected,
-            isLongPress = isLongPress,
+            isVisibleOverlay = isVisibleOverlay,
             onUpdateIsDragging = onUpdateIsDragging,
             onDismissGridItemPopup = onDismissGridItemPopup,
             onDraggingGridItem = onDraggingGridItem,
@@ -406,7 +405,7 @@ private fun SharedTransitionScope.FolderGridItemContent(
         modifier = modifier
             .pointerInput(key1 = drag) {
                 detectTapGestures(
-                    onDoubleTap = if (!isLongPress) {
+                    onDoubleTap = if (isGesture) {
                         {
                             onDoubleTap(
                                 context = context,
@@ -419,7 +418,7 @@ private fun SharedTransitionScope.FolderGridItemContent(
                     } else {
                         null
                     },
-                    onLongPress = if (!isLongPress) {
+                    onLongPress = if (isGesture) {
                         {
                             onLongPress(
                                 scope = scope,
@@ -436,7 +435,6 @@ private fun SharedTransitionScope.FolderGridItemContent(
                                 ),
                                 onUpdateGridItemSource = onUpdateGridItemSource,
                                 onUpdateImageBitmap = onUpdateImageBitmap,
-                                onUpdateIsLongPress = onUpdateIsLongPress,
                                 onUpdateOverlayBounds = onUpdateOverlayBounds,
                                 onUpdateSharedElementKey = onUpdateSharedElementKey,
                                 onShowGridItemPopup = onShowGridItemPopup,
@@ -446,7 +444,7 @@ private fun SharedTransitionScope.FolderGridItemContent(
                     } else {
                         null
                     },
-                    onTap = if (!isLongPress) {
+                    onTap = if (isGesture) {
                         {
                             launcherApps.startMainActivity(
                                 serialNumber = gridItem.serialNumber,

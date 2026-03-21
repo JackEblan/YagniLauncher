@@ -180,7 +180,6 @@ internal fun onLongPress(
     sharedElementKey: SharedElementKey,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
-    onUpdateIsLongPress: (Boolean) -> Unit,
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
@@ -206,8 +205,6 @@ internal fun onLongPress(
 
         onUpdateIsVisibleOverlay(true)
 
-        onUpdateIsLongPress(true)
-
         onShowGridItemPopup(
             intOffset,
             intSize,
@@ -218,12 +215,12 @@ internal fun onLongPress(
 internal fun handleDrag(
     drag: Drag,
     isSelected: Boolean,
-    isLongPress: Boolean,
+    isVisibleOverlay: Boolean,
     onUpdateIsDragging: (Boolean) -> Unit,
     onDismissGridItemPopup: () -> Unit,
     onDraggingGridItem: () -> Unit,
 ) {
-    if (drag == Drag.Dragging && isSelected && isLongPress) {
+    if (drag == Drag.Dragging && isSelected && isVisibleOverlay) {
         onUpdateIsDragging(true)
 
         onDismissGridItemPopup()

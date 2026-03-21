@@ -100,7 +100,7 @@ internal fun AppWidgetScreen(
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onUpdateIsLongPressAndIsDragging: () -> Unit,
+    onUpdateIsDragging: (Boolean) -> Unit,
     onVerticalDrag: (Float) -> Unit,
     onDragEnd: () -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
@@ -170,7 +170,7 @@ internal fun AppWidgetScreen(
                 onUpdateSharedElementKey = onUpdateSharedElementKey,
                 onDismiss = onDismiss,
                 onDismissApplicationScreen = onDismissApplicationScreen,
-                onUpdateIsLongPressAndIsDragging = onUpdateIsLongPressAndIsDragging,
+                onUpdateIsDragging = onUpdateIsDragging,
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
             )
         }
@@ -197,7 +197,7 @@ private fun Success(
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onDismiss: () -> Unit,
     onDismissApplicationScreen: () -> Unit,
-    onUpdateIsLongPressAndIsDragging: () -> Unit,
+    onUpdateIsDragging: (Boolean) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
 ) {
     val lazyListState = rememberLazyListState()
@@ -240,7 +240,7 @@ private fun Success(
                     onUpdateSharedElementKey = onUpdateSharedElementKey,
                     onDismiss = onDismiss,
                     onDismissApplicationScreen = onDismissApplicationScreen,
-                    onUpdateIsLongPressAndIsDragging = onUpdateIsLongPressAndIsDragging,
+                    onUpdateIsDragging = onUpdateIsDragging,
                     onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                 )
             }
@@ -270,7 +270,7 @@ private fun EblanAppWidgetProviderInfoItem(
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onDismiss: () -> Unit,
     onDismissApplicationScreen: () -> Unit,
-    onUpdateIsLongPressAndIsDragging: () -> Unit,
+    onUpdateIsDragging: (Boolean) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
@@ -335,7 +335,7 @@ private fun EblanAppWidgetProviderInfoItem(
 
                             onDismissApplicationScreen()
 
-                            onUpdateIsLongPressAndIsDragging()
+                            onUpdateIsDragging(true)
 
                             onDraggingGridItem()
                         }

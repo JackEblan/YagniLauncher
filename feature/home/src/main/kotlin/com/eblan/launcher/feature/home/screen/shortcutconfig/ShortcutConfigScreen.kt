@@ -135,7 +135,7 @@ internal fun ShortcutConfigScreen(
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onUpdateIsLongPressAndIsDragging: () -> Unit,
+    onUpdateIsDragging: (Boolean) -> Unit,
     onVerticalDrag: (Float) -> Unit,
     onDragEnd: (Float) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
@@ -170,7 +170,7 @@ internal fun ShortcutConfigScreen(
             onUpdateImageBitmap = onUpdateImageBitmap,
             onUpdateGridItemSource = onUpdateGridItemSource,
             onUpdateSharedElementKey = onUpdateSharedElementKey,
-            onUpdateIsLongPressAndIsDragging = onUpdateIsLongPressAndIsDragging,
+            onUpdateIsDragging = onUpdateIsDragging,
             onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
         )
     }
@@ -198,7 +198,7 @@ private fun Success(
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onUpdateIsLongPressAndIsDragging: () -> Unit,
+    onUpdateIsDragging: (Boolean) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
 ) {
     val horizontalPagerState = rememberPagerState(
@@ -291,7 +291,7 @@ private fun Success(
                     onUpdateGridItemSource = onUpdateGridItemSource,
                     onUpdateSharedElementKey = onUpdateSharedElementKey,
                     onDismiss = onDismiss,
-                    onUpdateIsLongPressAndIsDragging = onUpdateIsLongPressAndIsDragging,
+                    onUpdateIsDragging = onUpdateIsDragging,
                     onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                 )
             }
@@ -311,7 +311,7 @@ private fun Success(
                 onUpdateGridItemSource = onUpdateGridItemSource,
                 onUpdateSharedElementKey = onUpdateSharedElementKey,
                 onDismiss = onDismiss,
-                onUpdateIsLongPressAndIsDragging = onUpdateIsLongPressAndIsDragging,
+                onUpdateIsDragging = onUpdateIsDragging,
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
             )
         }
@@ -365,7 +365,7 @@ private fun EblanShortcutConfigsPage(
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onDismiss: () -> Unit,
-    onUpdateIsLongPressAndIsDragging: () -> Unit,
+    onUpdateIsDragging: (Boolean) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
@@ -444,7 +444,7 @@ private fun EblanShortcutConfigsPage(
                         onUpdateGridItemSource = onUpdateGridItemSource,
                         onUpdateSharedElementKey = onUpdateSharedElementKey,
                         onDismiss = onDismiss,
-                        onUpdateIsLongPressAndIsDragging = onUpdateIsLongPressAndIsDragging,
+                        onUpdateIsDragging = onUpdateIsDragging,
                         onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                     )
                 }
@@ -471,7 +471,7 @@ private fun EblanApplicationInfoItem(
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onDismiss: () -> Unit,
-    onUpdateIsLongPressAndIsDragging: () -> Unit,
+    onUpdateIsDragging: (Boolean) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -529,7 +529,7 @@ private fun EblanApplicationInfoItem(
                     onUpdateGridItemSource = onUpdateGridItemSource,
                     onUpdateSharedElementKey = onUpdateSharedElementKey,
                     onDismiss = onDismiss,
-                    onUpdateIsLongPressAndIsDragging = onUpdateIsLongPressAndIsDragging,
+                    onUpdateIsDragging = onUpdateIsDragging,
                     onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                 )
             }
@@ -554,7 +554,7 @@ private fun EblanShortcutConfigItem(
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onDismiss: () -> Unit,
-    onUpdateIsLongPressAndIsDragging: () -> Unit,
+    onUpdateIsDragging: (Boolean) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
@@ -636,7 +636,7 @@ private fun EblanShortcutConfigItem(
 
                             onDismiss()
 
-                            onUpdateIsLongPressAndIsDragging()
+                            onUpdateIsDragging(true)
 
                             onDraggingGridItem()
                         }

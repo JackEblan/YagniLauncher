@@ -52,9 +52,9 @@ internal suspend fun handleDropGridItem(
     drag: Drag,
     gridItemSource: GridItemSource?,
     isDragging: Boolean,
-    isLongPress: Boolean,
     moveGridItemResult: MoveGridItemResult?,
     lockMovement: Boolean,
+    isVisibleOverlay: Boolean,
     onResetGridCacheAfterDeleteGridItemCache: (GridItem) -> Unit,
     onDragCancelAfterMove: () -> Unit,
     onDragEndAfterMove: (MoveGridItemResult) -> Unit,
@@ -65,7 +65,6 @@ internal suspend fun handleDropGridItem(
     onToast: () -> Unit,
     onUpdateAppWidgetId: (Int) -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
-    onUpdateIsLongPress: (Boolean) -> Unit,
     onUpdateWidgetGridItem: (GridItem) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
 ) {
@@ -73,20 +72,8 @@ internal suspend fun handleDropGridItem(
         return
     }
 
-    fun resetOverlayOnlyIfLongPress() {
-        onUpdateIsLongPress(false)
-
-        onUpdateIsVisibleOverlay(false)
-    }
-
-    fun resetState() {
-        onUpdateIsLongPress(false)
-
-        onUpdateIsDragging(false)
-    }
-
     fun cancel() {
-        resetState()
+        onUpdateIsDragging(false)
 
         onDragCancelAfterMove()
 
@@ -102,16 +89,16 @@ internal suspend fun handleDropGridItem(
         is GridItemSource.Existing -> {
             if (lockMovement) return cancel()
 
-            if (isLongPress && !isDragging) {
-                resetOverlayOnlyIfLongPress()
+            if (isVisibleOverlay && !isDragging) {
+                onUpdateIsVisibleOverlay(false)
 
                 return
             }
 
-            if (isLongPress && dragFailed) return cancel()
+            if (isVisibleOverlay && dragFailed) return cancel()
 
-            if (isLongPress && moveGridItemResult != null) {
-                resetState()
+            if (isVisibleOverlay && moveGridItemResult != null) {
+                onUpdateIsDragging(false)
 
                 onDragEndAfterMove(moveGridItemResult)
             }
@@ -120,10 +107,10 @@ internal suspend fun handleDropGridItem(
         is GridItemSource.New -> {
             if (lockMovement) return cancel()
 
-            if (isLongPress && isDragging && dragFailed) return cancel()
+            if (isVisibleOverlay && isDragging && dragFailed) return cancel()
 
-            if (isLongPress && isDragging && moveGridItemResult != null) {
-                resetState()
+            if (isVisibleOverlay && isDragging && moveGridItemResult != null) {
+                onUpdateIsDragging(false)
 
                 when (val data = gridItemSource.gridItem.data) {
                     is GridItemData.Widget ->
@@ -162,10 +149,10 @@ internal suspend fun handleDropGridItem(
         is GridItemSource.Pin -> {
             if (lockMovement) return cancel()
 
-            if (isLongPress && isDragging && dragFailed) return cancel()
+            if (isVisibleOverlay && isDragging && dragFailed) return cancel()
 
-            if (isLongPress && isDragging && moveGridItemResult != null) {
-                resetState()
+            if (isVisibleOverlay && isDragging && moveGridItemResult != null) {
+                onUpdateIsDragging(false)
 
                 when (val data = gridItemSource.gridItem.data) {
                     is GridItemData.ShortcutInfo ->
@@ -197,15 +184,15 @@ internal suspend fun handleDropGridItem(
 
         is GridItemSource.Folder -> {
             val shouldCancel = lockMovement || drag == Drag.Cancel
-            val longPressWithoutDrag = isLongPress && !isDragging
-            val shouldFinishDrag = isLongPress && isDragging && !shouldCancel
+            val longPressWithoutDrag = isVisibleOverlay && !isDragging
+            val shouldFinishDrag = isVisibleOverlay && isDragging && !shouldCancel
 
             if (shouldCancel) {
                 cancel()
             } else if (longPressWithoutDrag) {
-                resetOverlayOnlyIfLongPress()
+                onUpdateIsVisibleOverlay(false)
             } else if (shouldFinishDrag) {
-                resetState()
+                onUpdateIsDragging(false)
 
                 onDragEndAfterMoveFolder(moveGridItemResult)
             }

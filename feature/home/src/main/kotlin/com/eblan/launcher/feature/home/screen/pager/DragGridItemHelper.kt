@@ -159,7 +159,7 @@ internal fun handleDragGridItem(
     folderTitleHeightPx: Int,
     gridItemSource: GridItemSource?,
     isDragging: Boolean,
-    isLongPress: Boolean,
+    isVisibleOverlay: Boolean,
     isGridScrollInProgress: Boolean,
     isDockScrollInProgress: Boolean,
     lockMovement: Boolean,
@@ -201,7 +201,7 @@ internal fun handleDragGridItem(
         isGridScrollInProgress ||
         isDockScrollInProgress ||
         gridItemSource == null ||
-        !(isLongPress && isDragging) ||
+        !(isVisibleOverlay && isDragging) ||
         lockMovement
     ) {
         return
@@ -594,7 +594,7 @@ internal suspend fun handleConflictingGridItem(
     drag: Drag,
     gridItemSource: GridItemSource?,
     isDragging: Boolean,
-    isLongPress: Boolean,
+    isVisibleOverlay: Boolean,
     moveGridItemResult: MoveGridItemResult?,
     paddingValues: PaddingValues,
     rows: Int,
@@ -614,7 +614,7 @@ internal suspend fun handleConflictingGridItem(
         gridItemSource is GridItemSource.Folder ||
         moveGridItemResult == null ||
         !moveGridItemResult.isSuccess ||
-        !(isLongPress && isDragging) ||
+        !(isVisibleOverlay && isDragging) ||
         lockMovement
     ) {
         return

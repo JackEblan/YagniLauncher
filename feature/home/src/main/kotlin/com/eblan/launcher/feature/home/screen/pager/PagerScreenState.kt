@@ -160,9 +160,6 @@ internal class PagerScreenState(
     var showFolderGridItemPopup by mutableStateOf(false)
         private set
 
-    var isLongPress by mutableStateOf(false)
-        private set
-
     var isDragging by mutableStateOf(false)
         private set
 
@@ -349,6 +346,7 @@ internal class PagerScreenState(
         pinGridItem: GridItem?,
         onDraggingGridItem: (List<GridItem>) -> Unit,
         onUpdateGridItemSource: (GridItemSource) -> Unit,
+        onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     ) {
         handlePinGridItem(
             isApplicationScreenVisible = isApplicationScreenVisible,
@@ -357,13 +355,12 @@ internal class PagerScreenState(
             screenHeight = screenHeight,
             swipeY = swipeY,
             onDraggingGridItem = {
-                isLongPress = true
-
                 isDragging = true
 
                 onDraggingGridItem(gridItems)
             },
             onUpdateGridItemSource = onUpdateGridItemSource,
+            onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
         )
     }
 
@@ -378,6 +375,7 @@ internal class PagerScreenState(
         lockMovement: Boolean,
         paddingValues: PaddingValues,
         gridItemSource: GridItemSource?,
+        isVisibleOverlay: Boolean,
         onMoveFolderGridItem: (
             folderGridItem: GridItem,
             applicationInfoGridItems: List<ApplicationInfoGridItem>,
@@ -422,7 +420,7 @@ internal class PagerScreenState(
             folderTitleHeightPx = folderTitleHeightPx,
             gridItemSource = gridItemSource,
             isDragging = isDragging,
-            isLongPress = isLongPress,
+            isVisibleOverlay = isVisibleOverlay,
             isGridScrollInProgress = isGridScrollInProgress,
             isDockScrollInProgress = isDockScrollInProgress,
             lockMovement = lockMovement,
@@ -449,6 +447,7 @@ internal class PagerScreenState(
         onLaunchShortcutConfigIntentSenderRequest: (IntentSenderRequest) -> Unit,
         onLaunchWidgetIntent: (Intent) -> Unit,
         gridItemSource: GridItemSource?,
+        isVisibleOverlay: Boolean,
         onUpdateIsVisibleOverlay: (Boolean) -> Unit,
         onResetGridCacheAfterDeleteGridItemCache: (GridItem) -> Unit,
         onDragCancelAfterMove: () -> Unit,
@@ -463,7 +462,7 @@ internal class PagerScreenState(
             drag = drag,
             gridItemSource = gridItemSource,
             isDragging = isDragging,
-            isLongPress = isLongPress,
+            isVisibleOverlay = isVisibleOverlay,
             moveGridItemResult = moveGridItemResult,
             lockMovement = experimentalSettings.lockMovement,
             onResetGridCacheAfterDeleteGridItemCache = onResetGridCacheAfterDeleteGridItemCache,
@@ -485,9 +484,6 @@ internal class PagerScreenState(
             },
             onUpdateIsDragging = { newIsDragging ->
                 isDragging = newIsDragging
-            },
-            onUpdateIsLongPress = { newIsLongPress ->
-                isLongPress = newIsLongPress
             },
             onUpdateWidgetGridItem = { gridItem ->
                 updatedWidgetGridItem = gridItem
@@ -522,6 +518,7 @@ internal class PagerScreenState(
         moveGridItemResult: MoveGridItemResult?,
         paddingValues: PaddingValues,
         gridItemSource: GridItemSource?,
+        isVisibleOverlay: Boolean,
         onUpdateFolderGridItemId: (String?) -> Unit,
         onUpdateGridItemSource: (GridItemSource) -> Unit,
     ) {
@@ -534,7 +531,7 @@ internal class PagerScreenState(
             drag = drag,
             gridItemSource = gridItemSource,
             isDragging = isDragging,
-            isLongPress = isLongPress,
+            isVisibleOverlay = isVisibleOverlay,
             moveGridItemResult = moveGridItemResult,
             paddingValues = paddingValues,
             rows = homeSettings.rows,
@@ -858,6 +855,7 @@ internal class PagerScreenState(
         swipeY: Animatable<Float, AnimationVector1D>,
         onDraggingGridItem: () -> Unit,
         onUpdateGridItemSource: (GridItemSource) -> Unit,
+        onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     ) {
         if (pinGridItem == null) return
 
@@ -878,6 +876,8 @@ internal class PagerScreenState(
                 pinItemRequest = pinItemRequest,
             ),
         )
+
+        onUpdateIsVisibleOverlay(true)
 
         onDraggingGridItem()
     }
@@ -1022,10 +1022,6 @@ internal class PagerScreenState(
         showFolderGridItemPopup = false
     }
 
-    fun updateIsLongPress(value: Boolean) {
-        isLongPress = value
-    }
-
     fun updateIsDragging(value: Boolean) {
         isDragging = value
     }
@@ -1106,8 +1102,6 @@ internal class PagerScreenState(
         gridItems: List<GridItem>,
         onDraggingGridItem: (List<GridItem>) -> Unit,
     ) {
-        isLongPress = true
-
         isDragging = true
 
         onDraggingGridItem(gridItems)
@@ -1135,12 +1129,6 @@ internal class PagerScreenState(
                 isPressHome = false
             }
         }
-    }
-
-    fun updateIsLongPressAndIsDragging() {
-        isLongPress = true
-
-        isDragging = true
     }
 
     fun verticalDragApplicationScreen(dragAmount: Float) {

@@ -184,7 +184,7 @@ internal fun SharedTransitionScope.ApplicationScreen(
     onUpdateEblanApplicationInfos: (List<EblanApplicationInfo>) -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
-    onUpdateIsLongPressAndIsDragging: () -> Unit,
+    onUpdateIsDragging: (Boolean) -> Unit,
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
@@ -230,7 +230,7 @@ internal fun SharedTransitionScope.ApplicationScreen(
             onUpdateEblanApplicationInfos = onUpdateEblanApplicationInfos,
             onUpdateGridItemSource = onUpdateGridItemSource,
             onUpdateImageBitmap = onUpdateImageBitmap,
-            onUpdateIsLongPressAndIsDragging = onUpdateIsLongPressAndIsDragging,
+            onUpdateIsDragging = onUpdateIsDragging,
             onUpdateOverlayBounds = onUpdateOverlayBounds,
             onUpdateSharedElementKey = onUpdateSharedElementKey,
             onVerticalDrag = onVerticalDrag,
@@ -273,7 +273,7 @@ private fun SharedTransitionScope.Success(
     onUpdateEblanApplicationInfos: (List<EblanApplicationInfo>) -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
-    onUpdateIsLongPressAndIsDragging: () -> Unit,
+    onUpdateIsDragging: (Boolean) -> Unit,
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
@@ -470,7 +470,7 @@ private fun SharedTransitionScope.Success(
                     onUpdateEblanApplicationInfos = onUpdateEblanApplicationInfos,
                     onUpdateGridItemSource = onUpdateGridItemSource,
                     onUpdateImageBitmap = onUpdateImageBitmap,
-                    onUpdateIsLongPressAndIsDragging = onUpdateIsLongPressAndIsDragging,
+                    onUpdateIsDragging = onUpdateIsDragging,
                     onUpdateOverlayBounds = { intOffset, intSize ->
                         onUpdateOverlayBounds(intOffset, intSize)
 
@@ -512,7 +512,7 @@ private fun SharedTransitionScope.Success(
                 onUpdateEblanApplicationInfos = onUpdateEblanApplicationInfos,
                 onUpdateGridItemSource = onUpdateGridItemSource,
                 onUpdateImageBitmap = onUpdateImageBitmap,
-                onUpdateIsLongPressAndIsDragging = onUpdateIsLongPressAndIsDragging,
+                onUpdateIsDragging = onUpdateIsDragging,
                 onUpdateOverlayBounds = { intOffset, intSize ->
                     onUpdateOverlayBounds(intOffset, intSize)
 
@@ -627,7 +627,7 @@ private fun SharedTransitionScope.EblanApplicationInfosPage(
     onUpdateEblanApplicationInfos: (List<EblanApplicationInfo>) -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
-    onUpdateIsLongPressAndIsDragging: () -> Unit,
+    onUpdateIsDragging: (Boolean) -> Unit,
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
@@ -708,7 +708,7 @@ private fun SharedTransitionScope.EblanApplicationInfosPage(
                 onDraggingGridItem = onDraggingGridItem,
                 onUpdateGridItemSource = onUpdateGridItemSource,
                 onUpdateImageBitmap = onUpdateImageBitmap,
-                onUpdateIsLongPressAndIsDragging = onUpdateIsLongPressAndIsDragging,
+                onUpdateIsDragging = onUpdateIsDragging,
                 onUpdateOverlayBounds = onUpdateOverlayBounds,
                 onUpdatePopupMenu = onUpdatePopupMenu,
                 onUpdateSharedElementKey = onUpdateSharedElementKey,
@@ -817,7 +817,7 @@ private fun SharedTransitionScope.EblanApplicationInfos(
     onDraggingGridItem: () -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
-    onUpdateIsLongPressAndIsDragging: () -> Unit,
+    onUpdateIsDragging: (Boolean) -> Unit,
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
@@ -904,7 +904,7 @@ private fun SharedTransitionScope.EblanApplicationInfos(
                                 onDraggingGridItem = onDraggingGridItem,
                                 onUpdateGridItemSource = onUpdateGridItemSource,
                                 onUpdateImageBitmap = onUpdateImageBitmap,
-                                onUpdateIsLongPressAndIsDragging = onUpdateIsLongPressAndIsDragging,
+                                onUpdateIsDragging = onUpdateIsDragging,
                                 onUpdateOverlayBounds = onUpdateOverlayBounds,
                                 onUpdatePopupMenu = onUpdatePopupMenu,
                                 onUpdateSharedElementKey = onUpdateSharedElementKey,
@@ -947,7 +947,7 @@ private fun SharedTransitionScope.EblanApplicationInfos(
                                 onDraggingGridItem = onDraggingGridItem,
                                 onUpdateGridItemSource = onUpdateGridItemSource,
                                 onUpdateImageBitmap = onUpdateImageBitmap,
-                                onUpdateIsLongPressAndIsDragging = onUpdateIsLongPressAndIsDragging,
+                                onUpdateIsDragging = onUpdateIsDragging,
                                 onUpdateOverlayBounds = onUpdateOverlayBounds,
                                 onUpdatePopupMenu = onUpdatePopupMenu,
                                 onUpdateSharedElementKey = onUpdateSharedElementKey,
@@ -989,7 +989,7 @@ private fun SharedTransitionScope.EblanApplicationInfoItem(
     onDraggingGridItem: () -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
-    onUpdateIsLongPressAndIsDragging: () -> Unit,
+    onUpdateIsDragging: (Boolean) -> Unit,
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
@@ -1093,7 +1093,7 @@ private fun SharedTransitionScope.EblanApplicationInfoItem(
 
                 onUpdateGridItemSource(GridItemSource.New(gridItem = gridItem))
 
-                onUpdateIsLongPressAndIsDragging()
+                onUpdateIsDragging(true)
 
                 onDraggingGridItem()
             }
