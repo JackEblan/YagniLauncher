@@ -745,15 +745,15 @@ internal class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             moveGridItemJob?.cancelAndJoin()
 
+            _folderGridItemId.update {
+                null
+            }
+
             moveFolderGridItemOutsideFolderUseCase(
                 folderGridItem = folderGridItem,
                 movingApplicationInfoGridItem = movingApplicationInfoGridItem,
                 applicationInfoGridItems = applicationInfoGridItems,
             )
-
-            _folderGridItemId.update {
-                null
-            }
         }
     }
 

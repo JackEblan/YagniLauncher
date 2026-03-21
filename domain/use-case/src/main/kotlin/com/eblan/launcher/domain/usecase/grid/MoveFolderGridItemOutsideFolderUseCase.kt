@@ -40,17 +40,24 @@ class MoveFolderGridItemOutsideFolderUseCase @Inject constructor(
             val data =
                 folderGridItem.data as? GridItemData.Folder ?: error("Expected GridItemData.Folder")
 
+            val gridItems = applicationInfoGridItems.toMutableList().apply {
+                removeIf { applicationInfoGridItem ->
+                    applicationInfoGridItem.id == movingApplicationInfoGridItem.id
+                }
+            }
+
+            val gridItemsByPage = gridItems.getGridItemsByPage()
+
+            val firstPageGridItems = gridItemsByPage[0] ?: emptyList()
+
+            val (columns, rows) = getGridDimension(count = firstPageGridItems.size)
+
             val newData = data.copy(
-                gridItems = applicationInfoGridItems.toMutableList().apply {
-                    removeIf { applicationInfoGridItem ->
-                        applicationInfoGridItem.id == movingApplicationInfoGridItem.id
-                    }
-                },
-                previewGridItemsByPage = data.previewGridItemsByPage.toMutableList().apply {
-                    removeIf { applicationInfoGridItem ->
-                        applicationInfoGridItem.id == movingApplicationInfoGridItem.id
-                    }
-                },
+                gridItems = gridItems,
+                gridItemsByPage = gridItemsByPage,
+                previewGridItemsByPage = gridItemsByPage.values.firstOrNull() ?: emptyList(),
+                columns = columns,
+                rows = rows,
             )
 
             gridCacheRepository.updateGridItemData(
