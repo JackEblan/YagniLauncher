@@ -496,15 +496,21 @@ private fun SharedTransitionScope.FolderGridItemContent(
 
                         intSize = layoutCoordinates.size
                     }
-                    .sharedElementWithCallerManagedVisibility(
-                        rememberSharedContentState(
-                            key = SharedElementKey(
-                                id = gridItem.id,
-                                parent = SharedElementKey.Parent.Folder,
-                            ),
-                        ),
-                        visible = !hasInteraction && !isVisibleOverlay,
-                    ),
+                    .run {
+                        if (!hasInteraction) {
+                            sharedElementWithCallerManagedVisibility(
+                                rememberSharedContentState(
+                                    key = SharedElementKey(
+                                        id = gridItem.id,
+                                        parent = SharedElementKey.Parent.Folder,
+                                    ),
+                                ),
+                                visible = true,
+                            )
+                        } else {
+                            this
+                        }
+                    },
             )
 
             if (settings.isNotificationAccessGranted() && hasNotifications) {

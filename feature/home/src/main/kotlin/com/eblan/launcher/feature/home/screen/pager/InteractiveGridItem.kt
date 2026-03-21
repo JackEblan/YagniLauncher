@@ -831,7 +831,6 @@ private fun SharedTransitionScope.InteractiveShortcutInfoGridItem(
                 model = customIcon,
                 modifier = Modifier
                     .matchParentSize()
-                    .alpha(alpha)
                     .drawWithContent {
                         graphicsLayer.record {
                             this@drawWithContent.drawContent()
