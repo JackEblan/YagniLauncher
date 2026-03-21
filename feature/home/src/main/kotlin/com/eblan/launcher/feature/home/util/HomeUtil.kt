@@ -31,7 +31,6 @@ import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
-import com.eblan.launcher.domain.model.Associate
 import com.eblan.launcher.domain.model.EblanAction
 import com.eblan.launcher.domain.model.EblanActionType
 import com.eblan.launcher.domain.model.GlobalAction
@@ -181,7 +180,6 @@ internal fun onLongPress(
     sharedElementKey: SharedElementKey,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
-    onUpdateIsLongPress: (Boolean) -> Unit,
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
@@ -191,12 +189,10 @@ internal fun onLongPress(
         intOffset: IntOffset,
         intSize: IntSize,
     ) -> Unit,
-    onUpdateAssociate: (Associate) -> Unit,
+    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
 ) {
     scope.launch {
         onUpdateGridItemSource(gridItemSource)
-
-        onUpdateAssociate(gridItemSource.gridItem.associate)
 
         onUpdateImageBitmap(graphicsLayer.toImageBitmap())
 
@@ -207,7 +203,7 @@ internal fun onLongPress(
 
         onUpdateSharedElementKey(sharedElementKey)
 
-        onUpdateIsLongPress(true)
+        onUpdateIsVisibleOverlay(true)
 
         onShowGridItemPopup(
             intOffset,
@@ -219,12 +215,12 @@ internal fun onLongPress(
 internal fun handleDrag(
     drag: Drag,
     isSelected: Boolean,
-    isLongPress: Boolean,
+    isVisibleOverlay: Boolean,
     onUpdateIsDragging: (Boolean) -> Unit,
     onDismissGridItemPopup: () -> Unit,
     onDraggingGridItem: () -> Unit,
 ) {
-    if (drag == Drag.Dragging && isSelected && isLongPress) {
+    if (drag == Drag.Dragging && isSelected && isVisibleOverlay) {
         onUpdateIsDragging(true)
 
         onDismissGridItemPopup()

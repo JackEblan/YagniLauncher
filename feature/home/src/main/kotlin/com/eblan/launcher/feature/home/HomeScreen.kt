@@ -114,7 +114,7 @@ internal fun HomeRoute(
 
     val gridItemSource by viewModel.gridItemSource.collectAsStateWithLifecycle()
 
-    val isCache by viewModel.isCache.collectAsStateWithLifecycle()
+    val isVisibleOverlay by viewModel.isVisibleOverlay.collectAsStateWithLifecycle()
 
     HomeScreen(
         modifier = modifier,
@@ -134,7 +134,7 @@ internal fun HomeRoute(
         screen = screen,
         resizeGridItem = resizeGridItem,
         gridItemSource = gridItemSource,
-        isCache = isCache,
+        isVisibleOverlay = isVisibleOverlay,
         onCancelGridCache = viewModel::cancelGridCache,
         onDeleteApplicationInfoGridItem = viewModel::deleteApplicationInfoGridItem,
         onDeleteGridItem = viewModel::deleteGridItem,
@@ -170,6 +170,7 @@ internal fun HomeRoute(
         onUpdateShortcutConfigGridItemDataCache = viewModel::updateShortcutConfigGridItemDataCache,
         onUpdateShortcutConfigIntoShortcutInfoGridItem = viewModel::updateShortcutConfigIntoShortcutInfoGridItem,
         onUpdateGridItemSource = viewModel::updateGridItemSource,
+        onUpdateIsVisibleOverlay = viewModel::updateIsVisibleOverlay,
     )
 }
 
@@ -193,7 +194,7 @@ internal fun HomeScreen(
     screen: Screen,
     resizeGridItem: GridItem?,
     gridItemSource: GridItemSource?,
-    isCache: Boolean,
+    isVisibleOverlay: Boolean,
     onCancelGridCache: () -> Unit,
     onDeleteApplicationInfoGridItem: (ApplicationInfoGridItem) -> Unit,
     onDeleteGridItem: (GridItem) -> Unit,
@@ -278,6 +279,7 @@ internal fun HomeScreen(
         pinItemRequestType: PinItemRequestType.ShortcutInfo,
     ) -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
+    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
 ) {
     val paddingValues = WindowInsets.safeDrawing.asPaddingValues()
 
@@ -311,7 +313,7 @@ internal fun HomeScreen(
                 screenWidth = screenIntSize.width,
                 resizeGridItem = resizeGridItem,
                 gridItemSource = gridItemSource,
-                isCache = isCache,
+                isVisibleOverlay = isVisibleOverlay,
                 onCancelGridCache = onCancelGridCache,
                 onDeleteApplicationInfoGridItem = onDeleteApplicationInfoGridItem,
                 onDeleteGridItem = onDeleteGridItem,
@@ -347,6 +349,7 @@ internal fun HomeScreen(
                 onUpdateShortcutConfigGridItemDataCache = onUpdateShortcutConfigGridItemDataCache,
                 onUpdateShortcutConfigIntoShortcutInfoGridItem = onUpdateShortcutConfigIntoShortcutInfoGridItem,
                 onUpdateGridItemSource = onUpdateGridItemSource,
+                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
             )
         }
     }
@@ -375,7 +378,7 @@ private fun Success(
     screenWidth: Int,
     resizeGridItem: GridItem?,
     gridItemSource: GridItemSource?,
-    isCache: Boolean,
+    isVisibleOverlay: Boolean,
     onCancelGridCache: () -> Unit,
     onDeleteApplicationInfoGridItem: (ApplicationInfoGridItem) -> Unit,
     onDeleteGridItem: (GridItem) -> Unit,
@@ -460,6 +463,7 @@ private fun Success(
         pinItemRequestType: PinItemRequestType.ShortcutInfo,
     ) -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
+    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
 ) {
     val activity = LocalActivity.current
 
@@ -503,7 +507,7 @@ private fun Success(
                     textColor = homeData.textColor,
                     resizeGridItem = resizeGridItem,
                     gridItemSource = gridItemSource,
-                    isCache = isCache,
+                    isVisibleOverlay = isVisibleOverlay,
                     onDeleteApplicationInfoGridItem = onDeleteApplicationInfoGridItem,
                     onDeleteGridItem = onDeleteGridItem,
                     onResetGridCacheAfterDeleteGridItemCache = onResetGridCacheAfterDeleteGridItemCache,
@@ -538,6 +542,7 @@ private fun Success(
                     onUpdateShortcutConfigGridItemDataCache = onUpdateShortcutConfigGridItemDataCache,
                     onUpdateShortcutConfigIntoShortcutInfoGridItem = onUpdateShortcutConfigIntoShortcutInfoGridItem,
                     onUpdateGridItemSource = onUpdateGridItemSource,
+                    onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                 )
             }
 

@@ -119,8 +119,6 @@ internal class HomeViewModel @Inject constructor(
 ) : ViewModel() {
     private val _isCache = MutableStateFlow(false)
 
-    val isCache = _isCache.asStateFlow()
-
     val homeUiState = getHomeDataUseCase(isCacheFlow = _isCache).map(HomeUiState::Success).stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
@@ -236,6 +234,10 @@ internal class HomeViewModel @Inject constructor(
     private val _gridItemSource = MutableStateFlow<GridItemSource?>(null)
 
     val gridItemSource = _gridItemSource.asStateFlow()
+
+    private val _isVisibleOverlay = MutableStateFlow(false)
+
+    val isVisibleOverlay = _isVisibleOverlay.asStateFlow()
 
     fun moveGridItem(
         movingGridItem: GridItem,
@@ -389,6 +391,10 @@ internal class HomeViewModel @Inject constructor(
                 false
             }
 
+            _isVisibleOverlay.update {
+                false
+            }
+
             _gridItemSource.update {
                 null
             }
@@ -429,6 +435,10 @@ internal class HomeViewModel @Inject constructor(
             }
 
             _isCache.update {
+                false
+            }
+
+            _isVisibleOverlay.update {
                 false
             }
 
@@ -717,6 +727,10 @@ internal class HomeViewModel @Inject constructor(
                 false
             }
 
+            _isVisibleOverlay.update {
+                false
+            }
+
             _gridItemSource.update {
                 null
             }
@@ -731,15 +745,15 @@ internal class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             moveGridItemJob?.cancelAndJoin()
 
-            _folderGridItemId.update {
-                null
-            }
-
             moveFolderGridItemOutsideFolderUseCase(
                 folderGridItem = folderGridItem,
                 movingApplicationInfoGridItem = movingApplicationInfoGridItem,
                 applicationInfoGridItems = applicationInfoGridItems,
             )
+
+            _folderGridItemId.update {
+                null
+            }
         }
     }
 
@@ -752,6 +766,12 @@ internal class HomeViewModel @Inject constructor(
     fun updateGridItemSource(gridItemSource: GridItemSource) {
         _gridItemSource.update {
             gridItemSource
+        }
+    }
+
+    fun updateIsVisibleOverlay(isVisibleOverlay: Boolean) {
+        _isVisibleOverlay.update {
+            isVisibleOverlay
         }
     }
 }

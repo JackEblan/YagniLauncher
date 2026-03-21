@@ -70,7 +70,6 @@ import coil3.compose.AsyncImage
 import coil3.request.ImageRequest.Builder
 import coil3.request.addLastModifiedToFileCacheKey
 import com.eblan.launcher.domain.model.ApplicationInfoGridItem
-import com.eblan.launcher.domain.model.Associate
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.GridItemSettings
@@ -107,19 +106,18 @@ internal fun SharedTransitionScope.FolderScreen(
     gridItemSource: GridItemSource?,
     homeSettings: HomeSettings,
     iconPackFilePaths: Map<String, String>,
-    isLongPress: Boolean,
     paddingValues: PaddingValues,
     safeDrawingHeight: Int,
     safeDrawingWidth: Int,
     statusBarNotifications: Map<String, Int>,
     textColor: TextColor,
+    isVisibleOverlay: Boolean,
     onDismissRequest: () -> Unit,
     onDraggingGridItem: () -> Unit,
     onOpenAppDrawer: () -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
-    onUpdateIsLongPress: (Boolean) -> Unit,
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
@@ -130,7 +128,7 @@ internal fun SharedTransitionScope.FolderScreen(
         intSize: IntSize,
     ) -> Unit,
     onDismissGridItemPopup: () -> Unit,
-    onUpdateAssociate: (Associate) -> Unit,
+    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
 ) {
     if (folderPopupIntOffset == null || folderPopupIntSize == null) return
 
@@ -205,7 +203,7 @@ internal fun SharedTransitionScope.FolderScreen(
                             columns = data.columns,
                             gridItems = data.gridItemsByPage[index],
                             rows = data.rows,
-                            { applicationInfoGridItem ->
+                            content = { applicationInfoGridItem ->
                                 FolderGridItemContent(
                                     drag = drag,
                                     folderGridItem = folderGridItem,
@@ -213,20 +211,19 @@ internal fun SharedTransitionScope.FolderScreen(
                                     gridItemSettings = gridItemSettings,
                                     gridItemSource = gridItemSource,
                                     iconPackFilePaths = iconPackFilePaths,
-                                    isLongPress = isLongPress,
                                     statusBarNotifications = statusBarNotifications,
                                     textColor = textColor,
+                                    isVisibleOverlay = isVisibleOverlay,
                                     onDraggingGridItem = onDraggingGridItem,
                                     onOpenAppDrawer = onOpenAppDrawer,
                                     onUpdateGridItemSource = onUpdateGridItemSource,
                                     onUpdateImageBitmap = onUpdateImageBitmap,
                                     onUpdateIsDragging = onUpdateIsDragging,
-                                    onUpdateIsLongPress = onUpdateIsLongPress,
                                     onUpdateOverlayBounds = onUpdateOverlayBounds,
                                     onUpdateSharedElementKey = onUpdateSharedElementKey,
                                     onShowGridItemPopup = onShowGridItemPopup,
                                     onDismissGridItemPopup = onDismissGridItemPopup,
-                                    onUpdateAssociate = onUpdateAssociate,
+                                    onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                                 )
                             },
                         )
@@ -307,15 +304,14 @@ private fun SharedTransitionScope.FolderGridItemContent(
     gridItemSettings: GridItemSettings,
     gridItemSource: GridItemSource?,
     iconPackFilePaths: Map<String, String>,
-    isLongPress: Boolean,
     statusBarNotifications: Map<String, Int>,
     textColor: TextColor,
+    isVisibleOverlay: Boolean,
     onDraggingGridItem: () -> Unit,
     onOpenAppDrawer: () -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
-    onUpdateIsLongPress: (Boolean) -> Unit,
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
@@ -326,7 +322,7 @@ private fun SharedTransitionScope.FolderGridItemContent(
         intSize: IntSize,
     ) -> Unit,
     onDismissGridItemPopup: () -> Unit,
-    onUpdateAssociate: (Associate) -> Unit,
+    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
 ) {
     val launcherApps = LocalLauncherApps.current
 
@@ -383,7 +379,7 @@ private fun SharedTransitionScope.FolderGridItemContent(
                 ?: 0
             ) > 0
 
-    val hasInteraction = isSelected && isLongPress && (drag == Drag.Start || drag == Drag.Dragging)
+    val hasInteraction = isSelected && isVisibleOverlay
 
     val isVisibleWhiteBox = isSelected && drag == Drag.Dragging
 
@@ -393,7 +389,7 @@ private fun SharedTransitionScope.FolderGridItemContent(
         handleDrag(
             drag = drag,
             isSelected = isSelected,
-            isLongPress = isLongPress,
+            isVisibleOverlay = isVisibleOverlay,
             onUpdateIsDragging = onUpdateIsDragging,
             onDismissGridItemPopup = onDismissGridItemPopup,
             onDraggingGridItem = onDraggingGridItem,
@@ -404,7 +400,7 @@ private fun SharedTransitionScope.FolderGridItemContent(
         modifier = modifier
             .pointerInput(key1 = drag) {
                 detectTapGestures(
-                    onDoubleTap = if (!isLongPress) {
+                    onDoubleTap = if (!isVisibleOverlay) {
                         {
                             onDoubleTap(
                                 context = context,
@@ -417,7 +413,7 @@ private fun SharedTransitionScope.FolderGridItemContent(
                     } else {
                         null
                     },
-                    onLongPress = if (!isLongPress) {
+                    onLongPress = if (!isVisibleOverlay) {
                         {
                             onLongPress(
                                 scope = scope,
@@ -434,17 +430,16 @@ private fun SharedTransitionScope.FolderGridItemContent(
                                 ),
                                 onUpdateGridItemSource = onUpdateGridItemSource,
                                 onUpdateImageBitmap = onUpdateImageBitmap,
-                                onUpdateIsLongPress = onUpdateIsLongPress,
                                 onUpdateOverlayBounds = onUpdateOverlayBounds,
                                 onUpdateSharedElementKey = onUpdateSharedElementKey,
                                 onShowGridItemPopup = onShowGridItemPopup,
-                                onUpdateAssociate = onUpdateAssociate,
+                                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                             )
                         }
                     } else {
                         null
                     },
-                    onTap = if (!isLongPress) {
+                    onTap = if (!isVisibleOverlay) {
                         {
                             launcherApps.startMainActivity(
                                 serialNumber = gridItem.serialNumber,
@@ -500,21 +495,16 @@ private fun SharedTransitionScope.FolderGridItemContent(
                         intOffset = layoutCoordinates.positionInRoot().round()
 
                         intSize = layoutCoordinates.size
-                    }.run {
-                        if (!hasInteraction) {
-                            sharedElementWithCallerManagedVisibility(
-                                rememberSharedContentState(
-                                    key = SharedElementKey(
-                                        id = gridItem.id,
-                                        parent = SharedElementKey.Parent.Folder,
-                                    ),
-                                ),
-                                visible = drag == Drag.None || drag == Drag.Cancel || drag == Drag.End,
-                            )
-                        } else {
-                            this
-                        }
-                    },
+                    }
+                    .sharedElementWithCallerManagedVisibility(
+                        rememberSharedContentState(
+                            key = SharedElementKey(
+                                id = gridItem.id,
+                                parent = SharedElementKey.Parent.Folder,
+                            ),
+                        ),
+                        visible = !hasInteraction && !isVisibleOverlay,
+                    ),
             )
 
             if (settings.isNotificationAccessGranted() && hasNotifications) {

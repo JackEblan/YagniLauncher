@@ -42,6 +42,7 @@ internal fun SharedTransitionScope.OverlayImage(
     overlayIntOffset: IntOffset?,
     overlayIntSize: IntSize?,
     sharedElementKey: SharedElementKey?,
+    isVisibleOverlay: Boolean,
     onResetOverlay: () -> Unit,
 ) {
     if (overlayImageBitmap == null ||
@@ -58,8 +59,8 @@ internal fun SharedTransitionScope.OverlayImage(
         DpSize(width = overlayIntSize.width.toDp(), height = overlayIntSize.height.toDp())
     }
 
-    LaunchedEffect(key1 = drag) {
-        if (drag == Drag.Cancel || drag == Drag.End) {
+    LaunchedEffect(key1 = isVisibleOverlay) {
+        if (!isVisibleOverlay) {
             onResetOverlay()
         }
     }
@@ -72,7 +73,7 @@ internal fun SharedTransitionScope.OverlayImage(
             .size(size)
             .sharedElementWithCallerManagedVisibility(
                 rememberSharedContentState(key = sharedElementKey),
-                visible = drag == Drag.Start || drag == Drag.Dragging,
+                visible = isVisibleOverlay,
             ),
         bitmap = overlayImageBitmap,
         contentDescription = null,
