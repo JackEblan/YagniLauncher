@@ -207,7 +207,7 @@ internal fun SharedTransitionScope.FolderScreen(
                             columns = data.columns,
                             gridItems = data.gridItemsByPage[index],
                             rows = data.rows,
-                            { applicationInfoGridItem ->
+                            content = { applicationInfoGridItem ->
                                 FolderGridItemContent(
                                     drag = drag,
                                     folderGridItem = folderGridItem,
@@ -508,15 +508,21 @@ private fun SharedTransitionScope.FolderGridItemContent(
 
                         intSize = layoutCoordinates.size
                     }
-                    .sharedElementWithCallerManagedVisibility(
-                        rememberSharedContentState(
-                            key = SharedElementKey(
-                                id = gridItem.id,
-                                parent = SharedElementKey.Parent.Folder,
-                            ),
-                        ),
-                        visible = !isVisibleOverlay,
-                    ),
+                    .run {
+                        if (!hasInteraction) {
+                            sharedElementWithCallerManagedVisibility(
+                                rememberSharedContentState(
+                                    key = SharedElementKey(
+                                        id = gridItem.id,
+                                        parent = SharedElementKey.Parent.Folder,
+                                    ),
+                                ),
+                                visible = !isVisibleOverlay,
+                            )
+                        } else {
+                            this
+                        }
+                    },
             )
 
             if (settings.isNotificationAccessGranted() && hasNotifications) {

@@ -73,6 +73,12 @@ internal suspend fun handleDropGridItem(
         return
     }
 
+    fun resetOverlayIfOnlyLongPress() {
+        onUpdateIsLongPress(false)
+
+        onUpdateIsVisibleOverlay(false)
+    }
+
     fun resetState() {
         onUpdateIsLongPress(false)
 
@@ -97,9 +103,7 @@ internal suspend fun handleDropGridItem(
             if (lockMovement) return cancel()
 
             if (isLongPress && !isDragging) {
-                onUpdateIsLongPress(false)
-
-                onUpdateIsVisibleOverlay(false)
+                resetOverlayIfOnlyLongPress()
 
                 return
             }
@@ -131,6 +135,7 @@ internal suspend fun handleDropGridItem(
                             onLaunchWidgetIntent = onLaunchWidgetIntent,
                             onUpdateAppWidgetId = onUpdateAppWidgetId,
                             onUpdateWidgetGridItem = onUpdateWidgetGridItem,
+                            onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                         )
 
                     is GridItemData.ShortcutConfig ->
@@ -142,6 +147,7 @@ internal suspend fun handleDropGridItem(
                             onResetGridCacheAfterDeleteGridItemCache = onResetGridCacheAfterDeleteGridItemCache,
                             onLaunchShortcutConfigIntent = onLaunchShortcutConfigIntent,
                             onLaunchShortcutConfigIntentSenderRequest = onLaunchShortcutConfigIntentSenderRequest,
+                            onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                         )
 
                     is GridItemData.ApplicationInfo,
@@ -169,6 +175,7 @@ internal suspend fun handleDropGridItem(
                             pinItemRequest = gridItemSource.pinItemRequest,
                             onDeleteGridItemCache = onResetGridCacheAfterDeleteGridItemCache,
                             onDragEndAfterMove = onDragEndAfterMove,
+                            onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                         )
 
                     is GridItemData.Widget ->
@@ -180,6 +187,7 @@ internal suspend fun handleDropGridItem(
                             onLaunchWidgetIntent = onLaunchWidgetIntent,
                             onUpdateAppWidgetId = onUpdateAppWidgetId,
                             onUpdateWidgetGridItem = onUpdateWidgetGridItem,
+                            onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                         )
 
                     else -> error("Expected ShortcutInfo or Widget")
@@ -195,7 +203,7 @@ internal suspend fun handleDropGridItem(
             if (shouldCancel) {
                 cancel()
             } else if (longPressWithoutDrag) {
-                onUpdateIsLongPress(false)
+                resetOverlayIfOnlyLongPress()
             } else if (shouldFinishDrag) {
                 resetState()
 
@@ -478,6 +486,7 @@ private fun onDragEndWidget(
     onLaunchWidgetIntent: (Intent) -> Unit,
     onUpdateAppWidgetId: (Int) -> Unit,
     onUpdateWidgetGridItem: (GridItem) -> Unit,
+    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
 ) {
     val appWidgetId = androidAppWidgetHostWrapper.allocateAppWidgetId()
 
@@ -515,6 +524,8 @@ private fun onDragEndWidget(
 
         onLaunchWidgetIntent(intent)
     }
+
+    onUpdateIsVisibleOverlay(false)
 }
 
 private fun onDragEndPinShortcut(
@@ -523,12 +534,15 @@ private fun onDragEndPinShortcut(
     pinItemRequest: PinItemRequest?,
     onDeleteGridItemCache: (GridItem) -> Unit,
     onDragEndAfterMove: (MoveGridItemResult) -> Unit,
+    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
 ) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && pinItemRequest != null && pinItemRequest.isValid && pinItemRequest.accept()) {
         onDragEndAfterMove(moveGridItemResult)
     } else {
         onDeleteGridItemCache(gridItem)
     }
+
+    onUpdateIsVisibleOverlay(false)
 }
 
 private fun bindPinWidget(
@@ -561,6 +575,7 @@ private suspend fun onDragEndShortcutConfig(
     onResetGridCacheAfterDeleteGridItemCache: (GridItem) -> Unit,
     onLaunchShortcutConfigIntent: (Intent) -> Unit,
     onLaunchShortcutConfigIntentSenderRequest: (IntentSenderRequest) -> Unit,
+    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
 ) {
     val serialNumber =
         androidUserManagerWrapper.getSerialNumberForUser(userHandle = Process.myUserHandle())
@@ -590,6 +605,8 @@ private suspend fun onDragEndShortcutConfig(
             onResetGridCacheAfterDeleteGridItemCache(gridItem)
         }
     }
+
+    onUpdateIsVisibleOverlay(false)
 }
 
 private fun startAppWidgetConfigureActivityForResult(
