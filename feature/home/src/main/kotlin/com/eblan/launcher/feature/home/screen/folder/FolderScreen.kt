@@ -112,7 +112,6 @@ internal fun SharedTransitionScope.FolderScreen(
     statusBarNotifications: Map<String, Int>,
     textColor: TextColor,
     isVisibleOverlay: Boolean,
-    isCache: Boolean,
     onDismissRequest: () -> Unit,
     onDraggingGridItem: () -> Unit,
     onOpenAppDrawer: () -> Unit,
@@ -215,7 +214,6 @@ internal fun SharedTransitionScope.FolderScreen(
                                     statusBarNotifications = statusBarNotifications,
                                     textColor = textColor,
                                     isVisibleOverlay = isVisibleOverlay,
-                                    isCache = isCache,
                                     onDraggingGridItem = onDraggingGridItem,
                                     onOpenAppDrawer = onOpenAppDrawer,
                                     onUpdateGridItemSource = onUpdateGridItemSource,
@@ -309,7 +307,6 @@ private fun SharedTransitionScope.FolderGridItemContent(
     statusBarNotifications: Map<String, Int>,
     textColor: TextColor,
     isVisibleOverlay: Boolean,
-    isCache: Boolean,
     onDraggingGridItem: () -> Unit,
     onOpenAppDrawer: () -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
@@ -388,8 +385,6 @@ private fun SharedTransitionScope.FolderGridItemContent(
 
     val alpha = if (hasInteraction) 0f else 1f
 
-    val isGesture = !isVisibleOverlay && !isCache
-
     LaunchedEffect(key1 = drag) {
         handleDrag(
             drag = drag,
@@ -405,7 +400,7 @@ private fun SharedTransitionScope.FolderGridItemContent(
         modifier = modifier
             .pointerInput(key1 = drag) {
                 detectTapGestures(
-                    onDoubleTap = if (isGesture) {
+                    onDoubleTap = if (!isVisibleOverlay) {
                         {
                             onDoubleTap(
                                 context = context,
@@ -418,7 +413,7 @@ private fun SharedTransitionScope.FolderGridItemContent(
                     } else {
                         null
                     },
-                    onLongPress = if (isGesture) {
+                    onLongPress = if (!isVisibleOverlay) {
                         {
                             onLongPress(
                                 scope = scope,
@@ -444,7 +439,7 @@ private fun SharedTransitionScope.FolderGridItemContent(
                     } else {
                         null
                     },
-                    onTap = if (isGesture) {
+                    onTap = if (!isVisibleOverlay) {
                         {
                             launcherApps.startMainActivity(
                                 serialNumber = gridItem.serialNumber,

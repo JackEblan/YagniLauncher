@@ -144,7 +144,6 @@ internal fun PagerScreen(
     textColor: TextColor,
     resizeGridItem: GridItem?,
     gridItemSource: GridItemSource?,
-    isCache: Boolean,
     isVisibleOverlay: Boolean,
     onDeleteApplicationInfoGridItem: (ApplicationInfoGridItem) -> Unit,
     onDeleteGridItem: (GridItem) -> Unit,
@@ -735,7 +734,6 @@ internal fun PagerScreen(
                             isScrollInProgress = gridHorizontalPagerState.isScrollInProgress,
                             statusBarNotifications = pagerScreenState.statusBarNotifications,
                             textColor = textColor,
-                            isCache = isCache,
                             isVisibleOverlay = isVisibleOverlay,
                             parent = SharedElementKey.Parent.Grid,
                             onDraggingGridItem = {
@@ -860,7 +858,6 @@ internal fun PagerScreen(
                             isScrollInProgress = dockGridHorizontalPagerState.isScrollInProgress,
                             statusBarNotifications = pagerScreenState.statusBarNotifications,
                             textColor = textColor,
-                            isCache = isCache,
                             isVisibleOverlay = isVisibleOverlay,
                             parent = SharedElementKey.Parent.Dock,
                             onDraggingGridItem = {
@@ -1053,7 +1050,6 @@ internal fun PagerScreen(
                 statusBarNotifications = pagerScreenState.statusBarNotifications,
                 textColor = textColor,
                 isVisibleOverlay = isVisibleOverlay,
-                isCache = isCache,
                 onDismissRequest = {
                     pagerScreenState.dismissFolder(onUpdateFolderGridItemId = onUpdateFolderGridItemId)
                 },

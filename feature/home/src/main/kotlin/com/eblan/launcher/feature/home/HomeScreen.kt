@@ -114,8 +114,6 @@ internal fun HomeRoute(
 
     val gridItemSource by viewModel.gridItemSource.collectAsStateWithLifecycle()
 
-    val isCache by viewModel.isCache.collectAsStateWithLifecycle()
-
     val isVisibleOverlay by viewModel.isVisibleOverlay.collectAsStateWithLifecycle()
 
     HomeScreen(
@@ -136,7 +134,6 @@ internal fun HomeRoute(
         screen = screen,
         resizeGridItem = resizeGridItem,
         gridItemSource = gridItemSource,
-        isCache = isCache,
         isVisibleOverlay = isVisibleOverlay,
         onCancelGridCache = viewModel::cancelGridCache,
         onDeleteApplicationInfoGridItem = viewModel::deleteApplicationInfoGridItem,
@@ -197,7 +194,6 @@ internal fun HomeScreen(
     screen: Screen,
     resizeGridItem: GridItem?,
     gridItemSource: GridItemSource?,
-    isCache: Boolean,
     isVisibleOverlay: Boolean,
     onCancelGridCache: () -> Unit,
     onDeleteApplicationInfoGridItem: (ApplicationInfoGridItem) -> Unit,
@@ -317,7 +313,6 @@ internal fun HomeScreen(
                 screenWidth = screenIntSize.width,
                 resizeGridItem = resizeGridItem,
                 gridItemSource = gridItemSource,
-                isCache = isCache,
                 isVisibleOverlay = isVisibleOverlay,
                 onCancelGridCache = onCancelGridCache,
                 onDeleteApplicationInfoGridItem = onDeleteApplicationInfoGridItem,
@@ -383,7 +378,6 @@ private fun Success(
     screenWidth: Int,
     resizeGridItem: GridItem?,
     gridItemSource: GridItemSource?,
-    isCache: Boolean,
     isVisibleOverlay: Boolean,
     onCancelGridCache: () -> Unit,
     onDeleteApplicationInfoGridItem: (ApplicationInfoGridItem) -> Unit,
@@ -513,7 +507,6 @@ private fun Success(
                     textColor = homeData.textColor,
                     resizeGridItem = resizeGridItem,
                     gridItemSource = gridItemSource,
-                    isCache = isCache,
                     isVisibleOverlay = isVisibleOverlay,
                     onDeleteApplicationInfoGridItem = onDeleteApplicationInfoGridItem,
                     onDeleteGridItem = onDeleteGridItem,
