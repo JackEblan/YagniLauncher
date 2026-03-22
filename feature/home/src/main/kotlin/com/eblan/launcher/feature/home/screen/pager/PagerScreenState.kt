@@ -1133,7 +1133,7 @@ internal class PagerScreenState(
 
     fun verticalDragApplicationScreen(dragAmount: Float) {
         scope.launch {
-            swipeY.snapTo(swipeY.value + dragAmount)
+            swipeY.snapTo((swipeY.value + dragAmount).coerceIn(0f, screenHeight.toFloat()))
         }
     }
 
@@ -1165,13 +1165,23 @@ internal class PagerScreenState(
 
     fun verticalDragWidgetScreen(dragAmount: Float) {
         scope.launch {
-            widgetScreenOffsetY.snapTo(widgetScreenOffsetY.value + dragAmount)
+            widgetScreenOffsetY.snapTo(
+                (widgetScreenOffsetY.value + dragAmount).coerceIn(
+                    0f,
+                    screenHeight.toFloat(),
+                ),
+            )
         }
     }
 
     fun verticalDragShortcutConfigScreen(dragAmount: Float) {
         scope.launch {
-            shortcutConfigScreenOffsetY.snapTo(shortcutConfigScreenOffsetY.value + dragAmount)
+            shortcutConfigScreenOffsetY.snapTo(
+                (shortcutConfigScreenOffsetY.value + dragAmount).coerceIn(
+                    0f,
+                    screenHeight.toFloat(),
+                ),
+            )
         }
     }
 
@@ -1233,7 +1243,12 @@ internal class PagerScreenState(
 
     fun verticalDragAppWidgetScreen(dragAmount: Float) {
         scope.launch {
-            appWidgetScreenOffsetY.snapTo(appWidgetScreenOffsetY.value + dragAmount)
+            appWidgetScreenOffsetY.snapTo(
+                (appWidgetScreenOffsetY.value + dragAmount).coerceIn(
+                    0f,
+                    screenHeight.toFloat(),
+                ),
+            )
         }
     }
 
@@ -1316,9 +1331,11 @@ internal class PagerScreenState(
                     val shortcutInfo = pinItemRequest.shortcutInfo
 
                     if (shortcutInfo != null) {
-                        val serialNumber = androidUserManagerWrapper.getSerialNumberForUser(userHandle = shortcutInfo.userHandle)
+                        val serialNumber =
+                            androidUserManagerWrapper.getSerialNumberForUser(userHandle = shortcutInfo.userHandle)
 
-                        val shortcutIconKey = "$serialNumber:${shortcutInfo.`package`}:${shortcutInfo.id}"
+                        val shortcutIconKey =
+                            "$serialNumber:${shortcutInfo.`package`}:${shortcutInfo.id}"
 
                         val icon = androidLauncherAppsWrapper.getShortcutBadgedIconDrawable(
                             shortcutInfo = shortcutInfo,
