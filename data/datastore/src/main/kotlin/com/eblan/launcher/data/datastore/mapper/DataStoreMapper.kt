@@ -68,6 +68,7 @@ internal fun AppDrawerSettingsProto.toAppDrawerSettings(): AppDrawerSettings = A
     eblanApplicationInfoOrder = eblanApplicationInfoOrderProto.toEblanApplicationInfoOrder(),
     backgroundColor = backgroundColor.toTextColor(),
     customBackgroundColor = customBackgroundColor,
+    showKeyboard = showKeyboard,
 )
 
 internal fun GridItemSettingsProto.toGridItemSettings(): GridItemSettings = GridItemSettings(
@@ -111,6 +112,7 @@ internal fun AppDrawerSettings.toAppDrawerSettingsProto(): AppDrawerSettingsProt
     .setEblanApplicationInfoOrderProto(eblanApplicationInfoOrder.toEblanApplicationInfoOrderProto())
     .setBackgroundColor(backgroundColor.toTextColorProto())
     .setCustomBackgroundColor(customBackgroundColor)
+    .setShowKeyboard(showKeyboard)
     .build()
 
 internal fun GeneralSettings.toGeneralSettingsProto(): GeneralSettingsProto = GeneralSettingsProto.newBuilder().setThemeProto(theme.toThemeProto())

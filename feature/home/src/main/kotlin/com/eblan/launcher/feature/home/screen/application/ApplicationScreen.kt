@@ -90,6 +90,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.layer.drawLayer
@@ -100,6 +102,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -412,11 +415,12 @@ private fun SharedTransitionScope.Success(
             ),
     ) {
         ApplicationSearchBar(
-            modifier = modifier,
             searchBarState = searchBarState,
             textFieldState = textFieldState,
             backgroundColor = appDrawerSettings.backgroundColor,
             customBackgroundColor = appDrawerSettings.customBackgroundColor,
+            swipeY = swipeY,
+            showKeyboard = appDrawerSettings.showKeyboard,
             onUpdateShowEblanApplicationInfoOrderDialog = { newShowEblanApplicationInfoOrderDialog ->
                 showEblanApplicationInfoOrderDialog = newShowEblanApplicationInfoOrderDialog
             },
@@ -612,9 +616,15 @@ private fun ApplicationSearchBar(
     textFieldState: TextFieldState,
     backgroundColor: TextColor,
     customBackgroundColor: Int,
+    swipeY: Float,
+    showKeyboard: Boolean,
     onUpdateShowEblanApplicationInfoOrderDialog: (Boolean) -> Unit,
 ) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+
     val scope = rememberCoroutineScope()
+
+    val focusRequester = remember { FocusRequester() }
 
     val searchBarContainerColor = when (backgroundColor) {
         TextColor.System -> {
@@ -669,9 +679,19 @@ private fun ApplicationSearchBar(
             Color(customBackgroundColor)
         }
     }
+
+    LaunchedEffect(key1 = swipeY) {
+        if (swipeY.roundToInt() == 0 && showKeyboard) {
+            focusRequester.requestFocus()
+
+            keyboardController?.show()
+        }
+    }
+
     SearchBar(
         state = searchBarState,
         modifier = modifier
+            .focusRequester(focusRequester)
             .fillMaxWidth()
             .padding(10.dp),
         inputField = {

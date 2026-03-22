@@ -51,6 +51,7 @@ import com.eblan.launcher.ui.dialog.TextColorDialog
 import com.eblan.launcher.ui.dialog.TwoTextFieldsDialog
 import com.eblan.launcher.ui.settings.GridItemSettings
 import com.eblan.launcher.ui.settings.SettingsColumn
+import com.eblan.launcher.ui.settings.SettingsSwitch
 import com.eblan.launcher.ui.settings.TextColorSettingsRow
 
 @Composable
@@ -147,6 +148,17 @@ private fun Success(
                 subtitle = "${appDrawerSettings.appDrawerColumns}x${appDrawerSettings.appDrawerRowsHeight}",
                 onClick = {
                     showGridDialog = true
+                },
+            )
+
+            HorizontalDivider(modifier = Modifier.fillMaxWidth())
+
+            SettingsSwitch(
+                checked = appDrawerSettings.showKeyboard,
+                title = "Show Keyboard",
+                subtitle = "Show keyboard on launch",
+                onCheckedChange = { showKeyboard ->
+                    onUpdateAppDrawerSettings(appDrawerSettings.copy(showKeyboard = showKeyboard))
                 },
             )
 
