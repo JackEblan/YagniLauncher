@@ -13,5 +13,5 @@ message AppDrawerSettingsProto {
   GridItemSettingsProto gridItemSettingsProto = 3;
   EblanApplicationInfoOrderProto eblanApplicationInfoOrderProto = 4;
   TextColorProto backgroundColor = 5;
-  int32 customBackgroundColor = 9;
+  int32 customBackgroundColor = 6;
 }
