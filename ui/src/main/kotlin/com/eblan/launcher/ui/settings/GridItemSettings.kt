@@ -95,7 +95,10 @@ fun GridItemSettings(
             HorizontalDivider(modifier = Modifier.fillMaxWidth())
 
             TextColorSettingsRow(
-                gridItemSettings = gridItemSettings,
+                textColorTitle = "Text Color",
+                customColorTitle = "Custom Text Color",
+                textColor = gridItemSettings.textColor,
+                customColor = gridItemSettings.customTextColor,
                 onClick = {
                     showTextColorDialog = true
                 },
@@ -207,7 +210,11 @@ fun GridItemSettings(
             },
             onUpdateClick = {
                 try {
-                    onUpdateGridItemSettings(gridItemSettings.copy(iconSize = value.toInt().coerceAtLeast(1)))
+                    onUpdateGridItemSettings(
+                        gridItemSettings.copy(
+                            iconSize = value.toInt().coerceAtLeast(1),
+                        ),
+                    )
 
                     showIconSizeDialog = false
                 } catch (_: NumberFormatException) {
@@ -257,7 +264,11 @@ fun GridItemSettings(
             },
             onUpdateClick = {
                 try {
-                    onUpdateGridItemSettings(gridItemSettings.copy(textSize = value.toInt().coerceAtLeast(1)))
+                    onUpdateGridItemSettings(
+                        gridItemSettings.copy(
+                            textSize = value.toInt().coerceAtLeast(1),
+                        ),
+                    )
 
                     showTextSizeDialog = false
                 } catch (_: NumberFormatException) {
@@ -383,20 +394,23 @@ fun GridItemSettings(
 }
 
 @Composable
-private fun TextColorSettingsRow(
+fun TextColorSettingsRow(
     modifier: Modifier = Modifier,
-    gridItemSettings: GridItemSettings,
+    textColorTitle: String,
+    customColorTitle: String,
+    textColor: TextColor,
+    customColor: Int,
     onClick: () -> Unit,
 ) {
-    when (gridItemSettings.textColor) {
+    when (textColor) {
         TextColor.System,
         TextColor.Light,
         TextColor.Dark,
         -> {
             SettingsColumn(
                 modifier = modifier,
-                title = "Text Color",
-                subtitle = gridItemSettings.textColor.name,
+                title = textColorTitle,
+                subtitle = textColor.name,
                 onClick = onClick,
             )
         }
@@ -404,8 +418,8 @@ private fun TextColorSettingsRow(
         TextColor.Custom -> {
             CustomColorSettingsRow(
                 modifier = modifier,
-                title = "Text Color",
-                customColor = gridItemSettings.customTextColor,
+                title = customColorTitle,
+                customColor = customColor,
                 onClick = onClick,
             )
         }

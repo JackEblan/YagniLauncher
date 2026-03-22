@@ -52,6 +52,7 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberOverscrollEffect
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.clearText
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -64,10 +65,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
+import androidx.compose.material3.SearchBarDefaults.inputFieldColors
+import androidx.compose.material3.SearchBarState
 import androidx.compose.material3.SearchBarValue
 import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.runtime.Composable
@@ -126,6 +130,7 @@ import com.eblan.launcher.domain.model.GetEblanApplicationInfosByLabel
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.ManagedProfileResult
+import com.eblan.launcher.domain.model.TextColor
 import com.eblan.launcher.feature.home.component.scroll.OffsetNestedScrollConnection
 import com.eblan.launcher.feature.home.component.scroll.OffsetOverscrollEffect
 import com.eblan.launcher.feature.home.dialog.EblanApplicationInfoOrderDialog
@@ -203,6 +208,23 @@ internal fun SharedTransitionScope.ApplicationScreen(
             .fillMaxSize()
             .clip(RoundedCornerShape(cornerSize))
             .alpha(alpha),
+        color = when (appDrawerSettings.backgroundColor) {
+            TextColor.System -> {
+                MaterialTheme.colorScheme.surface
+            }
+
+            TextColor.Light -> {
+                Color.White
+            }
+
+            TextColor.Dark -> {
+                Color.Black
+            }
+
+            TextColor.Custom -> {
+                Color(appDrawerSettings.customBackgroundColor)
+            }
+        },
     ) {
         Success(
             appDrawerSettings = appDrawerSettings,
@@ -318,8 +340,6 @@ private fun SharedTransitionScope.Success(
 
     val selectedTagIds = remember { mutableStateSetOf<Long>() }
 
-    val scope = rememberCoroutineScope()
-
     var isRearrangeEblanApplicationInfo by remember { mutableStateOf(false) }
 
     var showEblanApplicationInfoOrderDialog by remember { mutableStateOf(false) }
@@ -391,36 +411,14 @@ private fun SharedTransitionScope.Success(
                 end = paddingValues.calculateEndPadding(LayoutDirection.Ltr),
             ),
     ) {
-        SearchBar(
-            state = searchBarState,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(10.dp),
-            inputField = {
-                SearchBarDefaults.InputField(
-                    textFieldState = textFieldState,
-                    searchBarState = searchBarState,
-                    leadingIcon = {
-                        Icon(
-                            imageVector = EblanLauncherIcons.Search,
-                            contentDescription = null,
-                        )
-                    },
-                    trailingIcon = {
-                        IconButton(
-                            onClick = {
-                                showEblanApplicationInfoOrderDialog = true
-                            },
-                        ) {
-                            Icon(
-                                imageVector = EblanLauncherIcons.MoreVert,
-                                contentDescription = null,
-                            )
-                        }
-                    },
-                    onSearch = { scope.launch { searchBarState.animateToCollapsed() } },
-                    placeholder = { Text(text = "Search Applications") },
-                )
+        ApplicationSearchBar(
+            modifier = modifier,
+            searchBarState = searchBarState,
+            textFieldState = textFieldState,
+            backgroundColor = appDrawerSettings.backgroundColor,
+            customBackgroundColor = appDrawerSettings.customBackgroundColor,
+            onUpdateShowEblanApplicationInfoOrderDialog = { newShowEblanApplicationInfoOrderDialog ->
+                showEblanApplicationInfoOrderDialog = newShowEblanApplicationInfoOrderDialog
             },
         )
 
@@ -441,6 +439,8 @@ private fun SharedTransitionScope.Success(
             EblanApplicationInfoTabRow(
                 currentPage = horizontalPagerState.currentPage,
                 eblanApplicationInfos = getEblanApplicationInfosByLabel.eblanApplicationInfos,
+                backgroundColor = appDrawerSettings.backgroundColor,
+                customBackgroundColor = appDrawerSettings.customBackgroundColor,
                 onAnimateScrollToPage = horizontalPagerState::animateScrollToPage,
             )
 
@@ -602,6 +602,110 @@ private fun SharedTransitionScope.Success(
             },
         )
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ApplicationSearchBar(
+    modifier: Modifier = Modifier,
+    searchBarState: SearchBarState,
+    textFieldState: TextFieldState,
+    backgroundColor: TextColor,
+    customBackgroundColor: Int,
+    onUpdateShowEblanApplicationInfoOrderDialog: (Boolean) -> Unit,
+) {
+    val scope = rememberCoroutineScope()
+
+    val searchBarContainerColor = when (backgroundColor) {
+        TextColor.System -> {
+            SearchBarDefaults.colors().containerColor
+        }
+
+        TextColor.Light -> {
+            Color.White
+        }
+
+        TextColor.Dark -> {
+            Color.Black
+        }
+
+        TextColor.Custom -> {
+            Color(customBackgroundColor)
+        }
+    }
+
+    val focusedContainerColor = when (backgroundColor) {
+        TextColor.System -> {
+            inputFieldColors().focusedContainerColor
+        }
+
+        TextColor.Light -> {
+            Color.White
+        }
+
+        TextColor.Dark -> {
+            Color.Black
+        }
+
+        TextColor.Custom -> {
+            Color(customBackgroundColor)
+        }
+    }
+
+    val unfocusedContainerColor = when (backgroundColor) {
+        TextColor.System -> {
+            inputFieldColors().unfocusedContainerColor
+        }
+
+        TextColor.Light -> {
+            Color.White
+        }
+
+        TextColor.Dark -> {
+            Color.Black
+        }
+
+        TextColor.Custom -> {
+            Color(customBackgroundColor)
+        }
+    }
+    SearchBar(
+        state = searchBarState,
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(10.dp),
+        inputField = {
+            SearchBarDefaults.InputField(
+                textFieldState = textFieldState,
+                searchBarState = searchBarState,
+                leadingIcon = {
+                    Icon(
+                        imageVector = EblanLauncherIcons.Search,
+                        contentDescription = null,
+                    )
+                },
+                trailingIcon = {
+                    IconButton(
+                        onClick = {
+                            onUpdateShowEblanApplicationInfoOrderDialog(true)
+                        },
+                    ) {
+                        Icon(
+                            imageVector = EblanLauncherIcons.MoreVert,
+                            contentDescription = null,
+                        )
+                    }
+                },
+                onSearch = { scope.launch { searchBarState.animateToCollapsed() } },
+                placeholder = { Text(text = "Search Applications") },
+                colors = inputFieldColors(
+                    focusedContainerColor = focusedContainerColor,
+                    unfocusedContainerColor = unfocusedContainerColor,
+                ),
+            )
+        },
+        colors = SearchBarDefaults.colors(containerColor = searchBarContainerColor),
+    )
 }
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalSharedTransitionApi::class)
@@ -1226,6 +1330,8 @@ private fun EblanApplicationInfoTabRow(
     modifier: Modifier = Modifier,
     currentPage: Int,
     eblanApplicationInfos: Map<EblanUser, List<EblanApplicationInfo>>,
+    backgroundColor: TextColor,
+    customBackgroundColor: Int,
     onAnimateScrollToPage: suspend (Int) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
@@ -1233,6 +1339,12 @@ private fun EblanApplicationInfoTabRow(
     SecondaryTabRow(
         modifier = modifier,
         selectedTabIndex = currentPage,
+        containerColor = when (backgroundColor) {
+            TextColor.System -> TabRowDefaults.secondaryContainerColor
+            TextColor.Light -> Color.White
+            TextColor.Dark -> Color.Black
+            TextColor.Custom -> Color(customBackgroundColor)
+        },
     ) {
         eblanApplicationInfos.keys.forEachIndexed { index, eblanUser ->
             Tab(

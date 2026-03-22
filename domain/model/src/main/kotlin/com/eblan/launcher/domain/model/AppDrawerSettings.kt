@@ -22,4 +22,6 @@ data class AppDrawerSettings(
     val appDrawerRowsHeight: Int,
     val gridItemSettings: GridItemSettings,
     val eblanApplicationInfoOrder: EblanApplicationInfoOrder,
+    val backgroundColor: TextColor,
+    val customBackgroundColor: Int,
 )
