@@ -291,14 +291,14 @@ class SyncDataUseCase @Inject constructor(
                 val icon = if (componentName != null) {
                     val file = File(
                         directory,
-                        fileManager.getHashedFileName(name = componentName),
+                        fileManager.getHashedFileName(name = "${appWidgetManagerAppWidgetProviderInfo.serialNumber}:$componentName"),
                     )
 
                     file.absolutePath
                 } else {
                     val file = File(
                         directory,
-                        fileManager.getHashedFileName(name = appWidgetManagerAppWidgetProviderInfo.packageName),
+                        fileManager.getHashedFileName(name = "${appWidgetManagerAppWidgetProviderInfo.serialNumber}:${appWidgetManagerAppWidgetProviderInfo.packageName}"),
                     )
 
                     packageManagerWrapper.getApplicationIcon(
