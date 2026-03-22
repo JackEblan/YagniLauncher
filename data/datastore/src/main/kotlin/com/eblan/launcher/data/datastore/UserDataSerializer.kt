@@ -82,6 +82,7 @@ class UserDataSerializer @Inject constructor() : Serializer<UserDataProto> {
         appDrawerRowsHeight = 100
         gridItemSettingsProto = defaultGridItemSettingsProto
         eblanApplicationInfoOrderProto = EblanApplicationInfoOrderProto.Alphabetical
+        backgroundColor = TextColorProto.TextColorSystem
     }.build()
 
     private val defaultGestureSettingsProto = GestureSettingsProto.newBuilder().apply {

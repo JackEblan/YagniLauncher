@@ -47,9 +47,11 @@ import com.eblan.launcher.domain.model.AppDrawerSettings
 import com.eblan.launcher.domain.model.EblanApplicationInfo
 import com.eblan.launcher.feature.settings.appdrawer.dialog.HiddenEblanApplicationInfosDialog
 import com.eblan.launcher.feature.settings.appdrawer.model.AppDrawerSettingsUiState
+import com.eblan.launcher.ui.dialog.TextColorDialog
 import com.eblan.launcher.ui.dialog.TwoTextFieldsDialog
 import com.eblan.launcher.ui.settings.GridItemSettings
 import com.eblan.launcher.ui.settings.SettingsColumn
+import com.eblan.launcher.ui.settings.TextColorSettingsRow
 
 @Composable
 internal fun AppDrawerSettingsRoute(
@@ -128,6 +130,8 @@ private fun Success(
 
     var showHiddenEblanApplicationInfosDialog by remember { mutableStateOf(false) }
 
+    var showTextColorDialog by remember { mutableStateOf(false) }
+
     Column(
         modifier = modifier
             .verticalScroll(rememberScrollState())
@@ -143,6 +147,18 @@ private fun Success(
                 subtitle = "${appDrawerSettings.appDrawerColumns}x${appDrawerSettings.appDrawerRowsHeight}",
                 onClick = {
                     showGridDialog = true
+                },
+            )
+
+            HorizontalDivider(modifier = Modifier.fillMaxWidth())
+
+            TextColorSettingsRow(
+                textColorTitle = "Background Color",
+                customColorTitle = "Custom Background Color",
+                textColor = appDrawerSettings.backgroundColor,
+                customColor = appDrawerSettings.customBackgroundColor,
+                onClick = {
+                    showTextColorDialog = true
                 },
             )
 
@@ -228,6 +244,27 @@ private fun Success(
                 showHiddenEblanApplicationInfosDialog = false
             },
             onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
+        )
+    }
+
+    if (showTextColorDialog) {
+        TextColorDialog(
+            title = "Background Color",
+            textColor = appDrawerSettings.backgroundColor,
+            customTextColor = appDrawerSettings.customBackgroundColor,
+            onDismissRequest = {
+                showTextColorDialog = false
+            },
+            onUpdateClick = { textColor, customColor ->
+                onUpdateAppDrawerSettings(
+                    appDrawerSettings.copy(
+                        backgroundColor = textColor,
+                        customBackgroundColor = customColor,
+                    ),
+                )
+
+                showTextColorDialog = false
+            },
         )
     }
 }

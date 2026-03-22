@@ -66,6 +66,8 @@ internal fun AppDrawerSettingsProto.toAppDrawerSettings(): AppDrawerSettings = A
     appDrawerRowsHeight = appDrawerRowsHeight,
     gridItemSettings = gridItemSettingsProto.toGridItemSettings(),
     eblanApplicationInfoOrder = eblanApplicationInfoOrderProto.toEblanApplicationInfoOrder(),
+    backgroundColor = backgroundColor.toTextColor(),
+    customBackgroundColor = customBackgroundColor,
 )
 
 internal fun GridItemSettingsProto.toGridItemSettings(): GridItemSettings = GridItemSettings(
@@ -107,6 +109,8 @@ internal fun AppDrawerSettings.toAppDrawerSettingsProto(): AppDrawerSettingsProt
     .setAppDrawerRowsHeight(appDrawerRowsHeight)
     .setGridItemSettingsProto(gridItemSettings.toGridItemSettingsProto())
     .setEblanApplicationInfoOrderProto(eblanApplicationInfoOrder.toEblanApplicationInfoOrderProto())
+    .setBackgroundColor(backgroundColor.toTextColorProto())
+    .setCustomBackgroundColor(customBackgroundColor)
     .build()
 
 internal fun GeneralSettings.toGeneralSettingsProto(): GeneralSettingsProto = GeneralSettingsProto.newBuilder().setThemeProto(theme.toThemeProto())
