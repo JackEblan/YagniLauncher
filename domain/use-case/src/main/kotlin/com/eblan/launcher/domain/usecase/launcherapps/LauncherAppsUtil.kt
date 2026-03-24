@@ -236,21 +236,16 @@ suspend fun updateShortcutInfoGridItems(
                     packageManagerWrapper.getComponentName(packageName = eblanShortcutInfo.packageName)
 
                 val eblanApplicationInfoIcon = if (componentName != null) {
-                    val iconKey = "${eblanShortcutInfo.serialNumber}:$componentName"
-
                     val file = File(
                         directory,
-                        fileManager.getHashedFileName(name = iconKey),
+                        fileManager.getHashedFileName(name = "${eblanShortcutInfo.serialNumber}:$componentName"),
                     )
 
                     file.absolutePath
                 } else {
-                    val iconKey =
-                        "${eblanShortcutInfo.serialNumber}:${eblanShortcutInfo.packageName}"
-
                     val file = File(
                         directory,
-                        fileManager.getHashedFileName(name = iconKey),
+                        fileManager.getHashedFileName(name = "${eblanShortcutInfo.serialNumber}:${eblanShortcutInfo.packageName}"),
                     )
 
                     packageManagerWrapper.getApplicationIcon(
@@ -308,12 +303,9 @@ suspend fun updateShortcutConfigGridItems(
         if (shortcutConfigActivityInfo != null) {
             val directory = fileManager.getFilesDirectory(FileManager.ICONS_DIR)
 
-            val iconKey =
-                "${shortcutConfigActivityInfo.serialNumber}:${shortcutConfigActivityInfo.componentName}"
-
             val file = File(
                 directory,
-                fileManager.getHashedFileName(name = iconKey),
+                fileManager.getHashedFileName(name = "${shortcutConfigActivityInfo.serialNumber}:${shortcutConfigActivityInfo.componentName}"),
             )
 
             updateShortcutConfigGridItems.add(
@@ -374,23 +366,17 @@ suspend fun updateWidgetGridItems(
             val componentName =
                 packageManagerWrapper.getComponentName(packageName = eblanAppWidgetProviderInfo.packageName)
 
-            val icon = if (componentName != null) {
-                val iconKey =
-                    "${eblanAppWidgetProviderInfo.serialNumber}:${eblanAppWidgetProviderInfo.componentName}"
-
+            val applicationIcon = if (componentName != null) {
                 val file = File(
                     directory,
-                    fileManager.getHashedFileName(name = iconKey),
+                    fileManager.getHashedFileName(name = "${eblanAppWidgetProviderInfo.serialNumber}:${eblanAppWidgetProviderInfo.componentName}"),
                 )
 
                 file.absolutePath
             } else {
-                val iconKey =
-                    "${eblanAppWidgetProviderInfo.serialNumber}:${eblanAppWidgetProviderInfo.packageName}"
-
                 val file = File(
                     directory,
-                    fileManager.getHashedFileName(name = iconKey),
+                    fileManager.getHashedFileName(name = "${eblanAppWidgetProviderInfo.serialNumber}:${eblanAppWidgetProviderInfo.packageName}"),
                 )
 
                 packageManagerWrapper.getApplicationIcon(
@@ -413,7 +399,7 @@ suspend fun updateWidgetGridItems(
                     maxResizeHeight = eblanAppWidgetProviderInfo.maxResizeHeight,
                     targetCellHeight = eblanAppWidgetProviderInfo.targetCellHeight,
                     targetCellWidth = eblanAppWidgetProviderInfo.targetCellWidth,
-                    icon = icon,
+                    icon = applicationIcon,
                     label = packageManagerWrapper.getApplicationLabel(
                         packageName = eblanAppWidgetProviderInfo.packageName,
                     ).toString(),
@@ -526,14 +512,14 @@ internal suspend fun ShortcutConfigActivityInfo.toEblanShortcutConfig(
     val applicationIcon = if (packageComponentName != null) {
         val file = File(
             directory,
-            fileManager.getHashedFileName(name = packageComponentName),
+            fileManager.getHashedFileName(name = "$serialNumber:$packageComponentName"),
         )
 
         file.absolutePath
     } else {
         val file = File(
             directory,
-            fileManager.getHashedFileName(name = packageName),
+            fileManager.getHashedFileName(name = "$serialNumber:$packageName"),
         )
 
         packageManagerWrapper.getApplicationIcon(
