@@ -42,8 +42,6 @@ import com.eblan.launcher.domain.model.UpdateShortcutInfoGridItem
 import com.eblan.launcher.domain.model.UpdateWidgetGridItem
 import com.eblan.launcher.domain.model.WidgetGridItem
 import com.eblan.launcher.domain.repository.ApplicationInfoGridItemRepository
-import com.eblan.launcher.domain.repository.EblanAppWidgetProviderInfoRepository
-import com.eblan.launcher.domain.repository.EblanApplicationInfoRepository
 import com.eblan.launcher.domain.repository.ShortcutConfigGridItemRepository
 import com.eblan.launcher.domain.repository.ShortcutInfoGridItemRepository
 import com.eblan.launcher.domain.repository.WidgetGridItemRepository
@@ -52,9 +50,9 @@ import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.first
 import java.io.File
 
-suspend fun deleteEblanApplicationInfoIcons(
-    eblanApplicationInfoRepository: EblanApplicationInfoRepository,
-    eblanAppWidgetProviderInfoRepository: EblanAppWidgetProviderInfoRepository,
+internal suspend fun deleteEblanApplicationInfoIcons(
+    eblanApplicationInfos: List<EblanApplicationInfo>,
+    eblanAppWidgetProviderInfos: List<EblanAppWidgetProviderInfo>,
     oldDeleteEblanApplicationInfos: List<DeleteEblanApplicationInfo>,
 ) {
     oldDeleteEblanApplicationInfos.forEach { oldDeleteEblanApplicationInfo ->
@@ -63,12 +61,12 @@ suspend fun deleteEblanApplicationInfoIcons(
         val icon = oldDeleteEblanApplicationInfo.icon
 
         val hasNoIconReference =
-            icon != null && eblanApplicationInfoRepository.getEblanApplicationInfos()
+            icon != null && eblanApplicationInfos
                 .none { eblanApplicationInfo ->
                     currentCoroutineContext().ensureActive()
 
                     eblanApplicationInfo.icon == icon
-                } && eblanAppWidgetProviderInfoRepository.getEblanAppWidgetProviderInfos()
+                } && eblanAppWidgetProviderInfos
                 .none { eblanAppWidgetProviderInfo ->
                     currentCoroutineContext().ensureActive()
                     eblanAppWidgetProviderInfo.applicationIcon == icon
@@ -85,8 +83,8 @@ suspend fun deleteEblanApplicationInfoIcons(
 }
 
 internal suspend fun deleteEblanAppWidgetProviderInfoIcons(
-    eblanAppWidgetProviderInfoRepository: EblanAppWidgetProviderInfoRepository,
-    eblanApplicationInfoRepository: EblanApplicationInfoRepository,
+    eblanApplicationInfos: List<EblanApplicationInfo>,
+    eblanAppWidgetProviderInfos: List<EblanAppWidgetProviderInfo>,
     oldDeleteEblanAppWidgetProviderInfos: List<DeleteEblanAppWidgetProviderInfo>,
 ) {
     oldDeleteEblanAppWidgetProviderInfos.forEach { deleteEblanAppWidgetProviderInfo ->
@@ -95,13 +93,13 @@ internal suspend fun deleteEblanAppWidgetProviderInfoIcons(
         val applicationIcon = deleteEblanAppWidgetProviderInfo.applicationIcon
 
         val hasNoIconReference = applicationIcon != null &&
-            eblanAppWidgetProviderInfoRepository.getEblanAppWidgetProviderInfos()
+            eblanAppWidgetProviderInfos
                 .none { eblanAppWidgetProviderInfo ->
                     currentCoroutineContext().ensureActive()
 
                     eblanAppWidgetProviderInfo.applicationIcon == applicationIcon
                 } &&
-            eblanApplicationInfoRepository.getEblanApplicationInfos()
+            eblanApplicationInfos
                 .none { eblanApplicationInfo ->
                     currentCoroutineContext().ensureActive()
 
@@ -230,30 +228,6 @@ suspend fun updateShortcutInfoGridItems(
             }
 
             if (eblanShortcutInfo != null) {
-                val directory = fileManager.getFilesDirectory(FileManager.ICONS_DIR)
-
-                val componentName =
-                    packageManagerWrapper.getComponentName(packageName = eblanShortcutInfo.packageName)
-
-                val eblanApplicationInfoIcon = if (componentName != null) {
-                    val file = File(
-                        directory,
-                        fileManager.getHashedFileName(name = "${eblanShortcutInfo.serialNumber}:$componentName"),
-                    )
-
-                    file.absolutePath
-                } else {
-                    val file = File(
-                        directory,
-                        fileManager.getHashedFileName(name = "${eblanShortcutInfo.serialNumber}:${eblanShortcutInfo.packageName}"),
-                    )
-
-                    packageManagerWrapper.getApplicationIcon(
-                        packageName = eblanShortcutInfo.packageName,
-                        file = file,
-                    )
-                }
-
                 updateShortcutInfoGridItems.add(
                     UpdateShortcutInfoGridItem(
                         id = shortcutInfoGridItem.id,
@@ -261,7 +235,12 @@ suspend fun updateShortcutInfoGridItems(
                         longLabel = eblanShortcutInfo.longLabel,
                         isEnabled = eblanShortcutInfo.isEnabled,
                         icon = eblanShortcutInfo.icon,
-                        eblanApplicationInfoIcon = eblanApplicationInfoIcon,
+                        eblanApplicationInfoIcon = resolveApplicationIcon(
+                            fileManager = fileManager,
+                            packageManagerWrapper = packageManagerWrapper,
+                            serialNumber = eblanShortcutInfo.serialNumber,
+                            packageName = eblanShortcutInfo.packageName,
+                        ),
                     ),
                 )
             } else {
@@ -361,30 +340,6 @@ suspend fun updateWidgetGridItems(
             }
 
         if (eblanAppWidgetProviderInfo != null) {
-            val directory = fileManager.getFilesDirectory(FileManager.ICONS_DIR)
-
-            val componentName =
-                packageManagerWrapper.getComponentName(packageName = eblanAppWidgetProviderInfo.packageName)
-
-            val applicationIcon = if (componentName != null) {
-                val file = File(
-                    directory,
-                    fileManager.getHashedFileName(name = "${eblanAppWidgetProviderInfo.serialNumber}:${eblanAppWidgetProviderInfo.componentName}"),
-                )
-
-                file.absolutePath
-            } else {
-                val file = File(
-                    directory,
-                    fileManager.getHashedFileName(name = "${eblanAppWidgetProviderInfo.serialNumber}:${eblanAppWidgetProviderInfo.packageName}"),
-                )
-
-                packageManagerWrapper.getApplicationIcon(
-                    packageName = eblanAppWidgetProviderInfo.packageName,
-                    file = file,
-                )
-            }
-
             updateWidgetGridItems.add(
                 UpdateWidgetGridItem(
                     id = widgetGridItem.id,
@@ -399,7 +354,12 @@ suspend fun updateWidgetGridItems(
                     maxResizeHeight = eblanAppWidgetProviderInfo.maxResizeHeight,
                     targetCellHeight = eblanAppWidgetProviderInfo.targetCellHeight,
                     targetCellWidth = eblanAppWidgetProviderInfo.targetCellWidth,
-                    icon = applicationIcon,
+                    icon = resolveApplicationIcon(
+                        fileManager = fileManager,
+                        packageManagerWrapper = packageManagerWrapper,
+                        serialNumber = eblanAppWidgetProviderInfo.serialNumber,
+                        packageName = eblanAppWidgetProviderInfo.packageName,
+                    ),
                     label = packageManagerWrapper.getApplicationLabel(
                         packageName = eblanAppWidgetProviderInfo.packageName,
                     ).toString(),
@@ -418,55 +378,34 @@ suspend fun updateWidgetGridItems(
 internal suspend fun AppWidgetManagerAppWidgetProviderInfo.toEblanAppWidgetProviderInfo(
     fileManager: FileManager,
     packageManagerWrapper: PackageManagerWrapper,
-): EblanAppWidgetProviderInfo {
-    val directory = fileManager.getFilesDirectory(FileManager.ICONS_DIR)
-
-    val packageComponentName =
-        packageManagerWrapper.getComponentName(packageName = packageName)
-
-    val icon = if (packageComponentName != null) {
-        val file = File(
-            directory,
-            fileManager.getHashedFileName(name = "$serialNumber:$packageComponentName"),
-        )
-
-        file.absolutePath
-    } else {
-        val file = File(
-            directory,
-            fileManager.getHashedFileName(name = "$serialNumber:$packageName"),
-        )
-
-        packageManagerWrapper.getApplicationIcon(
-            packageName = packageName,
-            file = file,
-        )
-    }
-
-    return EblanAppWidgetProviderInfo(
-        componentName = componentName,
+): EblanAppWidgetProviderInfo = EblanAppWidgetProviderInfo(
+    componentName = componentName,
+    serialNumber = serialNumber,
+    configure = configure,
+    packageName = packageName,
+    targetCellWidth = targetCellWidth,
+    targetCellHeight = targetCellHeight,
+    minWidth = minWidth,
+    minHeight = minHeight,
+    resizeMode = resizeMode,
+    minResizeWidth = minResizeWidth,
+    minResizeHeight = minResizeHeight,
+    maxResizeWidth = maxResizeWidth,
+    maxResizeHeight = maxResizeHeight,
+    preview = preview,
+    applicationIcon = resolveApplicationIcon(
+        fileManager = fileManager,
+        packageManagerWrapper = packageManagerWrapper,
         serialNumber = serialNumber,
-        configure = configure,
         packageName = packageName,
-        targetCellWidth = targetCellWidth,
-        targetCellHeight = targetCellHeight,
-        minWidth = minWidth,
-        minHeight = minHeight,
-        resizeMode = resizeMode,
-        minResizeWidth = minResizeWidth,
-        minResizeHeight = minResizeHeight,
-        maxResizeWidth = maxResizeWidth,
-        maxResizeHeight = maxResizeHeight,
-        preview = preview,
-        applicationIcon = icon,
-        applicationLabel = packageManagerWrapper.getApplicationLabel(
-            packageName = packageName,
-        ).toString(),
-        lastUpdateTime = lastUpdateTime,
-        label = label,
-        description = description,
-    )
-}
+    ),
+    applicationLabel = packageManagerWrapper.getApplicationLabel(
+        packageName = packageName,
+    ).toString(),
+    lastUpdateTime = lastUpdateTime,
+    label = label,
+    description = description,
+)
 
 internal fun EblanApplicationInfo.toFastLauncherAppsActivityInfo(): FastLauncherAppsActivityInfo = FastLauncherAppsActivityInfo(
     serialNumber = serialNumber,
@@ -503,43 +442,22 @@ internal fun SyncEblanApplicationInfo.toDeleteEblanApplicationInfo() = DeleteEbl
 internal suspend fun ShortcutConfigActivityInfo.toEblanShortcutConfig(
     fileManager: FileManager,
     packageManagerWrapper: PackageManagerWrapper,
-): EblanShortcutConfig {
-    val directory = fileManager.getFilesDirectory(FileManager.ICONS_DIR)
-
-    val packageComponentName =
-        packageManagerWrapper.getComponentName(packageName = packageName)
-
-    val applicationIcon = if (packageComponentName != null) {
-        val file = File(
-            directory,
-            fileManager.getHashedFileName(name = "$serialNumber:$packageComponentName"),
-        )
-
-        file.absolutePath
-    } else {
-        val file = File(
-            directory,
-            fileManager.getHashedFileName(name = "$serialNumber:$packageName"),
-        )
-
-        packageManagerWrapper.getApplicationIcon(
-            packageName = packageName,
-            file = file,
-        )
-    }
-
-    return EblanShortcutConfig(
-        componentName = componentName,
-        packageName = packageName,
+): EblanShortcutConfig = EblanShortcutConfig(
+    componentName = componentName,
+    packageName = packageName,
+    serialNumber = serialNumber,
+    activityIcon = activityIcon,
+    activityLabel = activityLabel,
+    applicationIcon = resolveApplicationIcon(
+        fileManager = fileManager,
+        packageManagerWrapper = packageManagerWrapper,
         serialNumber = serialNumber,
-        activityIcon = activityIcon,
-        activityLabel = activityLabel,
-        applicationIcon = applicationIcon,
-        applicationLabel = packageManagerWrapper.getApplicationLabel(
-            packageName = packageName,
-        ),
-    )
-}
+        packageName = packageName,
+    ),
+    applicationLabel = packageManagerWrapper.getApplicationLabel(
+        packageName = packageName,
+    ),
+)
 
 internal fun EblanAppWidgetProviderInfo.toDeleteEblanAppWidgetProviderInfo(): DeleteEblanAppWidgetProviderInfo = DeleteEblanAppWidgetProviderInfo(
     componentName = componentName,
@@ -574,3 +492,29 @@ internal fun EblanShortcutConfig.toDeleteEblanShortcutConfig(): DeleteEblanShort
     serialNumber = serialNumber,
     activityIcon = activityIcon,
 )
+
+private suspend fun resolveApplicationIcon(
+    fileManager: FileManager,
+    packageManagerWrapper: PackageManagerWrapper,
+    serialNumber: Long,
+    packageName: String,
+): String? {
+    val directory = fileManager.getFilesDirectory(FileManager.ICONS_DIR)
+
+    val componentName = packageManagerWrapper.getComponentName(packageName = packageName)
+
+    return if (componentName != null) {
+        File(
+            directory,
+            fileManager.getHashedFileName(name = "$serialNumber:$componentName"),
+        ).absolutePath
+    } else {
+        val file =
+            File(
+                directory,
+                fileManager.getHashedFileName(name = "$serialNumber:$packageName"),
+            )
+
+        packageManagerWrapper.getApplicationIcon(packageName = packageName, file = file)
+    }
+}

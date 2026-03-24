@@ -158,8 +158,8 @@ class SyncDataUseCase @Inject constructor(
         )
 
         deleteEblanApplicationInfoIcons(
-            eblanApplicationInfoRepository = eblanApplicationInfoRepository,
-            eblanAppWidgetProviderInfoRepository = eblanAppWidgetProviderInfoRepository,
+            eblanApplicationInfos = eblanApplicationInfoRepository.getEblanApplicationInfos(),
+            eblanAppWidgetProviderInfos = eblanAppWidgetProviderInfoRepository.getEblanAppWidgetProviderInfos(),
             oldDeleteEblanApplicationInfos = oldDeleteEblanApplicationInfos,
         )
 
@@ -244,8 +244,8 @@ class SyncDataUseCase @Inject constructor(
         )
 
         deleteEblanAppWidgetProviderInfoIcons(
-            eblanAppWidgetProviderInfoRepository = eblanAppWidgetProviderInfoRepository,
-            eblanApplicationInfoRepository = eblanApplicationInfoRepository,
+            eblanApplicationInfos = eblanApplicationInfoRepository.getEblanApplicationInfos(),
+            eblanAppWidgetProviderInfos = eblanAppWidgetProviderInfoRepository.getEblanAppWidgetProviderInfos(),
             oldDeleteEblanAppWidgetProviderInfos = oldDeleteEblanAppWidgetProviderInfos,
         )
 
