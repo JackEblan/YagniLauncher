@@ -280,13 +280,6 @@ suspend fun updateShortcutConfigGridItems(
         }
 
         if (eblanShortcutConfig != null) {
-            val directory = fileManager.getFilesDirectory(FileManager.ICONS_DIR)
-
-            val file = File(
-                directory,
-                fileManager.getHashedFileName(name = "${eblanShortcutConfig.serialNumber}:${eblanShortcutConfig.componentName}"),
-            )
-
             updateShortcutConfigGridItems.add(
                 UpdateShortcutConfigGridItem(
                     id = shortcutConfigGridItem.id,
@@ -296,7 +289,12 @@ suspend fun updateShortcutConfigGridItems(
                     applicationLabel = packageManagerWrapper.getApplicationLabel(
                         packageName = eblanShortcutConfig.packageName,
                     ).toString(),
-                    applicationIcon = file.absolutePath,
+                    applicationIcon = resolveApplicationIcon(
+                        fileManager = fileManager,
+                        packageManagerWrapper = packageManagerWrapper,
+                        serialNumber = eblanShortcutConfig.serialNumber,
+                        packageName = eblanShortcutConfig.packageName,
+                    ),
                 ),
             )
         } else {

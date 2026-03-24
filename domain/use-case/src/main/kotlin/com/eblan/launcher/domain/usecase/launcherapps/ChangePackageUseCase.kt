@@ -191,9 +191,7 @@ class ChangePackageUseCase @Inject constructor(
                 }
 
         val newEblanAppWidgetProviderInfosByPackageName =
-            appWidgetManagerAppWidgetProviderInfosByPackageName.filter { appWidgetManagerAppWidgetProviderInfo ->
-                appWidgetManagerAppWidgetProviderInfo.serialNumber == serialNumber && appWidgetManagerAppWidgetProviderInfo.packageName == packageName
-            }.map { appWidgetManagerAppWidgetProviderInfo ->
+            appWidgetManagerAppWidgetProviderInfosByPackageName.map { appWidgetManagerAppWidgetProviderInfo ->
                 currentCoroutineContext().ensureActive()
 
                 appWidgetManagerAppWidgetProviderInfo.toEblanAppWidgetProviderInfo(
@@ -392,7 +390,7 @@ class ChangePackageUseCase @Inject constructor(
             }
         }
 
-        if (oldFastEblanLauncherAppsActivityInfo != fastLauncherAppsActivityInfos) {
+        if (oldFastEblanLauncherAppsActivityInfo.toSet() != fastLauncherAppsActivityInfos.toSet()) {
             iconPackInfoDirectory.listFiles()
                 ?.filter {
                     currentCoroutineContext().ensureActive()
