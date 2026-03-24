@@ -24,10 +24,7 @@ import com.eblan.launcher.domain.framework.FileManager
 import com.eblan.launcher.domain.framework.IconPackManager
 import com.eblan.launcher.domain.framework.LauncherAppsWrapper
 import com.eblan.launcher.domain.framework.PackageManagerWrapper
-import com.eblan.launcher.domain.model.EblanAppWidgetProviderInfo
 import com.eblan.launcher.domain.model.EblanApplicationInfo
-import com.eblan.launcher.domain.model.EblanShortcutConfig
-import com.eblan.launcher.domain.model.EblanShortcutInfo
 import com.eblan.launcher.domain.model.LauncherAppsActivityInfo
 import com.eblan.launcher.domain.repository.EblanAppWidgetProviderInfoRepository
 import com.eblan.launcher.domain.repository.EblanApplicationInfoRepository
@@ -138,52 +135,9 @@ class AddPackageUseCase @Inject constructor(
             }.map { appWidgetManagerAppWidgetProviderInfo ->
                 currentCoroutineContext().ensureActive()
 
-                val directory = fileManager.getFilesDirectory(FileManager.ICONS_DIR)
-
-                val componentName =
-                    packageManagerWrapper.getComponentName(packageName = appWidgetManagerAppWidgetProviderInfo.packageName)
-
-                val icon = if (componentName != null) {
-                    val file = File(
-                        directory,
-                        fileManager.getHashedFileName(name = componentName),
-                    )
-
-                    file.absolutePath
-                } else {
-                    val file = File(
-                        directory,
-                        fileManager.getHashedFileName(name = appWidgetManagerAppWidgetProviderInfo.packageName),
-                    )
-
-                    packageManagerWrapper.getApplicationIcon(
-                        packageName = appWidgetManagerAppWidgetProviderInfo.packageName,
-                        file = file,
-                    )
-                }
-
-                EblanAppWidgetProviderInfo(
-                    componentName = appWidgetManagerAppWidgetProviderInfo.componentName,
-                    serialNumber = serialNumber,
-                    configure = appWidgetManagerAppWidgetProviderInfo.configure,
-                    packageName = appWidgetManagerAppWidgetProviderInfo.packageName,
-                    targetCellWidth = appWidgetManagerAppWidgetProviderInfo.targetCellWidth,
-                    targetCellHeight = appWidgetManagerAppWidgetProviderInfo.targetCellHeight,
-                    minWidth = appWidgetManagerAppWidgetProviderInfo.minWidth,
-                    minHeight = appWidgetManagerAppWidgetProviderInfo.minHeight,
-                    resizeMode = appWidgetManagerAppWidgetProviderInfo.resizeMode,
-                    minResizeWidth = appWidgetManagerAppWidgetProviderInfo.minResizeWidth,
-                    minResizeHeight = appWidgetManagerAppWidgetProviderInfo.minResizeHeight,
-                    maxResizeWidth = appWidgetManagerAppWidgetProviderInfo.maxResizeWidth,
-                    maxResizeHeight = appWidgetManagerAppWidgetProviderInfo.maxResizeHeight,
-                    preview = appWidgetManagerAppWidgetProviderInfo.preview,
-                    applicationIcon = icon,
-                    applicationLabel = packageManagerWrapper.getApplicationLabel(
-                        packageName = appWidgetManagerAppWidgetProviderInfo.packageName,
-                    ).toString(),
-                    lastUpdateTime = appWidgetManagerAppWidgetProviderInfo.lastUpdateTime,
-                    label = appWidgetManagerAppWidgetProviderInfo.label,
-                    description = appWidgetManagerAppWidgetProviderInfo.description,
+                appWidgetManagerAppWidgetProviderInfo.toEblanAppWidgetProviderInfo(
+                    fileManager = fileManager,
+                    packageManagerWrapper = packageManagerWrapper,
                 )
             }
 
@@ -203,17 +157,7 @@ class AddPackageUseCase @Inject constructor(
             )?.map { launcherAppsShortcutInfo ->
                 currentCoroutineContext().ensureActive()
 
-                EblanShortcutInfo(
-                    shortcutId = launcherAppsShortcutInfo.shortcutId,
-                    serialNumber = launcherAppsShortcutInfo.serialNumber,
-                    packageName = launcherAppsShortcutInfo.packageName,
-                    shortLabel = launcherAppsShortcutInfo.shortLabel,
-                    longLabel = launcherAppsShortcutInfo.longLabel,
-                    icon = launcherAppsShortcutInfo.icon,
-                    shortcutQueryFlag = launcherAppsShortcutInfo.shortcutQueryFlag,
-                    isEnabled = launcherAppsShortcutInfo.isEnabled,
-                    lastChangedTimestamp = launcherAppsShortcutInfo.lastChangedTimestamp,
-                )
+                launcherAppsShortcutInfo.toEblanShortcutInfo()
             }
 
         if (eblanShortcutInfos != null) {
@@ -233,40 +177,9 @@ class AddPackageUseCase @Inject constructor(
         ).map { shortcutConfigActivityInfo ->
             currentCoroutineContext().ensureActive()
 
-            val directory = fileManager.getFilesDirectory(FileManager.ICONS_DIR)
-
-            val componentName =
-                packageManagerWrapper.getComponentName(packageName = shortcutConfigActivityInfo.packageName)
-
-            val applicationIcon = if (componentName != null) {
-                val file = File(
-                    directory,
-                    fileManager.getHashedFileName(name = componentName),
-                )
-
-                file.absolutePath
-            } else {
-                val file = File(
-                    directory,
-                    fileManager.getHashedFileName(name = shortcutConfigActivityInfo.packageName),
-                )
-
-                packageManagerWrapper.getApplicationIcon(
-                    packageName = shortcutConfigActivityInfo.packageName,
-                    file = file,
-                )
-            }
-
-            EblanShortcutConfig(
-                componentName = shortcutConfigActivityInfo.componentName,
-                packageName = shortcutConfigActivityInfo.packageName,
-                serialNumber = shortcutConfigActivityInfo.serialNumber,
-                activityIcon = shortcutConfigActivityInfo.activityIcon,
-                activityLabel = shortcutConfigActivityInfo.activityLabel,
-                applicationIcon = applicationIcon,
-                applicationLabel = packageManagerWrapper.getApplicationLabel(
-                    packageName = shortcutConfigActivityInfo.packageName,
-                ),
+            shortcutConfigActivityInfo.toEblanShortcutConfig(
+                fileManager = fileManager,
+                packageManagerWrapper = packageManagerWrapper,
             )
         }
 
@@ -286,7 +199,8 @@ class AddPackageUseCase @Inject constructor(
             iconPackInfoPackageName,
         ).apply { if (!exists()) mkdirs() }
 
-        val appFilter = iconPackManager.getIconPackInfoComponents(packageName = iconPackInfoPackageName)
+        val appFilter =
+            iconPackManager.getIconPackInfoComponents(packageName = iconPackInfoPackageName)
 
         launcherAppsActivityInfos.forEach { launcherAppsActivityInfo ->
             currentCoroutineContext().ensureActive()

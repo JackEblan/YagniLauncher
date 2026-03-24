@@ -69,36 +69,16 @@ class ChangeShortcutsUseCase @Inject constructor(
             val newEblanShortcutInfos = launcherAppsShortcutInfos.map { launcherAppsShortcutInfo ->
                 ensureActive()
 
-                EblanShortcutInfo(
-                    shortcutId = launcherAppsShortcutInfo.shortcutId,
-                    serialNumber = launcherAppsShortcutInfo.serialNumber,
-                    packageName = launcherAppsShortcutInfo.packageName,
-                    shortLabel = launcherAppsShortcutInfo.shortLabel,
-                    longLabel = launcherAppsShortcutInfo.longLabel,
-                    icon = launcherAppsShortcutInfo.icon,
-                    shortcutQueryFlag = launcherAppsShortcutInfo.shortcutQueryFlag,
-                    isEnabled = launcherAppsShortcutInfo.isEnabled,
-                    lastChangedTimestamp = launcherAppsShortcutInfo.lastChangedTimestamp,
-                )
+                launcherAppsShortcutInfo.toEblanShortcutInfo()
             }
 
             if (oldEblanShortcutInfos.toSet() != newEblanShortcutInfos.toSet()) {
                 val newDeleteEblanShortcutInfos = newEblanShortcutInfos.map { eblanShortcutInfo ->
-                    DeleteEblanShortcutInfo(
-                        serialNumber = eblanShortcutInfo.serialNumber,
-                        shortcutId = eblanShortcutInfo.shortcutId,
-                        packageName = eblanShortcutInfo.packageName,
-                        icon = eblanShortcutInfo.icon,
-                    )
+                    eblanShortcutInfo.toDeleteEblanShortcutInfo()
                 }.toSet()
 
                 val oldDeleteEblanShortcutInfos = oldEblanShortcutInfos.map { eblanShortcutInfo ->
-                    DeleteEblanShortcutInfo(
-                        serialNumber = eblanShortcutInfo.serialNumber,
-                        shortcutId = eblanShortcutInfo.shortcutId,
-                        packageName = eblanShortcutInfo.packageName,
-                        icon = eblanShortcutInfo.icon,
-                    )
+                    eblanShortcutInfo.toDeleteEblanShortcutInfo()
                 }.filter { deleteEblanShortcutInfo ->
                     deleteEblanShortcutInfo !in newDeleteEblanShortcutInfos
                 }
@@ -111,19 +91,7 @@ class ChangeShortcutsUseCase @Inject constructor(
                     deleteEblanShortcutInfos = oldDeleteEblanShortcutInfos,
                 )
 
-                oldDeleteEblanShortcutInfos.forEach { deleteEblanShortcutInfo ->
-                    currentCoroutineContext().ensureActive()
-
-                    val icon = deleteEblanShortcutInfo.icon
-
-                    if (icon != null) {
-                        val iconFile = File(icon)
-
-                        if (iconFile.exists()) {
-                            iconFile.delete()
-                        }
-                    }
-                }
+                deleteEblanShortInfoIcons(oldDeleteEblanShortcutInfos = oldDeleteEblanShortcutInfos)
 
                 updateShortcutInfoGridItems(
                     eblanShortcutInfos = eblanShortcutInfoRepository.getEblanShortcutInfos(),
