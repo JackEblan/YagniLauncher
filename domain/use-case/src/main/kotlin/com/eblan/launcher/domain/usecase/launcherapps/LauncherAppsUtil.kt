@@ -273,28 +273,28 @@ suspend fun updateShortcutConfigGridItems(
     }.forEach { shortcutConfigGridItem ->
         currentCoroutineContext().ensureActive()
 
-        val shortcutConfigActivityInfo = eblanShortcutConfigs.find { eblanShortcutConfig ->
+        val eblanShortcutConfig = eblanShortcutConfigs.find { eblanShortcutConfig ->
             currentCoroutineContext().ensureActive()
 
             eblanShortcutConfig.serialNumber == shortcutConfigGridItem.serialNumber && eblanShortcutConfig.componentName == shortcutConfigGridItem.componentName
         }
 
-        if (shortcutConfigActivityInfo != null) {
+        if (eblanShortcutConfig != null) {
             val directory = fileManager.getFilesDirectory(FileManager.ICONS_DIR)
 
             val file = File(
                 directory,
-                fileManager.getHashedFileName(name = "${shortcutConfigActivityInfo.serialNumber}:${shortcutConfigActivityInfo.componentName}"),
+                fileManager.getHashedFileName(name = "${eblanShortcutConfig.serialNumber}:${eblanShortcutConfig.componentName}"),
             )
 
             updateShortcutConfigGridItems.add(
                 UpdateShortcutConfigGridItem(
                     id = shortcutConfigGridItem.id,
-                    componentName = shortcutConfigActivityInfo.componentName,
-                    activityLabel = shortcutConfigActivityInfo.activityLabel,
-                    activityIcon = shortcutConfigActivityInfo.activityIcon,
+                    componentName = eblanShortcutConfig.componentName,
+                    activityLabel = eblanShortcutConfig.activityLabel,
+                    activityIcon = eblanShortcutConfig.activityIcon,
                     applicationLabel = packageManagerWrapper.getApplicationLabel(
-                        packageName = shortcutConfigActivityInfo.packageName,
+                        packageName = eblanShortcutConfig.packageName,
                     ).toString(),
                     applicationIcon = file.absolutePath,
                 ),
