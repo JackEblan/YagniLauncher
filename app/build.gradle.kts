@@ -26,8 +26,8 @@ android {
 
     defaultConfig {
         applicationId = "com.eblan.launcher"
-        versionCode = 53
-        versionName = "0.5.3-alpha"
+        versionCode = 54
+        versionName = "0.5.4-alpha"
     }
 
     buildTypes {
@@ -80,7 +80,6 @@ dependencies {
     implementation(projects.service)
     implementation(projects.ui)
 
-    implementation(libs.accompanist.permissions)
     implementation(libs.androidx.activity.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.core.ktx)
