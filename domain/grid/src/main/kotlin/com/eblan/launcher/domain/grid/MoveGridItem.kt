@@ -29,13 +29,20 @@ suspend fun resolveConflicts(
     columns: Int,
     rows: Int,
 ): Boolean {
-    val queue = ArrayDeque<GridItem>()
-    queue.add(movingGridItem)
+    val queue = ArrayDeque<String>()
+
+    queue.add(movingGridItem.id)
 
     while (queue.isNotEmpty()) {
         currentCoroutineContext().ensureActive()
 
-        val current = queue.removeFirst()
+        val currentId = queue.removeFirst()
+
+        val currentIndex = gridItems.indexOfFirst { it.id == currentId }
+
+        if (currentIndex == -1) continue
+
+        val current = gridItems[currentIndex]
 
         for (i in gridItems.indices) {
             currentCoroutineContext().ensureActive()
@@ -52,7 +59,7 @@ suspend fun resolveConflicts(
                 continue
             }
 
-            val moved = moveGridItem(
+            val movedGridItem = moveGridItem(
                 resolveDirection = resolveDirection,
                 moving = current,
                 conflicting = other,
@@ -60,9 +67,9 @@ suspend fun resolveConflicts(
                 rows = rows,
             ) ?: return false
 
-            gridItems[i] = moved
+            gridItems[i] = movedGridItem
 
-            queue.add(moved)
+            queue.add(movedGridItem.id)
         }
     }
 
