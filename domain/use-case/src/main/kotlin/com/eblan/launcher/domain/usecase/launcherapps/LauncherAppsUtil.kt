@@ -156,7 +156,7 @@ internal suspend fun deleteEblanShortcutConfigIcons(oldDeleteEblanShortcutConfig
     }
 }
 
-suspend fun updateApplicationInfoGridItems(
+internal suspend fun updateApplicationInfoGridItems(
     eblanApplicationInfos: List<EblanApplicationInfo>,
     applicationInfoGridItemRepository: ApplicationInfoGridItemRepository,
 ) {
@@ -203,7 +203,7 @@ suspend fun updateApplicationInfoGridItems(
     )
 }
 
-suspend fun updateShortcutInfoGridItems(
+internal suspend fun updateShortcutInfoGridItems(
     eblanShortcutInfos: List<EblanShortcutInfo>?,
     shortcutInfoGridItemRepository: ShortcutInfoGridItemRepository,
     fileManager: FileManager,
@@ -256,7 +256,7 @@ suspend fun updateShortcutInfoGridItems(
     }
 }
 
-suspend fun updateShortcutConfigGridItems(
+internal suspend fun updateShortcutConfigGridItems(
     eblanShortcutConfigs: List<EblanShortcutConfig>,
     shortcutConfigGridItemRepository: ShortcutConfigGridItemRepository,
     fileManager: FileManager,
@@ -311,7 +311,7 @@ suspend fun updateShortcutConfigGridItems(
     )
 }
 
-suspend fun updateWidgetGridItems(
+internal suspend fun updateWidgetGridItems(
     eblanAppWidgetProviderInfos: List<EblanAppWidgetProviderInfo>,
     fileManager: FileManager,
     packageManagerWrapper: PackageManagerWrapper,

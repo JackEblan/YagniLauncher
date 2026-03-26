@@ -29,33 +29,40 @@ suspend fun resolveConflicts(
     columns: Int,
     rows: Int,
 ): Boolean {
-    for ((index, gridItem) in gridItems.withIndex()) {
+    val queue = ArrayDeque<GridItem>()
+    queue.add(movingGridItem)
+
+    while (queue.isNotEmpty()) {
         currentCoroutineContext().ensureActive()
 
-        val isOverlapping = gridItem.id != movingGridItem.id &&
-            rectanglesOverlap(moving = movingGridItem, other = gridItem)
+        val current = queue.removeFirst()
 
-        if (isOverlapping) {
-            val movedGridItem = moveGridItem(
+        for (i in gridItems.indices) {
+            currentCoroutineContext().ensureActive()
+
+            val other = gridItems[i]
+
+            if (other.id == current.id) continue
+
+            if (!rectanglesOverlap(
+                    moving = current,
+                    other = other,
+                )
+            ) {
+                continue
+            }
+
+            val moved = moveGridItem(
                 resolveDirection = resolveDirection,
-                moving = movingGridItem,
-                conflicting = gridItem,
+                moving = current,
+                conflicting = other,
                 columns = columns,
                 rows = rows,
             ) ?: return false
 
-            gridItems[index] = movedGridItem
+            gridItems[i] = moved
 
-            if (!resolveConflicts(
-                    gridItems = gridItems,
-                    resolveDirection = resolveDirection,
-                    movingGridItem = movedGridItem,
-                    columns = columns,
-                    rows = rows,
-                )
-            ) {
-                return false
-            }
+            queue.add(moved)
         }
     }
 
