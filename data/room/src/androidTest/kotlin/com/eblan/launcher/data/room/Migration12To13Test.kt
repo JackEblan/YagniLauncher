@@ -80,14 +80,20 @@ class Migration12To13Test {
             true,
             Migration12To13(),
         ).use { db ->
-            val cursor = db.query("SELECT * FROM EblanShortcutInfoEntity")
+            db.query("SELECT * FROM EblanShortcutInfoEntity").use { cursor ->
+                assertTrue(cursor.moveToFirst())
 
-            assertTrue(cursor.moveToFirst())
-
-            assertEquals("id_1", cursor.getString(cursor.getColumnIndex("shortcutId")))
-            assertEquals("com.example.app", cursor.getString(cursor.getColumnIndex("packageName")))
-            assertEquals(101L, cursor.getLong(cursor.getColumnIndex("serialNumber")))
-            assertEquals(123456789L, cursor.getLong(cursor.getColumnIndex("lastChangedTimestamp")))
+                assertEquals("id_1", cursor.getString(cursor.getColumnIndexOrThrow("shortcutId")))
+                assertEquals(
+                    "com.example.app",
+                    cursor.getString(cursor.getColumnIndexOrThrow("packageName")),
+                )
+                assertEquals(101L, cursor.getLong(cursor.getColumnIndexOrThrow("serialNumber")))
+                assertEquals(
+                    123456789L,
+                    cursor.getLong(cursor.getColumnIndexOrThrow("lastChangedTimestamp")),
+                )
+            }
         }
     }
 }

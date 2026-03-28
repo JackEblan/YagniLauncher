@@ -59,15 +59,12 @@ class Migration13To14Test {
             true,
             Migration13To14(),
         ).use { db ->
-
             // 1. Verify existing data still exists
-            val cursor = db.query("SELECT * FROM EblanApplicationInfoTagEntity")
-
-            assertTrue(cursor.moveToFirst())
-            assertEquals(1L, cursor.getLong(cursor.getColumnIndex("id")))
-            assertEquals("Work", cursor.getString(cursor.getColumnIndex("name")))
-
-            cursor.close()
+            db.query("SELECT * FROM EblanApplicationInfoTagEntity").use { cursor ->
+                assertTrue(cursor.moveToFirst())
+                assertEquals(1L, cursor.getLong(cursor.getColumnIndexOrThrow("id")))
+                assertEquals("Work", cursor.getString(cursor.getColumnIndexOrThrow("name")))
+            }
 
             // 2. Verify duplicates are now allowed
             db.execSQL(
@@ -77,14 +74,12 @@ class Migration13To14Test {
                 """.trimIndent(),
             )
 
-            val duplicateCursor = db.query(
+            db.query(
                 "SELECT COUNT(*) FROM EblanApplicationInfoTagEntity WHERE name = 'Work'",
-            )
-
-            assertTrue(duplicateCursor.moveToFirst())
-            assertEquals(2, duplicateCursor.getInt(0))
-
-            duplicateCursor.close()
+            ).use { duplicateCursor ->
+                assertTrue(duplicateCursor.moveToFirst())
+                assertEquals(2, duplicateCursor.getInt(0))
+            }
         }
     }
 }
