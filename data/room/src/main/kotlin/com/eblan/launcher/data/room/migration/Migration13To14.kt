@@ -1,0 +1,50 @@
+/*
+ *
+ *   Copyright 2023 Einstein Blanco
+ *
+ *   Licensed under the GNU General Public License v3.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
+ *
+ *       https://www.gnu.org/licenses/gpl-3.0
+ *
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
+ *
+ */
+package com.eblan.launcher.data.room.migration
+
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
+
+class Migration13To14 : Migration(13, 14) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL(
+            """
+            CREATE TABLE EblanApplicationInfoTagEntity_new (
+                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                name TEXT NOT NULL
+            )
+            """.trimIndent(),
+        )
+
+        db.execSQL(
+            """
+            INSERT INTO EblanApplicationInfoTagEntity_new (id, name)
+            SELECT id, name FROM EblanApplicationInfoTagEntity
+            """.trimIndent(),
+        )
+
+        db.execSQL("DROP TABLE EblanApplicationInfoTagEntity")
+
+        db.execSQL(
+            """
+            ALTER TABLE EblanApplicationInfoTagEntity_new
+            RENAME TO EblanApplicationInfoTagEntity
+            """.trimIndent(),
+        )
+    }
+}
