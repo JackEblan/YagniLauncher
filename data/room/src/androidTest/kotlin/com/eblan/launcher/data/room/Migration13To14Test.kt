@@ -42,15 +42,13 @@ class Migration13To14Test {
     @Test
     @Throws(IOException::class)
     fun migrate13To14() {
-        helper.createDatabase(testDatabase, 13).apply {
-            execSQL(
+        helper.createDatabase(testDatabase, 13).use { db ->
+            db.execSQL(
                 """
                 INSERT INTO EblanApplicationInfoTagEntity (id, name)
                 VALUES (1, 'Work')
                 """.trimIndent(),
             )
-
-            close()
         }
 
         helper.runMigrationsAndValidate(
@@ -76,9 +74,9 @@ class Migration13To14Test {
 
             db.query(
                 "SELECT COUNT(*) FROM EblanApplicationInfoTagEntity WHERE name = 'Work'",
-            ).use { duplicateCursor ->
-                assertTrue(duplicateCursor.moveToFirst())
-                assertEquals(2, duplicateCursor.getInt(0))
+            ).use { cursor ->
+                assertTrue(cursor.moveToFirst())
+                assertEquals(2, cursor.getInt(0))
             }
         }
     }

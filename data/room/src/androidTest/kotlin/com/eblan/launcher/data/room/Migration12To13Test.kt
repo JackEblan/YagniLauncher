@@ -43,8 +43,8 @@ class Migration12To13Test {
     @Throws(IOException::class)
     fun migrate12To13() {
         // Create database at version 12
-        helper.createDatabase(testDatabase, 12).apply {
-            execSQL(
+        helper.createDatabase(testDatabase, 12).use { db ->
+            db.execSQL(
                 """
         INSERT INTO EblanShortcutInfoEntity (
             shortcutId, 
@@ -69,8 +69,6 @@ class Migration12To13Test {
         )
                 """.trimIndent(),
             )
-
-            close()
         }
 
         // Run migration → validate version 13

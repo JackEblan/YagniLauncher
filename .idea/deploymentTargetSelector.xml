@@ -19,7 +19,13 @@
       <SelectionState runConfigName="migrate13To14()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="migrateAll()">
+      <SelectionState runConfigName="migrate4To5()">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="migrate6To7()">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="migrate7To8()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

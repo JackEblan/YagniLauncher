@@ -46,9 +46,9 @@ class Migration7To8Test {
         helper.createDatabase(
             testDatabase,
             7,
-        ).apply {
+        ).use { db ->
             // ApplicationInfoGridItemEntity
-            execSQL(
+            db.execSQL(
                 """
     INSERT INTO ApplicationInfoGridItemEntity (
         id,
@@ -105,7 +105,7 @@ class Migration7To8Test {
             )
 
             // ShortcutInfoGridItemEntity
-            execSQL(
+            db.execSQL(
                 """
     INSERT INTO ShortcutInfoGridItemEntity (
         id,
@@ -167,7 +167,7 @@ class Migration7To8Test {
             )
 
             // FolderGridItemEntity
-            execSQL(
+            db.execSQL(
                 """
     INSERT INTO FolderGridItemEntity (
         id,
@@ -216,7 +216,7 @@ class Migration7To8Test {
             )
 
             // ShortcutConfigGridItemEntity
-            execSQL(
+            db.execSQL(
                 """
     INSERT INTO ShortcutConfigGridItemEntity (
         id,
@@ -283,7 +283,7 @@ class Migration7To8Test {
             )
 
             // WidgetGridItemEntity
-            execSQL(
+            db.execSQL(
                 """
             INSERT INTO WidgetGridItemEntity (
                 id,
@@ -358,21 +358,18 @@ class Migration7To8Test {
             )
                 """.trimIndent(),
             )
-
-            close()
         }
 
         // Run migration to version 8
-        val dbV8 = helper.runMigrationsAndValidate(
+        helper.runMigrationsAndValidate(
             testDatabase,
             8,
             true,
             Migration7To8(),
-        )
-
-        // Verify ApplicationInfoGridItemEntity
-        dbV8.query(
-            """
+        ).use { db ->
+            // Verify ApplicationInfoGridItemEntity
+            db.query(
+                """
     SELECT 
         id,
         folderId,
@@ -416,120 +413,123 @@ class Migration7To8Test {
         swipeDown_componentName
     FROM ApplicationInfoGridItemEntity
     WHERE id = 'app_com.example.app_1'
-            """.trimIndent(),
-        ).use { cursor ->
-            assertTrue(cursor.moveToFirst())
+                """.trimIndent(),
+            ).use { cursor ->
+                assertTrue(cursor.moveToFirst())
 
-            // Core identity & position fields – should be unchanged
-            assertEquals(
-                "app_com.example.app_1",
-                cursor.getString(cursor.getColumnIndexOrThrow("id")),
-            )
-            assertNull(cursor.getString(cursor.getColumnIndexOrThrow("folderId")))
-            assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("page")))
-            assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("startColumn")))
-            assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("startRow")))
-            assertEquals(1, cursor.getInt(cursor.getColumnIndexOrThrow("columnSpan")))
-            assertEquals(1, cursor.getInt(cursor.getColumnIndexOrThrow("rowSpan")))
-            assertEquals("APP", cursor.getString(cursor.getColumnIndexOrThrow("associate")))
+                // Core identity & position fields – should be unchanged
+                assertEquals(
+                    "app_com.example.app_1",
+                    cursor.getString(cursor.getColumnIndexOrThrow("id")),
+                )
+                assertNull(cursor.getString(cursor.getColumnIndexOrThrow("folderId")))
+                assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("page")))
+                assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("startColumn")))
+                assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("startRow")))
+                assertEquals(1, cursor.getInt(cursor.getColumnIndexOrThrow("columnSpan")))
+                assertEquals(1, cursor.getInt(cursor.getColumnIndexOrThrow("rowSpan")))
+                assertEquals("APP", cursor.getString(cursor.getColumnIndexOrThrow("associate")))
 
-            // Application identification
-            assertEquals(
-                "com.example.app/.MainActivity",
-                cursor.getString(cursor.getColumnIndexOrThrow("componentName")),
-            )
-            assertEquals(
-                "com.example.app",
-                cursor.getString(cursor.getColumnIndexOrThrow("packageName")),
-            )
+                // Application identification
+                assertEquals(
+                    "com.example.app/.MainActivity",
+                    cursor.getString(cursor.getColumnIndexOrThrow("componentName")),
+                )
+                assertEquals(
+                    "com.example.app",
+                    cursor.getString(cursor.getColumnIndexOrThrow("packageName")),
+                )
 
-            // Visual & label fields
-            assertEquals(
-                "ic_launcher_com_example_app",
-                cursor.getString(cursor.getColumnIndexOrThrow("icon")),
-            )
-            assertEquals("Example App", cursor.getString(cursor.getColumnIndexOrThrow("label")))
-            assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("override")))
-            assertEquals(1002L, cursor.getLong(cursor.getColumnIndexOrThrow("serialNumber")))
-            assertNull(cursor.getString(cursor.getColumnIndexOrThrow("customIcon")))
-            assertNull(cursor.getString(cursor.getColumnIndexOrThrow("customLabel")))
+                // Visual & label fields
+                assertEquals(
+                    "ic_launcher_com_example_app",
+                    cursor.getString(cursor.getColumnIndexOrThrow("icon")),
+                )
+                assertEquals("Example App", cursor.getString(cursor.getColumnIndexOrThrow("label")))
+                assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("override")))
+                assertEquals(1002L, cursor.getLong(cursor.getColumnIndexOrThrow("serialNumber")))
+                assertNull(cursor.getString(cursor.getColumnIndexOrThrow("customIcon")))
+                assertNull(cursor.getString(cursor.getColumnIndexOrThrow("customLabel")))
 
-            // gridItemSettings – should be preserved
-            assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("iconSize")))
-            assertEquals("#FF000000", cursor.getString(cursor.getColumnIndexOrThrow("textColor")))
-            assertEquals(14f, cursor.getFloat(cursor.getColumnIndexOrThrow("textSize")), 0.001f)
-            assertEquals(1, cursor.getInt(cursor.getColumnIndexOrThrow("showLabel")))
-            assertEquals(1, cursor.getInt(cursor.getColumnIndexOrThrow("singleLineLabel")))
-            assertEquals(
-                "CENTER",
-                cursor.getString(cursor.getColumnIndexOrThrow("horizontalAlignment")),
-            )
-            assertEquals(
-                "CENTER",
-                cursor.getString(cursor.getColumnIndexOrThrow("verticalArrangement")),
-            )
+                // gridItemSettings – should be preserved
+                assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("iconSize")))
+                assertEquals(
+                    "#FF000000",
+                    cursor.getString(cursor.getColumnIndexOrThrow("textColor")),
+                )
+                assertEquals(14f, cursor.getFloat(cursor.getColumnIndexOrThrow("textSize")), 0.001f)
+                assertEquals(1, cursor.getInt(cursor.getColumnIndexOrThrow("showLabel")))
+                assertEquals(1, cursor.getInt(cursor.getColumnIndexOrThrow("singleLineLabel")))
+                assertEquals(
+                    "CENTER",
+                    cursor.getString(cursor.getColumnIndexOrThrow("horizontalAlignment")),
+                )
+                assertEquals(
+                    "CENTER",
+                    cursor.getString(cursor.getColumnIndexOrThrow("verticalArrangement")),
+                )
 
-            assertEquals(
-                0,
-                cursor.getInt(cursor.getColumnIndexOrThrow("customTextColor")),
-            )
-            assertEquals(
-                0,
-                cursor.getInt(cursor.getColumnIndexOrThrow("customBackgroundColor")),
-            )
-            assertEquals(
-                0,
-                cursor.getInt(cursor.getColumnIndexOrThrow("padding")),
-            )
-            assertEquals(
-                0,
-                cursor.getInt(cursor.getColumnIndexOrThrow("cornerRadius")),
-            )
+                assertEquals(
+                    0,
+                    cursor.getInt(cursor.getColumnIndexOrThrow("customTextColor")),
+                )
+                assertEquals(
+                    0,
+                    cursor.getInt(cursor.getColumnIndexOrThrow("customBackgroundColor")),
+                )
+                assertEquals(
+                    0,
+                    cursor.getInt(cursor.getColumnIndexOrThrow("padding")),
+                )
+                assertEquals(
+                    0,
+                    cursor.getInt(cursor.getColumnIndexOrThrow("cornerRadius")),
+                )
 
-            // New gesture fields — should have default values after migration
-            assertEquals(
-                "None",
-                cursor.getString(cursor.getColumnIndexOrThrow("doubleTap_eblanActionType")),
-            )
-            assertEquals(
-                0L,
-                cursor.getLong(cursor.getColumnIndexOrThrow("doubleTap_serialNumber")),
-            )
-            assertEquals(
-                "",
-                cursor.getString(cursor.getColumnIndexOrThrow("doubleTap_componentName")),
-            )
+                // New gesture fields — should have default values after migration
+                assertEquals(
+                    "None",
+                    cursor.getString(cursor.getColumnIndexOrThrow("doubleTap_eblanActionType")),
+                )
+                assertEquals(
+                    0L,
+                    cursor.getLong(cursor.getColumnIndexOrThrow("doubleTap_serialNumber")),
+                )
+                assertEquals(
+                    "",
+                    cursor.getString(cursor.getColumnIndexOrThrow("doubleTap_componentName")),
+                )
 
-            assertEquals(
-                "None",
-                cursor.getString(cursor.getColumnIndexOrThrow("swipeUp_eblanActionType")),
-            )
-            assertEquals(
-                0L,
-                cursor.getLong(cursor.getColumnIndexOrThrow("swipeUp_serialNumber")),
-            )
-            assertEquals(
-                "",
-                cursor.getString(cursor.getColumnIndexOrThrow("swipeUp_componentName")),
-            )
+                assertEquals(
+                    "None",
+                    cursor.getString(cursor.getColumnIndexOrThrow("swipeUp_eblanActionType")),
+                )
+                assertEquals(
+                    0L,
+                    cursor.getLong(cursor.getColumnIndexOrThrow("swipeUp_serialNumber")),
+                )
+                assertEquals(
+                    "",
+                    cursor.getString(cursor.getColumnIndexOrThrow("swipeUp_componentName")),
+                )
 
-            assertEquals(
-                "None",
-                cursor.getString(cursor.getColumnIndexOrThrow("swipeDown_eblanActionType")),
-            )
-            assertEquals(
-                0L,
-                cursor.getLong(cursor.getColumnIndexOrThrow("swipeDown_serialNumber")),
-            )
-            assertEquals(
-                "",
-                cursor.getString(cursor.getColumnIndexOrThrow("swipeDown_componentName")),
-            )
-        }
+                assertEquals(
+                    "None",
+                    cursor.getString(cursor.getColumnIndexOrThrow("swipeDown_eblanActionType")),
+                )
+                assertEquals(
+                    0L,
+                    cursor.getLong(cursor.getColumnIndexOrThrow("swipeDown_serialNumber")),
+                )
+                assertEquals(
+                    "",
+                    cursor.getString(cursor.getColumnIndexOrThrow("swipeDown_componentName")),
+                )
+            }
 
-        // Verify ShortcutInfoGridItemEntity
-        dbV8.query(
-            """
+            // Verify ShortcutInfoGridItemEntity
+            db.query(
+                """
     SELECT 
         id,
         folderId,
@@ -574,122 +574,131 @@ class Migration7To8Test {
         swipeDown_serialNumber,
         swipeDown_componentName
     FROM ShortcutInfoGridItemEntity
-            """.trimIndent(),
-        ).use { cursor ->
-            assertTrue(cursor.moveToFirst())
+                """.trimIndent(),
+            ).use { cursor ->
+                assertTrue(cursor.moveToFirst())
 
-            assertEquals("shortcut_1", cursor.getString(cursor.getColumnIndexOrThrow("id")))
-            assertNull(cursor.getString(cursor.getColumnIndexOrThrow("folderId")))
-            assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("page")))
-            assertEquals(1, cursor.getInt(cursor.getColumnIndexOrThrow("startColumn")))
-            assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("startRow")))
-            assertEquals(1, cursor.getInt(cursor.getColumnIndexOrThrow("columnSpan")))
-            assertEquals(1, cursor.getInt(cursor.getColumnIndexOrThrow("rowSpan")))
-            assertEquals("UNSPECIFIED", cursor.getString(cursor.getColumnIndexOrThrow("associate")))
+                assertEquals("shortcut_1", cursor.getString(cursor.getColumnIndexOrThrow("id")))
+                assertNull(cursor.getString(cursor.getColumnIndexOrThrow("folderId")))
+                assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("page")))
+                assertEquals(1, cursor.getInt(cursor.getColumnIndexOrThrow("startColumn")))
+                assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("startRow")))
+                assertEquals(1, cursor.getInt(cursor.getColumnIndexOrThrow("columnSpan")))
+                assertEquals(1, cursor.getInt(cursor.getColumnIndexOrThrow("rowSpan")))
+                assertEquals(
+                    "UNSPECIFIED",
+                    cursor.getString(cursor.getColumnIndexOrThrow("associate")),
+                )
 
-            assertEquals(
-                "com.example",
-                cursor.getString(cursor.getColumnIndexOrThrow("packageName")),
-            )
-            assertEquals(
-                "shortcut_id_1",
-                cursor.getString(cursor.getColumnIndexOrThrow("shortcutId")),
-            )
+                assertEquals(
+                    "com.example",
+                    cursor.getString(cursor.getColumnIndexOrThrow("packageName")),
+                )
+                assertEquals(
+                    "shortcut_id_1",
+                    cursor.getString(cursor.getColumnIndexOrThrow("shortcutId")),
+                )
 
-            assertEquals(
-                "Example",
-                cursor.getString(cursor.getColumnIndexOrThrow("shortLabel")),
-            )
+                assertEquals(
+                    "Example",
+                    cursor.getString(cursor.getColumnIndexOrThrow("shortLabel")),
+                )
 
-            assertEquals(
-                "Example Shortcut",
-                cursor.getString(cursor.getColumnIndexOrThrow("longLabel")),
-            )
+                assertEquals(
+                    "Example Shortcut",
+                    cursor.getString(cursor.getColumnIndexOrThrow("longLabel")),
+                )
 
-            assertNull(cursor.getString(cursor.getColumnIndexOrThrow("icon")))
-            assertEquals(false, cursor.getInt(cursor.getColumnIndexOrThrow("override")) != 0)
-            assertEquals(1L, cursor.getLong(cursor.getColumnIndexOrThrow("serialNumber")))
-            assertEquals(true, cursor.getInt(cursor.getColumnIndexOrThrow("isEnabled")) != 0)
+                assertNull(cursor.getString(cursor.getColumnIndexOrThrow("icon")))
+                assertEquals(false, cursor.getInt(cursor.getColumnIndexOrThrow("override")) != 0)
+                assertEquals(1L, cursor.getLong(cursor.getColumnIndexOrThrow("serialNumber")))
+                assertEquals(true, cursor.getInt(cursor.getColumnIndexOrThrow("isEnabled")) != 0)
 
-            assertNull(cursor.getString(cursor.getColumnIndexOrThrow("eblanApplicationInfoIcon")))
-            assertNull(cursor.getString(cursor.getColumnIndexOrThrow("customIcon")))
-            assertNull(cursor.getString(cursor.getColumnIndexOrThrow("customShortLabel")))
+                assertNull(cursor.getString(cursor.getColumnIndexOrThrow("eblanApplicationInfoIcon")))
+                assertNull(cursor.getString(cursor.getColumnIndexOrThrow("customIcon")))
+                assertNull(cursor.getString(cursor.getColumnIndexOrThrow("customShortLabel")))
 
-            assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("iconSize")))
-            assertEquals("#FF000000", cursor.getString(cursor.getColumnIndexOrThrow("textColor")))
-            assertEquals(14f, cursor.getFloat(cursor.getColumnIndexOrThrow("textSize")), 0.001f)
-            assertEquals(true, cursor.getInt(cursor.getColumnIndexOrThrow("showLabel")) != 0)
-            assertEquals(true, cursor.getInt(cursor.getColumnIndexOrThrow("singleLineLabel")) != 0)
-            assertEquals(
-                "CENTER",
-                cursor.getString(cursor.getColumnIndexOrThrow("horizontalAlignment")),
-            )
-            assertEquals(
-                "CENTER",
-                cursor.getString(cursor.getColumnIndexOrThrow("verticalArrangement")),
-            )
+                assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("iconSize")))
+                assertEquals(
+                    "#FF000000",
+                    cursor.getString(cursor.getColumnIndexOrThrow("textColor")),
+                )
+                assertEquals(14f, cursor.getFloat(cursor.getColumnIndexOrThrow("textSize")), 0.001f)
+                assertEquals(true, cursor.getInt(cursor.getColumnIndexOrThrow("showLabel")) != 0)
+                assertEquals(
+                    true,
+                    cursor.getInt(cursor.getColumnIndexOrThrow("singleLineLabel")) != 0,
+                )
+                assertEquals(
+                    "CENTER",
+                    cursor.getString(cursor.getColumnIndexOrThrow("horizontalAlignment")),
+                )
+                assertEquals(
+                    "CENTER",
+                    cursor.getString(cursor.getColumnIndexOrThrow("verticalArrangement")),
+                )
 
-            assertEquals(
-                0,
-                cursor.getInt(cursor.getColumnIndexOrThrow("customTextColor")),
-            )
-            assertEquals(
-                0,
-                cursor.getInt(cursor.getColumnIndexOrThrow("customBackgroundColor")),
-            )
-            assertEquals(
-                0,
-                cursor.getInt(cursor.getColumnIndexOrThrow("padding")),
-            )
-            assertEquals(
-                0,
-                cursor.getInt(cursor.getColumnIndexOrThrow("cornerRadius")),
-            )
+                assertEquals(
+                    0,
+                    cursor.getInt(cursor.getColumnIndexOrThrow("customTextColor")),
+                )
+                assertEquals(
+                    0,
+                    cursor.getInt(cursor.getColumnIndexOrThrow("customBackgroundColor")),
+                )
+                assertEquals(
+                    0,
+                    cursor.getInt(cursor.getColumnIndexOrThrow("padding")),
+                )
+                assertEquals(
+                    0,
+                    cursor.getInt(cursor.getColumnIndexOrThrow("cornerRadius")),
+                )
 
-            // New gesture fields — should have default values after migration
-            assertEquals(
-                "None",
-                cursor.getString(cursor.getColumnIndexOrThrow("doubleTap_eblanActionType")),
-            )
-            assertEquals(
-                0L,
-                cursor.getLong(cursor.getColumnIndexOrThrow("doubleTap_serialNumber")),
-            )
-            assertEquals(
-                "",
-                cursor.getString(cursor.getColumnIndexOrThrow("doubleTap_componentName")),
-            )
+                // New gesture fields — should have default values after migration
+                assertEquals(
+                    "None",
+                    cursor.getString(cursor.getColumnIndexOrThrow("doubleTap_eblanActionType")),
+                )
+                assertEquals(
+                    0L,
+                    cursor.getLong(cursor.getColumnIndexOrThrow("doubleTap_serialNumber")),
+                )
+                assertEquals(
+                    "",
+                    cursor.getString(cursor.getColumnIndexOrThrow("doubleTap_componentName")),
+                )
 
-            assertEquals(
-                "None",
-                cursor.getString(cursor.getColumnIndexOrThrow("swipeUp_eblanActionType")),
-            )
-            assertEquals(
-                0L,
-                cursor.getLong(cursor.getColumnIndexOrThrow("swipeUp_serialNumber")),
-            )
-            assertEquals(
-                "",
-                cursor.getString(cursor.getColumnIndexOrThrow("swipeUp_componentName")),
-            )
+                assertEquals(
+                    "None",
+                    cursor.getString(cursor.getColumnIndexOrThrow("swipeUp_eblanActionType")),
+                )
+                assertEquals(
+                    0L,
+                    cursor.getLong(cursor.getColumnIndexOrThrow("swipeUp_serialNumber")),
+                )
+                assertEquals(
+                    "",
+                    cursor.getString(cursor.getColumnIndexOrThrow("swipeUp_componentName")),
+                )
 
-            assertEquals(
-                "None",
-                cursor.getString(cursor.getColumnIndexOrThrow("swipeDown_eblanActionType")),
-            )
-            assertEquals(
-                0L,
-                cursor.getLong(cursor.getColumnIndexOrThrow("swipeDown_serialNumber")),
-            )
-            assertEquals(
-                "",
-                cursor.getString(cursor.getColumnIndexOrThrow("swipeDown_componentName")),
-            )
-        }
+                assertEquals(
+                    "None",
+                    cursor.getString(cursor.getColumnIndexOrThrow("swipeDown_eblanActionType")),
+                )
+                assertEquals(
+                    0L,
+                    cursor.getLong(cursor.getColumnIndexOrThrow("swipeDown_serialNumber")),
+                )
+                assertEquals(
+                    "",
+                    cursor.getString(cursor.getColumnIndexOrThrow("swipeDown_componentName")),
+                )
+            }
 
-        // Verify FolderGridItemEntity
-        dbV8.query(
-            """
+            // Verify FolderGridItemEntity
+            db.query(
+                """
     SELECT 
         id,
         folderId,
@@ -729,100 +738,103 @@ class Migration7To8Test {
         swipeDown_componentName
     FROM FolderGridItemEntity
     WHERE id = 'folder_abc123'
-            """.trimIndent(),
-        ).use { cursor ->
-            assertTrue(cursor.moveToFirst())
+                """.trimIndent(),
+            ).use { cursor ->
+                assertTrue(cursor.moveToFirst())
 
-            // Core fields — should be unchanged after migration
-            assertEquals("folder_abc123", cursor.getString(cursor.getColumnIndexOrThrow("id")))
-            assertNull(cursor.getString(cursor.getColumnIndexOrThrow("folderId")))
-            assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("page")))
-            assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("startColumn")))
-            assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("startRow")))
-            assertEquals(2, cursor.getInt(cursor.getColumnIndexOrThrow("columnSpan")))
-            assertEquals(2, cursor.getInt(cursor.getColumnIndexOrThrow("rowSpan")))
-            assertEquals("FOLDER", cursor.getString(cursor.getColumnIndexOrThrow("associate")))
-            assertEquals("My Folder", cursor.getString(cursor.getColumnIndexOrThrow("label")))
-            assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("override")))
-            assertEquals(4, cursor.getInt(cursor.getColumnIndexOrThrow("pageCount")))
-            assertNull(cursor.getString(cursor.getColumnIndexOrThrow("icon")))
+                // Core fields — should be unchanged after migration
+                assertEquals("folder_abc123", cursor.getString(cursor.getColumnIndexOrThrow("id")))
+                assertNull(cursor.getString(cursor.getColumnIndexOrThrow("folderId")))
+                assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("page")))
+                assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("startColumn")))
+                assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("startRow")))
+                assertEquals(2, cursor.getInt(cursor.getColumnIndexOrThrow("columnSpan")))
+                assertEquals(2, cursor.getInt(cursor.getColumnIndexOrThrow("rowSpan")))
+                assertEquals("FOLDER", cursor.getString(cursor.getColumnIndexOrThrow("associate")))
+                assertEquals("My Folder", cursor.getString(cursor.getColumnIndexOrThrow("label")))
+                assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("override")))
+                assertEquals(4, cursor.getInt(cursor.getColumnIndexOrThrow("pageCount")))
+                assertNull(cursor.getString(cursor.getColumnIndexOrThrow("icon")))
 
-            // gridItemSettings — should be preserved
-            assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("iconSize")))
-            assertEquals("#FF000000", cursor.getString(cursor.getColumnIndexOrThrow("textColor")))
-            assertEquals(14f, cursor.getFloat(cursor.getColumnIndexOrThrow("textSize")), 0.001f)
-            assertEquals(1, cursor.getInt(cursor.getColumnIndexOrThrow("showLabel")))
-            assertEquals(1, cursor.getInt(cursor.getColumnIndexOrThrow("singleLineLabel")))
-            assertEquals(
-                "CENTER",
-                cursor.getString(cursor.getColumnIndexOrThrow("horizontalAlignment")),
-            )
-            assertEquals(
-                "CENTER",
-                cursor.getString(cursor.getColumnIndexOrThrow("verticalArrangement")),
-            )
+                // gridItemSettings — should be preserved
+                assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("iconSize")))
+                assertEquals(
+                    "#FF000000",
+                    cursor.getString(cursor.getColumnIndexOrThrow("textColor")),
+                )
+                assertEquals(14f, cursor.getFloat(cursor.getColumnIndexOrThrow("textSize")), 0.001f)
+                assertEquals(1, cursor.getInt(cursor.getColumnIndexOrThrow("showLabel")))
+                assertEquals(1, cursor.getInt(cursor.getColumnIndexOrThrow("singleLineLabel")))
+                assertEquals(
+                    "CENTER",
+                    cursor.getString(cursor.getColumnIndexOrThrow("horizontalAlignment")),
+                )
+                assertEquals(
+                    "CENTER",
+                    cursor.getString(cursor.getColumnIndexOrThrow("verticalArrangement")),
+                )
 
-            assertEquals(
-                0,
-                cursor.getInt(cursor.getColumnIndexOrThrow("customTextColor")),
-            )
-            assertEquals(
-                0,
-                cursor.getInt(cursor.getColumnIndexOrThrow("customBackgroundColor")),
-            )
-            assertEquals(
-                0,
-                cursor.getInt(cursor.getColumnIndexOrThrow("padding")),
-            )
-            assertEquals(
-                0,
-                cursor.getInt(cursor.getColumnIndexOrThrow("cornerRadius")),
-            )
+                assertEquals(
+                    0,
+                    cursor.getInt(cursor.getColumnIndexOrThrow("customTextColor")),
+                )
+                assertEquals(
+                    0,
+                    cursor.getInt(cursor.getColumnIndexOrThrow("customBackgroundColor")),
+                )
+                assertEquals(
+                    0,
+                    cursor.getInt(cursor.getColumnIndexOrThrow("padding")),
+                )
+                assertEquals(
+                    0,
+                    cursor.getInt(cursor.getColumnIndexOrThrow("cornerRadius")),
+                )
 
-            // New gesture fields — should have default values after migration
-            assertEquals(
-                "None",
-                cursor.getString(cursor.getColumnIndexOrThrow("doubleTap_eblanActionType")),
-            )
-            assertEquals(
-                0L,
-                cursor.getLong(cursor.getColumnIndexOrThrow("doubleTap_serialNumber")),
-            )
-            assertEquals(
-                "",
-                cursor.getString(cursor.getColumnIndexOrThrow("doubleTap_componentName")),
-            )
+                // New gesture fields — should have default values after migration
+                assertEquals(
+                    "None",
+                    cursor.getString(cursor.getColumnIndexOrThrow("doubleTap_eblanActionType")),
+                )
+                assertEquals(
+                    0L,
+                    cursor.getLong(cursor.getColumnIndexOrThrow("doubleTap_serialNumber")),
+                )
+                assertEquals(
+                    "",
+                    cursor.getString(cursor.getColumnIndexOrThrow("doubleTap_componentName")),
+                )
 
-            assertEquals(
-                "None",
-                cursor.getString(cursor.getColumnIndexOrThrow("swipeUp_eblanActionType")),
-            )
-            assertEquals(
-                0L,
-                cursor.getLong(cursor.getColumnIndexOrThrow("swipeUp_serialNumber")),
-            )
-            assertEquals(
-                "",
-                cursor.getString(cursor.getColumnIndexOrThrow("swipeUp_componentName")),
-            )
+                assertEquals(
+                    "None",
+                    cursor.getString(cursor.getColumnIndexOrThrow("swipeUp_eblanActionType")),
+                )
+                assertEquals(
+                    0L,
+                    cursor.getLong(cursor.getColumnIndexOrThrow("swipeUp_serialNumber")),
+                )
+                assertEquals(
+                    "",
+                    cursor.getString(cursor.getColumnIndexOrThrow("swipeUp_componentName")),
+                )
 
-            assertEquals(
-                "None",
-                cursor.getString(cursor.getColumnIndexOrThrow("swipeDown_eblanActionType")),
-            )
-            assertEquals(
-                0L,
-                cursor.getLong(cursor.getColumnIndexOrThrow("swipeDown_serialNumber")),
-            )
-            assertEquals(
-                "",
-                cursor.getString(cursor.getColumnIndexOrThrow("swipeDown_componentName")),
-            )
-        }
+                assertEquals(
+                    "None",
+                    cursor.getString(cursor.getColumnIndexOrThrow("swipeDown_eblanActionType")),
+                )
+                assertEquals(
+                    0L,
+                    cursor.getLong(cursor.getColumnIndexOrThrow("swipeDown_serialNumber")),
+                )
+                assertEquals(
+                    "",
+                    cursor.getString(cursor.getColumnIndexOrThrow("swipeDown_componentName")),
+                )
+            }
 
-        // Verify ShortcutConfigGridItemEntity
-        dbV8.query(
-            """
+            // Verify ShortcutConfigGridItemEntity
+            db.query(
+                """
     SELECT 
         id,
         folderId,
@@ -871,130 +883,133 @@ class Migration7To8Test {
         swipeDown_componentName
     FROM ShortcutConfigGridItemEntity
     WHERE id = 'config_shortcut_001'
-            """.trimIndent(),
-        ).use { cursor ->
-            assertTrue(cursor.moveToFirst())
+                """.trimIndent(),
+            ).use { cursor ->
+                assertTrue(cursor.moveToFirst())
 
-            // Core identity & position fields — should remain unchanged
-            assertEquals(
-                "config_shortcut_001",
-                cursor.getString(cursor.getColumnIndexOrThrow("id")),
-            )
-            assertNull(cursor.getString(cursor.getColumnIndexOrThrow("folderId")))
-            assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("page")))
-            assertEquals(2, cursor.getInt(cursor.getColumnIndexOrThrow("startColumn")))
-            assertEquals(1, cursor.getInt(cursor.getColumnIndexOrThrow("startRow")))
-            assertEquals(1, cursor.getInt(cursor.getColumnIndexOrThrow("columnSpan")))
-            assertEquals(1, cursor.getInt(cursor.getColumnIndexOrThrow("rowSpan")))
-            assertEquals("APP", cursor.getString(cursor.getColumnIndexOrThrow("associate")))
+                // Core identity & position fields — should remain unchanged
+                assertEquals(
+                    "config_shortcut_001",
+                    cursor.getString(cursor.getColumnIndexOrThrow("id")),
+                )
+                assertNull(cursor.getString(cursor.getColumnIndexOrThrow("folderId")))
+                assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("page")))
+                assertEquals(2, cursor.getInt(cursor.getColumnIndexOrThrow("startColumn")))
+                assertEquals(1, cursor.getInt(cursor.getColumnIndexOrThrow("startRow")))
+                assertEquals(1, cursor.getInt(cursor.getColumnIndexOrThrow("columnSpan")))
+                assertEquals(1, cursor.getInt(cursor.getColumnIndexOrThrow("rowSpan")))
+                assertEquals("APP", cursor.getString(cursor.getColumnIndexOrThrow("associate")))
 
-            // Shortcut identification
-            assertEquals(
-                "com.whatsapp/.MainActivity",
-                cursor.getString(cursor.getColumnIndexOrThrow("componentName")),
-            )
-            assertEquals(
-                "com.whatsapp",
-                cursor.getString(cursor.getColumnIndexOrThrow("packageName")),
-            )
+                // Shortcut identification
+                assertEquals(
+                    "com.whatsapp/.MainActivity",
+                    cursor.getString(cursor.getColumnIndexOrThrow("componentName")),
+                )
+                assertEquals(
+                    "com.whatsapp",
+                    cursor.getString(cursor.getColumnIndexOrThrow("packageName")),
+                )
 
-            // Labels & icons — should be preserved
-            assertNull(cursor.getString(cursor.getColumnIndexOrThrow("activityIcon")))
-            assertNull(cursor.getString(cursor.getColumnIndexOrThrow("activityLabel")))
-            assertEquals(
-                "ic_whatsapp_default",
-                cursor.getString(cursor.getColumnIndexOrThrow("applicationIcon")),
-            )
-            assertEquals(
-                "WhatsApp",
-                cursor.getString(cursor.getColumnIndexOrThrow("applicationLabel")),
-            )
+                // Labels & icons — should be preserved
+                assertNull(cursor.getString(cursor.getColumnIndexOrThrow("activityIcon")))
+                assertNull(cursor.getString(cursor.getColumnIndexOrThrow("activityLabel")))
+                assertEquals(
+                    "ic_whatsapp_default",
+                    cursor.getString(cursor.getColumnIndexOrThrow("applicationIcon")),
+                )
+                assertEquals(
+                    "WhatsApp",
+                    cursor.getString(cursor.getColumnIndexOrThrow("applicationLabel")),
+                )
 
-            // Other fields
-            assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("override")))
-            assertEquals(1001L, cursor.getLong(cursor.getColumnIndexOrThrow("serialNumber")))
-            assertNull(cursor.getString(cursor.getColumnIndexOrThrow("shortcutIntentName")))
-            assertNull(cursor.getString(cursor.getColumnIndexOrThrow("shortcutIntentIcon")))
-            assertNull(cursor.getString(cursor.getColumnIndexOrThrow("shortcutIntentUri")))
-            assertNull(cursor.getString(cursor.getColumnIndexOrThrow("customIcon")))
-            assertNull(cursor.getString(cursor.getColumnIndexOrThrow("customLabel")))
+                // Other fields
+                assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("override")))
+                assertEquals(1001L, cursor.getLong(cursor.getColumnIndexOrThrow("serialNumber")))
+                assertNull(cursor.getString(cursor.getColumnIndexOrThrow("shortcutIntentName")))
+                assertNull(cursor.getString(cursor.getColumnIndexOrThrow("shortcutIntentIcon")))
+                assertNull(cursor.getString(cursor.getColumnIndexOrThrow("shortcutIntentUri")))
+                assertNull(cursor.getString(cursor.getColumnIndexOrThrow("customIcon")))
+                assertNull(cursor.getString(cursor.getColumnIndexOrThrow("customLabel")))
 
-            // gridItemSettings — should be unchanged
-            assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("iconSize")))
-            assertEquals("#FF000000", cursor.getString(cursor.getColumnIndexOrThrow("textColor")))
-            assertEquals(14f, cursor.getFloat(cursor.getColumnIndexOrThrow("textSize")), 0.001f)
-            assertEquals(1, cursor.getInt(cursor.getColumnIndexOrThrow("showLabel")))
-            assertEquals(1, cursor.getInt(cursor.getColumnIndexOrThrow("singleLineLabel")))
-            assertEquals(
-                "CENTER",
-                cursor.getString(cursor.getColumnIndexOrThrow("horizontalAlignment")),
-            )
-            assertEquals(
-                "CENTER",
-                cursor.getString(cursor.getColumnIndexOrThrow("verticalArrangement")),
-            )
+                // gridItemSettings — should be unchanged
+                assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("iconSize")))
+                assertEquals(
+                    "#FF000000",
+                    cursor.getString(cursor.getColumnIndexOrThrow("textColor")),
+                )
+                assertEquals(14f, cursor.getFloat(cursor.getColumnIndexOrThrow("textSize")), 0.001f)
+                assertEquals(1, cursor.getInt(cursor.getColumnIndexOrThrow("showLabel")))
+                assertEquals(1, cursor.getInt(cursor.getColumnIndexOrThrow("singleLineLabel")))
+                assertEquals(
+                    "CENTER",
+                    cursor.getString(cursor.getColumnIndexOrThrow("horizontalAlignment")),
+                )
+                assertEquals(
+                    "CENTER",
+                    cursor.getString(cursor.getColumnIndexOrThrow("verticalArrangement")),
+                )
 
-            assertEquals(
-                0,
-                cursor.getInt(cursor.getColumnIndexOrThrow("customTextColor")),
-            )
-            assertEquals(
-                0,
-                cursor.getInt(cursor.getColumnIndexOrThrow("customBackgroundColor")),
-            )
-            assertEquals(
-                0,
-                cursor.getInt(cursor.getColumnIndexOrThrow("padding")),
-            )
-            assertEquals(
-                0,
-                cursor.getInt(cursor.getColumnIndexOrThrow("cornerRadius")),
-            )
+                assertEquals(
+                    0,
+                    cursor.getInt(cursor.getColumnIndexOrThrow("customTextColor")),
+                )
+                assertEquals(
+                    0,
+                    cursor.getInt(cursor.getColumnIndexOrThrow("customBackgroundColor")),
+                )
+                assertEquals(
+                    0,
+                    cursor.getInt(cursor.getColumnIndexOrThrow("padding")),
+                )
+                assertEquals(
+                    0,
+                    cursor.getInt(cursor.getColumnIndexOrThrow("cornerRadius")),
+                )
 
-            // New gesture fields — should have default values after migration
-            assertEquals(
-                "None",
-                cursor.getString(cursor.getColumnIndexOrThrow("doubleTap_eblanActionType")),
-            )
-            assertEquals(
-                0L,
-                cursor.getLong(cursor.getColumnIndexOrThrow("doubleTap_serialNumber")),
-            )
-            assertEquals(
-                "",
-                cursor.getString(cursor.getColumnIndexOrThrow("doubleTap_componentName")),
-            )
+                // New gesture fields — should have default values after migration
+                assertEquals(
+                    "None",
+                    cursor.getString(cursor.getColumnIndexOrThrow("doubleTap_eblanActionType")),
+                )
+                assertEquals(
+                    0L,
+                    cursor.getLong(cursor.getColumnIndexOrThrow("doubleTap_serialNumber")),
+                )
+                assertEquals(
+                    "",
+                    cursor.getString(cursor.getColumnIndexOrThrow("doubleTap_componentName")),
+                )
 
-            assertEquals(
-                "None",
-                cursor.getString(cursor.getColumnIndexOrThrow("swipeUp_eblanActionType")),
-            )
-            assertEquals(
-                0L,
-                cursor.getLong(cursor.getColumnIndexOrThrow("swipeUp_serialNumber")),
-            )
-            assertEquals(
-                "",
-                cursor.getString(cursor.getColumnIndexOrThrow("swipeUp_componentName")),
-            )
+                assertEquals(
+                    "None",
+                    cursor.getString(cursor.getColumnIndexOrThrow("swipeUp_eblanActionType")),
+                )
+                assertEquals(
+                    0L,
+                    cursor.getLong(cursor.getColumnIndexOrThrow("swipeUp_serialNumber")),
+                )
+                assertEquals(
+                    "",
+                    cursor.getString(cursor.getColumnIndexOrThrow("swipeUp_componentName")),
+                )
 
-            assertEquals(
-                "None",
-                cursor.getString(cursor.getColumnIndexOrThrow("swipeDown_eblanActionType")),
-            )
-            assertEquals(
-                0L,
-                cursor.getLong(cursor.getColumnIndexOrThrow("swipeDown_serialNumber")),
-            )
-            assertEquals(
-                "",
-                cursor.getString(cursor.getColumnIndexOrThrow("swipeDown_componentName")),
-            )
-        }
+                assertEquals(
+                    "None",
+                    cursor.getString(cursor.getColumnIndexOrThrow("swipeDown_eblanActionType")),
+                )
+                assertEquals(
+                    0L,
+                    cursor.getLong(cursor.getColumnIndexOrThrow("swipeDown_serialNumber")),
+                )
+                assertEquals(
+                    "",
+                    cursor.getString(cursor.getColumnIndexOrThrow("swipeDown_componentName")),
+                )
+            }
 
-        // Verify WidgetGridItemEntity
-        dbV8.query(
-            """
+            // Verify WidgetGridItemEntity
+            db.query(
+                """
         SELECT 
             id,
             folderId,
@@ -1025,55 +1040,65 @@ class Migration7To8Test {
             cornerRadius
         FROM WidgetGridItemEntity
         WHERE id = 'widget_456'
-            """.trimIndent(),
-        ).use { cursor ->
-            assertTrue(cursor.moveToFirst())
+                """.trimIndent(),
+            ).use { cursor ->
+                assertTrue(cursor.moveToFirst())
 
-            // Core identity & position fields – should remain unchanged
-            assertEquals("widget_456", cursor.getString(cursor.getColumnIndexOrThrow("id")))
-            assertNull(cursor.getString(cursor.getColumnIndexOrThrow("folderId")))
-            assertEquals(1, cursor.getInt(cursor.getColumnIndexOrThrow("page")))
-            assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("startColumn")))
-            assertEquals(1, cursor.getInt(cursor.getColumnIndexOrThrow("startRow")))
-            assertEquals(2, cursor.getInt(cursor.getColumnIndexOrThrow("columnSpan")))
-            assertEquals(2, cursor.getInt(cursor.getColumnIndexOrThrow("rowSpan")))
-            assertEquals("WIDGET", cursor.getString(cursor.getColumnIndexOrThrow("associate")))
+                // Core identity & position fields – should remain unchanged
+                assertEquals("widget_456", cursor.getString(cursor.getColumnIndexOrThrow("id")))
+                assertNull(cursor.getString(cursor.getColumnIndexOrThrow("folderId")))
+                assertEquals(1, cursor.getInt(cursor.getColumnIndexOrThrow("page")))
+                assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("startColumn")))
+                assertEquals(1, cursor.getInt(cursor.getColumnIndexOrThrow("startRow")))
+                assertEquals(2, cursor.getInt(cursor.getColumnIndexOrThrow("columnSpan")))
+                assertEquals(2, cursor.getInt(cursor.getColumnIndexOrThrow("rowSpan")))
+                assertEquals("WIDGET", cursor.getString(cursor.getColumnIndexOrThrow("associate")))
 
-            // Widget-specific fields
-            assertEquals(1234, cursor.getInt(cursor.getColumnIndexOrThrow("appWidgetId")))
-            assertEquals(
-                "com.google.android.deskclock",
-                cursor.getString(cursor.getColumnIndexOrThrow("packageName")),
-            )
-            assertEquals(
-                "com.google.android.deskclock.widget.AnalogClockWidgetProvider",
-                cursor.getString(cursor.getColumnIndexOrThrow("componentName")),
-            )
-            assertEquals("Clock", cursor.getString(cursor.getColumnIndexOrThrow("label")))
-            assertEquals("ic_clock_widget", cursor.getString(cursor.getColumnIndexOrThrow("icon")))
-            assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("override")))
-            assertEquals(2001L, cursor.getLong(cursor.getColumnIndexOrThrow("serialNumber")))
+                // Widget-specific fields
+                assertEquals(1234, cursor.getInt(cursor.getColumnIndexOrThrow("appWidgetId")))
+                assertEquals(
+                    "com.google.android.deskclock",
+                    cursor.getString(cursor.getColumnIndexOrThrow("packageName")),
+                )
+                assertEquals(
+                    "com.google.android.deskclock.widget.AnalogClockWidgetProvider",
+                    cursor.getString(cursor.getColumnIndexOrThrow("componentName")),
+                )
+                assertEquals("Clock", cursor.getString(cursor.getColumnIndexOrThrow("label")))
+                assertEquals(
+                    "ic_clock_widget",
+                    cursor.getString(cursor.getColumnIndexOrThrow("icon")),
+                )
+                assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("override")))
+                assertEquals(2001L, cursor.getLong(cursor.getColumnIndexOrThrow("serialNumber")))
 
-            // Existing gridItemSettings – should be preserved
-            assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("iconSize")))
-            assertEquals("#FF000000", cursor.getString(cursor.getColumnIndexOrThrow("textColor")))
-            assertEquals(12, cursor.getInt(cursor.getColumnIndexOrThrow("textSize")))
-            assertEquals(1, cursor.getInt(cursor.getColumnIndexOrThrow("showLabel")))
-            assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("singleLineLabel")))
-            assertEquals(
-                "CENTER",
-                cursor.getString(cursor.getColumnIndexOrThrow("horizontalAlignment")),
-            )
-            assertEquals(
-                "CENTER",
-                cursor.getString(cursor.getColumnIndexOrThrow("verticalArrangement")),
-            )
+                // Existing gridItemSettings – should be preserved
+                assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("iconSize")))
+                assertEquals(
+                    "#FF000000",
+                    cursor.getString(cursor.getColumnIndexOrThrow("textColor")),
+                )
+                assertEquals(12, cursor.getInt(cursor.getColumnIndexOrThrow("textSize")))
+                assertEquals(1, cursor.getInt(cursor.getColumnIndexOrThrow("showLabel")))
+                assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("singleLineLabel")))
+                assertEquals(
+                    "CENTER",
+                    cursor.getString(cursor.getColumnIndexOrThrow("horizontalAlignment")),
+                )
+                assertEquals(
+                    "CENTER",
+                    cursor.getString(cursor.getColumnIndexOrThrow("verticalArrangement")),
+                )
 
-            // New columns added in migration 7→8 – must exist and have default value 0
-            assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("customTextColor")))
-            assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("customBackgroundColor")))
-            assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("padding")))
-            assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("cornerRadius")))
+                // New columns added in migration 7→8 – must exist and have default value 0
+                assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("customTextColor")))
+                assertEquals(
+                    0,
+                    cursor.getInt(cursor.getColumnIndexOrThrow("customBackgroundColor")),
+                )
+                assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("padding")))
+                assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("cornerRadius")))
+            }
         }
     }
 }

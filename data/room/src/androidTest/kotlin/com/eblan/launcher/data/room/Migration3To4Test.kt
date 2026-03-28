@@ -41,9 +41,9 @@ class Migration3To4Test {
     @Test
     @Throws(IOException::class)
     fun migrate3To4() {
-        helper.createDatabase(testDatabase, 3).apply {
+        helper.createDatabase(testDatabase, 3).use { db ->
             // 1. EblanApplicationInfoEntity
-            execSQL(
+            db.execSQL(
                 """
             INSERT INTO `EblanApplicationInfoEntity` 
             (packageName, serialNumber, componentName, icon, label)
@@ -52,7 +52,7 @@ class Migration3To4Test {
             )
 
             // 2. EblanAppWidgetProviderInfoEntity
-            execSQL(
+            db.execSQL(
                 """
             INSERT INTO `EblanAppWidgetProviderInfoEntity` (
                 className, componentName, configure, packageName,
@@ -67,7 +67,7 @@ class Migration3To4Test {
             )
 
             // 3. ApplicationInfoGridItemEntity
-            execSQL(
+            db.execSQL(
                 """
             INSERT INTO `ApplicationInfoGridItemEntity` (
                 id, folderId, page, startColumn, startRow, columnSpan, rowSpan, associate,
@@ -83,7 +83,7 @@ class Migration3To4Test {
             )
 
             // 4. WidgetGridItemEntity
-            execSQL(
+            db.execSQL(
                 """
             INSERT INTO `WidgetGridItemEntity` (
                 id, folderId, page, startColumn, startRow, columnSpan, rowSpan, associate,
@@ -102,82 +102,80 @@ class Migration3To4Test {
             )
                 """.trimIndent(),
             )
-
-            close()
         }
 
         // Run migration and validate schema + data
-        val dbV5 = helper.runMigrationsAndValidate(
+        helper.runMigrationsAndValidate(
             testDatabase,
             4,
             true,
             Migration3To4(),
-        )
-
-        // EblanApplicationInfoEntity
-        dbV5.query("SELECT * FROM `EblanApplicationInfoEntity`").use { cursor ->
-            assertTrue(cursor.moveToFirst())
-            assertEquals(
-                "com.example.app",
-                cursor.getString(cursor.getColumnIndexOrThrow("packageName")),
-            )
-            assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("serialNumber")))
-            assertEquals(
-                "",
-                cursor.getString(cursor.getColumnIndexOrThrow("componentName")),
-            ) // NULL → ""
-            assertEquals("Test App", cursor.getString(cursor.getColumnIndexOrThrow("label")))
-        }
-
-        // EblanAppWidgetProviderInfoEntity
-        dbV5.query("SELECT componentName, serialNumber, packageName, label FROM `EblanAppWidgetProviderInfoEntity`")
-            .use { cursor ->
+        ).use { db ->
+            // EblanApplicationInfoEntity
+            db.query("SELECT * FROM `EblanApplicationInfoEntity`").use { cursor ->
                 assertTrue(cursor.moveToFirst())
                 assertEquals(
-                    "com.example.app/com.example.widget.OldWidget",
-                    cursor.getString(cursor.getColumnIndexOrThrow("componentName")),
+                    "com.example.app",
+                    cursor.getString(cursor.getColumnIndexOrThrow("packageName")),
                 )
-                assertEquals(
-                    0,
-                    cursor.getInt(cursor.getColumnIndexOrThrow("serialNumber")),
-                ) // default we set
-                assertEquals(
-                    "Clock Widget",
-                    cursor.getString(cursor.getColumnIndexOrThrow("label")),
-                )
-            }
-
-        // ApplicationInfoGridItemEntity
-        dbV5.query("SELECT componentName FROM `ApplicationInfoGridItemEntity` WHERE id = 'app1'")
-            .use { cursor ->
-                assertTrue(cursor.moveToFirst())
+                assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("serialNumber")))
                 assertEquals(
                     "",
                     cursor.getString(cursor.getColumnIndexOrThrow("componentName")),
-                ) // NULL → "" safely migrated
+                ) // NULL → ""
+                assertEquals("Test App", cursor.getString(cursor.getColumnIndexOrThrow("label")))
             }
 
-        // WidgetGridItemEntity
-        dbV5.query("SELECT componentName FROM `WidgetGridItemEntity` WHERE id = 'widget1'")
-            .use { cursor ->
-                assertTrue(cursor.moveToFirst())
-                assertEquals(
-                    "com.example.app/com.example.widget.OldWidget",
-                    cursor.getString(cursor.getColumnIndexOrThrow("componentName")),
-                )
-                // className column should no longer exist
-                assertEquals(-1, cursor.getColumnIndex("className"))
-            }
+            // EblanAppWidgetProviderInfoEntity
+            db.query("SELECT componentName, serialNumber, packageName, label FROM `EblanAppWidgetProviderInfoEntity`")
+                .use { cursor ->
+                    assertTrue(cursor.moveToFirst())
+                    assertEquals(
+                        "com.example.app/com.example.widget.OldWidget",
+                        cursor.getString(cursor.getColumnIndexOrThrow("componentName")),
+                    )
+                    assertEquals(
+                        0,
+                        cursor.getInt(cursor.getColumnIndexOrThrow("serialNumber")),
+                    ) // default we set
+                    assertEquals(
+                        "Clock Widget",
+                        cursor.getString(cursor.getColumnIndexOrThrow("label")),
+                    )
+                }
 
-        // New tables should exist and be empty (or ready)
-        dbV5.query("SELECT name FROM sqlite_master WHERE type='table' AND name='EblanShortcutConfigEntity'")
-            .use { cursor ->
-                assertEquals(cursor.count, 1)
-            }
+            // ApplicationInfoGridItemEntity
+            db.query("SELECT componentName FROM `ApplicationInfoGridItemEntity` WHERE id = 'app1'")
+                .use { cursor ->
+                    assertTrue(cursor.moveToFirst())
+                    assertEquals(
+                        "",
+                        cursor.getString(cursor.getColumnIndexOrThrow("componentName")),
+                    ) // NULL → "" safely migrated
+                }
 
-        dbV5.query("SELECT name FROM sqlite_master WHERE type='table' AND name='ShortcutConfigGridItemEntity'")
-            .use { cursor ->
-                assertEquals(cursor.count, 1)
-            }
+            // WidgetGridItemEntity
+            db.query("SELECT componentName FROM `WidgetGridItemEntity` WHERE id = 'widget1'")
+                .use { cursor ->
+                    assertTrue(cursor.moveToFirst())
+                    assertEquals(
+                        "com.example.app/com.example.widget.OldWidget",
+                        cursor.getString(cursor.getColumnIndexOrThrow("componentName")),
+                    )
+                    // className column should no longer exist
+                    assertEquals(-1, cursor.getColumnIndex("className"))
+                }
+
+            // New tables should exist and be empty (or ready)
+            db.query("SELECT name FROM sqlite_master WHERE type='table' AND name='EblanShortcutConfigEntity'")
+                .use { cursor ->
+                    assertEquals(cursor.count, 1)
+                }
+
+            db.query("SELECT name FROM sqlite_master WHERE type='table' AND name='ShortcutConfigGridItemEntity'")
+                .use { cursor ->
+                    assertEquals(cursor.count, 1)
+                }
+        }
     }
 }

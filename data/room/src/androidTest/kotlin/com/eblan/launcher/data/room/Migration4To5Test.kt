@@ -45,9 +45,9 @@ class Migration4To5Test {
         helper.createDatabase(
             testDatabase,
             4,
-        ).apply {
+        ).use { db ->
             // EblanApplicationInfoEntity
-            execSQL(
+            db.execSQL(
                 """
                 INSERT INTO `EblanApplicationInfoEntity`
                 (packageName, serialNumber, componentName, icon, label) 
@@ -56,7 +56,7 @@ class Migration4To5Test {
             )
 
             // EblanAppWidgetProviderInfoEntity
-            execSQL(
+            db.execSQL(
                 """
                 INSERT INTO `EblanAppWidgetProviderInfoEntity` (
                     componentName, serialNumber, packageName,
@@ -69,7 +69,7 @@ class Migration4To5Test {
             )
 
             // ApplicationInfoGridItemEntity
-            execSQL(
+            db.execSQL(
                 """
                 INSERT INTO `ApplicationInfoGridItemEntity` (id, page, startColumn, startRow, columnSpan, rowSpan,
                     associate, componentName, packageName, override, serialNumber,
@@ -82,7 +82,7 @@ class Migration4To5Test {
             )
 
             // WidgetGridItemEntity
-            execSQL(
+            db.execSQL(
                 """
                 INSERT INTO `WidgetGridItemEntity` (
                 id, folderId, page, startColumn, startRow, columnSpan, rowSpan,
@@ -108,7 +108,7 @@ class Migration4To5Test {
             )
 
             // FolderGridItemEntity
-            execSQL(
+            db.execSQL(
                 """
                 INSERT INTO `FolderGridItemEntity` (
                     id, page, startColumn, startRow, columnSpan, rowSpan,
@@ -125,7 +125,7 @@ class Migration4To5Test {
             )
 
             // ShortcutConfigGridItemEntity
-            execSQL(
+            db.execSQL(
                 """
                 INSERT INTO `ShortcutConfigGridItemEntity` (
                     id, page, startColumn, startRow, columnSpan, rowSpan,
@@ -139,93 +139,97 @@ class Migration4To5Test {
                 )
                 """.trimIndent(),
             )
-
-            close()
         }
 
         // Run migration and validate version 5
-        val dbV5 = helper.runMigrationsAndValidate(
+        helper.runMigrationsAndValidate(
             testDatabase,
             5,
             true,
-        )
-
-        // EblanApplicationInfoEntity
-        dbV5.query(
-            """
+        ).use { db ->
+            // EblanApplicationInfoEntity
+            db.query(
+                """
             SELECT componentName, serialNumber, packageName, label, customIcon, customLabel
             FROM `EblanApplicationInfoEntity`
             ORDER BY serialNumber
-            """.trimIndent(),
-        ).use { cursor ->
-            assertTrue(cursor.moveToFirst())
-
-            // Row 1
-            assertEquals(
-                "com.example.app/.MainActivity",
-                cursor.getString(cursor.getColumnIndexOrThrow("componentName")),
-            )
-            assertEquals(1, cursor.getInt(cursor.getColumnIndexOrThrow("serialNumber")))
-            assertEquals(
-                "com.example.app",
-                cursor.getString(cursor.getColumnIndexOrThrow("packageName")),
-            )
-            assertEquals("Original App", cursor.getString(cursor.getColumnIndexOrThrow("label")))
-            assertNull(cursor.getString(cursor.getColumnIndexOrThrow("customIcon")))
-            assertNull(cursor.getString(cursor.getColumnIndexOrThrow("customLabel")))
-        }
-
-        // EblanAppWidgetProviderInfoEntity
-        dbV5.query("SELECT componentName, label, serialNumber FROM `EblanAppWidgetProviderInfoEntity` ORDER BY serialNumber")
-            .use { cursor ->
+                """.trimIndent(),
+            ).use { cursor ->
                 assertTrue(cursor.moveToFirst())
 
                 // Row 1
                 assertEquals(
-                    "com.example.clock",
+                    "com.example.app/.MainActivity",
                     cursor.getString(cursor.getColumnIndexOrThrow("componentName")),
                 )
-                assertEquals("Clock", cursor.getString(cursor.getColumnIndexOrThrow("label")))
-            }
-
-        // ApplicationInfoGridItemEntity
-        dbV5.query("SELECT id, label, customIcon, customLabel FROM `ApplicationInfoGridItemEntity` ORDER BY serialNumber")
-            .use { cursor ->
-                assertTrue(cursor.moveToFirst())
-                assertEquals("item1", cursor.getString(cursor.getColumnIndexOrThrow("id")))
-                assertEquals("Browser", cursor.getString(cursor.getColumnIndexOrThrow("label")))
-                assertNull(cursor.getString(cursor.getColumnIndexOrThrow("customIcon")))
-                assertNull(cursor.getString(cursor.getColumnIndexOrThrow("customLabel")))
-            }
-
-        // WidgetGridItemEntity
-        dbV5.query("SELECT id, label FROM `WidgetGridItemEntity` ORDER BY serialNumber")
-            .use { cursor ->
-                assertTrue(cursor.moveToFirst())
-                assertEquals("Clock", cursor.getString(cursor.getColumnIndexOrThrow("label")))
-            }
-
-        // FolderGridItemEntity
-        dbV5.query("SELECT label, pageCount, icon, iconSize FROM `FolderGridItemEntity`")
-            .use { cursor ->
-                assertTrue(cursor.moveToFirst())
-                assertEquals("Work Apps", cursor.getString(cursor.getColumnIndexOrThrow("label")))
-                assertEquals(3, cursor.getInt(cursor.getColumnIndexOrThrow("pageCount")))
-                assertNull(cursor.getString(cursor.getColumnIndexOrThrow("icon")))
-                assertEquals(64, cursor.getInt(cursor.getColumnIndexOrThrow("iconSize")))
-            }
-
-        // ShortcutConfigGridItemEntity
-        dbV5.query("SELECT activityLabel, iconSize, customIcon, customLabel FROM `ShortcutConfigGridItemEntity`")
-            .use { cursor ->
-                assertTrue(cursor.moveToFirst())
+                assertEquals(1, cursor.getInt(cursor.getColumnIndexOrThrow("serialNumber")))
                 assertEquals(
-                    "Browser",
-                    cursor.getString(cursor.getColumnIndexOrThrow("activityLabel")),
+                    "com.example.app",
+                    cursor.getString(cursor.getColumnIndexOrThrow("packageName")),
                 )
-                assertEquals(56, cursor.getInt(cursor.getColumnIndexOrThrow("iconSize")))
+                assertEquals(
+                    "Original App",
+                    cursor.getString(cursor.getColumnIndexOrThrow("label")),
+                )
                 assertNull(cursor.getString(cursor.getColumnIndexOrThrow("customIcon")))
                 assertNull(cursor.getString(cursor.getColumnIndexOrThrow("customLabel")))
             }
+
+            // EblanAppWidgetProviderInfoEntity
+            db.query("SELECT componentName, label, serialNumber FROM `EblanAppWidgetProviderInfoEntity` ORDER BY serialNumber")
+                .use { cursor ->
+                    assertTrue(cursor.moveToFirst())
+
+                    // Row 1
+                    assertEquals(
+                        "com.example.clock",
+                        cursor.getString(cursor.getColumnIndexOrThrow("componentName")),
+                    )
+                    assertEquals("Clock", cursor.getString(cursor.getColumnIndexOrThrow("label")))
+                }
+
+            // ApplicationInfoGridItemEntity
+            db.query("SELECT id, label, customIcon, customLabel FROM `ApplicationInfoGridItemEntity` ORDER BY serialNumber")
+                .use { cursor ->
+                    assertTrue(cursor.moveToFirst())
+                    assertEquals("item1", cursor.getString(cursor.getColumnIndexOrThrow("id")))
+                    assertEquals("Browser", cursor.getString(cursor.getColumnIndexOrThrow("label")))
+                    assertNull(cursor.getString(cursor.getColumnIndexOrThrow("customIcon")))
+                    assertNull(cursor.getString(cursor.getColumnIndexOrThrow("customLabel")))
+                }
+
+            // WidgetGridItemEntity
+            db.query("SELECT id, label FROM `WidgetGridItemEntity` ORDER BY serialNumber")
+                .use { cursor ->
+                    assertTrue(cursor.moveToFirst())
+                    assertEquals("Clock", cursor.getString(cursor.getColumnIndexOrThrow("label")))
+                }
+
+            // FolderGridItemEntity
+            db.query("SELECT label, pageCount, icon, iconSize FROM `FolderGridItemEntity`")
+                .use { cursor ->
+                    assertTrue(cursor.moveToFirst())
+                    assertEquals(
+                        "Work Apps",
+                        cursor.getString(cursor.getColumnIndexOrThrow("label")),
+                    )
+                    assertEquals(3, cursor.getInt(cursor.getColumnIndexOrThrow("pageCount")))
+                    assertNull(cursor.getString(cursor.getColumnIndexOrThrow("icon")))
+                    assertEquals(64, cursor.getInt(cursor.getColumnIndexOrThrow("iconSize")))
+                }
+
+            // ShortcutConfigGridItemEntity
+            db.query("SELECT activityLabel, iconSize, customIcon, customLabel FROM `ShortcutConfigGridItemEntity`")
+                .use { cursor ->
+                    assertTrue(cursor.moveToFirst())
+                    assertEquals(
+                        "Browser",
+                        cursor.getString(cursor.getColumnIndexOrThrow("activityLabel")),
+                    )
+                    assertEquals(56, cursor.getInt(cursor.getColumnIndexOrThrow("iconSize")))
+                    assertNull(cursor.getString(cursor.getColumnIndexOrThrow("customIcon")))
+                    assertNull(cursor.getString(cursor.getColumnIndexOrThrow("customLabel")))
+                }
+        }
     }
 }

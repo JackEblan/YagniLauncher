@@ -43,7 +43,6 @@ class Migration6To7Test {
     fun migrate6To7() {
         // Create database at version 6
         helper.createDatabase(testDatabase, 6).use { db ->
-
             db.execSQL(
                 """
                 INSERT INTO EblanApplicationInfoEntity (
@@ -99,7 +98,6 @@ class Migration6To7Test {
 
         // Run migration → validate version 7
         helper.runMigrationsAndValidate(testDatabase, 7, true).use { db ->
-
             // EblanApplicationInfoEntity
             db.query(
                 """
