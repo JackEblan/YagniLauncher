@@ -25,6 +25,8 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.IOException
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 @RunWith(AndroidJUnit4::class)
 class Migration13To14Test {
@@ -61,9 +63,9 @@ class Migration13To14Test {
             // 1. Verify existing data still exists
             val cursor = db.query("SELECT * FROM EblanApplicationInfoTagEntity")
 
-            assert(cursor.moveToFirst())
-            assert(cursor.getLong(cursor.getColumnIndex("id")) == 1L)
-            assert(cursor.getString(cursor.getColumnIndex("name")) == "Work")
+            assertTrue(cursor.moveToFirst())
+            assertEquals(1L, cursor.getLong(cursor.getColumnIndex("id")))
+            assertEquals("Work", cursor.getString(cursor.getColumnIndex("name")))
 
             cursor.close()
 
@@ -79,8 +81,8 @@ class Migration13To14Test {
                 "SELECT COUNT(*) FROM EblanApplicationInfoTagEntity WHERE name = 'Work'",
             )
 
-            assert(duplicateCursor.moveToFirst())
-            assert(duplicateCursor.getInt(0) == 2)
+            assertTrue(duplicateCursor.moveToFirst())
+            assertEquals(2, duplicateCursor.getInt(0))
 
             duplicateCursor.close()
         }
