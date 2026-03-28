@@ -18,6 +18,7 @@
 package com.eblan.launcher.ui.local
 
 import androidx.compose.runtime.staticCompositionLocalOf
+import com.eblan.launcher.domain.common.IconKeyGenerator
 import com.eblan.launcher.domain.framework.FileManager
 import com.eblan.launcher.framework.accessibilitymanager.AndroidAccessibilityManagerWrapper
 import com.eblan.launcher.framework.iconpackmanager.AndroidIconPackManager
@@ -77,4 +78,8 @@ val LocalFileManager = staticCompositionLocalOf<FileManager> {
 
 val LocalAccessibilityManager = staticCompositionLocalOf<AndroidAccessibilityManagerWrapper> {
     error("No AndroidAccessibilityManagerWrapper provided")
+}
+
+val LocalIconKeyGenerator = staticCompositionLocalOf<IconKeyGenerator> {
+    error("No IconKeyGenerator provided")
 }

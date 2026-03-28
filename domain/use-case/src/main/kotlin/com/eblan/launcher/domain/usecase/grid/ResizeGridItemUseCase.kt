@@ -17,8 +17,8 @@
  */
 package com.eblan.launcher.domain.usecase.grid
 
-import com.eblan.launcher.domain.common.dispatcher.Dispatcher
-import com.eblan.launcher.domain.common.dispatcher.EblanDispatchers
+import com.eblan.launcher.domain.common.Dispatcher
+import com.eblan.launcher.domain.common.EblanDispatchers
 import com.eblan.launcher.domain.grid.getRelativeResolveDirection
 import com.eblan.launcher.domain.grid.isGridItemSpanWithinBounds
 import com.eblan.launcher.domain.grid.rectanglesOverlap

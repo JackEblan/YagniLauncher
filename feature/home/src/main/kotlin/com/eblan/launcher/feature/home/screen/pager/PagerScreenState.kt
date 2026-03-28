@@ -59,7 +59,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.round
-import com.eblan.launcher.domain.common.dispatcher.getShortcutIconKey
+import com.eblan.launcher.domain.common.IconKeyGenerator
 import com.eblan.launcher.domain.framework.FileManager
 import com.eblan.launcher.domain.model.ApplicationInfoGridItem
 import com.eblan.launcher.domain.model.Associate
@@ -89,6 +89,7 @@ import com.eblan.launcher.framework.widgetmanager.AndroidAppWidgetManagerWrapper
 import com.eblan.launcher.ui.local.LocalAppWidgetHost
 import com.eblan.launcher.ui.local.LocalAppWidgetManager
 import com.eblan.launcher.ui.local.LocalFileManager
+import com.eblan.launcher.ui.local.LocalIconKeyGenerator
 import com.eblan.launcher.ui.local.LocalImageSerializer
 import com.eblan.launcher.ui.local.LocalLauncherApps
 import com.eblan.launcher.ui.local.LocalPinItemRequest
@@ -128,6 +129,7 @@ internal class PagerScreenState(
     private val androidWallpaperManagerWrapper: AndroidWallpaperManagerWrapper,
     private val density: Density,
     private val experimentalSettings: ExperimentalSettings,
+    private val iconKeyGenerator: IconKeyGenerator,
     private val onGetPinGridItem: (PinItemRequestType) -> Unit,
     private val onResetPinGridItem: () -> Unit,
 ) {
@@ -1269,7 +1271,7 @@ internal class PagerScreenState(
 
                                 val file = File(
                                     directory,
-                                    fileManager.getHashedFileName(name = componentName),
+                                    iconKeyGenerator.getHashedName(name = componentName),
                                 )
 
                                 androidImageSerializer.createDrawablePath(
@@ -1343,12 +1345,10 @@ internal class PagerScreenState(
 
                             val file = File(
                                 directory,
-                                fileManager.getHashedFileName(
-                                    name = getShortcutIconKey(
-                                        serialNumber = serialNumber,
-                                        packageName = shortcutInfo.`package`,
-                                        id = shortcutInfo.id,
-                                    ),
+                                iconKeyGenerator.getShortcutIconKey(
+                                    serialNumber = serialNumber,
+                                    packageName = shortcutInfo.`package`,
+                                    id = shortcutInfo.id,
                                 ),
                             )
 
@@ -1398,6 +1398,7 @@ internal class PagerScreenState(
             androidWallpaperManagerWrapper: AndroidWallpaperManagerWrapper,
             density: Density,
             experimentalSettings: ExperimentalSettings,
+            iconKeyGenerator: IconKeyGenerator,
             onGetPinGridItem: (PinItemRequestType) -> Unit,
             onResetPinGridItem: () -> Unit,
         ): Saver<PagerScreenState, *> = listSaver(
@@ -1435,6 +1436,7 @@ internal class PagerScreenState(
                     androidWallpaperManagerWrapper = androidWallpaperManagerWrapper,
                     density = density,
                     experimentalSettings = experimentalSettings,
+                    iconKeyGenerator = iconKeyGenerator,
                     onGetPinGridItem = onGetPinGridItem,
                     onResetPinGridItem = onResetPinGridItem,
                 )
@@ -1475,6 +1477,8 @@ internal fun rememberPagerScreenState(
 
     val pinItemRequestWrapper = LocalPinItemRequest.current
 
+    val iconKeyGenerator = LocalIconKeyGenerator.current
+
     return rememberSaveable(
         saver = PagerScreenState.Saver(
             screenWidth = screenWidth,
@@ -1493,6 +1497,7 @@ internal fun rememberPagerScreenState(
             androidWallpaperManagerWrapper = androidWallpaperManagerWrapper,
             density = density,
             experimentalSettings = experimentalSettings,
+            iconKeyGenerator = iconKeyGenerator,
             onGetPinGridItem = onGetPinGridItem,
             onResetPinGridItem = onResetPinGridItem,
         ),
@@ -1520,6 +1525,7 @@ internal fun rememberPagerScreenState(
             androidWallpaperManagerWrapper = androidWallpaperManagerWrapper,
             density = density,
             experimentalSettings = experimentalSettings,
+            iconKeyGenerator = iconKeyGenerator,
             onGetPinGridItem = onGetPinGridItem,
             onResetPinGridItem = onResetPinGridItem,
         )

@@ -17,9 +17,9 @@
  */
 package com.eblan.launcher.domain.usecase.pin
 
-import com.eblan.launcher.domain.common.dispatcher.Dispatcher
-import com.eblan.launcher.domain.common.dispatcher.EblanDispatchers
-import com.eblan.launcher.domain.common.dispatcher.getActivityIconKey
+import com.eblan.launcher.domain.common.Dispatcher
+import com.eblan.launcher.domain.common.EblanDispatchers
+import com.eblan.launcher.domain.common.IconKeyGenerator
 import com.eblan.launcher.domain.framework.FileManager
 import com.eblan.launcher.domain.framework.PackageManagerWrapper
 import com.eblan.launcher.domain.grid.findAvailableRegionByPage
@@ -45,6 +45,7 @@ class AddPinShortcutToHomeScreenUseCase @Inject constructor(
     private val gridRepository: GridRepository,
     private val packageManagerWrapper: PackageManagerWrapper,
     private val getFolderGridItemsUseCase: GetFolderGridItemsUseCase,
+    private val iconKeyGenerator: IconKeyGenerator,
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke(
@@ -75,11 +76,9 @@ class AddPinShortcutToHomeScreenUseCase @Inject constructor(
 
                     val file = File(
                         directory,
-                        fileManager.getHashedFileName(
-                            name = getActivityIconKey(
-                                serialNumber = serialNumber,
-                                componentName = componentName,
-                            ),
+                        iconKeyGenerator.getActivityIconKey(
+                            serialNumber = serialNumber,
+                            componentName = componentName,
                         ),
                     )
 

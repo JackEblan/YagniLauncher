@@ -30,7 +30,7 @@ import android.os.Bundle
 import android.os.Process
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.IntentSenderRequest
-import com.eblan.launcher.domain.common.dispatcher.getShortcutIconKey
+import com.eblan.launcher.domain.common.IconKeyGenerator
 import com.eblan.launcher.domain.framework.FileManager
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
@@ -402,6 +402,7 @@ internal suspend fun handleShortcutConfigIntentSenderLauncherResult(
     gridItemSource: GridItemSource?,
     moveGridItemResult: MoveGridItemResult?,
     result: ActivityResult,
+    iconKeyGenerator: IconKeyGenerator,
     onDeleteGridItemCache: (GridItem) -> Unit,
     onUpdateShortcutConfigIntoShortcutInfoGridItem: (
         moveGridItemResult: MoveGridItemResult,
@@ -441,12 +442,10 @@ internal suspend fun handleShortcutConfigIntentSenderLauncherResult(
 
             val file = File(
                 directory,
-                fileManager.getHashedFileName(
-                    name = getShortcutIconKey(
-                        serialNumber = serialNumber,
-                        packageName = shortcutInfo.`package`,
-                        id = shortcutInfo.id,
-                    ),
+                iconKeyGenerator.getShortcutIconKey(
+                    serialNumber = serialNumber,
+                    packageName = shortcutInfo.`package`,
+                    id = shortcutInfo.id,
                 ),
             )
 

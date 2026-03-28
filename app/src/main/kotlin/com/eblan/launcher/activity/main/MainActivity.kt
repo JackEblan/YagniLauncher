@@ -32,6 +32,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
 import com.eblan.launcher.activity.settings.SettingsActivity
 import com.eblan.launcher.designsystem.theme.EblanLauncherTheme
+import com.eblan.launcher.domain.common.IconKeyGenerator
 import com.eblan.launcher.domain.framework.FileManager
 import com.eblan.launcher.framework.accessibilitymanager.AndroidAccessibilityManagerWrapper
 import com.eblan.launcher.framework.iconpackmanager.AndroidIconPackManager
@@ -50,6 +51,7 @@ import com.eblan.launcher.ui.local.LocalAccessibilityManager
 import com.eblan.launcher.ui.local.LocalAppWidgetHost
 import com.eblan.launcher.ui.local.LocalAppWidgetManager
 import com.eblan.launcher.ui.local.LocalFileManager
+import com.eblan.launcher.ui.local.LocalIconKeyGenerator
 import com.eblan.launcher.ui.local.LocalIconPackManager
 import com.eblan.launcher.ui.local.LocalImageSerializer
 import com.eblan.launcher.ui.local.LocalLauncherApps
@@ -100,6 +102,9 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var androidAccessibilityManagerWrapper: AndroidAccessibilityManagerWrapper
 
+    @Inject
+    lateinit var iconKeyGenerator: IconKeyGenerator
+
     private val viewModel: MainActivityViewModel by viewModels()
 
     private var configureResultCode by mutableStateOf<Int?>(null)
@@ -121,6 +126,7 @@ class MainActivity : ComponentActivity() {
                 LocalIconPackManager provides androidIconPackManager,
                 LocalFileManager provides fileManager,
                 LocalAccessibilityManager provides androidAccessibilityManagerWrapper,
+                LocalIconKeyGenerator provides iconKeyGenerator,
             ) {
                 val navController = rememberNavController()
 

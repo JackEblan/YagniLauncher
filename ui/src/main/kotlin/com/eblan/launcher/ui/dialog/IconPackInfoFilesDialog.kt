@@ -55,6 +55,7 @@ import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.framework.FileManager
 import com.eblan.launcher.domain.model.IconPackInfoComponent
 import com.eblan.launcher.ui.local.LocalFileManager
+import com.eblan.launcher.ui.local.LocalIconKeyGenerator
 import com.eblan.launcher.ui.local.LocalIconPackManager
 import com.eblan.launcher.ui.local.LocalImageSerializer
 import kotlinx.coroutines.FlowPreview
@@ -83,6 +84,8 @@ fun IconPackInfoFilesDialog(
     val fileManager = LocalFileManager.current
 
     val iconPackManager = LocalIconPackManager.current
+
+    val iconKeyGenerator = LocalIconKeyGenerator.current
 
     val searchBarState = rememberSearchBarState()
 
@@ -171,7 +174,7 @@ fun IconPackInfoFilesDialog(
 
                                                     val file = File(
                                                         directory,
-                                                        fileManager.getHashedFileName(name = iconName),
+                                                        iconKeyGenerator.getHashedName(name = iconName),
                                                     )
 
                                                     byteArray.createDrawablePath(

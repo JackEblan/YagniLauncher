@@ -24,8 +24,9 @@ import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.os.UserHandle
-import com.eblan.launcher.domain.common.dispatcher.Dispatcher
-import com.eblan.launcher.domain.common.dispatcher.EblanDispatchers
+import com.eblan.launcher.domain.common.Dispatcher
+import com.eblan.launcher.domain.common.EblanDispatchers
+import com.eblan.launcher.domain.common.IconKeyGenerator
 import com.eblan.launcher.domain.framework.AppWidgetManagerWrapper
 import com.eblan.launcher.domain.framework.FileManager
 import com.eblan.launcher.domain.framework.PackageManagerWrapper
@@ -45,6 +46,7 @@ internal class DefaultAppWidgetManagerWrapper @Inject constructor(
     private val userManagerWrapper: AndroidUserManagerWrapper,
     private val fileManager: FileManager,
     private val packageManagerWrapper: PackageManagerWrapper,
+    private val iconKeyGenerator: IconKeyGenerator,
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) : AppWidgetManagerWrapper,
     AndroidAppWidgetManagerWrapper {
@@ -87,7 +89,7 @@ internal class DefaultAppWidgetManagerWrapper @Inject constructor(
 
             val file = File(
                 directory,
-                fileManager.getHashedFileName(name = provider.flattenToString()),
+                iconKeyGenerator.getHashedName(name = provider.flattenToString()),
             )
 
             imageSerializer.createDrawablePath(drawable = drawable, file = file)

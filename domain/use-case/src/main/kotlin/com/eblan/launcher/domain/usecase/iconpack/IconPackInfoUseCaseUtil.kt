@@ -17,6 +17,7 @@
  */
 package com.eblan.launcher.domain.usecase.iconpack
 
+import com.eblan.launcher.domain.common.IconKeyGenerator
 import com.eblan.launcher.domain.framework.FileManager
 import com.eblan.launcher.domain.framework.IconPackManager
 import com.eblan.launcher.domain.model.FastLauncherAppsActivityInfo
@@ -30,6 +31,7 @@ internal suspend fun updateIconPackInfos(
     fileManager: FileManager,
     iconPackManager: IconPackManager,
     fastLauncherAppsActivityInfos: List<FastLauncherAppsActivityInfo>,
+    iconKeyGenerator: IconKeyGenerator,
 ) {
     if (iconPackInfoPackageName.isEmpty()) return
 
@@ -46,7 +48,7 @@ internal suspend fun updateIconPackInfos(
 
             val file = File(
                 iconPackInfoDirectory,
-                fileManager.getHashedFileName(name = fastLauncherAppsActivityInfo.componentName),
+                iconKeyGenerator.getHashedName(name = fastLauncherAppsActivityInfo.componentName),
             )
 
             cacheIconPackFile(
@@ -57,7 +59,7 @@ internal suspend fun updateIconPackInfos(
                 componentName = fastLauncherAppsActivityInfo.componentName,
             )
 
-            add(fileManager.getHashedFileName(name = fastLauncherAppsActivityInfo.componentName))
+            add(iconKeyGenerator.getHashedName(name = fastLauncherAppsActivityInfo.componentName))
         }
     }
 

@@ -17,7 +17,7 @@
  */
 package com.eblan.launcher.domain.usecase.launcherapps
 
-import com.eblan.launcher.domain.common.dispatcher.getActivityIconKey
+import com.eblan.launcher.domain.common.IconKeyGenerator
 import com.eblan.launcher.domain.framework.FileManager
 import com.eblan.launcher.domain.framework.PackageManagerWrapper
 import com.eblan.launcher.domain.model.AppWidgetManagerAppWidgetProviderInfo
@@ -204,6 +204,7 @@ internal suspend fun updateShortcutInfoGridItems(
     shortcutInfoGridItemRepository: ShortcutInfoGridItemRepository,
     fileManager: FileManager,
     packageManagerWrapper: PackageManagerWrapper,
+    iconKeyGenerator: IconKeyGenerator,
 ) {
     val updateShortcutInfoGridItems = mutableListOf<UpdateShortcutInfoGridItem>()
 
@@ -234,6 +235,7 @@ internal suspend fun updateShortcutInfoGridItems(
                         eblanApplicationInfoIcon = resolveApplicationIcon(
                             fileManager = fileManager,
                             packageManagerWrapper = packageManagerWrapper,
+                            iconKeyGenerator = iconKeyGenerator,
                             serialNumber = eblanShortcutInfo.serialNumber,
                             packageName = eblanShortcutInfo.packageName,
                         ),
@@ -257,6 +259,7 @@ internal suspend fun updateShortcutConfigGridItems(
     shortcutConfigGridItemRepository: ShortcutConfigGridItemRepository,
     fileManager: FileManager,
     packageManagerWrapper: PackageManagerWrapper,
+    iconKeyGenerator: IconKeyGenerator,
 ) {
     val updateShortcutConfigGridItems = mutableListOf<UpdateShortcutConfigGridItem>()
 
@@ -288,6 +291,7 @@ internal suspend fun updateShortcutConfigGridItems(
                     applicationIcon = resolveApplicationIcon(
                         fileManager = fileManager,
                         packageManagerWrapper = packageManagerWrapper,
+                        iconKeyGenerator = iconKeyGenerator,
                         serialNumber = eblanShortcutConfig.serialNumber,
                         packageName = eblanShortcutConfig.packageName,
                     ),
@@ -312,6 +316,7 @@ internal suspend fun updateWidgetGridItems(
     fileManager: FileManager,
     packageManagerWrapper: PackageManagerWrapper,
     widgetGridItemRepository: WidgetGridItemRepository,
+    iconKeyGenerator: IconKeyGenerator,
 ) {
     if (!packageManagerWrapper.hasSystemFeatureAppWidgets) return
 
@@ -351,6 +356,7 @@ internal suspend fun updateWidgetGridItems(
                     icon = resolveApplicationIcon(
                         fileManager = fileManager,
                         packageManagerWrapper = packageManagerWrapper,
+                        iconKeyGenerator = iconKeyGenerator,
                         serialNumber = eblanAppWidgetProviderInfo.serialNumber,
                         packageName = eblanAppWidgetProviderInfo.packageName,
                     ),
@@ -372,6 +378,7 @@ internal suspend fun updateWidgetGridItems(
 internal suspend fun AppWidgetManagerAppWidgetProviderInfo.toEblanAppWidgetProviderInfo(
     fileManager: FileManager,
     packageManagerWrapper: PackageManagerWrapper,
+    iconKeyGenerator: IconKeyGenerator,
 ): EblanAppWidgetProviderInfo = EblanAppWidgetProviderInfo(
     componentName = componentName,
     serialNumber = serialNumber,
@@ -390,6 +397,7 @@ internal suspend fun AppWidgetManagerAppWidgetProviderInfo.toEblanAppWidgetProvi
     applicationIcon = resolveApplicationIcon(
         fileManager = fileManager,
         packageManagerWrapper = packageManagerWrapper,
+        iconKeyGenerator = iconKeyGenerator,
         serialNumber = serialNumber,
         packageName = packageName,
     ),
@@ -436,6 +444,7 @@ internal fun SyncEblanApplicationInfo.toDeleteEblanApplicationInfo() = DeleteEbl
 internal suspend fun ShortcutConfigActivityInfo.toEblanShortcutConfig(
     fileManager: FileManager,
     packageManagerWrapper: PackageManagerWrapper,
+    iconKeyGenerator: IconKeyGenerator,
 ): EblanShortcutConfig = EblanShortcutConfig(
     componentName = componentName,
     packageName = packageName,
@@ -445,6 +454,7 @@ internal suspend fun ShortcutConfigActivityInfo.toEblanShortcutConfig(
     applicationIcon = resolveApplicationIcon(
         fileManager = fileManager,
         packageManagerWrapper = packageManagerWrapper,
+        iconKeyGenerator = iconKeyGenerator,
         serialNumber = serialNumber,
         packageName = packageName,
     ),
@@ -490,6 +500,7 @@ internal fun EblanShortcutConfig.toDeleteEblanShortcutConfig(): DeleteEblanShort
 private suspend fun resolveApplicationIcon(
     fileManager: FileManager,
     packageManagerWrapper: PackageManagerWrapper,
+    iconKeyGenerator: IconKeyGenerator,
     serialNumber: Long,
     packageName: String,
 ): String? {
@@ -500,22 +511,18 @@ private suspend fun resolveApplicationIcon(
     return if (componentName != null) {
         File(
             directory,
-            fileManager.getHashedFileName(
-                name = getActivityIconKey(
-                    serialNumber = serialNumber,
-                    componentName = componentName,
-                ),
+            iconKeyGenerator.getActivityIconKey(
+                serialNumber = serialNumber,
+                componentName = componentName,
             ),
         ).absolutePath
     } else {
         val file =
             File(
                 directory,
-                fileManager.getHashedFileName(
-                    name = getActivityIconKey(
-                        serialNumber = serialNumber,
-                        componentName = packageName,
-                    ),
+                iconKeyGenerator.getActivityIconKey(
+                    serialNumber = serialNumber,
+                    componentName = packageName,
                 ),
             )
 

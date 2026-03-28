@@ -105,6 +105,7 @@ import com.eblan.launcher.feature.home.util.handleApplyFling
 import com.eblan.launcher.feature.home.util.handleWallpaperScrollEffect
 import com.eblan.launcher.ui.local.LocalAppWidgetHost
 import com.eblan.launcher.ui.local.LocalFileManager
+import com.eblan.launcher.ui.local.LocalIconKeyGenerator
 import com.eblan.launcher.ui.local.LocalImageSerializer
 import com.eblan.launcher.ui.local.LocalLauncherApps
 import com.eblan.launcher.ui.local.LocalUserManager
@@ -245,6 +246,8 @@ internal fun PagerScreen(
 
     val androidAppWidgetHostWrapper = LocalAppWidgetHost.current
 
+    val iconKeyGenerator = LocalIconKeyGenerator.current
+
     val scope = rememberCoroutineScope()
 
     val pagerScreenState = rememberPagerScreenState(
@@ -331,6 +334,7 @@ internal fun PagerScreen(
                 gridItemSource = gridItemSource,
                 moveGridItemResult = moveGridItemResult,
                 result = result,
+                iconKeyGenerator = iconKeyGenerator,
                 onDeleteGridItemCache = onResetGridCacheAfterDeleteGridItemCache,
                 onUpdateShortcutConfigIntoShortcutInfoGridItem = onUpdateShortcutConfigIntoShortcutInfoGridItem,
             )

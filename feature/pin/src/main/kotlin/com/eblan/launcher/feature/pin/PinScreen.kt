@@ -68,12 +68,12 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
-import com.eblan.launcher.domain.common.dispatcher.getShortcutIconKey
 import com.eblan.launcher.domain.framework.FileManager
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.ui.local.LocalAppWidgetHost
 import com.eblan.launcher.ui.local.LocalAppWidgetManager
 import com.eblan.launcher.ui.local.LocalFileManager
+import com.eblan.launcher.ui.local.LocalIconKeyGenerator
 import com.eblan.launcher.ui.local.LocalImageSerializer
 import com.eblan.launcher.ui.local.LocalLauncherApps
 import com.eblan.launcher.ui.local.LocalPinItemRequest
@@ -164,6 +164,8 @@ private fun PinShortcutScreen(
 
     val context = LocalContext.current
 
+    val iconKeyGenerator = LocalIconKeyGenerator.current
+
     val scope = rememberCoroutineScope()
 
     if (shortcutInfo != null) {
@@ -223,12 +225,10 @@ private fun PinShortcutScreen(
 
                                 val file = File(
                                     directory,
-                                    fileManager.getHashedFileName(
-                                        name = getShortcutIconKey(
-                                            serialNumber = serialNumber,
-                                            packageName = shortcutInfo.`package`,
-                                            id = shortcutInfo.id,
-                                        ),
+                                    iconKeyGenerator.getShortcutIconKey(
+                                        serialNumber = serialNumber,
+                                        packageName = shortcutInfo.`package`,
+                                        id = shortcutInfo.id,
                                     ),
                                 )
 
@@ -307,6 +307,8 @@ private fun PinWidgetScreen(
     val context = LocalContext.current
 
     val fileManager = LocalFileManager.current
+
+    val iconKeyGenerator = LocalIconKeyGenerator.current
 
     val paddingValues = WindowInsets.safeDrawing.asPaddingValues()
 
@@ -397,7 +399,7 @@ private fun PinWidgetScreen(
 
                     val file = File(
                         directory,
-                        fileManager.getHashedFileName(name = componentName),
+                        iconKeyGenerator.getHashedName(name = componentName),
                     )
 
                     val preview = file.absolutePath

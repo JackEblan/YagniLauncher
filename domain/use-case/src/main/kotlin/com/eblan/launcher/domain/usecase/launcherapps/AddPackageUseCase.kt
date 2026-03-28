@@ -17,8 +17,9 @@
  */
 package com.eblan.launcher.domain.usecase.launcherapps
 
-import com.eblan.launcher.domain.common.dispatcher.Dispatcher
-import com.eblan.launcher.domain.common.dispatcher.EblanDispatchers
+import com.eblan.launcher.domain.common.Dispatcher
+import com.eblan.launcher.domain.common.EblanDispatchers
+import com.eblan.launcher.domain.common.IconKeyGenerator
 import com.eblan.launcher.domain.framework.AppWidgetManagerWrapper
 import com.eblan.launcher.domain.framework.FileManager
 import com.eblan.launcher.domain.framework.IconPackManager
@@ -51,6 +52,7 @@ class AddPackageUseCase @Inject constructor(
     private val eblanShortcutConfigRepository: EblanShortcutConfigRepository,
     private val fileManager: FileManager,
     private val iconPackManager: IconPackManager,
+    private val iconKeyGenerator: IconKeyGenerator,
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke(
@@ -138,6 +140,7 @@ class AddPackageUseCase @Inject constructor(
                 appWidgetManagerAppWidgetProviderInfo.toEblanAppWidgetProviderInfo(
                     fileManager = fileManager,
                     packageManagerWrapper = packageManagerWrapper,
+                    iconKeyGenerator = iconKeyGenerator,
                 )
             }
 
@@ -180,6 +183,7 @@ class AddPackageUseCase @Inject constructor(
             shortcutConfigActivityInfo.toEblanShortcutConfig(
                 fileManager = fileManager,
                 packageManagerWrapper = packageManagerWrapper,
+                iconKeyGenerator = iconKeyGenerator,
             )
         }
 
@@ -207,7 +211,7 @@ class AddPackageUseCase @Inject constructor(
 
             val file = File(
                 iconPackInfoDirectory,
-                fileManager.getHashedFileName(name = launcherAppsActivityInfo.componentName),
+                iconKeyGenerator.getHashedName(name = launcherAppsActivityInfo.componentName),
             )
 
             cacheIconPackFile(

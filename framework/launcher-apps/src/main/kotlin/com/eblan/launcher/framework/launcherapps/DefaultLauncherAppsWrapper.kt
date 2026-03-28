@@ -36,10 +36,9 @@ import android.os.Process.myUserHandle
 import android.os.UserHandle
 import android.os.UserManager
 import androidx.annotation.RequiresApi
-import com.eblan.launcher.domain.common.dispatcher.Dispatcher
-import com.eblan.launcher.domain.common.dispatcher.EblanDispatchers
-import com.eblan.launcher.domain.common.dispatcher.getActivityIconKey
-import com.eblan.launcher.domain.common.dispatcher.getShortcutIconKey
+import com.eblan.launcher.domain.common.Dispatcher
+import com.eblan.launcher.domain.common.EblanDispatchers
+import com.eblan.launcher.domain.common.IconKeyGenerator
 import com.eblan.launcher.domain.framework.FileManager
 import com.eblan.launcher.domain.framework.LauncherAppsWrapper
 import com.eblan.launcher.domain.framework.PackageManagerWrapper
@@ -75,6 +74,7 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
     private val fileManager: FileManager,
     private val packageManagerWrapper: PackageManagerWrapper,
     private val androidPackageManager: AndroidPackageManagerWrapper,
+    private val iconKeyGenerator: IconKeyGenerator,
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) : LauncherAppsWrapper,
     AndroidLauncherAppsWrapper {
@@ -529,11 +529,9 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
 
             val file = File(
                 directory,
-                fileManager.getHashedFileName(
-                    name = getActivityIconKey(
-                        serialNumber = serialNumber,
-                        componentName = componentName.flattenToString(),
-                    ),
+                iconKeyGenerator.getActivityIconKey(
+                    serialNumber = serialNumber,
+                    componentName = componentName.flattenToString(),
                 ),
             )
 
@@ -568,12 +566,10 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
 
             val file = File(
                 directory,
-                fileManager.getHashedFileName(
-                    name = getShortcutIconKey(
-                        serialNumber = serialNumber,
-                        packageName = `package`,
-                        id = id,
-                    ),
+                iconKeyGenerator.getShortcutIconKey(
+                    serialNumber = serialNumber,
+                    packageName = `package`,
+                    id = id,
                 ),
             )
 

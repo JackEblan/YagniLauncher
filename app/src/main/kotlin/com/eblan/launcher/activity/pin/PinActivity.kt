@@ -28,6 +28,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.eblan.launcher.designsystem.theme.EblanLauncherTheme
+import com.eblan.launcher.domain.common.IconKeyGenerator
 import com.eblan.launcher.domain.framework.FileManager
 import com.eblan.launcher.feature.pin.PinScreen
 import com.eblan.launcher.framework.imageserializer.AndroidImageSerializer
@@ -40,6 +41,7 @@ import com.eblan.launcher.model.ActivityUiState
 import com.eblan.launcher.ui.local.LocalAppWidgetHost
 import com.eblan.launcher.ui.local.LocalAppWidgetManager
 import com.eblan.launcher.ui.local.LocalFileManager
+import com.eblan.launcher.ui.local.LocalIconKeyGenerator
 import com.eblan.launcher.ui.local.LocalImageSerializer
 import com.eblan.launcher.ui.local.LocalLauncherApps
 import com.eblan.launcher.ui.local.LocalPinItemRequest
@@ -71,6 +73,9 @@ class PinActivity : ComponentActivity() {
     @Inject
     lateinit var fileManager: FileManager
 
+    @Inject
+    lateinit var iconKeyGenerator: IconKeyGenerator
+
     private val viewModel: PinActivityViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -94,6 +99,7 @@ class PinActivity : ComponentActivity() {
                     LocalImageSerializer provides imageSerializer,
                     LocalUserManager provides androidUserManagerWrapper,
                     LocalFileManager provides fileManager,
+                    LocalIconKeyGenerator provides iconKeyGenerator,
                 ) {
                     val activityUiState by viewModel.activityUiState.collectAsStateWithLifecycle()
 

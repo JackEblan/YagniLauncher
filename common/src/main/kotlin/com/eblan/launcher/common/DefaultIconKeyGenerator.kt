@@ -15,28 +15,38 @@
  *   limitations under the License.
  *
  */
-package com.eblan.launcher.domain.usecase.application
+package com.eblan.launcher.common
 
+import android.util.Base64
 import com.eblan.launcher.domain.common.Dispatcher
 import com.eblan.launcher.domain.common.EblanDispatchers
-import com.eblan.launcher.domain.model.EblanApplicationInfo
-import com.eblan.launcher.domain.repository.EblanApplicationInfoRepository
+import com.eblan.launcher.domain.common.IconKeyGenerator
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
+import java.security.MessageDigest
 import javax.inject.Inject
 
-class UpdateEblanApplicationInfosIndexesUseCase @Inject constructor(
-    private val eblanApplicationInfoRepository: EblanApplicationInfoRepository,
+internal class DefaultIconKeyGenerator @Inject constructor(
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
-) {
-    suspend operator fun invoke(eblanApplicationInfos: List<EblanApplicationInfo>) {
-        withContext(defaultDispatcher) {
-            val eblanApplicationInfoIndexes =
-                eblanApplicationInfos.mapIndexed { index, eblanApplicationInfo ->
-                    eblanApplicationInfo.copy(index = index)
-                }
+) : IconKeyGenerator {
+    override suspend fun getActivityIconKey(
+        serialNumber: Long,
+        componentName: String,
+    ) = getHashedName("$serialNumber:$componentName")
 
-            eblanApplicationInfoRepository.updateEblanApplicationInfos(eblanApplicationInfos = eblanApplicationInfoIndexes)
-        }
+    override suspend fun getShortcutIconKey(
+        serialNumber: Long,
+        packageName: String,
+        id: String,
+    ) = getHashedName("$serialNumber:$packageName:$id")
+
+    override suspend fun getHashedName(name: String): String = withContext(defaultDispatcher) {
+        val digest = MessageDigest.getInstance("SHA-256")
+            .digest(name.toByteArray())
+
+        Base64.encodeToString(
+            digest.copyOfRange(0, 8),
+            Base64.URL_SAFE or Base64.NO_PADDING or Base64.NO_WRAP,
+        )
     }
 }

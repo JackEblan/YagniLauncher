@@ -17,8 +17,9 @@
  */
 package com.eblan.launcher.domain.usecase.launcherapps
 
-import com.eblan.launcher.domain.common.dispatcher.Dispatcher
-import com.eblan.launcher.domain.common.dispatcher.EblanDispatchers
+import com.eblan.launcher.domain.common.Dispatcher
+import com.eblan.launcher.domain.common.EblanDispatchers
+import com.eblan.launcher.domain.common.IconKeyGenerator
 import com.eblan.launcher.domain.framework.AppWidgetManagerWrapper
 import com.eblan.launcher.domain.framework.FileManager
 import com.eblan.launcher.domain.framework.IconPackManager
@@ -59,6 +60,7 @@ class ChangePackageUseCase @Inject constructor(
     private val fileManager: FileManager,
     private val iconPackManager: IconPackManager,
     private val widgetGridItemRepository: WidgetGridItemRepository,
+    private val iconKeyGenerator: IconKeyGenerator,
     @param:Dispatcher(EblanDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke(
@@ -125,6 +127,7 @@ class ChangePackageUseCase @Inject constructor(
                         shortcutConfigActivityInfo.toEblanShortcutConfig(
                             fileManager = fileManager,
                             packageManagerWrapper = packageManagerWrapper,
+                            iconKeyGenerator = iconKeyGenerator,
                         )
                     },
                 )
@@ -197,6 +200,7 @@ class ChangePackageUseCase @Inject constructor(
                 appWidgetManagerAppWidgetProviderInfo.toEblanAppWidgetProviderInfo(
                     fileManager = fileManager,
                     packageManagerWrapper = packageManagerWrapper,
+                    iconKeyGenerator = iconKeyGenerator,
                 )
             }
 
@@ -232,6 +236,7 @@ class ChangePackageUseCase @Inject constructor(
                 fileManager = fileManager,
                 packageManagerWrapper = packageManagerWrapper,
                 widgetGridItemRepository = widgetGridItemRepository,
+                iconKeyGenerator = iconKeyGenerator,
             )
         }
     }
@@ -288,6 +293,7 @@ class ChangePackageUseCase @Inject constructor(
                 shortcutInfoGridItemRepository = shortcutInfoGridItemRepository,
                 fileManager = fileManager,
                 packageManagerWrapper = packageManagerWrapper,
+                iconKeyGenerator = iconKeyGenerator,
             )
         }
     }
@@ -330,6 +336,7 @@ class ChangePackageUseCase @Inject constructor(
                 shortcutConfigGridItemRepository = shortcutConfigGridItemRepository,
                 fileManager = fileManager,
                 packageManagerWrapper = packageManagerWrapper,
+                iconKeyGenerator = iconKeyGenerator,
             )
         }
     }
@@ -375,7 +382,7 @@ class ChangePackageUseCase @Inject constructor(
 
                 val file = File(
                     iconPackInfoDirectory,
-                    fileManager.getHashedFileName(name = fastLauncherAppsActivityInfo.componentName),
+                    iconKeyGenerator.getHashedName(name = fastLauncherAppsActivityInfo.componentName),
                 )
 
                 cacheIconPackFile(
@@ -386,7 +393,7 @@ class ChangePackageUseCase @Inject constructor(
                     componentName = fastLauncherAppsActivityInfo.componentName,
                 )
 
-                add(fileManager.getHashedFileName(name = fastLauncherAppsActivityInfo.componentName))
+                add(iconKeyGenerator.getHashedName(name = fastLauncherAppsActivityInfo.componentName))
             }
         }
 

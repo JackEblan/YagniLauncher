@@ -56,6 +56,7 @@ dependencies {
     api(projects.framework.widgetManager)
 
     implementation(projects.designSystem)
+    implementation(projects.domain.common)
     implementation(projects.domain.framework)
     implementation(projects.domain.model)
 

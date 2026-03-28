@@ -15,15 +15,20 @@
  *   limitations under the License.
  *
  */
-package com.eblan.launcher.domain.common.dispatcher
+package com.eblan.launcher.common
 
-fun getActivityIconKey(
-    serialNumber: Long,
-    componentName: String,
-) = "$serialNumber:$componentName"
+import com.eblan.launcher.domain.common.IconKeyGenerator
+import dagger.Binds
+import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 
-fun getShortcutIconKey(
-    serialNumber: Long,
-    packageName: String,
-    id: String,
-) = "$serialNumber:$packageName:$id"
+@Module
+@InstallIn(SingletonComponent::class)
+internal interface CommonModule {
+
+    @Binds
+    @Singleton
+    fun iconKeyGenerator(impl: DefaultIconKeyGenerator): IconKeyGenerator
+}

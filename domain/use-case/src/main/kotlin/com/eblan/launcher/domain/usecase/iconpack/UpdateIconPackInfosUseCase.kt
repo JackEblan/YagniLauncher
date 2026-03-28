@@ -17,8 +17,9 @@
  */
 package com.eblan.launcher.domain.usecase.iconpack
 
-import com.eblan.launcher.domain.common.dispatcher.Dispatcher
-import com.eblan.launcher.domain.common.dispatcher.EblanDispatchers
+import com.eblan.launcher.domain.common.Dispatcher
+import com.eblan.launcher.domain.common.EblanDispatchers
+import com.eblan.launcher.domain.common.IconKeyGenerator
 import com.eblan.launcher.domain.framework.FileManager
 import com.eblan.launcher.domain.framework.IconPackManager
 import com.eblan.launcher.domain.framework.LauncherAppsWrapper
@@ -35,6 +36,7 @@ class UpdateIconPackInfosUseCase @Inject constructor(
     private val fileManager: FileManager,
     private val eblanIconPackInfoRepository: EblanIconPackInfoRepository,
     private val eblanApplicationInfoRepository: EblanApplicationInfoRepository,
+    private val iconKeyGenerator: IconKeyGenerator,
     @param:Dispatcher(EblanDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke(iconPackInfoPackageName: String) {
@@ -51,6 +53,7 @@ class UpdateIconPackInfosUseCase @Inject constructor(
                     fileManager = fileManager,
                     iconPackManager = iconPackManager,
                     fastLauncherAppsActivityInfos = launcherAppsWrapper.getFastActivityList(),
+                    iconKeyGenerator = iconKeyGenerator,
                 )
 
                 eblanIconPackInfoRepository.upsertEblanIconPackInfo(

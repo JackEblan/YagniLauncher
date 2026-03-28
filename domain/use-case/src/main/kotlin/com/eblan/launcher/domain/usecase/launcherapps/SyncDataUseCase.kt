@@ -17,8 +17,9 @@
  */
 package com.eblan.launcher.domain.usecase.launcherapps
 
-import com.eblan.launcher.domain.common.dispatcher.Dispatcher
-import com.eblan.launcher.domain.common.dispatcher.EblanDispatchers
+import com.eblan.launcher.domain.common.Dispatcher
+import com.eblan.launcher.domain.common.EblanDispatchers
+import com.eblan.launcher.domain.common.IconKeyGenerator
 import com.eblan.launcher.domain.framework.AppWidgetManagerWrapper
 import com.eblan.launcher.domain.framework.FileManager
 import com.eblan.launcher.domain.framework.IconPackManager
@@ -70,6 +71,7 @@ class SyncDataUseCase @Inject constructor(
     private val eblanShortcutConfigRepository: EblanShortcutConfigRepository,
     private val iconPackManager: IconPackManager,
     private val shortcutConfigGridItemRepository: ShortcutConfigGridItemRepository,
+    private val iconKeyGenerator: IconKeyGenerator,
     @param:Dispatcher(EblanDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke() {
@@ -94,6 +96,7 @@ class SyncDataUseCase @Inject constructor(
                     fileManager = fileManager,
                     iconPackManager = iconPackManager,
                     fastLauncherAppsActivityInfos = launcherAppsWrapper.getFastActivityList(),
+                    iconKeyGenerator = iconKeyGenerator,
                 )
             }
         }
@@ -130,6 +133,7 @@ class SyncDataUseCase @Inject constructor(
                         shortcutConfigActivityInfo.toEblanShortcutConfig(
                             fileManager = fileManager,
                             packageManagerWrapper = packageManagerWrapper,
+                            iconKeyGenerator = iconKeyGenerator,
                         )
                     },
                 )
@@ -220,6 +224,7 @@ class SyncDataUseCase @Inject constructor(
                 appWidgetManagerAppWidgetProviderInfo.toEblanAppWidgetProviderInfo(
                     fileManager = fileManager,
                     packageManagerWrapper = packageManagerWrapper,
+                    iconKeyGenerator = iconKeyGenerator,
                 )
             }
 
@@ -254,6 +259,7 @@ class SyncDataUseCase @Inject constructor(
             fileManager = fileManager,
             packageManagerWrapper = packageManagerWrapper,
             widgetGridItemRepository = widgetGridItemRepository,
+            iconKeyGenerator = iconKeyGenerator,
         )
     }
 
@@ -308,6 +314,7 @@ class SyncDataUseCase @Inject constructor(
             shortcutInfoGridItemRepository = shortcutInfoGridItemRepository,
             fileManager = fileManager,
             packageManagerWrapper = packageManagerWrapper,
+            iconKeyGenerator = iconKeyGenerator,
         )
     }
 
@@ -342,6 +349,7 @@ class SyncDataUseCase @Inject constructor(
                 shortcutConfigGridItemRepository = shortcutConfigGridItemRepository,
                 fileManager = fileManager,
                 packageManagerWrapper = packageManagerWrapper,
+                iconKeyGenerator = iconKeyGenerator,
             )
         }
     }

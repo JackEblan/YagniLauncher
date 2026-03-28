@@ -17,8 +17,9 @@
  */
 package com.eblan.launcher.domain.usecase.iconpack
 
-import com.eblan.launcher.domain.common.dispatcher.Dispatcher
-import com.eblan.launcher.domain.common.dispatcher.EblanDispatchers
+import com.eblan.launcher.domain.common.Dispatcher
+import com.eblan.launcher.domain.common.EblanDispatchers
+import com.eblan.launcher.domain.common.IconKeyGenerator
 import com.eblan.launcher.domain.framework.FileManager
 import com.eblan.launcher.domain.repository.EblanApplicationInfoRepository
 import com.eblan.launcher.domain.repository.UserDataRepository
@@ -33,6 +34,7 @@ class GetIconPackFilePathsUseCase @Inject constructor(
     private val userDataRepository: UserDataRepository,
     private val eblanApplicationInfoRepository: EblanApplicationInfoRepository,
     private val fileManager: FileManager,
+    private val iconKeyGenerator: IconKeyGenerator,
     @param:Dispatcher(EblanDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) {
     operator fun invoke(): Flow<Map<String, String>> = combine(
@@ -55,7 +57,7 @@ class GetIconPackFilePathsUseCase @Inject constructor(
                 eblaApplicationInfos.forEach { eblanApplicationInfo ->
                     val iconPackFile = File(
                         iconPackDirectory,
-                        fileManager.getHashedFileName(name = eblanApplicationInfo.componentName),
+                        iconKeyGenerator.getHashedName(name = eblanApplicationInfo.componentName),
                     )
 
                     if (iconPackFile.exists()) {

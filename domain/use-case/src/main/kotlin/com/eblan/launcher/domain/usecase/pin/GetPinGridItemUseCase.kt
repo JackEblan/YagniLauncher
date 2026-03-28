@@ -17,9 +17,9 @@
  */
 package com.eblan.launcher.domain.usecase.pin
 
-import com.eblan.launcher.domain.common.dispatcher.Dispatcher
-import com.eblan.launcher.domain.common.dispatcher.EblanDispatchers
-import com.eblan.launcher.domain.common.dispatcher.getActivityIconKey
+import com.eblan.launcher.domain.common.Dispatcher
+import com.eblan.launcher.domain.common.EblanDispatchers
+import com.eblan.launcher.domain.common.IconKeyGenerator
 import com.eblan.launcher.domain.framework.FileManager
 import com.eblan.launcher.domain.framework.PackageManagerWrapper
 import com.eblan.launcher.domain.model.Associate
@@ -42,6 +42,7 @@ class GetPinGridItemUseCase @Inject constructor(
     private val fileManager: FileManager,
     private val userDataRepository: UserDataRepository,
     private val packageManagerWrapper: PackageManagerWrapper,
+    private val iconKeyGenerator: IconKeyGenerator,
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) {
     @OptIn(ExperimentalUuidApi::class)
@@ -59,11 +60,9 @@ class GetPinGridItemUseCase @Inject constructor(
 
                             val file = File(
                                 directory,
-                                fileManager.getHashedFileName(
-                                    name = getActivityIconKey(
-                                        serialNumber = pinItemRequestType.serialNumber,
-                                        componentName = componentName,
-                                    ),
+                                iconKeyGenerator.getActivityIconKey(
+                                    serialNumber = pinItemRequestType.serialNumber,
+                                    componentName = componentName,
                                 ),
                             )
 
@@ -129,11 +128,9 @@ class GetPinGridItemUseCase @Inject constructor(
 
                             val file = File(
                                 directory,
-                                fileManager.getHashedFileName(
-                                    name = getActivityIconKey(
-                                        serialNumber = pinItemRequestType.serialNumber,
-                                        componentName = componentName,
-                                    ),
+                                iconKeyGenerator.getActivityIconKey(
+                                    serialNumber = pinItemRequestType.serialNumber,
+                                    componentName = componentName,
                                 ),
                             )
 
