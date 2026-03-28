@@ -175,18 +175,27 @@ class RemovePackageUseCase @Inject constructor(
     ) {
         if (componentName == null) return
 
-        val iconPacksDirectory = File(
-            fileManager.getFilesDirectory(FileManager.ICON_PACKS_DIR),
-            iconPackInfoPackageName,
-        )
+        val hasNoIconPackInfoReference = eblanApplicationInfoRepository.getEblanApplicationInfos()
+            .none { eblanApplicationInfo ->
+                currentCoroutineContext().ensureActive()
 
-        val iconPackFile = File(
-            iconPacksDirectory,
-            iconKeyGenerator.getHashedName(name = componentName),
-        )
+                eblanApplicationInfo.componentName == componentName
+            }
 
-        if (iconPackFile.exists()) {
-            iconPackFile.delete()
+        if (hasNoIconPackInfoReference) {
+            val iconPacksDirectory = File(
+                fileManager.getFilesDirectory(FileManager.ICON_PACKS_DIR),
+                iconPackInfoPackageName,
+            )
+
+            val iconPackFile = File(
+                iconPacksDirectory,
+                iconKeyGenerator.getHashedName(name = componentName),
+            )
+
+            if (iconPackFile.exists()) {
+                iconPackFile.delete()
+            }
         }
     }
 
