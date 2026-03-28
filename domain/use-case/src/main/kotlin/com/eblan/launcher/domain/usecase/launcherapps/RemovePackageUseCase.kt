@@ -19,7 +19,9 @@ package com.eblan.launcher.domain.usecase.launcherapps
 
 import com.eblan.launcher.domain.common.Dispatcher
 import com.eblan.launcher.domain.common.EblanDispatchers
+import com.eblan.launcher.domain.common.IconKeyGenerator
 import com.eblan.launcher.domain.framework.FileManager
+import com.eblan.launcher.domain.framework.PackageManagerWrapper
 import com.eblan.launcher.domain.repository.ApplicationInfoGridItemRepository
 import com.eblan.launcher.domain.repository.EblanAppWidgetProviderInfoRepository
 import com.eblan.launcher.domain.repository.EblanApplicationInfoRepository
@@ -48,6 +50,8 @@ class RemovePackageUseCase @Inject constructor(
     private val eblanShortcutInfoRepository: EblanShortcutInfoRepository,
     private val eblanShortcutConfigRepository: EblanShortcutConfigRepository,
     private val shortcutConfigGridItemRepository: ShortcutConfigGridItemRepository,
+    private val packageManagerWrapper: PackageManagerWrapper,
+    private val iconKeyGenerator: IconKeyGenerator,
     @param:Dispatcher(EblanDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke(
@@ -117,6 +121,8 @@ class RemovePackageUseCase @Inject constructor(
         val iconPackInfoPackageName =
             userDataRepository.userData.first().generalSettings.iconPackInfoPackageName
 
+        val componentName = packageManagerWrapper.getComponentName(packageName = packageName)
+
         eblanApplicationInfoRepository.getEblanApplicationInfosByPackageName(
             serialNumber = serialNumber,
             packageName = packageName,
@@ -140,16 +146,10 @@ class RemovePackageUseCase @Inject constructor(
                     iconFile.delete()
                 }
 
-                val iconPacksDirectory = File(
-                    fileManager.getFilesDirectory(FileManager.ICON_PACKS_DIR),
-                    iconPackInfoPackageName,
+                deleteIconPackFile(
+                    componentName = componentName,
+                    iconPackInfoPackageName = iconPackInfoPackageName,
                 )
-
-                val iconPackFile = File(iconPacksDirectory, packageName)
-
-                if (iconPackFile.exists()) {
-                    iconPackFile.delete()
-                }
             }
         }
 
@@ -166,6 +166,27 @@ class RemovePackageUseCase @Inject constructor(
                     customIconFile.delete()
                 }
             }
+        }
+    }
+
+    private suspend fun deleteIconPackFile(
+        componentName: String?,
+        iconPackInfoPackageName: String,
+    ) {
+        if (componentName == null) return
+
+        val iconPacksDirectory = File(
+            fileManager.getFilesDirectory(FileManager.ICON_PACKS_DIR),
+            iconPackInfoPackageName,
+        )
+
+        val iconPackFile = File(
+            iconPacksDirectory,
+            iconKeyGenerator.getHashedName(name = componentName),
+        )
+
+        if (iconPackFile.exists()) {
+            iconPackFile.delete()
         }
     }
 
