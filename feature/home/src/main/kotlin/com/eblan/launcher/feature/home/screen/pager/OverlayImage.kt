@@ -30,14 +30,12 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
-import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.SharedElementKey
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun SharedTransitionScope.OverlayImage(
     modifier: Modifier = Modifier,
-    drag: Drag,
     overlayImageBitmap: ImageBitmap?,
     overlayIntOffset: IntOffset?,
     overlayIntSize: IntSize?,

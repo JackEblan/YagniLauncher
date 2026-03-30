@@ -1319,7 +1319,6 @@ internal fun PagerScreen(
         }
 
         OverlayImage(
-            drag = pagerScreenState.drag,
             overlayImageBitmap = pagerScreenState.overlayImageBitmap,
             overlayIntOffset = pagerScreenState.overlayIntOffset,
             overlayIntSize = pagerScreenState.overlayIntSize,
