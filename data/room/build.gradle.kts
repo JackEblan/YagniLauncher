@@ -40,12 +40,9 @@ dependencies {
 
     implementation(libs.kotlinx.serialization.json)
 
-    androidTestImplementation(kotlin("test"))
     androidTestImplementation(libs.androidx.test.core.ktx)
     androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(libs.androidx.test.rules)
     androidTestImplementation(libs.androidx.test.ext.junit.ktx)
     androidTestImplementation(libs.room.testing)
-
-
 }
