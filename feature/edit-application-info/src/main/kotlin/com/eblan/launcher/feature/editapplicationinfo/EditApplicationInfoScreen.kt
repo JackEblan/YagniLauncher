@@ -123,7 +123,7 @@ internal fun EditApplicationInfoScreen(
             topBar = {
                 TopAppBar(
                     title = {
-                        Text(text = "Edit Application Info")
+                        Text(text = "Edit ${editApplicationInfoUiState.eblanApplicationInfo.label}")
                     },
                     navigationIcon = {
                         IconButton(onClick = onNavigateUp) {

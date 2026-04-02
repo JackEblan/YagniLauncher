@@ -110,7 +110,15 @@ internal fun EditGridItemScreen(
             topBar = {
                 TopAppBar(
                     title = {
-                        Text(text = "Edit Grid Item")
+                        val label = when (val data = editGridItemUiState.gridItem.data) {
+                            is GridItemData.ApplicationInfo -> data.label
+                            is GridItemData.ShortcutConfig -> data.activityLabel.toString()
+                            is GridItemData.ShortcutInfo -> data.shortLabel
+                            is GridItemData.Folder -> data.label
+                            else -> "Grid Item"
+                        }
+
+                        Text(text = "Edit $label")
                     },
                     navigationIcon = {
                         IconButton(onClick = onNavigateUp) {

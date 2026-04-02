@@ -48,7 +48,6 @@ import coil3.compose.AsyncImage
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.PackageManagerIconPackInfo
 import com.eblan.launcher.ui.settings.SettingsColumn
-import kotlin.collections.forEach
 
 @Composable
 fun CustomIcon(
@@ -83,6 +82,14 @@ fun CustomIcon(
                 .padding(15.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
+            AsyncImage(
+                modifier = Modifier.size(40.dp),
+                model = customIcon,
+                contentDescription = null,
+            )
+
+            Spacer(modifier = Modifier.width(10.dp))
+
             Column(modifier = Modifier.weight(1f)) {
                 Text(text = "Custom Icon")
 
