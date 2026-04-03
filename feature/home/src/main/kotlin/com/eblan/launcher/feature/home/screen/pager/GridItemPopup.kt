@@ -197,6 +197,7 @@ internal fun FolderGridItemPopup(
     onEdit: (String) -> Unit,
     onDismissFolder: () -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+    onInfo: (Long, String) -> Unit,
 ) {
     if (popupIntOffset == null || popupIntSize == null) return
 
@@ -288,6 +289,14 @@ internal fun FolderGridItemPopup(
                     onDismissFolder()
                 },
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                onInfo = {
+                    onInfo(
+                        gridItemSourceFolder.applicationInfoGridItem.serialNumber,
+                        gridItemSourceFolder.applicationInfoGridItem.componentName,
+                    )
+
+                    onDismissRequest()
+                },
             )
         },
     ) { measurables, constraints ->
@@ -495,6 +504,7 @@ private fun FolderGridItemPopupContent(
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onWidgets: () -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+    onInfo: () -> Unit,
 ) {
     Surface(
         modifier = modifier.width(IntrinsicSize.Max),
@@ -532,6 +542,12 @@ private fun FolderGridItemPopupContent(
                         onClick = onEdit,
                     ) {
                         Icon(imageVector = EblanLauncherIcons.Edit, contentDescription = null)
+                    }
+
+                    IconButton(
+                        onClick = onInfo,
+                    ) {
+                        Icon(imageVector = EblanLauncherIcons.Info, contentDescription = null)
                     }
 
                     IconButton(

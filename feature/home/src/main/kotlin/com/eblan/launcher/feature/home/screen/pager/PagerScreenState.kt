@@ -21,6 +21,7 @@ import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.LauncherApps.PinItemRequest
+import android.graphics.Rect
 import android.os.Build
 import android.os.IBinder
 import android.widget.Toast
@@ -1241,6 +1242,64 @@ internal class PagerScreenState(
                     easing = FastOutSlowInEasing,
                 ),
             )
+        }
+    }
+
+    fun startAppDetailsActivity(
+        left: Int?,
+        top: Int?,
+        width: Int?,
+        height: Int?,
+        serialNumber: Long,
+        componentName: String,
+    ) {
+        if (left != null && top != null && width != null && height != null) {
+            androidLauncherAppsWrapper.startAppDetailsActivity(
+                serialNumber = serialNumber,
+                componentName = componentName,
+                sourceBounds = Rect(
+                    left,
+                    top,
+                    left + width,
+                    top + height,
+                ),
+            )
+        }
+    }
+
+    fun startPopupShortcut(
+        leftPadding: Int,
+        topPadding: Int,
+        serialNumber: Long,
+        packageName: String,
+        shortcutId: String,
+    ) {
+        val x = popupIntOffset?.x
+
+        val y = popupIntOffset?.y
+
+        val width = popupIntSize?.width
+
+        val height = popupIntSize?.height
+
+        if (x != null && y != null && width != null && height != null) {
+            val sourceBoundsX = x + leftPadding
+
+            val sourceBoundsY = y + topPadding
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+                androidLauncherAppsWrapper.startShortcut(
+                    serialNumber = serialNumber,
+                    packageName = packageName,
+                    id = shortcutId,
+                    sourceBounds = Rect(
+                        sourceBoundsX,
+                        sourceBoundsY,
+                        sourceBoundsX + width,
+                        sourceBoundsY + height,
+                    ),
+                )
+            }
         }
     }
 
