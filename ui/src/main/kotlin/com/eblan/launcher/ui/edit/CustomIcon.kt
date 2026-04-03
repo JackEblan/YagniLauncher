@@ -150,13 +150,15 @@ fun CustomIcon(
                 )
             }
 
-            HorizontalDivider(modifier = Modifier.fillMaxWidth())
+            if (customIcon != null) {
+                HorizontalDivider(modifier = Modifier.fillMaxWidth())
 
-            SettingsColumn(
-                title = "Reset to defaults",
-                subtitle = "Delete custom icon",
-                onClick = onResetCustomIcon,
-            )
+                SettingsColumn(
+                    title = "Reset to defaults",
+                    subtitle = "Delete custom icon",
+                    onClick = onResetCustomIcon,
+                )
+            }
         }
     }
 }

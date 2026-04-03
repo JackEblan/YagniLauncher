@@ -67,7 +67,10 @@ fun CustomLabelDialog(
                 ) {
                     Text(text = title, style = MaterialTheme.typography.titleLarge)
 
-                    IconButton(onClick = onResetClick) {
+                    IconButton(
+                        enabled = value.isNotBlank(),
+                        onClick = onResetClick,
+                    ) {
                         Icon(
                             imageVector = EblanLauncherIcons.Delete,
                             contentDescription = null,
