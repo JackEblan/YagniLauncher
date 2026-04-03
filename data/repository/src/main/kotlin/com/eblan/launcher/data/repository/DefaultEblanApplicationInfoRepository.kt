@@ -46,11 +46,10 @@ internal class DefaultEblanApplicationInfoRepository @Inject constructor(
             }
         }
 
-    override suspend fun getEblanApplicationInfos(): List<EblanApplicationInfo> =
-        eblanApplicationInfoDao.getEblanApplicationInfoEntityList()
-            .map { eblanApplicationInfoEntity ->
-                eblanApplicationInfoEntity.asModel()
-            }
+    override suspend fun getEblanApplicationInfos(): List<EblanApplicationInfo> = eblanApplicationInfoDao.getEblanApplicationInfoEntityList()
+        .map { eblanApplicationInfoEntity ->
+            eblanApplicationInfoEntity.asModel()
+        }
 
     override suspend fun upsertEblanApplicationInfo(eblanApplicationInfo: EblanApplicationInfo) {
         eblanApplicationInfoDao.upsertEblanApplicationInfoEntity(entity = eblanApplicationInfo.asEntity())
@@ -119,38 +118,34 @@ internal class DefaultEblanApplicationInfoRepository @Inject constructor(
     override suspend fun getEblanApplicationInfosByPackageName(
         serialNumber: Long,
         packageName: String,
-    ): List<EblanApplicationInfo> =
-        eblanApplicationInfoDao.getEblanApplicationInfoEntitiesByPackageName(
-            serialNumber = serialNumber,
-            packageName = packageName,
-        ).map { entity ->
-            entity.asModel()
-        }
+    ): List<EblanApplicationInfo> = eblanApplicationInfoDao.getEblanApplicationInfoEntitiesByPackageName(
+        serialNumber = serialNumber,
+        packageName = packageName,
+    ).map { entity ->
+        entity.asModel()
+    }
 
-    override fun getEblanApplicationInfosByTagId(tagIds: List<Long>): Flow<List<EblanApplicationInfo>> =
-        eblanApplicationInfoDao.getEblanApplicationInfoEntitiesByTagId(tagIds = tagIds)
-            .map { entities ->
-                entities.map { entity ->
-                    entity.asModel()
-                }
-            }
-
-    override fun getEblanApplicationInfoTags(
-        serialNumber: Long,
-        componentName: String,
-    ): Flow<List<EblanApplicationInfoTag>> =
-        eblanApplicationInfoDao.getEblanApplicationInfoTagEntities(
-            serialNumber = serialNumber,
-            componentName = componentName,
-        ).map { entities ->
+    override fun getEblanApplicationInfosByTagId(tagIds: List<Long>): Flow<List<EblanApplicationInfo>> = eblanApplicationInfoDao.getEblanApplicationInfoEntitiesByTagId(tagIds = tagIds)
+        .map { entities ->
             entities.map { entity ->
                 entity.asModel()
             }
         }
 
-    private fun EblanApplicationInfoTagEntity.asModel(): EblanApplicationInfoTag =
-        EblanApplicationInfoTag(
-            id = id,
-            name = name,
-        )
+    override fun getEblanApplicationInfoTags(
+        serialNumber: Long,
+        componentName: String,
+    ): Flow<List<EblanApplicationInfoTag>> = eblanApplicationInfoDao.getEblanApplicationInfoTagEntities(
+        serialNumber = serialNumber,
+        componentName = componentName,
+    ).map { entities ->
+        entities.map { entity ->
+            entity.asModel()
+        }
+    }
+
+    private fun EblanApplicationInfoTagEntity.asModel(): EblanApplicationInfoTag = EblanApplicationInfoTag(
+        id = id,
+        name = name,
+    )
 }

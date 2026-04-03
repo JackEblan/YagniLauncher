@@ -58,6 +58,7 @@ import com.eblan.launcher.feature.editapplicationinfo.model.EditApplicationInfoU
 import com.eblan.launcher.ui.dialog.IconPackInfoFilesDialog
 import com.eblan.launcher.ui.dialog.SingleTextFieldDialog
 import com.eblan.launcher.ui.edit.CustomIcon
+import com.eblan.launcher.ui.edit.CustomLabelDialog
 import com.eblan.launcher.ui.settings.SettingsColumn
 import com.eblan.launcher.ui.settings.SettingsSwitch
 
@@ -277,7 +278,7 @@ private fun Success(
 
             var isError by remember { mutableStateOf(false) }
 
-            SingleTextFieldDialog(
+            CustomLabelDialog(
                 title = "Custom Label",
                 textFieldTitle = "Custom Label",
                 value = value,
@@ -297,6 +298,11 @@ private fun Success(
                     } else {
                         isError = true
                     }
+                },
+                onResetClick = {
+                    onUpdateEblanApplicationInfo(eblanApplicationInfo.copy(customLabel = null))
+
+                    showCustomLabelDialog = false
                 },
             )
         }
