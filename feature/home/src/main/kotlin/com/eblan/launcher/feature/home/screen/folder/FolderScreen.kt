@@ -136,16 +136,16 @@ internal fun SharedTransitionScope.FolderScreen(
 
     val density = LocalDensity.current
 
-    val folderCellWidth = safeDrawingWidth / homeSettings.columns
+    val cellWidth = safeDrawingWidth / homeSettings.columns
 
-    val folderCellHeight = safeDrawingHeight / homeSettings.rows
+    val cellHeight = safeDrawingHeight / homeSettings.rows
 
     val folderGridWidthDp = with(density) {
-        (folderCellWidth * data.columns).toDp()
+        (cellWidth * data.columns).toDp()
     }
 
     val folderGridHeightDp = with(density) {
-        (folderCellHeight * data.rows).toDp()
+        (cellHeight * data.rows).toDp()
     }
 
     val folderGridWidthPx = with(density) {
