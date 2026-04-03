@@ -17,7 +17,7 @@
  */
 
 import com.android.build.api.dsl.ApplicationExtension
-import com.eblan.launcher.configureComposeCompilerGradlePluginExtension
+import com.eblan.launcher.configureCompose
 import com.eblan.launcher.libs
 import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
@@ -65,7 +65,7 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
                 }
             }
 
-            configureComposeCompilerGradlePluginExtension()
+            configureCompose()
         }
     }
 }

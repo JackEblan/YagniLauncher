@@ -24,7 +24,14 @@ import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
 
-internal fun Project.configureComposeCompilerGradlePluginExtension() {
+internal fun Project.configureCompose() {
+    dependencies {
+        val bom = libs.androidx.compose.bom
+        add("implementation", platform(bom))
+        add("debugImplementation", libs.androidx.compose.ui.tooling)
+        add("implementation", libs.androidx.compose.ui.tooling.preview)
+    }
+
     configure<ComposeCompilerGradlePluginExtension> {
         fun Provider<String>.onlyIfTrue() = flatMap { provider { it.takeIf(String::toBoolean) } }
         fun Provider<*>.relativeToRootProject(dir: String) = flatMap {
@@ -40,12 +47,5 @@ internal fun Project.configureComposeCompilerGradlePluginExtension() {
             .let(reportsDestination::set)
 
         stabilityConfigurationFiles.add(rootProject.layout.projectDirectory.file("compose_compiler_config.conf"))
-    }
-
-    dependencies {
-        val bom = libs.androidx.compose.bom
-        add("implementation", platform(bom))
-        add("debugImplementation", libs.androidx.compose.ui.tooling)
-        add("implementation", libs.androidx.compose.ui.tooling.preview)
     }
 }

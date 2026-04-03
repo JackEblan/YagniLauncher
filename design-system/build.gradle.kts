@@ -32,7 +32,6 @@ dependencies {
     api(libs.androidx.compose.material.iconsExtended)
     api(libs.androidx.compose.runtime)
     api(libs.androidx.compose.ui.ui)
-    api(libs.androidx.compose.ui.util)
     api(libs.coil.compose)
 
     implementation(projects.domain.model)
