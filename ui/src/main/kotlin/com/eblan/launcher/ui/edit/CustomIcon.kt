@@ -33,7 +33,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -43,8 +42,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.RenderVectorGroup
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
@@ -67,8 +64,6 @@ fun CustomIcon(
 
     val context = LocalContext.current
 
-    val color = LocalContentColor.current
-
     val pickMedia =
         rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
             if (uri != null) {
@@ -80,8 +75,6 @@ fun CustomIcon(
             }
         }
 
-    val brokenImage = EblanLauncherIcons.BrokenImage
-
     Column(modifier = modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier
@@ -89,24 +82,19 @@ fun CustomIcon(
                 .padding(15.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            AsyncImage(
-                modifier = Modifier.size(40.dp),
-                model = customIcon,
-                contentDescription = null,
-                error = rememberVectorPainter(
-                    defaultWidth = brokenImage.defaultWidth,
-                    defaultHeight = brokenImage.defaultHeight,
-                    viewportWidth = brokenImage.viewportWidth,
-                    viewportHeight = brokenImage.viewportHeight,
-                    name = brokenImage.name,
-                    tintColor = color,
-                    tintBlendMode = brokenImage.tintBlendMode,
-                    autoMirror = brokenImage.autoMirror,
-                    content = { _, _ ->
-                        RenderVectorGroup(group = brokenImage.root)
-                    },
-                ),
-            )
+            if (customIcon != null) {
+                AsyncImage(
+                    modifier = Modifier.size(40.dp),
+                    model = customIcon,
+                    contentDescription = null,
+                )
+            } else {
+                Icon(
+                    modifier = Modifier.size(40.dp),
+                    imageVector = EblanLauncherIcons.BrokenImage,
+                    contentDescription = null,
+                )
+            }
 
             Spacer(modifier = Modifier.width(10.dp))
 
