@@ -108,7 +108,7 @@ internal class DefaultGridRepository @Inject constructor(
         }
     }
 
-    override suspend fun restoreGridItem(gridItem: GridItem) {
+    override suspend fun resetGridItemCustomIcon(gridItem: GridItem) {
         withContext(ioDispatcher) {
             val gridItem = when (val data = gridItem.data) {
                 is GridItemData.ApplicationInfo -> {
@@ -128,17 +128,11 @@ internal class DefaultGridRepository @Inject constructor(
 
                     if (eblanApplicationInfo != null) {
                         eblanApplicationInfoRepository.updateEblanApplicationInfo(
-                            eblanApplicationInfo = eblanApplicationInfo.copy(
-                                customIcon = null,
-                                customLabel = null,
-                            ),
+                            eblanApplicationInfo = eblanApplicationInfo.copy(customIcon = null),
                         )
                     }
 
-                    val newData = data.copy(
-                        customIcon = null,
-                        customLabel = null,
-                    )
+                    val newData = data.copy(customIcon = null)
 
                     gridItem.copy(data = newData)
                 }
@@ -152,10 +146,7 @@ internal class DefaultGridRepository @Inject constructor(
                         }
                     }
 
-                    val newData = data.copy(
-                        customIcon = null,
-                        customLabel = null,
-                    )
+                    val newData = data.copy(customIcon = null)
 
                     gridItem.copy(data = newData)
                 }
@@ -169,10 +160,7 @@ internal class DefaultGridRepository @Inject constructor(
                         }
                     }
 
-                    val newData = data.copy(
-                        customIcon = null,
-                        customShortLabel = null,
-                    )
+                    val newData = data.copy(customIcon = null)
 
                     gridItem.copy(data = newData)
                 }
@@ -186,9 +174,7 @@ internal class DefaultGridRepository @Inject constructor(
                         }
                     }
 
-                    val newData = data.copy(
-                        icon = null,
-                    )
+                    val newData = data.copy(icon = null)
 
                     gridItem.copy(data = newData)
                 }

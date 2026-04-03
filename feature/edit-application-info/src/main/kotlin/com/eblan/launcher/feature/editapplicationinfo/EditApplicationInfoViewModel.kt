@@ -147,9 +147,9 @@ internal class EditApplicationInfoViewModel @Inject constructor(
         }
     }
 
-    fun restoreEblanApplicationInfo(eblanApplicationInfo: EblanApplicationInfo) {
+    fun resetEblanApplicationInfoCustomIcon(eblanApplicationInfo: EblanApplicationInfo) {
         viewModelScope.launch {
-            eblanApplicationInfoRepository.restoreEblanApplicationInfo(
+            eblanApplicationInfoRepository.resetEblanApplicationInfoCustomIcon(
                 eblanApplicationInfo = eblanApplicationInfo,
             )
 

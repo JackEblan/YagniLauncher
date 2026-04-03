@@ -103,9 +103,9 @@ internal class EditGridItemViewModel @Inject constructor(
         }
     }
 
-    fun restoreGridItem(gridItem: GridItem) {
+    fun resetGridItemCustomIcon(gridItem: GridItem) {
         viewModelScope.launch {
-            gridRepository.restoreGridItem(gridItem = gridItem)
+            gridRepository.resetGridItemCustomIcon(gridItem = gridItem)
 
             getGridItem()
         }

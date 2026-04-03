@@ -45,7 +45,7 @@ interface EblanApplicationInfoRepository {
 
     suspend fun updateEblanApplicationInfo(eblanApplicationInfo: EblanApplicationInfo)
 
-    suspend fun restoreEblanApplicationInfo(eblanApplicationInfo: EblanApplicationInfo)
+    suspend fun resetEblanApplicationInfoCustomIcon(eblanApplicationInfo: EblanApplicationInfo)
 
     suspend fun getEblanApplicationInfoByComponentName(
         serialNumber: Long,

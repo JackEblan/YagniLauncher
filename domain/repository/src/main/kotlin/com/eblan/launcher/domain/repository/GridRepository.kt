@@ -27,7 +27,7 @@ interface GridRepository {
 
     suspend fun updateGridItem(gridItem: GridItem)
 
-    suspend fun restoreGridItem(gridItem: GridItem)
+    suspend fun resetGridItemCustomIcon(gridItem: GridItem)
 
     suspend fun updateGridItems(gridItems: List<GridItem>)
 

@@ -59,6 +59,7 @@ fun CustomIcon(
         label: String?,
     ) -> Unit,
     onUpdateUri: (String) -> Unit,
+    onResetCustomIcon: () -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -148,6 +149,14 @@ fun CustomIcon(
                     },
                 )
             }
+
+            HorizontalDivider(modifier = Modifier.fillMaxWidth())
+
+            SettingsColumn(
+                title = "Reset to defaults",
+                subtitle = "Delete custom icon",
+                onClick = onResetCustomIcon,
+            )
         }
     }
 }

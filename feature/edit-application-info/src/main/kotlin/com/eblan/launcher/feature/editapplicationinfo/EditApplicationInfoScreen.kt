@@ -87,7 +87,7 @@ internal fun EditApplicationInfoRoute(
         onDeleteEblanApplicationInfoTag = viewModel::deleteEblanApplicationInfoTag,
         onNavigateUp = onNavigateUp,
         onResetIconPackInfoPackageName = viewModel::resetIconPackInfoPackageName,
-        onRestoreEblanApplicationInfo = viewModel::restoreEblanApplicationInfo,
+        onResetEblanApplicationInfoCustomIcon = viewModel::resetEblanApplicationInfoCustomIcon,
         onSearchIconPackInfoComponent = viewModel::searchIconPackInfoComponent,
         onUpdateEblanApplicationInfo = viewModel::updateEblanApplicationInfo,
         onUpdateEblanApplicationInfoTag = viewModel::updateEblanApplicationInfoTag,
@@ -110,7 +110,6 @@ internal fun EditApplicationInfoScreen(
     onDeleteEblanApplicationInfoTag: (EblanApplicationInfoTag) -> Unit,
     onNavigateUp: () -> Unit,
     onResetIconPackInfoPackageName: () -> Unit,
-    onRestoreEblanApplicationInfo: (EblanApplicationInfo) -> Unit,
     onSearchIconPackInfoComponent: (String) -> Unit,
     onUpdateEblanApplicationInfo: (EblanApplicationInfo) -> Unit,
     onUpdateEblanApplicationInfoTag: (EblanApplicationInfoTag) -> Unit,
@@ -119,6 +118,7 @@ internal fun EditApplicationInfoScreen(
         eblanApplicationInfo: EblanApplicationInfo,
     ) -> Unit,
     onUpdateIconPackInfoPackageName: (String) -> Unit,
+    onResetEblanApplicationInfoCustomIcon: (EblanApplicationInfo) -> Unit,
 ) {
     if (editApplicationInfoUiState is EditApplicationInfoUiState.Success && editApplicationInfoUiState.eblanApplicationInfo != null) {
         Scaffold(
@@ -131,18 +131,6 @@ internal fun EditApplicationInfoScreen(
                         IconButton(onClick = onNavigateUp) {
                             Icon(
                                 imageVector = EblanLauncherIcons.ArrowBack,
-                                contentDescription = null,
-                            )
-                        }
-                    },
-                    actions = {
-                        IconButton(
-                            onClick = {
-                                onRestoreEblanApplicationInfo(editApplicationInfoUiState.eblanApplicationInfo)
-                            },
-                        ) {
-                            Icon(
-                                imageVector = EblanLauncherIcons.Restore,
                                 contentDescription = null,
                             )
                         }
@@ -170,6 +158,7 @@ internal fun EditApplicationInfoScreen(
                     onUpdateEblanApplicationInfoTag = onUpdateEblanApplicationInfoTag,
                     onUpdateGridItemCustomIcon = onUpdateGridItemCustomIcon,
                     onUpdateIconPackInfoPackageName = onUpdateIconPackInfoPackageName,
+                    onResetEblanApplicationInfoCustomIcon = onResetEblanApplicationInfoCustomIcon,
                 )
             }
         }
@@ -196,6 +185,7 @@ private fun Success(
         eblanApplicationInfo: EblanApplicationInfo,
     ) -> Unit,
     onUpdateIconPackInfoPackageName: (String) -> Unit,
+    onResetEblanApplicationInfoCustomIcon: (EblanApplicationInfo) -> Unit,
 ) {
     var showCustomIconDialog by remember { mutableStateOf(false) }
 
@@ -234,6 +224,9 @@ private fun Success(
             },
             onUpdateUri = { uri ->
                 onUpdateEblanApplicationInfo(eblanApplicationInfo.copy(customIcon = uri))
+            },
+            onResetCustomIcon = {
+                onResetEblanApplicationInfoCustomIcon(eblanApplicationInfo)
             },
         )
 
