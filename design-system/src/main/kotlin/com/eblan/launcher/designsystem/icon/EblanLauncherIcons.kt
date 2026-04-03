@@ -24,6 +24,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Apps
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
+import androidx.compose.material.icons.filled.BrokenImage
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.DeveloperMode
@@ -78,4 +79,5 @@ object EblanLauncherIcons {
     val Done = Icons.Default.Done
     val MoreVert = Icons.Default.MoreVert
     val Warning = Icons.Default.Warning
+    val BrokenImage = Icons.Default.BrokenImage
 }
