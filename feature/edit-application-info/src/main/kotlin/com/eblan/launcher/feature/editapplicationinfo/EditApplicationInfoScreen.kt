@@ -23,6 +23,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.ElevatedCard
@@ -123,7 +125,7 @@ internal fun EditApplicationInfoScreen(
             topBar = {
                 TopAppBar(
                     title = {
-                        Text(text = "Edit Application Info")
+                        Text(text = "Edit ${editApplicationInfoUiState.eblanApplicationInfo.label}")
                     },
                     navigationIcon = {
                         IconButton(onClick = onNavigateUp) {
@@ -205,6 +207,7 @@ private fun Success(
 
     ElevatedCard(
         modifier = modifier
+            .verticalScroll(rememberScrollState())
             .fillMaxWidth()
             .padding(horizontal = 15.dp),
     ) {
