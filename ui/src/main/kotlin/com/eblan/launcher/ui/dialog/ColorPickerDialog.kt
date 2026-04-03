@@ -346,7 +346,7 @@ private fun AlphaCanvas(
         val rows = kotlin.math.ceil(size.height / squareSize).toInt()
 
         for (column in 0 until columns) {
-            val columnAlpha = ((column * squareSize) / size.width).coerceIn(0f, 1f)
+            val columnAlpha = (1f - (column * squareSize) / size.width).coerceIn(0f, 1f)
 
             val black = Color.Black.copy(alpha = 0.4f * columnAlpha)
             val white = Color.White.copy(alpha = 0.4f * columnAlpha)
