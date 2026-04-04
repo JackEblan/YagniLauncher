@@ -75,6 +75,8 @@ import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.GridItemSettings
 import com.eblan.launcher.domain.model.HomeSettings
 import com.eblan.launcher.domain.model.TextColor
+import com.eblan.launcher.domain.usecase.grid.FOLDER_MAX_COLUMNS
+import com.eblan.launcher.domain.usecase.grid.FOLDER_MAX_ROWS
 import com.eblan.launcher.feature.home.component.grid.FolderGridLayout
 import com.eblan.launcher.feature.home.component.indicator.PageIndicator
 import com.eblan.launcher.feature.home.component.modifier.swipeGestures
@@ -136,9 +138,9 @@ internal fun SharedTransitionScope.FolderScreen(
 
     val density = LocalDensity.current
 
-    val cellWidth = safeDrawingWidth / homeSettings.columns
+    val cellWidth = safeDrawingWidth / FOLDER_MAX_COLUMNS
 
-    val cellHeight = safeDrawingHeight / homeSettings.rows
+    val cellHeight = safeDrawingHeight / FOLDER_MAX_ROWS
 
     val folderGridWidthDp = with(density) {
         (cellWidth * data.columns).toDp()
