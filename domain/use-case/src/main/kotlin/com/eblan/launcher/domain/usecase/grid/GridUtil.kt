@@ -27,9 +27,9 @@ import kotlin.math.ceil
 import kotlin.math.min
 import kotlin.math.sqrt
 
-private const val MAX_COLUMNS = 5
+const val FOLDER_MAX_COLUMNS = 5
 
-private const val MAX_ROWS = 4
+const val FOLDER_MAX_ROWS = 4
 
 internal suspend fun FolderGridItemWrapper.asGridItem(): GridItem {
     val sortedApplicationInfoGridItems = applicationInfoGridItems.sortedBy { it.index }
@@ -68,7 +68,7 @@ internal suspend fun FolderGridItemWrapper.asGridItem(): GridItem {
     )
 }
 
-internal suspend fun List<ApplicationInfoGridItem>.getGridItemsByPage(): Map<Int, List<ApplicationInfoGridItem>> = chunked(MAX_COLUMNS * MAX_ROWS)
+internal suspend fun List<ApplicationInfoGridItem>.getGridItemsByPage(): Map<Int, List<ApplicationInfoGridItem>> = chunked(FOLDER_MAX_COLUMNS * FOLDER_MAX_ROWS)
     .mapIndexed { pageIndex, pageItems ->
         currentCoroutineContext().ensureActive()
 
@@ -79,8 +79,8 @@ internal suspend fun List<ApplicationInfoGridItem>.getGridItemsByPage(): Map<Int
 internal fun getGridDimension(count: Int): Pair<Int, Int> {
     if (count <= 0) return 0 to 0
 
-    val columns = min(MAX_COLUMNS, ceil(sqrt(count.toDouble())).toInt())
-    val rows = min(MAX_ROWS, ceil(count / columns.toDouble()).toInt())
+    val columns = min(FOLDER_MAX_COLUMNS, ceil(sqrt(count.toDouble())).toInt())
+    val rows = min(FOLDER_MAX_ROWS, ceil(count / columns.toDouble()).toInt())
 
     return columns to rows
 }
