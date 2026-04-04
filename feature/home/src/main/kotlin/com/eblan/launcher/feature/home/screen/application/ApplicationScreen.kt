@@ -55,8 +55,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.clearText
 import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.material3.ElevatedFilterChip
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -65,13 +65,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
-import androidx.compose.material3.SearchBarDefaults.inputFieldColors
 import androidx.compose.material3.SearchBarState
 import androidx.compose.material3.SearchBarValue
 import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.runtime.Composable
@@ -417,8 +415,6 @@ private fun SharedTransitionScope.Success(
         ApplicationSearchBar(
             searchBarState = searchBarState,
             textFieldState = textFieldState,
-            backgroundColor = appDrawerSettings.backgroundColor,
-            customBackgroundColor = appDrawerSettings.customBackgroundColor,
             swipeY = swipeY,
             showKeyboard = appDrawerSettings.showKeyboard,
             onUpdateShowEblanApplicationInfoOrderDialog = { newShowEblanApplicationInfoOrderDialog ->
@@ -429,7 +425,7 @@ private fun SharedTransitionScope.Success(
         if (eblanApplicationInfoTags.isNotEmpty()) {
             LazyRow(modifier = Modifier.fillMaxWidth()) {
                 items(eblanApplicationInfoTags) { eblanApplicationInfoTag ->
-                    TagFilterChip(
+                    TagElevatedFilterChip(
                         eblanApplicationInfoTag = eblanApplicationInfoTag,
                         selectedTagIds = selectedTagIds,
                         onAddId = selectedTagIds::add,
@@ -443,8 +439,6 @@ private fun SharedTransitionScope.Success(
             EblanApplicationInfoTabRow(
                 currentPage = horizontalPagerState.currentPage,
                 eblanApplicationInfos = getEblanApplicationInfosByLabel.eblanApplicationInfos,
-                backgroundColor = appDrawerSettings.backgroundColor,
-                customBackgroundColor = appDrawerSettings.customBackgroundColor,
                 onAnimateScrollToPage = horizontalPagerState::animateScrollToPage,
             )
 
@@ -614,8 +608,6 @@ private fun ApplicationSearchBar(
     modifier: Modifier = Modifier,
     searchBarState: SearchBarState,
     textFieldState: TextFieldState,
-    backgroundColor: TextColor,
-    customBackgroundColor: Int,
     swipeY: Float,
     showKeyboard: Boolean,
     onUpdateShowEblanApplicationInfoOrderDialog: (Boolean) -> Unit,
@@ -625,60 +617,6 @@ private fun ApplicationSearchBar(
     val scope = rememberCoroutineScope()
 
     val focusRequester = remember { FocusRequester() }
-
-    val searchBarContainerColor = when (backgroundColor) {
-        TextColor.System -> {
-            SearchBarDefaults.colors().containerColor
-        }
-
-        TextColor.Light -> {
-            Color.White
-        }
-
-        TextColor.Dark -> {
-            Color.Black
-        }
-
-        TextColor.Custom -> {
-            Color(customBackgroundColor)
-        }
-    }
-
-    val focusedContainerColor = when (backgroundColor) {
-        TextColor.System -> {
-            inputFieldColors().focusedContainerColor
-        }
-
-        TextColor.Light -> {
-            Color.White
-        }
-
-        TextColor.Dark -> {
-            Color.Black
-        }
-
-        TextColor.Custom -> {
-            Color(customBackgroundColor)
-        }
-    }
-
-    val unfocusedContainerColor = when (backgroundColor) {
-        TextColor.System -> {
-            inputFieldColors().unfocusedContainerColor
-        }
-
-        TextColor.Light -> {
-            Color.White
-        }
-
-        TextColor.Dark -> {
-            Color.Black
-        }
-
-        TextColor.Custom -> {
-            Color(customBackgroundColor)
-        }
-    }
 
     LaunchedEffect(key1 = swipeY) {
         if (swipeY.roundToInt() == 0 && showKeyboard) {
@@ -718,13 +656,8 @@ private fun ApplicationSearchBar(
                 },
                 onSearch = { scope.launch { searchBarState.animateToCollapsed() } },
                 placeholder = { Text(text = "Search Applications") },
-                colors = inputFieldColors(
-                    focusedContainerColor = focusedContainerColor,
-                    unfocusedContainerColor = unfocusedContainerColor,
-                ),
             )
         },
-        colors = SearchBarDefaults.colors(containerColor = searchBarContainerColor),
     )
 }
 
@@ -1350,8 +1283,6 @@ private fun EblanApplicationInfoTabRow(
     modifier: Modifier = Modifier,
     currentPage: Int,
     eblanApplicationInfos: Map<EblanUser, List<EblanApplicationInfo>>,
-    backgroundColor: TextColor,
-    customBackgroundColor: Int,
     onAnimateScrollToPage: suspend (Int) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
@@ -1359,12 +1290,6 @@ private fun EblanApplicationInfoTabRow(
     SecondaryTabRow(
         modifier = modifier,
         selectedTabIndex = currentPage,
-        containerColor = when (backgroundColor) {
-            TextColor.System -> TabRowDefaults.secondaryContainerColor
-            TextColor.Light -> Color.White
-            TextColor.Dark -> Color.Black
-            TextColor.Custom -> Color(customBackgroundColor)
-        },
     ) {
         eblanApplicationInfos.keys.forEachIndexed { index, eblanUser ->
             Tab(
@@ -1386,14 +1311,14 @@ private fun EblanApplicationInfoTabRow(
 }
 
 @Composable
-private fun TagFilterChip(
+private fun TagElevatedFilterChip(
     modifier: Modifier = Modifier,
     eblanApplicationInfoTag: EblanApplicationInfoTag,
     selectedTagIds: Set<Long>,
     onAddId: (Long) -> Unit,
     onRemoveId: (Long) -> Unit,
 ) {
-    FilterChip(
+    ElevatedFilterChip(
         modifier = modifier.padding(5.dp),
         onClick = {
             if (eblanApplicationInfoTag.id in selectedTagIds) {
