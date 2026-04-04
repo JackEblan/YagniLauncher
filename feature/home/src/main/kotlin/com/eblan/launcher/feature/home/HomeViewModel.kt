@@ -174,11 +174,11 @@ internal class HomeViewModel @Inject constructor(
 
     private val _eblanApplicationInfoLabel = MutableStateFlow("")
 
-    private val _eblanApplicationInfoTagIds = MutableStateFlow<List<Long>?>(null)
+    private val _eblanApplicationInfoTagId = MutableStateFlow<Long?>(null)
 
     val getEblanApplicationInfosByLabel = getEblanApplicationInfosByLabelUseCase(
         labelFlow = _eblanApplicationInfoLabel,
-        eblanApplicationInfoTagIdsFlow = _eblanApplicationInfoTagIds,
+        eblanApplicationInfoTagIdFlow = _eblanApplicationInfoTagId,
     ).stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
@@ -607,9 +607,9 @@ internal class HomeViewModel @Inject constructor(
         }
     }
 
-    fun getEblanApplicationInfosByTagId(tagIds: List<Long>) {
-        _eblanApplicationInfoTagIds.update {
-            tagIds
+    fun getEblanApplicationInfosByTagId(id: Long?) {
+        _eblanApplicationInfoTagId.update {
+            id
         }
     }
 

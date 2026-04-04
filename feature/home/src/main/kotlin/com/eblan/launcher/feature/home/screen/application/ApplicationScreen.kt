@@ -78,7 +78,6 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.mutableStateSetOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -185,7 +184,7 @@ internal fun SharedTransitionScope.ApplicationScreen(
         componentName: String,
     ) -> Unit,
     onGetEblanApplicationInfosByLabel: (String) -> Unit,
-    onGetEblanApplicationInfosByTagIds: (List<Long>) -> Unit,
+    onGetEblanApplicationInfosByTagId: (Long?) -> Unit,
     onUpdateAppDrawerSettings: (AppDrawerSettings) -> Unit,
     onUpdateEblanApplicationInfos: (List<EblanApplicationInfo>) -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
@@ -248,7 +247,7 @@ internal fun SharedTransitionScope.ApplicationScreen(
             onDraggingGridItem = onDraggingGridItem,
             onEditApplicationInfo = onEditApplicationInfo,
             onGetEblanApplicationInfosByLabel = onGetEblanApplicationInfosByLabel,
-            onGetEblanApplicationInfosByTagIds = onGetEblanApplicationInfosByTagIds,
+            onGetEblanApplicationInfosByTagId = onGetEblanApplicationInfosByTagId,
             onUpdateAppDrawerSettings = onUpdateAppDrawerSettings,
             onUpdateEblanApplicationInfos = onUpdateEblanApplicationInfos,
             onUpdateGridItemSource = onUpdateGridItemSource,
@@ -291,7 +290,7 @@ private fun SharedTransitionScope.Success(
         componentName: String,
     ) -> Unit,
     onGetEblanApplicationInfosByLabel: (String) -> Unit,
-    onGetEblanApplicationInfosByTagIds: (List<Long>) -> Unit,
+    onGetEblanApplicationInfosByTagId: (Long?) -> Unit,
     onUpdateAppDrawerSettings: (AppDrawerSettings) -> Unit,
     onUpdateEblanApplicationInfos: (List<EblanApplicationInfo>) -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
@@ -339,7 +338,7 @@ private fun SharedTransitionScope.Success(
 
     val textFieldState = rememberTextFieldState()
 
-    val selectedTagIds = remember { mutableStateSetOf<Long>() }
+    var selectedEblanApplicationInfoTagId by remember { mutableStateOf<Long?>(null) }
 
     var isRearrangeEblanApplicationInfo by remember { mutableStateOf(false) }
 
@@ -361,7 +360,7 @@ private fun SharedTransitionScope.Success(
 
             textFieldState.clearText()
 
-            selectedTagIds.clear()
+            selectedEblanApplicationInfoTagId = null
         }
 
         if (swipeY.roundToInt() > 0 && showPopupApplicationMenu) {
@@ -370,8 +369,8 @@ private fun SharedTransitionScope.Success(
     }
 
     LaunchedEffect(key1 = Unit) {
-        snapshotFlow { selectedTagIds.toList() }.onEach { selectedTagIds ->
-            onGetEblanApplicationInfosByTagIds(selectedTagIds)
+        snapshotFlow { selectedEblanApplicationInfoTagId }.onEach { selectedEblanApplicationInfoTag ->
+            onGetEblanApplicationInfosByTagId(selectedEblanApplicationInfoTag)
         }.collect()
     }
 
@@ -427,9 +426,10 @@ private fun SharedTransitionScope.Success(
                 items(eblanApplicationInfoTags) { eblanApplicationInfoTag ->
                     TagElevatedFilterChip(
                         eblanApplicationInfoTag = eblanApplicationInfoTag,
-                        selectedTagIds = selectedTagIds,
-                        onAddId = selectedTagIds::add,
-                        onRemoveId = selectedTagIds::remove,
+                        selectedEblanApplicationInfoTag = selectedEblanApplicationInfoTagId,
+                        onUpdateEblanApplicationInfoTag = { newEblanApplicationInfoTagId ->
+                            selectedEblanApplicationInfoTagId = newEblanApplicationInfoTagId
+                        },
                     )
                 }
             }
@@ -1314,24 +1314,23 @@ private fun EblanApplicationInfoTabRow(
 private fun TagElevatedFilterChip(
     modifier: Modifier = Modifier,
     eblanApplicationInfoTag: EblanApplicationInfoTag,
-    selectedTagIds: Set<Long>,
-    onAddId: (Long) -> Unit,
-    onRemoveId: (Long) -> Unit,
+    selectedEblanApplicationInfoTag: Long?,
+    onUpdateEblanApplicationInfoTag: (Long?) -> Unit,
 ) {
     ElevatedFilterChip(
         modifier = modifier.padding(5.dp),
         onClick = {
-            if (eblanApplicationInfoTag.id in selectedTagIds) {
-                onRemoveId(eblanApplicationInfoTag.id)
+            if (eblanApplicationInfoTag.id == selectedEblanApplicationInfoTag) {
+                onUpdateEblanApplicationInfoTag(null)
             } else {
-                onAddId(eblanApplicationInfoTag.id)
+                onUpdateEblanApplicationInfoTag(eblanApplicationInfoTag.id)
             }
         },
         label = {
             Text(text = eblanApplicationInfoTag.name)
         },
-        selected = eblanApplicationInfoTag.id in selectedTagIds,
-        leadingIcon = if (eblanApplicationInfoTag.id in selectedTagIds) {
+        selected = eblanApplicationInfoTag.id == selectedEblanApplicationInfoTag,
+        leadingIcon = if (eblanApplicationInfoTag.id == selectedEblanApplicationInfoTag) {
             {
                 Icon(
                     imageVector = EblanLauncherIcons.Done,

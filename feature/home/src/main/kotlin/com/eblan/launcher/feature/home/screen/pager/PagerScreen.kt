@@ -169,7 +169,7 @@ internal fun PagerScreen(
     ) -> Unit,
     onGetEblanAppWidgetProviderInfosByLabel: (String) -> Unit,
     onGetEblanApplicationInfosByLabel: (String) -> Unit,
-    onGetEblanApplicationInfosByTagIds: (List<Long>) -> Unit,
+    onGetEblanApplicationInfosByTagId: (Long?) -> Unit,
     onGetEblanShortcutConfigsByLabel: (String) -> Unit,
     onGetPinGridItem: (PinItemRequestType) -> Unit,
     onMoveFolderGridItem: (
@@ -1134,7 +1134,7 @@ internal fun PagerScreen(
                 },
                 onEditApplicationInfo = onEditApplicationInfo,
                 onGetEblanApplicationInfosByLabel = onGetEblanApplicationInfosByLabel,
-                onGetEblanApplicationInfosByTagIds = onGetEblanApplicationInfosByTagIds,
+                onGetEblanApplicationInfosByTagId = onGetEblanApplicationInfosByTagId,
                 onUpdateAppDrawerSettings = onUpdateAppDrawerSettings,
                 onUpdateEblanApplicationInfos = onUpdateEblanApplicationInfos,
                 onUpdateGridItemSource = onUpdateGridItemSource,

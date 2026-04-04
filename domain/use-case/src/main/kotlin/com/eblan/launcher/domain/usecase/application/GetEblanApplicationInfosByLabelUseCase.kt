@@ -43,11 +43,11 @@ class GetEblanApplicationInfosByLabelUseCase @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     operator fun invoke(
         labelFlow: Flow<String>,
-        eblanApplicationInfoTagIdsFlow: Flow<List<Long>?>,
+        eblanApplicationInfoTagIdFlow: Flow<Long?>,
     ): Flow<GetEblanApplicationInfosByLabel> {
-        val eblanApplicationInfosFlow = eblanApplicationInfoTagIdsFlow.flatMapLatest { tagIds ->
-            if (!tagIds.isNullOrEmpty()) {
-                eblanApplicationInfoRepository.getEblanApplicationInfosByTagId(tagIds = tagIds)
+        val eblanApplicationInfosFlow = eblanApplicationInfoTagIdFlow.flatMapLatest { id ->
+            if (id != null) {
+                eblanApplicationInfoRepository.getEblanApplicationInfosByTagId(id = id)
             } else {
                 eblanApplicationInfoRepository.eblanApplicationInfos
             }

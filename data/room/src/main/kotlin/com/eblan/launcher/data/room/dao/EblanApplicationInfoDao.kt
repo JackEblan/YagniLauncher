@@ -79,10 +79,10 @@ interface EblanApplicationInfoDao {
     INNER JOIN EblanApplicationInfoTagCrossRefEntity AS ref
         ON app.componentName = ref.componentName
        AND app.serialNumber = ref.serialNumber
-    WHERE ref.id IN (:tagIds)
+    WHERE ref.id = :id
     """,
     )
-    fun getEblanApplicationInfoEntitiesByTagId(tagIds: List<Long>): Flow<List<EblanApplicationInfoEntity>>
+    fun getEblanApplicationInfoEntitiesByTagId(id: Long): Flow<List<EblanApplicationInfoEntity>>
 
     @Query(
         """
