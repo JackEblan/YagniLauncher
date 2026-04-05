@@ -1,0 +1,16 @@
+- Refactored expandable UI components to use a new centralized `VerticalSlideReveal` animation:
+- Refined typography and labels in `EditApplicationInfoScreen`:
+- Folder max grid dimensions
+- Spotless
+- Init
+- Refactored folder grid dimension logic to use centralized constants: (#719)
+- Refactored application tag filtering to support single-tag selection instead of multiple tags: (#711)
+- Refactored `ApplicationScreen` to simplify theme handling and UI components: (#710)
+- Refactored app info and shortcut launching logic in `PagerScreen`:
+- Inverted transparency gradient calculation in `ColorPickerDialog`:
+- Reset custom label and icon (#709)
+- Refactored variable naming in `FolderScreen` for clarity:
+- Refactored Compose configuration and cleaned up unused dependencies:
+- Updated `TextColorDialog` to use the dynamic `title` parameter instead of a hardcoded string when displaying `ColorPickerDialog`.
+- Improved UI for edit screens and custom icon selection (#700)
+- Refined ProGuard rules for domain models to improve obfuscation:
