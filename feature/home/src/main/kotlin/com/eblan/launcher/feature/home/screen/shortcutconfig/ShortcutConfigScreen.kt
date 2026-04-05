@@ -87,6 +87,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.round
 import coil3.compose.AsyncImage
+import com.eblan.launcher.designsystem.component.VerticalSlideReveal
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.Associate
 import com.eblan.launcher.domain.model.EblanAction
@@ -488,8 +489,7 @@ private fun EblanApplicationInfoItem(
                     },
                 )
             }
-            .fillMaxWidth()
-            .animateContentSize(),
+            .fillMaxWidth(),
     ) {
         ListItem(
             headlineContent = { Text(text = eblanApplicationInfoGroup.label.toString()) },
@@ -514,24 +514,26 @@ private fun EblanApplicationInfoItem(
             modifier = Modifier.fillMaxWidth(),
         )
 
-        if (expanded) {
-            Spacer(modifier = Modifier.height(10.dp))
+        VerticalSlideReveal(visible = expanded) {
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Spacer(modifier = Modifier.height(10.dp))
 
-            eblanShortcutConfigs[eblanApplicationInfoGroup]?.forEach { eblanShortcutConfig ->
-                EblanShortcutConfigItem(
-                    currentPage = currentPage,
-                    drag = drag,
-                    eblanShortcutConfig = eblanShortcutConfig,
-                    gridItemSettings = gridItemSettings,
-                    onDraggingGridItem = onDraggingGridItem,
-                    onUpdateOverlayBounds = onUpdateOverlayBounds,
-                    onUpdateImageBitmap = onUpdateImageBitmap,
-                    onUpdateGridItemSource = onUpdateGridItemSource,
-                    onUpdateSharedElementKey = onUpdateSharedElementKey,
-                    onDismiss = onDismiss,
-                    onUpdateIsDragging = onUpdateIsDragging,
-                    onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                )
+                eblanShortcutConfigs[eblanApplicationInfoGroup]?.forEach { eblanShortcutConfig ->
+                    EblanShortcutConfigItem(
+                        currentPage = currentPage,
+                        drag = drag,
+                        eblanShortcutConfig = eblanShortcutConfig,
+                        gridItemSettings = gridItemSettings,
+                        onDraggingGridItem = onDraggingGridItem,
+                        onUpdateOverlayBounds = onUpdateOverlayBounds,
+                        onUpdateImageBitmap = onUpdateImageBitmap,
+                        onUpdateGridItemSource = onUpdateGridItemSource,
+                        onUpdateSharedElementKey = onUpdateSharedElementKey,
+                        onDismiss = onDismiss,
+                        onUpdateIsDragging = onUpdateIsDragging,
+                        onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                    )
+                }
             }
         }
     }

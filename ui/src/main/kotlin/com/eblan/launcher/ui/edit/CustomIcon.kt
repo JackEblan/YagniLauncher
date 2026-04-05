@@ -45,6 +45,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.eblan.launcher.designsystem.component.VerticalSlideReveal
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.PackageManagerIconPackInfo
 import com.eblan.launcher.ui.settings.SettingsColumn
@@ -123,41 +124,43 @@ fun CustomIcon(
             }
         }
 
-        if (expanded) {
-            HorizontalDivider(modifier = Modifier.fillMaxWidth())
-
-            SettingsColumn(
-                title = "Gallery",
-                subtitle = "Pick icons from your gallery",
-                onClick = {
-                    pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-                },
-            )
-
-            packageManagerIconPackInfos.forEach { packageManagerIconPackInfo ->
-                HorizontalDivider(modifier = Modifier.fillMaxWidth())
-
-                IconPackItem(
-                    icon = packageManagerIconPackInfo.icon,
-                    label = packageManagerIconPackInfo.label,
-                    packageName = packageManagerIconPackInfo.packageName,
-                    onClick = {
-                        onUpdateIconPackInfoPackageName(
-                            packageManagerIconPackInfo.packageName,
-                            packageManagerIconPackInfo.label,
-                        )
-                    },
-                )
-            }
-
-            if (customIcon != null) {
+        VerticalSlideReveal(visible = expanded) {
+            Column(modifier = Modifier.fillMaxWidth()) {
                 HorizontalDivider(modifier = Modifier.fillMaxWidth())
 
                 SettingsColumn(
-                    title = "Reset to defaults",
-                    subtitle = "Delete custom icon",
-                    onClick = onResetCustomIcon,
+                    title = "Gallery",
+                    subtitle = "Pick icons from your gallery",
+                    onClick = {
+                        pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                    },
                 )
+
+                packageManagerIconPackInfos.forEach { packageManagerIconPackInfo ->
+                    HorizontalDivider(modifier = Modifier.fillMaxWidth())
+
+                    IconPackItem(
+                        icon = packageManagerIconPackInfo.icon,
+                        label = packageManagerIconPackInfo.label,
+                        packageName = packageManagerIconPackInfo.packageName,
+                        onClick = {
+                            onUpdateIconPackInfoPackageName(
+                                packageManagerIconPackInfo.packageName,
+                                packageManagerIconPackInfo.label,
+                            )
+                        },
+                    )
+                }
+
+                if (customIcon != null) {
+                    HorizontalDivider(modifier = Modifier.fillMaxWidth())
+
+                    SettingsColumn(
+                        title = "Reset to defaults",
+                        subtitle = "Delete custom icon",
+                        onClick = onResetCustomIcon,
+                    )
+                }
             }
         }
     }

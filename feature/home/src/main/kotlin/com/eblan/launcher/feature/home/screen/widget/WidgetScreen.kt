@@ -19,7 +19,6 @@ package com.eblan.launcher.feature.home.screen.widget
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -81,6 +80,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.round
 import coil3.compose.AsyncImage
+import com.eblan.launcher.designsystem.component.VerticalSlideReveal
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.EblanAppWidgetProviderInfo
 import com.eblan.launcher.domain.model.EblanApplicationInfoGroup
@@ -367,8 +367,7 @@ private fun EblanApplicationInfoItem(
                     },
                 )
             }
-            .fillMaxWidth()
-            .animateContentSize(),
+            .fillMaxWidth(),
     ) {
         ListItem(
             headlineContent = { Text(text = eblanApplicationInfoGroup.label.toString()) },
@@ -393,28 +392,30 @@ private fun EblanApplicationInfoItem(
             modifier = Modifier.fillMaxWidth(),
         )
 
-        if (expanded) {
-            Spacer(modifier = Modifier.height(10.dp))
+        VerticalSlideReveal(visible = expanded) {
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Spacer(modifier = Modifier.height(10.dp))
 
-            eblanAppWidgetProviderInfos[eblanApplicationInfoGroup]?.forEach { eblanAppWidgetProviderInfo ->
-                EblanAppWidgetProviderInfoItem(
-                    columns = columns,
-                    currentPage = currentPage,
-                    drag = drag,
-                    eblanAppWidgetProviderInfo = eblanAppWidgetProviderInfo,
-                    gridItemSettings = gridItemSettings,
-                    rows = rows,
-                    screenHeight = screenHeight,
-                    screenWidth = screenWidth,
-                    onDraggingGridItem = onDraggingGridItem,
-                    onUpdateOverlayBounds = onUpdateOverlayBounds,
-                    onUpdateImageBitmap = onUpdateImageBitmap,
-                    onUpdateGridItemSource = onUpdateGridItemSource,
-                    onUpdateSharedElementKey = onUpdateSharedElementKey,
-                    onDismiss = onDismiss,
-                    onUpdateIsDragging = onUpdateIsDragging,
-                    onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                )
+                eblanAppWidgetProviderInfos[eblanApplicationInfoGroup]?.forEach { eblanAppWidgetProviderInfo ->
+                    EblanAppWidgetProviderInfoItem(
+                        columns = columns,
+                        currentPage = currentPage,
+                        drag = drag,
+                        eblanAppWidgetProviderInfo = eblanAppWidgetProviderInfo,
+                        gridItemSettings = gridItemSettings,
+                        rows = rows,
+                        screenHeight = screenHeight,
+                        screenWidth = screenWidth,
+                        onDraggingGridItem = onDraggingGridItem,
+                        onUpdateOverlayBounds = onUpdateOverlayBounds,
+                        onUpdateImageBitmap = onUpdateImageBitmap,
+                        onUpdateGridItemSource = onUpdateGridItemSource,
+                        onUpdateSharedElementKey = onUpdateSharedElementKey,
+                        onDismiss = onDismiss,
+                        onUpdateIsDragging = onUpdateIsDragging,
+                        onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                    )
+                }
             }
         }
     }

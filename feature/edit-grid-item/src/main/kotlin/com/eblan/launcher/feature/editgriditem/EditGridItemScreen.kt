@@ -43,6 +43,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.eblan.launcher.designsystem.component.VerticalSlideReveal
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.EblanApplicationInfo
 import com.eblan.launcher.domain.model.EblanUser
@@ -248,7 +249,7 @@ private fun Success(
             )
         }
 
-        if (gridItem.override) {
+        VerticalSlideReveal(visible = gridItem.override) {
             GridItemSettings(
                 gridItemSettings = gridItem.gridItemSettings,
                 onUpdateGridItemSettings = { gridItemSettings ->
