@@ -61,7 +61,4 @@ interface ApplicationInfoGridItemDao {
 
     @Insert
     suspend fun insertApplicationInfoGridItemEntity(entity: ApplicationInfoGridItemEntity)
-
-    @Query("DELETE FROM ApplicationInfoGridItemEntity WHERE id = :id")
-    suspend fun deleteApplicationInfoGridItemEntityById(id: String)
 }
