@@ -23,9 +23,27 @@ Only 2 MB Android Launcher, total control, zero bloat, zero tracking
 
 ## About The Project
 
-Most Android launchers are just AOSP Launcher3 forks. I wanted to build from scratch, make it easy for new developers to contribute, and follow solid coding practices to keep it sustainable. Open-source Launcher3 forks often get abandoned due to complexity, many still use Java and legacy APIs. Closed-source launchers are locking features behind paywalls and adding trackers. My goal is to offer powerful features with no compromises on privacy.
+Closed-source launchers are locking features behind paywalls and adding trackers. My goal is to offer powerful features with no compromises on privacy.
 
 **YAGNI ("You Aren't Gonna Need It")** is a principle which arose from extreme programming (XP) that states a programmer should not add functionality until deemed necessary.
+
+## Features
+* No fixed grid size. You can set the grid width and height to any value you want.
+* Each grid item is fully customizable:
+  * Size and rotation
+  * Background color
+  * Icon size
+  * Text and label size
+  * Label color
+  * Show or hide icons and labels
+  * And more
+
+* Infinite scrolling
+* Multiple dock pages
+* Adjustable dock height
+* Custom dock grid size
+
+All features packed in a small app (~2MB)
 
 ## Screenshots
 
