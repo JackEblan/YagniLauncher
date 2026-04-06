@@ -73,7 +73,6 @@ import com.eblan.launcher.domain.model.ApplicationInfoGridItem
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.GridItemSettings
-import com.eblan.launcher.domain.model.HomeSettings
 import com.eblan.launcher.domain.model.TextColor
 import com.eblan.launcher.domain.usecase.grid.FOLDER_MAX_COLUMNS
 import com.eblan.launcher.domain.usecase.grid.FOLDER_MAX_ROWS
@@ -106,7 +105,6 @@ internal fun SharedTransitionScope.FolderScreen(
     folderPopupIntSize: IntSize?,
     gridItemSettings: GridItemSettings,
     gridItemSource: GridItemSource?,
-    homeSettings: HomeSettings,
     iconPackFilePaths: Map<String, String>,
     paddingValues: PaddingValues,
     safeDrawingHeight: Int,
@@ -234,8 +232,6 @@ internal fun SharedTransitionScope.FolderScreen(
                     FolderTitle(
                         data = data,
                         folderGridHorizontalPagerState = folderGridHorizontalPagerState,
-                        homeSettings = homeSettings,
-                        textColor = textColor,
                     )
                 }
             },
@@ -248,8 +244,6 @@ internal fun FolderTitle(
     modifier: Modifier = Modifier,
     data: GridItemData.Folder,
     folderGridHorizontalPagerState: PagerState,
-    homeSettings: HomeSettings,
-    textColor: TextColor,
 ) {
     if (data.gridItemsByPage.size > 1) {
         Row(
@@ -260,19 +254,12 @@ internal fun FolderTitle(
         ) {
             Text(
                 text = data.label,
-                color = getSystemTextColor(
-                    systemCustomTextColor = homeSettings.gridItemSettings.customTextColor,
-                    systemTextColor = textColor,
-                ),
                 style = MaterialTheme.typography.bodySmall,
             )
 
             PageIndicator(
                 modifier = Modifier.height(PAGE_INDICATOR_HEIGHT),
-                color = getSystemTextColor(
-                    systemCustomTextColor = homeSettings.gridItemSettings.customTextColor,
-                    systemTextColor = textColor,
-                ),
+                color = MaterialTheme.colorScheme.onSurface,
                 gridHorizontalPagerState = folderGridHorizontalPagerState,
                 infiniteScroll = false,
                 pageCount = data.gridItemsByPage.size,
@@ -287,10 +274,6 @@ internal fun FolderTitle(
         ) {
             Text(
                 text = data.label,
-                color = getSystemTextColor(
-                    systemCustomTextColor = homeSettings.gridItemSettings.customTextColor,
-                    systemTextColor = textColor,
-                ),
                 style = MaterialTheme.typography.bodySmall,
             )
         }
