@@ -36,14 +36,13 @@ Closed-source launchers are locking features behind paywalls and adding trackers
   * Text and label size
   * Label color
   * Show or hide icons and labels
-  * And more
 
 * Infinite scrolling
 * Multiple dock pages
 * Adjustable dock height
 * Custom dock grid size
 
-All features packed in a small app (~2MB)
+Explore and discover more features, all packed in a small app (~2MB)
 
 ## Screenshots
 
