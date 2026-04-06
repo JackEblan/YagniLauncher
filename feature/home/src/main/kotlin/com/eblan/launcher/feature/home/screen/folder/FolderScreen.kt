@@ -95,6 +95,9 @@ import com.eblan.launcher.feature.home.util.onLongPress
 import com.eblan.launcher.ui.local.LocalLauncherApps
 import com.eblan.launcher.ui.local.LocalSettings
 
+/**
+ * Add Folder Enter and exit animation
+ */
 @Composable
 internal fun SharedTransitionScope.FolderScreen(
     modifier: Modifier = Modifier,
