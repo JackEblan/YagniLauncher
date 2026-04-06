@@ -1014,7 +1014,6 @@ internal fun PagerScreen(
                 folderPopupIntSize = pagerScreenState.folderPopupIntSize,
                 gridItemSettings = homeSettings.gridItemSettings,
                 gridItemSource = gridItemSource,
-                homeSettings = homeSettings,
                 iconPackFilePaths = iconPackFilePaths,
                 paddingValues = paddingValues,
                 safeDrawingHeight = safeDrawingHeight,
