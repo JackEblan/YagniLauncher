@@ -19,6 +19,10 @@ package com.eblan.launcher.feature.home.screen.folder
 
 import android.graphics.Rect
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -50,6 +54,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.layer.drawLayer
@@ -94,9 +99,18 @@ import com.eblan.launcher.feature.home.util.onDoubleTap
 import com.eblan.launcher.feature.home.util.onLongPress
 import com.eblan.launcher.ui.local.LocalLauncherApps
 import com.eblan.launcher.ui.local.LocalSettings
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 /**
- * Add Folder Enter and exit animation
+ * Displays the folder popup with enter and exit animations.
+ *
+ * On entry the [Surface] scales up from 85 % to 100 % with a medium-bouncy spring while fading
+ * in, expanding from the centre of the tapped folder grid item (the Surface is already offset so
+ * its centre aligns with the folder item's centre).
+ *
+ * On dismiss the animation reverses – the Surface scales back to 85 % and fades out over 200 ms –
+ * before [onDismissRequest] is invoked, so the folder item on the home screen is restored cleanly.
  */
 @Composable
 internal fun SharedTransitionScope.FolderScreen(
@@ -159,6 +173,29 @@ internal fun SharedTransitionScope.FolderScreen(
         folderGridHeightDp.roundToPx()
     }
 
+    var isFolderVisible by remember { mutableStateOf(false) }
+
+    val animScope = rememberCoroutineScope()
+
+    val folderScale by animateFloatAsState(
+        targetValue = if (isFolderVisible) 1f else 0.85f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessMedium,
+        ),
+        label = "folderScale",
+    )
+
+    val folderAlpha by animateFloatAsState(
+        targetValue = if (isFolderVisible) 1f else 0f,
+        animationSpec = tween(durationMillis = 200),
+        label = "folderAlpha",
+    )
+
+    LaunchedEffect(Unit) {
+        isFolderVisible = true
+    }
+
     Box(
         modifier = modifier
             .pointerInput(Unit) {
@@ -166,7 +203,11 @@ internal fun SharedTransitionScope.FolderScreen(
                     onPress = {
                         awaitRelease()
 
-                        onDismissRequest()
+                        animScope.launch {
+                            isFolderVisible = false
+                            delay(200L)
+                            onDismissRequest()
+                        }
                     },
                 )
             }
@@ -192,6 +233,8 @@ internal fun SharedTransitionScope.FolderScreen(
                     width = folderGridWidthDp,
                     height = folderGridHeightDp,
                 )
+                .scale(folderScale)
+                .alpha(folderAlpha)
                 .padding(FOLDER_GRID_PADDING),
             shape = RoundedCornerShape(5.dp),
             shadowElevation = 2.dp,
