@@ -1021,6 +1021,7 @@ internal fun PagerScreen(
                 statusBarNotifications = pagerScreenState.statusBarNotifications,
                 textColor = textColor,
                 isVisibleOverlay = isVisibleOverlay,
+                isClosingFolder = pagerScreenState.isCloseFolder,
                 onDismissRequest = {
                     pagerScreenState.dismissFolder(onUpdateFolderGridItemId = onUpdateFolderGridItemId)
                 },
@@ -1036,6 +1037,7 @@ internal fun PagerScreen(
                 onShowGridItemPopup = pagerScreenState::showFolderGridItemPopup,
                 onDismissGridItemPopup = pagerScreenState::dismissFolderGridItemPopup,
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                onUpdateIsClosingFolder = pagerScreenState::updateIsCloseFolder,
             )
         }
 

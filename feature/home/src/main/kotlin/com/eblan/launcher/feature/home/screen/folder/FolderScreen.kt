@@ -100,7 +100,6 @@ import com.eblan.launcher.feature.home.util.onDoubleTap
 import com.eblan.launcher.feature.home.util.onLongPress
 import com.eblan.launcher.ui.local.LocalLauncherApps
 import com.eblan.launcher.ui.local.LocalSettings
-import kotlinx.coroutines.launch
 
 @Composable
 internal fun SharedTransitionScope.FolderScreen(
@@ -119,6 +118,7 @@ internal fun SharedTransitionScope.FolderScreen(
     statusBarNotifications: Map<String, Int>,
     textColor: TextColor,
     isVisibleOverlay: Boolean,
+    isClosingFolder: Boolean,
     onDismissRequest: () -> Unit,
     onDraggingGridItem: () -> Unit,
     onOpenAppDrawer: () -> Unit,
@@ -136,6 +136,7 @@ internal fun SharedTransitionScope.FolderScreen(
     ) -> Unit,
     onDismissGridItemPopup: () -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+    onUpdateIsClosingFolder: (Boolean) -> Unit,
 ) {
     if (folderPopupIntOffset == null || folderPopupIntSize == null) return
 
@@ -158,10 +159,6 @@ internal fun SharedTransitionScope.FolderScreen(
     val folderGridHeightPx = with(density) { folderGridHeightDp.roundToPx() }
 
     val progress = remember { Animatable(0f) }
-
-    val scope = rememberCoroutineScope()
-
-    var isClosing by remember { mutableStateOf(false) }
 
     val centeredX =
         folderPopupIntOffset.x + (folderPopupIntSize.width / 2) - (folderGridWidthPx / 2)
@@ -226,10 +223,12 @@ internal fun SharedTransitionScope.FolderScreen(
         progress.animateTo(targetValue = 1f)
     }
 
-    BackHandler(enabled = !isClosing) {
-        isClosing = true
+    BackHandler(enabled = !isClosingFolder) {
+        onUpdateIsClosingFolder(true)
+    }
 
-        scope.launch {
+    LaunchedEffect(key1 = isClosingFolder) {
+        if (isClosingFolder) {
             progress.animateTo(targetValue = 0f)
 
             onDismissRequest()
@@ -243,15 +242,7 @@ internal fun SharedTransitionScope.FolderScreen(
                     onPress = {
                         awaitRelease()
 
-                        if (!isClosing) {
-                            isClosing = true
-
-                            scope.launch {
-                                progress.animateTo(targetValue = 0f)
-
-                                onDismissRequest()
-                            }
-                        }
+                        onUpdateIsClosingFolder(true)
                     },
                 )
             }

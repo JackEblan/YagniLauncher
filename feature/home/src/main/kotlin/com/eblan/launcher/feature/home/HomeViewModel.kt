@@ -755,10 +755,6 @@ internal class HomeViewModel @Inject constructor(
                 movingApplicationInfoGridItem = movingApplicationInfoGridItem,
                 applicationInfoGridItems = applicationInfoGridItems,
             )
-
-            _folderGridItemId.update {
-                null
-            }
         }
     }
 

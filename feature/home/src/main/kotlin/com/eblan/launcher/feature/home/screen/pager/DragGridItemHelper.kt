@@ -197,6 +197,7 @@ internal fun handleDragGridItem(
     onUpdateAssociate: (Associate) -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
+    onUpdateIsCloseFolder: (Boolean) -> Unit,
 ) {
     if (drag != Drag.Dragging ||
         isGridScrollInProgress ||
@@ -299,6 +300,7 @@ internal fun handleDragGridItem(
                 onMoveFolderGridItemOutsideFolder = onMoveFolderGridItemOutsideFolder,
                 onUpdateGridItemSource = onUpdateGridItemSource,
                 onUpdateSharedElementKey = onUpdateSharedElementKey,
+                onUpdateIsCloseFolder = onUpdateIsCloseFolder,
             )
         }
     }
@@ -335,6 +337,7 @@ private fun handleDragFolderGridItem(
     ) -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
+    onUpdateIsCloseFolder: (Boolean) -> Unit,
 ) {
     if (folderPopupIntOffset == null || folderPopupIntSize == null) return
 
@@ -433,6 +436,8 @@ private fun handleDragFolderGridItem(
             gridItemSourceFolder.applicationInfoGridItem,
             data.gridItems,
         )
+
+        onUpdateIsCloseFolder(true)
     }
 }
 

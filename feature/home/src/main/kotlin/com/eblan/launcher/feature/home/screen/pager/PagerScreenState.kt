@@ -335,6 +335,9 @@ internal class PagerScreenState(
 
     val appWidgetScreenOffsetY = Animatable(screenHeight.toFloat())
 
+    var isCloseFolder by mutableStateOf(false)
+        private set
+
     private val touchSlop = with(density) {
         50.dp.toPx()
     }
@@ -441,6 +444,9 @@ internal class PagerScreenState(
             onUpdateGridItemSource = onUpdateGridItemSource,
             onUpdateSharedElementKey = { newSharedElementKey ->
                 sharedElementKey = newSharedElementKey
+            },
+            onUpdateIsCloseFolder = { newIsClosingFolder ->
+                isCloseFolder = newIsClosingFolder
             },
         )
     }
@@ -951,6 +957,8 @@ internal class PagerScreenState(
 
         folderPopupIntSize = null
 
+        isCloseFolder = false
+
         onUpdateFolderGridItemId(null)
     }
 
@@ -1436,6 +1444,10 @@ internal class PagerScreenState(
                 }
             }
         }
+    }
+
+    fun updateIsCloseFolder(value: Boolean) {
+        isCloseFolder = value
     }
 
     companion object {
