@@ -1065,8 +1065,8 @@ private fun SharedTransitionScope.InteractiveFolderGridItem(
                     modifier = Modifier.matchParentSize(),
                     horizontalArrangement = Arrangement.SpaceEvenly,
                     verticalArrangement = Arrangement.SpaceEvenly,
-                    maxItemsInEachRow = 3,
-                    maxLines = 3,
+                    maxItemsInEachRow = 2,
+                    maxLines = 2,
                 ) {
                     data.previewGridItemsByPage.forEach { applicationInfoGridItem ->
                         key(applicationInfoGridItem.id) {

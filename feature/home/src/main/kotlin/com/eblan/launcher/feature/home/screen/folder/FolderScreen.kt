@@ -18,7 +18,9 @@
 package com.eblan.launcher.feature.home.screen.folder
 
 import android.graphics.Rect
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -41,6 +43,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -52,6 +55,8 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
@@ -66,6 +71,7 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.round
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.util.lerp
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest.Builder
 import coil3.request.addLastModifiedToFileCacheKey
@@ -94,6 +100,7 @@ import com.eblan.launcher.feature.home.util.onDoubleTap
 import com.eblan.launcher.feature.home.util.onLongPress
 import com.eblan.launcher.ui.local.LocalLauncherApps
 import com.eblan.launcher.ui.local.LocalSettings
+import kotlinx.coroutines.launch
 
 @Composable
 internal fun SharedTransitionScope.FolderScreen(
@@ -137,7 +144,6 @@ internal fun SharedTransitionScope.FolderScreen(
     val density = LocalDensity.current
 
     val cellWidth = safeDrawingWidth / FOLDER_MAX_COLUMNS
-
     val cellHeight = safeDrawingHeight / FOLDER_MAX_ROWS
 
     val folderGridWidthDp = with(density) {
@@ -148,12 +154,86 @@ internal fun SharedTransitionScope.FolderScreen(
         (cellHeight * data.rows).toDp()
     }
 
-    val folderGridWidthPx = with(density) {
-        folderGridWidthDp.roundToPx()
+    val folderGridWidthPx = with(density) { folderGridWidthDp.roundToPx() }
+    val folderGridHeightPx = with(density) { folderGridHeightDp.roundToPx() }
+
+    val progress = remember { Animatable(0f) }
+
+    val scope = rememberCoroutineScope()
+
+    var isClosing by remember { mutableStateOf(false) }
+
+    val centeredX =
+        folderPopupIntOffset.x + (folderPopupIntSize.width / 2) - (folderGridWidthPx / 2)
+
+    val centeredY =
+        folderPopupIntOffset.y + (folderPopupIntSize.height / 2) - (folderGridHeightPx / 2)
+
+    val endOffset = IntOffset(
+        x = centeredX.coerceIn(0, safeDrawingWidth - folderGridWidthPx),
+        y = centeredY.coerceIn(0, safeDrawingHeight - folderGridHeightPx),
+    )
+
+    val startCenterX = folderPopupIntOffset.x + folderPopupIntSize.width / 2f
+    val startCenterY = folderPopupIntOffset.y + folderPopupIntSize.height / 2f
+
+    val endCenterX = endOffset.x + folderGridWidthPx / 2f
+    val endCenterY = endOffset.y + folderGridHeightPx / 2f
+
+    val scaleX by remember {
+        derivedStateOf {
+            lerp(
+                folderPopupIntSize.width.toFloat() / folderGridWidthPx,
+                1f,
+                progress.value,
+            )
+        }
     }
 
-    val folderGridHeightPx = with(density) {
-        folderGridHeightDp.roundToPx()
+    val scaleY by remember {
+        derivedStateOf {
+            lerp(
+                folderPopupIntSize.height.toFloat() / folderGridHeightPx,
+                1f,
+                progress.value,
+            )
+        }
+    }
+
+    val translationX by remember {
+        derivedStateOf {
+            lerp(
+                startCenterX - endCenterX,
+                0f,
+                progress.value,
+            )
+        }
+    }
+
+    val translationY by remember {
+        derivedStateOf {
+            lerp(
+                startCenterY - endCenterY,
+                0f,
+                progress.value,
+            )
+        }
+    }
+
+    LaunchedEffect(key1 = Unit) {
+        progress.snapTo(targetValue = 0f)
+
+        progress.animateTo(targetValue = 1f)
+    }
+
+    BackHandler(enabled = !isClosing) {
+        isClosing = true
+
+        scope.launch {
+            progress.animateTo(targetValue = 0f)
+
+            onDismissRequest()
+        }
     }
 
     Box(
@@ -163,7 +243,15 @@ internal fun SharedTransitionScope.FolderScreen(
                     onPress = {
                         awaitRelease()
 
-                        onDismissRequest()
+                        if (!isClosing) {
+                            isClosing = true
+
+                            scope.launch {
+                                progress.animateTo(targetValue = 0f)
+
+                                onDismissRequest()
+                            }
+                        }
                     },
                 )
             }
@@ -172,19 +260,14 @@ internal fun SharedTransitionScope.FolderScreen(
     ) {
         Surface(
             modifier = Modifier
-                .offset {
-                    val centeredX =
-                        folderPopupIntOffset.x + (folderPopupIntSize.width / 2) - (folderGridWidthPx / 2)
-
-                    val centeredY =
-                        folderPopupIntOffset.y + (folderPopupIntSize.height / 2) - (folderGridHeightPx / 2)
-
-                    val popupX = centeredX.coerceIn(0, safeDrawingWidth - folderGridWidthPx)
-
-                    val popupY = centeredY.coerceIn(0, safeDrawingHeight - folderGridHeightPx)
-
-                    IntOffset(x = popupX, y = popupY)
-                }
+                .offset { endOffset }
+                .graphicsLayer(
+                    scaleX = scaleX,
+                    scaleY = scaleY,
+                    translationX = translationX,
+                    translationY = translationY,
+                    transformOrigin = TransformOrigin.Center,
+                )
                 .size(
                     width = folderGridWidthDp,
                     height = folderGridHeightDp,
@@ -192,50 +275,54 @@ internal fun SharedTransitionScope.FolderScreen(
                 .padding(FOLDER_GRID_PADDING),
             shape = RoundedCornerShape(5.dp),
             shadowElevation = 2.dp,
-            content = {
-                Column(modifier = Modifier.fillMaxSize()) {
-                    HorizontalPager(
-                        modifier = Modifier.weight(1f),
-                        state = folderGridHorizontalPagerState,
-                    ) { index ->
-                        FolderGridLayout(
-                            modifier = Modifier.fillMaxSize(),
-                            columns = data.columns,
-                            gridItems = data.gridItemsByPage[index],
-                            rows = data.rows,
-                            content = { applicationInfoGridItem ->
-                                FolderGridItemContent(
-                                    drag = drag,
-                                    folderGridItem = folderGridItem,
-                                    gridItem = applicationInfoGridItem,
-                                    gridItemSettings = gridItemSettings,
-                                    gridItemSource = gridItemSource,
-                                    iconPackFilePaths = iconPackFilePaths,
-                                    statusBarNotifications = statusBarNotifications,
-                                    textColor = textColor,
-                                    isVisibleOverlay = isVisibleOverlay,
-                                    onDraggingGridItem = onDraggingGridItem,
-                                    onOpenAppDrawer = onOpenAppDrawer,
-                                    onUpdateGridItemSource = onUpdateGridItemSource,
-                                    onUpdateImageBitmap = onUpdateImageBitmap,
-                                    onUpdateIsDragging = onUpdateIsDragging,
-                                    onUpdateOverlayBounds = onUpdateOverlayBounds,
-                                    onUpdateSharedElementKey = onUpdateSharedElementKey,
-                                    onShowGridItemPopup = onShowGridItemPopup,
-                                    onDismissGridItemPopup = onDismissGridItemPopup,
-                                    onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                                )
-                            },
-                        )
-                    }
-
-                    FolderTitle(
-                        data = data,
-                        folderGridHorizontalPagerState = folderGridHorizontalPagerState,
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .alpha(progress.value),
+            ) {
+                HorizontalPager(
+                    modifier = Modifier.weight(1f),
+                    state = folderGridHorizontalPagerState,
+                ) { index ->
+                    FolderGridLayout(
+                        modifier = Modifier.fillMaxSize(),
+                        columns = data.columns,
+                        gridItems = data.gridItemsByPage[index],
+                        rows = data.rows,
+                        content = { applicationInfoGridItem ->
+                            FolderGridItemContent(
+                                drag = drag,
+                                folderGridItem = folderGridItem,
+                                gridItem = applicationInfoGridItem,
+                                gridItemSettings = gridItemSettings,
+                                gridItemSource = gridItemSource,
+                                iconPackFilePaths = iconPackFilePaths,
+                                statusBarNotifications = statusBarNotifications,
+                                textColor = textColor,
+                                isVisibleOverlay = isVisibleOverlay,
+                                progress = progress.value,
+                                onDraggingGridItem = onDraggingGridItem,
+                                onOpenAppDrawer = onOpenAppDrawer,
+                                onUpdateGridItemSource = onUpdateGridItemSource,
+                                onUpdateImageBitmap = onUpdateImageBitmap,
+                                onUpdateIsDragging = onUpdateIsDragging,
+                                onUpdateOverlayBounds = onUpdateOverlayBounds,
+                                onUpdateSharedElementKey = onUpdateSharedElementKey,
+                                onShowGridItemPopup = onShowGridItemPopup,
+                                onDismissGridItemPopup = onDismissGridItemPopup,
+                                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                            )
+                        },
                     )
                 }
-            },
-        )
+
+                FolderTitle(
+                    data = data,
+                    folderGridHorizontalPagerState = folderGridHorizontalPagerState,
+                )
+            }
+        }
     }
 }
 
@@ -292,6 +379,7 @@ private fun SharedTransitionScope.FolderGridItemContent(
     statusBarNotifications: Map<String, Int>,
     textColor: TextColor,
     isVisibleOverlay: Boolean,
+    progress: Float,
     onDraggingGridItem: () -> Unit,
     onOpenAppDrawer: () -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
@@ -459,7 +547,13 @@ private fun SharedTransitionScope.FolderGridItemContent(
     ) {
         Box(
             modifier = Modifier
-                .size(currentGridItemSettings.iconSize.dp)
+                .size(
+                    lerp(
+                        currentGridItemSettings.iconSize * 0.25f,
+                        gridItemSettings.iconSize.toFloat(),
+                        progress,
+                    ).dp,
+                )
                 .alpha(alpha),
         ) {
             AsyncImage(
