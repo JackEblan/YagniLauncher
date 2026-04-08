@@ -116,7 +116,6 @@ internal fun SharedTransitionScope.FolderScreen(
     safeDrawingHeight: Int,
     safeDrawingWidth: Int,
     statusBarNotifications: Map<String, Int>,
-    textColor: TextColor,
     isVisibleOverlay: Boolean,
     isClosingFolder: Boolean,
     onDismissRequest: () -> Unit,
@@ -287,7 +286,6 @@ internal fun SharedTransitionScope.FolderScreen(
                                 gridItemSource = gridItemSource,
                                 iconPackFilePaths = iconPackFilePaths,
                                 statusBarNotifications = statusBarNotifications,
-                                textColor = textColor,
                                 isVisibleOverlay = isVisibleOverlay,
                                 onDraggingGridItem = onDraggingGridItem,
                                 onOpenAppDrawer = onOpenAppDrawer,
@@ -364,7 +362,6 @@ private fun SharedTransitionScope.FolderGridItemContent(
     gridItemSource: GridItemSource?,
     iconPackFilePaths: Map<String, String>,
     statusBarNotifications: Map<String, Int>,
-    textColor: TextColor,
     isVisibleOverlay: Boolean,
     onDraggingGridItem: () -> Unit,
     onOpenAppDrawer: () -> Unit,
@@ -398,20 +395,6 @@ private fun SharedTransitionScope.FolderGridItemContent(
         gridItem.gridItemSettings
     } else {
         gridItemSettings
-    }
-
-    val currentTextColor = if (gridItem.override) {
-        getGridItemTextColor(
-            gridItemCustomTextColor = gridItem.gridItemSettings.customTextColor,
-            gridItemTextColor = gridItem.gridItemSettings.textColor,
-            systemCustomTextColor = gridItemSettings.customTextColor,
-            systemTextColor = textColor,
-        )
-    } else {
-        getSystemTextColor(
-            systemCustomTextColor = gridItemSettings.customTextColor,
-            systemTextColor = textColor,
-        )
     }
 
     val horizontalAlignment =
@@ -523,11 +506,10 @@ private fun SharedTransitionScope.FolderGridItemContent(
             )
             .fillMaxSize()
             .padding(currentGridItemSettings.padding.dp)
-            .background(
-                color = Color(currentGridItemSettings.customBackgroundColor),
-                shape = RoundedCornerShape(size = currentGridItemSettings.cornerRadius.dp),
-            )
-            .whiteBox(textColor = currentTextColor, visible = isVisibleWhiteBox),
+            .whiteBox(
+                textColor = MaterialTheme.colorScheme.onSurface,
+                visible = isVisibleWhiteBox,
+            ),
         horizontalAlignment = horizontalAlignment,
         verticalArrangement = verticalArrangement,
     ) {
@@ -588,7 +570,6 @@ private fun SharedTransitionScope.FolderGridItemContent(
             Text(
                 modifier = Modifier.alpha(alpha),
                 text = gridItem.customLabel ?: gridItem.label,
-                color = currentTextColor,
                 textAlign = TextAlign.Center,
                 maxLines = maxLines,
                 fontSize = currentGridItemSettings.textSize.sp,

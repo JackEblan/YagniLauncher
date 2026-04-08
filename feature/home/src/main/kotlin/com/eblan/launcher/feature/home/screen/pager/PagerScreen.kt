@@ -1019,7 +1019,6 @@ internal fun PagerScreen(
                 safeDrawingHeight = safeDrawingHeight,
                 safeDrawingWidth = safeDrawingWidth,
                 statusBarNotifications = pagerScreenState.statusBarNotifications,
-                textColor = textColor,
                 isVisibleOverlay = isVisibleOverlay,
                 isClosingFolder = pagerScreenState.isCloseFolder,
                 onDismissRequest = {
