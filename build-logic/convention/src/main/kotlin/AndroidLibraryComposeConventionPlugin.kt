@@ -16,7 +16,7 @@
  *
  */
 
-import com.android.build.gradle.LibraryExtension
+import com.android.build.api.dsl.LibraryExtension
 import com.eblan.launcher.configureCompose
 import com.eblan.launcher.libs
 import org.gradle.api.JavaVersion
@@ -32,7 +32,6 @@ class AndroidLibraryComposeConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {
             apply(plugin = libs.plugins.android.library.get().pluginId)
-            apply(plugin = libs.plugins.kotlin.android.get().pluginId)
             apply(plugin = libs.plugins.compose.get().pluginId)
 
             configure<LibraryExtension> {
