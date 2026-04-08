@@ -289,7 +289,6 @@ internal fun SharedTransitionScope.FolderScreen(
                                 statusBarNotifications = statusBarNotifications,
                                 textColor = textColor,
                                 isVisibleOverlay = isVisibleOverlay,
-                                progress = progress.value,
                                 onDraggingGridItem = onDraggingGridItem,
                                 onOpenAppDrawer = onOpenAppDrawer,
                                 onUpdateGridItemSource = onUpdateGridItemSource,
@@ -367,7 +366,6 @@ private fun SharedTransitionScope.FolderGridItemContent(
     statusBarNotifications: Map<String, Int>,
     textColor: TextColor,
     isVisibleOverlay: Boolean,
-    progress: Float,
     onDraggingGridItem: () -> Unit,
     onOpenAppDrawer: () -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
@@ -535,13 +533,7 @@ private fun SharedTransitionScope.FolderGridItemContent(
     ) {
         Box(
             modifier = Modifier
-                .size(
-                    lerp(
-                        currentGridItemSettings.iconSize * 0.25f,
-                        gridItemSettings.iconSize.toFloat(),
-                        progress,
-                    ).dp,
-                )
+                .size(gridItemSettings.iconSize.dp)
                 .alpha(alpha),
         ) {
             AsyncImage(
