@@ -17,23 +17,28 @@
  */
 
 plugins {
-    alias(libs.plugins.com.eblan.launcher.library)
-    alias(libs.plugins.com.eblan.launcher.hilt)
+    alias(libs.plugins.com.eblan.launcher.jvmLibrary)
+    alias(libs.plugins.protobuf)
 }
 
-android {
-    namespace = "com.eblan.launcher.data.datastore"
-
-    defaultConfig {
-        consumerProguardFiles("consumer-proguard-rules.pro")
+protobuf {
+    protoc {
+        artifact = libs.protobuf.protoc.get().toString()
+    }
+    generateProtoTasks {
+        all().forEach { task ->
+            task.builtins {
+                named("java") {
+                    option("lite")
+                }
+                register("kotlin") {
+                    option("lite")
+                }
+            }
+        }
     }
 }
 
 dependencies {
-    implementation(libs.androidx.dataStore.core)
-    implementation(projects.common)
-    implementation(projects.data.datastoreProto)
-    implementation(projects.domain.common)
-    implementation(projects.domain.model)
-    implementation(projects.domain.repository)
+    api(libs.protobuf.kotlin.lite)
 }
