@@ -33,7 +33,6 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
         with(target) {
             apply(plugin = libs.plugins.android.application.get().pluginId)
             apply(plugin = libs.plugins.compose.get().pluginId)
-            apply(plugin = libs.plugins.kotlin.android.get().pluginId)
 
             configure<ApplicationExtension> {
                 compileSdk = 36
