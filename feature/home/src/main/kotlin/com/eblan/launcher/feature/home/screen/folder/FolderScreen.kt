@@ -263,15 +263,12 @@ internal fun SharedTransitionScope.FolderScreen(
                     width = folderGridWidthDp,
                     height = folderGridHeightDp,
                 )
-                .padding(FOLDER_GRID_PADDING),
+                .padding(FOLDER_GRID_PADDING)
+                .alpha(progress.value),
             shape = RoundedCornerShape(5.dp),
             shadowElevation = 2.dp,
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .alpha(progress.value),
-            ) {
+            Column(modifier = Modifier.fillMaxSize()) {
                 HorizontalPager(
                     modifier = Modifier.weight(1f),
                     state = folderGridHorizontalPagerState,
