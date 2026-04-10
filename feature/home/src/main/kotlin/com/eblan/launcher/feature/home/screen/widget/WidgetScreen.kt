@@ -210,15 +210,9 @@ private fun Success(
         )
     }
 
-    val canOverscroll by remember(key1 = lazyListState) {
+    val canScroll by remember(key1 = lazyListState) {
         derivedStateOf {
-            val layoutInfo = lazyListState.layoutInfo
-
-            val lastVisible = layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
-
-            val total = layoutInfo.totalItemsCount
-
-            lastVisible < total - 1
+            lazyListState.canScrollForward || lazyListState.canScrollBackward
         }
     }
 
@@ -262,7 +256,7 @@ private fun Success(
     Column(
         modifier = modifier
             .run {
-                if (!canOverscroll) {
+                if (!canScroll) {
                     nestedScroll(nestedScrollConnection)
                 } else {
                     this
@@ -300,7 +294,7 @@ private fun Success(
             state = lazyListState,
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(bottom = paddingValues.calculateBottomPadding()),
-            overscrollEffect = if (canOverscroll) {
+            overscrollEffect = if (canScroll) {
                 overscrollEffect
             } else {
                 rememberOverscrollEffect()

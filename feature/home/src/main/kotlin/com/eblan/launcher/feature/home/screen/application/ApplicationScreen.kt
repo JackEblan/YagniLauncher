@@ -897,12 +897,9 @@ private fun SharedTransitionScope.EblanApplicationInfos(
 
     val lazyGridState = rememberLazyGridState()
 
-    val canOverscroll by remember(key1 = lazyGridState) {
+    val canScroll by remember(key1 = lazyGridState) {
         derivedStateOf {
-            val lastVisibleIndex =
-                lazyGridState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
-
-            lastVisibleIndex < lazyGridState.layoutInfo.totalItemsCount - 1
+            lazyGridState.canScrollForward || lazyGridState.canScrollBackward
         }
     }
 
@@ -924,7 +921,7 @@ private fun SharedTransitionScope.EblanApplicationInfos(
     Box(
         modifier = modifier
             .run {
-                if (!canOverscroll) {
+                if (!canScroll) {
                     nestedScroll(nestedScrollConnection)
                 } else {
                     this
@@ -939,7 +936,7 @@ private fun SharedTransitionScope.EblanApplicationInfos(
             contentPadding = PaddingValues(
                 bottom = paddingValues.calculateBottomPadding(),
             ),
-            overscrollEffect = if (canOverscroll) {
+            overscrollEffect = if (canScroll) {
                 overscrollEffect
             } else {
                 rememberOverscrollEffect()

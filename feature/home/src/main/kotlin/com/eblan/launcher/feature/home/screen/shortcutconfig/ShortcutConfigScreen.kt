@@ -19,7 +19,6 @@ package com.eblan.launcher.feature.home.screen.shortcutconfig
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -388,15 +387,9 @@ private fun EblanShortcutConfigsPage(
         },
     )
 
-    val canOverscroll by remember(key1 = lazyListState) {
+    val canScroll by remember(key1 = lazyListState) {
         derivedStateOf {
-            val layoutInfo = lazyListState.layoutInfo
-
-            val lastVisible = layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
-
-            val total = layoutInfo.totalItemsCount
-
-            lastVisible < total - 1
+            lazyListState.canScrollForward || lazyListState.canScrollBackward
         }
     }
 
@@ -410,7 +403,7 @@ private fun EblanShortcutConfigsPage(
     Box(
         modifier = modifier
             .run {
-                if (!canOverscroll) {
+                if (!canScroll) {
                     nestedScroll(nestedScrollConnection)
                 } else {
                     this
@@ -424,7 +417,7 @@ private fun EblanShortcutConfigsPage(
             contentPadding = PaddingValues(
                 bottom = paddingValues.calculateBottomPadding(),
             ),
-            overscrollEffect = if (canOverscroll) {
+            overscrollEffect = if (canScroll) {
                 overscrollEffect
             } else {
                 rememberOverscrollEffect()
