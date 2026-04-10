@@ -37,45 +37,14 @@ internal class DefaultImageSerializer @Inject constructor(
     @param:Dispatcher(EblanDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) : AndroidImageSerializer {
     override suspend fun createByteArray(drawable: Drawable): ByteArray? = withContext(defaultDispatcher) {
-        if (drawable is BitmapDrawable) {
-            ByteArrayOutputStream().use { stream ->
-                drawable.bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
+        ByteArrayOutputStream().use { stream ->
+            drawable.toBitmap()?.compress(
+                Bitmap.CompressFormat.PNG,
+                100,
+                stream,
+            )
 
-                stream.toByteArray()
-            }
-        } else {
-            val width = if (!drawable.bounds.isEmpty) {
-                drawable.bounds.width()
-            } else {
-                drawable.intrinsicWidth
-            }
-
-            val height = if (!drawable.bounds.isEmpty) {
-                drawable.bounds.height()
-            } else {
-                drawable.intrinsicHeight
-            }
-
-            if (width > 0 && height > 0) {
-                val bitmap = createBitmap(
-                    width = width,
-                    height = height,
-                )
-
-                val canvas = Canvas(bitmap)
-
-                drawable.setBounds(0, 0, canvas.width, canvas.height)
-
-                drawable.draw(canvas)
-
-                ByteArrayOutputStream().use { stream ->
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
-
-                    stream.toByteArray()
-                }
-            } else {
-                null
-            }
+            stream.toByteArray()
         }
     }
 
@@ -92,47 +61,59 @@ internal class DefaultImageSerializer @Inject constructor(
         file: File,
     ) {
         withContext(ioDispatcher) {
-            val bitmap = when (drawable) {
-                is BitmapDrawable -> drawable.bitmap
+            drawable.toBitmap()?.let { bitmap ->
+                var isCreateNew = true
 
-                else -> {
-                    val width = if (!drawable.bounds.isEmpty) {
-                        drawable.bounds.width()
-                    } else {
-                        drawable.intrinsicWidth
+                if (file.exists()) {
+                    val old = BitmapFactory.decodeFile(file.path)
+
+                    isCreateNew = old == null || !bitmap.sameAs(old)
+
+                    old?.recycle()
+                }
+
+                if (isCreateNew) {
+                    FileOutputStream(file).use { out ->
+                        bitmap.compress(
+                            Bitmap.CompressFormat.PNG,
+                            100,
+                            out,
+                        )
                     }
-
-                    val height = if (!drawable.bounds.isEmpty) {
-                        drawable.bounds.height()
-                    } else {
-                        drawable.intrinsicHeight
-                    }
-
-                    if (width <= 0 || height <= 0) return@withContext
-
-                    val bitmap = createBitmap(width, height)
-
-                    val canvas = Canvas(bitmap)
-
-                    drawable.setBounds(0, 0, canvas.width, canvas.height)
-
-                    drawable.draw(canvas)
-
-                    bitmap
                 }
             }
+        }
+    }
 
-            if (file.exists()) {
-                val old = BitmapFactory.decodeFile(file.path)
+    private fun Drawable.toBitmap(): Bitmap? = if (this is BitmapDrawable) {
+        bitmap
+    } else {
+        val width = if (!bounds.isEmpty) {
+            bounds.width()
+        } else {
+            intrinsicWidth
+        }
 
-                if (old != null && bitmap.sameAs(old)) {
-                    return@withContext
-                }
+        val height = if (!bounds.isEmpty) {
+            bounds.height()
+        } else {
+            intrinsicHeight
+        }
+
+        if (width > 0 && height > 0) {
+            createBitmap(
+                width = width,
+                height = height,
+                config = Bitmap.Config.ARGB_8888,
+            ).apply {
+                val canvas = Canvas(this)
+
+                setBounds(0, 0, canvas.width, canvas.height)
+
+                draw(canvas)
             }
-
-            FileOutputStream(file).use { out ->
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
-            }
+        } else {
+            null
         }
     }
 }
