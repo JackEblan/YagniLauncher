@@ -36,6 +36,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberOverscrollEffect
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -299,7 +300,11 @@ private fun Success(
             state = lazyListState,
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(bottom = paddingValues.calculateBottomPadding()),
-            overscrollEffect = overscrollEffect,
+            overscrollEffect = if (canOverscroll) {
+                overscrollEffect
+            } else {
+                rememberOverscrollEffect()
+            },
         ) {
             items(eblanAppWidgetProviderInfos.keys.toList()) { eblanApplicationInfoGroup ->
                 key(eblanApplicationInfoGroup.packageName) {
