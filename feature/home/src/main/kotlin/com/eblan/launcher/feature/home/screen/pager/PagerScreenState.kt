@@ -1469,10 +1469,17 @@ internal class PagerScreenState(
 
     fun handleOnDragEndAppWidgetScreen() {
         scope.launch {
-            appWidgetScreenOffsetY.animateTo(
-                targetValue = 0f,
-                animationSpec = tween(easing = FastOutSlowInEasing),
-            )
+            if (appWidgetScreenOffsetY.value > 200f) {
+                appWidgetScreenOffsetY.animateTo(
+                    targetValue = screenHeight.toFloat(),
+                    animationSpec = tween(easing = FastOutSlowInEasing),
+                )
+            } else {
+                appWidgetScreenOffsetY.animateTo(
+                    targetValue = 0f,
+                    animationSpec = tween(easing = FastOutSlowInEasing),
+                )
+            }
         }
     }
 
