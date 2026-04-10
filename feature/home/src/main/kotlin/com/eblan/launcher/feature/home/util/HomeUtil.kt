@@ -115,43 +115,6 @@ internal suspend fun handleEblanAction(
     }
 }
 
-internal suspend fun handleApplyFling(
-    offsetY: Animatable<Float, AnimationVector1D>,
-    remaining: Float,
-    screenHeight: Int,
-    onDismiss: () -> Unit = {},
-) {
-    if (offsetY.value <= 0f && remaining > 10000f) {
-        offsetY.animateTo(
-            targetValue = screenHeight.toFloat(),
-            initialVelocity = remaining,
-            animationSpec = tween(
-                easing = FastOutSlowInEasing,
-            ),
-        )
-
-        onDismiss()
-    } else if (offsetY.value > 200f) {
-        offsetY.animateTo(
-            targetValue = screenHeight.toFloat(),
-            animationSpec = tween(
-                easing = FastOutSlowInEasing,
-            ),
-        )
-
-        onDismiss()
-    } else {
-        offsetY.animateTo(
-            targetValue = 0f,
-            initialVelocity = remaining,
-            animationSpec = spring(
-                dampingRatio = Spring.DampingRatioNoBouncy,
-                stiffness = Spring.StiffnessLow,
-            ),
-        )
-    }
-}
-
 internal fun onDoubleTap(
     context: Context,
     doubleTap: EblanAction,

@@ -101,7 +101,6 @@ import com.eblan.launcher.feature.home.screen.widget.WidgetScreen
 import com.eblan.launcher.feature.home.util.PAGE_INDICATOR_HEIGHT
 import com.eblan.launcher.feature.home.util.calculatePage
 import com.eblan.launcher.feature.home.util.getSystemTextColor
-import com.eblan.launcher.feature.home.util.handleApplyFling
 import com.eblan.launcher.feature.home.util.handleWallpaperScrollEffect
 import com.eblan.launcher.ui.local.LocalAppWidgetHost
 import com.eblan.launcher.ui.local.LocalFileManager
@@ -1120,15 +1119,7 @@ internal fun PagerScreen(
                 swipeY = pagerScreenState.swipeY.value,
                 isVisibleOverlay = isVisibleOverlay,
                 onDismiss = pagerScreenState::dismissApplicationScreen,
-                onDragEnd = { remaining ->
-                    scope.launch {
-                        handleApplyFling(
-                            offsetY = pagerScreenState.swipeY,
-                            remaining = remaining,
-                            screenHeight = screenHeight,
-                        )
-                    }
-                },
+                onDragEnd = pagerScreenState::handleOnDragEndApplicationScreen,
                 onDraggingGridItem = {
                     onDraggingGridItem(gridItems)
                 },
@@ -1179,15 +1170,7 @@ internal fun PagerScreen(
             onUpdateSharedElementKey = pagerScreenState::updateSharedElementKey,
             onUpdateIsDragging = pagerScreenState::updateIsDragging,
             onVerticalDrag = pagerScreenState::verticalDragWidgetScreen,
-            onDragEnd = { remaining ->
-                scope.launch {
-                    handleApplyFling(
-                        offsetY = pagerScreenState.widgetScreenOffsetY,
-                        remaining = remaining,
-                        screenHeight = screenHeight,
-                    )
-                }
-            },
+            onDragEnd = pagerScreenState::handleOnDragEndWidgetScreen,
             onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
         )
 
@@ -1213,15 +1196,7 @@ internal fun PagerScreen(
             onUpdateSharedElementKey = pagerScreenState::updateSharedElementKey,
             onUpdateIsDragging = pagerScreenState::updateIsDragging,
             onVerticalDrag = pagerScreenState::verticalDragShortcutConfigScreen,
-            onDragEnd = { remaining ->
-                scope.launch {
-                    handleApplyFling(
-                        offsetY = pagerScreenState.shortcutConfigScreenOffsetY,
-                        remaining = remaining,
-                        screenHeight = screenHeight,
-                    )
-                }
-            },
+            onDragEnd = pagerScreenState::handleOnDragEndShortcutConfigScreen,
             onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
         )
 
@@ -1249,15 +1224,7 @@ internal fun PagerScreen(
             onUpdateSharedElementKey = pagerScreenState::updateSharedElementKey,
             onUpdateIsDragging = pagerScreenState::updateIsDragging,
             onVerticalDrag = pagerScreenState::verticalDragAppWidgetScreen,
-            onDragEnd = {
-                scope.launch {
-                    handleApplyFling(
-                        offsetY = pagerScreenState.appWidgetScreenOffsetY,
-                        remaining = 0f,
-                        screenHeight = screenHeight,
-                    )
-                }
-            },
+            onDragEnd = pagerScreenState::handleOnDragEndAppWidgetScreen,
             onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
         )
 
