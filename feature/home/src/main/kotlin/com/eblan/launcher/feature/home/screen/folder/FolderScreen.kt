@@ -53,7 +53,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
@@ -79,7 +78,6 @@ import com.eblan.launcher.domain.model.ApplicationInfoGridItem
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.GridItemSettings
-import com.eblan.launcher.domain.model.TextColor
 import com.eblan.launcher.domain.usecase.grid.FOLDER_MAX_COLUMNS
 import com.eblan.launcher.domain.usecase.grid.FOLDER_MAX_ROWS
 import com.eblan.launcher.feature.home.component.grid.FolderGridLayout
@@ -91,9 +89,7 @@ import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
 import com.eblan.launcher.feature.home.util.FOLDER_GRID_PADDING
 import com.eblan.launcher.feature.home.util.PAGE_INDICATOR_HEIGHT
-import com.eblan.launcher.feature.home.util.getGridItemTextColor
 import com.eblan.launcher.feature.home.util.getHorizontalAlignment
-import com.eblan.launcher.feature.home.util.getSystemTextColor
 import com.eblan.launcher.feature.home.util.getVerticalArrangement
 import com.eblan.launcher.feature.home.util.handleDrag
 import com.eblan.launcher.feature.home.util.onDoubleTap

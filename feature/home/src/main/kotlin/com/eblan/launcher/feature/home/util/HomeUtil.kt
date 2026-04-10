@@ -20,12 +20,6 @@ package com.eblan.launcher.feature.home.util
 import android.content.Context
 import android.content.Intent
 import android.graphics.Rect
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.AnimationVector1D
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.compose.ui.unit.IntOffset
