@@ -42,7 +42,11 @@ Closed-source launchers are locking features behind paywalls and adding trackers
 * Adjustable dock height
 * Custom dock grid size
 
-Explore and discover more features, only ~2MB
+We keep the APK size minimal and heavily cache icons and images, which improves the launcher’s performance. Each launch uses less memory because there’s less overhead, with no trackers or ads.
+
+Thanks for all your support. I’m continuously improving the user experience, especially the folder animation, as that has been bothering me for a while.
+
+![Screenshot_20260412-100101](https://github.com/user-attachments/assets/58fc1fe9-aa80-48ac-995a-1d0ad42d041e)
 
 ## Screenshots
 
