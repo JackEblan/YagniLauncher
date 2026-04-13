@@ -33,9 +33,9 @@ import com.eblan.launcher.domain.model.EblanApplicationInfo
 import com.eblan.launcher.domain.model.EblanShortcutConfig
 import com.eblan.launcher.domain.model.ExperimentalSettings
 import com.eblan.launcher.domain.model.FastAppWidgetManagerAppWidgetProviderInfo
+import com.eblan.launcher.domain.model.FastLauncherAppsActivityInfo
 import com.eblan.launcher.domain.model.FastLauncherAppsShortcutInfo
 import com.eblan.launcher.domain.model.HomeSettings
-import com.eblan.launcher.domain.model.UserData
 import com.eblan.launcher.domain.repository.ApplicationInfoGridItemRepository
 import com.eblan.launcher.domain.repository.EblanAppWidgetProviderInfoRepository
 import com.eblan.launcher.domain.repository.EblanApplicationInfoRepository
@@ -78,8 +78,14 @@ class SyncDataUseCase @Inject constructor(
         withContext(ioDispatcher) {
             val userData = userDataRepository.userData.first()
 
+            val fastLauncherAppsActivityInfos = launcherAppsWrapper.getFastActivityList()
+
             launch {
-                updateEblanApplicationInfos(userData = userData)
+                updateEblanApplicationInfos(
+                    experimentalSettings = userData.experimentalSettings,
+                    homeSettings = userData.homeSettings,
+                    fastLauncherAppsActivityInfos = fastLauncherAppsActivityInfos,
+                )
             }
 
             launch {
@@ -95,22 +101,24 @@ class SyncDataUseCase @Inject constructor(
                     iconPackInfoPackageName = userData.generalSettings.iconPackInfoPackageName,
                     fileManager = fileManager,
                     iconPackManager = iconPackManager,
-                    fastLauncherAppsActivityInfos = launcherAppsWrapper.getFastActivityList(),
+                    fastLauncherAppsActivityInfos = fastLauncherAppsActivityInfos,
                     iconKeyGenerator = iconKeyGenerator,
                 )
             }
         }
     }
 
-    private suspend fun updateEblanApplicationInfos(userData: UserData) {
+    private suspend fun updateEblanApplicationInfos(
+        experimentalSettings: ExperimentalSettings,
+        homeSettings: HomeSettings,
+        fastLauncherAppsActivityInfos: List<FastLauncherAppsActivityInfo>,
+    ) {
         val oldFastEblanLauncherAppsActivityInfo =
             eblanApplicationInfoRepository.getEblanApplicationInfos().map { eblanApplicationInfo ->
                 eblanApplicationInfo.toFastLauncherAppsActivityInfo()
             }
 
-        val newFastLauncherAppsActivityInfos = launcherAppsWrapper.getFastActivityList()
-
-        if (oldFastEblanLauncherAppsActivityInfo.toSet() == newFastLauncherAppsActivityInfos.toSet()) return
+        if (oldFastEblanLauncherAppsActivityInfo.toSet() == fastLauncherAppsActivityInfos.toSet()) return
 
         val newEblanShortcutConfigs = mutableSetOf<EblanShortcutConfig>()
 
@@ -176,8 +184,8 @@ class SyncDataUseCase @Inject constructor(
 
         insertApplicationInfoGridItems(
             eblanApplicationInfos = eblanApplicationInfoRepository.getEblanApplicationInfos(),
-            experimentalSettings = userData.experimentalSettings,
-            homeSettings = userData.homeSettings,
+            experimentalSettings = experimentalSettings,
+            homeSettings = homeSettings,
         )
     }
 
