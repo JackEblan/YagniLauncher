@@ -792,29 +792,30 @@ private fun SharedTransitionScope.EblanApplicationInfos(
                 }
 
                 else -> {
-                    items(getEblanApplicationInfosByLabel.eblanApplicationInfos[eblanUserPageKey].orEmpty()) { eblanApplicationInfo ->
-                        key(eblanApplicationInfo.serialNumber, eblanApplicationInfo.componentName) {
-                            EblanApplicationInfoItem(
-                                appDrawerSettings = appDrawerSettings,
-                                currentPage = currentPage,
-                                drag = drag,
-                                eblanApplicationInfo = eblanApplicationInfo,
-                                iconPackFilePaths = iconPackFilePaths,
-                                paddingValues = paddingValues,
-                                isVisibleOverlay = isVisibleOverlay,
-                                appDrawerType = appDrawerSettings.appDrawerType,
-                                onDismiss = onDismiss,
-                                onDraggingGridItem = onDraggingGridItem,
-                                onUpdateGridItemSource = onUpdateGridItemSource,
-                                onUpdateImageBitmap = onUpdateImageBitmap,
-                                onUpdateIsDragging = onUpdateIsDragging,
-                                onUpdateOverlayBounds = onUpdateOverlayBounds,
-                                onUpdatePopupMenu = onUpdatePopupMenu,
-                                onUpdateSharedElementKey = onUpdateSharedElementKey,
-                                onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
-                                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                            )
-                        }
+                    items(
+                        getEblanApplicationInfosByLabel.eblanApplicationInfos[eblanUserPageKey].orEmpty(),
+                        key = { eblanApplicationInfo -> eblanApplicationInfo.serialNumber to eblanApplicationInfo.componentName },
+                    ) { eblanApplicationInfo ->
+                        EblanApplicationInfoItem(
+                            appDrawerSettings = appDrawerSettings,
+                            currentPage = currentPage,
+                            drag = drag,
+                            eblanApplicationInfo = eblanApplicationInfo,
+                            iconPackFilePaths = iconPackFilePaths,
+                            paddingValues = paddingValues,
+                            isVisibleOverlay = isVisibleOverlay,
+                            appDrawerType = appDrawerSettings.appDrawerType,
+                            onDismiss = onDismiss,
+                            onDraggingGridItem = onDraggingGridItem,
+                            onUpdateGridItemSource = onUpdateGridItemSource,
+                            onUpdateImageBitmap = onUpdateImageBitmap,
+                            onUpdateIsDragging = onUpdateIsDragging,
+                            onUpdateOverlayBounds = onUpdateOverlayBounds,
+                            onUpdatePopupMenu = onUpdatePopupMenu,
+                            onUpdateSharedElementKey = onUpdateSharedElementKey,
+                            onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
+                            onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                        )
                     }
                 }
             }

@@ -159,7 +159,7 @@ internal fun HorizontalAppDrawerGridLayout(
 
                 val column = index % columns
 
-                subcompose("${eblanApplicationInfo.serialNumber}${eblanApplicationInfo.packageName}${eblanApplicationInfo.componentName}") {
+                subcompose(eblanApplicationInfo.serialNumber to eblanApplicationInfo.componentName) {
                     Box(
                         modifier = Modifier.gridItem(
                             width = cellWidth,

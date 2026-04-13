@@ -162,7 +162,7 @@ private fun Success(
             when (appDrawerSettings.appDrawerType) {
                 AppDrawerType.Vertical -> {
                     SettingsColumn(
-                        title = "Vertical App Drawer Grid",
+                        title = "Grid",
                         subtitle = "${appDrawerSettings.appDrawerColumns}x${appDrawerSettings.appDrawerRowsHeight}",
                         onClick = {
                             showVerticalGridDialog = true
@@ -172,7 +172,7 @@ private fun Success(
 
                 AppDrawerType.Horizontal -> {
                     SettingsColumn(
-                        title = "Horizontal App Drawer Grid",
+                        title = "Grid",
                         subtitle = "${appDrawerSettings.horizontalAppDrawerColumns}x${appDrawerSettings.horizontalAppDrawerRows}",
                         onClick = {
                             showHorizontalGridDialog = true
@@ -225,7 +225,7 @@ private fun Success(
 
     if (showAppDrawerTypeDialog) {
         RadioOptionsDialog(
-            title = "App drawer Type",
+            title = "App Drawer Type",
             options = AppDrawerType.entries,
             selected = appDrawerSettings.appDrawerType,
             label = {
