@@ -21,19 +21,18 @@ import android.graphics.Rect
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.calculateStartPadding
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -60,7 +59,6 @@ import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.addLastModifiedToFileCacheKey
-import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.AppDrawerSettings
 import com.eblan.launcher.domain.model.EblanApplicationInfo
 import com.eblan.launcher.domain.model.EblanUser
@@ -144,8 +142,6 @@ private fun PrivateSpaceEblanApplicationInfoItem(
         systemTextColor = appDrawerSettings.gridItemSettings.textColor,
     )
 
-    val appDrawerRowsHeight = appDrawerSettings.appDrawerRowsHeight.dp
-
     val maxLines = if (appDrawerSettings.gridItemSettings.singleLineLabel) 1 else Int.MAX_VALUE
 
     val icon = iconPackFilePaths[eblanApplicationInfo.componentName] ?: eblanApplicationInfo.icon
@@ -200,45 +196,29 @@ private fun PrivateSpaceEblanApplicationInfoItem(
                     },
                 )
             }
-            .height(appDrawerRowsHeight)
-            .padding(appDrawerSettings.gridItemSettings.padding.dp)
+            .fillMaxWidth()
+            .padding(10.dp)
             .background(
                 color = Color(appDrawerSettings.gridItemSettings.customBackgroundColor),
                 shape = RoundedCornerShape(size = appDrawerSettings.gridItemSettings.cornerRadius.dp),
             ),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Box(
-            modifier = Modifier.size(appDrawerSettings.gridItemSettings.iconSize.dp),
-        ) {
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(eblanApplicationInfo.customIcon ?: icon)
-                    .addLastModifiedToFileCacheKey(true).build(),
-                contentDescription = null,
-                modifier = Modifier
-                    .onGloballyPositioned { layoutCoordinates ->
-                        intOffset = layoutCoordinates.positionInRoot().round()
+        AsyncImage(
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(eblanApplicationInfo.customIcon ?: icon)
+                .addLastModifiedToFileCacheKey(true).build(),
+            contentDescription = null,
+            modifier = Modifier
+                .onGloballyPositioned { layoutCoordinates ->
+                    intOffset = layoutCoordinates.positionInRoot().round()
 
-                        intSize = layoutCoordinates.size
-                    }
-                    .matchParentSize(),
-            )
+                    intSize = layoutCoordinates.size
+                }
+                .size(appDrawerSettings.gridItemSettings.iconSize.dp),
+        )
 
-            ElevatedCard(
-                modifier = Modifier
-                    .size((appDrawerSettings.gridItemSettings.iconSize * 0.40).dp)
-                    .align(Alignment.BottomEnd),
-            ) {
-                Icon(
-                    imageVector = EblanLauncherIcons.Work,
-                    contentDescription = null,
-                    modifier = Modifier.padding(2.dp),
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.width(10.dp))
 
         Text(
             text = eblanApplicationInfo.customLabel ?: eblanApplicationInfo.label,

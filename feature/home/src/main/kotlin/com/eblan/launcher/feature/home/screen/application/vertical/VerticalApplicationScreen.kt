@@ -101,6 +101,7 @@ import com.eblan.launcher.feature.home.model.SharedElementKey
 import com.eblan.launcher.feature.home.screen.application.ApplicationInfoPopup
 import com.eblan.launcher.feature.home.screen.application.EblanApplicationInfoItem
 import com.eblan.launcher.feature.home.screen.application.EblanApplicationInfoTabRow
+import com.eblan.launcher.feature.home.screen.application.PrivateApplicationInfoPopup
 import com.eblan.launcher.feature.home.screen.application.QuiteModeScreen
 import com.eblan.launcher.feature.home.screen.application.TagElevatedFilterChip
 import com.eblan.launcher.feature.home.screen.application.privateSpace
@@ -160,6 +161,8 @@ internal fun SharedTransitionScope.VerticalApplicationScreen(
     val density = LocalDensity.current
 
     var showPopupApplicationMenu by remember { mutableStateOf(false) }
+
+    var showPrivatePopupApplicationMenu by remember { mutableStateOf(false) }
 
     var popupIntOffset by remember { mutableStateOf(IntOffset.Zero) }
 
@@ -330,6 +333,9 @@ internal fun SharedTransitionScope.VerticalApplicationScreen(
                     onUpdatePopupMenu = { newShowPopupApplicationMenu ->
                         showPopupApplicationMenu = newShowPopupApplicationMenu
                     },
+                    onUpdatePrivatePopupMenu = { newShowPrivatePopupApplicationMenu ->
+                        showPrivatePopupApplicationMenu = newShowPrivatePopupApplicationMenu
+                    },
                     onUpdateSharedElementKey = onUpdateSharedElementKey,
                     onVerticalDrag = onVerticalDrag,
                     onUpdateEblanApplicationInfo = { eblanApplicationInfo ->
@@ -374,6 +380,9 @@ internal fun SharedTransitionScope.VerticalApplicationScreen(
                 },
                 onUpdatePopupMenu = { newShowPopupApplicationMenu ->
                     showPopupApplicationMenu = newShowPopupApplicationMenu
+                },
+                onUpdatePrivatePopupMenu = { newShowPrivatePopupApplicationMenu ->
+                    showPrivatePopupApplicationMenu = newShowPrivatePopupApplicationMenu
                 },
                 onUpdateSharedElementKey = onUpdateSharedElementKey,
                 onVerticalDrag = onVerticalDrag,
@@ -448,6 +457,41 @@ internal fun SharedTransitionScope.VerticalApplicationScreen(
                 isRearrangeEblanApplicationInfo = newIsRearrangeEblanApplicationInfo
 
                 showEblanApplicationInfoOrderDialog = false
+            },
+        )
+    }
+
+    if (showPrivatePopupApplicationMenu && selectedEblanApplicationInfo != null) {
+        PrivateApplicationInfoPopup(
+            drag = drag,
+            eblanShortcutInfosGroup = eblanShortcutInfosGroup,
+            eblanApplicationInfo = selectedEblanApplicationInfo,
+            hasShortcutHostPermission = hasShortcutHostPermission,
+            paddingValues = paddingValues,
+            popupIntOffset = popupIntOffset,
+            popupIntSize = popupIntSize,
+            onDismissRequest = {
+                showPrivatePopupApplicationMenu = false
+            },
+            onEditApplicationInfo = onEditApplicationInfo,
+            onTapShortcutInfo = { serialNumber, packageName, shortcutId ->
+                val sourceBoundsX = popupIntOffset.x + leftPadding
+
+                val sourceBoundsY = popupIntOffset.y + topPadding
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+                    launcherApps.startShortcut(
+                        serialNumber = serialNumber,
+                        packageName = packageName,
+                        id = shortcutId,
+                        sourceBounds = Rect(
+                            sourceBoundsX,
+                            sourceBoundsY,
+                            sourceBoundsX + popupIntSize.width,
+                            sourceBoundsY + popupIntSize.height,
+                        ),
+                    )
+                }
             },
         )
     }
@@ -541,6 +585,7 @@ private fun SharedTransitionScope.EblanApplicationInfosPage(
         intSize: IntSize,
     ) -> Unit,
     onUpdatePopupMenu: (Boolean) -> Unit,
+    onUpdatePrivatePopupMenu: (Boolean) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onVerticalDrag: (Float) -> Unit,
     onUpdateEblanApplicationInfo: (EblanApplicationInfo) -> Unit,
@@ -624,6 +669,7 @@ private fun SharedTransitionScope.EblanApplicationInfosPage(
                 onUpdateIsDragging = onUpdateIsDragging,
                 onUpdateOverlayBounds = onUpdateOverlayBounds,
                 onUpdatePopupMenu = onUpdatePopupMenu,
+                onUpdatePrivatePopupMenu = onUpdatePrivatePopupMenu,
                 onUpdateSharedElementKey = onUpdateSharedElementKey,
                 onVerticalDrag = onVerticalDrag,
                 onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
@@ -684,6 +730,7 @@ private fun SharedTransitionScope.EblanApplicationInfos(
         intSize: IntSize,
     ) -> Unit,
     onUpdatePopupMenu: (Boolean) -> Unit,
+    onUpdatePrivatePopupMenu: (Boolean) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onVerticalDrag: (Float) -> Unit,
     onUpdateEblanApplicationInfo: (EblanApplicationInfo) -> Unit,
@@ -786,7 +833,7 @@ private fun SharedTransitionScope.EblanApplicationInfos(
                             isQuietModeEnabled = newIsQuiteModeEnabled
                         },
                         onUpdateOverlayBounds = onUpdateOverlayBounds,
-                        onUpdatePopupMenu = onUpdatePopupMenu,
+                        onUpdatePopupMenu = onUpdatePrivatePopupMenu,
                         onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
                     )
                 }

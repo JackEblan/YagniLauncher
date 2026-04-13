@@ -49,6 +49,7 @@ import com.eblan.launcher.domain.model.EblanApplicationInfoGroup
 import com.eblan.launcher.domain.model.EblanShortcutInfo
 import com.eblan.launcher.domain.model.EblanShortcutInfoByGroup
 import com.eblan.launcher.domain.model.GridItemSettings
+import com.eblan.launcher.feature.home.component.popup.PrivateShortcutInfoMenu
 import com.eblan.launcher.feature.home.component.popup.ShortcutInfoMenu
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
@@ -211,6 +212,126 @@ internal fun ApplicationInfoPopup(
 }
 
 @Composable
+internal fun PrivateApplicationInfoPopup(
+    modifier: Modifier = Modifier,
+    drag: Drag,
+    eblanShortcutInfosGroup: Map<EblanShortcutInfoByGroup, List<EblanShortcutInfo>>,
+    eblanApplicationInfo: EblanApplicationInfo?,
+    hasShortcutHostPermission: Boolean,
+    paddingValues: PaddingValues,
+    popupIntOffset: IntOffset,
+    popupIntSize: IntSize,
+    onDismissRequest: () -> Unit,
+    onEditApplicationInfo: (
+        serialNumber: Long,
+        componentName: String,
+    ) -> Unit,
+    onTapShortcutInfo: (
+        serialNumber: Long,
+        packageName: String,
+        shortcutId: String,
+    ) -> Unit,
+) {
+    requireNotNull(eblanApplicationInfo)
+
+    val density = LocalDensity.current
+
+    val launcherApps = LocalLauncherApps.current
+
+    val leftPadding = with(density) {
+        paddingValues.calculateStartPadding(LayoutDirection.Ltr).roundToPx()
+    }
+
+    val topPadding = with(density) {
+        paddingValues.calculateTopPadding().roundToPx()
+    }
+
+    val x = popupIntOffset.x - leftPadding
+
+    val y = popupIntOffset.y - topPadding
+
+    Layout(
+        modifier = modifier
+            .pointerInput(Unit) {
+                detectTapGestures(
+                    onPress = {
+                        awaitRelease()
+
+                        onDismissRequest()
+                    },
+                )
+            }
+            .fillMaxSize()
+            .padding(paddingValues),
+        content = {
+            PrivateApplicationInfoMenu(
+                drag = drag,
+                eblanShortcutInfosGroup = eblanShortcutInfosGroup[
+                    EblanShortcutInfoByGroup(
+                        serialNumber = eblanApplicationInfo.serialNumber,
+                        packageName = eblanApplicationInfo.packageName,
+                    ),
+                ],
+                hasShortcutHostPermission = hasShortcutHostPermission,
+                onApplicationInfo = {
+                    launcherApps.startAppDetailsActivity(
+                        serialNumber = eblanApplicationInfo.serialNumber,
+                        componentName = eblanApplicationInfo.componentName,
+                        sourceBounds = Rect(
+                            x,
+                            y,
+                            x + popupIntSize.width,
+                            y + popupIntSize.height,
+                        ),
+                    )
+
+                    onDismissRequest()
+                },
+                onEdit = {
+                    onDismissRequest()
+
+                    onEditApplicationInfo(
+                        eblanApplicationInfo.serialNumber,
+                        eblanApplicationInfo.componentName,
+                    )
+                },
+                onTapShortcutInfo = { serialNumber, packageName, shortcutId ->
+                    onTapShortcutInfo(
+                        serialNumber,
+                        packageName,
+                        shortcutId,
+                    )
+
+                    onDismissRequest()
+                },
+            )
+        },
+    ) { measurables, constraints ->
+        val placeable = measurables.first().measure(
+            constraints.copy(
+                minWidth = 0,
+                minHeight = 0,
+            ),
+        )
+
+        val parentCenterX = x + popupIntSize.width / 2
+
+        val topY = y - placeable.height
+        val bottomY = y + popupIntSize.height
+
+        val childX = parentCenterX - placeable.width / 2
+        val childY = if (topY < 0) bottomY else topY
+
+        layout(constraints.maxWidth, constraints.maxHeight) {
+            placeable.place(
+                x = childX.coerceIn(0, constraints.maxWidth - placeable.width),
+                y = childY.coerceIn(0, constraints.maxHeight - placeable.height),
+            )
+        }
+    }
+}
+
+@Composable
 private fun ApplicationInfoMenu(
     modifier: Modifier = Modifier,
     currentPage: Int,
@@ -296,6 +417,65 @@ private fun ApplicationInfoMenu(
                                 contentDescription = null,
                             )
                         }
+                    }
+                }
+            }
+        },
+    )
+}
+
+@Composable
+private fun PrivateApplicationInfoMenu(
+    modifier: Modifier = Modifier,
+    drag: Drag,
+    eblanShortcutInfosGroup: List<EblanShortcutInfo>?,
+    hasShortcutHostPermission: Boolean,
+    onApplicationInfo: () -> Unit,
+    onEdit: () -> Unit,
+    onTapShortcutInfo: (
+        serialNumber: Long,
+        packageName: String,
+        shortcutId: String,
+    ) -> Unit,
+) {
+    Surface(
+        modifier = modifier.padding(5.dp),
+        shape = RoundedCornerShape(30.dp),
+        shadowElevation = 2.dp,
+        content = {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                if (hasShortcutHostPermission &&
+                    !eblanShortcutInfosGroup.isNullOrEmpty()
+                ) {
+                    PrivateShortcutInfoMenu(
+                        modifier = modifier,
+                        drag = drag,
+                        eblanShortcutInfosGroup = eblanShortcutInfosGroup,
+                        onTapShortcutInfo = onTapShortcutInfo,
+                    )
+
+                    Spacer(modifier = Modifier.height(5.dp))
+                }
+
+                Row {
+                    IconButton(
+                        onClick = onApplicationInfo,
+                    ) {
+                        Icon(
+                            imageVector = EblanLauncherIcons.Info,
+                            contentDescription = null,
+                        )
+                    }
+
+                    IconButton(
+                        onClick = onEdit,
+                    ) {
+                        Icon(
+                            imageVector = EblanLauncherIcons.Edit,
+                            contentDescription = null,
+                        )
                     }
                 }
             }

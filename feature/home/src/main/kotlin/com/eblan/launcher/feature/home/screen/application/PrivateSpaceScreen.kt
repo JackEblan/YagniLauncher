@@ -26,7 +26,6 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -39,7 +38,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -313,35 +311,19 @@ internal fun PrivateSpaceEblanApplicationInfoItem(
         horizontalAlignment = horizontalAlignment,
         verticalArrangement = verticalArrangement,
     ) {
-        Box(
-            modifier = Modifier.size(appDrawerSettings.gridItemSettings.iconSize.dp),
-        ) {
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(eblanApplicationInfo.customIcon ?: icon)
-                    .addLastModifiedToFileCacheKey(true).build(),
-                contentDescription = null,
-                modifier = Modifier
-                    .onGloballyPositioned { layoutCoordinates ->
-                        intOffset = layoutCoordinates.positionInRoot().round()
+        AsyncImage(
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(eblanApplicationInfo.customIcon ?: icon)
+                .addLastModifiedToFileCacheKey(true).build(),
+            contentDescription = null,
+            modifier = Modifier
+                .onGloballyPositioned { layoutCoordinates ->
+                    intOffset = layoutCoordinates.positionInRoot().round()
 
-                        intSize = layoutCoordinates.size
-                    }
-                    .matchParentSize(),
-            )
-
-            ElevatedCard(
-                modifier = Modifier
-                    .size((appDrawerSettings.gridItemSettings.iconSize * 0.40).dp)
-                    .align(Alignment.BottomEnd),
-            ) {
-                Icon(
-                    imageVector = EblanLauncherIcons.Work,
-                    contentDescription = null,
-                    modifier = Modifier.padding(2.dp),
-                )
-            }
-        }
+                    intSize = layoutCoordinates.size
+                }
+                .size(appDrawerSettings.gridItemSettings.iconSize.dp),
+        )
 
         Spacer(modifier = Modifier.height(10.dp))
 

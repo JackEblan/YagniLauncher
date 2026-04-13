@@ -111,6 +111,35 @@ internal fun ShortcutInfoMenu(
     }
 }
 
+@Composable
+internal fun PrivateShortcutInfoMenu(
+    modifier: Modifier = Modifier,
+    drag: Drag,
+    eblanShortcutInfosGroup: List<EblanShortcutInfo>,
+    onTapShortcutInfo: (
+        serialNumber: Long,
+        packageName: String,
+        shortcutId: String,
+    ) -> Unit,
+) {
+    Column(
+        modifier = modifier
+            .sizeIn(
+                maxWidth = 300.dp,
+                maxHeight = 150.dp,
+            )
+            .verticalScroll(rememberScrollState()),
+    ) {
+        eblanShortcutInfosGroup.forEach { eblanShortcutInfo ->
+            PrivateShortcutInfoMenuItem(
+                drag = drag,
+                eblanShortcutInfo = eblanShortcutInfo,
+                onTapShortcutInfo = onTapShortcutInfo,
+            )
+        }
+    }
+}
+
 @OptIn(ExperimentalUuidApi::class)
 @Composable
 private fun ShortcutInfoMenuItem(
@@ -249,6 +278,48 @@ private fun ShortcutInfoMenuItem(
                     }
                     .size(30.dp),
             ) {
+                if (!isLongPress) {
+                    AsyncImage(
+                        model = eblanShortcutInfo.icon,
+                        contentDescription = null,
+                        modifier = Modifier.matchParentSize(),
+                    )
+                }
+            }
+        },
+    )
+}
+
+@OptIn(ExperimentalUuidApi::class)
+@Composable
+private fun PrivateShortcutInfoMenuItem(
+    modifier: Modifier = Modifier,
+    drag: Drag,
+    eblanShortcutInfo: EblanShortcutInfo,
+    onTapShortcutInfo: (Long, String, String) -> Unit,
+) {
+    var isLongPress by remember { mutableStateOf(false) }
+
+    LaunchedEffect(key1 = drag) {
+        if (drag == Drag.End || drag == Drag.Cancel) {
+            isLongPress = false
+        }
+    }
+
+    ListItem(
+        modifier = modifier
+            .clickable {
+                onTapShortcutInfo(
+                    eblanShortcutInfo.serialNumber,
+                    eblanShortcutInfo.packageName,
+                    eblanShortcutInfo.shortcutId,
+                )
+            },
+        headlineContent = {
+            Text(text = eblanShortcutInfo.shortLabel)
+        },
+        leadingContent = {
+            Box(modifier = Modifier.size(30.dp)) {
                 if (!isLongPress) {
                     AsyncImage(
                         model = eblanShortcutInfo.icon,
