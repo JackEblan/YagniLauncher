@@ -180,6 +180,8 @@ internal fun SharedTransitionScope.HorizontalApplicationScreen(
 
     LaunchedEffect(key1 = textFieldState) {
         snapshotFlow { textFieldState.text }.debounce(500L).onEach { text ->
+            horizontalPagerState.scrollToPage(0)
+
             onGetEblanApplicationInfosByLabel(text.toString())
 
             showPopupApplicationMenu = false
