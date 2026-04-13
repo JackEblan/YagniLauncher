@@ -15,7 +15,7 @@
  *   limitations under the License.
  *
  */
-package com.eblan.launcher.feature.home.screen.application.draganddrop
+package com.eblan.launcher.feature.home.screen.application.vertical
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
@@ -69,7 +69,6 @@ import com.eblan.launcher.domain.model.AppDrawerSettings
 import com.eblan.launcher.domain.model.EblanApplicationInfo
 import com.eblan.launcher.domain.model.EblanUserPageKey
 import com.eblan.launcher.domain.model.GetEblanApplicationInfosByLabel
-import com.eblan.launcher.feature.home.screen.application.ScrollBarThumb
 import com.eblan.launcher.feature.home.util.getHorizontalAlignment
 import com.eblan.launcher.feature.home.util.getSystemTextColor
 import com.eblan.launcher.feature.home.util.getVerticalArrangement

@@ -15,7 +15,7 @@
  *   limitations under the License.
  *
  */
-package com.eblan.launcher.feature.home.screen.application
+package com.eblan.launcher.feature.home.screen.application.vertical
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
