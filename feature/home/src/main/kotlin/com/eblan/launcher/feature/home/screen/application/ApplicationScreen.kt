@@ -125,6 +125,7 @@ import com.eblan.launcher.domain.model.EblanApplicationInfoTag
 import com.eblan.launcher.domain.model.EblanShortcutInfo
 import com.eblan.launcher.domain.model.EblanShortcutInfoByGroup
 import com.eblan.launcher.domain.model.EblanUser
+import com.eblan.launcher.domain.model.EblanUserPageKey
 import com.eblan.launcher.domain.model.EblanUserType
 import com.eblan.launcher.domain.model.GetEblanApplicationInfosByLabel
 import com.eblan.launcher.domain.model.GridItem
@@ -699,18 +700,23 @@ private fun SharedTransitionScope.EblanApplicationInfosPage(
 
     val packageManager = LocalPackageManager.current
 
-    val eblanUser = getEblanApplicationInfosByLabel.eblanApplicationInfos.keys.toList().getOrElse(
-        index = index,
-        defaultValue = {
-            EblanUser(
-                serialNumber = 0L,
-                eblanUserType = EblanUserType.Personal,
-                isPrivateSpaceEntryPointHidden = false,
-            )
-        },
-    )
+    val eblanUserPageKey =
+        getEblanApplicationInfosByLabel.eblanApplicationInfos.keys.toList().getOrElse(
+            index = index,
+            defaultValue = {
+                EblanUserPageKey(
+                    eblanUser = EblanUser(
+                        serialNumber = 0L,
+                        eblanUserType = EblanUserType.Personal,
+                        isPrivateSpaceEntryPointHidden = false,
+                    ),
+                    page = 0,
+                )
+            },
+        )
 
-    val userHandle = userManager.getUserForSerialNumber(serialNumber = eblanUser.serialNumber)
+    val userHandle =
+        userManager.getUserForSerialNumber(serialNumber = eblanUserPageKey.eblanUser.serialNumber)
 
     var isQuietModeEnabled by remember { mutableStateOf(false) }
 
@@ -721,7 +727,7 @@ private fun SharedTransitionScope.EblanApplicationInfosPage(
     }
 
     LaunchedEffect(key1 = managedProfileResult) {
-        if (managedProfileResult != null && managedProfileResult.serialNumber == eblanUser.serialNumber) {
+        if (managedProfileResult != null && managedProfileResult.serialNumber == eblanUserPageKey.eblanUser.serialNumber) {
             isQuietModeEnabled = managedProfileResult.isQuiteModeEnabled
         }
     }
@@ -741,7 +747,7 @@ private fun SharedTransitionScope.EblanApplicationInfosPage(
         } else if (isRearrangeEblanApplicationInfo && eblanApplicationInfoOrder == EblanApplicationInfoOrder.Index) {
             DragAndDropEblanApplicationInfos(
                 appDrawerSettings = appDrawerSettings,
-                eblanUser = eblanUser,
+                eblanUserPageKey = eblanUserPageKey,
                 getEblanApplicationInfosByLabel = getEblanApplicationInfosByLabel,
                 iconPackFilePaths = iconPackFilePaths,
                 paddingValues = paddingValues,
@@ -753,7 +759,7 @@ private fun SharedTransitionScope.EblanApplicationInfosPage(
                 appDrawerSettings = appDrawerSettings,
                 currentPage = currentPage,
                 drag = drag,
-                eblanUser = eblanUser,
+                eblanUserPageKey = eblanUserPageKey,
                 getEblanApplicationInfosByLabel = getEblanApplicationInfosByLabel,
                 iconPackFilePaths = iconPackFilePaths,
                 managedProfileResult = managedProfileResult,
@@ -774,7 +780,9 @@ private fun SharedTransitionScope.EblanApplicationInfosPage(
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
             )
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && packageManager.isDefaultLauncher() && eblanUser.serialNumber > 0 && userHandle != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && packageManager.isDefaultLauncher() &&
+                eblanUserPageKey.eblanUser.serialNumber > 0 && userHandle != null
+            ) {
                 FloatingActionButton(
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
@@ -862,7 +870,7 @@ private fun SharedTransitionScope.EblanApplicationInfos(
     appDrawerSettings: AppDrawerSettings,
     currentPage: Int,
     drag: Drag,
-    eblanUser: EblanUser,
+    eblanUserPageKey: EblanUserPageKey,
     getEblanApplicationInfosByLabel: GetEblanApplicationInfosByLabel,
     iconPackFilePaths: Map<String, String>,
     managedProfileResult: ManagedProfileResult?,
@@ -942,9 +950,9 @@ private fun SharedTransitionScope.EblanApplicationInfos(
                 rememberOverscrollEffect()
             },
         ) {
-            when (eblanUser.eblanUserType) {
+            when (eblanUserPageKey.eblanUser.eblanUserType) {
                 EblanUserType.Personal -> {
-                    items(getEblanApplicationInfosByLabel.eblanApplicationInfos[eblanUser].orEmpty()) { eblanApplicationInfo ->
+                    items(getEblanApplicationInfosByLabel.eblanApplicationInfos[eblanUserPageKey].orEmpty()) { eblanApplicationInfo ->
                         key(eblanApplicationInfo.serialNumber, eblanApplicationInfo.componentName) {
                             EblanApplicationInfoItem(
                                 appDrawerSettings = appDrawerSettings,
@@ -987,7 +995,7 @@ private fun SharedTransitionScope.EblanApplicationInfos(
                 }
 
                 else -> {
-                    items(getEblanApplicationInfosByLabel.eblanApplicationInfos[eblanUser].orEmpty()) { eblanApplicationInfo ->
+                    items(getEblanApplicationInfosByLabel.eblanApplicationInfos[eblanUserPageKey].orEmpty()) { eblanApplicationInfo ->
                         key(eblanApplicationInfo.serialNumber, eblanApplicationInfo.componentName) {
                             EblanApplicationInfoItem(
                                 appDrawerSettings = appDrawerSettings,
@@ -1279,7 +1287,7 @@ private fun SharedTransitionScope.EblanApplicationInfoItem(
 private fun EblanApplicationInfoTabRow(
     modifier: Modifier = Modifier,
     currentPage: Int,
-    eblanApplicationInfos: Map<EblanUser, List<EblanApplicationInfo>>,
+    eblanApplicationInfos: Map<EblanUserPageKey, List<EblanApplicationInfo>>,
     onAnimateScrollToPage: suspend (Int) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
@@ -1288,7 +1296,7 @@ private fun EblanApplicationInfoTabRow(
         modifier = modifier,
         selectedTabIndex = currentPage,
     ) {
-        eblanApplicationInfos.keys.forEachIndexed { index, eblanUser ->
+        eblanApplicationInfos.keys.forEachIndexed { index, eblanUserPageKey ->
             Tab(
                 selected = currentPage == index,
                 onClick = {
@@ -1298,7 +1306,7 @@ private fun EblanApplicationInfoTabRow(
                 },
                 text = {
                     Text(
-                        text = eblanUser.eblanUserType.name,
+                        text = eblanUserPageKey.eblanUser.eblanUserType.name,
                         maxLines = 1,
                     )
                 },

@@ -67,7 +67,7 @@ import coil3.request.addLastModifiedToFileCacheKey
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.AppDrawerSettings
 import com.eblan.launcher.domain.model.EblanApplicationInfo
-import com.eblan.launcher.domain.model.EblanUser
+import com.eblan.launcher.domain.model.EblanUserPageKey
 import com.eblan.launcher.domain.model.GetEblanApplicationInfosByLabel
 import com.eblan.launcher.feature.home.screen.application.ScrollBarThumb
 import com.eblan.launcher.feature.home.util.getHorizontalAlignment
@@ -80,7 +80,7 @@ import kotlin.uuid.ExperimentalUuidApi
 internal fun DragAndDropEblanApplicationInfos(
     modifier: Modifier = Modifier,
     appDrawerSettings: AppDrawerSettings,
-    eblanUser: EblanUser,
+    eblanUserPageKey: EblanUserPageKey,
     getEblanApplicationInfosByLabel: GetEblanApplicationInfosByLabel,
     iconPackFilePaths: Map<String, String>,
     paddingValues: PaddingValues,
@@ -90,7 +90,7 @@ internal fun DragAndDropEblanApplicationInfos(
     val lazyGridState = rememberLazyGridState()
 
     val eblanApplicationInfos =
-        getEblanApplicationInfosByLabel.eblanApplicationInfos[eblanUser].orEmpty()
+        getEblanApplicationInfosByLabel.eblanApplicationInfos[eblanUserPageKey].orEmpty()
 
     var currentEblanApplicationInfos by remember { mutableStateOf(eblanApplicationInfos) }
 
