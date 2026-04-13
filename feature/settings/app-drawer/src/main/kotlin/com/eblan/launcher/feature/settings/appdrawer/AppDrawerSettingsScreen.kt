@@ -131,7 +131,9 @@ private fun Success(
 ) {
     var showAppDrawerTypeDialog by remember { mutableStateOf(false) }
 
-    var showGridDialog by remember { mutableStateOf(false) }
+    var showVerticalGridDialog by remember { mutableStateOf(false) }
+
+    var showHorizontalGridDialog by remember { mutableStateOf(false) }
 
     var showHiddenEblanApplicationInfosDialog by remember { mutableStateOf(false) }
 
@@ -155,13 +157,29 @@ private fun Success(
                 },
             )
 
-            SettingsColumn(
-                title = "App Drawer Grid",
-                subtitle = "${appDrawerSettings.appDrawerColumns}x${appDrawerSettings.appDrawerRowsHeight}",
-                onClick = {
-                    showGridDialog = true
-                },
-            )
+            HorizontalDivider(modifier = Modifier.fillMaxWidth())
+
+            when (appDrawerSettings.appDrawerType) {
+                AppDrawerType.Vertical -> {
+                    SettingsColumn(
+                        title = "Vertical App Drawer Grid",
+                        subtitle = "${appDrawerSettings.appDrawerColumns}x${appDrawerSettings.appDrawerRowsHeight}",
+                        onClick = {
+                            showVerticalGridDialog = true
+                        },
+                    )
+                }
+
+                AppDrawerType.Horizontal -> {
+                    SettingsColumn(
+                        title = "Horizontal App Drawer Grid",
+                        subtitle = "${appDrawerSettings.horizontalAppDrawerColumns}x${appDrawerSettings.horizontalAppDrawerRows}",
+                        onClick = {
+                            showHorizontalGridDialog = true
+                        },
+                    )
+                }
+            }
 
             HorizontalDivider(modifier = Modifier.fillMaxWidth())
 
@@ -225,7 +243,7 @@ private fun Success(
     }
 
 
-    if (showGridDialog) {
+    if (showVerticalGridDialog) {
         var appDrawerColumns by remember { mutableStateOf("${appDrawerSettings.appDrawerColumns}") }
 
         var appDrawerRowsHeight by remember { mutableStateOf("${appDrawerSettings.appDrawerRowsHeight}") }
@@ -235,7 +253,7 @@ private fun Success(
         var secondTextFieldIsError by remember { mutableStateOf(false) }
 
         TwoTextFieldsDialog(
-            title = "App Drawer Grid",
+            title = "Vertical App Drawer Grid",
             firstTextFieldTitle = "Columns",
             secondTextFieldTitle = "Rows Height",
             firstTextFieldValue = appDrawerColumns,
@@ -250,32 +268,88 @@ private fun Success(
                 appDrawerRowsHeight = it
             },
             onDismissRequest = {
-                showGridDialog = false
+                showVerticalGridDialog = false
             },
             onUpdateClick = {
-                val appDrawerColumns = try {
+                val newAppDrawerColumns = try {
                     appDrawerColumns.toInt()
                 } catch (_: NumberFormatException) {
                     firstTextFieldIsError = true
                     0
                 }
 
-                val appDrawerRowsHeight = try {
+                val newAppDrawerRowsHeight = try {
                     appDrawerRowsHeight.toInt()
                 } catch (_: NumberFormatException) {
                     secondTextFieldIsError = true
                     0
                 }
 
-                if (appDrawerColumns > 0 && appDrawerRowsHeight > 0) {
+                if (newAppDrawerColumns > 0 && newAppDrawerRowsHeight > 0) {
                     onUpdateAppDrawerSettings(
                         appDrawerSettings.copy(
-                            appDrawerColumns = appDrawerColumns,
-                            appDrawerRowsHeight = appDrawerRowsHeight,
+                            appDrawerColumns = newAppDrawerColumns,
+                            appDrawerRowsHeight = newAppDrawerRowsHeight,
                         ),
                     )
 
-                    showGridDialog = false
+                    showVerticalGridDialog = false
+                }
+            },
+        )
+    }
+
+    if (showHorizontalGridDialog) {
+        var horizontalAppDrawerColumns by remember { mutableStateOf("${appDrawerSettings.horizontalAppDrawerColumns}") }
+
+        var horizontalAppDrawerRows by remember { mutableStateOf("${appDrawerSettings.horizontalAppDrawerRows}") }
+
+        var firstTextFieldIsError by remember { mutableStateOf(false) }
+
+        var secondTextFieldIsError by remember { mutableStateOf(false) }
+
+        TwoTextFieldsDialog(
+            title = "Horizontal App Drawer Grid",
+            firstTextFieldTitle = "Columns",
+            secondTextFieldTitle = "Rows",
+            firstTextFieldValue = horizontalAppDrawerColumns,
+            secondTextFieldValue = horizontalAppDrawerRows,
+            firstTextFieldIsError = firstTextFieldIsError,
+            secondTextFieldIsError = secondTextFieldIsError,
+            keyboardType = KeyboardType.Number,
+            onFirstValueChange = {
+                horizontalAppDrawerColumns = it
+            },
+            onSecondValueChange = {
+                horizontalAppDrawerRows = it
+            },
+            onDismissRequest = {
+                showHorizontalGridDialog = false
+            },
+            onUpdateClick = {
+                val newHorizontalAppDrawerColumns = try {
+                    horizontalAppDrawerColumns.toInt()
+                } catch (_: NumberFormatException) {
+                    firstTextFieldIsError = true
+                    0
+                }
+
+                val newHorizontalAppDrawerRows = try {
+                    horizontalAppDrawerRows.toInt()
+                } catch (_: NumberFormatException) {
+                    secondTextFieldIsError = true
+                    0
+                }
+
+                if (newHorizontalAppDrawerColumns > 0 && newHorizontalAppDrawerRows > 0) {
+                    onUpdateAppDrawerSettings(
+                        appDrawerSettings.copy(
+                            horizontalAppDrawerColumns = newHorizontalAppDrawerColumns,
+                            horizontalAppDrawerRows = newHorizontalAppDrawerRows,
+                        ),
+                    )
+
+                    showHorizontalGridDialog = false
                 }
             },
         )

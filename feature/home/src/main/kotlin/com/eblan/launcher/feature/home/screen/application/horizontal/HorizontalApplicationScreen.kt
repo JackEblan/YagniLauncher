@@ -8,7 +8,6 @@ import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
@@ -29,14 +28,11 @@ import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.SearchBarState
 import androidx.compose.material3.SearchBarValue
-import androidx.compose.material3.SecondaryTabRow
-import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -66,6 +62,7 @@ import com.eblan.launcher.domain.model.EblanUserPageKey
 import com.eblan.launcher.domain.model.EblanUserType
 import com.eblan.launcher.domain.model.GetEblanApplicationInfosByLabel
 import com.eblan.launcher.domain.model.ManagedProfileResult
+import com.eblan.launcher.feature.home.component.grid.HorizontalAppDrawerGridLayout
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
@@ -584,33 +581,32 @@ private fun SharedTransitionScope.EblanApplicationInfos(
     onUpdateEblanApplicationInfo: (EblanApplicationInfo) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
 ) {
-    FlowRow(
+    HorizontalAppDrawerGridLayout(
         modifier = modifier.fillMaxSize(),
-        maxItemsInEachRow = appDrawerSettings.horizontalAppDrawerColumns,
-        maxLines = appDrawerSettings.horizontalAppDrawerRows,
-    ) {
-        getEblanApplicationInfosByLabel.eblanApplicationInfos[eblanUserPageKey]?.forEach { eblanApplicationInfo ->
-            key(eblanApplicationInfo.serialNumber, eblanApplicationInfo.componentName) {
-                EblanApplicationInfoItem(
-                    appDrawerSettings = appDrawerSettings,
-                    currentPage = currentPage,
-                    drag = drag,
-                    eblanApplicationInfo = eblanApplicationInfo,
-                    iconPackFilePaths = iconPackFilePaths,
-                    paddingValues = paddingValues,
-                    isVisibleOverlay = isVisibleOverlay,
-                    onDismiss = onDismiss,
-                    onDraggingGridItem = onDraggingGridItem,
-                    onUpdateGridItemSource = onUpdateGridItemSource,
-                    onUpdateImageBitmap = onUpdateImageBitmap,
-                    onUpdateIsDragging = onUpdateIsDragging,
-                    onUpdateOverlayBounds = onUpdateOverlayBounds,
-                    onUpdatePopupMenu = onUpdatePopupMenu,
-                    onUpdateSharedElementKey = onUpdateSharedElementKey,
-                    onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
-                    onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                )
-            }
-        }
-    }
+        columns = appDrawerSettings.horizontalAppDrawerColumns,
+        eblanApplicationInfos = getEblanApplicationInfosByLabel.eblanApplicationInfos[eblanUserPageKey],
+        rows = appDrawerSettings.horizontalAppDrawerRows,
+        content = { eblanApplicationInfo ->
+            EblanApplicationInfoItem(
+                appDrawerSettings = appDrawerSettings,
+                currentPage = currentPage,
+                drag = drag,
+                eblanApplicationInfo = eblanApplicationInfo,
+                iconPackFilePaths = iconPackFilePaths,
+                paddingValues = paddingValues,
+                isVisibleOverlay = isVisibleOverlay,
+                appDrawerType = appDrawerSettings.appDrawerType,
+                onDismiss = onDismiss,
+                onDraggingGridItem = onDraggingGridItem,
+                onUpdateGridItemSource = onUpdateGridItemSource,
+                onUpdateImageBitmap = onUpdateImageBitmap,
+                onUpdateIsDragging = onUpdateIsDragging,
+                onUpdateOverlayBounds = onUpdateOverlayBounds,
+                onUpdatePopupMenu = onUpdatePopupMenu,
+                onUpdateSharedElementKey = onUpdateSharedElementKey,
+                onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
+                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+            )
+        },
+    )
 }

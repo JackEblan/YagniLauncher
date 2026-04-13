@@ -324,6 +324,7 @@ internal fun SharedTransitionScope.EblanApplicationInfoItem(
     iconPackFilePaths: Map<String, String>,
     paddingValues: PaddingValues,
     isVisibleOverlay: Boolean,
+    appDrawerType: AppDrawerType,
     onDismiss: () -> Unit,
     onDraggingGridItem: () -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
@@ -496,7 +497,17 @@ internal fun SharedTransitionScope.EblanApplicationInfoItem(
                     },
                 )
             }
-            .height(appDrawerRowsHeight)
+            .run {
+                when (appDrawerType) {
+                    AppDrawerType.Vertical -> {
+                        height(appDrawerRowsHeight)
+                    }
+
+                    AppDrawerType.Horizontal -> {
+                        fillMaxSize()
+                    }
+                }
+            }
             .padding(appDrawerSettings.gridItemSettings.padding.dp)
             .background(
                 color = Color(appDrawerSettings.gridItemSettings.customBackgroundColor),
