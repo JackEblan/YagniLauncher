@@ -327,14 +327,26 @@ private fun Success(
             },
             onUpdateClick = {
                 val newHorizontalAppDrawerColumns = try {
-                    horizontalAppDrawerColumns.toInt()
+                    if (horizontalAppDrawerColumns.toInt() > 2) {
+                        firstTextFieldIsError = false
+                        horizontalAppDrawerColumns.toInt()
+                    } else {
+                        firstTextFieldIsError = true
+                        0
+                    }
                 } catch (_: NumberFormatException) {
                     firstTextFieldIsError = true
                     0
                 }
 
                 val newHorizontalAppDrawerRows = try {
-                    horizontalAppDrawerRows.toInt()
+                    if (horizontalAppDrawerRows.toInt() > 2) {
+                        secondTextFieldIsError = false
+                        horizontalAppDrawerRows.toInt()
+                    } else {
+                        secondTextFieldIsError = true
+                        0
+                    }
                 } catch (_: NumberFormatException) {
                     secondTextFieldIsError = true
                     0
