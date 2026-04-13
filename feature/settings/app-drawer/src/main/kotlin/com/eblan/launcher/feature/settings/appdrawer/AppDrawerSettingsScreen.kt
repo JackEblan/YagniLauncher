@@ -44,9 +44,11 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.AppDrawerSettings
+import com.eblan.launcher.domain.model.AppDrawerType
 import com.eblan.launcher.domain.model.EblanApplicationInfo
 import com.eblan.launcher.feature.settings.appdrawer.dialog.HiddenEblanApplicationInfosDialog
 import com.eblan.launcher.feature.settings.appdrawer.model.AppDrawerSettingsUiState
+import com.eblan.launcher.ui.dialog.RadioOptionsDialog
 import com.eblan.launcher.ui.dialog.TextColorDialog
 import com.eblan.launcher.ui.dialog.TwoTextFieldsDialog
 import com.eblan.launcher.ui.settings.GridItemSettings
@@ -127,6 +129,8 @@ private fun Success(
     onUpdateAppDrawerSettings: (AppDrawerSettings) -> Unit,
     onUpdateEblanApplicationInfo: (EblanApplicationInfo) -> Unit,
 ) {
+    var showAppDrawerTypeDialog by remember { mutableStateOf(false) }
+
     var showGridDialog by remember { mutableStateOf(false) }
 
     var showHiddenEblanApplicationInfosDialog by remember { mutableStateOf(false) }
@@ -143,6 +147,14 @@ private fun Success(
                 .fillMaxWidth()
                 .padding(horizontal = 15.dp),
         ) {
+            SettingsColumn(
+                title = "App Drawer Type",
+                subtitle = appDrawerSettings.appDrawerType.name,
+                onClick = {
+                    showAppDrawerTypeDialog = true
+                },
+            )
+
             SettingsColumn(
                 title = "App Drawer Grid",
                 subtitle = "${appDrawerSettings.appDrawerColumns}x${appDrawerSettings.appDrawerRowsHeight}",
@@ -192,6 +204,26 @@ private fun Success(
             },
         )
     }
+
+    if (showAppDrawerTypeDialog) {
+        RadioOptionsDialog(
+            title = "App drawer Type",
+            options = AppDrawerType.entries,
+            selected = appDrawerSettings.appDrawerType,
+            label = {
+                it.name
+            },
+            onDismissRequest = {
+                showAppDrawerTypeDialog = false
+            },
+            onUpdateClick = { appDrawerType ->
+                onUpdateAppDrawerSettings(appDrawerSettings.copy(appDrawerType = appDrawerType))
+
+                showAppDrawerTypeDialog = false
+            },
+        )
+    }
+
 
     if (showGridDialog) {
         var appDrawerColumns by remember { mutableStateOf("${appDrawerSettings.appDrawerColumns}") }
