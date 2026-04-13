@@ -2,6 +2,7 @@ syntax = "proto3";
 
 import "com/eblan/launcher/data/datastore/proto/home/grid_item_settings.proto";
 import "com/eblan/launcher/data/datastore/proto/appdrawer/eblan_application_info_order.proto";
+import "com/eblan/launcher/data/datastore/proto/appdrawer/app_drawer_type.proto";
 import "com/eblan/launcher/data/datastore/proto/home/text_color.proto";
 
 option java_package = "com.eblan.launcher.data.datastore.proto.appdrawer";
@@ -15,4 +16,7 @@ message AppDrawerSettingsProto {
   TextColorProto backgroundColor = 5;
   int32 customBackgroundColor = 6;
   bool showKeyboard = 7;
+  AppDrawerTypeProto AppDrawerTypeProto = 8;
+  int32 horizontalAppDrawerColumns = 9;
+  int32 horizontalAppDrawerRows = 10;
 }

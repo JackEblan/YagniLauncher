@@ -25,4 +25,7 @@ data class AppDrawerSettings(
     val backgroundColor: TextColor,
     val customBackgroundColor: Int,
     val showKeyboard: Boolean,
+    val appDrawerType: AppDrawerType,
+    val horizontalAppDrawerColumns: Int,
+    val horizontalAppDrawerRows: Int,
 )
