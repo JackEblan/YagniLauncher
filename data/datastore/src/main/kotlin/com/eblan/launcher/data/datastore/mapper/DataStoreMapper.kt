@@ -18,6 +18,7 @@
 package com.eblan.launcher.data.datastore.mapper
 
 import com.eblan.launcher.data.datastore.proto.appdrawer.AppDrawerSettingsProto
+import com.eblan.launcher.data.datastore.proto.appdrawer.AppDrawerTypeProto
 import com.eblan.launcher.data.datastore.proto.appdrawer.EblanApplicationInfoOrderProto
 import com.eblan.launcher.data.datastore.proto.experimental.ExperimentalSettingsProto
 import com.eblan.launcher.data.datastore.proto.general.GeneralSettingsProto
@@ -31,6 +32,7 @@ import com.eblan.launcher.data.datastore.proto.home.HorizontalAlignmentProto
 import com.eblan.launcher.data.datastore.proto.home.TextColorProto
 import com.eblan.launcher.data.datastore.proto.home.VerticalArrangementProto
 import com.eblan.launcher.domain.model.AppDrawerSettings
+import com.eblan.launcher.domain.model.AppDrawerType
 import com.eblan.launcher.domain.model.EblanAction
 import com.eblan.launcher.domain.model.EblanActionType
 import com.eblan.launcher.domain.model.EblanApplicationInfoOrder
@@ -69,6 +71,9 @@ internal fun AppDrawerSettingsProto.toAppDrawerSettings(): AppDrawerSettings = A
     backgroundColor = backgroundColor.toTextColor(),
     customBackgroundColor = customBackgroundColor,
     showKeyboard = showKeyboard,
+    appDrawerType = appDrawerTypeProto.toAppDrawerType(),
+    horizontalAppDrawerColumns = horizontalAppDrawerColumns,
+    horizontalAppDrawerRows = horizontalAppDrawerRows,
 )
 
 internal fun GridItemSettingsProto.toGridItemSettings(): GridItemSettings = GridItemSettings(
@@ -113,6 +118,9 @@ internal fun AppDrawerSettings.toAppDrawerSettingsProto(): AppDrawerSettingsProt
     .setBackgroundColor(backgroundColor.toTextColorProto())
     .setCustomBackgroundColor(customBackgroundColor)
     .setShowKeyboard(showKeyboard)
+    .setAppDrawerTypeProto(appDrawerType.toAppDrawerTypeProto())
+    .setHorizontalAppDrawerColumns(horizontalAppDrawerColumns)
+    .setHorizontalAppDrawerRows(horizontalAppDrawerRows)
     .build()
 
 internal fun GeneralSettings.toGeneralSettingsProto(): GeneralSettingsProto = GeneralSettingsProto.newBuilder().setThemeProto(theme.toThemeProto())
@@ -225,4 +233,16 @@ private fun VerticalArrangementProto.toVerticalArrangement(): VerticalArrangemen
     VerticalArrangementProto.Top -> VerticalArrangement.Top
     VerticalArrangementProto.Center, VerticalArrangementProto.UNRECOGNIZED -> VerticalArrangement.Center
     VerticalArrangementProto.Bottom -> VerticalArrangement.Bottom
+}
+
+private fun AppDrawerType.toAppDrawerTypeProto(): AppDrawerTypeProto = when (this) {
+    AppDrawerType.Vertical -> AppDrawerTypeProto.Vertical
+    AppDrawerType.Horizontal -> AppDrawerTypeProto.Horizontal
+    AppDrawerType.List -> AppDrawerTypeProto.List
+}
+
+private fun AppDrawerTypeProto.toAppDrawerType(): AppDrawerType = when (this) {
+    AppDrawerTypeProto.Vertical, AppDrawerTypeProto.UNRECOGNIZED -> AppDrawerType.Vertical
+    AppDrawerTypeProto.Horizontal -> AppDrawerType.Horizontal
+    AppDrawerTypeProto.List -> AppDrawerType.List
 }

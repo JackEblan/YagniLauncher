@@ -17,20 +17,8 @@
  */
 package com.eblan.launcher.domain.model
 
-data class EblanUser(
-    val serialNumber: Long,
-    val eblanUserType: EblanUserType,
-    val isPrivateSpaceEntryPointHidden: Boolean,
-)
-
-enum class EblanUserType {
-    Personal,
-    Clone,
-    Work,
-    Private,
+enum class AppDrawerType {
+    Vertical,
+    Horizontal,
+    List,
 }
-
-data class EblanUserPageKey(
-    val eblanUser: EblanUser,
-    val page: Int,
-)

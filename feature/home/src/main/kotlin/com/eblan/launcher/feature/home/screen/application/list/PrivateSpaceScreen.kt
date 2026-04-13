@@ -15,33 +15,25 @@
  *   limitations under the License.
  *
  */
-package com.eblan.launcher.feature.home.screen.application
+package com.eblan.launcher.feature.home.screen.application.list
 
 import android.graphics.Rect
-import android.os.Build
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.IntentSenderRequest
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.calculateStartPadding
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.grid.LazyGridScope
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -74,15 +66,12 @@ import com.eblan.launcher.domain.model.EblanApplicationInfo
 import com.eblan.launcher.domain.model.EblanUser
 import com.eblan.launcher.domain.model.ManagedProfileResult
 import com.eblan.launcher.feature.home.model.Drag
-import com.eblan.launcher.feature.home.util.getHorizontalAlignment
+import com.eblan.launcher.feature.home.screen.application.PrivateSpaceStickyHeader
 import com.eblan.launcher.feature.home.util.getSystemTextColor
-import com.eblan.launcher.feature.home.util.getVerticalArrangement
 import com.eblan.launcher.ui.local.LocalLauncherApps
-import com.eblan.launcher.ui.local.LocalPackageManager
-import com.eblan.launcher.ui.local.LocalUserManager
 import kotlin.uuid.ExperimentalUuidApi
 
-internal fun LazyGridScope.privateSpace(
+internal fun LazyListScope.privateSpace(
     appDrawerSettings: AppDrawerSettings,
     drag: Drag,
     iconPackFilePaths: Map<String, String>,
@@ -126,96 +115,9 @@ internal fun LazyGridScope.privateSpace(
     }
 }
 
-@Composable
-internal fun PrivateSpaceStickyHeader(
-    modifier: Modifier = Modifier,
-    isQuietModeEnabled: Boolean,
-    managedProfileResult: ManagedProfileResult?,
-    privateEblanUser: EblanUser?,
-    onUpdateIsQuietModeEnabled: (Boolean) -> Unit,
-) {
-    if (privateEblanUser == null) return
-
-    val userManager = LocalUserManager.current
-
-    val packageManager = LocalPackageManager.current
-
-    val launcherApps = LocalLauncherApps.current
-
-    val userHandle =
-        userManager.getUserForSerialNumber(serialNumber = privateEblanUser.serialNumber)
-
-    val privateSpaceLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartIntentSenderForResult(),
-    ) {}
-
-    LaunchedEffect(key1 = userHandle) {
-        if (userHandle != null) {
-            onUpdateIsQuietModeEnabled(userManager.isQuietModeEnabled(userHandle = userHandle))
-        }
-    }
-
-    LaunchedEffect(key1 = managedProfileResult) {
-        if (managedProfileResult != null && managedProfileResult.serialNumber == privateEblanUser.serialNumber) {
-            onUpdateIsQuietModeEnabled(managedProfileResult.isQuiteModeEnabled)
-        }
-    }
-
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(20.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Text(
-            text = "Private",
-        )
-
-        Row {
-            launcherApps.getPrivateSpaceSettingsIntent()?.let { intentSender ->
-                IconButton(
-                    onClick = {
-                        privateSpaceLauncher.launch(
-                            IntentSenderRequest.Builder(intentSender).build(),
-                        )
-                    },
-                ) {
-                    Icon(
-                        imageVector = EblanLauncherIcons.Settings,
-                        contentDescription = null,
-                    )
-                }
-            }
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && packageManager.isDefaultLauncher() && userHandle != null) {
-                IconButton(
-                    onClick = {
-                        userManager.requestQuietModeEnabled(
-                            enableQuiteMode = !isQuietModeEnabled,
-                            userHandle = userHandle,
-                        )
-
-                        onUpdateIsQuietModeEnabled(userManager.isQuietModeEnabled(userHandle))
-                    },
-                ) {
-                    Icon(
-                        imageVector = if (isQuietModeEnabled) {
-                            EblanLauncherIcons.Lock
-                        } else {
-                            EblanLauncherIcons.LockOpen
-                        },
-                        contentDescription = null,
-                    )
-                }
-            }
-        }
-    }
-}
-
 @OptIn(ExperimentalUuidApi::class, ExperimentalSharedTransitionApi::class)
 @Composable
-internal fun PrivateSpaceEblanApplicationInfoItem(
+private fun PrivateSpaceEblanApplicationInfoItem(
     modifier: Modifier = Modifier,
     appDrawerSettings: AppDrawerSettings,
     drag: Drag,
@@ -248,12 +150,6 @@ internal fun PrivateSpaceEblanApplicationInfoItem(
 
     val icon = iconPackFilePaths[eblanApplicationInfo.componentName] ?: eblanApplicationInfo.icon
 
-    val horizontalAlignment =
-        getHorizontalAlignment(horizontalAlignment = appDrawerSettings.gridItemSettings.horizontalAlignment)
-
-    val verticalArrangement =
-        getVerticalArrangement(verticalArrangement = appDrawerSettings.gridItemSettings.verticalArrangement)
-
     val leftPadding = with(density) {
         paddingValues.calculateStartPadding(LayoutDirection.Ltr).roundToPx()
     }
@@ -270,7 +166,7 @@ internal fun PrivateSpaceEblanApplicationInfoItem(
         }
     }
 
-    Column(
+    Row(
         modifier = modifier
             .pointerInput(key1 = drag) {
                 detectTapGestures(
@@ -310,8 +206,7 @@ internal fun PrivateSpaceEblanApplicationInfoItem(
                 color = Color(appDrawerSettings.gridItemSettings.customBackgroundColor),
                 shape = RoundedCornerShape(size = appDrawerSettings.gridItemSettings.cornerRadius.dp),
             ),
-        horizontalAlignment = horizontalAlignment,
-        verticalArrangement = verticalArrangement,
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(
             modifier = Modifier.size(appDrawerSettings.gridItemSettings.iconSize.dp),

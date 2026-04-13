@@ -28,6 +28,7 @@ import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Density
 import com.eblan.launcher.domain.model.ApplicationInfoGridItem
+import com.eblan.launcher.domain.model.EblanApplicationInfo
 import com.eblan.launcher.domain.model.GridItem
 
 @Composable
@@ -120,6 +121,54 @@ internal fun FolderGridLayout(
                         ),
                     ) {
                         content(gridItem)
+                    }
+                }.forEach { measurable ->
+                    val parentData = measurable.parentData as GridItemParentData
+
+                    measurable.measure(
+                        Constraints.fixed(
+                            width = parentData.width,
+                            height = parentData.height,
+                        ),
+                    ).placeRelative(
+                        x = parentData.x,
+                        y = parentData.y,
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+internal fun HorizontalAppDrawerGridLayout(
+    modifier: Modifier = Modifier,
+    columns: Int,
+    eblanApplicationInfos: List<EblanApplicationInfo>?,
+    rows: Int,
+    content: @Composable BoxScope.(EblanApplicationInfo) -> Unit,
+) {
+    SubcomposeLayout(modifier = modifier) { constraints ->
+        val cellWidth = constraints.maxWidth / columns
+
+        val cellHeight = constraints.maxHeight / rows
+
+        layout(constraints.maxWidth, constraints.maxHeight) {
+            eblanApplicationInfos?.forEachIndexed { index, eblanApplicationInfo ->
+                val row = index / columns
+
+                val column = index % columns
+
+                subcompose(eblanApplicationInfo.serialNumber to eblanApplicationInfo.componentName) {
+                    Box(
+                        modifier = Modifier.gridItem(
+                            width = cellWidth,
+                            height = cellHeight,
+                            x = column * cellWidth,
+                            y = row * cellHeight,
+                        ),
+                    ) {
+                        content(eblanApplicationInfo)
                     }
                 }.forEach { measurable ->
                     val parentData = measurable.parentData as GridItemParentData
