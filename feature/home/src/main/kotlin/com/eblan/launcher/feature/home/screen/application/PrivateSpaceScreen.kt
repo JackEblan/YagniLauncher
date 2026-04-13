@@ -215,7 +215,7 @@ internal fun PrivateSpaceStickyHeader(
 
 @OptIn(ExperimentalUuidApi::class, ExperimentalSharedTransitionApi::class)
 @Composable
-private fun PrivateSpaceEblanApplicationInfoItem(
+internal fun PrivateSpaceEblanApplicationInfoItem(
     modifier: Modifier = Modifier,
     appDrawerSettings: AppDrawerSettings,
     drag: Drag,

@@ -242,7 +242,6 @@ private fun Success(
         )
     }
 
-
     if (showVerticalGridDialog) {
         var appDrawerColumns by remember { mutableStateOf("${appDrawerSettings.appDrawerColumns}") }
 

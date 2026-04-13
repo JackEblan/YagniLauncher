@@ -188,7 +188,6 @@ internal fun HorizontalAppDrawerGridLayout(
     }
 }
 
-
 private data class GridItemParentData(
     val width: Int,
     val height: Int,

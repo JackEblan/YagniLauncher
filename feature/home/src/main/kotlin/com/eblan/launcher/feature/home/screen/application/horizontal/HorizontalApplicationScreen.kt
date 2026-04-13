@@ -1,3 +1,20 @@
+/*
+ *
+ *   Copyright 2023 Einstein Blanco
+ *
+ *   Licensed under the GNU General Public License v3.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
+ *
+ *       https://www.gnu.org/licenses/gpl-3.0
+ *
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
+ *
+ */
 package com.eblan.launcher.feature.home.screen.application.horizontal
 
 import android.graphics.Rect
@@ -5,6 +22,7 @@ import android.os.Build
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -43,6 +61,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.IntOffset
@@ -69,6 +88,7 @@ import com.eblan.launcher.feature.home.model.SharedElementKey
 import com.eblan.launcher.feature.home.screen.application.ApplicationInfoPopup
 import com.eblan.launcher.feature.home.screen.application.EblanApplicationInfoItem
 import com.eblan.launcher.feature.home.screen.application.EblanApplicationInfoTabRow
+import com.eblan.launcher.feature.home.screen.application.PrivateSpaceEblanApplicationInfoItem
 import com.eblan.launcher.feature.home.screen.application.QuiteModeScreen
 import com.eblan.launcher.feature.home.screen.application.TagElevatedFilterChip
 import com.eblan.launcher.ui.local.LocalLauncherApps
@@ -515,6 +535,7 @@ private fun SharedTransitionScope.EblanApplicationInfosPage(
                 paddingValues = paddingValues,
                 isVisibleOverlay = isVisibleOverlay,
                 onDismiss = onDismiss,
+                onDragEnd = onDragEnd,
                 onDraggingGridItem = onDraggingGridItem,
                 onUpdateGridItemSource = onUpdateGridItemSource,
                 onUpdateImageBitmap = onUpdateImageBitmap,
@@ -522,6 +543,7 @@ private fun SharedTransitionScope.EblanApplicationInfosPage(
                 onUpdateOverlayBounds = onUpdateOverlayBounds,
                 onUpdatePopupMenu = onUpdatePopupMenu,
                 onUpdateSharedElementKey = onUpdateSharedElementKey,
+                onVerticalDrag = onVerticalDrag,
                 onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
             )
@@ -568,6 +590,7 @@ private fun SharedTransitionScope.EblanApplicationInfos(
     paddingValues: PaddingValues,
     isVisibleOverlay: Boolean,
     onDismiss: () -> Unit,
+    onDragEnd: (Float) -> Unit,
     onDraggingGridItem: () -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
@@ -578,35 +601,67 @@ private fun SharedTransitionScope.EblanApplicationInfos(
     ) -> Unit,
     onUpdatePopupMenu: (Boolean) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
+    onVerticalDrag: (Float) -> Unit,
     onUpdateEblanApplicationInfo: (EblanApplicationInfo) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
 ) {
     HorizontalAppDrawerGridLayout(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier
+            .pointerInput(key1 = Unit) {
+                detectVerticalDragGestures(
+                    onVerticalDrag = { _, dragAmount ->
+                        onVerticalDrag(dragAmount)
+                    },
+                    onDragEnd = {
+                        onDragEnd(0f)
+                    },
+                )
+            }
+            .fillMaxSize(),
         columns = appDrawerSettings.horizontalAppDrawerColumns,
         eblanApplicationInfos = getEblanApplicationInfosByLabel.eblanApplicationInfos[eblanUserPageKey],
         rows = appDrawerSettings.horizontalAppDrawerRows,
         content = { eblanApplicationInfo ->
-            EblanApplicationInfoItem(
-                appDrawerSettings = appDrawerSettings,
-                currentPage = currentPage,
-                drag = drag,
-                eblanApplicationInfo = eblanApplicationInfo,
-                iconPackFilePaths = iconPackFilePaths,
-                paddingValues = paddingValues,
-                isVisibleOverlay = isVisibleOverlay,
-                appDrawerType = appDrawerSettings.appDrawerType,
-                onDismiss = onDismiss,
-                onDraggingGridItem = onDraggingGridItem,
-                onUpdateGridItemSource = onUpdateGridItemSource,
-                onUpdateImageBitmap = onUpdateImageBitmap,
-                onUpdateIsDragging = onUpdateIsDragging,
-                onUpdateOverlayBounds = onUpdateOverlayBounds,
-                onUpdatePopupMenu = onUpdatePopupMenu,
-                onUpdateSharedElementKey = onUpdateSharedElementKey,
-                onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
-                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-            )
+            when (eblanUserPageKey.eblanUser.eblanUserType) {
+                EblanUserType.Personal,
+                EblanUserType.Clone,
+                EblanUserType.Work,
+                -> {
+                    EblanApplicationInfoItem(
+                        appDrawerSettings = appDrawerSettings,
+                        currentPage = currentPage,
+                        drag = drag,
+                        eblanApplicationInfo = eblanApplicationInfo,
+                        iconPackFilePaths = iconPackFilePaths,
+                        paddingValues = paddingValues,
+                        isVisibleOverlay = isVisibleOverlay,
+                        appDrawerType = appDrawerSettings.appDrawerType,
+                        onDismiss = onDismiss,
+                        onDraggingGridItem = onDraggingGridItem,
+                        onUpdateGridItemSource = onUpdateGridItemSource,
+                        onUpdateImageBitmap = onUpdateImageBitmap,
+                        onUpdateIsDragging = onUpdateIsDragging,
+                        onUpdateOverlayBounds = onUpdateOverlayBounds,
+                        onUpdatePopupMenu = onUpdatePopupMenu,
+                        onUpdateSharedElementKey = onUpdateSharedElementKey,
+                        onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
+                        onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                    )
+                }
+
+                EblanUserType.Private -> {
+                    PrivateSpaceEblanApplicationInfoItem(
+                        appDrawerSettings = appDrawerSettings,
+                        drag = drag,
+                        eblanApplicationInfo = eblanApplicationInfo,
+                        iconPackFilePaths = iconPackFilePaths,
+                        paddingValues = paddingValues,
+                        onUpdateOverlayBounds = onUpdateOverlayBounds,
+                        onUpdatePopupMenu = onUpdatePopupMenu,
+                        onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
+                    )
+                }
+            }
         },
     )
 }

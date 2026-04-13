@@ -32,5 +32,5 @@ enum class EblanUserType {
 
 data class EblanUserPageKey(
     val eblanUser: EblanUser,
-    val page: Int
+    val page: Int,
 )
