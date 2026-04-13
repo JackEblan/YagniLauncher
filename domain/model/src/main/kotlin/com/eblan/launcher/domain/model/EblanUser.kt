@@ -29,3 +29,8 @@ enum class EblanUserType {
     Work,
     Private,
 }
+
+data class EblanUserPageKey(
+    val eblanUser: EblanUser,
+    val page: Int
+)

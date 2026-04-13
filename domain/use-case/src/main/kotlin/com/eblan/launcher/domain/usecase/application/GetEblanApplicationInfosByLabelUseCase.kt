@@ -20,10 +20,13 @@ package com.eblan.launcher.domain.usecase.application
 import com.eblan.launcher.domain.common.Dispatcher
 import com.eblan.launcher.domain.common.EblanDispatchers
 import com.eblan.launcher.domain.framework.LauncherAppsWrapper
+import com.eblan.launcher.domain.model.AppDrawerType
 import com.eblan.launcher.domain.model.EblanApplicationInfo
 import com.eblan.launcher.domain.model.EblanApplicationInfoOrder
+import com.eblan.launcher.domain.model.EblanUserPageKey
 import com.eblan.launcher.domain.model.EblanUserType
 import com.eblan.launcher.domain.model.GetEblanApplicationInfosByLabel
+import com.eblan.launcher.domain.model.UserData
 import com.eblan.launcher.domain.repository.EblanApplicationInfoRepository
 import com.eblan.launcher.domain.repository.UserDataRepository
 import kotlinx.coroutines.CoroutineDispatcher
@@ -71,20 +74,86 @@ class GetEblanApplicationInfosByLabelUseCase @Inject constructor(
                 eblanApplicationInfos = eblanApplicationInfosByLabel,
             )
 
-            val groupedEblanApplicationInfos = eblanApplicationInfosByLabel.groupBy {
-                launcherAppsWrapper.getUser(serialNumber = it.serialNumber)
-            }.toSortedMap(nullsLast(compareBy { it.serialNumber }))
+            when (val appDrawerType = userData.appDrawerSettings.appDrawerType) {
+                AppDrawerType.Vertical -> {
+                    getVerticalEblanApplicationInfosByLabel(
+                        eblanApplicationInfos = eblanApplicationInfosByLabel,
+                        userData = userData,
+                        appDrawerType = appDrawerType,
+                    )
+                }
 
-            val privateEblanUser = groupedEblanApplicationInfos.keys.firstOrNull {
-                it.eblanUserType == EblanUserType.Private
+                AppDrawerType.Horizontal -> {
+                    getHorizontalEblanApplicationInfosByLabel(
+                        userData = userData,
+                        eblanApplicationInfosByLabel = eblanApplicationInfosByLabel,
+                        appDrawerType = appDrawerType,
+                    )
+                }
             }
-
-            GetEblanApplicationInfosByLabel(
-                eblanApplicationInfos = groupedEblanApplicationInfos.filterKeys { eblanUser -> eblanUser != privateEblanUser },
-                privateEblanUser = privateEblanUser,
-                privateEblanApplicationInfos = groupedEblanApplicationInfos[privateEblanUser].orEmpty(),
-            )
         }.flowOn(defaultDispatcher)
+    }
+
+    private fun getVerticalEblanApplicationInfosByLabel(
+        userData: UserData,
+        eblanApplicationInfos: MutableList<EblanApplicationInfo>,
+        appDrawerType: AppDrawerType,
+    ): GetEblanApplicationInfosByLabel {
+        updateEblanApplicationInfoIndexes(
+            eblanApplicationInfoOrder = userData.appDrawerSettings.eblanApplicationInfoOrder,
+            eblanApplicationInfos = eblanApplicationInfos,
+        )
+
+        val groupedEblanApplicationInfos = eblanApplicationInfos.groupBy {
+            EblanUserPageKey(
+                eblanUser = launcherAppsWrapper.getUser(serialNumber = it.serialNumber),
+                page = 0,
+            )
+        }.toSortedMap(nullsLast(compareBy { it.eblanUser.serialNumber }))
+
+        val privateEblanUserPageKey = groupedEblanApplicationInfos.keys.firstOrNull {
+            it.eblanUser.eblanUserType == EblanUserType.Private
+        }
+
+        return GetEblanApplicationInfosByLabel(
+            eblanApplicationInfos = groupedEblanApplicationInfos.filterKeys { eblanUser -> eblanUser != privateEblanUserPageKey },
+            privateEblanUser = privateEblanUserPageKey?.eblanUser,
+            privateEblanApplicationInfos = groupedEblanApplicationInfos[privateEblanUserPageKey].orEmpty(),
+            appDrawerType = appDrawerType,
+        )
+    }
+
+    private fun getHorizontalEblanApplicationInfosByLabel(
+        userData: UserData,
+        eblanApplicationInfosByLabel: MutableList<EblanApplicationInfo>,
+        appDrawerType: AppDrawerType,
+    ): GetEblanApplicationInfosByLabel {
+        val pageSize =
+            userData.appDrawerSettings.horizontalAppDrawerColumns *
+                    userData.appDrawerSettings.horizontalAppDrawerRows
+
+        val groupedEblanApplicationInfos =
+            eblanApplicationInfosByLabel
+                .groupBy { app ->
+                    launcherAppsWrapper.getUser(serialNumber = app.serialNumber)
+                }
+                .flatMap { (eblanUser, eblanApplicationInfos) ->
+                    eblanApplicationInfos.chunked(pageSize)
+                        .mapIndexed { index, pageApps ->
+                            EblanUserPageKey(
+                                eblanUser = eblanUser,
+                                page = index,
+                            ) to pageApps
+                        }
+                }
+                .toMap()
+
+        return GetEblanApplicationInfosByLabel(
+            eblanApplicationInfos = groupedEblanApplicationInfos,
+            privateEblanUser = null,
+            privateEblanApplicationInfos = emptyList(),
+            appDrawerType = appDrawerType,
+        )
     }
 
     private fun updateEblanApplicationInfoIndexes(
