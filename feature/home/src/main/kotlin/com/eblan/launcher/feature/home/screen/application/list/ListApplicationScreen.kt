@@ -15,17 +15,21 @@
  *   limitations under the License.
  *
  */
-package com.eblan.launcher.feature.home.screen.application.vertical
+package com.eblan.launcher.feature.home.screen.application.list
 
 import android.graphics.Rect
 import android.os.Build
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
@@ -34,15 +38,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberOverscrollEffect
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.clearText
 import androidx.compose.foundation.text.input.rememberTextFieldState
@@ -68,18 +73,37 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.layer.drawLayer
+import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInRoot
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.round
+import androidx.compose.ui.unit.sp
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.addLastModifiedToFileCacheKey
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.AppDrawerSettings
+import com.eblan.launcher.domain.model.Associate
+import com.eblan.launcher.domain.model.EblanAction
+import com.eblan.launcher.domain.model.EblanActionType
 import com.eblan.launcher.domain.model.EblanAppWidgetProviderInfo
 import com.eblan.launcher.domain.model.EblanApplicationInfo
 import com.eblan.launcher.domain.model.EblanApplicationInfoGroup
@@ -91,6 +115,8 @@ import com.eblan.launcher.domain.model.EblanUser
 import com.eblan.launcher.domain.model.EblanUserPageKey
 import com.eblan.launcher.domain.model.EblanUserType
 import com.eblan.launcher.domain.model.GetEblanApplicationInfosByLabel
+import com.eblan.launcher.domain.model.GridItem
+import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.ManagedProfileResult
 import com.eblan.launcher.feature.home.component.scroll.OffsetNestedScrollConnection
 import com.eblan.launcher.feature.home.component.scroll.OffsetOverscrollEffect
@@ -99,11 +125,11 @@ import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
 import com.eblan.launcher.feature.home.screen.application.ApplicationInfoPopup
-import com.eblan.launcher.feature.home.screen.application.EblanApplicationInfoItem
 import com.eblan.launcher.feature.home.screen.application.EblanApplicationInfoTabRow
 import com.eblan.launcher.feature.home.screen.application.QuiteModeScreen
 import com.eblan.launcher.feature.home.screen.application.TagElevatedFilterChip
-import com.eblan.launcher.feature.home.screen.application.privateSpace
+import com.eblan.launcher.feature.home.screen.application.vertical.DragAndDropEblanApplicationInfos
+import com.eblan.launcher.feature.home.util.getSystemTextColor
 import com.eblan.launcher.ui.local.LocalLauncherApps
 import com.eblan.launcher.ui.local.LocalPackageManager
 import com.eblan.launcher.ui.local.LocalUserManager
@@ -113,10 +139,12 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class, FlowPreview::class)
 @Composable
-internal fun SharedTransitionScope.VerticalApplicationScreen(
+internal fun SharedTransitionScope.ListApplicationScreen(
     modifier: Modifier = Modifier,
     appDrawerSettings: AppDrawerSettings,
     currentPage: Int,
@@ -699,11 +727,11 @@ private fun SharedTransitionScope.EblanApplicationInfos(
         )
     }
 
-    val lazyGridState = rememberLazyGridState()
+    val lazyListState = rememberLazyListState()
 
-    val canScroll by remember(key1 = lazyGridState) {
+    val canScroll by remember(key1 = lazyListState) {
         derivedStateOf {
-            lazyGridState.canScrollForward || lazyGridState.canScrollBackward
+            lazyListState.canScrollForward || lazyListState.canScrollBackward
         }
     }
 
@@ -716,8 +744,8 @@ private fun SharedTransitionScope.EblanApplicationInfos(
 
     var isQuietModeEnabled by remember { mutableStateOf(false) }
 
-    LaunchedEffect(key1 = lazyGridState.isScrollInProgress) {
-        if (lazyGridState.isScrollInProgress && showPopupApplicationMenu) {
+    LaunchedEffect(key1 = lazyListState.isScrollInProgress) {
+        if (lazyListState.isScrollInProgress && showPopupApplicationMenu) {
             onUpdatePopupMenu(false)
         }
     }
@@ -733,9 +761,8 @@ private fun SharedTransitionScope.EblanApplicationInfos(
             }
             .fillMaxSize(),
     ) {
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(count = appDrawerSettings.appDrawerColumns),
-            state = lazyGridState,
+        LazyColumn(
+            state = lazyListState,
             modifier = Modifier.matchParentSize(),
             contentPadding = PaddingValues(
                 bottom = paddingValues.calculateBottomPadding(),
@@ -758,7 +785,6 @@ private fun SharedTransitionScope.EblanApplicationInfos(
                                 iconPackFilePaths = iconPackFilePaths,
                                 paddingValues = paddingValues,
                                 isVisibleOverlay = isVisibleOverlay,
-                                appDrawerType = appDrawerSettings.appDrawerType,
                                 onDismiss = onDismiss,
                                 onDraggingGridItem = onDraggingGridItem,
                                 onUpdateGridItemSource = onUpdateGridItemSource,
@@ -804,7 +830,6 @@ private fun SharedTransitionScope.EblanApplicationInfos(
                             iconPackFilePaths = iconPackFilePaths,
                             paddingValues = paddingValues,
                             isVisibleOverlay = isVisibleOverlay,
-                            appDrawerType = appDrawerSettings.appDrawerType,
                             onDismiss = onDismiss,
                             onDraggingGridItem = onDraggingGridItem,
                             onUpdateGridItemSource = onUpdateGridItemSource,
@@ -826,10 +851,246 @@ private fun SharedTransitionScope.EblanApplicationInfos(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
                     .fillMaxHeight(),
-                appDrawerSettings = appDrawerSettings,
-                lazyGridState = lazyGridState,
+                lazyListState = lazyListState,
                 paddingValues = paddingValues,
-                onScrollToItem = lazyGridState::scrollToItem,
+                onScrollToItem = lazyListState::scrollToItem,
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalUuidApi::class, ExperimentalSharedTransitionApi::class)
+@Composable
+private fun SharedTransitionScope.EblanApplicationInfoItem(
+    modifier: Modifier = Modifier,
+    appDrawerSettings: AppDrawerSettings,
+    currentPage: Int,
+    drag: Drag,
+    eblanApplicationInfo: EblanApplicationInfo,
+    iconPackFilePaths: Map<String, String>,
+    paddingValues: PaddingValues,
+    isVisibleOverlay: Boolean,
+    onDismiss: () -> Unit,
+    onDraggingGridItem: () -> Unit,
+    onUpdateGridItemSource: (GridItemSource) -> Unit,
+    onUpdateImageBitmap: (ImageBitmap) -> Unit,
+    onUpdateIsDragging: (Boolean) -> Unit,
+    onUpdateOverlayBounds: (
+        intOffset: IntOffset,
+        intSize: IntSize,
+    ) -> Unit,
+    onUpdatePopupMenu: (Boolean) -> Unit,
+    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
+    onUpdateEblanApplicationInfo: (EblanApplicationInfo) -> Unit,
+    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+) {
+    var intOffset by remember { mutableStateOf(IntOffset.Zero) }
+
+    var intSize by remember { mutableStateOf(IntSize.Zero) }
+
+    val graphicsLayer = rememberGraphicsLayer()
+
+    val scope = rememberCoroutineScope()
+
+    val density = LocalDensity.current
+
+    val launcherApps = LocalLauncherApps.current
+
+    val textColor = getSystemTextColor(
+        systemCustomTextColor = appDrawerSettings.gridItemSettings.customTextColor,
+        systemTextColor = appDrawerSettings.gridItemSettings.textColor,
+    )
+
+    val maxLines = if (appDrawerSettings.gridItemSettings.singleLineLabel) 1 else Int.MAX_VALUE
+
+    val icon = iconPackFilePaths[eblanApplicationInfo.componentName] ?: eblanApplicationInfo.icon
+
+    val leftPadding = with(density) {
+        paddingValues.calculateStartPadding(LayoutDirection.Ltr).roundToPx()
+    }
+
+    val topPadding = with(density) {
+        paddingValues.calculateTopPadding().roundToPx()
+    }
+
+    var isLongPress by remember { mutableStateOf(false) }
+
+    val applicationScreenId = remember { Uuid.random().toHexString() }
+
+    val alpha = if (isLongPress) 0f else 1f
+
+    LaunchedEffect(key1 = drag) {
+        when (drag) {
+            Drag.Dragging if isLongPress -> {
+                onUpdatePopupMenu(false)
+
+                onDismiss()
+
+                val pagerScreenId = Uuid.random().toHexString()
+
+                val data = GridItemData.ApplicationInfo(
+                    serialNumber = eblanApplicationInfo.serialNumber,
+                    componentName = eblanApplicationInfo.componentName,
+                    packageName = eblanApplicationInfo.packageName,
+                    icon = eblanApplicationInfo.icon,
+                    label = eblanApplicationInfo.label,
+                    customIcon = eblanApplicationInfo.customIcon,
+                    customLabel = eblanApplicationInfo.customLabel,
+                    index = -1,
+                    folderId = null,
+                )
+
+                val gridItem = GridItem(
+                    id = pagerScreenId,
+                    page = currentPage,
+                    startColumn = -1,
+                    startRow = -1,
+                    columnSpan = 1,
+                    rowSpan = 1,
+                    data = data,
+                    associate = Associate.Grid,
+                    override = false,
+                    gridItemSettings = appDrawerSettings.gridItemSettings,
+                    doubleTap = EblanAction(
+                        eblanActionType = EblanActionType.None,
+                        serialNumber = 0L,
+                        componentName = "",
+                    ),
+                    swipeUp = EblanAction(
+                        eblanActionType = EblanActionType.None,
+                        serialNumber = 0L,
+                        componentName = "",
+                    ),
+                    swipeDown = EblanAction(
+                        eblanActionType = EblanActionType.None,
+                        serialNumber = 0L,
+                        componentName = "",
+                    ),
+                )
+
+                onUpdateGridItemSource(GridItemSource.New(gridItem = gridItem))
+
+                onUpdateIsDragging(true)
+
+                onDraggingGridItem()
+            }
+
+            Drag.Cancel, Drag.End -> {
+                if (isLongPress && isVisibleOverlay) {
+                    onUpdateIsVisibleOverlay(false)
+
+                    isLongPress = false
+                }
+            }
+
+            else -> Unit
+        }
+    }
+
+    Row(
+        modifier = modifier
+            .pointerInput(key1 = drag) {
+                detectTapGestures(
+                    onTap = {
+                        val sourceBoundsX = intOffset.x + leftPadding
+
+                        val sourceBoundsY = intOffset.y + topPadding
+
+                        launcherApps.startMainActivity(
+                            serialNumber = eblanApplicationInfo.serialNumber,
+                            componentName = eblanApplicationInfo.componentName,
+                            sourceBounds = Rect(
+                                sourceBoundsX,
+                                sourceBoundsY,
+                                sourceBoundsX + intSize.width,
+                                sourceBoundsY + intSize.height,
+                            ),
+                        )
+                    },
+                    onLongPress = {
+                        scope.launch {
+                            onUpdateImageBitmap(graphicsLayer.toImageBitmap())
+
+                            onUpdateOverlayBounds(
+                                intOffset,
+                                intSize,
+                            )
+
+                            onUpdateSharedElementKey(
+                                SharedElementKey(
+                                    id = applicationScreenId,
+                                    parent = SharedElementKey.Parent.SwipeY,
+                                ),
+                            )
+
+                            onUpdateEblanApplicationInfo(eblanApplicationInfo)
+
+                            onUpdateIsVisibleOverlay(true)
+
+                            onUpdatePopupMenu(true)
+
+                            isLongPress = true
+                        }
+                    },
+                )
+            }
+            .fillMaxWidth()
+            .padding(10.dp)
+            .background(
+                color = Color(appDrawerSettings.gridItemSettings.customBackgroundColor),
+                shape = RoundedCornerShape(size = appDrawerSettings.gridItemSettings.cornerRadius.dp),
+            ),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        AsyncImage(
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(eblanApplicationInfo.customIcon ?: icon)
+                .addLastModifiedToFileCacheKey(true)
+                .build(),
+            contentDescription = null,
+            modifier = Modifier
+                .size(appDrawerSettings.gridItemSettings.iconSize.dp)
+                .alpha(alpha)
+                .drawWithContent {
+                    graphicsLayer.record {
+                        this@drawWithContent.drawContent()
+                    }
+
+                    drawLayer(graphicsLayer)
+                }
+                .onGloballyPositioned { layoutCoordinates ->
+                    intOffset = layoutCoordinates.positionInRoot().round()
+
+                    intSize = layoutCoordinates.size
+                }
+                .run {
+                    if (!isLongPress) {
+                        sharedElementWithCallerManagedVisibility(
+                            rememberSharedContentState(
+                                key = SharedElementKey(
+                                    id = applicationScreenId,
+                                    parent = SharedElementKey.Parent.SwipeY,
+                                ),
+                            ),
+                            visible = !isVisibleOverlay,
+                        )
+                    } else {
+                        this
+                    }
+                },
+        )
+
+        if (appDrawerSettings.gridItemSettings.showLabel) {
+            Spacer(modifier = Modifier.width(10.dp))
+
+            Text(
+                modifier = Modifier.alpha(alpha),
+                text = eblanApplicationInfo.customLabel ?: eblanApplicationInfo.label,
+                color = textColor,
+                textAlign = TextAlign.Center,
+                maxLines = maxLines,
+                fontSize = appDrawerSettings.gridItemSettings.textSize.sp,
+                overflow = TextOverflow.Ellipsis,
             )
         }
     }

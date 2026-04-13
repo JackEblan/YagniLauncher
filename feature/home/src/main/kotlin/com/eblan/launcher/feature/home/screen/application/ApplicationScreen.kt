@@ -100,6 +100,7 @@ import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
 import com.eblan.launcher.feature.home.screen.application.horizontal.HorizontalApplicationScreen
+import com.eblan.launcher.feature.home.screen.application.list.ListApplicationScreen
 import com.eblan.launcher.feature.home.screen.application.vertical.VerticalApplicationScreen
 import com.eblan.launcher.feature.home.util.getHorizontalAlignment
 import com.eblan.launcher.feature.home.util.getSystemTextColor
@@ -244,6 +245,43 @@ internal fun SharedTransitionScope.ApplicationScreen(
                     onEditApplicationInfo = onEditApplicationInfo,
                     onGetEblanApplicationInfosByLabel = onGetEblanApplicationInfosByLabel,
                     onGetEblanApplicationInfosByTagId = onGetEblanApplicationInfosByTagId,
+                    onUpdateGridItemSource = onUpdateGridItemSource,
+                    onUpdateImageBitmap = onUpdateImageBitmap,
+                    onUpdateIsDragging = onUpdateIsDragging,
+                    onUpdateOverlayBounds = onUpdateOverlayBounds,
+                    onUpdateSharedElementKey = onUpdateSharedElementKey,
+                    onVerticalDrag = onVerticalDrag,
+                    onWidgets = onWidgets,
+                    onDraggingShortcutInfoGridItem = onDraggingShortcutInfoGridItem,
+                    onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                )
+            }
+
+            AppDrawerType.List -> {
+                ListApplicationScreen(
+                    appDrawerSettings = appDrawerSettings,
+                    currentPage = currentPage,
+                    drag = drag,
+                    eblanAppWidgetProviderInfosGroup = eblanAppWidgetProviderInfosGroup,
+                    eblanApplicationInfoTags = eblanApplicationInfoTags,
+                    eblanShortcutInfosGroup = eblanShortcutInfosGroup,
+                    getEblanApplicationInfosByLabel = getEblanApplicationInfosByLabel,
+                    hasShortcutHostPermission = hasShortcutHostPermission,
+                    iconPackFilePaths = iconPackFilePaths,
+                    isPressHome = isPressHome,
+                    managedProfileResult = managedProfileResult,
+                    paddingValues = paddingValues,
+                    screenHeight = screenHeight,
+                    swipeY = swipeY,
+                    isVisibleOverlay = isVisibleOverlay,
+                    onDismiss = onDismiss,
+                    onDragEnd = onDragEnd,
+                    onDraggingGridItem = onDraggingGridItem,
+                    onEditApplicationInfo = onEditApplicationInfo,
+                    onGetEblanApplicationInfosByLabel = onGetEblanApplicationInfosByLabel,
+                    onGetEblanApplicationInfosByTagId = onGetEblanApplicationInfosByTagId,
+                    onUpdateAppDrawerSettings = onUpdateAppDrawerSettings,
+                    onUpdateEblanApplicationInfos = onUpdateEblanApplicationInfos,
                     onUpdateGridItemSource = onUpdateGridItemSource,
                     onUpdateImageBitmap = onUpdateImageBitmap,
                     onUpdateIsDragging = onUpdateIsDragging,
@@ -499,13 +537,9 @@ internal fun SharedTransitionScope.EblanApplicationInfoItem(
             }
             .run {
                 when (appDrawerType) {
-                    AppDrawerType.Vertical -> {
-                        height(appDrawerRowsHeight)
-                    }
-
-                    AppDrawerType.Horizontal -> {
-                        fillMaxSize()
-                    }
+                    AppDrawerType.Vertical -> height(appDrawerRowsHeight)
+                    AppDrawerType.Horizontal -> fillMaxSize()
+                    else -> this
                 }
             }
             .padding(appDrawerSettings.gridItemSettings.padding.dp)

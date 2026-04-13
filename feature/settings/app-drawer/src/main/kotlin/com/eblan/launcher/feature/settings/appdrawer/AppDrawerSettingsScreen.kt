@@ -179,6 +179,8 @@ private fun Success(
                         },
                     )
                 }
+
+                AppDrawerType.List -> Unit
             }
 
             HorizontalDivider(modifier = Modifier.fillMaxWidth())

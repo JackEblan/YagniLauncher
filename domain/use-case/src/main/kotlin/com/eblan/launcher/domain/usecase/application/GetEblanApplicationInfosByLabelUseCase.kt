@@ -76,16 +76,14 @@ class GetEblanApplicationInfosByLabelUseCase @Inject constructor(
             )
 
             when (userData.appDrawerSettings.appDrawerType) {
-                AppDrawerType.Vertical -> {
-                    getVerticalEblanApplicationInfosByLabel(
-                        eblanApplicationInfos = eblanApplicationInfosByLabel,
-                        userData = userData,
-                    )
+                AppDrawerType.Vertical, AppDrawerType.List -> {
+                    getVerticalOrListEblanApplicationInfosByLabel(eblanApplicationInfos = eblanApplicationInfosByLabel)
                 }
 
                 AppDrawerType.Horizontal -> {
                     getHorizontalEblanApplicationInfosByLabel(
-                        userData = userData,
+                        horizontalAppDrawerColumns = userData.appDrawerSettings.horizontalAppDrawerColumns,
+                        horizontalAppDrawerRows = userData.appDrawerSettings.horizontalAppDrawerRows,
                         eblanApplicationInfosByLabel = eblanApplicationInfosByLabel,
                     )
                 }
@@ -93,15 +91,7 @@ class GetEblanApplicationInfosByLabelUseCase @Inject constructor(
         }.flowOn(defaultDispatcher)
     }
 
-    private fun getVerticalEblanApplicationInfosByLabel(
-        userData: UserData,
-        eblanApplicationInfos: MutableList<EblanApplicationInfo>,
-    ): GetEblanApplicationInfosByLabel {
-        updateEblanApplicationInfoIndexes(
-            eblanApplicationInfoOrder = userData.appDrawerSettings.eblanApplicationInfoOrder,
-            eblanApplicationInfos = eblanApplicationInfos,
-        )
-
+    private fun getVerticalOrListEblanApplicationInfosByLabel(eblanApplicationInfos: MutableList<EblanApplicationInfo>): GetEblanApplicationInfosByLabel {
         val groupedEblanApplicationInfos = eblanApplicationInfos.groupBy {
             EblanUserPageKey(
                 eblanUser = launcherAppsWrapper.getUser(serialNumber = it.serialNumber),
@@ -121,11 +111,11 @@ class GetEblanApplicationInfosByLabelUseCase @Inject constructor(
     }
 
     private fun getHorizontalEblanApplicationInfosByLabel(
-        userData: UserData,
+        horizontalAppDrawerColumns: Int,
+        horizontalAppDrawerRows: Int,
         eblanApplicationInfosByLabel: MutableList<EblanApplicationInfo>,
     ): GetEblanApplicationInfosByLabel {
-        val pageSize =
-            userData.appDrawerSettings.horizontalAppDrawerColumns * userData.appDrawerSettings.horizontalAppDrawerRows
+        val pageSize = horizontalAppDrawerColumns * horizontalAppDrawerRows
 
         val groupedEblanApplicationInfos = eblanApplicationInfosByLabel.groupBy { app ->
             launcherAppsWrapper.getUser(serialNumber = app.serialNumber)
