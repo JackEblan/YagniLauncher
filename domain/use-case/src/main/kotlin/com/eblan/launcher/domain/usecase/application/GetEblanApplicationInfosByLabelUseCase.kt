@@ -36,6 +36,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
+import kotlin.collections.toSortedMap
 
 class GetEblanApplicationInfosByLabelUseCase @Inject constructor(
     private val eblanApplicationInfoRepository: EblanApplicationInfoRepository,
@@ -74,12 +75,11 @@ class GetEblanApplicationInfosByLabelUseCase @Inject constructor(
                 eblanApplicationInfos = eblanApplicationInfosByLabel,
             )
 
-            when (val appDrawerType = userData.appDrawerSettings.appDrawerType) {
+            when (userData.appDrawerSettings.appDrawerType) {
                 AppDrawerType.Vertical -> {
                     getVerticalEblanApplicationInfosByLabel(
                         eblanApplicationInfos = eblanApplicationInfosByLabel,
                         userData = userData,
-                        appDrawerType = appDrawerType,
                     )
                 }
 
@@ -87,7 +87,6 @@ class GetEblanApplicationInfosByLabelUseCase @Inject constructor(
                     getHorizontalEblanApplicationInfosByLabel(
                         userData = userData,
                         eblanApplicationInfosByLabel = eblanApplicationInfosByLabel,
-                        appDrawerType = appDrawerType,
                     )
                 }
             }
@@ -97,7 +96,6 @@ class GetEblanApplicationInfosByLabelUseCase @Inject constructor(
     private fun getVerticalEblanApplicationInfosByLabel(
         userData: UserData,
         eblanApplicationInfos: MutableList<EblanApplicationInfo>,
-        appDrawerType: AppDrawerType,
     ): GetEblanApplicationInfosByLabel {
         updateEblanApplicationInfoIndexes(
             eblanApplicationInfoOrder = userData.appDrawerSettings.eblanApplicationInfoOrder,
@@ -119,40 +117,32 @@ class GetEblanApplicationInfosByLabelUseCase @Inject constructor(
             eblanApplicationInfos = groupedEblanApplicationInfos.filterKeys { eblanUser -> eblanUser != privateEblanUserPageKey },
             privateEblanUser = privateEblanUserPageKey?.eblanUser,
             privateEblanApplicationInfos = groupedEblanApplicationInfos[privateEblanUserPageKey].orEmpty(),
-            appDrawerType = appDrawerType,
         )
     }
 
     private fun getHorizontalEblanApplicationInfosByLabel(
         userData: UserData,
         eblanApplicationInfosByLabel: MutableList<EblanApplicationInfo>,
-        appDrawerType: AppDrawerType,
     ): GetEblanApplicationInfosByLabel {
         val pageSize =
-            userData.appDrawerSettings.horizontalAppDrawerColumns *
-                    userData.appDrawerSettings.horizontalAppDrawerRows
+            userData.appDrawerSettings.horizontalAppDrawerColumns * userData.appDrawerSettings.horizontalAppDrawerRows
 
-        val groupedEblanApplicationInfos =
-            eblanApplicationInfosByLabel
-                .groupBy { app ->
-                    launcherAppsWrapper.getUser(serialNumber = app.serialNumber)
+        val groupedEblanApplicationInfos = eblanApplicationInfosByLabel.groupBy { app ->
+            launcherAppsWrapper.getUser(serialNumber = app.serialNumber)
+        }.toSortedMap(nullsLast(compareBy { it.serialNumber }))
+            .flatMap { (eblanUser, eblanApplicationInfos) ->
+                eblanApplicationInfos.chunked(pageSize).mapIndexed { index, pageApps ->
+                    EblanUserPageKey(
+                        eblanUser = eblanUser,
+                        page = index,
+                    ) to pageApps
                 }
-                .flatMap { (eblanUser, eblanApplicationInfos) ->
-                    eblanApplicationInfos.chunked(pageSize)
-                        .mapIndexed { index, pageApps ->
-                            EblanUserPageKey(
-                                eblanUser = eblanUser,
-                                page = index,
-                            ) to pageApps
-                        }
-                }
-                .toMap()
+            }.toMap()
 
         return GetEblanApplicationInfosByLabel(
             eblanApplicationInfos = groupedEblanApplicationInfos,
             privateEblanUser = null,
             privateEblanApplicationInfos = emptyList(),
-            appDrawerType = appDrawerType,
         )
     }
 

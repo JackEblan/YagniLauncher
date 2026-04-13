@@ -25,7 +25,6 @@ import com.eblan.launcher.domain.framework.FileManager
 import com.eblan.launcher.domain.framework.LauncherAppsWrapper
 import com.eblan.launcher.domain.framework.PackageManagerWrapper
 import com.eblan.launcher.domain.model.AppDrawerSettings
-import com.eblan.launcher.domain.model.AppDrawerType
 import com.eblan.launcher.domain.model.ApplicationInfoGridItem
 import com.eblan.launcher.domain.model.Associate
 import com.eblan.launcher.domain.model.EblanApplicationInfo
@@ -187,7 +186,6 @@ internal class HomeViewModel @Inject constructor(
             eblanApplicationInfos = emptyMap(),
             privateEblanUser = null,
             privateEblanApplicationInfos = emptyList(),
-            appDrawerType = AppDrawerType.Vertical,
         ),
     )
 

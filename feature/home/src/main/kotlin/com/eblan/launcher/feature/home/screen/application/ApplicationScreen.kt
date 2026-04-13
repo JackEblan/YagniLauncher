@@ -560,39 +560,6 @@ internal fun SharedTransitionScope.EblanApplicationInfoItem(
 }
 
 @Composable
-@OptIn(ExperimentalMaterial3Api::class)
-internal fun EblanApplicationInfoTabRow(
-    modifier: Modifier = Modifier,
-    currentPage: Int,
-    eblanApplicationInfos: Map<EblanUserPageKey, List<EblanApplicationInfo>>,
-    onAnimateScrollToPage: suspend (Int) -> Unit,
-) {
-    val scope = rememberCoroutineScope()
-
-    SecondaryTabRow(
-        modifier = modifier,
-        selectedTabIndex = currentPage,
-    ) {
-        eblanApplicationInfos.keys.forEachIndexed { index, eblanUserPageKey ->
-            Tab(
-                selected = currentPage == index,
-                onClick = {
-                    scope.launch {
-                        onAnimateScrollToPage(index)
-                    }
-                },
-                text = {
-                    Text(
-                        text = eblanUserPageKey.eblanUser.eblanUserType.name,
-                        maxLines = 1,
-                    )
-                },
-            )
-        }
-    }
-}
-
-@Composable
 internal fun TagElevatedFilterChip(
     modifier: Modifier = Modifier,
     eblanApplicationInfoTag: EblanApplicationInfoTag,
@@ -624,4 +591,56 @@ internal fun TagElevatedFilterChip(
             null
         },
     )
+}
+
+@Composable
+@OptIn(ExperimentalMaterial3Api::class)
+internal fun EblanApplicationInfoTabRow(
+    modifier: Modifier = Modifier,
+    currentPage: Int,
+    eblanApplicationInfos: Map<EblanUserPageKey, List<EblanApplicationInfo>>,
+    onAnimateScrollToPage: suspend (Int) -> Unit,
+) {
+    val scope = rememberCoroutineScope()
+
+    val currentEblanUserPageKey = eblanApplicationInfos.keys.toList()[currentPage]
+
+    val eblanUserPageKeys = remember(key1 = eblanApplicationInfos) {
+        eblanApplicationInfos.keys.distinctBy { it.eblanUser.serialNumber }
+    }
+
+    val selectedTabIndex = remember(
+        key1 = eblanUserPageKeys,
+        key2 = currentEblanUserPageKey,
+    ) {
+        eblanUserPageKeys.indexOfFirst {
+            it.eblanUser.serialNumber == currentEblanUserPageKey.eblanUser.serialNumber
+        }
+    }
+
+    SecondaryTabRow(
+        modifier = modifier,
+        selectedTabIndex = selectedTabIndex,
+    ) {
+        eblanUserPageKeys.forEach { eblanUserPageKey ->
+            Tab(
+                selected = currentEblanUserPageKey == eblanUserPageKey,
+                onClick = {
+                    scope.launch {
+                        onAnimateScrollToPage(
+                            eblanApplicationInfos.keys.indexOfFirst {
+                                it.eblanUser.serialNumber == eblanUserPageKey.eblanUser.serialNumber
+                            },
+                        )
+                    }
+                },
+                text = {
+                    Text(
+                        text = eblanUserPageKey.eblanUser.eblanUserType.name,
+                        maxLines = 1,
+                    )
+                },
+            )
+        }
+    }
 }
