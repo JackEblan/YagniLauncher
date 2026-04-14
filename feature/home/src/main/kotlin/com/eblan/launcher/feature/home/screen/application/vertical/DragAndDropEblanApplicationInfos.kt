@@ -149,7 +149,7 @@ internal fun DragAndDropEblanApplicationInfos(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
                     .fillMaxHeight(),
-                appDrawerSettings = appDrawerSettings,
+                appDrawerColumns = appDrawerSettings.appDrawerColumns,
                 lazyGridState = lazyGridState,
                 paddingValues = paddingValues,
                 onScrollToItem = lazyGridState::scrollToItem,

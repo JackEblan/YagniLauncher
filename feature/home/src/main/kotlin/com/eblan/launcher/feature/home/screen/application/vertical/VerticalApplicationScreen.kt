@@ -43,18 +43,12 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberOverscrollEffect
-import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.clearText
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.SearchBar
-import androidx.compose.material3.SearchBarDefaults
-import androidx.compose.material3.SearchBarState
 import androidx.compose.material3.SearchBarValue
-import androidx.compose.material3.Text
 import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -67,12 +61,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.LayoutDirection
@@ -98,6 +89,7 @@ import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
 import com.eblan.launcher.feature.home.screen.application.ApplicationInfoPopup
+import com.eblan.launcher.feature.home.screen.application.ApplicationSearchBar
 import com.eblan.launcher.feature.home.screen.application.EblanApplicationInfoItem
 import com.eblan.launcher.feature.home.screen.application.EblanApplicationInfoTabRow
 import com.eblan.launcher.feature.home.screen.application.PrivateApplicationInfoPopup
@@ -111,7 +103,6 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class, FlowPreview::class)
@@ -496,65 +487,6 @@ internal fun SharedTransitionScope.VerticalApplicationScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun ApplicationSearchBar(
-    modifier: Modifier = Modifier,
-    searchBarState: SearchBarState,
-    textFieldState: TextFieldState,
-    swipeY: Float,
-    showKeyboard: Boolean,
-    onUpdateShowEblanApplicationInfoOrderDialog: (Boolean) -> Unit,
-) {
-    val keyboardController = LocalSoftwareKeyboardController.current
-
-    val scope = rememberCoroutineScope()
-
-    val focusRequester = remember { FocusRequester() }
-
-    LaunchedEffect(key1 = swipeY) {
-        if (swipeY.roundToInt() == 0 && showKeyboard) {
-            focusRequester.requestFocus()
-
-            keyboardController?.show()
-        }
-    }
-
-    SearchBar(
-        state = searchBarState,
-        modifier = modifier
-            .focusRequester(focusRequester)
-            .fillMaxWidth()
-            .padding(10.dp),
-        inputField = {
-            SearchBarDefaults.InputField(
-                textFieldState = textFieldState,
-                searchBarState = searchBarState,
-                leadingIcon = {
-                    Icon(
-                        imageVector = EblanLauncherIcons.Search,
-                        contentDescription = null,
-                    )
-                },
-                trailingIcon = {
-                    IconButton(
-                        onClick = {
-                            onUpdateShowEblanApplicationInfoOrderDialog(true)
-                        },
-                    ) {
-                        Icon(
-                            imageVector = EblanLauncherIcons.MoreVert,
-                            contentDescription = null,
-                        )
-                    }
-                },
-                onSearch = { scope.launch { searchBarState.animateToCollapsed() } },
-                placeholder = { Text(text = "Search Applications") },
-            )
-        },
-    )
-}
-
 @OptIn(ExperimentalLayoutApi::class, ExperimentalSharedTransitionApi::class)
 @Composable
 private fun SharedTransitionScope.EblanApplicationInfosPage(
@@ -873,7 +805,7 @@ private fun SharedTransitionScope.EblanApplicationInfos(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
                     .fillMaxHeight(),
-                appDrawerSettings = appDrawerSettings,
+                appDrawerColumns = appDrawerSettings.appDrawerColumns,
                 lazyGridState = lazyGridState,
                 paddingValues = paddingValues,
                 onScrollToItem = lazyGridState::scrollToItem,

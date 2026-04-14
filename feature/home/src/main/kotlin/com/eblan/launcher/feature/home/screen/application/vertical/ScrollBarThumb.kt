@@ -42,7 +42,6 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import com.eblan.launcher.domain.model.AppDrawerSettings
 import kotlinx.coroutines.launch
 import kotlin.math.ceil
 import kotlin.math.roundToInt
@@ -50,7 +49,7 @@ import kotlin.math.roundToInt
 @Composable
 internal fun ScrollBarThumb(
     modifier: Modifier = Modifier,
-    appDrawerSettings: AppDrawerSettings,
+    appDrawerColumns: Int,
     lazyGridState: LazyGridState,
     paddingValues: PaddingValues,
     onScrollToItem: suspend (Int) -> Unit,
@@ -59,8 +58,8 @@ internal fun ScrollBarThumb(
 
     val scope = rememberCoroutineScope()
 
-    val appDrawerRowsHeightPx = with(density) {
-        appDrawerSettings.appDrawerRowsHeight.dp.roundToPx()
+    val height = remember(key1 = lazyGridState) {
+        lazyGridState.layoutInfo.visibleItemsInfo.firstOrNull()?.size?.height ?: 1
     }
 
     val bottomPadding = with(density) {
@@ -78,19 +77,19 @@ internal fun ScrollBarThumb(
     val viewPortThumbY by remember(key1 = lazyGridState) {
         derivedStateOf {
             val totalRows =
-                (lazyGridState.layoutInfo.totalItemsCount + appDrawerSettings.appDrawerColumns - 1) / appDrawerSettings.appDrawerColumns
+                (lazyGridState.layoutInfo.totalItemsCount + appDrawerColumns - 1) / appDrawerColumns
 
             val visibleRows =
-                ceil(lazyGridState.layoutInfo.viewportSize.height / appDrawerRowsHeightPx.toFloat()).toInt()
+                ceil(lazyGridState.layoutInfo.viewportSize.height / height.toFloat()).toInt()
 
             val scrollableRows = (totalRows - visibleRows).coerceAtLeast(0)
 
-            val availableScroll = scrollableRows * appDrawerRowsHeightPx
+            val availableScroll = scrollableRows * height
 
-            val row = lazyGridState.firstVisibleItemIndex / appDrawerSettings.appDrawerColumns
+            val row = lazyGridState.firstVisibleItemIndex / appDrawerColumns
 
             val totalScrollY =
-                (row * appDrawerRowsHeightPx) + lazyGridState.firstVisibleItemScrollOffset
+                (row * height) + lazyGridState.firstVisibleItemScrollOffset
 
             val thumbHeightPx = with(density) {
                 thumbHeight.toPx()
@@ -141,14 +140,14 @@ internal fun ScrollBarThumb(
                         },
                         onVerticalDrag = { _, deltaY ->
                             val totalRows =
-                                (lazyGridState.layoutInfo.totalItemsCount + appDrawerSettings.appDrawerColumns - 1) / appDrawerSettings.appDrawerColumns
+                                (lazyGridState.layoutInfo.totalItemsCount + appDrawerColumns - 1) / appDrawerColumns
 
                             val visibleRows =
-                                ceil(lazyGridState.layoutInfo.viewportSize.height / appDrawerRowsHeightPx.toFloat()).toInt()
+                                ceil(lazyGridState.layoutInfo.viewportSize.height / height.toFloat()).toInt()
 
                             val scrollableRows = (totalRows - visibleRows).coerceAtLeast(0)
 
-                            val availableScroll = scrollableRows * appDrawerRowsHeightPx
+                            val availableScroll = scrollableRows * height
 
                             val thumbHeightPx = with(density) { thumbHeight.toPx() }
 
@@ -161,10 +160,10 @@ internal fun ScrollBarThumb(
 
                             val targetScrollY = progress * availableScroll
 
-                            val targetRow = targetScrollY / appDrawerRowsHeightPx
+                            val targetRow = targetScrollY / height
 
                             val targetIndex =
-                                (targetRow * appDrawerSettings.appDrawerColumns).roundToInt()
+                                (targetRow * appDrawerColumns).roundToInt()
                                     .coerceIn(0, lazyGridState.layoutInfo.totalItemsCount)
 
                             scope.launch {

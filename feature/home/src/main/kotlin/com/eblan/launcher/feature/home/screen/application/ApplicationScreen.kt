@@ -280,7 +280,6 @@ internal fun SharedTransitionScope.ApplicationScreen(
                     onEditApplicationInfo = onEditApplicationInfo,
                     onGetEblanApplicationInfosByLabel = onGetEblanApplicationInfosByLabel,
                     onGetEblanApplicationInfosByTagId = onGetEblanApplicationInfosByTagId,
-                    onUpdateAppDrawerSettings = onUpdateAppDrawerSettings,
                     onUpdateEblanApplicationInfos = onUpdateEblanApplicationInfos,
                     onUpdateGridItemSource = onUpdateGridItemSource,
                     onUpdateImageBitmap = onUpdateImageBitmap,
