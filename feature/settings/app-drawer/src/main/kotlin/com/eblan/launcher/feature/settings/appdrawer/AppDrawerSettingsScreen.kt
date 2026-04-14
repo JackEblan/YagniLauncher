@@ -254,7 +254,7 @@ private fun Success(
         var secondTextFieldIsError by remember { mutableStateOf(false) }
 
         TwoTextFieldsDialog(
-            title = "Vertical App Drawer Grid",
+            title = "Vertical Grid",
             firstTextFieldTitle = "Columns",
             secondTextFieldTitle = "Rows Height",
             firstTextFieldValue = appDrawerColumns,
@@ -310,7 +310,7 @@ private fun Success(
         var secondTextFieldIsError by remember { mutableStateOf(false) }
 
         TwoTextFieldsDialog(
-            title = "Horizontal App Drawer Grid",
+            title = "Horizontal Grid",
             firstTextFieldTitle = "Columns",
             secondTextFieldTitle = "Rows",
             firstTextFieldValue = horizontalAppDrawerColumns,
