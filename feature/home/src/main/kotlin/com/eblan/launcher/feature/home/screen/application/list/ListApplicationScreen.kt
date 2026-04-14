@@ -65,7 +65,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -822,28 +821,29 @@ private fun SharedTransitionScope.EblanApplicationInfos(
         ) {
             when (eblanUserPageKey.eblanUser.eblanUserType) {
                 EblanUserType.Personal -> {
-                    items(getEblanApplicationInfosByLabel.eblanApplicationInfos[eblanUserPageKey].orEmpty()) { eblanApplicationInfo ->
-                        key(eblanApplicationInfo.serialNumber, eblanApplicationInfo.componentName) {
-                            EblanApplicationInfoItem(
-                                appDrawerSettings = appDrawerSettings,
-                                currentPage = currentPage,
-                                drag = drag,
-                                eblanApplicationInfo = eblanApplicationInfo,
-                                iconPackFilePaths = iconPackFilePaths,
-                                paddingValues = paddingValues,
-                                isVisibleOverlay = isVisibleOverlay,
-                                onDismiss = onDismiss,
-                                onDraggingGridItem = onDraggingGridItem,
-                                onUpdateGridItemSource = onUpdateGridItemSource,
-                                onUpdateImageBitmap = onUpdateImageBitmap,
-                                onUpdateIsDragging = onUpdateIsDragging,
-                                onUpdateOverlayBounds = onUpdateOverlayBounds,
-                                onUpdatePopupMenu = onUpdatePopupMenu,
-                                onUpdateSharedElementKey = onUpdateSharedElementKey,
-                                onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
-                                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                            )
-                        }
+                    items(
+                        items = getEblanApplicationInfosByLabel.eblanApplicationInfos[eblanUserPageKey].orEmpty(),
+                        key = { eblanApplicationInfo -> eblanApplicationInfo.serialNumber to eblanApplicationInfo.componentName },
+                    ) { eblanApplicationInfo ->
+                        EblanApplicationInfoItem(
+                            appDrawerSettings = appDrawerSettings,
+                            currentPage = currentPage,
+                            drag = drag,
+                            eblanApplicationInfo = eblanApplicationInfo,
+                            iconPackFilePaths = iconPackFilePaths,
+                            paddingValues = paddingValues,
+                            isVisibleOverlay = isVisibleOverlay,
+                            onDismiss = onDismiss,
+                            onDraggingGridItem = onDraggingGridItem,
+                            onUpdateGridItemSource = onUpdateGridItemSource,
+                            onUpdateImageBitmap = onUpdateImageBitmap,
+                            onUpdateIsDragging = onUpdateIsDragging,
+                            onUpdateOverlayBounds = onUpdateOverlayBounds,
+                            onUpdatePopupMenu = onUpdatePopupMenu,
+                            onUpdateSharedElementKey = onUpdateSharedElementKey,
+                            onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
+                            onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                        )
                     }
 
                     privateSpace(
