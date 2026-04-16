@@ -20,6 +20,7 @@ package com.eblan.launcher.feature.home.screen.application
 import android.graphics.Rect
 import android.os.Build
 import android.os.UserHandle
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
@@ -34,13 +35,18 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.clearText
 import androidx.compose.material3.ElevatedFilterChip
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.SearchBarState
+import androidx.compose.material3.SearchBarValue
 import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
@@ -52,6 +58,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -108,6 +115,11 @@ import com.eblan.launcher.feature.home.util.getVerticalArrangement
 import com.eblan.launcher.framework.packagemanager.AndroidPackageManagerWrapper
 import com.eblan.launcher.framework.usermanager.AndroidUserManagerWrapper
 import com.eblan.launcher.ui.local.LocalLauncherApps
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 import kotlin.uuid.ExperimentalUuidApi
@@ -375,6 +387,7 @@ internal fun SharedTransitionScope.EblanApplicationInfoItem(
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onUpdateEblanApplicationInfo: (EblanApplicationInfo) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+    onScrollToItem: suspend (Int) -> Unit,
 ) {
     var intOffset by remember { mutableStateOf(IntOffset.Zero) }
 
@@ -506,6 +519,14 @@ internal fun SharedTransitionScope.EblanApplicationInfoItem(
                                 sourceBoundsY + intSize.height,
                             ),
                         )
+
+                        if (appDrawerSettings.resetState) {
+                            scope.launch {
+                                onDismiss()
+
+                                onScrollToItem(0)
+                            }
+                        }
                     },
                     onLongPress = {
                         scope.launch {
@@ -642,16 +663,13 @@ internal fun TagElevatedFilterChip(
 internal fun EblanApplicationInfoTabRow(
     modifier: Modifier = Modifier,
     currentPage: Int,
+    eblanUserPageKeys: List<EblanUserPageKey>,
     eblanApplicationInfos: Map<EblanUserPageKey, List<EblanApplicationInfo>>,
     onAnimateScrollToPage: suspend (Int) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
 
     val currentEblanUserPageKey = eblanApplicationInfos.keys.toList()[currentPage]
-
-    val eblanUserPageKeys = remember(key1 = eblanApplicationInfos) {
-        eblanApplicationInfos.keys.distinctBy { it.eblanUser.serialNumber }
-    }
 
     val selectedTabIndex = remember(
         key1 = eblanUserPageKeys,
@@ -685,6 +703,101 @@ internal fun EblanApplicationInfoTabRow(
                     )
                 },
             )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class, FlowPreview::class)
+@Composable
+internal fun ApplicationScreenEffect(
+    appDrawerSettings: AppDrawerSettings,
+    drag: Drag,
+    horizontalPagerState: PagerState,
+    isPressHome: Boolean,
+    screenHeight: Int,
+    searchBarState: SearchBarState,
+    selectedEblanApplicationInfoTagId: Long?,
+    showPopupApplicationMenu: Boolean,
+    swipeY: Float,
+    textFieldState: TextFieldState,
+    onDismiss: () -> Unit,
+    onGetEblanApplicationInfosByLabel: (String) -> Unit,
+    onGetEblanApplicationInfosByTagId: (Long?) -> Unit,
+    onShowPopupApplicationMenu: (Boolean) -> Unit,
+    onUpdateSelectedEblanApplicationInfoTagId: (Long?) -> Unit,
+    onScrollItem: suspend (Int) -> Unit = {},
+) {
+    val scope = rememberCoroutineScope()
+
+    LaunchedEffect(key1 = textFieldState) {
+        snapshotFlow { textFieldState.text }.debounce(500L).onEach { text ->
+            if (text.isNotEmpty()) {
+                onGetEblanApplicationInfosByLabel(text.toString())
+
+                onShowPopupApplicationMenu(false)
+            }
+        }.collect()
+    }
+
+    LaunchedEffect(key1 = swipeY) {
+        if (swipeY.roundToInt() >= screenHeight &&
+            textFieldState.text.isNotEmpty() &&
+            appDrawerSettings.resetState
+        ) {
+            onGetEblanApplicationInfosByLabel("")
+
+            textFieldState.clearText()
+
+            onUpdateSelectedEblanApplicationInfoTagId(null)
+
+            onScrollItem(0)
+        }
+
+        if (swipeY.roundToInt() > 0 && showPopupApplicationMenu) {
+            onShowPopupApplicationMenu(false)
+        }
+    }
+
+    LaunchedEffect(key1 = Unit) {
+        snapshotFlow { selectedEblanApplicationInfoTagId }.filterNotNull()
+            .onEach { selectedEblanApplicationInfoTag ->
+                onGetEblanApplicationInfosByTagId(selectedEblanApplicationInfoTag)
+            }.collect()
+    }
+
+    LaunchedEffect(key1 = isPressHome) {
+        if (isPressHome) {
+            onShowPopupApplicationMenu(false)
+
+            searchBarState.animateToCollapsed()
+
+            onScrollItem(0)
+
+            onDismiss()
+        }
+    }
+
+    LaunchedEffect(key1 = drag) {
+        if (drag == Drag.Start && searchBarState.currentValue == SearchBarValue.Expanded) {
+            searchBarState.animateToCollapsed()
+        }
+    }
+
+    LaunchedEffect(key1 = horizontalPagerState.isScrollInProgress) {
+        if (horizontalPagerState.isScrollInProgress && showPopupApplicationMenu) {
+            onShowPopupApplicationMenu(false)
+        }
+    }
+
+    BackHandler(enabled = swipeY < screenHeight.toFloat()) {
+        scope.launch {
+            if (appDrawerSettings.resetState) {
+                onScrollItem(0)
+            }
+
+            onShowPopupApplicationMenu(false)
+
+            onDismiss()
         }
     }
 }
