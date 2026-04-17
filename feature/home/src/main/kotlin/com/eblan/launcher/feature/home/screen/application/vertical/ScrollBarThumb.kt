@@ -46,7 +46,6 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import kotlin.math.ceil
 import kotlin.math.roundToInt
 
 @Composable
@@ -55,15 +54,14 @@ internal fun ScrollBarThumb(
     appDrawerColumns: Int,
     lazyGridState: LazyGridState,
     paddingValues: PaddingValues,
-    onScrollToItem: suspend (Int) -> Unit,
+    onScrollToItem: suspend (
+        index: Int,
+        offset: Int,
+    ) -> Unit,
 ) {
     val density = LocalDensity.current
 
     val scope = rememberCoroutineScope()
-
-    val height = remember(key1 = lazyGridState) {
-        lazyGridState.layoutInfo.visibleItemsInfo.firstOrNull()?.size?.height ?: 1
-    }
 
     val bottomPadding = with(density) {
         paddingValues.calculateBottomPadding().roundToPx()
@@ -82,7 +80,6 @@ internal fun ScrollBarThumb(
             getViewPortThumbY(
                 lazyGridState = lazyGridState,
                 appDrawerColumns = appDrawerColumns,
-                height = height,
                 density = density,
                 thumbHeight = thumbHeight,
                 bottomPadding = bottomPadding,
@@ -121,7 +118,6 @@ internal fun ScrollBarThumb(
                             handleVerticalDrag(
                                 lazyGridState = lazyGridState,
                                 appDrawerColumns = appDrawerColumns,
-                                height = height,
                                 density = density,
                                 thumbHeight = thumbHeight,
                                 bottomPadding = bottomPadding,
@@ -155,85 +151,90 @@ internal fun ScrollBarThumb(
 private fun handleVerticalDrag(
     lazyGridState: LazyGridState,
     appDrawerColumns: Int,
-    height: Int,
     density: Density,
     thumbHeight: Dp,
     bottomPadding: Int,
     thumbY: Float,
     deltaY: Float,
     scope: CoroutineScope,
-    onScrollToItem: suspend (Int) -> Unit,
+    onScrollToItem: suspend (
+        index: Int,
+        offset: Int,
+    ) -> Unit,
     onUpdateThumbY: (Float) -> Unit,
 ) {
-    val totalRows =
-        (lazyGridState.layoutInfo.totalItemsCount + appDrawerColumns - 1) / appDrawerColumns
+    val layoutInfo = lazyGridState.layoutInfo
+    val visibleItems = layoutInfo.visibleItemsInfo
 
-    val visibleRows =
-        ceil(lazyGridState.layoutInfo.viewportSize.height / height.toFloat()).toInt()
+    if (visibleItems.isEmpty() || appDrawerColumns <= 0) return
 
-    val scrollableRows = (totalRows - visibleRows).coerceAtLeast(0)
+    val avgItemHeight = (visibleItems.sumOf { it.size.height } / visibleItems.size).coerceAtLeast(1)
 
-    val availableScroll = scrollableRows * height
+    val totalItems = layoutInfo.totalItemsCount
+    val totalRows = (totalItems + appDrawerColumns - 1) / appDrawerColumns
+
+    val viewportHeight = layoutInfo.viewportSize.height
 
     val thumbHeightPx = with(density) { thumbHeight.toPx() }
 
-    val availableHeight =
-        lazyGridState.layoutInfo.viewportSize.height - thumbHeightPx - bottomPadding
+    val availableHeight = (viewportHeight - thumbHeightPx - bottomPadding).coerceAtLeast(1f)
 
     val newThumbY = (thumbY + deltaY).coerceIn(0f, availableHeight)
 
-    val progress = newThumbY / availableHeight
+    val progress = (newThumbY / availableHeight).coerceIn(0f, 1f)
 
-    val targetScrollY = progress * availableScroll
+    val totalContentHeight = totalRows * avgItemHeight
+    val scrollableHeight = (totalContentHeight - viewportHeight).coerceAtLeast(1)
 
-    val targetRow = targetScrollY / height
+    val targetScrollY = progress * scrollableHeight
 
-    val lastIndex = (lazyGridState.layoutInfo.totalItemsCount - 1).coerceAtLeast(0)
+    val targetRow = targetScrollY / avgItemHeight
+    val rowInt = targetRow.toInt()
 
-    val targetIndex =
-        (targetRow * appDrawerColumns).roundToInt()
-            .coerceIn(0, lastIndex)
+    val offsetInRow = (targetScrollY % avgItemHeight).toInt()
+
+    val targetIndex = (rowInt * appDrawerColumns).coerceIn(0, (totalItems - 1).coerceAtLeast(0))
 
     onUpdateThumbY(newThumbY)
 
     scope.launch {
-        onScrollToItem(targetIndex)
+        // use offset for smoother positioning
+        onScrollToItem(targetIndex, offsetInRow)
     }
 }
 
 private fun getViewPortThumbY(
     lazyGridState: LazyGridState,
     appDrawerColumns: Int,
-    height: Int,
     density: Density,
     thumbHeight: Dp,
     bottomPadding: Int,
 ): Float {
-    val totalRows =
-        (lazyGridState.layoutInfo.totalItemsCount + appDrawerColumns - 1) / appDrawerColumns
+    val layoutInfo = lazyGridState.layoutInfo
+    val visibleItems = layoutInfo.visibleItemsInfo
 
-    val visibleRows =
-        ceil(lazyGridState.layoutInfo.viewportSize.height / height.toFloat()).toInt()
+    val firstItem = visibleItems.first()
 
-    val scrollableRows = (totalRows - visibleRows).coerceAtLeast(0)
+    val avgItemHeight = visibleItems.sumOf { it.size.height } / visibleItems.size
 
-    val availableScroll = scrollableRows * height
+    val totalItems = layoutInfo.totalItemsCount
+    val totalRows = (totalItems + appDrawerColumns - 1) / appDrawerColumns
 
-    val row = lazyGridState.firstVisibleItemIndex / appDrawerColumns
+    val viewportHeight = layoutInfo.viewportSize.height.toFloat()
 
-    val totalScrollY =
-        (row * height) + lazyGridState.firstVisibleItemScrollOffset
+    val totalContentHeight = totalRows * avgItemHeight
 
-    val thumbHeightPx = with(density) {
-        thumbHeight.toPx()
-    }
+    val firstRow = firstItem.index / appDrawerColumns
 
-    val availableHeight = lazyGridState.layoutInfo.viewportSize.height - thumbHeightPx - bottomPadding
+    val scrollY = (firstRow * avgItemHeight) - firstItem.offset.y
 
-    return if (availableScroll <= 0) {
-        0f
-    } else {
-        (totalScrollY.toFloat() / availableScroll.toFloat() * availableHeight)
-            .coerceIn(0f, availableHeight)
-    }
+    val scrollableHeight = (totalContentHeight - viewportHeight).coerceAtLeast(1f)
+
+    val progress = (scrollY / scrollableHeight).coerceIn(0f, 1f)
+
+    val thumbHeightPx = with(density) { thumbHeight.toPx() }
+
+    val availableHeight = (viewportHeight - thumbHeightPx - bottomPadding).coerceAtLeast(0f)
+
+    return progress * availableHeight
 }

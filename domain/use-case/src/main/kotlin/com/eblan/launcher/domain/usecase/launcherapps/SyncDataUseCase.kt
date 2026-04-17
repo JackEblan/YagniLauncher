@@ -234,6 +234,24 @@ class SyncDataUseCase @Inject constructor(
         )
 
         newlyInstalledSyncEblanApplicationInfos.forEach { syncEblanApplicationInfo ->
+            val alreadyOnHome = gridItems.any { gridItem ->
+                when (val data = gridItem.data) {
+                    is GridItemData.ApplicationInfo ->
+                        data.serialNumber == syncEblanApplicationInfo.serialNumber &&
+                            data.componentName == syncEblanApplicationInfo.componentName
+
+                    is GridItemData.Folder ->
+                        data.gridItems.any { gridItem ->
+                            gridItem.serialNumber == syncEblanApplicationInfo.serialNumber &&
+                                gridItem.componentName == syncEblanApplicationInfo.componentName
+                        }
+
+                    else -> false
+                }
+            }
+
+            if (alreadyOnHome) return@forEach
+
             val data = GridItemData.ApplicationInfo(
                 serialNumber = syncEblanApplicationInfo.serialNumber,
                 componentName = syncEblanApplicationInfo.componentName,

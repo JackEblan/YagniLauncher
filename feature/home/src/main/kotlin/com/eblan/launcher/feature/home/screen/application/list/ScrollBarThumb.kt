@@ -53,7 +53,10 @@ internal fun ScrollBarThumb(
     modifier: Modifier = Modifier,
     lazyListState: LazyListState,
     paddingValues: PaddingValues,
-    onScrollToItem: suspend (Int) -> Unit,
+    onScrollToItem: suspend (
+        index: Int,
+        offset: Int,
+    ) -> Unit,
 ) {
     val density = LocalDensity.current
 
@@ -142,38 +145,50 @@ private fun handleVerticalDrag(
     thumbY: Float,
     deltaY: Float,
     scope: CoroutineScope,
-    onScrollToItem: suspend (Int) -> Unit,
+    onScrollToItem: suspend (
+        index: Int,
+        offset: Int,
+    ) -> Unit,
     onUpdateThumbY: (Float) -> Unit,
 ) {
-    val size =
-        lazyListState.layoutInfo.visibleItemsInfo.firstOrNull()?.size ?: 1
+    val layoutInfo = lazyListState.layoutInfo
+    val visibleItems = layoutInfo.visibleItemsInfo
 
-    val scrollableItems =
-        (lazyListState.layoutInfo.totalItemsCount - lazyListState.layoutInfo.visibleItemsInfo.size)
-            .coerceAtLeast(0)
+    if (visibleItems.isEmpty()) return
 
-    val availableScroll = scrollableItems * size
+    val avgItemSize =
+        (visibleItems.sumOf { it.size } / visibleItems.size)
+            .coerceAtLeast(1)
+
+    val totalItems = layoutInfo.totalItemsCount
+    val viewportHeight = layoutInfo.viewportSize.height
 
     val thumbHeightPx = with(density) { thumbHeight.toPx() }
 
-    val availableHeight = lazyListState.layoutInfo.viewportSize.height - thumbHeightPx - bottomPadding
+    val availableHeight =
+        (viewportHeight - thumbHeightPx - bottomPadding)
+            .coerceAtLeast(1f)
 
     val newThumbY = (thumbY + deltaY).coerceIn(0f, availableHeight)
 
-    val progress = newThumbY / availableHeight
+    val progress = (newThumbY / availableHeight).coerceIn(0f, 1f)
 
-    val targetScrollY = progress * availableScroll
+    val totalContentHeight = totalItems * avgItemSize
+    val scrollableHeight =
+        (totalContentHeight - viewportHeight).coerceAtLeast(1)
 
-    val lastIndex = (lazyListState.layoutInfo.totalItemsCount - 1).coerceAtLeast(0)
+    val targetScrollY = progress * scrollableHeight
 
     val targetIndex =
-        (targetScrollY / size).toInt()
-            .coerceIn(0, lastIndex)
+        (targetScrollY / avgItemSize).toInt()
+            .coerceIn(0, (totalItems - 1).coerceAtLeast(0))
+
+    val offset = (targetScrollY % avgItemSize).toInt()
+
+    onUpdateThumbY(newThumbY)
 
     scope.launch {
-        onUpdateThumbY(newThumbY)
-
-        onScrollToItem(targetIndex)
+        onScrollToItem(targetIndex, offset)
     }
 }
 
@@ -183,28 +198,35 @@ private fun getViewPortThumbY(
     thumbHeight: Dp,
     bottomPadding: Int,
 ): Float {
-    val scrollableItems =
-        (lazyListState.layoutInfo.totalItemsCount - lazyListState.layoutInfo.visibleItemsInfo.size)
-            .coerceAtLeast(0)
+    val layoutInfo = lazyListState.layoutInfo
+    val visibleItems = layoutInfo.visibleItemsInfo
 
-    val size =
-        lazyListState.layoutInfo.visibleItemsInfo.firstOrNull()?.size ?: 1
+    if (visibleItems.isEmpty()) return 0f
 
-    val totalScrollY =
-        (lazyListState.firstVisibleItemIndex * size) + lazyListState.firstVisibleItemScrollOffset
+    val firstItem = visibleItems.first()
 
-    val availableScroll = scrollableItems * size
+    val visibleHeight = visibleItems.sumOf { it.size }
+    val avgItemSize = visibleHeight / visibleItems.size
+
+    val totalItems = layoutInfo.totalItemsCount
+    val totalContentHeight = totalItems * avgItemSize
+
+    val scrollY =
+        (firstItem.index * avgItemSize) - firstItem.offset
+
+    val viewportHeight = layoutInfo.viewportSize.height.toFloat()
+
+    val scrollableHeight =
+        (totalContentHeight - viewportHeight).coerceAtLeast(1f)
+
+    val progress = (scrollY / scrollableHeight)
+        .coerceIn(0f, 1f)
 
     val thumbHeightPx = with(density) { thumbHeight.toPx() }
 
     val availableHeight =
-        (lazyListState.layoutInfo.viewportSize.height - thumbHeightPx - bottomPadding)
+        (viewportHeight - thumbHeightPx - bottomPadding)
             .coerceAtLeast(0f)
 
-    return if (availableScroll <= 0) {
-        0f
-    } else {
-        (totalScrollY.toFloat() / availableScroll.toFloat() * availableHeight)
-            .coerceIn(0f, availableHeight)
-    }
+    return progress * availableHeight
 }
