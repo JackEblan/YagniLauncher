@@ -727,6 +727,8 @@ internal fun ApplicationScreenEffect(
     onUpdateSelectedEblanApplicationInfoTagId: (Long?) -> Unit,
     onResetScroll: () -> Unit,
 ) {
+    val scope = rememberCoroutineScope()
+
     LaunchedEffect(key1 = textFieldState) {
         snapshotFlow { textFieldState.text }.debounce(500L).onEach { text ->
             if (text.isNotEmpty()) {
@@ -745,9 +747,18 @@ internal fun ApplicationScreenEffect(
             onGetEblanApplicationInfosByLabel("")
 
             textFieldState.clearText()
+        }
 
+        if (swipeY.roundToInt() >= screenHeight &&
+            selectedEblanApplicationInfoTagId != null &&
+            appDrawerSettings.resetState
+        ) {
             onUpdateSelectedEblanApplicationInfoTagId(null)
+        }
 
+        if (swipeY.roundToInt() >= screenHeight &&
+            appDrawerSettings.resetState
+        ) {
             onResetScroll()
         }
 
@@ -764,12 +775,14 @@ internal fun ApplicationScreenEffect(
     }
 
     LaunchedEffect(key1 = isPressHome) {
-        if (isPressHome) {
+        if (isPressHome && showPopupApplicationMenu) {
             onShowPopupApplicationMenu(false)
 
-            searchBarState.animateToCollapsed()
-
             onDismiss()
+        }
+
+        if (isPressHome && searchBarState.currentValue == SearchBarValue.Expanded) {
+            searchBarState.animateToCollapsed()
         }
 
         if (isPressHome && appDrawerSettings.resetState) {
@@ -790,12 +803,20 @@ internal fun ApplicationScreenEffect(
     }
 
     BackHandler(enabled = swipeY < screenHeight.toFloat()) {
-        if (appDrawerSettings.resetState) {
-            onResetScroll()
+        scope.launch {
+            if (showPopupApplicationMenu) {
+                onShowPopupApplicationMenu(false)
+            }
+
+            if (searchBarState.currentValue == SearchBarValue.Expanded) {
+                searchBarState.animateToCollapsed()
+            }
+
+            onDismiss()
+
+            if (appDrawerSettings.resetState) {
+                onResetScroll()
+            }
         }
-
-        onShowPopupApplicationMenu(false)
-
-        onDismiss()
     }
 }

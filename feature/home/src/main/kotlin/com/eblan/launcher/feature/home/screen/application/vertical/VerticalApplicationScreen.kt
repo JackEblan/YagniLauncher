@@ -251,7 +251,7 @@ internal fun SharedTransitionScope.VerticalApplicationScreen(
             }
         }
 
-        if (getEblanApplicationInfosByLabel.eblanApplicationInfos.keys.size > 1) {
+        if (eblanUserPageKeys.size > 1) {
             EblanApplicationInfoTabRow(
                 currentPage = horizontalPagerState.currentPage,
                 eblanUserPageKeys = eblanUserPageKeys,
