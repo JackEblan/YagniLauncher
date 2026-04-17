@@ -35,6 +35,7 @@ import androidx.compose.material.icons.filled.Gesture
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.LockOpen
 import androidx.compose.material.icons.filled.MoreVert
@@ -78,4 +79,5 @@ object EblanLauncherIcons {
     val MoreVert = Icons.Default.MoreVert
     val Warning = Icons.Default.Warning
     val BrokenImage = Icons.Default.BrokenImage
+    val KeyboardArrowUp = Icons.Default.KeyboardArrowUp
 }

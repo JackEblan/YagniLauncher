@@ -88,7 +88,7 @@ import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.domain.model.PinItemRequestType
 import com.eblan.launcher.domain.model.TextColor
 import com.eblan.launcher.feature.home.component.grid.GridLayout
-import com.eblan.launcher.feature.home.component.indicator.PageIndicator
+import com.eblan.launcher.feature.home.component.indicator.GridPagerIndicator
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
@@ -804,7 +804,7 @@ internal fun PagerScreen(
                 )
             }
 
-            PageIndicator(
+            GridPagerIndicator(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(PAGE_INDICATOR_HEIGHT),
