@@ -40,8 +40,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlin.math.ceil
 import kotlin.math.roundToInt
@@ -76,38 +79,14 @@ internal fun ScrollBarThumb(
 
     val viewPortThumbY by remember(key1 = lazyGridState) {
         derivedStateOf {
-            val totalRows =
-                (lazyGridState.layoutInfo.totalItemsCount + appDrawerColumns - 1) / appDrawerColumns
-
-            val visibleRows =
-                ceil(lazyGridState.layoutInfo.viewportSize.height / height.toFloat()).toInt()
-
-            val scrollableRows = (totalRows - visibleRows).coerceAtLeast(0)
-
-            val availableScroll = scrollableRows * height
-
-            val row = lazyGridState.firstVisibleItemIndex / appDrawerColumns
-
-            val totalScrollY =
-                (row * height) + lazyGridState.firstVisibleItemScrollOffset
-
-            val thumbHeightPx = with(density) {
-                thumbHeight.toPx()
-            }
-
-            val availableHeight =
-                (lazyGridState.layoutInfo.viewportSize.height - thumbHeightPx - bottomPadding).coerceAtLeast(
-                    0f,
-                )
-
-            if (availableScroll <= 0) {
-                0f
-            } else {
-                (totalScrollY.toFloat() / availableScroll.toFloat() * availableHeight).coerceIn(
-                    0f,
-                    availableHeight,
-                )
-            }
+            getViewPortThumbY(
+                lazyGridState = lazyGridState,
+                appDrawerColumns = appDrawerColumns,
+                height = height,
+                density = density,
+                thumbHeight = thumbHeight,
+                bottomPadding = bottomPadding,
+            )
         }
     }
 
@@ -139,36 +118,21 @@ internal fun ScrollBarThumb(
                             isDraggingThumb = true
                         },
                         onVerticalDrag = { _, deltaY ->
-                            val totalRows =
-                                (lazyGridState.layoutInfo.totalItemsCount + appDrawerColumns - 1) / appDrawerColumns
-
-                            val visibleRows =
-                                ceil(lazyGridState.layoutInfo.viewportSize.height / height.toFloat()).toInt()
-
-                            val scrollableRows = (totalRows - visibleRows).coerceAtLeast(0)
-
-                            val availableScroll = scrollableRows * height
-
-                            val thumbHeightPx = with(density) { thumbHeight.toPx() }
-
-                            val availableHeight =
-                                lazyGridState.layoutInfo.viewportSize.height - thumbHeightPx - bottomPadding
-
-                            thumbY = (thumbY + deltaY).coerceIn(0f, availableHeight)
-
-                            val progress = thumbY / availableHeight
-
-                            val targetScrollY = progress * availableScroll
-
-                            val targetRow = targetScrollY / height
-
-                            val targetIndex =
-                                (targetRow * appDrawerColumns).roundToInt()
-                                    .coerceIn(0, lazyGridState.layoutInfo.totalItemsCount)
-
-                            scope.launch {
-                                onScrollToItem(targetIndex)
-                            }
+                            handleVerticalDrag(
+                                lazyGridState = lazyGridState,
+                                appDrawerColumns = appDrawerColumns,
+                                height = height,
+                                density = density,
+                                thumbHeight = thumbHeight,
+                                bottomPadding = bottomPadding,
+                                thumbY = thumbY,
+                                deltaY = deltaY,
+                                scope = scope,
+                                onScrollToItem = onScrollToItem,
+                                onUpdateThumbY = { newThumbY ->
+                                    thumbY = newThumbY
+                                },
+                            )
                         },
                         onDragEnd = {
                             isDraggingThumb = false
@@ -185,5 +149,89 @@ internal fun ScrollBarThumb(
                     shape = RoundedCornerShape(10.dp),
                 ),
         )
+    }
+}
+
+private fun handleVerticalDrag(
+    lazyGridState: LazyGridState,
+    appDrawerColumns: Int,
+    height: Int,
+    density: Density,
+    thumbHeight: Dp,
+    bottomPadding: Int,
+    thumbY: Float,
+    deltaY: Float,
+    scope: CoroutineScope,
+    onScrollToItem: suspend (Int) -> Unit,
+    onUpdateThumbY: (Float) -> Unit,
+) {
+    val totalRows =
+        (lazyGridState.layoutInfo.totalItemsCount + appDrawerColumns - 1) / appDrawerColumns
+
+    val visibleRows =
+        ceil(lazyGridState.layoutInfo.viewportSize.height / height.toFloat()).toInt()
+
+    val scrollableRows = (totalRows - visibleRows).coerceAtLeast(0)
+
+    val availableScroll = scrollableRows * height
+
+    val thumbHeightPx = with(density) { thumbHeight.toPx() }
+
+    val availableHeight =
+        lazyGridState.layoutInfo.viewportSize.height - thumbHeightPx - bottomPadding
+
+    val newThumbY = (thumbY + deltaY).coerceIn(0f, availableHeight)
+
+    val progress = newThumbY / availableHeight
+
+    val targetScrollY = progress * availableScroll
+
+    val targetRow = targetScrollY / height
+
+    val targetIndex =
+        (targetRow * appDrawerColumns).roundToInt()
+            .coerceIn(0, lazyGridState.layoutInfo.totalItemsCount)
+
+    scope.launch {
+        onUpdateThumbY(newThumbY)
+
+        onScrollToItem(targetIndex)
+    }
+}
+
+private fun getViewPortThumbY(
+    lazyGridState: LazyGridState,
+    appDrawerColumns: Int,
+    height: Int,
+    density: Density,
+    thumbHeight: Dp,
+    bottomPadding: Int,
+): Float {
+    val totalRows =
+        (lazyGridState.layoutInfo.totalItemsCount + appDrawerColumns - 1) / appDrawerColumns
+
+    val visibleRows =
+        ceil(lazyGridState.layoutInfo.viewportSize.height / height.toFloat()).toInt()
+
+    val scrollableRows = (totalRows - visibleRows).coerceAtLeast(0)
+
+    val availableScroll = scrollableRows * height
+
+    val row = lazyGridState.firstVisibleItemIndex / appDrawerColumns
+
+    val totalScrollY =
+        (row * height) + lazyGridState.firstVisibleItemScrollOffset
+
+    val thumbHeightPx = with(density) {
+        thumbHeight.toPx()
+    }
+
+    val availableHeight = lazyGridState.layoutInfo.viewportSize.height - thumbHeightPx - bottomPadding
+
+    return if (availableScroll <= 0) {
+        0f
+    } else {
+        (totalScrollY.toFloat() / availableScroll.toFloat() * availableHeight)
+            .coerceIn(0f, availableHeight)
     }
 }
