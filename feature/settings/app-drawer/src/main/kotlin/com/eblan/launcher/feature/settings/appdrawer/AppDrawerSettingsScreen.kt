@@ -208,6 +208,17 @@ private fun Success(
 
             HorizontalDivider(modifier = Modifier.fillMaxWidth())
 
+            SettingsSwitch(
+                checked = appDrawerSettings.resetState,
+                title = "Reset State",
+                subtitle = "Reset app drawer state when not visible",
+                onCheckedChange = { newResetState ->
+                    onUpdateAppDrawerSettings(appDrawerSettings.copy(resetState = newResetState))
+                },
+            )
+
+            HorizontalDivider(modifier = Modifier.fillMaxWidth())
+
             SettingsColumn(
                 title = "Hidden Applications",
                 subtitle = "Hidden Applications",
