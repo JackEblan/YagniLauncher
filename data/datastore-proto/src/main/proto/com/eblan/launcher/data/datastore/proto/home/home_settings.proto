@@ -20,4 +20,5 @@ message HomeSettingsProto {
   int32 dockPageCount = 14;
   bool dockInfiniteScroll = 15;
   int32 dockInitialPage = 16;
+  bool addNewAppsToHomeScreen = 17;
 }

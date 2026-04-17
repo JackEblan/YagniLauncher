@@ -25,6 +25,7 @@ import com.eblan.launcher.domain.framework.FileManager
 import com.eblan.launcher.domain.framework.IconPackManager
 import com.eblan.launcher.domain.framework.LauncherAppsWrapper
 import com.eblan.launcher.domain.framework.PackageManagerWrapper
+import com.eblan.launcher.domain.grid.findAvailableRegionByPage
 import com.eblan.launcher.domain.model.ApplicationInfoGridItem
 import com.eblan.launcher.domain.model.Associate
 import com.eblan.launcher.domain.model.EblanAction
@@ -35,16 +36,21 @@ import com.eblan.launcher.domain.model.ExperimentalSettings
 import com.eblan.launcher.domain.model.FastAppWidgetManagerAppWidgetProviderInfo
 import com.eblan.launcher.domain.model.FastLauncherAppsActivityInfo
 import com.eblan.launcher.domain.model.FastLauncherAppsShortcutInfo
+import com.eblan.launcher.domain.model.GridItem
+import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.HomeSettings
+import com.eblan.launcher.domain.model.SyncEblanApplicationInfo
 import com.eblan.launcher.domain.repository.ApplicationInfoGridItemRepository
 import com.eblan.launcher.domain.repository.EblanAppWidgetProviderInfoRepository
 import com.eblan.launcher.domain.repository.EblanApplicationInfoRepository
 import com.eblan.launcher.domain.repository.EblanShortcutConfigRepository
 import com.eblan.launcher.domain.repository.EblanShortcutInfoRepository
+import com.eblan.launcher.domain.repository.GridRepository
 import com.eblan.launcher.domain.repository.ShortcutConfigGridItemRepository
 import com.eblan.launcher.domain.repository.ShortcutInfoGridItemRepository
 import com.eblan.launcher.domain.repository.UserDataRepository
 import com.eblan.launcher.domain.repository.WidgetGridItemRepository
+import com.eblan.launcher.domain.usecase.grid.GetFolderGridItemsUseCase
 import com.eblan.launcher.domain.usecase.iconpack.updateIconPackInfos
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.currentCoroutineContext
@@ -72,6 +78,8 @@ class SyncDataUseCase @Inject constructor(
     private val iconPackManager: IconPackManager,
     private val shortcutConfigGridItemRepository: ShortcutConfigGridItemRepository,
     private val iconKeyGenerator: IconKeyGenerator,
+    private val gridRepository: GridRepository,
+    private val getFolderGridItemsUseCase: GetFolderGridItemsUseCase,
     @param:Dispatcher(EblanDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke() {
@@ -108,6 +116,7 @@ class SyncDataUseCase @Inject constructor(
         }
     }
 
+    @OptIn(ExperimentalUuidApi::class)
     private suspend fun updateEblanApplicationInfos(
         experimentalSettings: ExperimentalSettings,
         homeSettings: HomeSettings,
@@ -150,6 +159,12 @@ class SyncDataUseCase @Inject constructor(
             }
         }
 
+        addNewApplicationsToHomeScreen(
+            homeSettings = homeSettings,
+            newSyncEblanApplicationInfos = newSyncEblanApplicationInfos,
+            oldSyncEblanApplicationInfos = oldSyncEblanApplicationInfos,
+        )
+
         val newDeleteEblanApplicationInfos =
             newSyncEblanApplicationInfos.map { syncEblanApplicationInfo ->
                 syncEblanApplicationInfo.toDeleteEblanApplicationInfo()
@@ -187,6 +202,94 @@ class SyncDataUseCase @Inject constructor(
             experimentalSettings = experimentalSettings,
             homeSettings = homeSettings,
         )
+    }
+
+    @OptIn(ExperimentalUuidApi::class)
+    private suspend fun addNewApplicationsToHomeScreen(
+        homeSettings: HomeSettings,
+        newSyncEblanApplicationInfos: List<SyncEblanApplicationInfo>,
+        oldSyncEblanApplicationInfos: List<SyncEblanApplicationInfo>,
+    ) {
+        if (!homeSettings.addNewAppsToHomeScreen) return
+
+        val gridItems = gridRepository.gridItems.first() + getFolderGridItemsUseCase().first()
+
+        val initialPage = homeSettings.initialPage
+
+        val newlyInstalledSyncEblanApplicationInfos =
+            newSyncEblanApplicationInfos - oldSyncEblanApplicationInfos.toSet()
+
+        val eblanAction = EblanAction(
+            eblanActionType = EblanActionType.None,
+            serialNumber = 0L,
+            componentName = "",
+        )
+
+        newlyInstalledSyncEblanApplicationInfos.forEach { syncEblanApplicationInfo ->
+            val data = GridItemData.ApplicationInfo(
+                serialNumber = syncEblanApplicationInfo.serialNumber,
+                componentName = syncEblanApplicationInfo.componentName,
+                packageName = syncEblanApplicationInfo.packageName,
+                icon = syncEblanApplicationInfo.icon,
+                label = syncEblanApplicationInfo.label.toString(),
+                customIcon = null,
+                customLabel = null,
+                index = -1,
+                folderId = null,
+            )
+
+            val gridItem = GridItem(
+                id = Uuid.random().toHexString(),
+                page = initialPage,
+                startColumn = 0,
+                startRow = 0,
+                columnSpan = 1,
+                rowSpan = 1,
+                data = data,
+                associate = Associate.Grid,
+                override = false,
+                gridItemSettings = homeSettings.gridItemSettings,
+                doubleTap = eblanAction,
+                swipeUp = eblanAction,
+                swipeDown = eblanAction,
+            )
+
+            val newGridItem = findAvailableRegionByPage(
+                gridItems = gridItems,
+                gridItem = gridItem,
+                pageCount = homeSettings.pageCount,
+                columns = homeSettings.columns,
+                rows = homeSettings.rows,
+            )
+
+            if (newGridItem != null) {
+                applicationInfoGridItemRepository.insertApplicationInfoGridItem(
+                    applicationInfoGridItem = ApplicationInfoGridItem(
+                        id = newGridItem.id,
+                        page = newGridItem.page,
+                        startColumn = newGridItem.startColumn,
+                        startRow = newGridItem.startRow,
+                        columnSpan = newGridItem.columnSpan,
+                        rowSpan = newGridItem.rowSpan,
+                        associate = newGridItem.associate,
+                        componentName = data.componentName,
+                        packageName = data.packageName,
+                        icon = data.icon,
+                        label = data.label,
+                        override = newGridItem.override,
+                        serialNumber = data.serialNumber,
+                        customIcon = data.customIcon,
+                        customLabel = data.customLabel,
+                        gridItemSettings = newGridItem.gridItemSettings,
+                        doubleTap = newGridItem.doubleTap,
+                        swipeUp = newGridItem.swipeUp,
+                        swipeDown = newGridItem.swipeDown,
+                        index = data.index,
+                        folderId = data.folderId,
+                    ),
+                )
+            }
+        }
     }
 
     private suspend fun updateAppWidgetProviderInfos() {
@@ -381,6 +484,12 @@ class SyncDataUseCase @Inject constructor(
 
             val startRow = index / columns
 
+            val eblanAction = EblanAction(
+                eblanActionType = EblanActionType.None,
+                serialNumber = 0L,
+                componentName = "",
+            )
+
             applicationInfoGridItemRepository.insertApplicationInfoGridItem(
                 applicationInfoGridItem = ApplicationInfoGridItem(
                     id = Uuid.random().toHexString(),
@@ -399,21 +508,9 @@ class SyncDataUseCase @Inject constructor(
                     customIcon = null,
                     customLabel = null,
                     gridItemSettings = homeSettings.gridItemSettings,
-                    doubleTap = EblanAction(
-                        eblanActionType = EblanActionType.None,
-                        serialNumber = 0L,
-                        componentName = "",
-                    ),
-                    swipeUp = EblanAction(
-                        eblanActionType = EblanActionType.None,
-                        serialNumber = 0L,
-                        componentName = "",
-                    ),
-                    swipeDown = EblanAction(
-                        eblanActionType = EblanActionType.None,
-                        serialNumber = 0L,
-                        componentName = "",
-                    ),
+                    doubleTap = eblanAction,
+                    swipeUp = eblanAction,
+                    swipeDown = eblanAction,
                     index = -1,
                     folderId = null,
                 ),

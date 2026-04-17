@@ -32,4 +32,5 @@ data class HomeSettings(
     val dockPageCount: Int,
     val dockInfiniteScroll: Boolean,
     val dockInitialPage: Int,
+    val addNewAppsToHomeScreen: Boolean,
 )

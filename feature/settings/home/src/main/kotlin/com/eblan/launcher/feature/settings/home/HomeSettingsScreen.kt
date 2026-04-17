@@ -175,6 +175,17 @@ private fun Success(
                     onUpdateHomeSettings(homeSettings.copy(lockScreenOrientation = lockScreenOrientation))
                 },
             )
+
+            HorizontalDivider(modifier = Modifier.fillMaxWidth())
+
+            SettingsSwitch(
+                checked = homeSettings.addNewAppsToHomeScreen,
+                title = "Add New Apps To Home Screen",
+                subtitle = "Add new apps to home screen",
+                onCheckedChange = { addNewAppsToHomeScreen ->
+                    onUpdateHomeSettings(homeSettings.copy(addNewAppsToHomeScreen = addNewAppsToHomeScreen))
+                },
+            )
         }
 
         Text(

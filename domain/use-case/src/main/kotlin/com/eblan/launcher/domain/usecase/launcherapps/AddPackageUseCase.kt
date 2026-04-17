@@ -25,13 +25,24 @@ import com.eblan.launcher.domain.framework.FileManager
 import com.eblan.launcher.domain.framework.IconPackManager
 import com.eblan.launcher.domain.framework.LauncherAppsWrapper
 import com.eblan.launcher.domain.framework.PackageManagerWrapper
+import com.eblan.launcher.domain.grid.findAvailableRegionByPage
+import com.eblan.launcher.domain.model.ApplicationInfoGridItem
+import com.eblan.launcher.domain.model.Associate
+import com.eblan.launcher.domain.model.EblanAction
+import com.eblan.launcher.domain.model.EblanActionType
 import com.eblan.launcher.domain.model.EblanApplicationInfo
+import com.eblan.launcher.domain.model.GridItem
+import com.eblan.launcher.domain.model.GridItemData
+import com.eblan.launcher.domain.model.HomeSettings
 import com.eblan.launcher.domain.model.LauncherAppsActivityInfo
+import com.eblan.launcher.domain.repository.ApplicationInfoGridItemRepository
 import com.eblan.launcher.domain.repository.EblanAppWidgetProviderInfoRepository
 import com.eblan.launcher.domain.repository.EblanApplicationInfoRepository
 import com.eblan.launcher.domain.repository.EblanShortcutConfigRepository
 import com.eblan.launcher.domain.repository.EblanShortcutInfoRepository
+import com.eblan.launcher.domain.repository.GridRepository
 import com.eblan.launcher.domain.repository.UserDataRepository
+import com.eblan.launcher.domain.usecase.grid.GetFolderGridItemsUseCase
 import com.eblan.launcher.domain.usecase.iconpack.cacheIconPackFile
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.currentCoroutineContext
@@ -40,6 +51,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import java.io.File
 import javax.inject.Inject
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 class AddPackageUseCase @Inject constructor(
     private val userDataRepository: UserDataRepository,
@@ -53,6 +66,9 @@ class AddPackageUseCase @Inject constructor(
     private val fileManager: FileManager,
     private val iconPackManager: IconPackManager,
     private val iconKeyGenerator: IconKeyGenerator,
+    private val gridRepository: GridRepository,
+    private val getFolderGridItemsUseCase: GetFolderGridItemsUseCase,
+    private val applicationInfoGridItemRepository: ApplicationInfoGridItemRepository,
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke(
@@ -70,13 +86,28 @@ class AddPackageUseCase @Inject constructor(
             ).onEach { launcherAppsActivityInfo ->
                 currentCoroutineContext().ensureActive()
 
-                addEblanApplicationInfo(
-                    componentName = launcherAppsActivityInfo.componentName,
+                eblanApplicationInfoRepository.upsertEblanApplicationInfo(
+                    eblanApplicationInfo = EblanApplicationInfo(
+                        componentName = launcherAppsActivityInfo.componentName,
+                        serialNumber = launcherAppsActivityInfo.serialNumber,
+                        packageName = launcherAppsActivityInfo.packageName,
+                        icon = launcherAppsActivityInfo.activityIcon,
+                        label = launcherAppsActivityInfo.activityLabel,
+                        customIcon = null,
+                        customLabel = null,
+                        isHidden = false,
+                        lastUpdateTime = launcherAppsActivityInfo.lastUpdateTime,
+                        index = -1,
+                    ),
+                )
+
+                addNewApplicationToHomeScreen(
+                    homeSettings = userData.homeSettings,
                     serialNumber = launcherAppsActivityInfo.serialNumber,
+                    componentName = launcherAppsActivityInfo.componentName,
                     packageName = launcherAppsActivityInfo.packageName,
                     icon = launcherAppsActivityInfo.activityIcon,
                     label = launcherAppsActivityInfo.activityLabel,
-                    lastUpdateTime = launcherAppsActivityInfo.lastUpdateTime,
                 )
             }
 
@@ -102,28 +133,88 @@ class AddPackageUseCase @Inject constructor(
         }
     }
 
-    private suspend fun addEblanApplicationInfo(
-        componentName: String,
+    @OptIn(ExperimentalUuidApi::class)
+    private suspend fun addNewApplicationToHomeScreen(
+        homeSettings: HomeSettings,
         serialNumber: Long,
+        componentName: String,
         packageName: String,
         icon: String?,
         label: String,
-        lastUpdateTime: Long,
     ) {
-        eblanApplicationInfoRepository.upsertEblanApplicationInfo(
-            eblanApplicationInfo = EblanApplicationInfo(
-                componentName = componentName,
-                serialNumber = serialNumber,
-                packageName = packageName,
-                icon = icon,
-                label = label,
-                customIcon = null,
-                customLabel = null,
-                isHidden = false,
-                lastUpdateTime = lastUpdateTime,
-                index = -1,
-            ),
+        if (!homeSettings.addNewAppsToHomeScreen) return
+
+        val gridItems = gridRepository.gridItems.first() + getFolderGridItemsUseCase().first()
+
+        val eblanAction = EblanAction(
+            eblanActionType = EblanActionType.None,
+            serialNumber = 0L,
+            componentName = "",
         )
+
+        val data = GridItemData.ApplicationInfo(
+            serialNumber = serialNumber,
+            componentName = componentName,
+            packageName = packageName,
+            icon = icon,
+            label = label,
+            customIcon = null,
+            customLabel = null,
+            index = -1,
+            folderId = null,
+        )
+
+        val gridItem = GridItem(
+            id = Uuid.random().toHexString(),
+            page = homeSettings.initialPage,
+            startColumn = 0,
+            startRow = 0,
+            columnSpan = 1,
+            rowSpan = 1,
+            data = data,
+            associate = Associate.Grid,
+            override = false,
+            gridItemSettings = homeSettings.gridItemSettings,
+            doubleTap = eblanAction,
+            swipeUp = eblanAction,
+            swipeDown = eblanAction,
+        )
+
+        val newGridItem = findAvailableRegionByPage(
+            gridItems = gridItems,
+            gridItem = gridItem,
+            pageCount = homeSettings.pageCount,
+            columns = homeSettings.columns,
+            rows = homeSettings.rows,
+        )
+
+        if (newGridItem != null) {
+            applicationInfoGridItemRepository.insertApplicationInfoGridItem(
+                applicationInfoGridItem = ApplicationInfoGridItem(
+                    id = newGridItem.id,
+                    page = newGridItem.page,
+                    startColumn = newGridItem.startColumn,
+                    startRow = newGridItem.startRow,
+                    columnSpan = newGridItem.columnSpan,
+                    rowSpan = newGridItem.rowSpan,
+                    associate = newGridItem.associate,
+                    componentName = data.componentName,
+                    packageName = data.packageName,
+                    icon = data.icon,
+                    label = data.label,
+                    override = newGridItem.override,
+                    serialNumber = data.serialNumber,
+                    customIcon = data.customIcon,
+                    customLabel = data.customLabel,
+                    gridItemSettings = newGridItem.gridItemSettings,
+                    doubleTap = newGridItem.doubleTap,
+                    swipeUp = newGridItem.swipeUp,
+                    swipeDown = newGridItem.swipeDown,
+                    index = data.index,
+                    folderId = data.folderId,
+                ),
+            )
+        }
     }
 
     private suspend fun addEblanAppWidgetProviderInfos(
