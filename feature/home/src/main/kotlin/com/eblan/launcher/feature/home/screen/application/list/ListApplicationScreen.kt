@@ -19,7 +19,6 @@ package com.eblan.launcher.feature.home.screen.application.list
 
 import android.graphics.Rect
 import android.os.Build
-import androidx.activity.compose.BackHandler
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
@@ -49,12 +48,10 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberOverscrollEffect
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.input.clearText
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.SearchBarValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.runtime.Composable
@@ -65,7 +62,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -128,11 +124,7 @@ import com.eblan.launcher.ui.local.LocalLauncherApps
 import com.eblan.launcher.ui.local.LocalPackageManager
 import com.eblan.launcher.ui.local.LocalUserManager
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import kotlin.math.roundToInt
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -204,6 +196,8 @@ internal fun SharedTransitionScope.ListApplicationScreen(
         },
     )
 
+    val scope = rememberCoroutineScope()
+
     val searchBarState = rememberSearchBarState()
 
     val textFieldState = rememberTextFieldState()
@@ -240,7 +234,13 @@ internal fun SharedTransitionScope.ListApplicationScreen(
         onUpdateSelectedEblanApplicationInfoTagId = { newSelectedEblanApplicationInfoTagId ->
             selectedEblanApplicationInfoTagId = newSelectedEblanApplicationInfoTagId
         },
-        onScrollItem = lazyListState::scrollToItem,
+        onResetScroll = {
+            scope.launch {
+                horizontalPagerState.scrollToPage(0)
+
+                lazyListState.scrollToItem(0)
+            }
+        },
     )
 
     Column(

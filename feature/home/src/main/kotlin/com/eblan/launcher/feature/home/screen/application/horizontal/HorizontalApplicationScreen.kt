@@ -44,6 +44,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -84,6 +85,7 @@ import com.eblan.launcher.ui.local.LocalLauncherApps
 import com.eblan.launcher.ui.local.LocalPackageManager
 import com.eblan.launcher.ui.local.LocalUserManager
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class, FlowPreview::class)
 @Composable
@@ -152,6 +154,8 @@ internal fun SharedTransitionScope.HorizontalApplicationScreen(
         },
     )
 
+    val scope = rememberCoroutineScope()
+
     val searchBarState = rememberSearchBarState()
 
     val textFieldState = rememberTextFieldState()
@@ -184,8 +188,10 @@ internal fun SharedTransitionScope.HorizontalApplicationScreen(
         onUpdateSelectedEblanApplicationInfoTagId = { newSelectedEblanApplicationInfoTagId ->
             selectedEblanApplicationInfoTagId = newSelectedEblanApplicationInfoTagId
         },
-        onScrollItem = {
-            horizontalPagerState.scrollToPage(0)
+        onResetScroll = {
+            scope.launch {
+                horizontalPagerState.scrollToPage(0)
+            }
         },
     )
 

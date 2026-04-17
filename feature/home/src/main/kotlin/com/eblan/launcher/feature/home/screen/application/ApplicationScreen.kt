@@ -725,10 +725,8 @@ internal fun ApplicationScreenEffect(
     onGetEblanApplicationInfosByTagId: (Long?) -> Unit,
     onShowPopupApplicationMenu: (Boolean) -> Unit,
     onUpdateSelectedEblanApplicationInfoTagId: (Long?) -> Unit,
-    onScrollItem: suspend (Int) -> Unit = {},
+    onResetScroll: () -> Unit,
 ) {
-    val scope = rememberCoroutineScope()
-
     LaunchedEffect(key1 = textFieldState) {
         snapshotFlow { textFieldState.text }.debounce(500L).onEach { text ->
             if (text.isNotEmpty()) {
@@ -750,7 +748,7 @@ internal fun ApplicationScreenEffect(
 
             onUpdateSelectedEblanApplicationInfoTagId(null)
 
-            onScrollItem(0)
+            onResetScroll()
         }
 
         if (swipeY.roundToInt() > 0 && showPopupApplicationMenu) {
@@ -775,7 +773,7 @@ internal fun ApplicationScreenEffect(
         }
 
         if (isPressHome && appDrawerSettings.resetState) {
-            onScrollItem(0)
+            onResetScroll()
         }
     }
 
@@ -792,14 +790,12 @@ internal fun ApplicationScreenEffect(
     }
 
     BackHandler(enabled = swipeY < screenHeight.toFloat()) {
-        scope.launch {
-            if (appDrawerSettings.resetState) {
-                onScrollItem(0)
-            }
-
-            onShowPopupApplicationMenu(false)
-
-            onDismiss()
+        if (appDrawerSettings.resetState) {
+            onResetScroll()
         }
+
+        onShowPopupApplicationMenu(false)
+
+        onDismiss()
     }
 }
