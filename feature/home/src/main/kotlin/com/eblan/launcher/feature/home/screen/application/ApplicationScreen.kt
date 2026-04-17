@@ -771,9 +771,11 @@ internal fun ApplicationScreenEffect(
 
             searchBarState.animateToCollapsed()
 
-            onScrollItem(0)
-
             onDismiss()
+        }
+
+        if (isPressHome && appDrawerSettings.resetState) {
+            onScrollItem(0)
         }
     }
 

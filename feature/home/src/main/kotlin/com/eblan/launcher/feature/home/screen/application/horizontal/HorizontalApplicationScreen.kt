@@ -184,6 +184,9 @@ internal fun SharedTransitionScope.HorizontalApplicationScreen(
         onUpdateSelectedEblanApplicationInfoTagId = { newSelectedEblanApplicationInfoTagId ->
             selectedEblanApplicationInfoTagId = newSelectedEblanApplicationInfoTagId
         },
+        onScrollItem = {
+            horizontalPagerState.scrollToPage(0)
+        },
     )
 
     Column(
