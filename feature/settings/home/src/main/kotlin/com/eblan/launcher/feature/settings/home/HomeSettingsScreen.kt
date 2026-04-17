@@ -180,7 +180,7 @@ private fun Success(
 
             SettingsSwitch(
                 checked = homeSettings.addNewAppsToHomeScreen,
-                title = "Add New Apps To Home Screen",
+                title = "Add New Apps",
                 subtitle = "Add new apps to home screen",
                 onCheckedChange = { addNewAppsToHomeScreen ->
                     onUpdateHomeSettings(homeSettings.copy(addNewAppsToHomeScreen = addNewAppsToHomeScreen))

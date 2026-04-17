@@ -188,13 +188,15 @@ private fun handleVerticalDrag(
 
     val targetRow = targetScrollY / height
 
+    val lastIndex = (lazyGridState.layoutInfo.totalItemsCount - 1).coerceAtLeast(0)
+
     val targetIndex =
         (targetRow * appDrawerColumns).roundToInt()
-            .coerceIn(0, lazyGridState.layoutInfo.totalItemsCount)
+            .coerceIn(0, lastIndex)
+
+    onUpdateThumbY(newThumbY)
 
     scope.launch {
-        onUpdateThumbY(newThumbY)
-
         onScrollToItem(targetIndex)
     }
 }

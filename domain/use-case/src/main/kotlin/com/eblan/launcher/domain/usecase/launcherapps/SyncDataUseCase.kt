@@ -161,6 +161,7 @@ class SyncDataUseCase @Inject constructor(
 
         addNewApplicationsToHomeScreen(
             homeSettings = homeSettings,
+            experimentalSettings = experimentalSettings,
             newSyncEblanApplicationInfos = newSyncEblanApplicationInfos,
             oldSyncEblanApplicationInfos = oldSyncEblanApplicationInfos,
         )
@@ -207,10 +208,11 @@ class SyncDataUseCase @Inject constructor(
     @OptIn(ExperimentalUuidApi::class)
     private suspend fun addNewApplicationsToHomeScreen(
         homeSettings: HomeSettings,
+        experimentalSettings: ExperimentalSettings,
         newSyncEblanApplicationInfos: List<SyncEblanApplicationInfo>,
         oldSyncEblanApplicationInfos: List<SyncEblanApplicationInfo>,
     ) {
-        if (!homeSettings.addNewAppsToHomeScreen) return
+        if (!homeSettings.addNewAppsToHomeScreen || experimentalSettings.firstLaunch) return
 
         val gridItems = gridRepository.gridItems.first() + getFolderGridItemsUseCase().first()
 

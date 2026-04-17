@@ -146,6 +146,14 @@ class AddPackageUseCase @Inject constructor(
 
         val gridItems = gridRepository.gridItems.first() + getFolderGridItemsUseCase().first()
 
+        val alreadyOnHome = gridItems.any { item ->
+            val data = item.data as? GridItemData.ApplicationInfo ?: return@any false
+
+            data.serialNumber == serialNumber && data.componentName == componentName
+        }
+
+        if (alreadyOnHome) return
+
         val eblanAction = EblanAction(
             eblanActionType = EblanActionType.None,
             serialNumber = 0L,
