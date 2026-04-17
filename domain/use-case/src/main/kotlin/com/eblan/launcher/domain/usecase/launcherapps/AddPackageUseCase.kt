@@ -155,9 +155,17 @@ class AddPackageUseCase @Inject constructor(
         val gridItems = gridRepository.gridItems.first() + getFolderGridItemsUseCase().first()
 
         val alreadyOnHome = gridItems.any { item ->
-            val data = item.data as? GridItemData.ApplicationInfo ?: return@any false
+            when (val data = item.data) {
+                is GridItemData.ApplicationInfo ->
+                    data.serialNumber == serialNumber && data.componentName == componentName
 
-            data.serialNumber == serialNumber && data.componentName == componentName
+                is GridItemData.Folder ->
+                    data.gridItems.any { gridItem ->
+                        gridItem.serialNumber == serialNumber && gridItem.componentName == componentName
+                    }
+
+                else -> false
+            }
         }
 
         if (alreadyOnHome) return
