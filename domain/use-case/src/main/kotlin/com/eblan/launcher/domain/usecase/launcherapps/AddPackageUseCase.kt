@@ -80,6 +80,8 @@ class AddPackageUseCase @Inject constructor(
 
             if (!userData.experimentalSettings.syncData) return@withContext
 
+            val newApplicationsToHomeScreen = mutableListOf<ApplicationInfoGridItem>()
+
             val launcherAppsActivityInfosByPackageName = launcherAppsWrapper.getActivityList(
                 serialNumber = serialNumber,
                 packageName = packageName,
@@ -108,6 +110,7 @@ class AddPackageUseCase @Inject constructor(
                     packageName = launcherAppsActivityInfo.packageName,
                     icon = launcherAppsActivityInfo.activityIcon,
                     label = launcherAppsActivityInfo.activityLabel,
+                    newApplicationsToHomeScreen = newApplicationsToHomeScreen,
                 )
             }
 
@@ -126,6 +129,10 @@ class AddPackageUseCase @Inject constructor(
                 packageName = packageName,
             )
 
+            applicationInfoGridItemRepository.insertApplicationInfoGridItems(
+                applicationInfoGridItems = newApplicationsToHomeScreen,
+            )
+
             addIconPackInfos(
                 iconPackInfoPackageName = userData.generalSettings.iconPackInfoPackageName,
                 launcherAppsActivityInfos = launcherAppsActivityInfosByPackageName,
@@ -141,6 +148,7 @@ class AddPackageUseCase @Inject constructor(
         packageName: String,
         icon: String?,
         label: String,
+        newApplicationsToHomeScreen: MutableList<ApplicationInfoGridItem>,
     ) {
         if (!homeSettings.addNewAppsToHomeScreen) return
 
@@ -197,8 +205,8 @@ class AddPackageUseCase @Inject constructor(
         )
 
         if (newGridItem != null) {
-            applicationInfoGridItemRepository.insertApplicationInfoGridItem(
-                applicationInfoGridItem = ApplicationInfoGridItem(
+            newApplicationsToHomeScreen.add(
+                ApplicationInfoGridItem(
                     id = newGridItem.id,
                     page = newGridItem.page,
                     startColumn = newGridItem.startColumn,

@@ -131,6 +131,8 @@ class SyncDataUseCase @Inject constructor(
 
         val newEblanShortcutConfigs = mutableSetOf<EblanShortcutConfig>()
 
+        val newApplicationsToHomeScreen = mutableListOf<ApplicationInfoGridItem>()
+
         val oldSyncEblanApplicationInfos =
             eblanApplicationInfoRepository.getEblanApplicationInfos().map { eblanApplicationInfo ->
                 eblanApplicationInfo.toSyncEblanApplicationInfo()
@@ -164,6 +166,7 @@ class SyncDataUseCase @Inject constructor(
             experimentalSettings = experimentalSettings,
             newSyncEblanApplicationInfos = newSyncEblanApplicationInfos,
             oldSyncEblanApplicationInfos = oldSyncEblanApplicationInfos,
+            newApplicationsToHomeScreen = newApplicationsToHomeScreen,
         )
 
         val newDeleteEblanApplicationInfos =
@@ -203,6 +206,8 @@ class SyncDataUseCase @Inject constructor(
             experimentalSettings = experimentalSettings,
             homeSettings = homeSettings,
         )
+
+        applicationInfoGridItemRepository.insertApplicationInfoGridItems(applicationInfoGridItems = newApplicationsToHomeScreen)
     }
 
     @OptIn(ExperimentalUuidApi::class)
@@ -211,6 +216,7 @@ class SyncDataUseCase @Inject constructor(
         experimentalSettings: ExperimentalSettings,
         newSyncEblanApplicationInfos: List<SyncEblanApplicationInfo>,
         oldSyncEblanApplicationInfos: List<SyncEblanApplicationInfo>,
+        newApplicationsToHomeScreen: MutableList<ApplicationInfoGridItem>,
     ) {
         if (!homeSettings.addNewAppsToHomeScreen || experimentalSettings.firstLaunch) return
 
@@ -265,8 +271,8 @@ class SyncDataUseCase @Inject constructor(
             )
 
             if (newGridItem != null) {
-                applicationInfoGridItemRepository.insertApplicationInfoGridItem(
-                    applicationInfoGridItem = ApplicationInfoGridItem(
+                newApplicationsToHomeScreen.add(
+                    ApplicationInfoGridItem(
                         id = newGridItem.id,
                         page = newGridItem.page,
                         startColumn = newGridItem.startColumn,
@@ -475,8 +481,10 @@ class SyncDataUseCase @Inject constructor(
     ) {
         if (!experimentalSettings.firstLaunch) return
 
+        val applicationInfoGridItems = mutableListOf<ApplicationInfoGridItem>()
+
         @OptIn(ExperimentalUuidApi::class)
-        suspend fun insertApplicationInfoGridItem(
+        fun insertApplicationInfoGridItem(
             index: Int,
             eblanApplicationInfo: EblanApplicationInfo,
             columns: Int,
@@ -492,8 +500,8 @@ class SyncDataUseCase @Inject constructor(
                 componentName = "",
             )
 
-            applicationInfoGridItemRepository.insertApplicationInfoGridItem(
-                applicationInfoGridItem = ApplicationInfoGridItem(
+            applicationInfoGridItems.add(
+                ApplicationInfoGridItem(
                     id = Uuid.random().toHexString(),
                     page = 0,
                     startColumn = startColumn,
@@ -539,6 +547,8 @@ class SyncDataUseCase @Inject constructor(
                     associate = Associate.Dock,
                 )
             }
+
+        applicationInfoGridItemRepository.insertApplicationInfoGridItems(applicationInfoGridItems = applicationInfoGridItems)
 
         userDataRepository.updateExperimentalSettings(
             experimentalSettings = experimentalSettings.copy(

@@ -164,9 +164,11 @@ private fun handleVerticalDrag(
 
     val targetScrollY = progress * availableScroll
 
+    val lastIndex = (lazyListState.layoutInfo.totalItemsCount - 1).coerceAtLeast(0)
+
     val targetIndex =
         (targetScrollY / size).toInt()
-            .coerceIn(0, lazyListState.layoutInfo.totalItemsCount)
+            .coerceIn(0, lastIndex)
 
     scope.launch {
         onUpdateThumbY(newThumbY)

@@ -60,5 +60,5 @@ interface ApplicationInfoGridItemDao {
     suspend fun updateApplicationInfoGridItemEntities(updateApplicationInfoGridItems: List<UpdateApplicationInfoGridItem>)
 
     @Insert
-    suspend fun insertApplicationInfoGridItemEntity(entity: ApplicationInfoGridItemEntity)
+    suspend fun insertApplicationInfoGridItemEntities(entities: List<ApplicationInfoGridItemEntity>)
 }
