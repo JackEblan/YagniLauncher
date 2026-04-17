@@ -20,17 +20,24 @@ package com.eblan.launcher.domain.usecase.launcherapps
 import com.eblan.launcher.domain.common.IconKeyGenerator
 import com.eblan.launcher.domain.framework.FileManager
 import com.eblan.launcher.domain.framework.PackageManagerWrapper
+import com.eblan.launcher.domain.grid.findAvailableRegionByPage
 import com.eblan.launcher.domain.model.AppWidgetManagerAppWidgetProviderInfo
 import com.eblan.launcher.domain.model.ApplicationInfoGridItem
+import com.eblan.launcher.domain.model.Associate
 import com.eblan.launcher.domain.model.DeleteEblanAppWidgetProviderInfo
 import com.eblan.launcher.domain.model.DeleteEblanApplicationInfo
 import com.eblan.launcher.domain.model.DeleteEblanShortcutConfig
 import com.eblan.launcher.domain.model.DeleteEblanShortcutInfo
+import com.eblan.launcher.domain.model.EblanAction
+import com.eblan.launcher.domain.model.EblanActionType
 import com.eblan.launcher.domain.model.EblanAppWidgetProviderInfo
 import com.eblan.launcher.domain.model.EblanApplicationInfo
 import com.eblan.launcher.domain.model.EblanShortcutConfig
 import com.eblan.launcher.domain.model.EblanShortcutInfo
 import com.eblan.launcher.domain.model.FastLauncherAppsActivityInfo
+import com.eblan.launcher.domain.model.GridItem
+import com.eblan.launcher.domain.model.GridItemData
+import com.eblan.launcher.domain.model.HomeSettings
 import com.eblan.launcher.domain.model.LauncherAppsActivityInfo
 import com.eblan.launcher.domain.model.LauncherAppsShortcutInfo
 import com.eblan.launcher.domain.model.ShortcutConfigActivityInfo
@@ -50,6 +57,8 @@ import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.first
 import java.io.File
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 internal suspend fun deleteEblanApplicationInfoIcons(
     eblanApplicationInfos: List<EblanApplicationInfo>,
@@ -496,6 +505,106 @@ internal fun EblanShortcutConfig.toDeleteEblanShortcutConfig(): DeleteEblanShort
     serialNumber = serialNumber,
     activityIcon = activityIcon,
 )
+
+@OptIn(ExperimentalUuidApi::class)
+internal suspend fun addNewApplicationToHomeScreen(
+    gridItems: List<GridItem>,
+    serialNumber: Long,
+    componentName: String,
+    packageName: String,
+    icon: String?,
+    label: String?,
+    homeSettings: HomeSettings,
+    newApplicationsToHomeScreen: MutableList<ApplicationInfoGridItem>,
+) {
+    val alreadyOnHome = gridItems.any { gridItem ->
+        when (val data = gridItem.data) {
+            is GridItemData.ApplicationInfo ->
+                data.serialNumber == serialNumber &&
+                    data.componentName == componentName
+
+            is GridItemData.Folder ->
+                data.gridItems.any { gridItem ->
+                    gridItem.serialNumber == serialNumber &&
+                        gridItem.componentName == componentName
+                }
+
+            else -> false
+        }
+    }
+
+    if (alreadyOnHome) return
+
+    val eblanAction = EblanAction(
+        eblanActionType = EblanActionType.None,
+        serialNumber = 0L,
+        componentName = "",
+    )
+
+    val data = GridItemData.ApplicationInfo(
+        serialNumber = serialNumber,
+        componentName = componentName,
+        packageName = packageName,
+        icon = icon,
+        label = label.toString(),
+        customIcon = null,
+        customLabel = null,
+        index = -1,
+        folderId = null,
+    )
+
+    val gridItem = GridItem(
+        id = Uuid.random().toHexString(),
+        page = homeSettings.initialPage,
+        startColumn = 0,
+        startRow = 0,
+        columnSpan = 1,
+        rowSpan = 1,
+        data = data,
+        associate = Associate.Grid,
+        override = false,
+        gridItemSettings = homeSettings.gridItemSettings,
+        doubleTap = eblanAction,
+        swipeUp = eblanAction,
+        swipeDown = eblanAction,
+    )
+
+    val newGridItem = findAvailableRegionByPage(
+        gridItems = gridItems,
+        gridItem = gridItem,
+        pageCount = homeSettings.pageCount,
+        columns = homeSettings.columns,
+        rows = homeSettings.rows,
+    )
+
+    if (newGridItem != null) {
+        newApplicationsToHomeScreen.add(
+            ApplicationInfoGridItem(
+                id = newGridItem.id,
+                page = newGridItem.page,
+                startColumn = newGridItem.startColumn,
+                startRow = newGridItem.startRow,
+                columnSpan = newGridItem.columnSpan,
+                rowSpan = newGridItem.rowSpan,
+                associate = newGridItem.associate,
+                componentName = data.componentName,
+                packageName = data.packageName,
+                icon = data.icon,
+                label = data.label,
+                override = newGridItem.override,
+                serialNumber = data.serialNumber,
+                customIcon = data.customIcon,
+                customLabel = data.customLabel,
+                gridItemSettings = newGridItem.gridItemSettings,
+                doubleTap = newGridItem.doubleTap,
+                swipeUp = newGridItem.swipeUp,
+                swipeDown = newGridItem.swipeDown,
+                index = data.index,
+                folderId = data.folderId,
+            ),
+        )
+    }
+}
 
 private suspend fun resolveApplicationIcon(
     fileManager: FileManager,

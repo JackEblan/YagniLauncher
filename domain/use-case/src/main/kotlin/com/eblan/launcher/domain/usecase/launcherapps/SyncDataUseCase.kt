@@ -25,7 +25,6 @@ import com.eblan.launcher.domain.framework.FileManager
 import com.eblan.launcher.domain.framework.IconPackManager
 import com.eblan.launcher.domain.framework.LauncherAppsWrapper
 import com.eblan.launcher.domain.framework.PackageManagerWrapper
-import com.eblan.launcher.domain.grid.findAvailableRegionByPage
 import com.eblan.launcher.domain.model.ApplicationInfoGridItem
 import com.eblan.launcher.domain.model.Associate
 import com.eblan.launcher.domain.model.EblanAction
@@ -36,8 +35,6 @@ import com.eblan.launcher.domain.model.ExperimentalSettings
 import com.eblan.launcher.domain.model.FastAppWidgetManagerAppWidgetProviderInfo
 import com.eblan.launcher.domain.model.FastLauncherAppsActivityInfo
 import com.eblan.launcher.domain.model.FastLauncherAppsShortcutInfo
-import com.eblan.launcher.domain.model.GridItem
-import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.HomeSettings
 import com.eblan.launcher.domain.model.SyncEblanApplicationInfo
 import com.eblan.launcher.domain.repository.ApplicationInfoGridItemRepository
@@ -222,99 +219,20 @@ class SyncDataUseCase @Inject constructor(
 
         val gridItems = gridRepository.gridItems.first() + getFolderGridItemsUseCase().first()
 
-        val initialPage = homeSettings.initialPage
-
         val newlyInstalledSyncEblanApplicationInfos =
             newSyncEblanApplicationInfos - oldSyncEblanApplicationInfos.toSet()
 
-        val eblanAction = EblanAction(
-            eblanActionType = EblanActionType.None,
-            serialNumber = 0L,
-            componentName = "",
-        )
-
         newlyInstalledSyncEblanApplicationInfos.forEach { syncEblanApplicationInfo ->
-            val alreadyOnHome = gridItems.any { gridItem ->
-                when (val data = gridItem.data) {
-                    is GridItemData.ApplicationInfo ->
-                        data.serialNumber == syncEblanApplicationInfo.serialNumber &&
-                            data.componentName == syncEblanApplicationInfo.componentName
-
-                    is GridItemData.Folder ->
-                        data.gridItems.any { gridItem ->
-                            gridItem.serialNumber == syncEblanApplicationInfo.serialNumber &&
-                                gridItem.componentName == syncEblanApplicationInfo.componentName
-                        }
-
-                    else -> false
-                }
-            }
-
-            if (alreadyOnHome) return@forEach
-
-            val data = GridItemData.ApplicationInfo(
+            addNewApplicationToHomeScreen(
+                gridItems = gridItems,
                 serialNumber = syncEblanApplicationInfo.serialNumber,
                 componentName = syncEblanApplicationInfo.componentName,
                 packageName = syncEblanApplicationInfo.packageName,
                 icon = syncEblanApplicationInfo.icon,
-                label = syncEblanApplicationInfo.label.toString(),
-                customIcon = null,
-                customLabel = null,
-                index = -1,
-                folderId = null,
+                label = syncEblanApplicationInfo.label,
+                homeSettings = homeSettings,
+                newApplicationsToHomeScreen = newApplicationsToHomeScreen,
             )
-
-            val gridItem = GridItem(
-                id = Uuid.random().toHexString(),
-                page = initialPage,
-                startColumn = 0,
-                startRow = 0,
-                columnSpan = 1,
-                rowSpan = 1,
-                data = data,
-                associate = Associate.Grid,
-                override = false,
-                gridItemSettings = homeSettings.gridItemSettings,
-                doubleTap = eblanAction,
-                swipeUp = eblanAction,
-                swipeDown = eblanAction,
-            )
-
-            val newGridItem = findAvailableRegionByPage(
-                gridItems = gridItems,
-                gridItem = gridItem,
-                pageCount = homeSettings.pageCount,
-                columns = homeSettings.columns,
-                rows = homeSettings.rows,
-            )
-
-            if (newGridItem != null) {
-                newApplicationsToHomeScreen.add(
-                    ApplicationInfoGridItem(
-                        id = newGridItem.id,
-                        page = newGridItem.page,
-                        startColumn = newGridItem.startColumn,
-                        startRow = newGridItem.startRow,
-                        columnSpan = newGridItem.columnSpan,
-                        rowSpan = newGridItem.rowSpan,
-                        associate = newGridItem.associate,
-                        componentName = data.componentName,
-                        packageName = data.packageName,
-                        icon = data.icon,
-                        label = data.label,
-                        override = newGridItem.override,
-                        serialNumber = data.serialNumber,
-                        customIcon = data.customIcon,
-                        customLabel = data.customLabel,
-                        gridItemSettings = newGridItem.gridItemSettings,
-                        doubleTap = newGridItem.doubleTap,
-                        swipeUp = newGridItem.swipeUp,
-                        swipeDown = newGridItem.swipeDown,
-                        index = data.index,
-                        folderId = data.folderId,
-                    ),
-                )
-            }
         }
     }
 

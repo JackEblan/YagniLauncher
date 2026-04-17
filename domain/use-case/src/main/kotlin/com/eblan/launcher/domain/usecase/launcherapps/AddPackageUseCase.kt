@@ -25,14 +25,8 @@ import com.eblan.launcher.domain.framework.FileManager
 import com.eblan.launcher.domain.framework.IconPackManager
 import com.eblan.launcher.domain.framework.LauncherAppsWrapper
 import com.eblan.launcher.domain.framework.PackageManagerWrapper
-import com.eblan.launcher.domain.grid.findAvailableRegionByPage
 import com.eblan.launcher.domain.model.ApplicationInfoGridItem
-import com.eblan.launcher.domain.model.Associate
-import com.eblan.launcher.domain.model.EblanAction
-import com.eblan.launcher.domain.model.EblanActionType
 import com.eblan.launcher.domain.model.EblanApplicationInfo
-import com.eblan.launcher.domain.model.GridItem
-import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.HomeSettings
 import com.eblan.launcher.domain.model.LauncherAppsActivityInfo
 import com.eblan.launcher.domain.repository.ApplicationInfoGridItemRepository
@@ -52,7 +46,6 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import javax.inject.Inject
 import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 class AddPackageUseCase @Inject constructor(
     private val userDataRepository: UserDataRepository,
@@ -88,28 +81,14 @@ class AddPackageUseCase @Inject constructor(
             ).onEach { launcherAppsActivityInfo ->
                 currentCoroutineContext().ensureActive()
 
-                eblanApplicationInfoRepository.upsertEblanApplicationInfo(
-                    eblanApplicationInfo = EblanApplicationInfo(
-                        componentName = launcherAppsActivityInfo.componentName,
-                        serialNumber = launcherAppsActivityInfo.serialNumber,
-                        packageName = launcherAppsActivityInfo.packageName,
-                        icon = launcherAppsActivityInfo.activityIcon,
-                        label = launcherAppsActivityInfo.activityLabel,
-                        customIcon = null,
-                        customLabel = null,
-                        isHidden = false,
-                        lastUpdateTime = launcherAppsActivityInfo.lastUpdateTime,
-                        index = -1,
-                    ),
-                )
-
-                addNewApplicationToHomeScreen(
+                addEblanApplicationInfo(
                     homeSettings = userData.homeSettings,
                     serialNumber = launcherAppsActivityInfo.serialNumber,
                     componentName = launcherAppsActivityInfo.componentName,
                     packageName = launcherAppsActivityInfo.packageName,
-                    icon = launcherAppsActivityInfo.activityIcon,
-                    label = launcherAppsActivityInfo.activityLabel,
+                    activityIcon = launcherAppsActivityInfo.activityIcon,
+                    activityLabel = launcherAppsActivityInfo.activityLabel,
+                    lastUpdateTime = launcherAppsActivityInfo.lastUpdateTime,
                     newApplicationsToHomeScreen = newApplicationsToHomeScreen,
                 )
             }
@@ -141,104 +120,45 @@ class AddPackageUseCase @Inject constructor(
     }
 
     @OptIn(ExperimentalUuidApi::class)
-    private suspend fun addNewApplicationToHomeScreen(
+    private suspend fun addEblanApplicationInfo(
         homeSettings: HomeSettings,
         serialNumber: Long,
         componentName: String,
         packageName: String,
-        icon: String?,
-        label: String,
+        activityIcon: String?,
+        activityLabel: String?,
+        lastUpdateTime: Long,
         newApplicationsToHomeScreen: MutableList<ApplicationInfoGridItem>,
     ) {
+        eblanApplicationInfoRepository.upsertEblanApplicationInfo(
+            eblanApplicationInfo = EblanApplicationInfo(
+                componentName = componentName,
+                serialNumber = serialNumber,
+                packageName = packageName,
+                icon = activityIcon,
+                label = activityLabel.toString(),
+                customIcon = null,
+                customLabel = null,
+                isHidden = false,
+                lastUpdateTime = lastUpdateTime,
+                index = -1,
+            ),
+        )
+
         if (!homeSettings.addNewAppsToHomeScreen) return
 
         val gridItems = gridRepository.gridItems.first() + getFolderGridItemsUseCase().first()
 
-        val alreadyOnHome = gridItems.any { gridItem ->
-            when (val data = gridItem.data) {
-                is GridItemData.ApplicationInfo ->
-                    data.serialNumber == serialNumber && data.componentName == componentName
-
-                is GridItemData.Folder ->
-                    data.gridItems.any { gridItem ->
-                        gridItem.serialNumber == serialNumber && gridItem.componentName == componentName
-                    }
-
-                else -> false
-            }
-        }
-
-        if (alreadyOnHome) return
-
-        val eblanAction = EblanAction(
-            eblanActionType = EblanActionType.None,
-            serialNumber = 0L,
-            componentName = "",
-        )
-
-        val data = GridItemData.ApplicationInfo(
+        addNewApplicationToHomeScreen(
+            gridItems = gridItems,
             serialNumber = serialNumber,
             componentName = componentName,
             packageName = packageName,
-            icon = icon,
-            label = label,
-            customIcon = null,
-            customLabel = null,
-            index = -1,
-            folderId = null,
+            icon = activityIcon,
+            label = activityLabel.toString(),
+            homeSettings = homeSettings,
+            newApplicationsToHomeScreen = newApplicationsToHomeScreen,
         )
-
-        val gridItem = GridItem(
-            id = Uuid.random().toHexString(),
-            page = homeSettings.initialPage,
-            startColumn = 0,
-            startRow = 0,
-            columnSpan = 1,
-            rowSpan = 1,
-            data = data,
-            associate = Associate.Grid,
-            override = false,
-            gridItemSettings = homeSettings.gridItemSettings,
-            doubleTap = eblanAction,
-            swipeUp = eblanAction,
-            swipeDown = eblanAction,
-        )
-
-        val newGridItem = findAvailableRegionByPage(
-            gridItems = gridItems,
-            gridItem = gridItem,
-            pageCount = homeSettings.pageCount,
-            columns = homeSettings.columns,
-            rows = homeSettings.rows,
-        )
-
-        if (newGridItem != null) {
-            newApplicationsToHomeScreen.add(
-                ApplicationInfoGridItem(
-                    id = newGridItem.id,
-                    page = newGridItem.page,
-                    startColumn = newGridItem.startColumn,
-                    startRow = newGridItem.startRow,
-                    columnSpan = newGridItem.columnSpan,
-                    rowSpan = newGridItem.rowSpan,
-                    associate = newGridItem.associate,
-                    componentName = data.componentName,
-                    packageName = data.packageName,
-                    icon = data.icon,
-                    label = data.label,
-                    override = newGridItem.override,
-                    serialNumber = data.serialNumber,
-                    customIcon = data.customIcon,
-                    customLabel = data.customLabel,
-                    gridItemSettings = newGridItem.gridItemSettings,
-                    doubleTap = newGridItem.doubleTap,
-                    swipeUp = newGridItem.swipeUp,
-                    swipeDown = newGridItem.swipeDown,
-                    index = data.index,
-                    folderId = data.folderId,
-                ),
-            )
-        }
     }
 
     private suspend fun addEblanAppWidgetProviderInfos(
