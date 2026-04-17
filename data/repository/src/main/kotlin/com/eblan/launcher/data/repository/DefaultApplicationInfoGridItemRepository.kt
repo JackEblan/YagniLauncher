@@ -104,7 +104,11 @@ internal class DefaultApplicationInfoGridItemRepository @Inject constructor(priv
         )
     }
 
-    override suspend fun insertApplicationInfoGridItem(applicationInfoGridItem: ApplicationInfoGridItem) {
-        applicationInfoGridItemDao.insertApplicationInfoGridItemEntity(entity = applicationInfoGridItem.asEntity())
+    override suspend fun insertApplicationInfoGridItems(applicationInfoGridItems: List<ApplicationInfoGridItem>) {
+        val entities = applicationInfoGridItems.map { applicationInfoGridItem ->
+            applicationInfoGridItem.asEntity()
+        }
+
+        applicationInfoGridItemDao.insertApplicationInfoGridItemEntities(entities = entities)
     }
 }

@@ -17,29 +17,83 @@
  */
 package com.eblan.launcher.feature.home.component.indicator
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.unit.dp
+import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.feature.home.util.calculatePage
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.onEach
 import kotlin.math.abs
 
+@OptIn(FlowPreview::class)
 @Composable
-fun PageIndicator(
+internal fun GridPagerIndicator(
+    modifier: Modifier = Modifier,
+    color: Color,
+    gridHorizontalPagerState: PagerState,
+    infiniteScroll: Boolean,
+    pageCount: Int,
+) {
+    var isScrollInProgress by remember { mutableStateOf(false) }
+
+    LaunchedEffect(key1 = gridHorizontalPagerState) {
+        snapshotFlow { gridHorizontalPagerState.isScrollInProgress }
+            .debounce(100L)
+            .onEach { newIsScrollInProgress ->
+                isScrollInProgress = newIsScrollInProgress
+            }.collect()
+    }
+
+    Box(
+        modifier = modifier,
+        contentAlignment = Alignment.Center,
+    ) {
+        if (isScrollInProgress) {
+            PageIndicator(
+                color = color,
+                gridHorizontalPagerState = gridHorizontalPagerState,
+                infiniteScroll = infiniteScroll,
+                pageCount = pageCount,
+            )
+        } else {
+            Image(
+                imageVector = EblanLauncherIcons.KeyboardArrowUp,
+                contentDescription = null,
+                colorFilter = ColorFilter.tint(color = color),
+            )
+        }
+    }
+}
+
+@Composable
+internal fun PageIndicator(
     modifier: Modifier = Modifier,
     color: Color,
     gridHorizontalPagerState: PagerState,
@@ -51,7 +105,7 @@ fun PageIndicator(
     val activeWidth = 16.dp
 
     Row(
-        modifier = modifier,
+        modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Center,
     ) {
         if (pageCount > 1) {

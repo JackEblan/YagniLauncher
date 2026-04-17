@@ -76,6 +76,7 @@ class UserDataSerializer @Inject constructor() : Serializer<UserDataProto> {
         lockScreenOrientation = false
         dockPageCount = 1
         dockInfiniteScroll = false
+        addNewAppsToHomeScreen = true
     }.build()
 
     private val defaultAppDrawerSettingsProto = AppDrawerSettingsProto.newBuilder().apply {
