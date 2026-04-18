@@ -19,7 +19,7 @@ package com.eblan.launcher.feature.home.screen.application.vertical
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.detectVerticalDragGestures
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -108,13 +108,13 @@ internal fun ScrollBarThumb(
                     IntOffset(0, y.roundToInt())
                 }
                 .pointerInput(key1 = lazyGridState) {
-                    detectVerticalDragGestures(
+                    detectDragGestures(
                         onDragStart = {
                             thumbY = viewPortThumbY
 
                             isDraggingThumb = true
                         },
-                        onVerticalDrag = { _, deltaY ->
+                        onDrag = { _, dragAmount ->
                             handleVerticalDrag(
                                 lazyGridState = lazyGridState,
                                 appDrawerColumns = appDrawerColumns,
@@ -122,7 +122,7 @@ internal fun ScrollBarThumb(
                                 thumbHeight = thumbHeight,
                                 bottomPadding = bottomPadding,
                                 thumbY = thumbY,
-                                deltaY = deltaY,
+                                deltaY = dragAmount.y,
                                 scope = scope,
                                 onScrollToItem = onScrollToItem,
                                 onUpdateThumbY = { newThumbY ->
@@ -163,12 +163,12 @@ private fun handleVerticalDrag(
     ) -> Unit,
     onUpdateThumbY: (Float) -> Unit,
 ) {
+    if (deltaY == 0f) return
+
     val layoutInfo = lazyGridState.layoutInfo
     val visibleItems = layoutInfo.visibleItemsInfo
 
-    if (visibleItems.isEmpty() || appDrawerColumns <= 0) return
-
-    val avgItemHeight = (visibleItems.sumOf { it.size.height } / visibleItems.size).coerceAtLeast(1)
+    val avgItemHeight = visibleItems.sumOf { it.size.height } / visibleItems.size
 
     val totalItems = layoutInfo.totalItemsCount
     val totalRows = (totalItems + appDrawerColumns - 1) / appDrawerColumns
@@ -177,14 +177,14 @@ private fun handleVerticalDrag(
 
     val thumbHeightPx = with(density) { thumbHeight.toPx() }
 
-    val availableHeight = (viewportHeight - thumbHeightPx - bottomPadding).coerceAtLeast(1f)
+    val availableHeight = viewportHeight - thumbHeightPx - bottomPadding
 
     val newThumbY = (thumbY + deltaY).coerceIn(0f, availableHeight)
 
-    val progress = (newThumbY / availableHeight).coerceIn(0f, 1f)
+    val progress = newThumbY / availableHeight
 
     val totalContentHeight = totalRows * avgItemHeight
-    val scrollableHeight = (totalContentHeight - viewportHeight).coerceAtLeast(1)
+    val scrollableHeight = totalContentHeight - viewportHeight
 
     val targetScrollY = progress * scrollableHeight
 
@@ -193,13 +193,15 @@ private fun handleVerticalDrag(
 
     val offsetInRow = (targetScrollY % avgItemHeight).toInt()
 
-    val targetIndex = (rowInt * appDrawerColumns).coerceIn(0, (totalItems - 1).coerceAtLeast(0))
+    val targetIndex = rowInt * appDrawerColumns
 
     onUpdateThumbY(newThumbY)
 
     scope.launch {
-        // use offset for smoother positioning
-        onScrollToItem(targetIndex, offsetInRow)
+        onScrollToItem(
+            targetIndex,
+            offsetInRow,
+        )
     }
 }
 
@@ -228,13 +230,13 @@ private fun getViewPortThumbY(
 
     val scrollY = (firstRow * avgItemHeight) - firstItem.offset.y
 
-    val scrollableHeight = (totalContentHeight - viewportHeight).coerceAtLeast(1f)
+    val scrollableHeight = totalContentHeight - viewportHeight
 
-    val progress = (scrollY / scrollableHeight).coerceIn(0f, 1f)
+    val progress = scrollY / scrollableHeight
 
     val thumbHeightPx = with(density) { thumbHeight.toPx() }
 
-    val availableHeight = (viewportHeight - thumbHeightPx - bottomPadding).coerceAtLeast(0f)
+    val availableHeight = viewportHeight - thumbHeightPx - bottomPadding
 
     return progress * availableHeight
 }
