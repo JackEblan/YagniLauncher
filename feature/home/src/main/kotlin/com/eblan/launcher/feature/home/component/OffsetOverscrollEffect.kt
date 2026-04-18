@@ -15,7 +15,7 @@
  *   limitations under the License.
  *
  */
-package com.eblan.launcher.feature.home.component.scroll
+package com.eblan.launcher.feature.home.component
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.OverscrollEffect

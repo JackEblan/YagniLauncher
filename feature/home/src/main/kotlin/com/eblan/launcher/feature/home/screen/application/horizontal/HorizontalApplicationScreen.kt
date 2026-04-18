@@ -68,7 +68,7 @@ import com.eblan.launcher.domain.model.EblanUserPageKey
 import com.eblan.launcher.domain.model.EblanUserType
 import com.eblan.launcher.domain.model.GetEblanApplicationInfosByLabel
 import com.eblan.launcher.domain.model.ManagedProfileResult
-import com.eblan.launcher.feature.home.component.grid.HorizontalAppDrawerGridLayout
+import com.eblan.launcher.feature.home.component.HorizontalAppDrawerGridLayout
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey

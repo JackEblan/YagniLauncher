@@ -97,8 +97,8 @@ import com.eblan.launcher.domain.model.EblanUser
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.GridItemSettings
-import com.eblan.launcher.feature.home.component.scroll.OffsetNestedScrollConnection
-import com.eblan.launcher.feature.home.component.scroll.OffsetOverscrollEffect
+import com.eblan.launcher.feature.home.component.OffsetNestedScrollConnection
+import com.eblan.launcher.feature.home.component.OffsetOverscrollEffect
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey

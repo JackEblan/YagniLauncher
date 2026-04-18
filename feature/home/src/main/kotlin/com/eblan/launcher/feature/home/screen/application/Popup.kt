@@ -49,8 +49,8 @@ import com.eblan.launcher.domain.model.EblanApplicationInfoGroup
 import com.eblan.launcher.domain.model.EblanShortcutInfo
 import com.eblan.launcher.domain.model.EblanShortcutInfoByGroup
 import com.eblan.launcher.domain.model.GridItemSettings
-import com.eblan.launcher.feature.home.component.popup.PrivateShortcutInfoMenu
-import com.eblan.launcher.feature.home.component.popup.ShortcutInfoMenu
+import com.eblan.launcher.feature.home.component.PrivateShortcutInfoMenu
+import com.eblan.launcher.feature.home.component.ShortcutInfoMenu
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey

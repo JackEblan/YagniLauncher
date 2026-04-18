@@ -64,7 +64,7 @@ import com.eblan.launcher.domain.model.EditPageData
 import com.eblan.launcher.domain.model.HomeSettings
 import com.eblan.launcher.domain.model.PageItem
 import com.eblan.launcher.domain.model.TextColor
-import com.eblan.launcher.feature.home.component.grid.GridLayout
+import com.eblan.launcher.feature.home.component.GridLayout
 import com.eblan.launcher.feature.home.model.Screen
 import com.eblan.launcher.feature.home.util.handleActionMainIntent
 import kotlinx.coroutines.launch

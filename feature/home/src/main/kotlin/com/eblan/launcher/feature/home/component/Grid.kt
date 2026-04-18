@@ -15,7 +15,7 @@
  *   limitations under the License.
  *
  */
-package com.eblan.launcher.feature.home.component.grid
+package com.eblan.launcher.feature.home.component
 
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.foundation.layout.Box

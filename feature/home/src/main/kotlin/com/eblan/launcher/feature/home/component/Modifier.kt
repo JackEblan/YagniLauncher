@@ -15,7 +15,7 @@
  *   limitations under the License.
  *
  */
-package com.eblan.launcher.feature.home.component.modifier
+package com.eblan.launcher.feature.home.component
 
 import android.graphics.Paint
 import androidx.compose.animation.core.Animatable

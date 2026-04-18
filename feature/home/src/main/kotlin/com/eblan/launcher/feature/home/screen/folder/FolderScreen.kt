@@ -80,10 +80,10 @@ import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.GridItemSettings
 import com.eblan.launcher.domain.usecase.grid.FOLDER_MAX_COLUMNS
 import com.eblan.launcher.domain.usecase.grid.FOLDER_MAX_ROWS
-import com.eblan.launcher.feature.home.component.grid.FolderGridLayout
-import com.eblan.launcher.feature.home.component.indicator.PageIndicator
-import com.eblan.launcher.feature.home.component.modifier.swipeGestures
-import com.eblan.launcher.feature.home.component.modifier.whiteBox
+import com.eblan.launcher.feature.home.component.FolderGridLayout
+import com.eblan.launcher.feature.home.component.PageIndicator
+import com.eblan.launcher.feature.home.component.swipeGestures
+import com.eblan.launcher.feature.home.component.whiteBox
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
