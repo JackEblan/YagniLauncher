@@ -1,0 +1,3 @@
+- Newly installed (#738)
+- Reset App Drawer State (#737)
+- App Drawer Type Either Vertical or Horizontal (#734)
