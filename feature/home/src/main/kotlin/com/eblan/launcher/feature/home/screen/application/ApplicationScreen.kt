@@ -731,40 +731,25 @@ internal fun ApplicationScreenEffect(
 
     LaunchedEffect(key1 = textFieldState) {
         snapshotFlow { textFieldState.text }.debounce(500L).onEach { text ->
-            if (text.isNotEmpty()) {
-                onGetEblanApplicationInfosByLabel(text.toString())
+            onGetEblanApplicationInfosByLabel(text.toString())
 
-                onShowPopupApplicationMenu(false)
-            }
+            onShowPopupApplicationMenu(false)
         }.collect()
     }
 
     LaunchedEffect(key1 = swipeY) {
-        if (swipeY.roundToInt() >= screenHeight &&
-            textFieldState.text.isNotEmpty() &&
-            appDrawerSettings.resetState
-        ) {
-            onGetEblanApplicationInfosByLabel("")
-
-            textFieldState.clearText()
-        }
-
-        if (swipeY.roundToInt() >= screenHeight &&
-            selectedEblanApplicationInfoTagId != null &&
-            appDrawerSettings.resetState
-        ) {
-            onUpdateSelectedEblanApplicationInfoTagId(null)
-        }
-
-        if (swipeY.roundToInt() >= screenHeight &&
-            appDrawerSettings.resetState
-        ) {
-            onResetScroll()
-        }
-
-        if (swipeY.roundToInt() > 0 && showPopupApplicationMenu) {
-            onShowPopupApplicationMenu(false)
-        }
+        handleSwipeY(
+            appDrawerSettings = appDrawerSettings,
+            screenHeight = screenHeight,
+            selectedEblanApplicationInfoTagId = selectedEblanApplicationInfoTagId,
+            showPopupApplicationMenu = showPopupApplicationMenu,
+            swipeY = swipeY,
+            textFieldState = textFieldState,
+            onGetEblanApplicationInfosByLabel = onGetEblanApplicationInfosByLabel,
+            onResetScroll = onResetScroll,
+            onShowPopupApplicationMenu = onShowPopupApplicationMenu,
+            onUpdateSelectedEblanApplicationInfoTagId = onUpdateSelectedEblanApplicationInfoTagId,
+        )
     }
 
     LaunchedEffect(key1 = Unit) {
@@ -775,19 +760,15 @@ internal fun ApplicationScreenEffect(
     }
 
     LaunchedEffect(key1 = isPressHome) {
-        if (isPressHome && showPopupApplicationMenu) {
-            onShowPopupApplicationMenu(false)
-
-            onDismiss()
-        }
-
-        if (isPressHome && searchBarState.currentValue == SearchBarValue.Expanded) {
-            searchBarState.animateToCollapsed()
-        }
-
-        if (isPressHome && appDrawerSettings.resetState) {
-            onResetScroll()
-        }
+        handleIsPressHome(
+            appDrawerSettings = appDrawerSettings,
+            isPressHome = isPressHome,
+            searchBarState = searchBarState,
+            showPopupApplicationMenu = showPopupApplicationMenu,
+            onDismiss = onDismiss,
+            onResetScroll = onResetScroll,
+            onShowPopupApplicationMenu = onShowPopupApplicationMenu,
+        )
     }
 
     LaunchedEffect(key1 = drag) {
@@ -804,19 +785,96 @@ internal fun ApplicationScreenEffect(
 
     BackHandler(enabled = swipeY < screenHeight.toFloat()) {
         scope.launch {
-            if (showPopupApplicationMenu) {
-                onShowPopupApplicationMenu(false)
-            }
-
-            if (searchBarState.currentValue == SearchBarValue.Expanded) {
-                searchBarState.animateToCollapsed()
-            }
-
-            onDismiss()
-
-            if (appDrawerSettings.resetState) {
-                onResetScroll()
-            }
+            handleBack(
+                appDrawerSettings = appDrawerSettings,
+                searchBarState = searchBarState,
+                showPopupApplicationMenu = showPopupApplicationMenu,
+                onDismiss = onDismiss,
+                onResetScroll = onResetScroll,
+                onShowPopupApplicationMenu = onShowPopupApplicationMenu,
+            )
         }
     }
+}
+
+private fun handleSwipeY(
+    appDrawerSettings: AppDrawerSettings,
+    screenHeight: Int,
+    selectedEblanApplicationInfoTagId: Long?,
+    showPopupApplicationMenu: Boolean,
+    swipeY: Float,
+    textFieldState: TextFieldState,
+    onGetEblanApplicationInfosByLabel: (String) -> Unit,
+    onResetScroll: () -> Unit,
+    onShowPopupApplicationMenu: (Boolean) -> Unit,
+    onUpdateSelectedEblanApplicationInfoTagId: (Long?) -> Unit,
+) {
+    if (swipeY.roundToInt() >= screenHeight && appDrawerSettings.resetState) {
+        onGetEblanApplicationInfosByLabel("")
+
+        if (textFieldState.text.isNotEmpty()) {
+            textFieldState.clearText()
+        }
+
+        if (selectedEblanApplicationInfoTagId != null) {
+            onUpdateSelectedEblanApplicationInfoTagId(null)
+        }
+
+        onResetScroll()
+    }
+
+    if (swipeY.roundToInt() > 0 && showPopupApplicationMenu) {
+        onShowPopupApplicationMenu(false)
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+private suspend fun handleBack(
+    appDrawerSettings: AppDrawerSettings,
+    searchBarState: SearchBarState,
+    showPopupApplicationMenu: Boolean,
+    onDismiss: () -> Unit,
+    onResetScroll: () -> Unit,
+    onShowPopupApplicationMenu: (Boolean) -> Unit,
+) {
+    if (showPopupApplicationMenu) {
+        onShowPopupApplicationMenu(false)
+    }
+
+    if (searchBarState.currentValue == SearchBarValue.Expanded) {
+        searchBarState.animateToCollapsed()
+    }
+
+    onDismiss()
+
+    if (appDrawerSettings.resetState) {
+        onResetScroll()
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+private suspend fun handleIsPressHome(
+    appDrawerSettings: AppDrawerSettings,
+    isPressHome: Boolean,
+    searchBarState: SearchBarState,
+    showPopupApplicationMenu: Boolean,
+    onDismiss: () -> Unit,
+    onResetScroll: () -> Unit,
+    onShowPopupApplicationMenu: (Boolean) -> Unit,
+) {
+    if (!isPressHome) return
+
+    if (showPopupApplicationMenu) {
+        onShowPopupApplicationMenu(false)
+    }
+
+    if (searchBarState.currentValue == SearchBarValue.Expanded) {
+        searchBarState.animateToCollapsed()
+    }
+
+    if (appDrawerSettings.resetState) {
+        onResetScroll()
+    }
+
+    onDismiss()
 }
