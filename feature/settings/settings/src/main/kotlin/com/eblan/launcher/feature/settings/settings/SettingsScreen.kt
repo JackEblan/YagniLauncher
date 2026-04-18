@@ -20,7 +20,6 @@ package com.eblan.launcher.feature.settings.settings
 import android.content.Intent
 import android.provider.Settings.ACTION_HOME_SETTINGS
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -30,13 +29,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -44,7 +40,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -54,7 +49,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
@@ -234,120 +228,25 @@ private fun AlphaWarningCard(modifier: Modifier = Modifier) {
 
     val repoUrl = "https://github.com/JackEblan/YagniLauncher"
 
-    val releasesUrl = "$repoUrl/releases"
-
     val kofiUrl = "https://ko-fi.com/I3I01OJG21"
 
-    OutlinedCard(
+    ElevatedCard(
         modifier = modifier
             .fillMaxWidth()
-            .padding(
-                horizontal = 16.dp,
-                vertical = 12.dp,
-            ),
-        border = BorderStroke(
-            width = 1.5.dp,
-            color = MaterialTheme.colorScheme.error,
-        ),
-        colors = CardDefaults.outlinedCardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
-        ),
+            .padding(10.dp),
     ) {
         Column(
             modifier = Modifier
                 .padding(20.dp)
                 .fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Icon(
-                    imageVector = EblanLauncherIcons.Warning,
-                    contentDescription = "Warning",
-                    tint = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.size(28.dp),
-                )
-                Text(
-                    text = "ALPHA STAGE VERSION",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.error,
-                )
-            }
-
-            HorizontalDivider(color = MaterialTheme.colorScheme.error.copy(alpha = 0.3f))
-
-            Text(
-                text = "This is an early alpha release of Yagni Launcher.",
-                style = MaterialTheme.typography.bodyLarge,
-                textAlign = TextAlign.Center,
-            )
-
-            Column(
-                verticalArrangement = Arrangement.spacedBy(4.dp),
-                modifier = Modifier.align(Alignment.Start),
-            ) {
-                Text("• Features are incomplete", style = MaterialTheme.typography.bodyMedium)
-                Text(
-                    "• Behavior may change without notice",
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-                Text(
-                    "• Crashes and data loss are possible",
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-                Text(
-                    "• No guarantees of stability or backward compatibility",
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-            }
-
-            Text(
-                text = "Use at your own risk.",
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.error,
-            )
-
-            Spacer(Modifier.height(12.dp))
-
-            Text(
-                text = "For the latest alpha builds, changelogs, and bug fixes, " +
-                    "please visit the GitHub repository and regularly check the Releases section.",
-                style = MaterialTheme.typography.bodyMedium,
-                textAlign = TextAlign.Center,
-            )
-
-            Spacer(Modifier.height(8.dp))
-
-            Button(
-                onClick = { uriHandler.openUri(releasesUrl) },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.errorContainer,
-                    contentColor = MaterialTheme.colorScheme.onErrorContainer,
-                ),
-                modifier = Modifier.fillMaxWidth(0.9f),
-            ) {
-                Text("Open GitHub Releases")
-            }
-
-            Spacer(Modifier.height(16.dp))
-
-            HorizontalDivider()
-
-            Spacer(Modifier.height(16.dp))
-
             Text(
                 text = "Thank you for using Yagni Launcher Alpha!",
                 style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold,
                 textAlign = TextAlign.Center,
             )
-
-            Spacer(Modifier.height(8.dp))
 
             Text(
                 text = "Development began in January 2025 with regular weekly updates. " +
@@ -356,16 +255,12 @@ private fun AlphaWarningCard(modifier: Modifier = Modifier) {
                 textAlign = TextAlign.Center,
             )
 
-            Spacer(Modifier.height(12.dp))
-
             Text(
                 text = "If you find value in the application, your support would be greatly appreciated " +
                     "through a donation on Ko-Fi or by starring the repository on GitHub.",
                 style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center,
             )
-
-            Spacer(Modifier.height(12.dp))
 
             Row(
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -393,11 +288,8 @@ private fun AlphaWarningCard(modifier: Modifier = Modifier) {
                 }
             }
 
-            Spacer(Modifier.height(16.dp))
-
             Text(
-                text = "Note: This informational card will be removed in future stable releases " +
-                    "once the application reaches a more mature stage.",
+                text = "Note: This informational card will be removed in future stable releases",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
