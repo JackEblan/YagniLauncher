@@ -118,7 +118,6 @@ import com.eblan.launcher.ui.local.LocalLauncherApps
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
@@ -752,11 +751,8 @@ internal fun ApplicationScreenEffect(
         )
     }
 
-    LaunchedEffect(key1 = Unit) {
-        snapshotFlow { selectedEblanApplicationInfoTagId }.filterNotNull()
-            .onEach { selectedEblanApplicationInfoTag ->
-                onGetEblanApplicationInfosByTagId(selectedEblanApplicationInfoTag)
-            }.collect()
+    LaunchedEffect(key1 = selectedEblanApplicationInfoTagId) {
+        onGetEblanApplicationInfosByTagId(selectedEblanApplicationInfoTagId)
     }
 
     LaunchedEffect(key1 = isPressHome) {

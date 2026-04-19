@@ -26,7 +26,6 @@ import com.eblan.launcher.domain.model.EblanApplicationInfoOrder
 import com.eblan.launcher.domain.model.EblanUserPageKey
 import com.eblan.launcher.domain.model.EblanUserType
 import com.eblan.launcher.domain.model.GetEblanApplicationInfosByLabel
-import com.eblan.launcher.domain.model.UserData
 import com.eblan.launcher.domain.repository.EblanApplicationInfoRepository
 import com.eblan.launcher.domain.repository.UserDataRepository
 import kotlinx.coroutines.CoroutineDispatcher
@@ -38,7 +37,7 @@ import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 import kotlin.collections.toSortedMap
 
-class GetEblanApplicationInfosByLabelUseCase @Inject constructor(
+class GetEblanApplicationInfosByLabelAndTagUseCase @Inject constructor(
     private val eblanApplicationInfoRepository: EblanApplicationInfoRepository,
     private val launcherAppsWrapper: LauncherAppsWrapper,
     private val userDataRepository: UserDataRepository,

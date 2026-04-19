@@ -45,7 +45,7 @@ import com.eblan.launcher.domain.repository.GridRepository
 import com.eblan.launcher.domain.repository.UserDataRepository
 import com.eblan.launcher.domain.usecase.GetHomeDataUseCase
 import com.eblan.launcher.domain.usecase.application.GetEblanAppWidgetProviderInfosByLabelUseCase
-import com.eblan.launcher.domain.usecase.application.GetEblanApplicationInfosByLabelUseCase
+import com.eblan.launcher.domain.usecase.application.GetEblanApplicationInfosByLabelAndTagUseCase
 import com.eblan.launcher.domain.usecase.application.GetEblanShortcutConfigsByLabelUseCase
 import com.eblan.launcher.domain.usecase.application.GetEblanShortcutInfosUseCase
 import com.eblan.launcher.domain.usecase.application.UpdateEblanApplicationInfosIndexesUseCase
@@ -100,7 +100,7 @@ internal class HomeViewModel @Inject constructor(
     getEblanShortcutInfosUseCase: GetEblanShortcutInfosUseCase,
     eblanAppWidgetProviderInfoRepository: EblanAppWidgetProviderInfoRepository,
     getIconPackFilePathsUseCase: GetIconPackFilePathsUseCase,
-    getEblanApplicationInfosByLabelUseCase: GetEblanApplicationInfosByLabelUseCase,
+    getEblanApplicationInfosByLabelAndTagUseCase: GetEblanApplicationInfosByLabelAndTagUseCase,
     getEblanAppWidgetProviderInfosByLabelUseCase: GetEblanAppWidgetProviderInfosByLabelUseCase,
     getEblanShortcutConfigsByLabelUseCase: GetEblanShortcutConfigsByLabelUseCase,
     private val gridRepository: GridRepository,
@@ -176,7 +176,7 @@ internal class HomeViewModel @Inject constructor(
 
     private val _eblanApplicationInfoTagId = MutableStateFlow<Long?>(null)
 
-    val getEblanApplicationInfosByLabel = getEblanApplicationInfosByLabelUseCase(
+    val getEblanApplicationInfosByLabel = getEblanApplicationInfosByLabelAndTagUseCase(
         labelFlow = _eblanApplicationInfoLabel,
         eblanApplicationInfoTagIdFlow = _eblanApplicationInfoTagId,
     ).stateIn(
