@@ -30,12 +30,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.ime
-import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -57,7 +54,6 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -104,7 +100,7 @@ import com.eblan.launcher.domain.model.EblanApplicationInfoTag
 import com.eblan.launcher.domain.model.EblanShortcutInfo
 import com.eblan.launcher.domain.model.EblanShortcutInfoByGroup
 import com.eblan.launcher.domain.model.EblanUserPageKey
-import com.eblan.launcher.domain.model.GetEblanApplicationInfosByLabel
+import com.eblan.launcher.domain.model.GetEblanApplicationInfosByLabelAndTag
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.ManagedProfileResult
@@ -142,7 +138,7 @@ internal fun SharedTransitionScope.ApplicationScreen(
     eblanAppWidgetProviderInfosGroup: Map<String, List<EblanAppWidgetProviderInfo>>,
     eblanApplicationInfoTags: List<EblanApplicationInfoTag>,
     eblanShortcutInfosGroup: Map<EblanShortcutInfoByGroup, List<EblanShortcutInfo>>,
-    getEblanApplicationInfosByLabel: GetEblanApplicationInfosByLabel,
+    getEblanApplicationInfosByLabelAndTag: GetEblanApplicationInfosByLabelAndTag,
     hasShortcutHostPermission: Boolean,
     iconPackFilePaths: Map<String, String>,
     isPressHome: Boolean,
@@ -210,7 +206,7 @@ internal fun SharedTransitionScope.ApplicationScreen(
                     eblanAppWidgetProviderInfosGroup = eblanAppWidgetProviderInfosGroup,
                     eblanApplicationInfoTags = eblanApplicationInfoTags,
                     eblanShortcutInfosGroup = eblanShortcutInfosGroup,
-                    getEblanApplicationInfosByLabel = getEblanApplicationInfosByLabel,
+                    getEblanApplicationInfosByLabelAndTag = getEblanApplicationInfosByLabelAndTag,
                     hasShortcutHostPermission = hasShortcutHostPermission,
                     iconPackFilePaths = iconPackFilePaths,
                     isPressHome = isPressHome,
@@ -247,7 +243,7 @@ internal fun SharedTransitionScope.ApplicationScreen(
                     eblanAppWidgetProviderInfosGroup = eblanAppWidgetProviderInfosGroup,
                     eblanApplicationInfoTags = eblanApplicationInfoTags,
                     eblanShortcutInfosGroup = eblanShortcutInfosGroup,
-                    getEblanApplicationInfosByLabel = getEblanApplicationInfosByLabel,
+                    getEblanApplicationInfosByLabelAndTag = getEblanApplicationInfosByLabelAndTag,
                     hasShortcutHostPermission = hasShortcutHostPermission,
                     iconPackFilePaths = iconPackFilePaths,
                     isPressHome = isPressHome,
@@ -282,7 +278,7 @@ internal fun SharedTransitionScope.ApplicationScreen(
                     eblanAppWidgetProviderInfosGroup = eblanAppWidgetProviderInfosGroup,
                     eblanApplicationInfoTags = eblanApplicationInfoTags,
                     eblanShortcutInfosGroup = eblanShortcutInfosGroup,
-                    getEblanApplicationInfosByLabel = getEblanApplicationInfosByLabel,
+                    getEblanApplicationInfosByLabelAndTag = getEblanApplicationInfosByLabelAndTag,
                     hasShortcutHostPermission = hasShortcutHostPermission,
                     iconPackFilePaths = iconPackFilePaths,
                     isPressHome = isPressHome,
@@ -443,8 +439,6 @@ internal fun SharedTransitionScope.EblanApplicationInfoItem(
 
     val alpha = if (isLongPress) 0f else 1f
 
-    val isImeVisible = WindowInsets.isImeVisible
-
     LaunchedEffect(key1 = drag) {
         when (drag) {
             Drag.Dragging if isLongPress -> {
@@ -535,9 +529,7 @@ internal fun SharedTransitionScope.EblanApplicationInfoItem(
                             }
                         }
 
-                        if (isImeVisible) {
-                            keyboardController?.hide()
-                        }
+                        keyboardController?.hide()
                     },
                     onLongPress = {
                         scope.launch {
@@ -563,9 +555,7 @@ internal fun SharedTransitionScope.EblanApplicationInfoItem(
 
                             isLongPress = true
 
-                            if (isImeVisible) {
-                                keyboardController?.hide()
-                            }
+                            keyboardController?.hide()
                         }
                     },
                 )

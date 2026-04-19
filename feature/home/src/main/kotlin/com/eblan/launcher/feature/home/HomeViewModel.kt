@@ -29,7 +29,7 @@ import com.eblan.launcher.domain.model.ApplicationInfoGridItem
 import com.eblan.launcher.domain.model.Associate
 import com.eblan.launcher.domain.model.EblanApplicationInfo
 import com.eblan.launcher.domain.model.EditPageData
-import com.eblan.launcher.domain.model.GetEblanApplicationInfosByLabel
+import com.eblan.launcher.domain.model.GetEblanApplicationInfosByLabelAndTag
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.GridItemData.ShortcutInfo
@@ -176,13 +176,13 @@ internal class HomeViewModel @Inject constructor(
 
     private val _eblanApplicationInfoTagId = MutableStateFlow<Long?>(null)
 
-    val getEblanApplicationInfosByLabel = getEblanApplicationInfosByLabelAndTagUseCase(
+    val getEblanApplicationInfosByLabelAndTag = getEblanApplicationInfosByLabelAndTagUseCase(
         labelFlow = _eblanApplicationInfoLabel,
         eblanApplicationInfoTagIdFlow = _eblanApplicationInfoTagId,
     ).stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = GetEblanApplicationInfosByLabel(
+        initialValue = GetEblanApplicationInfosByLabelAndTag(
             eblanApplicationInfos = emptyMap(),
             privateEblanUser = null,
             privateEblanApplicationInfos = emptyList(),

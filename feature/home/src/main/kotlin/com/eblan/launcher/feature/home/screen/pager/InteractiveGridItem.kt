@@ -1065,8 +1065,8 @@ private fun SharedTransitionScope.InteractiveFolderGridItem(
                     modifier = Modifier.matchParentSize(),
                     horizontalArrangement = Arrangement.SpaceEvenly,
                     verticalArrangement = Arrangement.SpaceEvenly,
-                    maxItemsInEachRow = 2,
-                    maxLines = 2,
+                    maxItemsInEachRow = 3,
+                    maxLines = 3,
                 ) {
                     data.previewGridItemsByPage.forEach { applicationInfoGridItem ->
                         key(applicationInfoGridItem.id) {
@@ -1080,7 +1080,7 @@ private fun SharedTransitionScope.InteractiveFolderGridItem(
                                     .addLastModifiedToFileCacheKey(true).build(),
                                 contentDescription = null,
                                 modifier = Modifier
-                                    .size((gridItemSettings.iconSize * 0.25).dp)
+                                    .size((gridItemSettings.iconSize * 0.30).dp)
                                     .run {
                                         if (!hasInteraction) {
                                             sharedElementWithCallerManagedVisibility(
