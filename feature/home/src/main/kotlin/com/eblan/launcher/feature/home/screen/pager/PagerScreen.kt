@@ -80,7 +80,7 @@ import com.eblan.launcher.domain.model.EblanShortcutInfoByGroup
 import com.eblan.launcher.domain.model.EblanUser
 import com.eblan.launcher.domain.model.ExperimentalSettings
 import com.eblan.launcher.domain.model.GestureSettings
-import com.eblan.launcher.domain.model.GetEblanApplicationInfosByLabel
+import com.eblan.launcher.domain.model.GetEblanApplicationInfosByLabelAndTag
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.HomeSettings
@@ -128,7 +128,7 @@ internal fun PagerScreen(
     experimentalSettings: ExperimentalSettings,
     folderGridItem: GridItem?,
     gestureSettings: GestureSettings,
-    getEblanApplicationInfosByLabel: GetEblanApplicationInfosByLabel,
+    getEblanApplicationInfosByLabelAndTag: GetEblanApplicationInfosByLabelAndTag,
     gridItems: List<GridItem>,
     gridItemsByPage: Map<Int, List<GridItem>>,
     hasShortcutHostPermission: Boolean,
@@ -1109,7 +1109,7 @@ internal fun PagerScreen(
                 eblanAppWidgetProviderInfosGroup = eblanAppWidgetProviderInfosGroup,
                 eblanApplicationInfoTags = eblanApplicationInfoTags,
                 eblanShortcutInfosGroup = eblanShortcutInfosGroup,
-                getEblanApplicationInfosByLabel = getEblanApplicationInfosByLabel,
+                getEblanApplicationInfosByLabelAndTag = getEblanApplicationInfosByLabelAndTag,
                 hasShortcutHostPermission = hasShortcutHostPermission,
                 iconPackFilePaths = iconPackFilePaths,
                 isPressHome = pagerScreenState.isPressHome,

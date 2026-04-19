@@ -29,7 +29,7 @@ import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.IconPackInfoComponent
 import com.eblan.launcher.domain.model.PackageManagerIconPackInfo
 import com.eblan.launcher.domain.repository.GridRepository
-import com.eblan.launcher.domain.usecase.application.GetEblanApplicationInfosUseCase
+import com.eblan.launcher.domain.usecase.application.GetEblanApplicationInfosByUserUseCase
 import com.eblan.launcher.domain.usecase.grid.GetGridItemByIdUseCase
 import com.eblan.launcher.feature.editgriditem.model.EditGridItemUiState
 import com.eblan.launcher.feature.editgriditem.navigation.EditGridItemRouteData
@@ -51,7 +51,7 @@ internal class EditGridItemViewModel @Inject constructor(
     private val iconPackManager: IconPackManager,
     packageManagerWrapper: PackageManagerWrapper,
     private val gridRepository: GridRepository,
-    getEblanApplicationInfosUseCase: GetEblanApplicationInfosUseCase,
+    getEblanApplicationInfosByUserUseCase: GetEblanApplicationInfosByUserUseCase,
     private val getGridItemByIdUseCase: GetGridItemByIdUseCase,
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) : ViewModel() {
@@ -81,7 +81,7 @@ internal class EditGridItemViewModel @Inject constructor(
         initialValue = emptyList(),
     )
 
-    val eblanApplicationInfos = getEblanApplicationInfosUseCase().stateIn(
+    val eblanApplicationInfos = getEblanApplicationInfosByUserUseCase().stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
         initialValue = emptyMap(),

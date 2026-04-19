@@ -68,7 +68,7 @@ import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.AppDrawerSettings
 import com.eblan.launcher.domain.model.EblanApplicationInfo
 import com.eblan.launcher.domain.model.EblanUserPageKey
-import com.eblan.launcher.domain.model.GetEblanApplicationInfosByLabel
+import com.eblan.launcher.domain.model.GetEblanApplicationInfosByLabelAndTag
 import com.eblan.launcher.feature.home.util.getHorizontalAlignment
 import com.eblan.launcher.feature.home.util.getSystemTextColor
 import com.eblan.launcher.feature.home.util.getVerticalArrangement
@@ -80,7 +80,7 @@ internal fun DragAndDropEblanApplicationInfos(
     modifier: Modifier = Modifier,
     appDrawerSettings: AppDrawerSettings,
     eblanUserPageKey: EblanUserPageKey,
-    getEblanApplicationInfosByLabel: GetEblanApplicationInfosByLabel,
+    getEblanApplicationInfosByLabelAndTag: GetEblanApplicationInfosByLabelAndTag,
     iconPackFilePaths: Map<String, String>,
     paddingValues: PaddingValues,
     onDismissDragAndDrop: () -> Unit,
@@ -89,7 +89,7 @@ internal fun DragAndDropEblanApplicationInfos(
     val lazyGridState = rememberLazyGridState()
 
     val eblanApplicationInfos =
-        getEblanApplicationInfosByLabel.eblanApplicationInfos[eblanUserPageKey].orEmpty()
+        getEblanApplicationInfosByLabelAndTag.eblanApplicationInfos[eblanUserPageKey].orEmpty()
 
     var currentEblanApplicationInfos by remember { mutableStateOf(eblanApplicationInfos) }
 

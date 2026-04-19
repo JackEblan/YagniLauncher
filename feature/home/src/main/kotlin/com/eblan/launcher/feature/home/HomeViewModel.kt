@@ -29,7 +29,7 @@ import com.eblan.launcher.domain.model.ApplicationInfoGridItem
 import com.eblan.launcher.domain.model.Associate
 import com.eblan.launcher.domain.model.EblanApplicationInfo
 import com.eblan.launcher.domain.model.EditPageData
-import com.eblan.launcher.domain.model.GetEblanApplicationInfosByLabel
+import com.eblan.launcher.domain.model.GetEblanApplicationInfosByLabelAndTag
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.GridItemData.ShortcutInfo
@@ -45,7 +45,7 @@ import com.eblan.launcher.domain.repository.GridRepository
 import com.eblan.launcher.domain.repository.UserDataRepository
 import com.eblan.launcher.domain.usecase.GetHomeDataUseCase
 import com.eblan.launcher.domain.usecase.application.GetEblanAppWidgetProviderInfosByLabelUseCase
-import com.eblan.launcher.domain.usecase.application.GetEblanApplicationInfosByLabelUseCase
+import com.eblan.launcher.domain.usecase.application.GetEblanApplicationInfosByLabelAndTagUseCase
 import com.eblan.launcher.domain.usecase.application.GetEblanShortcutConfigsByLabelUseCase
 import com.eblan.launcher.domain.usecase.application.GetEblanShortcutInfosUseCase
 import com.eblan.launcher.domain.usecase.application.UpdateEblanApplicationInfosIndexesUseCase
@@ -100,7 +100,7 @@ internal class HomeViewModel @Inject constructor(
     getEblanShortcutInfosUseCase: GetEblanShortcutInfosUseCase,
     eblanAppWidgetProviderInfoRepository: EblanAppWidgetProviderInfoRepository,
     getIconPackFilePathsUseCase: GetIconPackFilePathsUseCase,
-    getEblanApplicationInfosByLabelUseCase: GetEblanApplicationInfosByLabelUseCase,
+    getEblanApplicationInfosByLabelAndTagUseCase: GetEblanApplicationInfosByLabelAndTagUseCase,
     getEblanAppWidgetProviderInfosByLabelUseCase: GetEblanAppWidgetProviderInfosByLabelUseCase,
     getEblanShortcutConfigsByLabelUseCase: GetEblanShortcutConfigsByLabelUseCase,
     private val gridRepository: GridRepository,
@@ -176,13 +176,13 @@ internal class HomeViewModel @Inject constructor(
 
     private val _eblanApplicationInfoTagId = MutableStateFlow<Long?>(null)
 
-    val getEblanApplicationInfosByLabel = getEblanApplicationInfosByLabelUseCase(
+    val getEblanApplicationInfosByLabelAndTag = getEblanApplicationInfosByLabelAndTagUseCase(
         labelFlow = _eblanApplicationInfoLabel,
         eblanApplicationInfoTagIdFlow = _eblanApplicationInfoTagId,
     ).stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = GetEblanApplicationInfosByLabel(
+        initialValue = GetEblanApplicationInfosByLabelAndTag(
             eblanApplicationInfos = emptyMap(),
             privateEblanUser = null,
             privateEblanApplicationInfos = emptyList(),

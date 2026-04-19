@@ -25,8 +25,7 @@ import com.eblan.launcher.domain.model.EblanApplicationInfo
 import com.eblan.launcher.domain.model.EblanApplicationInfoOrder
 import com.eblan.launcher.domain.model.EblanUserPageKey
 import com.eblan.launcher.domain.model.EblanUserType
-import com.eblan.launcher.domain.model.GetEblanApplicationInfosByLabel
-import com.eblan.launcher.domain.model.UserData
+import com.eblan.launcher.domain.model.GetEblanApplicationInfosByLabelAndTag
 import com.eblan.launcher.domain.repository.EblanApplicationInfoRepository
 import com.eblan.launcher.domain.repository.UserDataRepository
 import kotlinx.coroutines.CoroutineDispatcher
@@ -38,7 +37,7 @@ import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 import kotlin.collections.toSortedMap
 
-class GetEblanApplicationInfosByLabelUseCase @Inject constructor(
+class GetEblanApplicationInfosByLabelAndTagUseCase @Inject constructor(
     private val eblanApplicationInfoRepository: EblanApplicationInfoRepository,
     private val launcherAppsWrapper: LauncherAppsWrapper,
     private val userDataRepository: UserDataRepository,
@@ -48,7 +47,7 @@ class GetEblanApplicationInfosByLabelUseCase @Inject constructor(
     operator fun invoke(
         labelFlow: Flow<String>,
         eblanApplicationInfoTagIdFlow: Flow<Long?>,
-    ): Flow<GetEblanApplicationInfosByLabel> {
+    ): Flow<GetEblanApplicationInfosByLabelAndTag> {
         val eblanApplicationInfosFlow = eblanApplicationInfoTagIdFlow.flatMapLatest { id ->
             if (id != null) {
                 eblanApplicationInfoRepository.getEblanApplicationInfosByTagId(id = id)
@@ -91,7 +90,7 @@ class GetEblanApplicationInfosByLabelUseCase @Inject constructor(
         }.flowOn(defaultDispatcher)
     }
 
-    private fun getVerticalOrListEblanApplicationInfosByLabel(eblanApplicationInfos: MutableList<EblanApplicationInfo>): GetEblanApplicationInfosByLabel {
+    private fun getVerticalOrListEblanApplicationInfosByLabel(eblanApplicationInfos: MutableList<EblanApplicationInfo>): GetEblanApplicationInfosByLabelAndTag {
         val groupedEblanApplicationInfos = eblanApplicationInfos.groupBy {
             EblanUserPageKey(
                 eblanUser = launcherAppsWrapper.getUser(serialNumber = it.serialNumber),
@@ -103,7 +102,7 @@ class GetEblanApplicationInfosByLabelUseCase @Inject constructor(
             it.eblanUser.eblanUserType == EblanUserType.Private
         }
 
-        return GetEblanApplicationInfosByLabel(
+        return GetEblanApplicationInfosByLabelAndTag(
             eblanApplicationInfos = groupedEblanApplicationInfos.filterKeys { eblanUser -> eblanUser != privateEblanUserPageKey },
             privateEblanUser = privateEblanUserPageKey?.eblanUser,
             privateEblanApplicationInfos = groupedEblanApplicationInfos[privateEblanUserPageKey].orEmpty(),
@@ -114,7 +113,7 @@ class GetEblanApplicationInfosByLabelUseCase @Inject constructor(
         horizontalAppDrawerColumns: Int,
         horizontalAppDrawerRows: Int,
         eblanApplicationInfosByLabel: MutableList<EblanApplicationInfo>,
-    ): GetEblanApplicationInfosByLabel {
+    ): GetEblanApplicationInfosByLabelAndTag {
         val pageSize = horizontalAppDrawerColumns * horizontalAppDrawerRows
 
         val groupedEblanApplicationInfos = eblanApplicationInfosByLabel.groupBy { app ->
@@ -129,7 +128,7 @@ class GetEblanApplicationInfosByLabelUseCase @Inject constructor(
                 }
             }.toMap()
 
-        return GetEblanApplicationInfosByLabel(
+        return GetEblanApplicationInfosByLabelAndTag(
             eblanApplicationInfos = groupedEblanApplicationInfos,
             privateEblanUser = null,
             privateEblanApplicationInfos = emptyList(),

@@ -350,7 +350,7 @@ private fun FolderGridItem(
                                     .data(applicationInfoFolderGridItem.customIcon ?: icon)
                                     .addLastModifiedToFileCacheKey(true).build(),
                                 contentDescription = null,
-                                modifier = Modifier.size((gridItemSettings.iconSize * 0.25).dp),
+                                modifier = Modifier.size((gridItemSettings.iconSize * 0.30).dp),
                             )
                         }
                     }

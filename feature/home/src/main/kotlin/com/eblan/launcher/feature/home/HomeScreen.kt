@@ -53,7 +53,7 @@ import com.eblan.launcher.domain.model.EblanShortcutInfo
 import com.eblan.launcher.domain.model.EblanShortcutInfoByGroup
 import com.eblan.launcher.domain.model.EblanUser
 import com.eblan.launcher.domain.model.EditPageData
-import com.eblan.launcher.domain.model.GetEblanApplicationInfosByLabel
+import com.eblan.launcher.domain.model.GetEblanApplicationInfosByLabelAndTag
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.HomeData
@@ -94,7 +94,7 @@ internal fun HomeRoute(
 
     val pinGridItem by viewModel.pinGridItem.collectAsStateWithLifecycle()
 
-    val getEblanApplicationInfos by viewModel.getEblanApplicationInfosByLabel.collectAsStateWithLifecycle()
+    val getEblanApplicationInfos by viewModel.getEblanApplicationInfosByLabelAndTag.collectAsStateWithLifecycle()
 
     val eblanShortcutConfigs by viewModel.eblanShortcutConfigs.collectAsStateWithLifecycle()
 
@@ -126,7 +126,7 @@ internal fun HomeRoute(
         eblanShortcutInfosGroup = eblanShortcutInfosGroup,
         editPageData = editPageData,
         folderGridItem = folderGridItem,
-        getEblanApplicationInfosByLabel = getEblanApplicationInfos,
+        getEblanApplicationInfosByLabelAndTag = getEblanApplicationInfos,
         homeUiState = homeUiState,
         iconPackFilePaths = iconPackFilePaths,
         movedGridItemResult = movedGridItemResult,
@@ -186,7 +186,7 @@ internal fun HomeScreen(
     eblanShortcutInfosGroup: Map<EblanShortcutInfoByGroup, List<EblanShortcutInfo>>,
     editPageData: EditPageData?,
     folderGridItem: GridItem?,
-    getEblanApplicationInfosByLabel: GetEblanApplicationInfosByLabel,
+    getEblanApplicationInfosByLabelAndTag: GetEblanApplicationInfosByLabelAndTag,
     homeUiState: HomeUiState,
     iconPackFilePaths: Map<String, String>,
     movedGridItemResult: MoveGridItemResult?,
@@ -302,7 +302,7 @@ internal fun HomeScreen(
                 eblanShortcutInfosGroup = eblanShortcutInfosGroup,
                 editPageData = editPageData,
                 folderGridItem = folderGridItem,
-                getEblanApplicationInfosByLabel = getEblanApplicationInfosByLabel,
+                getEblanApplicationInfosByLabelAndTag = getEblanApplicationInfosByLabelAndTag,
                 homeData = homeUiState.homeData,
                 iconPackFilePaths = iconPackFilePaths,
                 movedGridItemResult = movedGridItemResult,
@@ -367,7 +367,7 @@ private fun Success(
     eblanShortcutInfosGroup: Map<EblanShortcutInfoByGroup, List<EblanShortcutInfo>>,
     editPageData: EditPageData?,
     folderGridItem: GridItem?,
-    getEblanApplicationInfosByLabel: GetEblanApplicationInfosByLabel,
+    getEblanApplicationInfosByLabelAndTag: GetEblanApplicationInfosByLabelAndTag,
     homeData: HomeData,
     iconPackFilePaths: Map<String, String>,
     movedGridItemResult: MoveGridItemResult?,
@@ -491,7 +491,7 @@ private fun Success(
                     experimentalSettings = homeData.userData.experimentalSettings,
                     folderGridItem = folderGridItem,
                     gestureSettings = homeData.userData.gestureSettings,
-                    getEblanApplicationInfosByLabel = getEblanApplicationInfosByLabel,
+                    getEblanApplicationInfosByLabelAndTag = getEblanApplicationInfosByLabelAndTag,
                     gridItems = homeData.gridItems,
                     gridItemsByPage = homeData.gridItemsByPage,
                     hasShortcutHostPermission = homeData.hasShortcutHostPermission,
