@@ -191,7 +191,6 @@ internal fun SharedTransitionScope.VerticalApplicationScreen(
 
     ApplicationScreenEffect(
         appDrawerSettings = appDrawerSettings,
-        drag = drag,
         horizontalPagerState = horizontalPagerState,
         isPressHome = isPressHome,
         screenHeight = screenHeight,

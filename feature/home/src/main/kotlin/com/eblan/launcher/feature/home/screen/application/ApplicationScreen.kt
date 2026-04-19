@@ -27,11 +27,15 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -53,6 +57,7 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -73,6 +78,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -361,7 +367,11 @@ internal fun QuiteModeScreen(
     }
 }
 
-@OptIn(ExperimentalUuidApi::class, ExperimentalSharedTransitionApi::class)
+@OptIn(
+    ExperimentalUuidApi::class,
+    ExperimentalSharedTransitionApi::class,
+    ExperimentalLayoutApi::class,
+)
 @Composable
 internal fun SharedTransitionScope.EblanApplicationInfoItem(
     modifier: Modifier = Modifier,
@@ -400,6 +410,8 @@ internal fun SharedTransitionScope.EblanApplicationInfoItem(
 
     val launcherApps = LocalLauncherApps.current
 
+    val keyboardController = LocalSoftwareKeyboardController.current
+
     val textColor = getSystemTextColor(
         systemCustomTextColor = appDrawerSettings.gridItemSettings.customTextColor,
         systemTextColor = appDrawerSettings.gridItemSettings.textColor,
@@ -431,6 +443,8 @@ internal fun SharedTransitionScope.EblanApplicationInfoItem(
 
     val alpha = if (isLongPress) 0f else 1f
 
+    val isImeVisible = WindowInsets.isImeVisible
+
     LaunchedEffect(key1 = drag) {
         when (drag) {
             Drag.Dragging if isLongPress -> {
@@ -452,6 +466,12 @@ internal fun SharedTransitionScope.EblanApplicationInfoItem(
                     folderId = null,
                 )
 
+                val eblanAction = EblanAction(
+                    eblanActionType = EblanActionType.None,
+                    serialNumber = 0L,
+                    componentName = "",
+                )
+
                 val gridItem = GridItem(
                     id = pagerScreenId,
                     page = currentPage,
@@ -463,21 +483,9 @@ internal fun SharedTransitionScope.EblanApplicationInfoItem(
                     associate = Associate.Grid,
                     override = false,
                     gridItemSettings = appDrawerSettings.gridItemSettings,
-                    doubleTap = EblanAction(
-                        eblanActionType = EblanActionType.None,
-                        serialNumber = 0L,
-                        componentName = "",
-                    ),
-                    swipeUp = EblanAction(
-                        eblanActionType = EblanActionType.None,
-                        serialNumber = 0L,
-                        componentName = "",
-                    ),
-                    swipeDown = EblanAction(
-                        eblanActionType = EblanActionType.None,
-                        serialNumber = 0L,
-                        componentName = "",
-                    ),
+                    doubleTap = eblanAction,
+                    swipeUp = eblanAction,
+                    swipeDown = eblanAction,
                 )
 
                 onUpdateGridItemSource(GridItemSource.New(gridItem = gridItem))
@@ -526,6 +534,10 @@ internal fun SharedTransitionScope.EblanApplicationInfoItem(
                                 onScrollToItem(0)
                             }
                         }
+
+                        if (isImeVisible) {
+                            keyboardController?.hide()
+                        }
                     },
                     onLongPress = {
                         scope.launch {
@@ -550,6 +562,10 @@ internal fun SharedTransitionScope.EblanApplicationInfoItem(
                             onUpdatePopupMenu(true)
 
                             isLongPress = true
+
+                            if (isImeVisible) {
+                                keyboardController?.hide()
+                            }
                         }
                     },
                 )
@@ -710,7 +726,6 @@ internal fun EblanApplicationInfoTabRow(
 @Composable
 internal fun ApplicationScreenEffect(
     appDrawerSettings: AppDrawerSettings,
-    drag: Drag,
     horizontalPagerState: PagerState,
     isPressHome: Boolean,
     screenHeight: Int,
@@ -765,12 +780,6 @@ internal fun ApplicationScreenEffect(
             onResetScroll = onResetScroll,
             onShowPopupApplicationMenu = onShowPopupApplicationMenu,
         )
-    }
-
-    LaunchedEffect(key1 = drag) {
-        if (drag == Drag.Start && searchBarState.currentValue == SearchBarValue.Expanded) {
-            searchBarState.animateToCollapsed()
-        }
     }
 
     LaunchedEffect(key1 = horizontalPagerState.isScrollInProgress) {

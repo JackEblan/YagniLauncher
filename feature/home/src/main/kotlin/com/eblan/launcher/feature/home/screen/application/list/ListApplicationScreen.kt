@@ -76,6 +76,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
@@ -216,7 +217,6 @@ internal fun SharedTransitionScope.ListApplicationScreen(
 
     ApplicationScreenEffect(
         appDrawerSettings = appDrawerSettings,
-        drag = drag,
         horizontalPagerState = horizontalPagerState,
         isPressHome = isPressHome,
         screenHeight = screenHeight,
@@ -746,7 +746,11 @@ private fun SharedTransitionScope.EblanApplicationInfos(
     }
 }
 
-@OptIn(ExperimentalUuidApi::class, ExperimentalSharedTransitionApi::class)
+@OptIn(
+    ExperimentalUuidApi::class,
+    ExperimentalSharedTransitionApi::class,
+    ExperimentalLayoutApi::class,
+)
 @Composable
 private fun SharedTransitionScope.EblanApplicationInfoItem(
     modifier: Modifier = Modifier,
@@ -784,6 +788,8 @@ private fun SharedTransitionScope.EblanApplicationInfoItem(
 
     val launcherApps = LocalLauncherApps.current
 
+    val keyboardController = LocalSoftwareKeyboardController.current
+
     val textColor = getSystemTextColor(
         systemCustomTextColor = appDrawerSettings.gridItemSettings.customTextColor,
         systemTextColor = appDrawerSettings.gridItemSettings.textColor,
@@ -807,6 +813,8 @@ private fun SharedTransitionScope.EblanApplicationInfoItem(
 
     val alpha = if (isLongPress) 0f else 1f
 
+    val isImeVisible = WindowInsets.isImeVisible
+
     LaunchedEffect(key1 = drag) {
         when (drag) {
             Drag.Dragging if isLongPress -> {
@@ -828,6 +836,12 @@ private fun SharedTransitionScope.EblanApplicationInfoItem(
                     folderId = null,
                 )
 
+                val eblanAction = EblanAction(
+                    eblanActionType = EblanActionType.None,
+                    serialNumber = 0L,
+                    componentName = "",
+                )
+
                 val gridItem = GridItem(
                     id = pagerScreenId,
                     page = currentPage,
@@ -839,21 +853,9 @@ private fun SharedTransitionScope.EblanApplicationInfoItem(
                     associate = Associate.Grid,
                     override = false,
                     gridItemSettings = appDrawerSettings.gridItemSettings,
-                    doubleTap = EblanAction(
-                        eblanActionType = EblanActionType.None,
-                        serialNumber = 0L,
-                        componentName = "",
-                    ),
-                    swipeUp = EblanAction(
-                        eblanActionType = EblanActionType.None,
-                        serialNumber = 0L,
-                        componentName = "",
-                    ),
-                    swipeDown = EblanAction(
-                        eblanActionType = EblanActionType.None,
-                        serialNumber = 0L,
-                        componentName = "",
-                    ),
+                    doubleTap = eblanAction,
+                    swipeUp = eblanAction,
+                    swipeDown = eblanAction,
                 )
 
                 onUpdateGridItemSource(GridItemSource.New(gridItem = gridItem))
@@ -902,6 +904,10 @@ private fun SharedTransitionScope.EblanApplicationInfoItem(
                                 onScrollToItem(0)
                             }
                         }
+
+                        if (isImeVisible) {
+                            keyboardController?.hide()
+                        }
                     },
                     onLongPress = {
                         scope.launch {
@@ -926,6 +932,10 @@ private fun SharedTransitionScope.EblanApplicationInfoItem(
                             onUpdatePopupMenu(true)
 
                             isLongPress = true
+
+                            if (isImeVisible) {
+                                keyboardController?.hide()
+                            }
                         }
                     },
                 )
