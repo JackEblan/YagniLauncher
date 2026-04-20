@@ -508,7 +508,7 @@ internal fun EblanShortcutConfig.toDeleteEblanShortcutConfig(): DeleteEblanShort
 
 @OptIn(ExperimentalUuidApi::class)
 internal suspend fun addNewApplicationToHomeScreen(
-    gridItems: List<GridItem>,
+    gridItems: MutableList<GridItem>,
     serialNumber: Long,
     componentName: String,
     packageName: String,
@@ -578,6 +578,8 @@ internal suspend fun addNewApplicationToHomeScreen(
     )
 
     if (newGridItem != null) {
+        gridItems.add(newGridItem)
+
         newApplicationsToHomeScreen.add(
             ApplicationInfoGridItem(
                 id = newGridItem.id,

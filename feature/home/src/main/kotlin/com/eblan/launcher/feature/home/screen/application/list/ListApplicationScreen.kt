@@ -125,6 +125,7 @@ import com.eblan.launcher.ui.local.LocalLauncherApps
 import com.eblan.launcher.ui.local.LocalPackageManager
 import com.eblan.launcher.ui.local.LocalUserManager
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -693,6 +694,7 @@ private fun SharedTransitionScope.EblanApplicationInfos(
                         isQuietModeEnabled = isQuietModeEnabled,
                         managedProfileResult = managedProfileResult,
                         paddingValues = paddingValues,
+                        onDismiss = onDismiss,
                         privateEblanApplicationInfos = getEblanApplicationInfosByLabelAndTag.privateEblanApplicationInfos,
                         privateEblanUser = getEblanApplicationInfosByLabelAndTag.privateEblanUser,
                         onUpdateIsQuietModeEnabled = { newIsQuiteModeEnabled ->
@@ -701,6 +703,7 @@ private fun SharedTransitionScope.EblanApplicationInfos(
                         onUpdateOverlayBounds = onUpdateOverlayBounds,
                         onUpdatePopupMenu = onUpdatePrivatePopupMenu,
                         onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
+                        onScrollToItem = lazyListState::scrollToItem,
                     )
                 }
 
@@ -881,30 +884,34 @@ private fun SharedTransitionScope.EblanApplicationInfoItem(
             .pointerInput(key1 = drag) {
                 detectTapGestures(
                     onTap = {
-                        val sourceBoundsX = intOffset.x + leftPadding
-
-                        val sourceBoundsY = intOffset.y + topPadding
-
-                        launcherApps.startMainActivity(
-                            serialNumber = eblanApplicationInfo.serialNumber,
-                            componentName = eblanApplicationInfo.componentName,
-                            sourceBounds = Rect(
-                                sourceBoundsX,
-                                sourceBoundsY,
-                                sourceBoundsX + intSize.width,
-                                sourceBoundsY + intSize.height,
-                            ),
-                        )
-
-                        if (appDrawerSettings.resetState) {
-                            scope.launch {
+                        scope.launch {
+                            if (appDrawerSettings.resetState) {
                                 onDismiss()
 
                                 onScrollToItem(0)
                             }
-                        }
 
-                        keyboardController?.hide()
+                            if (appDrawerSettings.showKeyboard) {
+                                keyboardController?.hide()
+
+                                delay(300L)
+                            }
+
+                            val sourceBoundsX = intOffset.x + leftPadding
+
+                            val sourceBoundsY = intOffset.y + topPadding
+
+                            launcherApps.startMainActivity(
+                                serialNumber = eblanApplicationInfo.serialNumber,
+                                componentName = eblanApplicationInfo.componentName,
+                                sourceBounds = Rect(
+                                    sourceBoundsX,
+                                    sourceBoundsY,
+                                    sourceBoundsX + intSize.width,
+                                    sourceBoundsY + intSize.height,
+                                ),
+                            )
+                        }
                     },
                     onLongPress = {
                         scope.launch {

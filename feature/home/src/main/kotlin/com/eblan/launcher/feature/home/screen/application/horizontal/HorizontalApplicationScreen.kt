@@ -578,9 +578,11 @@ private fun SharedTransitionScope.EblanApplicationInfos(
                         eblanApplicationInfo = eblanApplicationInfo,
                         iconPackFilePaths = iconPackFilePaths,
                         paddingValues = paddingValues,
+                        onDismiss = onDismiss,
                         onUpdateOverlayBounds = onUpdateOverlayBounds,
                         onUpdatePopupMenu = onUpdatePrivatePopupMenu,
                         onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
+                        onScrollToItem = onScrollToItem,
                     )
                 }
             }

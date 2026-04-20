@@ -185,9 +185,10 @@ internal fun SharedTransitionScope.VerticalApplicationScreen(
 
     val lazyGridState = rememberLazyGridState()
 
-    val eblanUserPageKeys = remember(key1 = getEblanApplicationInfosByLabelAndTag.eblanApplicationInfos) {
-        getEblanApplicationInfosByLabelAndTag.eblanApplicationInfos.keys.distinctBy { it.eblanUser.serialNumber }
-    }
+    val eblanUserPageKeys =
+        remember(key1 = getEblanApplicationInfosByLabelAndTag.eblanApplicationInfos) {
+            getEblanApplicationInfosByLabelAndTag.eblanApplicationInfos.keys.distinctBy { it.eblanUser.serialNumber }
+        }
 
     ApplicationScreenEffect(
         appDrawerSettings = appDrawerSettings,
@@ -689,6 +690,7 @@ private fun SharedTransitionScope.EblanApplicationInfos(
                         isQuietModeEnabled = isQuietModeEnabled,
                         managedProfileResult = managedProfileResult,
                         paddingValues = paddingValues,
+                        onDismiss = onDismiss,
                         privateEblanApplicationInfos = getEblanApplicationInfosByLabelAndTag.privateEblanApplicationInfos,
                         privateEblanUser = getEblanApplicationInfosByLabelAndTag.privateEblanUser,
                         onUpdateIsQuietModeEnabled = { newIsQuiteModeEnabled ->
@@ -697,6 +699,7 @@ private fun SharedTransitionScope.EblanApplicationInfos(
                         onUpdateOverlayBounds = onUpdateOverlayBounds,
                         onUpdatePopupMenu = onUpdatePrivatePopupMenu,
                         onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
+                        onScrollToItem = lazyGridState::scrollToItem,
                     )
                 }
 

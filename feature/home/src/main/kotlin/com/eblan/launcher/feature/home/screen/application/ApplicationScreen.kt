@@ -118,6 +118,7 @@ import com.eblan.launcher.framework.packagemanager.AndroidPackageManagerWrapper
 import com.eblan.launcher.framework.usermanager.AndroidUserManagerWrapper
 import com.eblan.launcher.ui.local.LocalLauncherApps
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.onEach
@@ -506,30 +507,34 @@ internal fun SharedTransitionScope.EblanApplicationInfoItem(
             .pointerInput(key1 = drag) {
                 detectTapGestures(
                     onTap = {
-                        val sourceBoundsX = intOffset.x + leftPadding
-
-                        val sourceBoundsY = intOffset.y + topPadding
-
-                        launcherApps.startMainActivity(
-                            serialNumber = eblanApplicationInfo.serialNumber,
-                            componentName = eblanApplicationInfo.componentName,
-                            sourceBounds = Rect(
-                                sourceBoundsX,
-                                sourceBoundsY,
-                                sourceBoundsX + intSize.width,
-                                sourceBoundsY + intSize.height,
-                            ),
-                        )
-
-                        if (appDrawerSettings.resetState) {
-                            scope.launch {
+                        scope.launch {
+                            if (appDrawerSettings.resetState) {
                                 onDismiss()
 
                                 onScrollToItem(0)
                             }
-                        }
 
-                        keyboardController?.hide()
+                            if (appDrawerSettings.showKeyboard) {
+                                keyboardController?.hide()
+
+                                delay(300L)
+                            }
+
+                            val sourceBoundsX = intOffset.x + leftPadding
+
+                            val sourceBoundsY = intOffset.y + topPadding
+
+                            launcherApps.startMainActivity(
+                                serialNumber = eblanApplicationInfo.serialNumber,
+                                componentName = eblanApplicationInfo.componentName,
+                                sourceBounds = Rect(
+                                    sourceBoundsX,
+                                    sourceBoundsY,
+                                    sourceBoundsX + intSize.width,
+                                    sourceBoundsY + intSize.height,
+                                ),
+                            )
+                        }
                     },
                     onLongPress = {
                         scope.launch {
@@ -555,7 +560,9 @@ internal fun SharedTransitionScope.EblanApplicationInfoItem(
 
                             isLongPress = true
 
-                            keyboardController?.hide()
+                            if (appDrawerSettings.showKeyboard) {
+                                keyboardController?.hide()
+                            }
                         }
                     },
                 )

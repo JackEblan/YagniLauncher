@@ -38,6 +38,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,6 +48,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
@@ -66,6 +68,8 @@ import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.screen.application.PrivateSpaceStickyHeader
 import com.eblan.launcher.feature.home.util.getSystemTextColor
 import com.eblan.launcher.ui.local.LocalLauncherApps
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlin.uuid.ExperimentalUuidApi
 
 internal fun LazyListScope.privateSpace(
@@ -77,6 +81,7 @@ internal fun LazyListScope.privateSpace(
     paddingValues: PaddingValues,
     privateEblanApplicationInfos: List<EblanApplicationInfo>,
     privateEblanUser: EblanUser?,
+    onDismiss: () -> Unit,
     onUpdateIsQuietModeEnabled: (Boolean) -> Unit,
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
@@ -84,6 +89,7 @@ internal fun LazyListScope.privateSpace(
     ) -> Unit,
     onUpdatePopupMenu: (Boolean) -> Unit,
     onUpdateEblanApplicationInfo: (EblanApplicationInfo) -> Unit,
+    onScrollToItem: suspend (Int) -> Unit,
 ) {
     if (privateEblanUser == null || privateEblanUser.isPrivateSpaceEntryPointHidden) return
 
@@ -104,9 +110,11 @@ internal fun LazyListScope.privateSpace(
                 eblanApplicationInfo = eblanApplicationInfo,
                 iconPackFilePaths = iconPackFilePaths,
                 paddingValues = paddingValues,
+                onDismiss = onDismiss,
                 onUpdateOverlayBounds = onUpdateOverlayBounds,
                 onUpdatePopupMenu = onUpdatePopupMenu,
                 onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
+                onScrollToItem = onScrollToItem,
             )
         }
     }
@@ -121,12 +129,14 @@ private fun PrivateSpaceEblanApplicationInfoItem(
     eblanApplicationInfo: EblanApplicationInfo,
     iconPackFilePaths: Map<String, String>,
     paddingValues: PaddingValues,
+    onDismiss: () -> Unit,
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
     ) -> Unit,
     onUpdatePopupMenu: (Boolean) -> Unit,
     onUpdateEblanApplicationInfo: (EblanApplicationInfo) -> Unit,
+    onScrollToItem: suspend (Int) -> Unit,
 ) {
     var intOffset by remember { mutableStateOf(IntOffset.Zero) }
 
@@ -135,6 +145,10 @@ private fun PrivateSpaceEblanApplicationInfoItem(
     val density = LocalDensity.current
 
     val launcherApps = LocalLauncherApps.current
+
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    val scope = rememberCoroutineScope()
 
     val textColor = getSystemTextColor(
         systemCustomTextColor = appDrawerSettings.gridItemSettings.customTextColor,
@@ -166,20 +180,34 @@ private fun PrivateSpaceEblanApplicationInfoItem(
             .pointerInput(key1 = drag) {
                 detectTapGestures(
                     onTap = {
-                        val sourceBoundsX = intOffset.x + leftPadding
+                        scope.launch {
+                            if (appDrawerSettings.resetState) {
+                                onDismiss()
 
-                        val sourceBoundsY = intOffset.y + topPadding
+                                onScrollToItem(0)
+                            }
 
-                        launcherApps.startMainActivity(
-                            serialNumber = eblanApplicationInfo.serialNumber,
-                            componentName = eblanApplicationInfo.componentName,
-                            sourceBounds = Rect(
-                                sourceBoundsX,
-                                sourceBoundsY,
-                                sourceBoundsX + intSize.width,
-                                sourceBoundsY + intSize.height,
-                            ),
-                        )
+                            if (appDrawerSettings.showKeyboard) {
+                                keyboardController?.hide()
+
+                                delay(300L)
+                            }
+
+                            val sourceBoundsX = intOffset.x + leftPadding
+
+                            val sourceBoundsY = intOffset.y + topPadding
+
+                            launcherApps.startMainActivity(
+                                serialNumber = eblanApplicationInfo.serialNumber,
+                                componentName = eblanApplicationInfo.componentName,
+                                sourceBounds = Rect(
+                                    sourceBoundsX,
+                                    sourceBoundsY,
+                                    sourceBoundsX + intSize.width,
+                                    sourceBoundsY + intSize.height,
+                                ),
+                            )
+                        }
                     },
                     onLongPress = {
                         onUpdateEblanApplicationInfo(eblanApplicationInfo)
@@ -192,6 +220,8 @@ private fun PrivateSpaceEblanApplicationInfoItem(
                         onUpdatePopupMenu(true)
 
                         isLongPress = true
+
+                        keyboardController?.hide()
                     },
                 )
             }

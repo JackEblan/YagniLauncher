@@ -224,7 +224,7 @@ class SyncDataUseCase @Inject constructor(
 
         newlyInstalledSyncEblanApplicationInfos.forEach { syncEblanApplicationInfo ->
             addNewApplicationToHomeScreen(
-                gridItems = gridItems,
+                gridItems = gridItems.toMutableList(),
                 serialNumber = syncEblanApplicationInfo.serialNumber,
                 componentName = syncEblanApplicationInfo.componentName,
                 packageName = syncEblanApplicationInfo.packageName,

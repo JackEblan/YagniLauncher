@@ -150,7 +150,7 @@ class AddPackageUseCase @Inject constructor(
         val gridItems = gridRepository.gridItems.first() + getFolderGridItemsUseCase().first()
 
         addNewApplicationToHomeScreen(
-            gridItems = gridItems,
+            gridItems = gridItems.toMutableList(),
             serialNumber = serialNumber,
             componentName = componentName,
             packageName = packageName,
