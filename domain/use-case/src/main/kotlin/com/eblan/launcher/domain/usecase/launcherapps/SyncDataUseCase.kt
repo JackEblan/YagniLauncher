@@ -217,14 +217,14 @@ class SyncDataUseCase @Inject constructor(
     ) {
         if (!homeSettings.addNewAppsToHomeScreen || experimentalSettings.firstLaunch) return
 
-        val gridItems = gridRepository.gridItems.first() + getFolderGridItemsUseCase().first()
+        val gridItems = (gridRepository.gridItems.first() + getFolderGridItemsUseCase().first()).toMutableList()
 
         val newlyInstalledSyncEblanApplicationInfos =
             newSyncEblanApplicationInfos - oldSyncEblanApplicationInfos.toSet()
 
         newlyInstalledSyncEblanApplicationInfos.forEach { syncEblanApplicationInfo ->
             addNewApplicationToHomeScreen(
-                gridItems = gridItems.toMutableList(),
+                gridItems = gridItems,
                 serialNumber = syncEblanApplicationInfo.serialNumber,
                 componentName = syncEblanApplicationInfo.componentName,
                 packageName = syncEblanApplicationInfo.packageName,
