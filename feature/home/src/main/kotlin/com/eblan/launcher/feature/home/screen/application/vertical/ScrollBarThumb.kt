@@ -157,10 +157,7 @@ private fun handleVerticalDrag(
     thumbY: Float,
     deltaY: Float,
     scope: CoroutineScope,
-    onScrollToItem: suspend (
-        index: Int,
-        offset: Int,
-    ) -> Unit,
+    onScrollToItem: suspend (index: Int, offset: Int) -> Unit,
     onUpdateThumbY: (Float) -> Unit,
 ) {
     if (deltaY == 0f) return
@@ -176,32 +173,37 @@ private fun handleVerticalDrag(
     val viewportHeight = layoutInfo.viewportSize.height
 
     val thumbHeightPx = with(density) { thumbHeight.toPx() }
-
-    val availableHeight = viewportHeight - thumbHeightPx - bottomPadding
+    val availableHeight = (viewportHeight - thumbHeightPx - bottomPadding).coerceAtLeast(0f)
 
     val newThumbY = (thumbY + deltaY).coerceIn(0f, availableHeight)
 
-    val progress = newThumbY / availableHeight
+    val progress = if (availableHeight > 0f) {
+        (newThumbY / availableHeight).coerceIn(0f, 1f)
+    } else {
+        0f
+    }
 
     val totalContentHeight = totalRows * avgItemHeight
-    val scrollableHeight = totalContentHeight - viewportHeight
+    val scrollableHeight = (totalContentHeight - viewportHeight).coerceAtLeast(0)
 
-    val targetScrollY = progress * scrollableHeight
+    val targetScrollY = (progress * scrollableHeight).coerceIn(0f, scrollableHeight.toFloat())
 
-    val targetRow = targetScrollY / avgItemHeight
+    val targetRow = (targetScrollY / avgItemHeight)
+        .coerceIn(0f, (totalRows - 1).toFloat())
+
     val rowInt = targetRow.toInt()
 
-    val offsetInRow = (targetScrollY % avgItemHeight).toInt()
+    val offsetInRow = (targetScrollY % avgItemHeight)
+        .toInt()
+        .coerceAtLeast(0)
 
-    val targetIndex = rowInt * appDrawerColumns
+    val targetIndex = (rowInt * appDrawerColumns)
+        .coerceIn(0, totalItems - 1)
 
     onUpdateThumbY(newThumbY)
 
     scope.launch {
-        onScrollToItem(
-            targetIndex,
-            offsetInRow,
-        )
+        onScrollToItem(targetIndex, offsetInRow)
     }
 }
 
@@ -230,13 +232,19 @@ private fun getViewPortThumbY(
 
     val scrollY = (firstRow * avgItemHeight) - firstItem.offset.y
 
-    val scrollableHeight = totalContentHeight - viewportHeight
+    val scrollableHeight = (totalContentHeight - viewportHeight).coerceAtLeast(0f)
 
-    val progress = scrollY / scrollableHeight
+    val progress = if (scrollableHeight > 0f) {
+        (scrollY / scrollableHeight).coerceIn(0f, 1f)
+    } else {
+        0f
+    }
 
     val thumbHeightPx = with(density) { thumbHeight.toPx() }
 
-    val availableHeight = viewportHeight - thumbHeightPx - bottomPadding
+    val availableHeight = (viewportHeight - thumbHeightPx - bottomPadding)
+        .coerceAtLeast(0f)
 
-    return progress * availableHeight
+    return (progress * availableHeight)
+        .coerceIn(0f, availableHeight)
 }
