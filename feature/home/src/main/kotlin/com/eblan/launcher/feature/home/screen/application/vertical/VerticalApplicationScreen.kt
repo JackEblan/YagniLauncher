@@ -230,8 +230,6 @@ internal fun SharedTransitionScope.VerticalApplicationScreen(
         ApplicationSearchBar(
             searchBarState = searchBarState,
             textFieldState = textFieldState,
-            swipeY = swipeY,
-            showKeyboard = appDrawerSettings.showKeyboard,
             onUpdateShowEblanApplicationInfoOrderDialog = { newShowEblanApplicationInfoOrderDialog ->
                 showEblanApplicationInfoOrderDialog = newShowEblanApplicationInfoOrderDialog
             },

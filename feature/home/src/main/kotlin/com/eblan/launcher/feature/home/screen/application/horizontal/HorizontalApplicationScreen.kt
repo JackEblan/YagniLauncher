@@ -202,8 +202,6 @@ internal fun SharedTransitionScope.HorizontalApplicationScreen(
         ApplicationSearchBarWithoutMenu(
             searchBarState = searchBarState,
             textFieldState = textFieldState,
-            swipeY = swipeY,
-            showKeyboard = appDrawerSettings.showKeyboard,
         )
 
         if (eblanApplicationInfoTags.isNotEmpty()) {

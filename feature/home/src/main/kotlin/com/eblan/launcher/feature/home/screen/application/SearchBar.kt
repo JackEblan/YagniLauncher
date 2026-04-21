@@ -46,28 +46,13 @@ internal fun ApplicationSearchBar(
     modifier: Modifier = Modifier,
     searchBarState: SearchBarState,
     textFieldState: TextFieldState,
-    swipeY: Float,
-    showKeyboard: Boolean,
     onUpdateShowEblanApplicationInfoOrderDialog: (Boolean) -> Unit,
 ) {
-    val keyboardController = LocalSoftwareKeyboardController.current
-
     val scope = rememberCoroutineScope()
-
-    val focusRequester = remember { FocusRequester() }
-
-    LaunchedEffect(key1 = swipeY) {
-        if (swipeY.roundToInt() == 0 && showKeyboard) {
-            focusRequester.requestFocus()
-
-            keyboardController?.show()
-        }
-    }
 
     SearchBar(
         state = searchBarState,
         modifier = modifier
-            .focusRequester(focusRequester)
             .fillMaxWidth()
             .padding(10.dp),
         inputField = {
@@ -92,8 +77,14 @@ internal fun ApplicationSearchBar(
                         )
                     }
                 },
-                onSearch = { scope.launch { searchBarState.animateToCollapsed() } },
-                placeholder = { Text(text = "Search Applications") },
+                onSearch = {
+                    scope.launch {
+                        searchBarState.animateToCollapsed()
+                    }
+                },
+                placeholder = {
+                    Text(text = "Search Applications")
+                },
             )
         },
     )
@@ -105,27 +96,12 @@ internal fun ApplicationSearchBarWithoutMenu(
     modifier: Modifier = Modifier,
     searchBarState: SearchBarState,
     textFieldState: TextFieldState,
-    swipeY: Float,
-    showKeyboard: Boolean,
 ) {
-    val keyboardController = LocalSoftwareKeyboardController.current
-
     val scope = rememberCoroutineScope()
-
-    val focusRequester = remember { FocusRequester() }
-
-    LaunchedEffect(key1 = swipeY) {
-        if (swipeY.roundToInt() == 0 && showKeyboard) {
-            focusRequester.requestFocus()
-
-            keyboardController?.show()
-        }
-    }
 
     SearchBar(
         state = searchBarState,
         modifier = modifier
-            .focusRequester(focusRequester)
             .fillMaxWidth()
             .padding(10.dp),
         inputField = {

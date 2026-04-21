@@ -115,8 +115,8 @@ import com.eblan.launcher.feature.home.screen.application.PrivateApplicationInfo
 import com.eblan.launcher.feature.home.screen.application.QuiteModeScreen
 import com.eblan.launcher.feature.home.screen.application.TagElevatedFilterChip
 import com.eblan.launcher.feature.home.screen.application.handleApplicationDrag
-import com.eblan.launcher.feature.home.screen.application.handleApplicationLongPress
-import com.eblan.launcher.feature.home.screen.application.handleApplicationTap
+import com.eblan.launcher.feature.home.screen.application.handleOnLongPressEblanApplicationInfoItem
+import com.eblan.launcher.feature.home.screen.application.handleOnTapEblanApplicationInfoItem
 import com.eblan.launcher.feature.home.screen.application.vertical.DragAndDropEblanApplicationInfos
 import com.eblan.launcher.feature.home.util.getSystemTextColor
 import com.eblan.launcher.ui.local.LocalLauncherApps
@@ -254,8 +254,6 @@ internal fun SharedTransitionScope.ListApplicationScreen(
         ApplicationSearchBarWithoutMenu(
             searchBarState = searchBarState,
             textFieldState = textFieldState,
-            swipeY = swipeY,
-            showKeyboard = appDrawerSettings.showKeyboard,
         )
 
         if (eblanApplicationInfoTags.isNotEmpty()) {
@@ -810,30 +808,9 @@ private fun SharedTransitionScope.EblanApplicationInfoItem(
 
     var isLongPress by remember { mutableStateOf(false) }
 
-    var isTap by remember { mutableStateOf(false) }
-
     val applicationScreenId = remember { Uuid.random().toHexString() }
 
     val alpha = if (isLongPress) 0f else 1f
-
-    val isImeVisible = WindowInsets.isImeVisible
-
-    fun startMainActivity() {
-        val left = intOffset.x + leftPadding
-
-        val top = intOffset.y + topPadding
-
-        launcherApps.startMainActivity(
-            serialNumber = eblanApplicationInfo.serialNumber,
-            componentName = eblanApplicationInfo.componentName,
-            sourceBounds = Rect(
-                left,
-                top,
-                left + intSize.width,
-                top + intSize.height,
-            ),
-        )
-    }
 
     LaunchedEffect(key1 = drag) {
         handleApplicationDrag(
@@ -855,31 +832,29 @@ private fun SharedTransitionScope.EblanApplicationInfoItem(
         )
     }
 
-    LaunchedEffect(key1 = isTap, key2 = isImeVisible) {
-        handleApplicationTap(
-            isTap = isTap,
-            isImeVisible = isImeVisible,
-            appDrawerSettings = appDrawerSettings,
-            keyboardController = keyboardController,
-            onDismiss = onDismiss,
-            onScrollToItem = onScrollToItem,
-            onStartMainActivity = ::startMainActivity,
-            onUpdateIsTap = { newIsTap ->
-                isTap = newIsTap
-            },
-        )
-    }
-
     Row(
         modifier = modifier
             .pointerInput(key1 = drag) {
                 detectTapGestures(
                     onTap = {
-                        isTap = true
+                        scope.launch {
+                            handleOnTapEblanApplicationInfoItem(
+                                appDrawerSettings = appDrawerSettings,
+                                eblanApplicationInfo = eblanApplicationInfo,
+                                intOffset = intOffset,
+                                intSize = intSize,
+                                keyboardController = keyboardController,
+                                launcherApps = launcherApps,
+                                leftPadding = leftPadding,
+                                topPadding = topPadding,
+                                onDismiss = onDismiss,
+                                onScrollToItem = onScrollToItem,
+                            )
+                        }
                     },
                     onLongPress = {
                         scope.launch {
-                            handleApplicationLongPress(
+                            handleOnLongPressEblanApplicationInfoItem(
                                 applicationScreenId = applicationScreenId,
                                 eblanApplicationInfo = eblanApplicationInfo,
                                 graphicsLayer = graphicsLayer,

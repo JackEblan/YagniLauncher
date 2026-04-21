@@ -24,7 +24,6 @@ data class AppDrawerSettings(
     val eblanApplicationInfoOrder: EblanApplicationInfoOrder,
     val backgroundColor: TextColor,
     val customBackgroundColor: Int,
-    val showKeyboard: Boolean,
     val appDrawerType: AppDrawerType,
     val horizontalAppDrawerColumns: Int,
     val horizontalAppDrawerRows: Int,

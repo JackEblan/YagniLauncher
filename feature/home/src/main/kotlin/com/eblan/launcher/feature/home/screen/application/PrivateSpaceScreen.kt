@@ -17,7 +17,6 @@
  */
 package com.eblan.launcher.feature.home.screen.application
 
-import android.graphics.Rect
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.IntentSenderRequest
@@ -31,11 +30,9 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.LazyGridScope
@@ -50,7 +47,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -283,40 +279,9 @@ internal fun PrivateSpaceEblanApplicationInfoItem(
 
     var isLongPress by remember { mutableStateOf(false) }
 
-    var isTap by remember { mutableStateOf(false) }
-
-    val isImeVisible by rememberUpdatedState(WindowInsets.isImeVisible)
-
-    fun startMainActivity() {
-        val sourceBoundsX = intOffset.x + leftPadding
-
-        val sourceBoundsY = intOffset.y + topPadding
-
-        launcherApps.startMainActivity(
-            serialNumber = eblanApplicationInfo.serialNumber,
-            componentName = eblanApplicationInfo.componentName,
-            sourceBounds = Rect(
-                sourceBoundsX,
-                sourceBoundsY,
-                sourceBoundsX + intSize.width,
-                sourceBoundsY + intSize.height,
-            ),
-        )
-    }
-
     LaunchedEffect(key1 = drag) {
         if (drag == Drag.Cancel && isLongPress) {
             onUpdatePopupMenu(false)
-        }
-    }
-
-    LaunchedEffect(key1 = isTap, key2 = isImeVisible) {
-        if (isTap && isImeVisible) {
-            keyboardController?.hide()
-        } else if (isTap) {
-            startMainActivity()
-
-            isTap = false
         }
     }
 
@@ -326,17 +291,18 @@ internal fun PrivateSpaceEblanApplicationInfoItem(
                 detectTapGestures(
                     onTap = {
                         scope.launch {
-                            if (appDrawerSettings.resetState) {
-                                onDismiss()
-
-                                onScrollToItem(0)
-                            }
-
-                            if (isImeVisible) {
-                                isTap = true
-                            } else {
-                                startMainActivity()
-                            }
+                            handleOnTapEblanApplicationInfoItem(
+                                appDrawerSettings = appDrawerSettings,
+                                eblanApplicationInfo = eblanApplicationInfo,
+                                intOffset = intOffset,
+                                intSize = intSize,
+                                keyboardController = keyboardController,
+                                launcherApps = launcherApps,
+                                leftPadding = leftPadding,
+                                topPadding = topPadding,
+                                onDismiss = onDismiss,
+                                onScrollToItem = onScrollToItem,
+                            )
                         }
                     },
                     onLongPress = {

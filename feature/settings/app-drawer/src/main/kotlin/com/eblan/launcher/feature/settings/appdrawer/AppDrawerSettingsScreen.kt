@@ -185,17 +185,6 @@ private fun Success(
 
             HorizontalDivider(modifier = Modifier.fillMaxWidth())
 
-            SettingsSwitch(
-                checked = appDrawerSettings.showKeyboard,
-                title = "Show Keyboard",
-                subtitle = "Show keyboard on launch",
-                onCheckedChange = { showKeyboard ->
-                    onUpdateAppDrawerSettings(appDrawerSettings.copy(showKeyboard = showKeyboard))
-                },
-            )
-
-            HorizontalDivider(modifier = Modifier.fillMaxWidth())
-
             TextColorSettingsRow(
                 textColorTitle = "Background Color",
                 customColorTitle = "Custom Background Color",

@@ -71,7 +71,6 @@ internal fun AppDrawerSettingsProto.toAppDrawerSettings(): AppDrawerSettings = A
     eblanApplicationInfoOrder = eblanApplicationInfoOrderProto.toEblanApplicationInfoOrder(),
     backgroundColor = backgroundColor.toTextColor(),
     customBackgroundColor = customBackgroundColor,
-    showKeyboard = showKeyboard,
     appDrawerType = appDrawerTypeProto.toAppDrawerType(),
     horizontalAppDrawerColumns = horizontalAppDrawerColumns,
     horizontalAppDrawerRows = horizontalAppDrawerRows,
@@ -120,7 +119,6 @@ internal fun AppDrawerSettings.toAppDrawerSettingsProto(): AppDrawerSettingsProt
     .setEblanApplicationInfoOrderProto(eblanApplicationInfoOrder.toEblanApplicationInfoOrderProto())
     .setBackgroundColor(backgroundColor.toTextColorProto())
     .setCustomBackgroundColor(customBackgroundColor)
-    .setShowKeyboard(showKeyboard)
     .setAppDrawerTypeProto(appDrawerType.toAppDrawerTypeProto())
     .setHorizontalAppDrawerColumns(horizontalAppDrawerColumns)
     .setHorizontalAppDrawerRows(horizontalAppDrawerRows)

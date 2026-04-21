@@ -26,11 +26,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -41,7 +39,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -83,6 +80,7 @@ import com.eblan.launcher.feature.home.model.SharedElementKey
 import com.eblan.launcher.feature.home.util.getHorizontalAlignment
 import com.eblan.launcher.feature.home.util.getSystemTextColor
 import com.eblan.launcher.feature.home.util.getVerticalArrangement
+import com.eblan.launcher.framework.launcherapps.AndroidLauncherAppsWrapper
 import com.eblan.launcher.ui.local.LocalLauncherApps
 import kotlinx.coroutines.launch
 import kotlin.uuid.ExperimentalUuidApi
@@ -160,30 +158,9 @@ internal fun SharedTransitionScope.EblanApplicationInfoItem(
 
     var isLongPress by remember { mutableStateOf(false) }
 
-    var isTap by remember { mutableStateOf(false) }
-
     val applicationScreenId = remember { Uuid.random().toHexString() }
 
     val alpha = if (isLongPress) 0f else 1f
-
-    val isImeVisible by rememberUpdatedState(WindowInsets.isImeVisible)
-
-    fun startMainActivity() {
-        val left = intOffset.x + leftPadding
-
-        val top = intOffset.y + topPadding
-
-        launcherApps.startMainActivity(
-            serialNumber = eblanApplicationInfo.serialNumber,
-            componentName = eblanApplicationInfo.componentName,
-            sourceBounds = Rect(
-                left,
-                top,
-                left + intSize.width,
-                top + intSize.height,
-            ),
-        )
-    }
 
     LaunchedEffect(key1 = drag) {
         handleApplicationDrag(
@@ -205,31 +182,29 @@ internal fun SharedTransitionScope.EblanApplicationInfoItem(
         )
     }
 
-    LaunchedEffect(key1 = isTap, key2 = isImeVisible) {
-        handleApplicationTap(
-            isTap = isTap,
-            isImeVisible = isImeVisible,
-            appDrawerSettings = appDrawerSettings,
-            keyboardController = keyboardController,
-            onDismiss = onDismiss,
-            onScrollToItem = onScrollToItem,
-            onStartMainActivity = ::startMainActivity,
-            onUpdateIsTap = { newIsTap ->
-                isTap = newIsTap
-            },
-        )
-    }
-
     Column(
         modifier = modifier
             .pointerInput(key1 = drag) {
                 detectTapGestures(
                     onTap = {
-                        isTap = true
+                        scope.launch {
+                            handleOnTapEblanApplicationInfoItem(
+                                appDrawerSettings = appDrawerSettings,
+                                eblanApplicationInfo = eblanApplicationInfo,
+                                intOffset = intOffset,
+                                intSize = intSize,
+                                keyboardController = keyboardController,
+                                launcherApps = launcherApps,
+                                leftPadding = leftPadding,
+                                topPadding = topPadding,
+                                onDismiss = onDismiss,
+                                onScrollToItem = onScrollToItem,
+                            )
+                        }
                     },
                     onLongPress = {
                         scope.launch {
-                            handleApplicationLongPress(
+                            handleOnLongPressEblanApplicationInfoItem(
                                 applicationScreenId = applicationScreenId,
                                 eblanApplicationInfo = eblanApplicationInfo,
                                 graphicsLayer = graphicsLayer,
@@ -312,6 +287,42 @@ internal fun SharedTransitionScope.EblanApplicationInfoItem(
     }
 }
 
+internal suspend fun handleOnTapEblanApplicationInfoItem(
+    appDrawerSettings: AppDrawerSettings,
+    eblanApplicationInfo: EblanApplicationInfo,
+    intOffset: IntOffset,
+    intSize: IntSize,
+    keyboardController: SoftwareKeyboardController?,
+    launcherApps: AndroidLauncherAppsWrapper,
+    leftPadding: Int,
+    topPadding: Int,
+    onDismiss: () -> Unit,
+    onScrollToItem: suspend (Int) -> Unit,
+) {
+    val left = intOffset.x + leftPadding
+
+    val top = intOffset.y + topPadding
+
+    launcherApps.startMainActivity(
+        serialNumber = eblanApplicationInfo.serialNumber,
+        componentName = eblanApplicationInfo.componentName,
+        sourceBounds = Rect(
+            left,
+            top,
+            left + intSize.width,
+            top + intSize.height,
+        ),
+    )
+
+    if (appDrawerSettings.resetState) {
+        onDismiss()
+
+        onScrollToItem(0)
+    }
+
+    keyboardController?.hide()
+}
+
 @OptIn(ExperimentalUuidApi::class)
 internal fun handleApplicationDrag(
     appDrawerSettings: AppDrawerSettings,
@@ -390,7 +401,7 @@ internal fun handleApplicationDrag(
 }
 
 @OptIn(ExperimentalUuidApi::class)
-internal suspend fun handleApplicationLongPress(
+internal suspend fun handleOnLongPressEblanApplicationInfoItem(
     applicationScreenId: String,
     eblanApplicationInfo: EblanApplicationInfo,
     graphicsLayer: GraphicsLayer,
@@ -428,29 +439,4 @@ internal suspend fun handleApplicationLongPress(
     onUpdateIsLongPress(true)
 
     keyboardController?.hide()
-}
-
-internal suspend fun handleApplicationTap(
-    isTap: Boolean,
-    isImeVisible: Boolean,
-    appDrawerSettings: AppDrawerSettings,
-    keyboardController: SoftwareKeyboardController?,
-    onDismiss: () -> Unit,
-    onScrollToItem: suspend (Int) -> Unit,
-    onStartMainActivity: () -> Unit,
-    onUpdateIsTap: (Boolean) -> Unit,
-) {
-    if (isTap && isImeVisible) {
-        keyboardController?.hide()
-    } else if (isTap) {
-        if (appDrawerSettings.resetState) {
-            onDismiss()
-
-            onScrollToItem(0)
-        }
-
-        onStartMainActivity()
-
-        onUpdateIsTap(false)
-    }
 }

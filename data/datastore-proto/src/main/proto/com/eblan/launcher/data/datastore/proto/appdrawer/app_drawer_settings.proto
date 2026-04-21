@@ -15,7 +15,6 @@ message AppDrawerSettingsProto {
   EblanApplicationInfoOrderProto eblanApplicationInfoOrderProto = 4;
   TextColorProto backgroundColor = 5;
   int32 customBackgroundColor = 6;
-  bool showKeyboard = 7;
   AppDrawerTypeProto AppDrawerTypeProto = 8;
   int32 horizontalAppDrawerColumns = 9;
   int32 horizontalAppDrawerRows = 10;
