@@ -868,18 +868,18 @@ internal fun PagerScreen(
                             },
                             onOpenAppDrawer = pagerScreenState::openApplicationScreen,
                             onTapApplicationInfo = { serialNumber, componentName ->
-                                val sourceBoundsX = x + leftPadding
+                                val left = x + leftPadding
 
-                                val sourceBoundsY = y + dockTopLeft
+                                val top = y + dockTopLeft
 
                                 androidLauncherAppsWrapper.startMainActivity(
                                     serialNumber = serialNumber,
                                     componentName = componentName,
                                     sourceBounds = Rect(
-                                        sourceBoundsX,
-                                        sourceBoundsY,
-                                        sourceBoundsX + width,
-                                        sourceBoundsY + height,
+                                        left,
+                                        top,
+                                        left + width,
+                                        top + height,
                                     ),
                                 )
                             },

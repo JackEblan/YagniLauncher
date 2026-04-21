@@ -61,7 +61,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -91,9 +90,6 @@ import coil3.request.ImageRequest
 import coil3.request.addLastModifiedToFileCacheKey
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.AppDrawerSettings
-import com.eblan.launcher.domain.model.Associate
-import com.eblan.launcher.domain.model.EblanAction
-import com.eblan.launcher.domain.model.EblanActionType
 import com.eblan.launcher.domain.model.EblanAppWidgetProviderInfo
 import com.eblan.launcher.domain.model.EblanApplicationInfo
 import com.eblan.launcher.domain.model.EblanApplicationInfoGroup
@@ -105,8 +101,6 @@ import com.eblan.launcher.domain.model.EblanUser
 import com.eblan.launcher.domain.model.EblanUserPageKey
 import com.eblan.launcher.domain.model.EblanUserType
 import com.eblan.launcher.domain.model.GetEblanApplicationInfosByLabelAndTag
-import com.eblan.launcher.domain.model.GridItem
-import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.ManagedProfileResult
 import com.eblan.launcher.feature.home.component.OffsetNestedScrollConnection
 import com.eblan.launcher.feature.home.component.OffsetOverscrollEffect
@@ -120,13 +114,15 @@ import com.eblan.launcher.feature.home.screen.application.EblanApplicationInfoTa
 import com.eblan.launcher.feature.home.screen.application.PrivateApplicationInfoPopup
 import com.eblan.launcher.feature.home.screen.application.QuiteModeScreen
 import com.eblan.launcher.feature.home.screen.application.TagElevatedFilterChip
+import com.eblan.launcher.feature.home.screen.application.handleApplicationDrag
+import com.eblan.launcher.feature.home.screen.application.handleApplicationLongPress
+import com.eblan.launcher.feature.home.screen.application.handleApplicationTap
 import com.eblan.launcher.feature.home.screen.application.vertical.DragAndDropEblanApplicationInfos
 import com.eblan.launcher.feature.home.util.getSystemTextColor
 import com.eblan.launcher.ui.local.LocalLauncherApps
 import com.eblan.launcher.ui.local.LocalPackageManager
 import com.eblan.launcher.ui.local.LocalUserManager
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -820,95 +816,58 @@ private fun SharedTransitionScope.EblanApplicationInfoItem(
 
     val alpha = if (isLongPress) 0f else 1f
 
-    val isImeVisible by rememberUpdatedState(WindowInsets.isImeVisible)
+    val isImeVisible = WindowInsets.isImeVisible
 
     fun startMainActivity() {
-        val sourceBoundsX = intOffset.x + leftPadding
+        val left = intOffset.x + leftPadding
 
-        val sourceBoundsY = intOffset.y + topPadding
+        val top = intOffset.y + topPadding
 
         launcherApps.startMainActivity(
             serialNumber = eblanApplicationInfo.serialNumber,
             componentName = eblanApplicationInfo.componentName,
             sourceBounds = Rect(
-                sourceBoundsX,
-                sourceBoundsY,
-                sourceBoundsX + intSize.width,
-                sourceBoundsY + intSize.height,
+                left,
+                top,
+                left + intSize.width,
+                top + intSize.height,
             ),
         )
     }
 
     LaunchedEffect(key1 = drag) {
-        when (drag) {
-            Drag.Dragging if isLongPress -> {
-                onUpdatePopupMenu(false)
-
-                onDismiss()
-
-                val pagerScreenId = Uuid.random().toHexString()
-
-                val data = GridItemData.ApplicationInfo(
-                    serialNumber = eblanApplicationInfo.serialNumber,
-                    componentName = eblanApplicationInfo.componentName,
-                    packageName = eblanApplicationInfo.packageName,
-                    icon = eblanApplicationInfo.icon,
-                    label = eblanApplicationInfo.label,
-                    customIcon = eblanApplicationInfo.customIcon,
-                    customLabel = eblanApplicationInfo.customLabel,
-                    index = -1,
-                    folderId = null,
-                )
-
-                val eblanAction = EblanAction(
-                    eblanActionType = EblanActionType.None,
-                    serialNumber = 0L,
-                    componentName = "",
-                )
-
-                val gridItem = GridItem(
-                    id = pagerScreenId,
-                    page = currentPage,
-                    startColumn = -1,
-                    startRow = -1,
-                    columnSpan = 1,
-                    rowSpan = 1,
-                    data = data,
-                    associate = Associate.Grid,
-                    override = false,
-                    gridItemSettings = appDrawerSettings.gridItemSettings,
-                    doubleTap = eblanAction,
-                    swipeUp = eblanAction,
-                    swipeDown = eblanAction,
-                )
-
-                onUpdateGridItemSource(GridItemSource.New(gridItem = gridItem))
-
-                onUpdateIsDragging(true)
-
-                onDraggingGridItem()
-            }
-
-            Drag.Cancel, Drag.End -> {
-                if (isLongPress && isVisibleOverlay) {
-                    onUpdateIsVisibleOverlay(false)
-
-                    isLongPress = false
-                }
-            }
-
-            else -> Unit
-        }
+        handleApplicationDrag(
+            appDrawerSettings = appDrawerSettings,
+            currentPage = currentPage,
+            drag = drag,
+            eblanApplicationInfo = eblanApplicationInfo,
+            isLongPress = isLongPress,
+            isVisibleOverlay = isVisibleOverlay,
+            onDismiss = onDismiss,
+            onDraggingGridItem = onDraggingGridItem,
+            onUpdateGridItemSource = onUpdateGridItemSource,
+            onUpdateIsDragging = onUpdateIsDragging,
+            onUpdateIsLongPress = { newIsLongPress ->
+                isLongPress = newIsLongPress
+            },
+            onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+            onUpdatePopupMenu = onUpdatePopupMenu,
+        )
     }
 
     LaunchedEffect(key1 = isTap, key2 = isImeVisible) {
-        if (isTap && isImeVisible) {
-            keyboardController?.hide()
-        } else if (isTap) {
-            startMainActivity()
-
-            isTap = false
-        }
+        handleApplicationTap(
+            isTap = isTap,
+            isImeVisible = isImeVisible,
+            appDrawerSettings = appDrawerSettings,
+            keyboardController = keyboardController,
+            onDismiss = onDismiss,
+            onScrollToItem = onScrollToItem,
+            onStartMainActivity = ::startMainActivity,
+            onUpdateIsTap = { newIsTap ->
+                isTap = newIsTap
+            },
+        )
     }
 
     Row(
@@ -916,45 +875,25 @@ private fun SharedTransitionScope.EblanApplicationInfoItem(
             .pointerInput(key1 = drag) {
                 detectTapGestures(
                     onTap = {
-                        scope.launch {
-                            if (appDrawerSettings.resetState) {
-                                onDismiss()
-
-                                onScrollToItem(0)
-                            }
-
-                            if (isImeVisible) {
-                                isTap = true
-                            } else {
-                                startMainActivity()
-                            }
-                        }
+                        isTap = true
                     },
                     onLongPress = {
                         scope.launch {
-                            onUpdateImageBitmap(graphicsLayer.toImageBitmap())
-
-                            onUpdateOverlayBounds(
-                                intOffset,
-                                intSize,
+                            handleApplicationLongPress(
+                                applicationScreenId = applicationScreenId,
+                                eblanApplicationInfo = eblanApplicationInfo,
+                                graphicsLayer = graphicsLayer,
+                                intOffset = intOffset,
+                                intSize = intSize,
+                                keyboardController = keyboardController,
+                                onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
+                                onUpdateImageBitmap = onUpdateImageBitmap,
+                                onUpdateIsLongPress = { isLongPress = it },
+                                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                                onUpdateOverlayBounds = onUpdateOverlayBounds,
+                                onUpdatePopupMenu = onUpdatePopupMenu,
+                                onUpdateSharedElementKey = onUpdateSharedElementKey,
                             )
-
-                            onUpdateSharedElementKey(
-                                SharedElementKey(
-                                    id = applicationScreenId,
-                                    parent = SharedElementKey.Parent.SwipeY,
-                                ),
-                            )
-
-                            onUpdateEblanApplicationInfo(eblanApplicationInfo)
-
-                            onUpdateIsVisibleOverlay(true)
-
-                            onUpdatePopupMenu(true)
-
-                            isLongPress = true
-
-                            keyboardController?.hide()
                         }
                     },
                 )
