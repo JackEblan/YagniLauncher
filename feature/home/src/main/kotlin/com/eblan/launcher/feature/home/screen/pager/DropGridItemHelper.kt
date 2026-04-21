@@ -68,12 +68,15 @@ internal suspend fun handleDropGridItem(
     onUpdateIsDragging: (Boolean) -> Unit,
     onUpdateWidgetGridItem: (GridItem) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+    onUpdateUserScrollEnabled: (Boolean) -> Unit,
 ) {
     if (drag == Drag.None || drag == Drag.Start || drag == Drag.Dragging || gridItemSource == null) {
         return
     }
 
     fun cancel() {
+        onUpdateUserScrollEnabled(true)
+
         onUpdateIsDragging(false)
 
         onDragCancelAfterMove()
@@ -89,6 +92,8 @@ internal suspend fun handleDropGridItem(
     when (gridItemSource) {
         is GridItemSource.Existing -> {
             if (isVisibleOverlay && !isDragging) {
+                onUpdateUserScrollEnabled(true)
+
                 onUpdateIsVisibleOverlay(false)
 
                 return
@@ -99,6 +104,8 @@ internal suspend fun handleDropGridItem(
             if (lockMovement) return cancel()
 
             if (isVisibleOverlay && moveGridItemResult != null) {
+                onUpdateUserScrollEnabled(true)
+
                 onUpdateIsDragging(false)
 
                 onDragEndAfterMove(moveGridItemResult)
@@ -111,6 +118,8 @@ internal suspend fun handleDropGridItem(
             if (lockMovement) return cancel()
 
             if (isVisibleOverlay && isDragging && moveGridItemResult != null) {
+                onUpdateUserScrollEnabled(true)
+
                 onUpdateIsDragging(false)
 
                 when (val data = gridItemSource.gridItem.data) {
@@ -153,6 +162,8 @@ internal suspend fun handleDropGridItem(
             if (lockMovement) return cancel()
 
             if (isVisibleOverlay && isDragging && moveGridItemResult != null) {
+                onUpdateUserScrollEnabled(true)
+
                 onUpdateIsDragging(false)
 
                 when (val data = gridItemSource.gridItem.data) {
@@ -185,10 +196,14 @@ internal suspend fun handleDropGridItem(
 
         is GridItemSource.Folder -> {
             if (isVisibleOverlay && !isDragging) {
+                onUpdateUserScrollEnabled(true)
+
                 onUpdateIsVisibleOverlay(false)
             } else if (lockMovement) {
                 cancel()
             } else if (isVisibleOverlay) {
+                onUpdateUserScrollEnabled(true)
+
                 onUpdateIsDragging(false)
 
                 onDragEndAfterMoveFolder(moveGridItemResult)

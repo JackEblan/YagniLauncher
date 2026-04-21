@@ -114,6 +114,7 @@ internal fun SharedTransitionScope.FolderScreen(
     statusBarNotifications: Map<String, Int>,
     isVisibleOverlay: Boolean,
     isClosingFolder: Boolean,
+    folderGridUserScrollEnabled: Boolean,
     onDismissRequest: () -> Unit,
     onDraggingGridItem: () -> Unit,
     onOpenAppDrawer: () -> Unit,
@@ -132,6 +133,7 @@ internal fun SharedTransitionScope.FolderScreen(
     onDismissGridItemPopup: () -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateIsClosingFolder: (Boolean) -> Unit,
+    onUpdateGridUserScrollEnabled: (Boolean) -> Unit,
 ) {
     if (folderPopupIntOffset == null || folderPopupIntSize == null) return
 
@@ -267,6 +269,7 @@ internal fun SharedTransitionScope.FolderScreen(
                 HorizontalPager(
                     modifier = Modifier.weight(1f),
                     state = folderGridHorizontalPagerState,
+                    userScrollEnabled = folderGridUserScrollEnabled,
                 ) { index ->
                     FolderGridLayout(
                         modifier = Modifier.fillMaxSize(),
@@ -293,6 +296,7 @@ internal fun SharedTransitionScope.FolderScreen(
                                 onShowGridItemPopup = onShowGridItemPopup,
                                 onDismissGridItemPopup = onDismissGridItemPopup,
                                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                                onUpdateGridUserScrollEnabled = onUpdateGridUserScrollEnabled,
                             )
                         },
                     )
@@ -375,6 +379,7 @@ private fun SharedTransitionScope.FolderGridItemContent(
     ) -> Unit,
     onDismissGridItemPopup: () -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+    onUpdateGridUserScrollEnabled: (Boolean) -> Unit,
 ) {
     val launcherApps = LocalLauncherApps.current
 
@@ -472,6 +477,7 @@ private fun SharedTransitionScope.FolderGridItemContent(
                                 onUpdateSharedElementKey = onUpdateSharedElementKey,
                                 onShowGridItemPopup = onShowGridItemPopup,
                                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                                onUpdateGridUserScrollEnabled = onUpdateGridUserScrollEnabled,
                             )
                         }
                     } else {

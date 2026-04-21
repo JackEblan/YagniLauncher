@@ -147,8 +147,11 @@ internal fun onLongPress(
         intSize: IntSize,
     ) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+    onUpdateGridUserScrollEnabled: (Boolean) -> Unit,
 ) {
     scope.launch {
+        onUpdateGridUserScrollEnabled(false)
+
         onUpdateGridItemSource(gridItemSource)
 
         onUpdateImageBitmap(graphicsLayer.toImageBitmap())

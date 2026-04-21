@@ -127,6 +127,7 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
     ) -> Unit,
     onDismissGridItemPopup: () -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+    onUpdateGridUserScrollEnabled: (Boolean) -> Unit,
 ) {
     val isSelected = gridItemSource != null && gridItem.id == gridItemSource.gridItem.id
 
@@ -176,6 +177,7 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
                 onShowGridItemPopup = onShowGridItemPopup,
                 onDismissGridItemPopup = onDismissGridItemPopup,
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                onUpdateGridUserScrollEnabled = onUpdateGridUserScrollEnabled,
             )
         }
 
@@ -199,6 +201,7 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
                 onShowGridItemPopup = onShowGridItemPopup,
                 onDismissGridItemPopup = onDismissGridItemPopup,
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                onUpdateGridUserScrollEnabled = onUpdateGridUserScrollEnabled,
             )
         }
 
@@ -226,6 +229,7 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
                 onShowGridItemPopup = onShowGridItemPopup,
                 onDismissGridItemPopup = onDismissGridItemPopup,
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                onUpdateGridUserScrollEnabled = onUpdateGridUserScrollEnabled,
             )
         }
 
@@ -254,6 +258,7 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
                 onDismissGridItemPopup = onDismissGridItemPopup,
 
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                onUpdateGridUserScrollEnabled = onUpdateGridUserScrollEnabled,
             )
         }
 
@@ -281,6 +286,7 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
                 onDismissGridItemPopup = onDismissGridItemPopup,
 
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                onUpdateGridUserScrollEnabled = onUpdateGridUserScrollEnabled,
             )
         }
     }
@@ -321,6 +327,7 @@ private fun SharedTransitionScope.InteractiveApplicationInfoGridItem(
     ) -> Unit,
     onDismissGridItemPopup: () -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+    onUpdateGridUserScrollEnabled: (Boolean) -> Unit,
 ) {
     val launcherApps = LocalLauncherApps.current
 
@@ -404,6 +411,7 @@ private fun SharedTransitionScope.InteractiveApplicationInfoGridItem(
                                 onUpdateSharedElementKey = onUpdateSharedElementKey,
                                 onShowGridItemPopup = onShowGridItemPopup,
                                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                                onUpdateGridUserScrollEnabled = onUpdateGridUserScrollEnabled,
                             )
                         }
                     } else {
@@ -533,6 +541,7 @@ private fun SharedTransitionScope.InteractiveWidgetGridItem(
     ) -> Unit,
     onDismissGridItemPopup: () -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+    onUpdateGridUserScrollEnabled: (Boolean) -> Unit,
 ) {
     var intOffset by remember { mutableStateOf(IntOffset.Zero) }
 
@@ -629,6 +638,7 @@ private fun SharedTransitionScope.InteractiveWidgetGridItem(
                                 onUpdateSharedElementKey = onUpdateSharedElementKey,
                                 onShowGridItemPopup = onShowGridItemPopup,
                                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                                onUpdateGridUserScrollEnabled = onUpdateGridUserScrollEnabled,
                             )
 
                             true
@@ -661,6 +671,7 @@ private fun SharedTransitionScope.InteractiveWidgetGridItem(
                                     onShowGridItemPopup = onShowGridItemPopup,
 
                                     onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                                    onUpdateGridUserScrollEnabled = onUpdateGridUserScrollEnabled,
                                 )
                             }
                         } else {
@@ -708,6 +719,7 @@ private fun SharedTransitionScope.InteractiveShortcutInfoGridItem(
     ) -> Unit,
     onDismissGridItemPopup: () -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+    onUpdateGridUserScrollEnabled: (Boolean) -> Unit,
 ) {
     val launcherApps = LocalLauncherApps.current
 
@@ -785,6 +797,7 @@ private fun SharedTransitionScope.InteractiveShortcutInfoGridItem(
                                 onUpdateSharedElementKey = onUpdateSharedElementKey,
                                 onShowGridItemPopup = onShowGridItemPopup,
                                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                                onUpdateGridUserScrollEnabled = onUpdateGridUserScrollEnabled,
                             )
                         }
                     } else {
@@ -915,6 +928,7 @@ private fun SharedTransitionScope.InteractiveFolderGridItem(
     ) -> Unit,
     onDismissGridItemPopup: () -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+    onUpdateGridUserScrollEnabled: (Boolean) -> Unit,
 ) {
     val launcherApps = LocalLauncherApps.current
 
@@ -988,6 +1002,7 @@ private fun SharedTransitionScope.InteractiveFolderGridItem(
                                 onUpdateSharedElementKey = onUpdateSharedElementKey,
                                 onShowGridItemPopup = onShowGridItemPopup,
                                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                                onUpdateGridUserScrollEnabled = onUpdateGridUserScrollEnabled,
                             )
                         }
                     } else {
@@ -1147,6 +1162,7 @@ private fun SharedTransitionScope.InteractiveShortcutConfigGridItem(
     ) -> Unit,
     onDismissGridItemPopup: () -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+    onUpdateGridUserScrollEnabled: (Boolean) -> Unit,
 ) {
     val launcherApps = LocalLauncherApps.current
 
@@ -1256,6 +1272,7 @@ private fun SharedTransitionScope.InteractiveShortcutConfigGridItem(
                                 onUpdateSharedElementKey = onUpdateSharedElementKey,
                                 onShowGridItemPopup = onShowGridItemPopup,
                                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                                onUpdateGridUserScrollEnabled = onUpdateGridUserScrollEnabled,
                             )
                         }
                     } else {

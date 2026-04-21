@@ -695,6 +695,7 @@ internal fun PagerScreen(
             HorizontalPager(
                 state = gridHorizontalPagerState,
                 modifier = Modifier.weight(1f),
+                userScrollEnabled = pagerScreenState.gridUserScrollEnabled,
             ) { index ->
                 val page = calculatePage(
                     index = index,
@@ -799,6 +800,7 @@ internal fun PagerScreen(
                             onShowGridItemPopup = pagerScreenState::showGridItemPopup,
                             onDismissGridItemPopup = pagerScreenState::dismissGridItemPopup,
                             onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                            onUpdateGridUserScrollEnabled = pagerScreenState::updateGridUserScrollEnabled,
                         )
                     },
                 )
@@ -826,6 +828,7 @@ internal fun PagerScreen(
                         start = paddingValues.calculateStartPadding(LayoutDirection.Ltr),
                         end = paddingValues.calculateEndPadding(LayoutDirection.Ltr),
                     ),
+                userScrollEnabled = pagerScreenState.folderGridUserScrollEnabled,
             ) { index ->
                 val page = calculatePage(
                     index = index,
@@ -923,6 +926,7 @@ internal fun PagerScreen(
                             onShowGridItemPopup = pagerScreenState::showGridItemPopup,
                             onDismissGridItemPopup = pagerScreenState::dismissGridItemPopup,
                             onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                            onUpdateGridUserScrollEnabled = pagerScreenState::updateDockGridUserScrollEnabled,
                         )
                     },
                 )
@@ -1020,6 +1024,7 @@ internal fun PagerScreen(
                 statusBarNotifications = pagerScreenState.statusBarNotifications,
                 isVisibleOverlay = isVisibleOverlay,
                 isClosingFolder = pagerScreenState.isCloseFolder,
+                folderGridUserScrollEnabled = pagerScreenState.folderGridUserScrollEnabled,
                 onDismissRequest = {
                     pagerScreenState.dismissFolder(onUpdateFolderGridItemId = onUpdateFolderGridItemId)
                 },
@@ -1036,6 +1041,7 @@ internal fun PagerScreen(
                 onDismissGridItemPopup = pagerScreenState::dismissFolderGridItemPopup,
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                 onUpdateIsClosingFolder = pagerScreenState::updateIsCloseFolder,
+                onUpdateGridUserScrollEnabled = pagerScreenState::updateFolderGridUserScrollEnabled,
             )
         }
 
