@@ -41,8 +41,6 @@ import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.SearchBarState
-import androidx.compose.material3.SearchBarValue
 import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
@@ -415,11 +413,9 @@ internal fun EblanApplicationInfoTabRow(
 @OptIn(ExperimentalMaterial3Api::class, FlowPreview::class)
 @Composable
 internal fun ApplicationScreenEffect(
-    appDrawerSettings: AppDrawerSettings,
     horizontalPagerState: PagerState,
     isPressHome: Boolean,
     screenHeight: Int,
-    searchBarState: SearchBarState,
     selectedEblanApplicationInfoTagId: Long?,
     showPopupApplicationMenu: Boolean,
     swipeY: Float,
@@ -441,34 +437,21 @@ internal fun ApplicationScreenEffect(
         }.collect()
     }
 
-    LaunchedEffect(key1 = swipeY) {
-        handleSwipeY(
-            appDrawerSettings = appDrawerSettings,
-            screenHeight = screenHeight,
-            selectedEblanApplicationInfoTagId = selectedEblanApplicationInfoTagId,
-            showPopupApplicationMenu = showPopupApplicationMenu,
-            swipeY = swipeY,
-            textFieldState = textFieldState,
-            onGetEblanApplicationInfosByLabel = onGetEblanApplicationInfosByLabel,
-            onResetScroll = onResetScroll,
-            onShowPopupApplicationMenu = onShowPopupApplicationMenu,
-            onUpdateSelectedEblanApplicationInfoTagId = onUpdateSelectedEblanApplicationInfoTagId,
-        )
-    }
-
     LaunchedEffect(key1 = selectedEblanApplicationInfoTagId) {
         onGetEblanApplicationInfosByTagId(selectedEblanApplicationInfoTagId)
     }
 
     LaunchedEffect(key1 = isPressHome) {
         handleIsPressHome(
-            appDrawerSettings = appDrawerSettings,
             isPressHome = isPressHome,
-            searchBarState = searchBarState,
             showPopupApplicationMenu = showPopupApplicationMenu,
+            textFieldState = textFieldState,
+            selectedEblanApplicationInfoTagId = selectedEblanApplicationInfoTagId,
             onDismiss = onDismiss,
             onResetScroll = onResetScroll,
             onShowPopupApplicationMenu = onShowPopupApplicationMenu,
+            onGetEblanApplicationInfosByLabel = onGetEblanApplicationInfosByLabel,
+            onUpdateSelectedEblanApplicationInfoTagId = onUpdateSelectedEblanApplicationInfoTagId,
         )
     }
 
@@ -481,81 +464,60 @@ internal fun ApplicationScreenEffect(
     BackHandler(enabled = swipeY < screenHeight.toFloat()) {
         scope.launch {
             handleBack(
-                appDrawerSettings = appDrawerSettings,
-                searchBarState = searchBarState,
+                textFieldState = textFieldState,
                 showPopupApplicationMenu = showPopupApplicationMenu,
+                selectedEblanApplicationInfoTagId = selectedEblanApplicationInfoTagId,
                 onDismiss = onDismiss,
                 onResetScroll = onResetScroll,
                 onShowPopupApplicationMenu = onShowPopupApplicationMenu,
+                onGetEblanApplicationInfosByLabel = onGetEblanApplicationInfosByLabel,
+                onUpdateSelectedEblanApplicationInfoTagId = onUpdateSelectedEblanApplicationInfoTagId,
             )
         }
     }
 }
 
-private fun handleSwipeY(
-    appDrawerSettings: AppDrawerSettings,
-    screenHeight: Int,
-    selectedEblanApplicationInfoTagId: Long?,
-    showPopupApplicationMenu: Boolean,
-    swipeY: Float,
-    textFieldState: TextFieldState,
-    onGetEblanApplicationInfosByLabel: (String) -> Unit,
-    onResetScroll: () -> Unit,
-    onShowPopupApplicationMenu: (Boolean) -> Unit,
-    onUpdateSelectedEblanApplicationInfoTagId: (Long?) -> Unit,
-) {
-    if (swipeY.roundToInt() >= screenHeight && appDrawerSettings.resetState) {
-        onGetEblanApplicationInfosByLabel("")
-
-        if (textFieldState.text.isNotEmpty()) {
-            textFieldState.clearText()
-        }
-
-        if (selectedEblanApplicationInfoTagId != null) {
-            onUpdateSelectedEblanApplicationInfoTagId(null)
-        }
-
-        onResetScroll()
-    }
-
-    if (swipeY.roundToInt() > 0 && showPopupApplicationMenu) {
-        onShowPopupApplicationMenu(false)
-    }
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
-private suspend fun handleBack(
-    appDrawerSettings: AppDrawerSettings,
-    searchBarState: SearchBarState,
+private fun handleBack(
+    textFieldState: TextFieldState,
     showPopupApplicationMenu: Boolean,
+    selectedEblanApplicationInfoTagId: Long?,
     onDismiss: () -> Unit,
     onResetScroll: () -> Unit,
     onShowPopupApplicationMenu: (Boolean) -> Unit,
+    onGetEblanApplicationInfosByLabel: (String) -> Unit,
+    onUpdateSelectedEblanApplicationInfoTagId: (Long?) -> Unit,
 ) {
     if (showPopupApplicationMenu) {
         onShowPopupApplicationMenu(false)
     }
 
-    if (searchBarState.currentValue == SearchBarValue.Expanded) {
-        searchBarState.animateToCollapsed()
-    }
-
     onDismiss()
 
-    if (appDrawerSettings.resetState) {
-        onResetScroll()
+    onGetEblanApplicationInfosByLabel("")
+
+    if (textFieldState.text.isNotEmpty()) {
+        textFieldState.clearText()
     }
+
+    if (selectedEblanApplicationInfoTagId != null) {
+        onUpdateSelectedEblanApplicationInfoTagId(null)
+    }
+
+    onResetScroll()
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-private suspend fun handleIsPressHome(
-    appDrawerSettings: AppDrawerSettings,
+private fun handleIsPressHome(
     isPressHome: Boolean,
-    searchBarState: SearchBarState,
     showPopupApplicationMenu: Boolean,
+    textFieldState: TextFieldState,
+    selectedEblanApplicationInfoTagId: Long?,
     onDismiss: () -> Unit,
     onResetScroll: () -> Unit,
     onShowPopupApplicationMenu: (Boolean) -> Unit,
+    onGetEblanApplicationInfosByLabel: (String) -> Unit,
+    onUpdateSelectedEblanApplicationInfoTagId: (Long?) -> Unit,
 ) {
     if (!isPressHome) return
 
@@ -563,13 +525,17 @@ private suspend fun handleIsPressHome(
         onShowPopupApplicationMenu(false)
     }
 
-    if (searchBarState.currentValue == SearchBarValue.Expanded) {
-        searchBarState.animateToCollapsed()
-    }
-
-    if (appDrawerSettings.resetState) {
-        onResetScroll()
-    }
-
     onDismiss()
+
+    onGetEblanApplicationInfosByLabel("")
+
+    if (textFieldState.text.isNotEmpty()) {
+        textFieldState.clearText()
+    }
+
+    if (selectedEblanApplicationInfoTagId != null) {
+        onUpdateSelectedEblanApplicationInfoTagId(null)
+    }
+
+    onResetScroll()
 }

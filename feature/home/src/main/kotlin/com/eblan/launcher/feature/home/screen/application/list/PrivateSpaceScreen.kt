@@ -66,6 +66,7 @@ import com.eblan.launcher.domain.model.EblanUser
 import com.eblan.launcher.domain.model.ManagedProfileResult
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.screen.application.PrivateSpaceStickyHeader
+import com.eblan.launcher.feature.home.screen.application.handleOnLongPressPrivateSpaceEblanApplicationInfoItem
 import com.eblan.launcher.feature.home.screen.application.handleOnTapEblanApplicationInfoItem
 import com.eblan.launcher.feature.home.util.getSystemTextColor
 import com.eblan.launcher.ui.local.LocalLauncherApps
@@ -186,7 +187,6 @@ private fun PrivateSpaceEblanApplicationInfoItem(
                     onTap = {
                         scope.launch {
                             handleOnTapEblanApplicationInfoItem(
-                                appDrawerSettings = appDrawerSettings,
                                 eblanApplicationInfo = eblanApplicationInfo,
                                 intOffset = intOffset,
                                 intSize = intSize,
@@ -194,24 +194,22 @@ private fun PrivateSpaceEblanApplicationInfoItem(
                                 launcherApps = launcherApps,
                                 leftPadding = leftPadding,
                                 topPadding = topPadding,
-                                onDismiss = onDismiss,
-                                onScrollToItem = onScrollToItem,
                             )
                         }
                     },
                     onLongPress = {
-                        onUpdateEblanApplicationInfo(eblanApplicationInfo)
-
-                        onUpdateOverlayBounds(
-                            intOffset,
-                            intSize,
+                        handleOnLongPressPrivateSpaceEblanApplicationInfoItem(
+                            onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
+                            eblanApplicationInfo = eblanApplicationInfo,
+                            onUpdateOverlayBounds = onUpdateOverlayBounds,
+                            intOffset = intOffset,
+                            intSize = intSize,
+                            onUpdatePopupMenu = onUpdatePopupMenu,
+                            keyboardController = keyboardController,
+                            onUpdateIsLongPress = { newIsLongPress ->
+                                isLongPress = newIsLongPress
+                            },
                         )
-
-                        onUpdatePopupMenu(true)
-
-                        isLongPress = true
-
-                        keyboardController?.hide()
                     },
                 )
             }

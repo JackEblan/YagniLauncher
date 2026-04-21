@@ -74,7 +74,6 @@ internal fun AppDrawerSettingsProto.toAppDrawerSettings(): AppDrawerSettings = A
     appDrawerType = appDrawerTypeProto.toAppDrawerType(),
     horizontalAppDrawerColumns = horizontalAppDrawerColumns,
     horizontalAppDrawerRows = horizontalAppDrawerRows,
-    resetState = resetState,
 )
 
 internal fun GridItemSettingsProto.toGridItemSettings(): GridItemSettings = GridItemSettings(
@@ -122,7 +121,6 @@ internal fun AppDrawerSettings.toAppDrawerSettingsProto(): AppDrawerSettingsProt
     .setAppDrawerTypeProto(appDrawerType.toAppDrawerTypeProto())
     .setHorizontalAppDrawerColumns(horizontalAppDrawerColumns)
     .setHorizontalAppDrawerRows(horizontalAppDrawerRows)
-    .setResetState(resetState)
     .build()
 
 internal fun GeneralSettings.toGeneralSettingsProto(): GeneralSettingsProto = GeneralSettingsProto.newBuilder().setThemeProto(theme.toThemeProto())

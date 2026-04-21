@@ -18,5 +18,4 @@ message AppDrawerSettingsProto {
   AppDrawerTypeProto AppDrawerTypeProto = 8;
   int32 horizontalAppDrawerColumns = 9;
   int32 horizontalAppDrawerRows = 10;
-  bool resetState = 11;
 }

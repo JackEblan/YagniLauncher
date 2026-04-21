@@ -115,7 +115,6 @@ internal fun SharedTransitionScope.EblanApplicationInfoItem(
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onUpdateEblanApplicationInfo: (EblanApplicationInfo) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
-    onScrollToItem: suspend (Int) -> Unit,
 ) {
     var intOffset by remember { mutableStateOf(IntOffset.Zero) }
 
@@ -163,7 +162,7 @@ internal fun SharedTransitionScope.EblanApplicationInfoItem(
     val alpha = if (isLongPress) 0f else 1f
 
     LaunchedEffect(key1 = drag) {
-        handleApplicationDrag(
+        handleDragEblanApplicationInfoItem(
             appDrawerSettings = appDrawerSettings,
             currentPage = currentPage,
             drag = drag,
@@ -189,7 +188,6 @@ internal fun SharedTransitionScope.EblanApplicationInfoItem(
                     onTap = {
                         scope.launch {
                             handleOnTapEblanApplicationInfoItem(
-                                appDrawerSettings = appDrawerSettings,
                                 eblanApplicationInfo = eblanApplicationInfo,
                                 intOffset = intOffset,
                                 intSize = intSize,
@@ -197,8 +195,6 @@ internal fun SharedTransitionScope.EblanApplicationInfoItem(
                                 launcherApps = launcherApps,
                                 leftPadding = leftPadding,
                                 topPadding = topPadding,
-                                onDismiss = onDismiss,
-                                onScrollToItem = onScrollToItem,
                             )
                         }
                     },
@@ -287,8 +283,7 @@ internal fun SharedTransitionScope.EblanApplicationInfoItem(
     }
 }
 
-internal suspend fun handleOnTapEblanApplicationInfoItem(
-    appDrawerSettings: AppDrawerSettings,
+internal fun handleOnTapEblanApplicationInfoItem(
     eblanApplicationInfo: EblanApplicationInfo,
     intOffset: IntOffset,
     intSize: IntSize,
@@ -296,8 +291,6 @@ internal suspend fun handleOnTapEblanApplicationInfoItem(
     launcherApps: AndroidLauncherAppsWrapper,
     leftPadding: Int,
     topPadding: Int,
-    onDismiss: () -> Unit,
-    onScrollToItem: suspend (Int) -> Unit,
 ) {
     val left = intOffset.x + leftPadding
 
@@ -314,17 +307,11 @@ internal suspend fun handleOnTapEblanApplicationInfoItem(
         ),
     )
 
-    if (appDrawerSettings.resetState) {
-        onDismiss()
-
-        onScrollToItem(0)
-    }
-
     keyboardController?.hide()
 }
 
 @OptIn(ExperimentalUuidApi::class)
-internal fun handleApplicationDrag(
+internal fun handleDragEblanApplicationInfoItem(
     appDrawerSettings: AppDrawerSettings,
     currentPage: Int,
     drag: Drag,

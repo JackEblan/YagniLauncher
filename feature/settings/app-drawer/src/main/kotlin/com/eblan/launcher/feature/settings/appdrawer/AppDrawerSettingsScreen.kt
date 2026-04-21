@@ -53,7 +53,6 @@ import com.eblan.launcher.ui.dialog.TextColorDialog
 import com.eblan.launcher.ui.dialog.TwoTextFieldsDialog
 import com.eblan.launcher.ui.settings.GridItemSettings
 import com.eblan.launcher.ui.settings.SettingsColumn
-import com.eblan.launcher.ui.settings.SettingsSwitch
 import com.eblan.launcher.ui.settings.TextColorSettingsRow
 
 @Composable
@@ -192,17 +191,6 @@ private fun Success(
                 customColor = appDrawerSettings.customBackgroundColor,
                 onClick = {
                     showTextColorDialog = true
-                },
-            )
-
-            HorizontalDivider(modifier = Modifier.fillMaxWidth())
-
-            SettingsSwitch(
-                checked = appDrawerSettings.resetState,
-                title = "Reset State",
-                subtitle = "Reset app drawer state when not visible",
-                onCheckedChange = { newResetState ->
-                    onUpdateAppDrawerSettings(appDrawerSettings.copy(resetState = newResetState))
                 },
             )
 

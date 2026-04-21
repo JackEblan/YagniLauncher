@@ -114,7 +114,7 @@ import com.eblan.launcher.feature.home.screen.application.EblanApplicationInfoTa
 import com.eblan.launcher.feature.home.screen.application.PrivateApplicationInfoPopup
 import com.eblan.launcher.feature.home.screen.application.QuiteModeScreen
 import com.eblan.launcher.feature.home.screen.application.TagElevatedFilterChip
-import com.eblan.launcher.feature.home.screen.application.handleApplicationDrag
+import com.eblan.launcher.feature.home.screen.application.handleDragEblanApplicationInfoItem
 import com.eblan.launcher.feature.home.screen.application.handleOnLongPressEblanApplicationInfoItem
 import com.eblan.launcher.feature.home.screen.application.handleOnTapEblanApplicationInfoItem
 import com.eblan.launcher.feature.home.screen.application.vertical.DragAndDropEblanApplicationInfos
@@ -215,11 +215,9 @@ internal fun SharedTransitionScope.ListApplicationScreen(
         }
 
     ApplicationScreenEffect(
-        appDrawerSettings = appDrawerSettings,
         horizontalPagerState = horizontalPagerState,
         isPressHome = isPressHome,
         screenHeight = screenHeight,
-        searchBarState = searchBarState,
         selectedEblanApplicationInfoTagId = selectedEblanApplicationInfoTagId,
         showPopupApplicationMenu = showPopupApplicationMenu,
         swipeY = swipeY,
@@ -813,7 +811,7 @@ private fun SharedTransitionScope.EblanApplicationInfoItem(
     val alpha = if (isLongPress) 0f else 1f
 
     LaunchedEffect(key1 = drag) {
-        handleApplicationDrag(
+        handleDragEblanApplicationInfoItem(
             appDrawerSettings = appDrawerSettings,
             currentPage = currentPage,
             drag = drag,
@@ -839,7 +837,6 @@ private fun SharedTransitionScope.EblanApplicationInfoItem(
                     onTap = {
                         scope.launch {
                             handleOnTapEblanApplicationInfoItem(
-                                appDrawerSettings = appDrawerSettings,
                                 eblanApplicationInfo = eblanApplicationInfo,
                                 intOffset = intOffset,
                                 intSize = intSize,
@@ -847,8 +844,6 @@ private fun SharedTransitionScope.EblanApplicationInfoItem(
                                 launcherApps = launcherApps,
                                 leftPadding = leftPadding,
                                 topPadding = topPadding,
-                                onDismiss = onDismiss,
-                                onScrollToItem = onScrollToItem,
                             )
                         }
                     },

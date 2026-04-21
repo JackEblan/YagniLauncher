@@ -57,6 +57,7 @@ import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
@@ -292,7 +293,6 @@ internal fun PrivateSpaceEblanApplicationInfoItem(
                     onTap = {
                         scope.launch {
                             handleOnTapEblanApplicationInfoItem(
-                                appDrawerSettings = appDrawerSettings,
                                 eblanApplicationInfo = eblanApplicationInfo,
                                 intOffset = intOffset,
                                 intSize = intSize,
@@ -300,24 +300,22 @@ internal fun PrivateSpaceEblanApplicationInfoItem(
                                 launcherApps = launcherApps,
                                 leftPadding = leftPadding,
                                 topPadding = topPadding,
-                                onDismiss = onDismiss,
-                                onScrollToItem = onScrollToItem,
                             )
                         }
                     },
                     onLongPress = {
-                        onUpdateEblanApplicationInfo(eblanApplicationInfo)
-
-                        onUpdateOverlayBounds(
-                            intOffset,
-                            intSize,
+                        handleOnLongPressPrivateSpaceEblanApplicationInfoItem(
+                            onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
+                            eblanApplicationInfo = eblanApplicationInfo,
+                            onUpdateOverlayBounds = onUpdateOverlayBounds,
+                            intOffset = intOffset,
+                            intSize = intSize,
+                            onUpdatePopupMenu = onUpdatePopupMenu,
+                            keyboardController = keyboardController,
+                            onUpdateIsLongPress = { newIsLongPress ->
+                                isLongPress = newIsLongPress
+                            },
                         )
-
-                        onUpdatePopupMenu(true)
-
-                        isLongPress = true
-
-                        keyboardController?.hide()
                     },
                 )
             }
@@ -355,4 +353,28 @@ internal fun PrivateSpaceEblanApplicationInfoItem(
             overflow = TextOverflow.Ellipsis,
         )
     }
+}
+
+internal fun handleOnLongPressPrivateSpaceEblanApplicationInfoItem(
+    onUpdateEblanApplicationInfo: (EblanApplicationInfo) -> Unit,
+    eblanApplicationInfo: EblanApplicationInfo,
+    onUpdateOverlayBounds: (IntOffset, IntSize) -> Unit,
+    intOffset: IntOffset,
+    intSize: IntSize,
+    onUpdatePopupMenu: (Boolean) -> Unit,
+    keyboardController: SoftwareKeyboardController?,
+    onUpdateIsLongPress: (Boolean) -> Unit,
+) {
+    onUpdateEblanApplicationInfo(eblanApplicationInfo)
+
+    onUpdateOverlayBounds(
+        intOffset,
+        intSize,
+    )
+
+    onUpdatePopupMenu(true)
+
+    onUpdateIsLongPress(true)
+
+    keyboardController?.hide()
 }

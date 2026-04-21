@@ -191,11 +191,9 @@ internal fun SharedTransitionScope.VerticalApplicationScreen(
         }
 
     ApplicationScreenEffect(
-        appDrawerSettings = appDrawerSettings,
         horizontalPagerState = horizontalPagerState,
         isPressHome = isPressHome,
         screenHeight = screenHeight,
-        searchBarState = searchBarState,
         selectedEblanApplicationInfoTagId = selectedEblanApplicationInfoTagId,
         showPopupApplicationMenu = showPopupApplicationMenu,
         swipeY = swipeY,
@@ -677,7 +675,6 @@ private fun SharedTransitionScope.EblanApplicationInfos(
                             onUpdateSharedElementKey = onUpdateSharedElementKey,
                             onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
                             onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                            onScrollToItem = onScrollToItem,
                         )
                     }
 
@@ -725,7 +722,6 @@ private fun SharedTransitionScope.EblanApplicationInfos(
                             onUpdateSharedElementKey = onUpdateSharedElementKey,
                             onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
                             onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                            onScrollToItem = onScrollToItem,
                         )
                     }
                 }
