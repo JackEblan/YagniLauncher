@@ -61,6 +61,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -813,9 +814,30 @@ private fun SharedTransitionScope.EblanApplicationInfoItem(
 
     var isLongPress by remember { mutableStateOf(false) }
 
+    var isTap by remember { mutableStateOf(false) }
+
     val applicationScreenId = remember { Uuid.random().toHexString() }
 
     val alpha = if (isLongPress) 0f else 1f
+
+    val isImeVisible by rememberUpdatedState(WindowInsets.isImeVisible)
+
+    fun startMainActivity() {
+        val sourceBoundsX = intOffset.x + leftPadding
+
+        val sourceBoundsY = intOffset.y + topPadding
+
+        launcherApps.startMainActivity(
+            serialNumber = eblanApplicationInfo.serialNumber,
+            componentName = eblanApplicationInfo.componentName,
+            sourceBounds = Rect(
+                sourceBoundsX,
+                sourceBoundsY,
+                sourceBoundsX + intSize.width,
+                sourceBoundsY + intSize.height,
+            ),
+        )
+    }
 
     LaunchedEffect(key1 = drag) {
         when (drag) {
@@ -879,6 +901,16 @@ private fun SharedTransitionScope.EblanApplicationInfoItem(
         }
     }
 
+    LaunchedEffect(key1 = isTap, key2 = isImeVisible) {
+        if (isTap && isImeVisible) {
+            keyboardController?.hide()
+        } else if (isTap) {
+            startMainActivity()
+
+            isTap = false
+        }
+    }
+
     Row(
         modifier = modifier
             .pointerInput(key1 = drag) {
@@ -891,26 +923,11 @@ private fun SharedTransitionScope.EblanApplicationInfoItem(
                                 onScrollToItem(0)
                             }
 
-                            if (appDrawerSettings.showKeyboard) {
-                                keyboardController?.hide()
-
-                                delay(300L)
+                            if (isImeVisible) {
+                                isTap = true
+                            } else {
+                                startMainActivity()
                             }
-
-                            val sourceBoundsX = intOffset.x + leftPadding
-
-                            val sourceBoundsY = intOffset.y + topPadding
-
-                            launcherApps.startMainActivity(
-                                serialNumber = eblanApplicationInfo.serialNumber,
-                                componentName = eblanApplicationInfo.componentName,
-                                sourceBounds = Rect(
-                                    sourceBoundsX,
-                                    sourceBoundsY,
-                                    sourceBoundsX + intSize.width,
-                                    sourceBoundsY + intSize.height,
-                                ),
-                            )
                         }
                     },
                     onLongPress = {
