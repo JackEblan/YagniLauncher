@@ -26,8 +26,8 @@ android {
 
     defaultConfig {
         applicationId = "com.eblan.launcher"
-        versionCode = 62
-        versionName = "0.6.2-alpha"
+        versionCode = 63
+        versionName = "0.6.3-alpha"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

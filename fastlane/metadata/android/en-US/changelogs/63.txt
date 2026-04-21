@@ -1,0 +1,1 @@
+- Remove the reset app drawer and show keyboard settings temporarily
