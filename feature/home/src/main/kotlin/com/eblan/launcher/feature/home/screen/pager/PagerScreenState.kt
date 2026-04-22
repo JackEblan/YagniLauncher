@@ -338,13 +338,13 @@ internal class PagerScreenState(
     var isCloseFolder by mutableStateOf(false)
         private set
 
-    var gridUserScrollEnabled by mutableStateOf(false)
+    var gridUserScrollEnabled by mutableStateOf(true)
         private set
 
-    var dockGridUserScrollEnabled by mutableStateOf(false)
+    var dockGridUserScrollEnabled by mutableStateOf(true)
         private set
 
-    var folderGridUserScrollEnabled by mutableStateOf(false)
+    var folderGridUserScrollEnabled by mutableStateOf(true)
         private set
 
     private val touchSlop = with(density) {
