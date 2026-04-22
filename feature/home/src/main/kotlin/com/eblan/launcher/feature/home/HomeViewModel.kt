@@ -241,6 +241,10 @@ internal class HomeViewModel @Inject constructor(
 
     val isVisibleOverlay = _isVisibleOverlay.asStateFlow()
 
+    private val _isMoveFolderGridItem = MutableStateFlow(false)
+
+    val isMoveFolderGridItem = _isMoveFolderGridItem.asStateFlow()
+
     fun moveGridItem(
         movingGridItem: GridItem,
         x: Int,
@@ -441,6 +445,10 @@ internal class HomeViewModel @Inject constructor(
             }
 
             _isVisibleOverlay.update {
+                false
+            }
+
+            _isMoveFolderGridItem.update {
                 false
             }
 
@@ -711,6 +719,10 @@ internal class HomeViewModel @Inject constructor(
                 gridHeight = gridHeight,
                 currentPage = currentPage,
             )
+
+            _isMoveFolderGridItem.update {
+                true
+            }
         }
     }
 
@@ -733,6 +745,10 @@ internal class HomeViewModel @Inject constructor(
             }
 
             _isVisibleOverlay.update {
+                false
+            }
+
+            _isMoveFolderGridItem.update {
                 false
             }
 

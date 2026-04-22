@@ -116,6 +116,8 @@ internal fun HomeRoute(
 
     val isVisibleOverlay by viewModel.isVisibleOverlay.collectAsStateWithLifecycle()
 
+    val isMoveFolderGridItem by viewModel.isMoveFolderGridItem.collectAsStateWithLifecycle()
+
     HomeScreen(
         modifier = modifier,
         configureResultCode = configureResultCode,
@@ -135,6 +137,7 @@ internal fun HomeRoute(
         resizeGridItem = resizeGridItem,
         gridItemSource = gridItemSource,
         isVisibleOverlay = isVisibleOverlay,
+        isMoveFolderGridItem = isMoveFolderGridItem,
         onCancelGridCache = viewModel::cancelGridCache,
         onDeleteApplicationInfoGridItem = viewModel::deleteApplicationInfoGridItem,
         onDeleteGridItem = viewModel::deleteGridItem,
@@ -195,6 +198,7 @@ internal fun HomeScreen(
     resizeGridItem: GridItem?,
     gridItemSource: GridItemSource?,
     isVisibleOverlay: Boolean,
+    isMoveFolderGridItem: Boolean,
     onCancelGridCache: () -> Unit,
     onDeleteApplicationInfoGridItem: (ApplicationInfoGridItem) -> Unit,
     onDeleteGridItem: (GridItem) -> Unit,
@@ -314,6 +318,7 @@ internal fun HomeScreen(
                 resizeGridItem = resizeGridItem,
                 gridItemSource = gridItemSource,
                 isVisibleOverlay = isVisibleOverlay,
+                isMoveFolderGridItem = isMoveFolderGridItem,
                 onCancelGridCache = onCancelGridCache,
                 onDeleteApplicationInfoGridItem = onDeleteApplicationInfoGridItem,
                 onDeleteGridItem = onDeleteGridItem,
@@ -379,6 +384,7 @@ private fun Success(
     resizeGridItem: GridItem?,
     gridItemSource: GridItemSource?,
     isVisibleOverlay: Boolean,
+    isMoveFolderGridItem: Boolean,
     onCancelGridCache: () -> Unit,
     onDeleteApplicationInfoGridItem: (ApplicationInfoGridItem) -> Unit,
     onDeleteGridItem: (GridItem) -> Unit,
@@ -508,6 +514,7 @@ private fun Success(
                     resizeGridItem = resizeGridItem,
                     gridItemSource = gridItemSource,
                     isVisibleOverlay = isVisibleOverlay,
+                    isMoveFolderGridItem = isMoveFolderGridItem,
                     onDeleteApplicationInfoGridItem = onDeleteApplicationInfoGridItem,
                     onDeleteGridItem = onDeleteGridItem,
                     onResetGridCacheAfterDeleteGridItemCache = onResetGridCacheAfterDeleteGridItemCache,
