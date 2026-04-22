@@ -70,6 +70,7 @@ import com.eblan.launcher.domain.model.EblanApplicationInfoGroup
 import com.eblan.launcher.domain.model.ExperimentalSettings
 import com.eblan.launcher.domain.model.GestureSettings
 import com.eblan.launcher.domain.model.GridItem
+import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.HomeSettings
 import com.eblan.launcher.domain.model.ManagedProfileResult
 import com.eblan.launcher.domain.model.MoveGridItemResult
@@ -393,9 +394,9 @@ internal class PagerScreenState(
         gridItemSource: GridItemSource?,
         isVisibleOverlay: Boolean,
         onMoveFolderGridItem: (
-            folderGridItem: GridItem,
-            applicationInfoGridItems: List<ApplicationInfoGridItem>,
+            conflictingId: String,
             movingApplicationInfoGridItem: ApplicationInfoGridItem,
+            data: GridItemData.Folder,
             dragX: Int,
             dragY: Int,
             columns: Int,
@@ -405,9 +406,9 @@ internal class PagerScreenState(
             currentPage: Int,
         ) -> Unit,
         onMoveFolderGridItemOutsideFolder: (
-            folderGridItem: GridItem,
-            movingApplicationInfoGridItem: ApplicationInfoGridItem,
-            applicationInfoGridItems: List<ApplicationInfoGridItem>,
+            conflictingId: String,
+            movingId: String,
+            data: GridItemData.Folder,
         ) -> Unit,
         onMoveGridItem: (
             movingGridItem: GridItem,

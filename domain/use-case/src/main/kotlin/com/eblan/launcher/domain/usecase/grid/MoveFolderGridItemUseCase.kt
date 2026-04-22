@@ -20,7 +20,6 @@ package com.eblan.launcher.domain.usecase.grid
 import com.eblan.launcher.domain.common.Dispatcher
 import com.eblan.launcher.domain.common.EblanDispatchers
 import com.eblan.launcher.domain.model.ApplicationInfoGridItem
-import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.repository.GridCacheRepository
 import kotlinx.coroutines.CoroutineDispatcher
@@ -33,9 +32,9 @@ class MoveFolderGridItemUseCase @Inject constructor(
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke(
-        folderGridItem: GridItem,
-        applicationInfoGridItems: List<ApplicationInfoGridItem>,
+        conflictingId: String,
         movingApplicationInfoGridItem: ApplicationInfoGridItem,
+        data: GridItemData.Folder,
         dragX: Int,
         dragY: Int,
         columns: Int,
@@ -55,7 +54,7 @@ class MoveFolderGridItemUseCase @Inject constructor(
 
             val targetIndex = currentPage * gridItemsPerPage + targetRow * columns + targetColumn
 
-            val currentApplicationInfoGridItems = applicationInfoGridItems.toMutableList()
+            val currentApplicationInfoGridItems = data.gridItems.toMutableList()
 
             val movingIndex =
                 currentApplicationInfoGridItems.indexOfFirst {
@@ -84,9 +83,6 @@ class MoveFolderGridItemUseCase @Inject constructor(
                 gridItem.copy(index = index)
             }
 
-            val folderData = folderGridItem.data as? GridItemData.Folder
-                ?: error("Expected GridItemData.Folder")
-
             val gridItemsByPage = gridItems.getGridItemsByPage()
 
             val firstPageGridItems = gridItemsByPage[0] ?: emptyList()
@@ -94,8 +90,8 @@ class MoveFolderGridItemUseCase @Inject constructor(
             val (columns, rows) = getGridDimension(count = firstPageGridItems.size)
 
             gridCacheRepository.updateGridItemData(
-                id = folderGridItem.id,
-                data = folderData.copy(
+                id = conflictingId,
+                data = data.copy(
                     gridItems = gridItems,
                     gridItemsByPage = gridItemsByPage,
                     columns = columns,

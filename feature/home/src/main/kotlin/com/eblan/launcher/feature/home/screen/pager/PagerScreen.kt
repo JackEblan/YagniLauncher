@@ -173,9 +173,9 @@ internal fun PagerScreen(
     onGetEblanShortcutConfigsByLabel: (String) -> Unit,
     onGetPinGridItem: (PinItemRequestType) -> Unit,
     onMoveFolderGridItem: (
-        folderGridItem: GridItem,
-        applicationInfoGridItems: List<ApplicationInfoGridItem>,
+        conflictingId: String,
         movingApplicationInfoGridItem: ApplicationInfoGridItem,
+        data: GridItemData.Folder,
         dragX: Int,
         dragY: Int,
         columns: Int,
@@ -185,9 +185,9 @@ internal fun PagerScreen(
         currentPage: Int,
     ) -> Unit,
     onMoveFolderGridItemOutsideFolder: (
-        folderGridItem: GridItem,
-        movingApplicationInfoGridItem: ApplicationInfoGridItem,
-        applicationInfoGridItems: List<ApplicationInfoGridItem>,
+        conflictingId: String,
+        movingId: String,
+        data: GridItemData.Folder,
     ) -> Unit,
     onMoveGridItem: (
         movingGridItem: GridItem,

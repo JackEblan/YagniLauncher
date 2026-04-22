@@ -19,8 +19,6 @@ package com.eblan.launcher.domain.usecase.grid
 
 import com.eblan.launcher.domain.common.Dispatcher
 import com.eblan.launcher.domain.common.EblanDispatchers
-import com.eblan.launcher.domain.model.ApplicationInfoGridItem
-import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.repository.GridCacheRepository
 import kotlinx.coroutines.CoroutineDispatcher
@@ -32,18 +30,15 @@ class MoveFolderGridItemOutsideFolderUseCase @Inject constructor(
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke(
-        folderGridItem: GridItem,
-        movingApplicationInfoGridItem: ApplicationInfoGridItem,
-        applicationInfoGridItems: List<ApplicationInfoGridItem>,
+        conflictingId: String,
+        movingId: String,
+        data: GridItemData.Folder,
     ) {
         withContext(defaultDispatcher) {
-            val data =
-                folderGridItem.data as? GridItemData.Folder ?: error("Expected GridItemData.Folder")
+            val gridItems = data.gridItems.toMutableList()
 
-            val gridItems = applicationInfoGridItems.toMutableList().apply {
-                removeIf { applicationInfoGridItem ->
-                    applicationInfoGridItem.id == movingApplicationInfoGridItem.id
-                }
+            gridItems.removeIf { applicationInfoGridItem ->
+                applicationInfoGridItem.id == movingId
             }
 
             val gridItemsByPage = gridItems.getGridItemsByPage()
@@ -61,7 +56,7 @@ class MoveFolderGridItemOutsideFolderUseCase @Inject constructor(
             )
 
             gridCacheRepository.updateGridItemData(
-                id = folderGridItem.id,
+                id = conflictingId,
                 data = newData,
             )
         }

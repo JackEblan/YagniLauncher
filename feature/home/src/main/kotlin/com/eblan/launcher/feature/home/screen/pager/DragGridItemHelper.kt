@@ -169,9 +169,9 @@ internal fun handleDragGridItem(
     screenHeight: Int,
     screenWidth: Int,
     onMoveFolderGridItem: (
-        folderGridItem: GridItem,
-        applicationInfoGridItems: List<ApplicationInfoGridItem>,
+        conflictingId: String,
         movingApplicationInfoGridItem: ApplicationInfoGridItem,
+        data: GridItemData.Folder,
         dragX: Int,
         dragY: Int,
         columns: Int,
@@ -181,9 +181,9 @@ internal fun handleDragGridItem(
         currentPage: Int,
     ) -> Unit,
     onMoveFolderGridItemOutsideFolder: (
-        folderGridItem: GridItem,
-        movingApplicationInfoGridItem: ApplicationInfoGridItem,
-        applicationInfoGridItems: List<ApplicationInfoGridItem>,
+        conflictingId: String,
+        movingId: String,
+        data: GridItemData.Folder,
     ) -> Unit,
     onMoveGridItem: (
         movingGridItem: GridItem,
@@ -319,9 +319,9 @@ private fun handleDragFolderGridItem(
     safeDrawingHeight: Int,
     safeDrawingWidth: Int,
     onMoveFolderGridItem: (
-        folderGridItem: GridItem,
-        applicationInfoGridItems: List<ApplicationInfoGridItem>,
+        conflictingId: String,
         movingApplicationInfoGridItem: ApplicationInfoGridItem,
+        data: GridItemData.Folder,
         dragX: Int,
         dragY: Int,
         columns: Int,
@@ -331,9 +331,9 @@ private fun handleDragFolderGridItem(
         currentPage: Int,
     ) -> Unit,
     onMoveFolderGridItemOutsideFolder: (
-        folderGridItem: GridItem,
-        movingApplicationInfoGridItem: ApplicationInfoGridItem,
-        applicationInfoGridItems: List<ApplicationInfoGridItem>,
+        conflictingId: String,
+        movingId: String,
+        data: GridItemData.Folder,
     ) -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
@@ -375,18 +375,20 @@ private fun handleDragFolderGridItem(
     val isInsideFolder = folderDragX in 0..folderGridVisibleWidthPx &&
         folderDragY in 0..folderGridVisibleHeightPx
 
+    val applicationInfoGridItem = gridItemSourceFolder.applicationInfoGridItem
+
     if (isInsideFolder) {
         onUpdateSharedElementKey(
             SharedElementKey(
-                id = gridItemSourceFolder.applicationInfoGridItem.id,
+                id = applicationInfoGridItem.id,
                 parent = SharedElementKey.Parent.Folder,
             ),
         )
 
         onMoveFolderGridItem(
-            folderGridItem,
-            data.gridItems,
-            gridItemSourceFolder.applicationInfoGridItem,
+            folderGridItem.id,
+            applicationInfoGridItem,
+            data,
             folderDragX,
             folderDragY,
             data.columns,
@@ -397,29 +399,29 @@ private fun handleDragFolderGridItem(
         )
     } else {
         val gridItem = GridItem(
-            id = gridItemSourceFolder.applicationInfoGridItem.id,
-            page = gridItemSourceFolder.applicationInfoGridItem.page,
-            startColumn = gridItemSourceFolder.applicationInfoGridItem.startColumn,
-            startRow = gridItemSourceFolder.applicationInfoGridItem.startRow,
-            columnSpan = gridItemSourceFolder.applicationInfoGridItem.columnSpan,
-            rowSpan = gridItemSourceFolder.applicationInfoGridItem.rowSpan,
+            id = applicationInfoGridItem.id,
+            page = applicationInfoGridItem.page,
+            startColumn = applicationInfoGridItem.startColumn,
+            startRow = applicationInfoGridItem.startRow,
+            columnSpan = applicationInfoGridItem.columnSpan,
+            rowSpan = applicationInfoGridItem.rowSpan,
             data = GridItemData.ApplicationInfo(
-                serialNumber = gridItemSourceFolder.applicationInfoGridItem.serialNumber,
-                componentName = gridItemSourceFolder.applicationInfoGridItem.componentName,
-                packageName = gridItemSourceFolder.applicationInfoGridItem.packageName,
-                icon = gridItemSourceFolder.applicationInfoGridItem.icon,
-                label = gridItemSourceFolder.applicationInfoGridItem.label,
-                customIcon = gridItemSourceFolder.applicationInfoGridItem.customIcon,
-                customLabel = gridItemSourceFolder.applicationInfoGridItem.customLabel,
+                serialNumber = applicationInfoGridItem.serialNumber,
+                componentName = applicationInfoGridItem.componentName,
+                packageName = applicationInfoGridItem.packageName,
+                icon = applicationInfoGridItem.icon,
+                label = applicationInfoGridItem.label,
+                customIcon = applicationInfoGridItem.customIcon,
+                customLabel = applicationInfoGridItem.customLabel,
                 index = -1,
                 folderId = null,
             ),
-            associate = gridItemSourceFolder.applicationInfoGridItem.associate,
-            override = gridItemSourceFolder.applicationInfoGridItem.override,
-            gridItemSettings = gridItemSourceFolder.applicationInfoGridItem.gridItemSettings,
-            doubleTap = gridItemSourceFolder.applicationInfoGridItem.doubleTap,
-            swipeUp = gridItemSourceFolder.applicationInfoGridItem.swipeUp,
-            swipeDown = gridItemSourceFolder.applicationInfoGridItem.swipeDown,
+            associate = applicationInfoGridItem.associate,
+            override = applicationInfoGridItem.override,
+            gridItemSettings = applicationInfoGridItem.gridItemSettings,
+            doubleTap = applicationInfoGridItem.doubleTap,
+            swipeUp = applicationInfoGridItem.swipeUp,
+            swipeDown = applicationInfoGridItem.swipeDown,
         )
 
         onUpdateGridItemSource(GridItemSource.New(gridItem = gridItem))
@@ -432,9 +434,9 @@ private fun handleDragFolderGridItem(
         )
 
         onMoveFolderGridItemOutsideFolder(
-            folderGridItem,
-            gridItemSourceFolder.applicationInfoGridItem,
-            data.gridItems,
+            folderGridItem.id,
+            applicationInfoGridItem.id,
+            data,
         )
 
         onUpdateIsCloseFolder(true)

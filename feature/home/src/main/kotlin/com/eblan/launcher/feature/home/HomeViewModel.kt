@@ -691,9 +691,9 @@ internal class HomeViewModel @Inject constructor(
     }
 
     fun moveFolderGridItem(
-        folderGridItem: GridItem,
-        applicationInfoGridItems: List<ApplicationInfoGridItem>,
+        conflictingId: String,
         movingApplicationInfoGridItem: ApplicationInfoGridItem,
+        data: GridItemData.Folder,
         dragX: Int,
         dragY: Int,
         columns: Int,
@@ -708,9 +708,9 @@ internal class HomeViewModel @Inject constructor(
             delay(moveDelay)
 
             moveFolderGridItemUseCase(
-                folderGridItem = folderGridItem,
-                applicationInfoGridItems = applicationInfoGridItems,
+                conflictingId = conflictingId,
                 movingApplicationInfoGridItem = movingApplicationInfoGridItem,
+                data = data,
                 dragX = dragX,
                 dragY = dragY,
                 columns = columns,
@@ -759,17 +759,17 @@ internal class HomeViewModel @Inject constructor(
     }
 
     fun moveFolderGridItemOutsideFolder(
-        folderGridItem: GridItem,
-        movingApplicationInfoGridItem: ApplicationInfoGridItem,
-        applicationInfoGridItems: List<ApplicationInfoGridItem>,
+        conflictingId: String,
+        movingId: String,
+        data: GridItemData.Folder,
     ) {
         viewModelScope.launch {
             moveGridItemJob?.cancelAndJoin()
 
             moveFolderGridItemOutsideFolderUseCase(
-                folderGridItem = folderGridItem,
-                movingApplicationInfoGridItem = movingApplicationInfoGridItem,
-                applicationInfoGridItems = applicationInfoGridItems,
+                conflictingId = conflictingId,
+                movingId = movingId,
+                data = data,
             )
         }
     }
