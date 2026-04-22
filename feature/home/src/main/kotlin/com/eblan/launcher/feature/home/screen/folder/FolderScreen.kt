@@ -83,7 +83,6 @@ import com.eblan.launcher.domain.usecase.grid.FOLDER_MAX_ROWS
 import com.eblan.launcher.feature.home.component.FolderGridLayout
 import com.eblan.launcher.feature.home.component.PageIndicator
 import com.eblan.launcher.feature.home.component.swipeGestures
-import com.eblan.launcher.feature.home.component.whiteBox
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
@@ -390,7 +389,7 @@ private fun SharedTransitionScope.FolderGridItemContent(
     val gridItemSourceFolder = gridItemSource as? GridItemSource.Folder
 
     val isSelected = gridItemSourceFolder != null &&
-        gridItem.id == gridItemSourceFolder.applicationInfoGridItem.id
+            gridItem.id == gridItemSourceFolder.applicationInfoGridItem.id
 
     val currentGridItemSettings = if (gridItem.override) {
         gridItem.gridItemSettings
@@ -418,13 +417,11 @@ private fun SharedTransitionScope.FolderGridItemContent(
 
     val hasNotifications =
         statusBarNotifications[gridItem.packageName] != null && (
-            statusBarNotifications[gridItem.packageName]
-                ?: 0
-            ) > 0
+                statusBarNotifications[gridItem.packageName]
+                    ?: 0
+                ) > 0
 
     val hasInteraction = isSelected && isVisibleOverlay
-
-    val isVisibleWhiteBox = isSelected && drag == Drag.Dragging
 
     val alpha = if (hasInteraction) 0f else 1f
 
@@ -507,11 +504,7 @@ private fun SharedTransitionScope.FolderGridItemContent(
                 onOpenAppDrawer = onOpenAppDrawer,
             )
             .fillMaxSize()
-            .padding(currentGridItemSettings.padding.dp)
-            .whiteBox(
-                textColor = MaterialTheme.colorScheme.onSurface,
-                visible = isVisibleWhiteBox,
-            ),
+            .padding(currentGridItemSettings.padding.dp),
         horizontalAlignment = horizontalAlignment,
         verticalArrangement = verticalArrangement,
     ) {
