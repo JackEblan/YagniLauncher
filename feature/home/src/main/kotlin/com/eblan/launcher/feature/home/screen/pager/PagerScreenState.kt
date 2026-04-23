@@ -384,7 +384,7 @@ internal class PagerScreenState(
         )
     }
 
-    fun handleDragGridItemEffect(
+    suspend fun handleDragGridItemEffect(
         currentPage: Int,
         density: Density,
         dockHeight: Dp,
@@ -984,6 +984,12 @@ internal class PagerScreenState(
             data: GridItemData.Folder,
         ) -> Unit,
     ) {
+        folderPopupIntOffset = null
+
+        folderPopupIntSize = null
+
+        isMoveFolderGridItemOutsideFolder = false
+
         val data = folderGridItem?.data as? GridItemData.Folder ?: return
 
         val gridItemSourceFolder = gridItemSource as? GridItemSource.Folder ?: return
@@ -1022,12 +1028,6 @@ internal class PagerScreenState(
             id = gridItem.id,
             parent = SharedElementKey.Parent.Grid,
         )
-
-        folderPopupIntOffset = null
-
-        folderPopupIntSize = null
-
-        isMoveFolderGridItemOutsideFolder = false
 
         onMoveFolderGridItemOutsideFolder(
             folderGridItem.id,
