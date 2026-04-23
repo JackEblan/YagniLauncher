@@ -797,4 +797,14 @@ internal class HomeViewModel @Inject constructor(
             isVisibleOverlay
         }
     }
+
+    fun showFolderWhenDragging(id: String?) {
+        viewModelScope.launch {
+            moveGridItemJob?.cancelAndJoin()
+
+            _folderGridItemId.update {
+                id
+            }
+        }
+    }
 }

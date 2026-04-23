@@ -551,7 +551,7 @@ internal suspend fun handleConflictingGridItem(
     screenHeight: Int,
     screenWidth: Int,
     lockMovement: Boolean,
-    onUpdateFolderGridItemId: (String) -> Unit,
+    onShowFolderWhenDragging: (String) -> Unit,
     onUpdateFolderPopupBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
@@ -688,7 +688,7 @@ internal suspend fun handleConflictingGridItem(
         intSize,
     )
 
-    onUpdateFolderGridItemId(conflictingData.id)
+    onShowFolderWhenDragging(conflictingData.id)
 }
 
 internal suspend fun handlePageDirection(pageDirection: PageDirection?, pagerState: PagerState) {

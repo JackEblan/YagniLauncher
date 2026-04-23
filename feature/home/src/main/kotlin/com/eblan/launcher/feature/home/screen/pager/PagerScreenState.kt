@@ -543,7 +543,7 @@ internal class PagerScreenState(
         paddingValues: PaddingValues,
         gridItemSource: GridItemSource?,
         isVisibleOverlay: Boolean,
-        onUpdateFolderGridItemId: (String?) -> Unit,
+        onShowFolderWhenDragging: (String?) -> Unit,
         onUpdateGridItemSource: (GridItemSource) -> Unit,
     ) {
         handleConflictingGridItem(
@@ -562,7 +562,7 @@ internal class PagerScreenState(
             screenHeight = screenHeight,
             screenWidth = screenWidth,
             lockMovement = experimentalSettings.lockMovement,
-            onUpdateFolderGridItemId = onUpdateFolderGridItemId,
+            onShowFolderWhenDragging = onShowFolderWhenDragging,
             onUpdateFolderPopupBounds = { intOffset, intSize ->
                 lastFolderPopupX = intOffset.x
                 lastFolderPopupY = intOffset.y

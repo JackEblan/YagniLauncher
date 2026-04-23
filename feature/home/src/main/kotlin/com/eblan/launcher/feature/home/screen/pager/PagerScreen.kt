@@ -213,6 +213,7 @@ internal fun PagerScreen(
     onUpdateAppDrawerSettings: (AppDrawerSettings) -> Unit,
     onUpdateEblanApplicationInfos: (List<EblanApplicationInfo>) -> Unit,
     onUpdateFolderGridItemId: (String?) -> Unit,
+    onShowFolderWhenDragging: (String?) -> Unit,
     onUpdateShortcutConfigGridItemDataCache: (
         byteArray: ByteArray?,
         moveGridItemResult: MoveGridItemResult,
@@ -524,7 +525,7 @@ internal fun PagerScreen(
             paddingValues = paddingValues,
             gridItemSource = gridItemSource,
             isVisibleOverlay = isVisibleOverlay,
-            onUpdateFolderGridItemId = onUpdateFolderGridItemId,
+            onShowFolderWhenDragging = onShowFolderWhenDragging,
             onUpdateGridItemSource = onUpdateGridItemSource,
         )
     }
