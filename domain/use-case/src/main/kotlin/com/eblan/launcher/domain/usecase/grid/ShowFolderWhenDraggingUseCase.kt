@@ -23,11 +23,10 @@ import com.eblan.launcher.domain.model.ApplicationInfoGridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.repository.GridCacheRepository
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class MoveFolderGridItemUseCase @Inject constructor(
+class ShowFolderWhenDraggingUseCase @Inject constructor(
     private val gridCacheRepository: GridCacheRepository,
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) {
@@ -35,49 +34,11 @@ class MoveFolderGridItemUseCase @Inject constructor(
         conflictingId: String,
         movingApplicationInfoGridItem: ApplicationInfoGridItem,
         data: GridItemData.Folder,
-        dragX: Int,
-        dragY: Int,
-        columns: Int,
-        rows: Int,
-        gridWidth: Int,
-        gridHeight: Int,
-        currentPage: Int,
     ) {
         withContext(defaultDispatcher) {
-            val gridItemsPerPage = columns * rows
+            val gridItems = data.gridItems.toMutableList()
 
-            val cellWidth = gridWidth / columns
-            val cellHeight = gridHeight / rows
-
-            val targetColumn = dragX / cellWidth
-            val targetRow = dragY / cellHeight
-
-            val targetIndex = currentPage * gridItemsPerPage + targetRow * columns + targetColumn
-
-            val currentApplicationInfoGridItems = data.gridItems.toMutableList()
-
-            val movingIndex =
-                currentApplicationInfoGridItems.indexOfFirst {
-                    ensureActive()
-
-                    it.id == movingApplicationInfoGridItem.id
-                }
-
-            if (movingIndex != -1) {
-                currentApplicationInfoGridItems.add(
-                    targetIndex.coerceIn(
-                        0,
-                        currentApplicationInfoGridItems.size - 1,
-                    ),
-                    currentApplicationInfoGridItems.removeAt(movingIndex),
-                )
-            }
-
-            val gridItems = currentApplicationInfoGridItems.mapIndexed { index, gridItem ->
-                ensureActive()
-
-                gridItem.copy(index = index)
-            }
+            gridItems.add(movingApplicationInfoGridItem)
 
             val gridItemsByPage = gridItems.getGridItemsByPage()
 

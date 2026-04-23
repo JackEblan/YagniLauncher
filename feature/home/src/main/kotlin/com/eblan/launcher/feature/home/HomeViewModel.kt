@@ -54,6 +54,7 @@ import com.eblan.launcher.domain.usecase.grid.MoveFolderGridItemOutsideFolderUse
 import com.eblan.launcher.domain.usecase.grid.MoveFolderGridItemUseCase
 import com.eblan.launcher.domain.usecase.grid.MoveGridItemUseCase
 import com.eblan.launcher.domain.usecase.grid.ResizeGridItemUseCase
+import com.eblan.launcher.domain.usecase.grid.ShowFolderWhenDraggingUseCase
 import com.eblan.launcher.domain.usecase.grid.UpdateGridItemsAfterMoveUseCase
 import com.eblan.launcher.domain.usecase.grid.UpdateGridItemsAfterResizeUseCase
 import com.eblan.launcher.domain.usecase.iconpack.GetIconPackFilePathsUseCase
@@ -118,6 +119,7 @@ internal class HomeViewModel @Inject constructor(
     private val moveFolderGridItemOutsideFolderUseCase: MoveFolderGridItemOutsideFolderUseCase,
     private val applicationInfoGridItemRepository: ApplicationInfoGridItemRepository,
     private val iconKeyGenerator: IconKeyGenerator,
+    private val showFolderWhenDraggingUseCase: ShowFolderWhenDraggingUseCase,
 ) : ViewModel() {
     private val _isCache = MutableStateFlow(false)
 
@@ -136,6 +138,8 @@ internal class HomeViewModel @Inject constructor(
     val movedGridItemResult = _moveGridItemResult.asStateFlow()
 
     private val defaultDelay = 500L
+
+    private val moveDelay = 100L
 
     private val _editPageData = MutableStateFlow<EditPageData?>(null)
 
@@ -255,6 +259,8 @@ internal class HomeViewModel @Inject constructor(
         moveGridItemJob?.cancel()
 
         moveGridItemJob = viewModelScope.launch {
+            delay(moveDelay)
+
             _moveGridItemResult.update {
                 moveGridItemUseCase(
                     movingGridItem = movingGridItem,
@@ -277,6 +283,8 @@ internal class HomeViewModel @Inject constructor(
         moveGridItemJob?.cancel()
 
         moveGridItemJob = viewModelScope.launch {
+            delay(moveDelay)
+
             _resizeGridItem.update {
                 resizeGridItemUseCase(
                     resizingGridItem = resizingGridItem,
@@ -701,6 +709,8 @@ internal class HomeViewModel @Inject constructor(
         moveGridItemJob?.cancel()
 
         moveGridItemJob = viewModelScope.launch {
+            delay(moveDelay)
+
             moveFolderGridItemUseCase(
                 conflictingId = conflictingId,
                 movingApplicationInfoGridItem = movingApplicationInfoGridItem,
@@ -790,12 +800,24 @@ internal class HomeViewModel @Inject constructor(
         }
     }
 
-    fun showFolderWhenDragging(id: String?) {
+    fun showFolderWhenDragging(
+        conflictingId: String,
+        movingApplicationInfoGridItem: ApplicationInfoGridItem,
+        data: GridItemData.Folder,
+    ) {
         viewModelScope.launch {
             moveGridItemJob?.cancelAndJoin()
 
+            delay(moveDelay)
+
+            showFolderWhenDraggingUseCase(
+                conflictingId = conflictingId,
+                movingApplicationInfoGridItem = movingApplicationInfoGridItem,
+                data = data,
+            )
+
             _folderGridItemId.update {
-                id
+                conflictingId
             }
         }
     }

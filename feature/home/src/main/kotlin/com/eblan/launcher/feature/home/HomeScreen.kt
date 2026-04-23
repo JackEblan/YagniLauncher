@@ -272,7 +272,11 @@ internal fun HomeScreen(
     onUpdateAppDrawerSettings: (AppDrawerSettings) -> Unit,
     onUpdateEblanApplicationInfos: (List<EblanApplicationInfo>) -> Unit,
     onUpdateFolderGridItemId: (String?) -> Unit,
-    onShowFolderWhenDragging: (String?) -> Unit,
+    onShowFolderWhenDragging: (
+        conflictingId: String,
+        movingApplicationInfoGridItem: ApplicationInfoGridItem,
+        data: GridItemData.Folder,
+    ) -> Unit,
     onUpdateScreen: (Screen) -> Unit,
     onUpdateShortcutConfigGridItemDataCache: (
         byteArray: ByteArray?,
@@ -460,7 +464,11 @@ private fun Success(
     onUpdateAppDrawerSettings: (AppDrawerSettings) -> Unit,
     onUpdateEblanApplicationInfos: (List<EblanApplicationInfo>) -> Unit,
     onUpdateFolderGridItemId: (String?) -> Unit,
-    onShowFolderWhenDragging: (String?) -> Unit,
+    onShowFolderWhenDragging: (
+        conflictingId: String,
+        movingApplicationInfoGridItem: ApplicationInfoGridItem,
+        data: GridItemData.Folder,
+    ) -> Unit,
     onUpdateScreen: (Screen) -> Unit,
     onUpdateShortcutConfigGridItemDataCache: (
         byteArray: ByteArray?,

@@ -144,7 +144,7 @@ internal fun handleAnimateScrollToPage(
     }
 }
 
-internal suspend fun handleDragGridItem(
+internal fun handleDragGridItem(
     columns: Int,
     currentPage: Int,
     density: Density,
@@ -202,8 +202,6 @@ internal suspend fun handleDragGridItem(
     ) {
         return
     }
-
-    delay(100L)
 
     val leftPadding = with(density) {
         paddingValues.calculateStartPadding(LayoutDirection.Ltr).roundToPx()
@@ -553,7 +551,11 @@ internal suspend fun handleConflictingGridItem(
     screenHeight: Int,
     screenWidth: Int,
     lockMovement: Boolean,
-    onShowFolderWhenDragging: (String) -> Unit,
+    onShowFolderWhenDragging: (
+        conflictingId: String,
+        movingApplicationInfoGridItem: ApplicationInfoGridItem,
+        data: GridItemData.Folder,
+    ) -> Unit,
     onUpdateFolderPopupBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
@@ -656,32 +658,34 @@ internal suspend fun handleConflictingGridItem(
         }
     }
 
+    val applicationInfoGridItem = ApplicationInfoGridItem(
+        id = moveGridItemResult.movingGridItem.id,
+        page = moveGridItemResult.movingGridItem.page,
+        startColumn = moveGridItemResult.movingGridItem.startColumn,
+        startRow = moveGridItemResult.movingGridItem.startRow,
+        columnSpan = moveGridItemResult.movingGridItem.columnSpan,
+        rowSpan = moveGridItemResult.movingGridItem.rowSpan,
+        associate = moveGridItemResult.movingGridItem.associate,
+        componentName = movingData.componentName,
+        packageName = movingData.packageName,
+        icon = movingData.icon,
+        label = movingData.label,
+        override = moveGridItemResult.movingGridItem.override,
+        serialNumber = movingData.serialNumber,
+        customIcon = movingData.customIcon,
+        customLabel = movingData.customLabel,
+        gridItemSettings = moveGridItemResult.movingGridItem.gridItemSettings,
+        doubleTap = moveGridItemResult.movingGridItem.doubleTap,
+        swipeUp = moveGridItemResult.movingGridItem.swipeUp,
+        swipeDown = moveGridItemResult.movingGridItem.swipeDown,
+        index = conflictingData.gridItems.lastIndex + 1,
+        folderId = conflictingData.id,
+    )
+
     onUpdateGridItemSource(
         GridItemSource.Folder(
             gridItem = moveGridItemResult.movingGridItem,
-            applicationInfoGridItem = ApplicationInfoGridItem(
-                id = moveGridItemResult.movingGridItem.id,
-                page = moveGridItemResult.movingGridItem.page,
-                startColumn = moveGridItemResult.movingGridItem.startColumn,
-                startRow = moveGridItemResult.movingGridItem.startRow,
-                columnSpan = moveGridItemResult.movingGridItem.columnSpan,
-                rowSpan = moveGridItemResult.movingGridItem.rowSpan,
-                associate = moveGridItemResult.movingGridItem.associate,
-                componentName = movingData.componentName,
-                packageName = movingData.packageName,
-                icon = movingData.icon,
-                label = movingData.label,
-                override = moveGridItemResult.movingGridItem.override,
-                serialNumber = movingData.serialNumber,
-                customIcon = movingData.customIcon,
-                customLabel = movingData.customLabel,
-                gridItemSettings = moveGridItemResult.movingGridItem.gridItemSettings,
-                doubleTap = moveGridItemResult.movingGridItem.doubleTap,
-                swipeUp = moveGridItemResult.movingGridItem.swipeUp,
-                swipeDown = moveGridItemResult.movingGridItem.swipeDown,
-                index = conflictingData.gridItems.lastIndex + 1,
-                folderId = conflictingData.id,
-            ),
+            applicationInfoGridItem = applicationInfoGridItem,
         ),
     )
 
@@ -690,7 +694,11 @@ internal suspend fun handleConflictingGridItem(
         intSize,
     )
 
-    onShowFolderWhenDragging(conflictingData.id)
+    onShowFolderWhenDragging(
+        conflictingData.id,
+        applicationInfoGridItem,
+        conflictingData,
+    )
 }
 
 internal suspend fun handlePageDirection(pageDirection: PageDirection?, pagerState: PagerState) {

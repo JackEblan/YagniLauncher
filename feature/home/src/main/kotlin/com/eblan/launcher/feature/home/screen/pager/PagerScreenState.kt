@@ -384,7 +384,7 @@ internal class PagerScreenState(
         )
     }
 
-    suspend fun handleDragGridItemEffect(
+    fun handleDragGridItemEffect(
         currentPage: Int,
         density: Density,
         dockHeight: Dp,
@@ -543,7 +543,11 @@ internal class PagerScreenState(
         paddingValues: PaddingValues,
         gridItemSource: GridItemSource?,
         isVisibleOverlay: Boolean,
-        onShowFolderWhenDragging: (String?) -> Unit,
+        onShowFolderWhenDragging: (
+            conflictingId: String,
+            movingApplicationInfoGridItem: ApplicationInfoGridItem,
+            data: GridItemData.Folder,
+        ) -> Unit,
         onUpdateGridItemSource: (GridItemSource) -> Unit,
     ) {
         handleConflictingGridItem(

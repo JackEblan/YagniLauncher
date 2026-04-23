@@ -213,7 +213,11 @@ internal fun PagerScreen(
     onUpdateAppDrawerSettings: (AppDrawerSettings) -> Unit,
     onUpdateEblanApplicationInfos: (List<EblanApplicationInfo>) -> Unit,
     onUpdateFolderGridItemId: (String?) -> Unit,
-    onShowFolderWhenDragging: (String?) -> Unit,
+    onShowFolderWhenDragging: (
+        conflictingId: String,
+        movingApplicationInfoGridItem: ApplicationInfoGridItem,
+        data: GridItemData.Folder,
+    ) -> Unit,
     onUpdateShortcutConfigGridItemDataCache: (
         byteArray: ByteArray?,
         moveGridItemResult: MoveGridItemResult,
