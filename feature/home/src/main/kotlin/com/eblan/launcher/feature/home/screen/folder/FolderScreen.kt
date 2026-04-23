@@ -113,8 +113,10 @@ internal fun SharedTransitionScope.FolderScreen(
     statusBarNotifications: Map<String, Int>,
     isVisibleOverlay: Boolean,
     isClosingFolder: Boolean,
+    isMoveFolderGridItemOutsideFolder: Boolean,
     folderGridUserScrollEnabled: Boolean,
     onDismissRequest: () -> Unit,
+    onMoveFolderGridItemOutsideFolder: () -> Unit,
     onDraggingGridItem: () -> Unit,
     onOpenAppDrawer: () -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
@@ -228,6 +230,14 @@ internal fun SharedTransitionScope.FolderScreen(
             progress.animateTo(targetValue = 0f)
 
             onDismissRequest()
+        }
+    }
+
+    LaunchedEffect(key1 = isMoveFolderGridItemOutsideFolder) {
+        if (isMoveFolderGridItemOutsideFolder) {
+            progress.animateTo(targetValue = 0f)
+
+            onMoveFolderGridItemOutsideFolder()
         }
     }
 

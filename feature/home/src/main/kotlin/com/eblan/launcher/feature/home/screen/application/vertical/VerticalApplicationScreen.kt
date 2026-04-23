@@ -530,7 +530,6 @@ private fun SharedTransitionScope.EblanApplicationInfosPage(
                 onVerticalDrag = onVerticalDrag,
                 onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                onScrollToItem = lazyGridState::scrollToItem,
             )
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && packageManager.isDefaultLauncher() &&
@@ -593,7 +592,6 @@ private fun SharedTransitionScope.EblanApplicationInfos(
     onVerticalDrag: (Float) -> Unit,
     onUpdateEblanApplicationInfo: (EblanApplicationInfo) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
-    onScrollToItem: suspend (Int) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
 

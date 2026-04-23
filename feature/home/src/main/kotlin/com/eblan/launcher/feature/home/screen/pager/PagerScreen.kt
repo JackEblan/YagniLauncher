@@ -464,9 +464,7 @@ internal fun PagerScreen(
             gridItemSource = gridItemSource,
             isVisibleOverlay = isVisibleOverlay,
             onMoveFolderGridItem = onMoveFolderGridItem,
-            onMoveFolderGridItemOutsideFolder = onMoveFolderGridItemOutsideFolder,
             onMoveGridItem = onMoveGridItem,
-            onUpdateGridItemSource = onUpdateGridItemSource,
         )
     }
 
@@ -528,7 +526,6 @@ internal fun PagerScreen(
             isVisibleOverlay = isVisibleOverlay,
             onUpdateFolderGridItemId = onUpdateFolderGridItemId,
             onUpdateGridItemSource = onUpdateGridItemSource,
-
         )
     }
 
@@ -1026,9 +1023,18 @@ internal fun PagerScreen(
                 statusBarNotifications = pagerScreenState.statusBarNotifications,
                 isVisibleOverlay = isVisibleOverlay,
                 isClosingFolder = pagerScreenState.isCloseFolder,
+                isMoveFolderGridItemOutsideFolder = pagerScreenState.isMoveFolderGridItemOutsideFolder,
                 folderGridUserScrollEnabled = pagerScreenState.folderGridUserScrollEnabled,
                 onDismissRequest = {
                     pagerScreenState.dismissFolder(onUpdateFolderGridItemId = onUpdateFolderGridItemId)
+                },
+                onMoveFolderGridItemOutsideFolder = {
+                    pagerScreenState.moveFolderGridItemOutsideFolder(
+                        folderGridItem = folderGridItem,
+                        gridItemSource = gridItemSource,
+                        onUpdateGridItemSource = onUpdateGridItemSource,
+                        onMoveFolderGridItemOutsideFolder = onMoveFolderGridItemOutsideFolder,
+                    )
                 },
                 onDraggingGridItem = {
                     onDraggingGridItem(gridItems)

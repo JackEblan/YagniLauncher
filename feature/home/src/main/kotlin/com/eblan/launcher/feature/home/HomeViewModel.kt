@@ -685,8 +685,10 @@ internal class HomeViewModel @Inject constructor(
     }
 
     fun updateFolderGridItemId(id: String?) {
-        _folderGridItemId.update {
-            id
+        viewModelScope.launch {
+            _folderGridItemId.update {
+                id
+            }
         }
     }
 
@@ -765,6 +767,10 @@ internal class HomeViewModel @Inject constructor(
     ) {
         viewModelScope.launch {
             moveGridItemJob?.cancelAndJoin()
+
+            _folderGridItemId.update {
+                null
+            }
 
             moveFolderGridItemOutsideFolderUseCase(
                 conflictingId = conflictingId,

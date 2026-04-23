@@ -180,11 +180,6 @@ internal fun handleDragGridItem(
         gridHeight: Int,
         currentPage: Int,
     ) -> Unit,
-    onMoveFolderGridItemOutsideFolder: (
-        conflictingId: String,
-        movingId: String,
-        data: GridItemData.Folder,
-    ) -> Unit,
     onMoveGridItem: (
         movingGridItem: GridItem,
         x: Int,
@@ -195,9 +190,8 @@ internal fun handleDragGridItem(
         gridHeight: Int,
     ) -> Unit,
     onUpdateAssociate: (Associate) -> Unit,
-    onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onUpdateIsCloseFolder: (Boolean) -> Unit,
+    onUpdateIsMoveFolderGridItemOutsideFolder: (Boolean) -> Unit,
 ) {
     if (drag != Drag.Dragging ||
         isGridScrollInProgress ||
@@ -250,7 +244,7 @@ internal fun handleDragGridItem(
     when (gridItemSource) {
         is GridItemSource.Existing, is GridItemSource.New, is GridItemSource.Pin -> {
             if (isOnDock) {
-                handleDragDockGridItem(
+                handleDragExistingOrNewDockGridItem(
                     currentPage = currentPage,
                     dockColumns = dockColumns,
                     dockHeightPx = dockHeightPx,
@@ -265,7 +259,7 @@ internal fun handleDragGridItem(
                     onUpdateSharedElementKey = onUpdateSharedElementKey,
                 )
             } else {
-                handleDragGridItem(
+                handleDragExistingOrNewGridItem(
                     columns = columns,
                     currentPage = currentPage,
                     dockHeightPx = dockHeightPx,
@@ -297,10 +291,8 @@ internal fun handleDragGridItem(
                 safeDrawingHeight = safeDrawingHeight,
                 safeDrawingWidth = safeDrawingWidth,
                 onMoveFolderGridItem = onMoveFolderGridItem,
-                onMoveFolderGridItemOutsideFolder = onMoveFolderGridItemOutsideFolder,
-                onUpdateGridItemSource = onUpdateGridItemSource,
                 onUpdateSharedElementKey = onUpdateSharedElementKey,
-                onUpdateIsCloseFolder = onUpdateIsCloseFolder,
+                onUpdateIsMoveFolderGridItemOutsideFolder = onUpdateIsMoveFolderGridItemOutsideFolder,
             )
         }
     }
@@ -330,14 +322,8 @@ private fun handleDragFolderGridItem(
         gridHeight: Int,
         currentPage: Int,
     ) -> Unit,
-    onMoveFolderGridItemOutsideFolder: (
-        conflictingId: String,
-        movingId: String,
-        data: GridItemData.Folder,
-    ) -> Unit,
-    onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onUpdateIsCloseFolder: (Boolean) -> Unit,
+    onUpdateIsMoveFolderGridItemOutsideFolder: (Boolean) -> Unit,
 ) {
     if (folderPopupIntOffset == null || folderPopupIntSize == null) return
 
@@ -398,52 +384,11 @@ private fun handleDragFolderGridItem(
             folderCurrentPage,
         )
     } else {
-        val gridItem = GridItem(
-            id = applicationInfoGridItem.id,
-            page = applicationInfoGridItem.page,
-            startColumn = applicationInfoGridItem.startColumn,
-            startRow = applicationInfoGridItem.startRow,
-            columnSpan = applicationInfoGridItem.columnSpan,
-            rowSpan = applicationInfoGridItem.rowSpan,
-            data = GridItemData.ApplicationInfo(
-                serialNumber = applicationInfoGridItem.serialNumber,
-                componentName = applicationInfoGridItem.componentName,
-                packageName = applicationInfoGridItem.packageName,
-                icon = applicationInfoGridItem.icon,
-                label = applicationInfoGridItem.label,
-                customIcon = applicationInfoGridItem.customIcon,
-                customLabel = applicationInfoGridItem.customLabel,
-                index = -1,
-                folderId = null,
-            ),
-            associate = applicationInfoGridItem.associate,
-            override = applicationInfoGridItem.override,
-            gridItemSettings = applicationInfoGridItem.gridItemSettings,
-            doubleTap = applicationInfoGridItem.doubleTap,
-            swipeUp = applicationInfoGridItem.swipeUp,
-            swipeDown = applicationInfoGridItem.swipeDown,
-        )
-
-        onUpdateGridItemSource(GridItemSource.New(gridItem = gridItem))
-
-        onUpdateSharedElementKey(
-            SharedElementKey(
-                id = gridItem.id,
-                parent = SharedElementKey.Parent.Grid,
-            ),
-        )
-
-        onMoveFolderGridItemOutsideFolder(
-            folderGridItem.id,
-            applicationInfoGridItem.id,
-            data,
-        )
-
-        onUpdateIsCloseFolder(true)
+        onUpdateIsMoveFolderGridItemOutsideFolder(true)
     }
 }
 
-private fun handleDragGridItem(
+private fun handleDragExistingOrNewGridItem(
     columns: Int,
     currentPage: Int,
     dockHeightPx: Int,
@@ -517,7 +462,7 @@ private fun handleDragGridItem(
     }
 }
 
-private fun handleDragDockGridItem(
+private fun handleDragExistingOrNewDockGridItem(
     currentPage: Int,
     dockColumns: Int,
     dockHeightPx: Int,

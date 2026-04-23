@@ -339,6 +339,9 @@ internal class PagerScreenState(
     var isCloseFolder by mutableStateOf(false)
         private set
 
+    var isMoveFolderGridItemOutsideFolder by mutableStateOf(false)
+        private set
+
     var gridUserScrollEnabled by mutableStateOf(true)
         private set
 
@@ -405,11 +408,6 @@ internal class PagerScreenState(
             gridHeight: Int,
             currentPage: Int,
         ) -> Unit,
-        onMoveFolderGridItemOutsideFolder: (
-            conflictingId: String,
-            movingId: String,
-            data: GridItemData.Folder,
-        ) -> Unit,
         onMoveGridItem: (
             movingGridItem: GridItem,
             x: Int,
@@ -419,7 +417,6 @@ internal class PagerScreenState(
             gridWidth: Int,
             gridHeight: Int,
         ) -> Unit,
-        onUpdateGridItemSource: (GridItemSource) -> Unit,
     ) {
         handleDragGridItem(
             columns = homeSettings.columns,
@@ -446,17 +443,15 @@ internal class PagerScreenState(
             screenHeight = screenHeight,
             screenWidth = screenWidth,
             onMoveFolderGridItem = onMoveFolderGridItem,
-            onMoveFolderGridItemOutsideFolder = onMoveFolderGridItemOutsideFolder,
             onMoveGridItem = onMoveGridItem,
             onUpdateAssociate = { newAssociate ->
                 associate = newAssociate
             },
-            onUpdateGridItemSource = onUpdateGridItemSource,
             onUpdateSharedElementKey = { newSharedElementKey ->
                 sharedElementKey = newSharedElementKey
             },
-            onUpdateIsCloseFolder = { newIsClosingFolder ->
-                isCloseFolder = newIsClosingFolder
+            onUpdateIsMoveFolderGridItemOutsideFolder = { newIsMoveFolderGridItemOutsideFolder ->
+                isMoveFolderGridItemOutsideFolder = newIsMoveFolderGridItemOutsideFolder
             },
         )
     }
@@ -977,6 +972,68 @@ internal class PagerScreenState(
         isCloseFolder = false
 
         onUpdateFolderGridItemId(null)
+    }
+
+    fun moveFolderGridItemOutsideFolder(
+        folderGridItem: GridItem?,
+        gridItemSource: GridItemSource?,
+        onUpdateGridItemSource: (GridItemSource) -> Unit,
+        onMoveFolderGridItemOutsideFolder: (
+            conflictingId: String,
+            movingId: String,
+            data: GridItemData.Folder,
+        ) -> Unit,
+    ) {
+        val data = folderGridItem?.data as? GridItemData.Folder ?: return
+
+        val gridItemSourceFolder = gridItemSource as? GridItemSource.Folder ?: return
+
+        val applicationInfoGridItem = gridItemSourceFolder.applicationInfoGridItem
+
+        val gridItem = GridItem(
+            id = applicationInfoGridItem.id,
+            page = applicationInfoGridItem.page,
+            startColumn = applicationInfoGridItem.startColumn,
+            startRow = applicationInfoGridItem.startRow,
+            columnSpan = applicationInfoGridItem.columnSpan,
+            rowSpan = applicationInfoGridItem.rowSpan,
+            data = GridItemData.ApplicationInfo(
+                serialNumber = applicationInfoGridItem.serialNumber,
+                componentName = applicationInfoGridItem.componentName,
+                packageName = applicationInfoGridItem.packageName,
+                icon = applicationInfoGridItem.icon,
+                label = applicationInfoGridItem.label,
+                customIcon = applicationInfoGridItem.customIcon,
+                customLabel = applicationInfoGridItem.customLabel,
+                index = -1,
+                folderId = null,
+            ),
+            associate = applicationInfoGridItem.associate,
+            override = applicationInfoGridItem.override,
+            gridItemSettings = applicationInfoGridItem.gridItemSettings,
+            doubleTap = applicationInfoGridItem.doubleTap,
+            swipeUp = applicationInfoGridItem.swipeUp,
+            swipeDown = applicationInfoGridItem.swipeDown,
+        )
+
+        onUpdateGridItemSource(GridItemSource.New(gridItem = gridItem))
+
+        sharedElementKey = SharedElementKey(
+            id = gridItem.id,
+            parent = SharedElementKey.Parent.Grid,
+        )
+
+        folderPopupIntOffset = null
+
+        folderPopupIntSize = null
+
+        isMoveFolderGridItemOutsideFolder = false
+
+        onMoveFolderGridItemOutsideFolder(
+            folderGridItem.id,
+            applicationInfoGridItem.id,
+            data,
+        )
     }
 
     fun updateOverlayBounds(
