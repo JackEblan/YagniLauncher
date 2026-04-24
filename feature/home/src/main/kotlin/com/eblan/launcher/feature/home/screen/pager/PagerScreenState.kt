@@ -463,7 +463,6 @@ internal class PagerScreenState(
         onLaunchWidgetIntent: (Intent) -> Unit,
         gridItemSource: GridItemSource?,
         isVisibleOverlay: Boolean,
-        isMoveFolderGridItem: Boolean,
         onUpdateIsVisibleOverlay: (Boolean) -> Unit,
         onResetGridCacheAfterDeleteGridItemCache: (GridItem) -> Unit,
         onDragCancelAfterMove: () -> Unit,
@@ -479,7 +478,6 @@ internal class PagerScreenState(
             gridItemSource = gridItemSource,
             isDragging = isDragging,
             isVisibleOverlay = isVisibleOverlay,
-            isMoveFolderGridItem = isMoveFolderGridItem,
             moveGridItemResult = moveGridItemResult,
             lockMovement = experimentalSettings.lockMovement,
             onResetGridCacheAfterDeleteGridItemCache = onResetGridCacheAfterDeleteGridItemCache,
@@ -579,6 +577,9 @@ internal class PagerScreenState(
                 folderPopupIntSize = intSize
             },
             onUpdateGridItemSource = onUpdateGridItemSource,
+            onUpdateSharedElementKey = { newSharedElementKey ->
+                sharedElementKey = newSharedElementKey
+            },
         )
     }
 

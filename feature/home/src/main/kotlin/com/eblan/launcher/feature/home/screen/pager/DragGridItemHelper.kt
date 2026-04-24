@@ -561,6 +561,7 @@ internal suspend fun handleConflictingGridItem(
         intSize: IntSize,
     ) -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
+    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
 ) {
     if (drag != Drag.Dragging ||
         gridItemSource == null ||
@@ -692,6 +693,13 @@ internal suspend fun handleConflictingGridItem(
     onUpdateFolderPopupBounds(
         intOffset,
         intSize,
+    )
+
+    onUpdateSharedElementKey(
+        SharedElementKey(
+            id = applicationInfoGridItem.id,
+            parent = SharedElementKey.Parent.Folder,
+        ),
     )
 
     onShowFolderWhenDragging(
