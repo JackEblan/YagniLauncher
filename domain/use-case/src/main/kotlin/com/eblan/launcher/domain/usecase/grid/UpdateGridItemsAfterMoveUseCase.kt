@@ -41,19 +41,10 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
         withContext(defaultDispatcher) {
             val gridItems = gridCacheRepository.gridItemsCache.first().toMutableList()
 
-            val conflictingGridItem = moveGridItemResult.conflictingGridItem
-
-            val movingIndex =
-                gridItems.indexOfFirst { it.id == moveGridItemResult.movingGridItem.id }
-
-            if (movingIndex != -1 && conflictingGridItem != null) {
-                groupConflictingGridItemsIntoFolder(
-                    gridItems = gridItems,
-                    conflictingGridItem = conflictingGridItem,
-                    movingGridItem = gridItems[movingIndex],
-                    movingIndex = movingIndex,
-                )
-            }
+            groupConflictingGridItemsIntoFolder(
+                gridItems = gridItems,
+                moveGridItemResult = moveGridItemResult,
+            )
 
             gridRepository.updateGridItems(gridItems = gridItems)
         }
@@ -62,11 +53,18 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
     @OptIn(ExperimentalUuidApi::class)
     private fun groupConflictingGridItemsIntoFolder(
         gridItems: MutableList<GridItem>,
-        conflictingGridItem: GridItem,
-        movingGridItem: GridItem,
-        movingIndex: Int,
+        moveGridItemResult: MoveGridItemResult,
     ) {
+        val conflictingGridItem = moveGridItemResult.conflictingGridItem ?: return
+
         val conflictingIndex = gridItems.indexOfFirst { it.id == conflictingGridItem.id }
+
+        val movingGridItem = moveGridItemResult.movingGridItem
+
+        val movingIndex =
+            gridItems.indexOfFirst { it.id == movingGridItem.id }
+
+        if (conflictingIndex == -1 || movingIndex == -1) return
 
         when (val data = conflictingGridItem.data) {
             is GridItemData.Folder -> {

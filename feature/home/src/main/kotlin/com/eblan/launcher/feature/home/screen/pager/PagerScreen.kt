@@ -455,11 +455,7 @@ internal fun PagerScreen(
         onStopSyncData = onStopSyncData,
     )
 
-    LaunchedEffect(
-        key1 = pagerScreenState.dragIntOffset,
-        key2 = gridItemSource,
-        key3 = folderGridItem,
-    ) {
+    LaunchedEffect(key1 = pagerScreenState.dragIntOffset) {
         pagerScreenState.handleDragGridItemEffect(
             currentPage = currentPage,
             density = density,
