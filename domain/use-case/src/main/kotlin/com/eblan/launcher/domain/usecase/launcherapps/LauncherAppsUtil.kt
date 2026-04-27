@@ -509,7 +509,6 @@ internal fun EblanShortcutConfig.toDeleteEblanShortcutConfig(): DeleteEblanShort
 @OptIn(ExperimentalUuidApi::class)
 internal suspend fun addNewApplicationToHomeScreen(
     gridItems: MutableList<GridItem>,
-    serialNumber: Long,
     componentName: String,
     packageName: String,
     icon: String?,
@@ -520,12 +519,12 @@ internal suspend fun addNewApplicationToHomeScreen(
     val alreadyOnHome = gridItems.any { gridItem ->
         when (val data = gridItem.data) {
             is GridItemData.ApplicationInfo ->
-                data.serialNumber == serialNumber &&
+                data.serialNumber == 0L &&
                     data.componentName == componentName
 
             is GridItemData.Folder ->
                 data.gridItems.any { gridItem ->
-                    gridItem.serialNumber == serialNumber &&
+                    gridItem.serialNumber == 0L &&
                         gridItem.componentName == componentName
                 }
 
@@ -542,7 +541,7 @@ internal suspend fun addNewApplicationToHomeScreen(
     )
 
     val data = GridItemData.ApplicationInfo(
-        serialNumber = serialNumber,
+        serialNumber = 0L,
         componentName = componentName,
         packageName = packageName,
         icon = icon,

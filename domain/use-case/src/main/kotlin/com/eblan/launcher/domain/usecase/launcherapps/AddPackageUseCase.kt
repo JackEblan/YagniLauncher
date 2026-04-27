@@ -151,7 +151,6 @@ class AddPackageUseCase @Inject constructor(
 
         addNewApplicationToHomeScreen(
             gridItems = gridItems,
-            serialNumber = serialNumber,
             componentName = componentName,
             packageName = packageName,
             icon = activityIcon,
