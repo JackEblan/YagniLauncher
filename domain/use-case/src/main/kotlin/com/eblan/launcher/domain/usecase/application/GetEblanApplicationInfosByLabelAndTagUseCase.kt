@@ -35,7 +35,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
-import kotlin.collections.toSortedMap
 
 class GetEblanApplicationInfosByLabelAndTagUseCase @Inject constructor(
     private val eblanApplicationInfoRepository: EblanApplicationInfoRepository,
@@ -48,13 +47,21 @@ class GetEblanApplicationInfosByLabelAndTagUseCase @Inject constructor(
         labelFlow: Flow<String>,
         eblanApplicationInfoTagIdFlow: Flow<Long?>,
     ): Flow<GetEblanApplicationInfosByLabelAndTag> {
-        val eblanApplicationInfosFlow = eblanApplicationInfoTagIdFlow.flatMapLatest { id ->
-            if (id != null) {
-                eblanApplicationInfoRepository.getEblanApplicationInfosByTagId(id = id)
-            } else {
-                eblanApplicationInfoRepository.eblanApplicationInfos
+        val eblanApplicationInfosFlow =
+            combine(
+                eblanApplicationInfoTagIdFlow,
+                userDataRepository.userData,
+            ) { tagId, userData ->
+                tagId to userData.appDrawerSettings.excludeTaggedApps
+            }.flatMapLatest { (tagId, excludeTaggedApps) ->
+                if (tagId != null) {
+                    eblanApplicationInfoRepository.getEblanApplicationInfosByTagId(tagId)
+                } else if (excludeTaggedApps) {
+                    eblanApplicationInfoRepository.getEblanApplicationInfosWithoutTag()
+                } else {
+                    eblanApplicationInfoRepository.eblanApplicationInfos
+                }
             }
-        }
 
         return combine(
             userDataRepository.userData,

@@ -88,6 +88,7 @@ class UserDataSerializer @Inject constructor() : Serializer<UserDataProto> {
         appDrawerTypeProto = AppDrawerTypeProto.Vertical
         horizontalAppDrawerColumns = 5
         horizontalAppDrawerRows = 5
+        excludeTaggedApps = false
     }.build()
 
     private val defaultGestureSettingsProto = GestureSettingsProto.newBuilder().apply {

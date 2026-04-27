@@ -98,4 +98,18 @@ interface EblanApplicationInfoDao {
         serialNumber: Long,
         componentName: String,
     ): Flow<List<EblanApplicationInfoTagEntity>>
+
+    @Query(
+        """
+    SELECT app.*
+    FROM EblanApplicationInfoEntity AS app
+    WHERE NOT EXISTS (
+        SELECT 1
+        FROM EblanApplicationInfoTagCrossRefEntity AS ref
+        WHERE ref.componentName = app.componentName
+          AND ref.serialNumber = app.serialNumber
+    )
+    """,
+    )
+    fun getEblanApplicationInfoEntitiesWithoutTags(): Flow<List<EblanApplicationInfoEntity>>
 }

@@ -63,4 +63,6 @@ interface EblanApplicationInfoRepository {
         serialNumber: Long,
         componentName: String,
     ): Flow<List<EblanApplicationInfoTag>>
+
+    fun getEblanApplicationInfosWithoutTag(): Flow<List<EblanApplicationInfo>>
 }
