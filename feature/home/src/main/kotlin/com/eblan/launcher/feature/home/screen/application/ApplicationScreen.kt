@@ -424,11 +424,7 @@ internal fun ApplicationScreenEffect(
     onGetEblanApplicationInfosByLabel: (String) -> Unit,
     onGetEblanApplicationInfosByTagId: (Long?) -> Unit,
     onShowPopupApplicationMenu: (Boolean) -> Unit,
-    onUpdateSelectedEblanApplicationInfoTagId: (Long?) -> Unit,
-    onResetScroll: () -> Unit,
 ) {
-    val scope = rememberCoroutineScope()
-
     LaunchedEffect(key1 = textFieldState) {
         snapshotFlow { textFieldState.text }.debounce(500L).onEach { text ->
             onGetEblanApplicationInfosByLabel(text.toString())
@@ -442,17 +438,9 @@ internal fun ApplicationScreenEffect(
     }
 
     LaunchedEffect(key1 = isPressHome) {
-        handleIsPressHome(
-            isPressHome = isPressHome,
-            showPopupApplicationMenu = showPopupApplicationMenu,
-            textFieldState = textFieldState,
-            selectedEblanApplicationInfoTagId = selectedEblanApplicationInfoTagId,
-            onDismiss = onDismiss,
-            onResetScroll = onResetScroll,
-            onShowPopupApplicationMenu = onShowPopupApplicationMenu,
-            onGetEblanApplicationInfosByLabel = onGetEblanApplicationInfosByLabel,
-            onUpdateSelectedEblanApplicationInfoTagId = onUpdateSelectedEblanApplicationInfoTagId,
-        )
+        if (isPressHome) {
+            onDismiss()
+        }
     }
 
     LaunchedEffect(key1 = horizontalPagerState.isScrollInProgress) {
@@ -462,80 +450,6 @@ internal fun ApplicationScreenEffect(
     }
 
     BackHandler(enabled = swipeY < screenHeight.toFloat()) {
-        scope.launch {
-            handleBack(
-                textFieldState = textFieldState,
-                showPopupApplicationMenu = showPopupApplicationMenu,
-                selectedEblanApplicationInfoTagId = selectedEblanApplicationInfoTagId,
-                onDismiss = onDismiss,
-                onResetScroll = onResetScroll,
-                onShowPopupApplicationMenu = onShowPopupApplicationMenu,
-                onGetEblanApplicationInfosByLabel = onGetEblanApplicationInfosByLabel,
-                onUpdateSelectedEblanApplicationInfoTagId = onUpdateSelectedEblanApplicationInfoTagId,
-            )
-        }
+        onDismiss()
     }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-private fun handleBack(
-    textFieldState: TextFieldState,
-    showPopupApplicationMenu: Boolean,
-    selectedEblanApplicationInfoTagId: Long?,
-    onDismiss: () -> Unit,
-    onResetScroll: () -> Unit,
-    onShowPopupApplicationMenu: (Boolean) -> Unit,
-    onGetEblanApplicationInfosByLabel: (String) -> Unit,
-    onUpdateSelectedEblanApplicationInfoTagId: (Long?) -> Unit,
-) {
-    if (showPopupApplicationMenu) {
-        onShowPopupApplicationMenu(false)
-    }
-
-    onDismiss()
-
-    onGetEblanApplicationInfosByLabel("")
-
-    if (textFieldState.text.isNotEmpty()) {
-        textFieldState.clearText()
-    }
-
-    if (selectedEblanApplicationInfoTagId != null) {
-        onUpdateSelectedEblanApplicationInfoTagId(null)
-    }
-
-    onResetScroll()
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-private fun handleIsPressHome(
-    isPressHome: Boolean,
-    showPopupApplicationMenu: Boolean,
-    textFieldState: TextFieldState,
-    selectedEblanApplicationInfoTagId: Long?,
-    onDismiss: () -> Unit,
-    onResetScroll: () -> Unit,
-    onShowPopupApplicationMenu: (Boolean) -> Unit,
-    onGetEblanApplicationInfosByLabel: (String) -> Unit,
-    onUpdateSelectedEblanApplicationInfoTagId: (Long?) -> Unit,
-) {
-    if (!isPressHome) return
-
-    if (showPopupApplicationMenu) {
-        onShowPopupApplicationMenu(false)
-    }
-
-    onDismiss()
-
-    onGetEblanApplicationInfosByLabel("")
-
-    if (textFieldState.text.isNotEmpty()) {
-        textFieldState.clearText()
-    }
-
-    if (selectedEblanApplicationInfoTagId != null) {
-        onUpdateSelectedEblanApplicationInfoTagId(null)
-    }
-
-    onResetScroll()
 }

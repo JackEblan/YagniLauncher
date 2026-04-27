@@ -195,8 +195,6 @@ internal fun SharedTransitionScope.ListApplicationScreen(
         },
     )
 
-    val scope = rememberCoroutineScope()
-
     val searchBarState = rememberSearchBarState()
 
     val textFieldState = rememberTextFieldState()
@@ -227,16 +225,6 @@ internal fun SharedTransitionScope.ListApplicationScreen(
         onGetEblanApplicationInfosByTagId = onGetEblanApplicationInfosByTagId,
         onShowPopupApplicationMenu = { newShowPopupApplicationMenu ->
             showPopupApplicationMenu = newShowPopupApplicationMenu
-        },
-        onUpdateSelectedEblanApplicationInfoTagId = { newSelectedEblanApplicationInfoTagId ->
-            selectedEblanApplicationInfoTagId = newSelectedEblanApplicationInfoTagId
-        },
-        onResetScroll = {
-            scope.launch {
-                horizontalPagerState.scrollToPage(0)
-
-                lazyListState.scrollToItem(0)
-            }
         },
     )
 
@@ -676,7 +664,6 @@ private fun SharedTransitionScope.EblanApplicationInfos(
                             onUpdateSharedElementKey = onUpdateSharedElementKey,
                             onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
                             onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                            onScrollToItem = lazyListState::scrollToItem,
                         )
                     }
 
@@ -723,7 +710,6 @@ private fun SharedTransitionScope.EblanApplicationInfos(
                             onUpdateSharedElementKey = onUpdateSharedElementKey,
                             onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
                             onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                            onScrollToItem = lazyListState::scrollToItem,
                         )
                     }
                 }
@@ -771,7 +757,6 @@ private fun SharedTransitionScope.EblanApplicationInfoItem(
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onUpdateEblanApplicationInfo: (EblanApplicationInfo) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
-    onScrollToItem: suspend (Int) -> Unit,
 ) {
     var intOffset by remember { mutableStateOf(IntOffset.Zero) }
 

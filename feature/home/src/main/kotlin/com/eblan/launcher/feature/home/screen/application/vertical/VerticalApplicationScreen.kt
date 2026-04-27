@@ -98,7 +98,6 @@ import com.eblan.launcher.ui.local.LocalLauncherApps
 import com.eblan.launcher.ui.local.LocalPackageManager
 import com.eblan.launcher.ui.local.LocalUserManager
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class, FlowPreview::class)
 @Composable
@@ -169,8 +168,6 @@ internal fun SharedTransitionScope.VerticalApplicationScreen(
         },
     )
 
-    val scope = rememberCoroutineScope()
-
     val searchBarState = rememberSearchBarState()
 
     val textFieldState = rememberTextFieldState()
@@ -203,16 +200,6 @@ internal fun SharedTransitionScope.VerticalApplicationScreen(
         onGetEblanApplicationInfosByTagId = onGetEblanApplicationInfosByTagId,
         onShowPopupApplicationMenu = { newShowPopupApplicationMenu ->
             showPopupApplicationMenu = newShowPopupApplicationMenu
-        },
-        onUpdateSelectedEblanApplicationInfoTagId = { newSelectedEblanApplicationInfoTagId ->
-            selectedEblanApplicationInfoTagId = newSelectedEblanApplicationInfoTagId
-        },
-        onResetScroll = {
-            scope.launch {
-                horizontalPagerState.scrollToPage(0)
-
-                lazyGridState.scrollToItem(0)
-            }
         },
     )
 
