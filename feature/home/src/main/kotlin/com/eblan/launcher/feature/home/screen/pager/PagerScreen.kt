@@ -650,7 +650,7 @@ internal fun PagerScreen(
     ) {
         Column(
             modifier = modifier
-                .pointerInput(Unit) {
+                .pointerInput(key1 = pagerScreenState.drag) {
                     detectVerticalDragGestures(
                         onVerticalDrag = { _, dragAmount ->
                             pagerScreenState.verticalDrag(dragAmount = dragAmount)
@@ -677,7 +677,7 @@ internal fun PagerScreen(
                         },
                     )
                 }
-                .pointerInput(Unit) {
+                .pointerInput(key1 = pagerScreenState.drag) {
                     detectTapGestures(
                         onDoubleTap = {
                             pagerScreenState.updateHasDoubleTap(value = true)
@@ -697,7 +697,7 @@ internal fun PagerScreen(
             HorizontalPager(
                 state = gridHorizontalPagerState,
                 modifier = Modifier.weight(1f),
-                userScrollEnabled = pagerScreenState.gridUserScrollEnabled,
+                userScrollEnabled = !isVisibleOverlay,
             ) { index ->
                 val page = calculatePage(
                     index = index,

@@ -47,17 +47,15 @@ class MoveFolderGridItemOutsideFolderUseCase @Inject constructor(
 
             val (columns, rows) = getGridDimension(count = firstPageGridItems.size)
 
-            val newData = data.copy(
-                gridItems = gridItems,
-                gridItemsByPage = gridItemsByPage,
-                previewGridItemsByPage = gridItemsByPage.values.firstOrNull() ?: emptyList(),
-                columns = columns,
-                rows = rows,
-            )
-
             gridCacheRepository.updateGridItemData(
                 id = conflictingId,
-                data = newData,
+                data = data.copy(
+                    gridItems = gridItems,
+                    gridItemsByPage = gridItemsByPage,
+                    previewGridItemsByPage = gridItemsByPage.values.firstOrNull() ?: emptyList(),
+                    columns = columns,
+                    rows = rows,
+                ),
             )
         }
     }
