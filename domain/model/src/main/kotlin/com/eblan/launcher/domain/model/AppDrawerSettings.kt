@@ -27,4 +27,5 @@ data class AppDrawerSettings(
     val appDrawerType: AppDrawerType,
     val horizontalAppDrawerColumns: Int,
     val horizontalAppDrawerRows: Int,
+    val excludeTaggedApps: Boolean,
 )

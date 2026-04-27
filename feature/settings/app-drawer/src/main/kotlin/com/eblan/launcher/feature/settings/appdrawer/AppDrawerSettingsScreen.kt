@@ -53,6 +53,7 @@ import com.eblan.launcher.ui.dialog.TextColorDialog
 import com.eblan.launcher.ui.dialog.TwoTextFieldsDialog
 import com.eblan.launcher.ui.settings.GridItemSettings
 import com.eblan.launcher.ui.settings.SettingsColumn
+import com.eblan.launcher.ui.settings.SettingsSwitch
 import com.eblan.launcher.ui.settings.TextColorSettingsRow
 
 @Composable
@@ -201,6 +202,17 @@ private fun Success(
                 subtitle = "Hidden Applications",
                 onClick = {
                     showHiddenEblanApplicationInfosDialog = true
+                },
+            )
+
+            HorizontalDivider(modifier = Modifier.fillMaxWidth())
+
+            SettingsSwitch(
+                checked = appDrawerSettings.excludeTaggedApps,
+                title = "Exclude Tagged apps",
+                subtitle = "Exclude tagged apps",
+                onCheckedChange = { excludeTaggedApps ->
+                    onUpdateAppDrawerSettings(appDrawerSettings.copy(excludeTaggedApps = excludeTaggedApps))
                 },
             )
         }

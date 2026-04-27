@@ -144,6 +144,13 @@ internal class DefaultEblanApplicationInfoRepository @Inject constructor(
         }
     }
 
+    override fun getEblanApplicationInfosWithoutTag(): Flow<List<EblanApplicationInfo>> = eblanApplicationInfoDao.getEblanApplicationInfoEntitiesWithoutTags()
+        .map { entities ->
+            entities.map { entity ->
+                entity.asModel()
+            }
+        }
+
     private fun EblanApplicationInfoTagEntity.asModel(): EblanApplicationInfoTag = EblanApplicationInfoTag(
         id = id,
         name = name,
