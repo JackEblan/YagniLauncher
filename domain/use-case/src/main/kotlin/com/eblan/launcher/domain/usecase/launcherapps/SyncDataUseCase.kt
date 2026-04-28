@@ -217,7 +217,8 @@ class SyncDataUseCase @Inject constructor(
     ) {
         if (!homeSettings.addNewAppsToHomeScreen || experimentalSettings.firstLaunch) return
 
-        val gridItems = (gridRepository.gridItems.first() + getFolderGridItemsUseCase().first()).toMutableList()
+        val gridItems =
+            (gridRepository.gridItems.first() + getFolderGridItemsUseCase().first()).toMutableList()
 
         val newlyInstalledSyncEblanApplicationInfos =
             newSyncEblanApplicationInfos - oldSyncEblanApplicationInfos.toSet()
@@ -361,7 +362,10 @@ class SyncDataUseCase @Inject constructor(
             deleteEblanShortcutInfos = oldDeleteEblanShortcutInfos,
         )
 
-        deleteEblanShortInfoIcons(oldDeleteEblanShortcutInfos = oldDeleteEblanShortcutInfos)
+        deleteEblanShortInfoIcons(
+            eblanShortcutInfos = eblanShortcutInfoRepository.getEblanShortcutInfos(),
+            oldDeleteEblanShortcutInfos = oldDeleteEblanShortcutInfos,
+        )
 
         updateShortcutInfoGridItems(
             eblanShortcutInfos = eblanShortcutInfoRepository.getEblanShortcutInfos(),

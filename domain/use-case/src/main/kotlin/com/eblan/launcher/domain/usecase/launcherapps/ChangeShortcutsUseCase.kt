@@ -89,7 +89,10 @@ class ChangeShortcutsUseCase @Inject constructor(
                     deleteEblanShortcutInfos = oldDeleteEblanShortcutInfos,
                 )
 
-                deleteEblanShortInfoIcons(oldDeleteEblanShortcutInfos = oldDeleteEblanShortcutInfos)
+                deleteEblanShortInfoIcons(
+                    eblanShortcutInfos = eblanShortcutInfoRepository.getEblanShortcutInfos(),
+                    oldDeleteEblanShortcutInfos = oldDeleteEblanShortcutInfos,
+                )
 
                 updateShortcutInfoGridItems(
                     eblanShortcutInfos = eblanShortcutInfoRepository.getEblanShortcutInfos(),

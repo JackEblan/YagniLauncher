@@ -77,6 +77,7 @@ internal suspend fun deleteEblanApplicationInfoIcons(
                 eblanApplicationInfo.icon == icon
             } && eblanAppWidgetProviderInfos.none { eblanAppWidgetProviderInfo ->
                 currentCoroutineContext().ensureActive()
+
                 eblanAppWidgetProviderInfo.applicationIcon == icon
             }
 
@@ -129,13 +130,23 @@ internal suspend fun deleteEblanAppWidgetProviderInfoIcons(
     }
 }
 
-internal suspend fun deleteEblanShortInfoIcons(oldDeleteEblanShortcutInfos: List<DeleteEblanShortcutInfo>) {
+internal suspend fun deleteEblanShortInfoIcons(
+    eblanShortcutInfos: List<EblanShortcutInfo>,
+    oldDeleteEblanShortcutInfos: List<DeleteEblanShortcutInfo>,
+) {
     oldDeleteEblanShortcutInfos.forEach { deleteEblanShortcutInfo ->
         currentCoroutineContext().ensureActive()
 
         val icon = deleteEblanShortcutInfo.icon
 
-        if (icon != null) {
+        val hasNoIconReference =
+            icon != null && eblanShortcutInfos.none { eblanApplicationInfo ->
+                currentCoroutineContext().ensureActive()
+
+                eblanApplicationInfo.icon == icon
+            }
+
+        if (hasNoIconReference) {
             val iconFile = File(icon)
 
             if (iconFile.exists()) {
