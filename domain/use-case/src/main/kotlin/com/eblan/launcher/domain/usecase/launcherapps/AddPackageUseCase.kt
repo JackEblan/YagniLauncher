@@ -24,7 +24,6 @@ import com.eblan.launcher.domain.framework.AppWidgetManagerWrapper
 import com.eblan.launcher.domain.framework.FileManager
 import com.eblan.launcher.domain.framework.IconPackManager
 import com.eblan.launcher.domain.framework.LauncherAppsWrapper
-import com.eblan.launcher.domain.framework.PackageManagerWrapper
 import com.eblan.launcher.domain.model.ApplicationInfoGridItem
 import com.eblan.launcher.domain.model.EblanApplicationInfo
 import com.eblan.launcher.domain.model.HomeSettings
@@ -37,7 +36,7 @@ import com.eblan.launcher.domain.repository.EblanShortcutInfoRepository
 import com.eblan.launcher.domain.repository.GridRepository
 import com.eblan.launcher.domain.repository.UserDataRepository
 import com.eblan.launcher.domain.usecase.grid.GetFolderGridItemsUseCase
-import com.eblan.launcher.domain.usecase.iconpack.cacheIconPackFile
+import com.eblan.launcher.domain.usecase.iconpack.IconPackInfoUseCaseUtil
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
@@ -49,7 +48,6 @@ import kotlin.uuid.ExperimentalUuidApi
 
 class AddPackageUseCase @Inject constructor(
     private val userDataRepository: UserDataRepository,
-    private val packageManagerWrapper: PackageManagerWrapper,
     private val eblanApplicationInfoRepository: EblanApplicationInfoRepository,
     private val appWidgetManagerWrapper: AppWidgetManagerWrapper,
     private val eblanAppWidgetProviderInfoRepository: EblanAppWidgetProviderInfoRepository,
@@ -62,6 +60,8 @@ class AddPackageUseCase @Inject constructor(
     private val gridRepository: GridRepository,
     private val getFolderGridItemsUseCase: GetFolderGridItemsUseCase,
     private val applicationInfoGridItemRepository: ApplicationInfoGridItemRepository,
+    private val iconPackInfoUseCaseUtil: IconPackInfoUseCaseUtil,
+    private val launcherAppsUtil: LauncherAppsUtil,
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke(
@@ -147,9 +147,10 @@ class AddPackageUseCase @Inject constructor(
 
         if (!homeSettings.addNewAppsToHomeScreen) return
 
-        val gridItems = (gridRepository.gridItems.first() + getFolderGridItemsUseCase().first()).toMutableList()
+        val gridItems =
+            (gridRepository.gridItems.first() + getFolderGridItemsUseCase().first()).toMutableList()
 
-        addNewApplicationToHomeScreen(
+        launcherAppsUtil.addNewApplicationToHomeScreen(
             gridItems = gridItems,
             componentName = componentName,
             packageName = packageName,
@@ -171,10 +172,8 @@ class AddPackageUseCase @Inject constructor(
             }.map { appWidgetManagerAppWidgetProviderInfo ->
                 currentCoroutineContext().ensureActive()
 
-                appWidgetManagerAppWidgetProviderInfo.toEblanAppWidgetProviderInfo(
-                    fileManager = fileManager,
-                    packageManagerWrapper = packageManagerWrapper,
-                    iconKeyGenerator = iconKeyGenerator,
+                launcherAppsUtil.toEblanAppWidgetProviderInfo(
+                    appWidgetManagerAppWidgetProviderInfo = appWidgetManagerAppWidgetProviderInfo,
                 )
             }
 
@@ -194,7 +193,7 @@ class AddPackageUseCase @Inject constructor(
             )?.map { launcherAppsShortcutInfo ->
                 currentCoroutineContext().ensureActive()
 
-                launcherAppsShortcutInfo.toEblanShortcutInfo()
+                launcherAppsUtil.toEblanShortcutInfo(launcherAppsShortcutInfo = launcherAppsShortcutInfo)
             }
 
         if (eblanShortcutInfos != null) {
@@ -214,11 +213,7 @@ class AddPackageUseCase @Inject constructor(
         ).map { shortcutConfigActivityInfo ->
             currentCoroutineContext().ensureActive()
 
-            shortcutConfigActivityInfo.toEblanShortcutConfig(
-                fileManager = fileManager,
-                packageManagerWrapper = packageManagerWrapper,
-                iconKeyGenerator = iconKeyGenerator,
-            )
+            launcherAppsUtil.toEblanShortcutConfig(shortcutConfigActivityInfo = shortcutConfigActivityInfo)
         }
 
         eblanShortcutConfigRepository.upsertEblanShortcutConfigs(
@@ -248,8 +243,7 @@ class AddPackageUseCase @Inject constructor(
                 iconKeyGenerator.getHashedName(name = launcherAppsActivityInfo.componentName),
             )
 
-            cacheIconPackFile(
-                iconPackManager = iconPackManager,
+            iconPackInfoUseCaseUtil.cacheIconPackFile(
                 appFilter = appFilter,
                 iconPackInfoPackageName = iconPackInfoPackageName,
                 file = file,

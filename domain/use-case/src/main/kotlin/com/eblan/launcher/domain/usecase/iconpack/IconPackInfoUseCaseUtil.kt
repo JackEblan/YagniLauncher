@@ -20,79 +20,82 @@ package com.eblan.launcher.domain.usecase.iconpack
 import com.eblan.launcher.domain.common.IconKeyGenerator
 import com.eblan.launcher.domain.framework.FileManager
 import com.eblan.launcher.domain.framework.IconPackManager
-import com.eblan.launcher.domain.model.FastLauncherAppsActivityInfo
+import com.eblan.launcher.domain.framework.LauncherAppsWrapper
 import com.eblan.launcher.domain.model.IconPackInfoComponent
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
 import java.io.File
+import javax.inject.Inject
 
-internal suspend fun updateIconPackInfos(
-    iconPackInfoPackageName: String,
-    fileManager: FileManager,
-    iconPackManager: IconPackManager,
-    fastLauncherAppsActivityInfos: List<FastLauncherAppsActivityInfo>,
-    iconKeyGenerator: IconKeyGenerator,
+class IconPackInfoUseCaseUtil @Inject internal constructor(
+    private val fileManager: FileManager,
+    private val iconPackManager: IconPackManager,
+    private val iconKeyGenerator: IconKeyGenerator,
+    private val launcherAppsWrapper: LauncherAppsWrapper,
 ) {
-    if (iconPackInfoPackageName.isEmpty()) return
+    suspend fun updateIconPackInfos(iconPackInfoPackageName: String) {
+        if (iconPackInfoPackageName.isEmpty()) return
 
-    val iconPackInfoDirectory = File(
-        fileManager.getFilesDirectory(name = FileManager.ICON_PACKS_DIR),
-        iconPackInfoPackageName,
-    ).apply { if (!exists()) mkdirs() }
+        val fastLauncherAppsActivityInfos = launcherAppsWrapper.getFastActivityList()
 
-    val appFilter = iconPackManager.getIconPackInfoComponents(packageName = iconPackInfoPackageName)
+        val iconPackInfoDirectory = File(
+            fileManager.getFilesDirectory(name = FileManager.ICON_PACKS_DIR),
+            iconPackInfoPackageName,
+        ).apply { if (!exists()) mkdirs() }
 
-    val installedComponentHashCodes = buildSet {
-        fastLauncherAppsActivityInfos.forEach { fastLauncherAppsActivityInfo ->
-            currentCoroutineContext().ensureActive()
+        val appFilter =
+            iconPackManager.getIconPackInfoComponents(packageName = iconPackInfoPackageName)
 
-            val file = File(
-                iconPackInfoDirectory,
-                iconKeyGenerator.getHashedName(name = fastLauncherAppsActivityInfo.componentName),
-            )
+        val installedComponentHashCodes = buildSet {
+            fastLauncherAppsActivityInfos.forEach { fastLauncherAppsActivityInfo ->
+                currentCoroutineContext().ensureActive()
 
-            cacheIconPackFile(
-                iconPackManager = iconPackManager,
-                appFilter = appFilter,
-                iconPackInfoPackageName = iconPackInfoPackageName,
-                file = file,
-                componentName = fastLauncherAppsActivityInfo.componentName,
-            )
+                val file = File(
+                    iconPackInfoDirectory,
+                    iconKeyGenerator.getHashedName(name = fastLauncherAppsActivityInfo.componentName),
+                )
 
-            add(iconKeyGenerator.getHashedName(name = fastLauncherAppsActivityInfo.componentName))
+                cacheIconPackFile(
+                    appFilter = appFilter,
+                    iconPackInfoPackageName = iconPackInfoPackageName,
+                    file = file,
+                    componentName = fastLauncherAppsActivityInfo.componentName,
+                )
+
+                add(iconKeyGenerator.getHashedName(name = fastLauncherAppsActivityInfo.componentName))
+            }
         }
+
+        iconPackInfoDirectory.listFiles()
+            ?.filter {
+                currentCoroutineContext().ensureActive()
+
+                it.isFile && it.name !in installedComponentHashCodes
+            }
+            ?.forEach {
+                currentCoroutineContext().ensureActive()
+
+                it.delete()
+            }
     }
 
-    iconPackInfoDirectory.listFiles()
-        ?.filter {
+    suspend fun cacheIconPackFile(
+        appFilter: List<IconPackInfoComponent>,
+        iconPackInfoPackageName: String,
+        file: File,
+        componentName: String,
+    ) {
+        appFilter.find { iconPackInfoComponent ->
             currentCoroutineContext().ensureActive()
 
-            it.isFile && it.name !in installedComponentHashCodes
+            componentName == iconPackInfoComponent.componentName.removePrefix("ComponentInfo{")
+                .removeSuffix("}")
+        }?.let { iconPackInfoComponent ->
+            iconPackManager.createIconPackInfoPath(
+                packageName = iconPackInfoPackageName,
+                drawableName = iconPackInfoComponent.drawableName,
+                file = file,
+            )
         }
-        ?.forEach {
-            currentCoroutineContext().ensureActive()
-
-            it.delete()
-        }
-}
-
-internal suspend fun cacheIconPackFile(
-    iconPackManager: IconPackManager,
-    appFilter: List<IconPackInfoComponent>,
-    iconPackInfoPackageName: String,
-    file: File,
-    componentName: String,
-) {
-    appFilter.find { iconPackInfoComponent ->
-        currentCoroutineContext().ensureActive()
-
-        componentName == iconPackInfoComponent.componentName.removePrefix("ComponentInfo{")
-            .removeSuffix("}")
-    }?.let { iconPackInfoComponent ->
-        iconPackManager.createIconPackInfoPath(
-            packageName = iconPackInfoPackageName,
-            drawableName = iconPackInfoComponent.drawableName,
-            file = file,
-        )
     }
 }

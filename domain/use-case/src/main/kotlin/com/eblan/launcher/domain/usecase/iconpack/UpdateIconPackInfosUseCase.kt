@@ -19,10 +19,6 @@ package com.eblan.launcher.domain.usecase.iconpack
 
 import com.eblan.launcher.domain.common.Dispatcher
 import com.eblan.launcher.domain.common.EblanDispatchers
-import com.eblan.launcher.domain.common.IconKeyGenerator
-import com.eblan.launcher.domain.framework.FileManager
-import com.eblan.launcher.domain.framework.IconPackManager
-import com.eblan.launcher.domain.framework.LauncherAppsWrapper
 import com.eblan.launcher.domain.model.EblanIconPackInfo
 import com.eblan.launcher.domain.repository.EblanApplicationInfoRepository
 import com.eblan.launcher.domain.repository.EblanIconPackInfoRepository
@@ -31,12 +27,9 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class UpdateIconPackInfosUseCase @Inject constructor(
-    private val launcherAppsWrapper: LauncherAppsWrapper,
-    private val iconPackManager: IconPackManager,
-    private val fileManager: FileManager,
     private val eblanIconPackInfoRepository: EblanIconPackInfoRepository,
     private val eblanApplicationInfoRepository: EblanApplicationInfoRepository,
-    private val iconKeyGenerator: IconKeyGenerator,
+    private val iconPackInfoUseCaseUtil: IconPackInfoUseCaseUtil,
     @param:Dispatcher(EblanDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke(iconPackInfoPackageName: String) {
@@ -48,13 +41,7 @@ class UpdateIconPackInfosUseCase @Inject constructor(
                 ).firstOrNull()
 
             if (eblanApplicationInfo != null) {
-                updateIconPackInfos(
-                    iconPackInfoPackageName = iconPackInfoPackageName,
-                    fileManager = fileManager,
-                    iconPackManager = iconPackManager,
-                    fastLauncherAppsActivityInfos = launcherAppsWrapper.getFastActivityList(),
-                    iconKeyGenerator = iconKeyGenerator,
-                )
+                iconPackInfoUseCaseUtil.updateIconPackInfos(iconPackInfoPackageName = iconPackInfoPackageName)
 
                 eblanIconPackInfoRepository.upsertEblanIconPackInfo(
                     eblanIconPackInfo = EblanIconPackInfo(
