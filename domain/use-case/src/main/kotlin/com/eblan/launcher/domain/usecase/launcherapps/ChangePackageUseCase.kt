@@ -68,7 +68,7 @@ class ChangePackageUseCase @Inject constructor(
         packageName: String,
     ) {
         withContext(ioDispatcher) {
-            val userData = userDataRepository.userData.first()
+            val userData = userDataRepository.userDataFlow.first()
 
             if (!userData.experimentalSettings.syncData) return@withContext
 
@@ -349,7 +349,7 @@ class ChangePackageUseCase @Inject constructor(
         packageName: String,
     ) {
         val iconPackInfoPackageName =
-            userDataRepository.userData.first().generalSettings.iconPackInfoPackageName
+            userDataRepository.userDataFlow.first().generalSettings.iconPackInfoPackageName
 
         if (iconPackInfoPackageName.isEmpty()) return
 

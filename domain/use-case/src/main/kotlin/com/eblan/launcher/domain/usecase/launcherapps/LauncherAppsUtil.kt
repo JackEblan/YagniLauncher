@@ -55,7 +55,6 @@ import com.eblan.launcher.domain.repository.ShortcutInfoGridItemRepository
 import com.eblan.launcher.domain.repository.WidgetGridItemRepository
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
-import kotlinx.coroutines.flow.first
 import java.io.File
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -181,7 +180,7 @@ internal suspend fun updateApplicationInfoGridItems(
     val deleteApplicationInfoGridItems = mutableListOf<ApplicationInfoGridItem>()
 
     val applicationInfoGridItems =
-        applicationInfoGridItemRepository.applicationInfoGridItems.first()
+        applicationInfoGridItemRepository.getApplicationInfoGridItems()
 
     applicationInfoGridItems.filterNot { applicationInfoGridItem ->
         currentCoroutineContext().ensureActive()
@@ -230,7 +229,7 @@ internal suspend fun updateShortcutInfoGridItems(
 
     val deleteShortcutInfoGridItems = mutableListOf<ShortcutInfoGridItem>()
 
-    val shortcutInfoGridItems = shortcutInfoGridItemRepository.shortcutInfoGridItems.first()
+    val shortcutInfoGridItems = shortcutInfoGridItemRepository.getShortcutInfoGridItems()
 
     if (eblanShortcutInfos != null) {
         shortcutInfoGridItems.filterNot { shortcutInfoGridItem ->
@@ -285,7 +284,7 @@ internal suspend fun updateShortcutConfigGridItems(
 
     val deleteShortcutConfigGridItems = mutableListOf<ShortcutConfigGridItem>()
 
-    val shortcutConfigGridItems = shortcutConfigGridItemRepository.shortcutConfigGridItems.first()
+    val shortcutConfigGridItems = shortcutConfigGridItemRepository.getShortcutConfigGridItems()
 
     shortcutConfigGridItems.filterNot { shortcutConfigGridItem ->
         shortcutConfigGridItem.override
@@ -344,7 +343,7 @@ internal suspend fun updateWidgetGridItems(
 
     val deleteWidgetGridItems = mutableListOf<WidgetGridItem>()
 
-    val widgetGridItems = widgetGridItemRepository.widgetGridItems.first()
+    val widgetGridItems = widgetGridItemRepository.getWidgetGridItems()
 
     widgetGridItems.filterNot { widgetGridItem ->
         widgetGridItem.override

@@ -59,7 +59,7 @@ class RemovePackageUseCase @Inject constructor(
         packageName: String,
     ) {
         withContext(ioDispatcher) {
-            if (!userDataRepository.userData.first().experimentalSettings.syncData) return@withContext
+            if (!userDataRepository.userDataFlow.first().experimentalSettings.syncData) return@withContext
 
             deleteEblanApplicationInfoFiles(
                 packageName = packageName,
@@ -119,7 +119,7 @@ class RemovePackageUseCase @Inject constructor(
         serialNumber: Long,
     ) {
         val iconPackInfoPackageName =
-            userDataRepository.userData.first().generalSettings.iconPackInfoPackageName
+            userDataRepository.userDataFlow.first().generalSettings.iconPackInfoPackageName
 
         val componentName = packageManagerWrapper.getComponentName(packageName = packageName)
 

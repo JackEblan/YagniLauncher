@@ -33,7 +33,7 @@ class GetEblanShortcutInfosUseCase @Inject constructor(
     private val eblanShortcutInfoRepository: EblanShortcutInfoRepository,
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) {
-    operator fun invoke(): Flow<Map<EblanShortcutInfoByGroup, List<EblanShortcutInfo>>> = eblanShortcutInfoRepository.eblanShortcutInfos.map { eblanShortcutInfos ->
+    operator fun invoke(): Flow<Map<EblanShortcutInfoByGroup, List<EblanShortcutInfo>>> = eblanShortcutInfoRepository.eblanShortcutInfosFlow.map { eblanShortcutInfos ->
         eblanShortcutInfos.filter { eblanShortcutInfo ->
             eblanShortcutInfo.shortcutQueryFlag != ShortcutQueryFlag.Pinned
         }.groupBy { eblanShortcutInfo ->

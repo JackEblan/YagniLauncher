@@ -26,8 +26,8 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class DefaultEblanAppWidgetProviderInfoRepository @Inject constructor(private val eblanAppWidgetProviderInfoDao: EblanAppWidgetProviderInfoDao) : EblanAppWidgetProviderInfoRepository {
-    override val eblanAppWidgetProviderInfos =
-        eblanAppWidgetProviderInfoDao.getEblanAppWidgetProviderInfoEntities().map { entities ->
+    override val eblanAppWidgetProviderInfosFlow =
+        eblanAppWidgetProviderInfoDao.getEblanAppWidgetProviderInfoEntitiesFlow().map { entities ->
             entities.map { entity ->
                 entity.asModel()
             }

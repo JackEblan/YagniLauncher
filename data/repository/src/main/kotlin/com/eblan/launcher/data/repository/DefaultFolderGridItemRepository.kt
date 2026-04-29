@@ -26,8 +26,8 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 internal class DefaultFolderGridItemRepository @Inject constructor(private val folderGridItemDao: FolderGridItemDao) : FolderGridItemRepository {
-    override val folderGridItemWrappers =
-        folderGridItemDao.getFolderGridItemWrappers().map { entities ->
+    override val folderGridItemWrappersFlow =
+        folderGridItemDao.getFolderGridItemWrappersFlow().map { entities ->
             entities.map { entity ->
                 entity.asFolderGridItemData()
             }

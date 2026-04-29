@@ -29,10 +29,10 @@ import kotlinx.coroutines.flow.Flow
 interface EblanShortcutInfoDao {
 
     @Query("SELECT * FROM EblanShortcutInfoEntity")
-    fun getEblanShortcutInfoEntities(): Flow<List<EblanShortcutInfoEntity>>
+    fun getEblanShortcutInfoEntitiesFlow(): Flow<List<EblanShortcutInfoEntity>>
 
     @Query("SELECT * FROM EblanShortcutInfoEntity")
-    fun getEblanShortcutInfoEntityList(): List<EblanShortcutInfoEntity>
+    fun getEblanShortcutInfoEntities(): List<EblanShortcutInfoEntity>
 
     @Upsert
     suspend fun upsertEblanShortcutInfoEntities(entities: List<EblanShortcutInfoEntity>)

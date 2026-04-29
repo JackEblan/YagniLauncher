@@ -50,7 +50,7 @@ class MoveGridItemUseCase @Inject constructor(
         gridHeight: Int,
     ): MoveGridItemResult {
         return withContext(defaultDispatcher) {
-            val gridItems = gridCacheRepository.gridItemsCache.first().filter { gridItem ->
+            val gridItems = gridCacheRepository.gridItemsCacheFlow.first().filter { gridItem ->
                 ensureActive()
 
                 isGridItemSpanWithinBounds(

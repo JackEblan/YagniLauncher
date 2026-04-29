@@ -49,7 +49,7 @@ class GetPinGridItemUseCase @Inject constructor(
     suspend operator fun invoke(
         pinItemRequestType: PinItemRequestType,
     ): GridItem = withContext(defaultDispatcher) {
-        val homeSettings = userDataRepository.userData.first().homeSettings
+        val homeSettings = userDataRepository.userDataFlow.first().homeSettings
 
         when (pinItemRequestType) {
             is PinItemRequestType.Widget -> {

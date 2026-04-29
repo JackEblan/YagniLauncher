@@ -34,7 +34,7 @@ class GetEblanApplicationInfosByUserUseCase @Inject constructor(
     private val launcherAppsWrapper: LauncherAppsWrapper,
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) {
-    operator fun invoke(): Flow<Map<EblanUser, List<EblanApplicationInfo>>> = eblanApplicationInfoRepository.eblanApplicationInfos
+    operator fun invoke(): Flow<Map<EblanUser, List<EblanApplicationInfo>>> = eblanApplicationInfoRepository.eblanApplicationInfosFlow
         .map { eblanApplicationInfos ->
             eblanApplicationInfos.filter { eblanApplicationInfo ->
                 !eblanApplicationInfo.isHidden

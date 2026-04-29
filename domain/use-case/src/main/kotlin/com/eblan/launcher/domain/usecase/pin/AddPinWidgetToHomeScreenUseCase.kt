@@ -71,7 +71,7 @@ class AddPinWidgetToHomeScreenUseCase @Inject constructor(
         rootHeight: Int,
         preview: String?,
     ): GridItem? = withContext(defaultDispatcher) {
-        val homeSettings = userDataRepository.userData.first().homeSettings
+        val homeSettings = userDataRepository.userDataFlow.first().homeSettings
 
         val columns = homeSettings.columns
 
@@ -83,7 +83,7 @@ class AddPinWidgetToHomeScreenUseCase @Inject constructor(
 
         val dockHeight = homeSettings.dockHeight
 
-        val gridItems = gridRepository.gridItems.first() + getFolderGridItemsUseCase().first()
+        val gridItems = gridRepository.gridItemsFlow.first() + getFolderGridItemsUseCase().first()
 
         val eblanApplicationInfoIcon =
             packageManagerWrapper.getComponentName(packageName = packageName)

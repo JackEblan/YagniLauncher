@@ -25,8 +25,8 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 internal class DefaultEblanApplicationInfoTagRepository @Inject constructor(private val eblanApplicationInfoTagDao: EblanApplicationInfoTagDao) : EblanApplicationInfoTagRepository {
-    override val eblanApplicationInfoTags =
-        eblanApplicationInfoTagDao.getEblanApplicationInfoTagEntities().map { entities ->
+    override val eblanApplicationInfoTagsFlow =
+        eblanApplicationInfoTagDao.getEblanApplicationInfoTagEntitiesFlow().map { entities ->
             entities.map { entity ->
                 entity.asModel()
             }

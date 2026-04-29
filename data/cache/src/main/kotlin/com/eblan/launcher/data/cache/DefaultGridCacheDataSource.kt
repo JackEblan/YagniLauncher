@@ -30,30 +30,30 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 internal class DefaultGridCacheDataSource @Inject constructor(@param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher) : GridCacheDataSource {
-    private val _gridItemsCache = MutableStateFlow(emptyList<GridItem>())
+    private val _gridItemsCacheFlow = MutableStateFlow(emptyList<GridItem>())
 
-    override val gridItemsCache = _gridItemsCache.asStateFlow()
+    override val gridItemsCacheFlow = _gridItemsCacheFlow.asStateFlow()
 
     override fun insertGridItems(gridItems: List<GridItem>) {
-        _gridItemsCache.update {
+        _gridItemsCacheFlow.update {
             gridItems
         }
     }
 
     override fun insertGridItem(gridItem: GridItem) {
-        _gridItemsCache.update { currentGridCacheItems ->
+        _gridItemsCacheFlow.update { currentGridCacheItems ->
             currentGridCacheItems + gridItem
         }
     }
 
     override fun deleteGridItems(gridItems: List<GridItem>) {
-        _gridItemsCache.update { currentGridCacheItems ->
+        _gridItemsCacheFlow.update { currentGridCacheItems ->
             currentGridCacheItems - gridItems.toSet()
         }
     }
 
     override fun deleteGridItemById(id: String) {
-        _gridItemsCache.update { currentGridCacheItems ->
+        _gridItemsCacheFlow.update { currentGridCacheItems ->
             currentGridCacheItems.toMutableList().apply {
                 removeIf { it.id == id }
             }
@@ -62,7 +62,7 @@ internal class DefaultGridCacheDataSource @Inject constructor(@param:Dispatcher(
 
     override suspend fun updateGridItemData(id: String, data: GridItemData) {
         withContext(defaultDispatcher) {
-            _gridItemsCache.update { currentGridCacheItems ->
+            _gridItemsCacheFlow.update { currentGridCacheItems ->
                 currentGridCacheItems.toMutableList().apply {
                     val index = indexOfFirst {
                         ensureActive()
@@ -80,7 +80,7 @@ internal class DefaultGridCacheDataSource @Inject constructor(@param:Dispatcher(
 
     override suspend fun upsertGridItems(gridItems: List<GridItem>) {
         withContext(defaultDispatcher) {
-            _gridItemsCache.update { currentGridCacheItems ->
+            _gridItemsCacheFlow.update { currentGridCacheItems ->
                 currentGridCacheItems.toMutableList().apply {
                     gridItems.forEach { gridItem ->
                         ensureActive()

@@ -23,11 +23,11 @@ import com.eblan.launcher.domain.model.UpdateApplicationInfoGridItem
 import kotlinx.coroutines.flow.Flow
 
 interface ApplicationInfoGridItemRepository {
-    val gridItems: Flow<List<GridItem>>
+    val gridItemsFlow: Flow<List<GridItem>>
 
-    val gridItemsWithFolderId: Flow<List<GridItem>>
+    val gridItemsWithFolderIdFlow: Flow<List<GridItem>>
 
-    val applicationInfoGridItems: Flow<List<ApplicationInfoGridItem>>
+    fun getApplicationInfoGridItems(): List<ApplicationInfoGridItem>
 
     suspend fun upsertApplicationInfoGridItems(applicationInfoGridItems: List<ApplicationInfoGridItem>)
 

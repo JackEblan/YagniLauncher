@@ -29,7 +29,7 @@ import kotlinx.coroutines.flow.Flow
 interface EblanAppWidgetProviderInfoDao {
 
     @Query("SELECT * FROM EblanAppWidgetProviderInfoEntity")
-    fun getEblanAppWidgetProviderInfoEntities(): Flow<List<EblanAppWidgetProviderInfoEntity>>
+    fun getEblanAppWidgetProviderInfoEntitiesFlow(): Flow<List<EblanAppWidgetProviderInfoEntity>>
 
     @Query("SELECT * FROM EblanAppWidgetProviderInfoEntity")
     fun getEblanAppWidgetProviderInfoEntityList(): List<EblanAppWidgetProviderInfoEntity>

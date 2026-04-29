@@ -31,10 +31,10 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface EblanApplicationInfoDao {
     @Query("SELECT * FROM EblanApplicationInfoEntity")
-    fun getEblanApplicationInfoEntities(): Flow<List<EblanApplicationInfoEntity>>
+    fun getEblanApplicationInfoEntitiesFlow(): Flow<List<EblanApplicationInfoEntity>>
 
     @Query("SELECT * FROM EblanApplicationInfoEntity")
-    fun getEblanApplicationInfoEntityList(): List<EblanApplicationInfoEntity>
+    fun getEblanApplicationInfoEntity(): List<EblanApplicationInfoEntity>
 
     @Update
     suspend fun updateEblanApplicationInfoEntities(entities: List<EblanApplicationInfoEntity>)
@@ -82,7 +82,22 @@ interface EblanApplicationInfoDao {
     WHERE ref.id = :id
     """,
     )
-    fun getEblanApplicationInfoEntitiesByTagId(id: Long): Flow<List<EblanApplicationInfoEntity>>
+    fun getEblanApplicationInfoEntitiesByTagIdFlow(id: Long): Flow<List<EblanApplicationInfoEntity>>
+
+    @Query(
+        """
+        SELECT tag.*
+        FROM EblanApplicationInfoTagEntity AS tag
+        INNER JOIN EblanApplicationInfoTagCrossRefEntity AS ref
+            ON tag.id = ref.id
+        WHERE ref.componentName = :componentName
+          AND ref.serialNumber = :serialNumber
+    """,
+    )
+    fun getEblanApplicationInfoTagEntitiesFlow(
+        serialNumber: Long,
+        componentName: String,
+    ): Flow<List<EblanApplicationInfoTagEntity>>
 
     @Query(
         """
@@ -97,7 +112,7 @@ interface EblanApplicationInfoDao {
     fun getEblanApplicationInfoTagEntities(
         serialNumber: Long,
         componentName: String,
-    ): Flow<List<EblanApplicationInfoTagEntity>>
+    ): List<EblanApplicationInfoTagEntity>
 
     @Query(
         """
@@ -111,5 +126,19 @@ interface EblanApplicationInfoDao {
     )
     """,
     )
-    fun getEblanApplicationInfoEntitiesWithoutTags(): Flow<List<EblanApplicationInfoEntity>>
+    fun getEblanApplicationInfoEntitiesWithoutTagsFlow(): Flow<List<EblanApplicationInfoEntity>>
+
+    @Query(
+        """
+    SELECT app.*
+    FROM EblanApplicationInfoEntity AS app
+    WHERE NOT EXISTS (
+        SELECT 1
+        FROM EblanApplicationInfoTagCrossRefEntity AS ref
+        WHERE ref.componentName = app.componentName
+          AND ref.serialNumber = app.serialNumber
+    )
+    """,
+    )
+    fun getEblanApplicationInfoEntitiesWithoutTags(): List<EblanApplicationInfoEntity>
 }

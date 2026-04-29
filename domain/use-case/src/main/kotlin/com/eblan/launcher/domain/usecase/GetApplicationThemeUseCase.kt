@@ -32,7 +32,7 @@ class GetApplicationThemeUseCase @Inject constructor(
     private val resourcesWrapper: ResourcesWrapper,
 ) {
     operator fun invoke(): Flow<ApplicationTheme> = combine(
-        userDataRepository.userData,
+        userDataRepository.userDataFlow,
         wallpaperManagerWrapper.getColorsChanged(),
     ) { userData, colorHints ->
         getApplicationTheme(

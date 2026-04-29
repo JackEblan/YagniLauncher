@@ -24,7 +24,7 @@ import com.eblan.launcher.domain.model.SyncEblanApplicationInfo
 import kotlinx.coroutines.flow.Flow
 
 interface EblanApplicationInfoRepository {
-    val eblanApplicationInfos: Flow<List<EblanApplicationInfo>>
+    val eblanApplicationInfosFlow: Flow<List<EblanApplicationInfo>>
 
     suspend fun getEblanApplicationInfos(): List<EblanApplicationInfo>
 
@@ -57,12 +57,16 @@ interface EblanApplicationInfoRepository {
         packageName: String,
     ): List<EblanApplicationInfo>
 
-    fun getEblanApplicationInfosByTagId(id: Long): Flow<List<EblanApplicationInfo>>
+    fun getEblanApplicationInfosByTagIdFlow(id: Long): Flow<List<EblanApplicationInfo>>
+
+    fun getEblanApplicationInfosByTagId(id: Long): List<EblanApplicationInfo>
 
     fun getEblanApplicationInfoTags(
         serialNumber: Long,
         componentName: String,
     ): Flow<List<EblanApplicationInfoTag>>
 
-    fun getEblanApplicationInfosWithoutTag(): Flow<List<EblanApplicationInfo>>
+    fun getEblanApplicationInfosWithoutTagFlow(): Flow<List<EblanApplicationInfo>>
+
+    fun getEblanApplicationInfosWithoutTag(): List<EblanApplicationInfo>
 }

@@ -27,7 +27,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface EblanIconPackInfoDao {
     @Query("SELECT * FROM EblanIconPackInfoEntity")
-    fun getEblanIconPackInfoEntities(): Flow<List<EblanIconPackInfoEntity>>
+    fun getEblanIconPackInfoEntitiesFlow(): Flow<List<EblanIconPackInfoEntity>>
 
     @Upsert
     suspend fun upsertEblanIconPackInfoEntity(entity: EblanIconPackInfoEntity): Long

@@ -24,13 +24,12 @@ import com.eblan.launcher.data.room.dao.ApplicationInfoGridItemDao
 import com.eblan.launcher.domain.model.ApplicationInfoGridItem
 import com.eblan.launcher.domain.model.UpdateApplicationInfoGridItem
 import com.eblan.launcher.domain.repository.ApplicationInfoGridItemRepository
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 internal class DefaultApplicationInfoGridItemRepository @Inject constructor(private val applicationInfoGridItemDao: ApplicationInfoGridItemDao) : ApplicationInfoGridItemRepository {
-    override val gridItems =
-        applicationInfoGridItemDao.getApplicationInfoGridItemEntities().map { entities ->
+    override val gridItemsFlow =
+        applicationInfoGridItemDao.getApplicationInfoGridItemEntitiesFlow().map { entities ->
             entities.filter { entity ->
                 entity.folderId == null
             }.map { entity ->
@@ -38,19 +37,16 @@ internal class DefaultApplicationInfoGridItemRepository @Inject constructor(priv
             }
         }
 
-    override val gridItemsWithFolderId =
-        applicationInfoGridItemDao.getApplicationInfoGridItemEntities().map { entities ->
+    override val gridItemsWithFolderIdFlow =
+        applicationInfoGridItemDao.getApplicationInfoGridItemEntitiesFlow().map { entities ->
             entities.map { entity ->
                 entity.asGridItem()
             }
         }
 
-    override val applicationInfoGridItems: Flow<List<ApplicationInfoGridItem>> =
-        applicationInfoGridItemDao.getApplicationInfoGridItemEntities().map { entities ->
-            entities.map { entity ->
-                entity.asModel()
-            }
-        }
+    override fun getApplicationInfoGridItems(): List<ApplicationInfoGridItem> = applicationInfoGridItemDao.getApplicationInfoGridItemEntities().map { entity ->
+        entity.asModel()
+    }
 
     override suspend fun upsertApplicationInfoGridItems(applicationInfoGridItems: List<ApplicationInfoGridItem>) {
         val entities = applicationInfoGridItems.map { applicationInfoGridItem ->

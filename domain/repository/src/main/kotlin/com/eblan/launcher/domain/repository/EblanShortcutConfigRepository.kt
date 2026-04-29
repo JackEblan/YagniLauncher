@@ -22,7 +22,7 @@ import com.eblan.launcher.domain.model.EblanShortcutConfig
 import kotlinx.coroutines.flow.Flow
 
 interface EblanShortcutConfigRepository {
-    val eblanShortcutConfigs: Flow<List<EblanShortcutConfig>>
+    val eblanShortcutConfigsFlow: Flow<List<EblanShortcutConfig>>
 
     suspend fun getEblanShortcutConfigs(): List<EblanShortcutConfig>
 

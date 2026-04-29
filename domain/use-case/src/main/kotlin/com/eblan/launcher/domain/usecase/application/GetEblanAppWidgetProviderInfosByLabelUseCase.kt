@@ -33,7 +33,7 @@ class GetEblanAppWidgetProviderInfosByLabelUseCase @Inject constructor(
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) {
     operator fun invoke(labelFlow: Flow<String>): Flow<Map<EblanApplicationInfoGroup, List<EblanAppWidgetProviderInfo>>> = combine(
-        eblanAppWidgetProviderInfoRepository.eblanAppWidgetProviderInfos,
+        eblanAppWidgetProviderInfoRepository.eblanAppWidgetProviderInfosFlow,
         labelFlow,
     ) { eblanAppWidgetProviderInfos, label ->
         eblanAppWidgetProviderInfos.filter { eblanAppWidgetProviderInfo ->

@@ -29,7 +29,10 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface ShortcutInfoGridItemDao {
     @Query("SELECT * FROM ShortcutInfoGridItemEntity")
-    fun getShortcutInfoGridItemEntities(): Flow<List<ShortcutInfoGridItemEntity>>
+    fun getShortcutInfoGridItemEntitiesFlow(): Flow<List<ShortcutInfoGridItemEntity>>
+
+    @Query("SELECT * FROM ShortcutInfoGridItemEntity")
+    fun getShortcutInfoGridItemEntities(): List<ShortcutInfoGridItemEntity>
 
     @Upsert
     suspend fun upsertShortcutInfoGridItemEntities(entities: List<ShortcutInfoGridItemEntity>)

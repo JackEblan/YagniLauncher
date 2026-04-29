@@ -21,7 +21,7 @@ import com.eblan.launcher.domain.model.EblanApplicationInfoTag
 import kotlinx.coroutines.flow.Flow
 
 interface EblanApplicationInfoTagRepository {
-    val eblanApplicationInfoTags: Flow<List<EblanApplicationInfoTag>>
+    val eblanApplicationInfoTagsFlow: Flow<List<EblanApplicationInfoTag>>
 
     suspend fun insertEblanApplicationInfoTag(eblanApplicationInfoTag: EblanApplicationInfoTag)
 

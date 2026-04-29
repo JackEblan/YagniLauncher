@@ -69,7 +69,7 @@ class AddPackageUseCase @Inject constructor(
         packageName: String,
     ) {
         withContext(defaultDispatcher) {
-            val userData = userDataRepository.userData.first()
+            val userData = userDataRepository.userDataFlow.first()
 
             if (!userData.experimentalSettings.syncData) return@withContext
 
@@ -147,7 +147,7 @@ class AddPackageUseCase @Inject constructor(
 
         if (!homeSettings.addNewAppsToHomeScreen) return
 
-        val gridItems = (gridRepository.gridItems.first() + getFolderGridItemsUseCase().first()).toMutableList()
+        val gridItems = (gridRepository.gridItemsFlow.first() + getFolderGridItemsUseCase().first()).toMutableList()
 
         addNewApplicationToHomeScreen(
             gridItems = gridItems,

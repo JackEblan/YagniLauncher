@@ -30,7 +30,10 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface ApplicationInfoGridItemDao {
     @Query("SELECT * FROM ApplicationInfoGridItemEntity")
-    fun getApplicationInfoGridItemEntities(): Flow<List<ApplicationInfoGridItemEntity>>
+    fun getApplicationInfoGridItemEntitiesFlow(): Flow<List<ApplicationInfoGridItemEntity>>
+
+    @Query("SELECT * FROM ApplicationInfoGridItemEntity")
+    fun getApplicationInfoGridItemEntities(): List<ApplicationInfoGridItemEntity>
 
     @Upsert
     suspend fun upsertApplicationInfoGridItemEntities(entities: List<ApplicationInfoGridItemEntity>)

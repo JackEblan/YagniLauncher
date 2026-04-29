@@ -158,7 +158,7 @@ internal class HomeViewModel @Inject constructor(
     )
 
     val eblanAppWidgetProviderInfosGroup =
-        eblanAppWidgetProviderInfoRepository.eblanAppWidgetProviderInfos.map { eblanAppWidgetProviderInfos ->
+        eblanAppWidgetProviderInfoRepository.eblanAppWidgetProviderInfosFlow.map { eblanAppWidgetProviderInfos ->
             eblanAppWidgetProviderInfos.groupBy { eblanAppWidgetProviderInfo ->
                 eblanAppWidgetProviderInfo.packageName
             }
@@ -210,7 +210,7 @@ internal class HomeViewModel @Inject constructor(
         )
 
     val eblanApplicationInfoTags =
-        eblanApplicationInfoTagRepository.eblanApplicationInfoTags.stateIn(
+        eblanApplicationInfoTagRepository.eblanApplicationInfoTagsFlow.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = emptyList(),
@@ -486,7 +486,7 @@ internal class HomeViewModel @Inject constructor(
 
             gridCacheRepository.deleteGridItemById(id = gridItem.id)
 
-            gridRepository.updateGridItems(gridItems = gridCacheRepository.gridItemsCache.first())
+            gridRepository.updateGridItems(gridItems = gridCacheRepository.gridItemsCacheFlow.first())
 
             _isCache.update {
                 false
@@ -513,7 +513,7 @@ internal class HomeViewModel @Inject constructor(
 
             gridCacheRepository.deleteGridItemById(id = gridItem.id)
 
-            gridRepository.updateGridItems(gridItems = gridCacheRepository.gridItemsCache.first())
+            gridRepository.updateGridItems(gridItems = gridCacheRepository.gridItemsCacheFlow.first())
 
             _isCache.update {
                 false
@@ -730,7 +730,7 @@ internal class HomeViewModel @Inject constructor(
                 }
             }
 
-            gridRepository.updateGridItems(gridItems = gridCacheRepository.gridItemsCache.first())
+            gridRepository.updateGridItems(gridItems = gridCacheRepository.gridItemsCacheFlow.first())
 
             _isCache.update {
                 false

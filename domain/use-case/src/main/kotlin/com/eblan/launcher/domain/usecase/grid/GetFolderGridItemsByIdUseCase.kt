@@ -39,8 +39,8 @@ class GetFolderGridItemsByIdUseCase @Inject constructor(
     ): Flow<GridItem?> = combine(
         isCacheFlow,
         idFlow,
-        folderGridItemRepository.folderGridItemWrappers,
-        gridCacheRepository.gridItemsCache,
+        folderGridItemRepository.folderGridItemWrappersFlow,
+        gridCacheRepository.gridItemsCacheFlow,
     ) { isCache, id, folderGridItemWrappers, gridItemsCache ->
         if (isCache) {
             gridItemsCache.firstOrNull { gridItem ->

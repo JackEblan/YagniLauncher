@@ -33,7 +33,7 @@ class GetGridItemByIdUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(id: String): GridItem? = withContext(defaultDispatcher) {
         val gridItems =
-            gridRepository.gridItemsWithFolderId.first() + getFolderGridItemsUseCase().first()
+            gridRepository.gridItemsWithFolderIdFlow.first() + getFolderGridItemsUseCase().first()
 
         gridItems.find { gridItem ->
             gridItem.id == id

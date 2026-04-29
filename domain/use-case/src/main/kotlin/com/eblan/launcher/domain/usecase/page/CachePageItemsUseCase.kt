@@ -38,7 +38,7 @@ class CachePageItemsUseCase @Inject constructor(
         gridItems: List<GridItem>,
         associate: Associate,
     ): EditPageData = withContext(defaultDispatcher) {
-        val userData = userDataRepository.userData.first()
+        val userData = userDataRepository.userDataFlow.first()
 
         val columns = when (associate) {
             Associate.Grid -> userData.homeSettings.columns

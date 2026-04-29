@@ -29,7 +29,10 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface WidgetGridItemDao {
     @Query("SELECT * FROM WidgetGridItemEntity")
-    fun getWidgetGridItemEntities(): Flow<List<WidgetGridItemEntity>>
+    fun getWidgetGridItemEntitiesFlow(): Flow<List<WidgetGridItemEntity>>
+
+    @Query("SELECT * FROM WidgetGridItemEntity")
+    fun getWidgetGridItemEntities(): List<WidgetGridItemEntity>
 
     @Upsert
     suspend fun upsertWidgetGridItemEntities(entities: List<WidgetGridItemEntity>)

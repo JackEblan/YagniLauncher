@@ -81,7 +81,7 @@ class SyncDataUseCase @Inject constructor(
 ) {
     suspend operator fun invoke() {
         withContext(ioDispatcher) {
-            val userData = userDataRepository.userData.first()
+            val userData = userDataRepository.userDataFlow.first()
 
             val fastLauncherAppsActivityInfos = launcherAppsWrapper.getFastActivityList()
 
@@ -218,7 +218,7 @@ class SyncDataUseCase @Inject constructor(
         if (!homeSettings.addNewAppsToHomeScreen || experimentalSettings.firstLaunch) return
 
         val gridItems =
-            (gridRepository.gridItems.first() + getFolderGridItemsUseCase().first()).toMutableList()
+            (gridRepository.gridItemsFlow.first() + getFolderGridItemsUseCase().first()).toMutableList()
 
         val newlyInstalledSyncEblanApplicationInfos =
             newSyncEblanApplicationInfos - oldSyncEblanApplicationInfos.toSet()

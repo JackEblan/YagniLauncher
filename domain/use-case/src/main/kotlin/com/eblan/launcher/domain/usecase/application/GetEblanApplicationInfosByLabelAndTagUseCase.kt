@@ -32,7 +32,6 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
@@ -46,56 +45,47 @@ class GetEblanApplicationInfosByLabelAndTagUseCase @Inject constructor(
     operator fun invoke(
         labelFlow: Flow<String>,
         eblanApplicationInfoTagIdFlow: Flow<Long?>,
-    ): Flow<GetEblanApplicationInfosByLabelAndTag> {
-        val eblanApplicationInfosFlow =
-            combine(
-                eblanApplicationInfoTagIdFlow,
-                userDataRepository.userData,
-            ) { tagId, userData ->
-                tagId to userData.appDrawerSettings.excludeTaggedApps
-            }.flatMapLatest { (tagId, excludeTaggedApps) ->
-                if (tagId != null) {
-                    eblanApplicationInfoRepository.getEblanApplicationInfosByTagId(tagId)
-                } else if (excludeTaggedApps) {
-                    eblanApplicationInfoRepository.getEblanApplicationInfosWithoutTag()
-                } else {
-                    eblanApplicationInfoRepository.eblanApplicationInfos
-                }
+    ): Flow<GetEblanApplicationInfosByLabelAndTag> = combine(
+        eblanApplicationInfoTagIdFlow,
+        labelFlow,
+        userDataRepository.userDataFlow,
+        eblanApplicationInfoRepository.eblanApplicationInfosFlow,
+    ) { tagId, label, userData, eblanApplicationInfos ->
+        val currentEblanApplicationInfos = if (tagId != null) {
+            eblanApplicationInfoRepository.getEblanApplicationInfosByTagId(id = tagId)
+        } else if (userData.appDrawerSettings.excludeTaggedApps) {
+            eblanApplicationInfoRepository.getEblanApplicationInfosWithoutTag()
+        } else {
+            eblanApplicationInfos
+        }
+
+        val eblanApplicationInfosByLabel =
+            currentEblanApplicationInfos.filter { eblanApplicationInfo ->
+                !eblanApplicationInfo.isHidden && eblanApplicationInfo.label.contains(
+                    label,
+                    ignoreCase = true,
+                )
+            }.sortedBy { it.label.lowercase() }.toMutableList()
+
+        updateEblanApplicationInfoIndexes(
+            eblanApplicationInfoOrder = userData.appDrawerSettings.eblanApplicationInfoOrder,
+            eblanApplicationInfos = eblanApplicationInfosByLabel,
+        )
+
+        when (userData.appDrawerSettings.appDrawerType) {
+            AppDrawerType.Vertical, AppDrawerType.List -> {
+                getVerticalOrListEblanApplicationInfosByLabel(eblanApplicationInfos = eblanApplicationInfosByLabel)
             }
 
-        return combine(
-            userDataRepository.userData,
-            eblanApplicationInfosFlow,
-            labelFlow,
-        ) { userData, eblanApplicationInfos, label ->
-            val eblanApplicationInfosByLabel =
-                eblanApplicationInfos.filter { eblanApplicationInfo ->
-                    !eblanApplicationInfo.isHidden && eblanApplicationInfo.label.contains(
-                        label,
-                        ignoreCase = true,
-                    )
-                }.sortedBy { it.label.lowercase() }.toMutableList()
-
-            updateEblanApplicationInfoIndexes(
-                eblanApplicationInfoOrder = userData.appDrawerSettings.eblanApplicationInfoOrder,
-                eblanApplicationInfos = eblanApplicationInfosByLabel,
-            )
-
-            when (userData.appDrawerSettings.appDrawerType) {
-                AppDrawerType.Vertical, AppDrawerType.List -> {
-                    getVerticalOrListEblanApplicationInfosByLabel(eblanApplicationInfos = eblanApplicationInfosByLabel)
-                }
-
-                AppDrawerType.Horizontal -> {
-                    getHorizontalEblanApplicationInfosByLabel(
-                        horizontalAppDrawerColumns = userData.appDrawerSettings.horizontalAppDrawerColumns,
-                        horizontalAppDrawerRows = userData.appDrawerSettings.horizontalAppDrawerRows,
-                        eblanApplicationInfosByLabel = eblanApplicationInfosByLabel,
-                    )
-                }
+            AppDrawerType.Horizontal -> {
+                getHorizontalEblanApplicationInfosByLabel(
+                    horizontalAppDrawerColumns = userData.appDrawerSettings.horizontalAppDrawerColumns,
+                    horizontalAppDrawerRows = userData.appDrawerSettings.horizontalAppDrawerRows,
+                    eblanApplicationInfosByLabel = eblanApplicationInfosByLabel,
+                )
             }
-        }.flowOn(defaultDispatcher)
-    }
+        }
+    }.flowOn(defaultDispatcher)
 
     private fun getVerticalOrListEblanApplicationInfosByLabel(eblanApplicationInfos: MutableList<EblanApplicationInfo>): GetEblanApplicationInfosByLabelAndTag {
         val groupedEblanApplicationInfos = eblanApplicationInfos.groupBy {

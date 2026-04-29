@@ -31,7 +31,7 @@ class GetFolderGridItemsUseCase @Inject constructor(
     private val folderGridItemRepository: FolderGridItemRepository,
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) {
-    operator fun invoke(): Flow<List<GridItem>> = folderGridItemRepository.folderGridItemWrappers.map { folderGridItemWrappers ->
+    operator fun invoke(): Flow<List<GridItem>> = folderGridItemRepository.folderGridItemWrappersFlow.map { folderGridItemWrappers ->
         folderGridItemWrappers.map { folderGridItemWrapper ->
             folderGridItemWrapper.asGridItem()
         }

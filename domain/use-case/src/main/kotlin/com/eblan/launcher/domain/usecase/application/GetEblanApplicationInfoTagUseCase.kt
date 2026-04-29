@@ -41,7 +41,7 @@ class GetEblanApplicationInfoTagUseCase @Inject constructor(
             serialNumber = serialNumber,
             componentName = componentName,
         ),
-        eblanApplicationInfoTagRepository.eblanApplicationInfoTags,
+        eblanApplicationInfoTagRepository.eblanApplicationInfoTagsFlow,
     ) { eblanApplicationInfoTagsByComponentName, eblanApplicationInfoTags ->
 
         eblanApplicationInfoTags.map { eblanApplicationInfoTag ->

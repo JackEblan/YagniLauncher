@@ -39,7 +39,7 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(moveGridItemResult: MoveGridItemResult) {
         withContext(defaultDispatcher) {
-            val gridItems = gridCacheRepository.gridItemsCache.first().toMutableList()
+            val gridItems = gridCacheRepository.gridItemsCacheFlow.first().toMutableList()
 
             groupConflictingGridItemsIntoFolder(
                 gridItems = gridItems,

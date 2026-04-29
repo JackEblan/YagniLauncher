@@ -57,7 +57,7 @@ class AddPinShortcutToHomeScreenUseCase @Inject constructor(
         isEnabled: Boolean,
         icon: String?,
     ): GridItem? = withContext(defaultDispatcher) {
-        val homeSettings = userDataRepository.userData.first().homeSettings
+        val homeSettings = userDataRepository.userDataFlow.first().homeSettings
 
         val columns = homeSettings.columns
 
@@ -67,7 +67,7 @@ class AddPinShortcutToHomeScreenUseCase @Inject constructor(
 
         val initialPage = homeSettings.initialPage
 
-        val gridItems = gridRepository.gridItems.first() + getFolderGridItemsUseCase().first()
+        val gridItems = gridRepository.gridItemsFlow.first() + getFolderGridItemsUseCase().first()
 
         val eblanApplicationInfoIcon =
             packageManagerWrapper.getComponentName(packageName = packageName)

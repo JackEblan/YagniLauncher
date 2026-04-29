@@ -152,7 +152,7 @@ class PinScreenViewModel @Inject constructor(
 
     fun updateGridItems() {
         viewModelScope.launch {
-            gridRepository.updateGridItems(gridItems = gridCacheRepository.gridItemsCache.first())
+            gridRepository.updateGridItems(gridItems = gridCacheRepository.gridItemsCacheFlow.first())
 
             _isFinished.update {
                 true

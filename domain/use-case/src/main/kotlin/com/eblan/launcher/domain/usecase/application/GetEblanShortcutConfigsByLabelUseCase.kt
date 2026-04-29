@@ -36,7 +36,7 @@ class GetEblanShortcutConfigsByLabelUseCase @Inject constructor(
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) {
     operator fun invoke(labelFlow: Flow<String>): Flow<Map<EblanUser, Map<EblanApplicationInfoGroup, List<EblanShortcutConfig>>>> = combine(
-        eblanShortcutConfigRepository.eblanShortcutConfigs,
+        eblanShortcutConfigRepository.eblanShortcutConfigsFlow,
         labelFlow,
     ) { eblanShortcutConfigs, label ->
         eblanShortcutConfigs.filter { eblanShortcutConfig ->

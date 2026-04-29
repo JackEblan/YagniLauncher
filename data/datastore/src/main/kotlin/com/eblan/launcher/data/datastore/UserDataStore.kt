@@ -36,12 +36,11 @@ import com.eblan.launcher.domain.model.GeneralSettings
 import com.eblan.launcher.domain.model.GestureSettings
 import com.eblan.launcher.domain.model.HomeSettings
 import com.eblan.launcher.domain.model.UserData
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class UserDataStore @Inject constructor(private val dataStore: DataStore<UserDataProto>) {
-    val userData: Flow<UserData> = dataStore.data.map { userDataProto ->
+    val userDataFlow = dataStore.data.map { userDataProto ->
         UserData(
             homeSettings = userDataProto.homeSettingsProto.toHomeSettings(),
             appDrawerSettings = userDataProto.appDrawerSettingsProto.toAppDrawerSettings(),

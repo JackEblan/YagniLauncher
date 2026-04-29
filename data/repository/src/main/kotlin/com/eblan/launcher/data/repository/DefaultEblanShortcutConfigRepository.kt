@@ -26,14 +26,14 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 internal class DefaultEblanShortcutConfigRepository @Inject constructor(private val eblanShortcutConfigDao: EblanShortcutConfigDao) : EblanShortcutConfigRepository {
-    override val eblanShortcutConfigs =
-        eblanShortcutConfigDao.getEblanShortcutConfigEntities().map { entities ->
+    override val eblanShortcutConfigsFlow =
+        eblanShortcutConfigDao.getEblanShortcutConfigEntitiesFlow().map { entities ->
             entities.map { entity ->
                 entity.asModel()
             }
         }
 
-    override suspend fun getEblanShortcutConfigs(): List<EblanShortcutConfig> = eblanShortcutConfigDao.getEblanShortcutConfigEntityList()
+    override suspend fun getEblanShortcutConfigs(): List<EblanShortcutConfig> = eblanShortcutConfigDao.getEblanShortcutConfigEntities()
         .map { eblanShortcutConfigEntity ->
             eblanShortcutConfigEntity.asModel()
         }

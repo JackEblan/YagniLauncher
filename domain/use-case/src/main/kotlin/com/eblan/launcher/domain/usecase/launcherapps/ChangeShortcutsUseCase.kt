@@ -53,7 +53,7 @@ class ChangeShortcutsUseCase @Inject constructor(
         }
 
         withContext(ioDispatcher) {
-            if (!userDataRepository.userData.first().experimentalSettings.syncData ||
+            if (!userDataRepository.userDataFlow.first().experimentalSettings.syncData ||
                 launcherAppsShortcutInfos === null
             ) {
                 return@withContext

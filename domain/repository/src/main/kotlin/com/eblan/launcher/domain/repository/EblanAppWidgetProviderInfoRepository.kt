@@ -22,7 +22,7 @@ import com.eblan.launcher.domain.model.EblanAppWidgetProviderInfo
 import kotlinx.coroutines.flow.Flow
 
 interface EblanAppWidgetProviderInfoRepository {
-    val eblanAppWidgetProviderInfos: Flow<List<EblanAppWidgetProviderInfo>>
+    val eblanAppWidgetProviderInfosFlow: Flow<List<EblanAppWidgetProviderInfo>>
 
     suspend fun getEblanAppWidgetProviderInfos(): List<EblanAppWidgetProviderInfo>
 

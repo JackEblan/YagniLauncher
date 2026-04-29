@@ -22,7 +22,7 @@ import com.eblan.launcher.domain.model.EblanShortcutInfo
 import kotlinx.coroutines.flow.Flow
 
 interface EblanShortcutInfoRepository {
-    val eblanShortcutInfos: Flow<List<EblanShortcutInfo>>
+    val eblanShortcutInfosFlow: Flow<List<EblanShortcutInfo>>
 
     suspend fun getEblanShortcutInfos(): List<EblanShortcutInfo>
 

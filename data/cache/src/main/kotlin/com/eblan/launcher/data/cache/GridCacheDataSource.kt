@@ -22,7 +22,7 @@ import com.eblan.launcher.domain.model.GridItemData
 import kotlinx.coroutines.flow.Flow
 
 interface GridCacheDataSource {
-    val gridItemsCache: Flow<List<GridItem>>
+    val gridItemsCacheFlow: Flow<List<GridItem>>
 
     fun insertGridItems(gridItems: List<GridItem>)
 

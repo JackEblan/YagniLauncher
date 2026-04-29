@@ -33,7 +33,7 @@ interface FolderGridItemDao {
 
     @Transaction
     @Query("SELECT * FROM FolderGridItemEntity")
-    fun getFolderGridItemWrappers(): Flow<List<FolderGridItemWrapperEntity>>
+    fun getFolderGridItemWrappersFlow(): Flow<List<FolderGridItemWrapperEntity>>
 
     @Transaction
     @Query("SELECT * FROM FolderGridItemEntity WHERE id = :id")

@@ -56,20 +56,20 @@ internal class DefaultGridRepository @Inject constructor(
     private val appWidgetHostWrapper: AppWidgetHostWrapper,
     @param:Dispatcher(EblanDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) : GridRepository {
-    override val gridItems: Flow<List<GridItem>> = combine(
-        applicationInfoGridItemRepository.gridItems,
-        widgetGridItemRepository.gridItems,
-        shortcutInfoGridItemRepository.gridItems,
-        shortcutConfigGridItemRepository.gridItems,
+    override val gridItemsFlow: Flow<List<GridItem>> = combine(
+        applicationInfoGridItemRepository.gridItemsFlow,
+        widgetGridItemRepository.gridItemsFlow,
+        shortcutInfoGridItemRepository.gridItemsFlow,
+        shortcutConfigGridItemRepository.gridItemsFlow,
     ) { applicationInfoGridItems, widgetGridItems, shortcutInfoGridItems, shortcutConfigGridItems ->
         (applicationInfoGridItems + widgetGridItems + shortcutInfoGridItems + shortcutConfigGridItems)
     }
 
-    override val gridItemsWithFolderId: Flow<List<GridItem>> = combine(
-        applicationInfoGridItemRepository.gridItemsWithFolderId,
-        widgetGridItemRepository.gridItems,
-        shortcutInfoGridItemRepository.gridItems,
-        shortcutConfigGridItemRepository.gridItems,
+    override val gridItemsWithFolderIdFlow: Flow<List<GridItem>> = combine(
+        applicationInfoGridItemRepository.gridItemsWithFolderIdFlow,
+        widgetGridItemRepository.gridItemsFlow,
+        shortcutInfoGridItemRepository.gridItemsFlow,
+        shortcutConfigGridItemRepository.gridItemsFlow,
     ) { applicationInfoGridItems, widgetGridItems, shortcutInfoGridItems, shortcutConfigGridItems ->
         (applicationInfoGridItems + widgetGridItems + shortcutInfoGridItems + shortcutConfigGridItems)
     }

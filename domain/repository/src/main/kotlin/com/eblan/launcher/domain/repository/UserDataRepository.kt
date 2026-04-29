@@ -26,7 +26,7 @@ import com.eblan.launcher.domain.model.UserData
 import kotlinx.coroutines.flow.Flow
 
 interface UserDataRepository {
-    val userData: Flow<UserData>
+    val userDataFlow: Flow<UserData>
 
     suspend fun updateHomeSettings(homeSettings: HomeSettings)
 

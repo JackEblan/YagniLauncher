@@ -52,8 +52,8 @@ class GetHomeDataUseCase @Inject constructor(
     operator fun invoke(isCacheFlow: Flow<Boolean>): Flow<HomeData> {
         val gridItemsFlow = combine(
             isCacheFlow,
-            gridCacheRepository.gridItemsCache,
-            gridRepository.gridItems,
+            gridCacheRepository.gridItemsCacheFlow,
+            gridRepository.gridItemsFlow,
             getFolderGridItemsUseCase(),
         ) { isCache, gridItemsCache, gridItems, folderGridItems ->
             if (isCache) {
@@ -64,7 +64,7 @@ class GetHomeDataUseCase @Inject constructor(
         }
 
         return combine(
-            userDataRepository.userData,
+            userDataRepository.userDataFlow,
             gridItemsFlow,
             wallpaperManagerWrapper.getColorsChanged(),
         ) { userData, gridItems, colorHints ->

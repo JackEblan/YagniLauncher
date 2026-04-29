@@ -36,7 +36,7 @@ internal class GestureSettingsViewModel @Inject constructor(
     getEblanApplicationInfosByUserUseCase: GetEblanApplicationInfosByUserUseCase,
 ) : ViewModel() {
     val gesturesSettingsUiState = combine(
-        userDataRepository.userData,
+        userDataRepository.userDataFlow,
         getEblanApplicationInfosByUserUseCase(),
     ) { userData, getEblanApplicationInfos ->
         GesturesSettingsUiState.Success(

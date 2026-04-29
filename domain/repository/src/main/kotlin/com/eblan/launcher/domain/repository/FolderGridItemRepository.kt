@@ -22,7 +22,7 @@ import com.eblan.launcher.domain.model.FolderGridItemWrapper
 import kotlinx.coroutines.flow.Flow
 
 interface FolderGridItemRepository {
-    val folderGridItemWrappers: Flow<List<FolderGridItemWrapper>>
+    val folderGridItemWrappersFlow: Flow<List<FolderGridItemWrapper>>
 
     suspend fun upsertFolderGridItems(folderGridItems: List<FolderGridItem>)
 

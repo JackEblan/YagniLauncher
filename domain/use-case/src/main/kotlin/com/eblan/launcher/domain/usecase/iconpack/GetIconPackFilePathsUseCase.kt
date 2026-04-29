@@ -38,8 +38,8 @@ class GetIconPackFilePathsUseCase @Inject constructor(
     @param:Dispatcher(EblanDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) {
     operator fun invoke(): Flow<Map<String, String>> = combine(
-        userDataRepository.userData,
-        eblanApplicationInfoRepository.eblanApplicationInfos,
+        userDataRepository.userDataFlow,
+        eblanApplicationInfoRepository.eblanApplicationInfosFlow,
     ) { userData, eblaApplicationInfos ->
         val iconPacksDirectory = fileManager.getFilesDirectory(
             FileManager.ICON_PACKS_DIR,
