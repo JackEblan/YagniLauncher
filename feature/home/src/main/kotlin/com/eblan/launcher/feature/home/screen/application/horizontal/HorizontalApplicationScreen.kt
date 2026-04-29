@@ -216,6 +216,7 @@ internal fun SharedTransitionScope.HorizontalApplicationScreen(
         HorizontalPager(
             modifier = Modifier.fillMaxSize(),
             state = horizontalPagerState,
+            userScrollEnabled = !isVisibleOverlay,
         ) { index ->
             EblanApplicationInfosPage(
                 appDrawerSettings = appDrawerSettings,

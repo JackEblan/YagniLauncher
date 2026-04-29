@@ -246,6 +246,7 @@ internal fun SharedTransitionScope.VerticalApplicationScreen(
         HorizontalPager(
             modifier = Modifier.fillMaxSize(),
             state = horizontalPagerState,
+            userScrollEnabled = !isVisibleOverlay,
         ) { index ->
             EblanApplicationInfosPage(
                 appDrawerSettings = appDrawerSettings,
@@ -634,6 +635,7 @@ private fun SharedTransitionScope.EblanApplicationInfos(
             } else {
                 rememberOverscrollEffect()
             },
+            userScrollEnabled = !isVisibleOverlay,
         ) {
             when (eblanUserPageKey.eblanUser.eblanUserType) {
                 EblanUserType.Personal -> {

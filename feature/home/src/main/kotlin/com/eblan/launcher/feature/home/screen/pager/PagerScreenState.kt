@@ -342,15 +342,6 @@ internal class PagerScreenState(
     var isMoveFolderGridItemOutsideFolder by mutableStateOf(false)
         private set
 
-    var gridUserScrollEnabled by mutableStateOf(true)
-        private set
-
-    var dockGridUserScrollEnabled by mutableStateOf(true)
-        private set
-
-    var folderGridUserScrollEnabled by mutableStateOf(true)
-        private set
-
     private val touchSlop = with(density) {
         50.dp.toPx()
     }
@@ -504,13 +495,6 @@ internal class PagerScreenState(
                 updatedWidgetGridItem = gridItem
             },
             onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-            onUpdateUserScrollEnabled = { newUserScrollEnabled ->
-                gridUserScrollEnabled = newUserScrollEnabled
-
-                dockGridUserScrollEnabled = newUserScrollEnabled
-
-                folderGridUserScrollEnabled = newUserScrollEnabled
-            },
         )
     }
 
@@ -1527,18 +1511,6 @@ internal class PagerScreenState(
 
     fun updateIsCloseFolder(value: Boolean) {
         isCloseFolder = value
-    }
-
-    fun updateGridUserScrollEnabled(value: Boolean) {
-        gridUserScrollEnabled = value
-    }
-
-    fun updateDockGridUserScrollEnabled(value: Boolean) {
-        dockGridUserScrollEnabled = value
-    }
-
-    fun updateFolderGridUserScrollEnabled(value: Boolean) {
-        folderGridUserScrollEnabled = value
     }
 
     fun handleOnDragEndApplicationScreen(remaining: Float) {
