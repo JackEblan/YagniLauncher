@@ -742,6 +742,7 @@ internal fun PagerScreen(
                             textColor = textColor,
                             isVisibleOverlay = isVisibleOverlay,
                             parent = SharedElementKey.Parent.Grid,
+                            isVisibleFolder = folderGridItem != null,
                             onDraggingGridItem = {
                                 onDraggingGridItem(gridItems)
                             },
@@ -868,6 +869,7 @@ internal fun PagerScreen(
                             textColor = textColor,
                             isVisibleOverlay = isVisibleOverlay,
                             parent = SharedElementKey.Parent.Dock,
+                            isVisibleFolder = folderGridItem != null,
                             onDraggingGridItem = {
                                 onDraggingGridItem(gridItems)
                             },

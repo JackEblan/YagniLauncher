@@ -100,6 +100,7 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
     textColor: TextColor,
     isVisibleOverlay: Boolean,
     parent: SharedElementKey.Parent,
+    isVisibleFolder: Boolean,
     onDraggingGridItem: () -> Unit,
     onOpenAppDrawer: () -> Unit,
     onTapApplicationInfo: (
@@ -245,6 +246,7 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
                 isSelected = isSelected,
                 textColor = currentTextColor,
                 isVisibleOverlay = isVisibleOverlay,
+                isVisibleFolder = isVisibleFolder,
                 parent = parent,
                 onDraggingGridItem = onDraggingGridItem,
                 onOpenAppDrawer = onOpenAppDrawer,
@@ -256,7 +258,6 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
                 onUpdateSharedElementKey = onUpdateSharedElementKey,
                 onShowGridItemPopup = onShowGridItemPopup,
                 onDismissGridItemPopup = onDismissGridItemPopup,
-
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                 onUpdateGridUserScrollEnabled = onUpdateGridUserScrollEnabled,
             )
@@ -911,6 +912,7 @@ private fun SharedTransitionScope.InteractiveFolderGridItem(
     textColor: Color,
     isVisibleOverlay: Boolean,
     parent: SharedElementKey.Parent,
+    isVisibleFolder: Boolean,
     onDraggingGridItem: () -> Unit,
     onOpenAppDrawer: () -> Unit,
     onTap: () -> Unit,
@@ -1028,7 +1030,10 @@ private fun SharedTransitionScope.InteractiveFolderGridItem(
                 color = Color(gridItemSettings.customBackgroundColor),
                 shape = RoundedCornerShape(size = gridItemSettings.cornerRadius.dp),
             )
-            .whiteBox(textColor = textColor, visible = isVisibleWhiteBox),
+            .whiteBox(
+                textColor = textColor,
+                visible = isVisibleWhiteBox && !isVisibleFolder,
+            ),
         horizontalAlignment = horizontalAlignment,
         verticalArrangement = verticalArrangement,
     ) {
