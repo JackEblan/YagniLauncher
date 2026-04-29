@@ -104,6 +104,18 @@ interface EblanApplicationInfoDao {
 
     @Query(
         """
+    SELECT DISTINCT app.*
+    FROM EblanApplicationInfoEntity AS app
+    INNER JOIN EblanApplicationInfoTagCrossRefEntity AS ref
+        ON app.componentName = ref.componentName
+       AND app.serialNumber = ref.serialNumber
+    WHERE ref.id = :id
+    """,
+    )
+    fun getEblanApplicationInfoEntitiesByTagId(id: Long): List<EblanApplicationInfoEntity>
+
+    @Query(
+        """
     SELECT app.*
     FROM EblanApplicationInfoEntity AS app
     WHERE NOT EXISTS (

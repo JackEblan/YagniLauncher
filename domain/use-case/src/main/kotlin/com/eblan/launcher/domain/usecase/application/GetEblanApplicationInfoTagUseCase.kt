@@ -37,7 +37,7 @@ class GetEblanApplicationInfoTagUseCase @Inject constructor(
         serialNumber: Long,
         componentName: String,
     ): Flow<List<EblanApplicationInfoTagUi>> = combine(
-        eblanApplicationInfoRepository.getEblanApplicationInfoTags(
+        eblanApplicationInfoRepository.getEblanApplicationInfoTagsFlow(
             serialNumber = serialNumber,
             componentName = componentName,
         ),

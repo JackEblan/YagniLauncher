@@ -125,11 +125,7 @@ internal class DefaultEblanApplicationInfoRepository @Inject constructor(
         entity.asModel()
     }
 
-    override fun getEblanApplicationInfosByTagId(id: Long): List<EblanApplicationInfo> = eblanApplicationInfoDao.getEblanApplicationInfoEntity().map { entity ->
-        entity.asModel()
-    }
-
-    override fun getEblanApplicationInfoTags(
+    override fun getEblanApplicationInfoTagsFlow(
         serialNumber: Long,
         componentName: String,
     ): Flow<List<EblanApplicationInfoTag>> = eblanApplicationInfoDao.getEblanApplicationInfoTagEntitiesFlow(
@@ -139,6 +135,10 @@ internal class DefaultEblanApplicationInfoRepository @Inject constructor(
         entities.map { entity ->
             entity.asModel()
         }
+    }
+
+    override fun getEblanApplicationInfosByTagId(id: Long): List<EblanApplicationInfo> = eblanApplicationInfoDao.getEblanApplicationInfoEntitiesByTagId(id = id).map { entity ->
+        entity.asModel()
     }
 
     override fun getEblanApplicationInfosWithoutTag(): List<EblanApplicationInfo> = eblanApplicationInfoDao.getEblanApplicationInfoEntitiesWithoutTags()

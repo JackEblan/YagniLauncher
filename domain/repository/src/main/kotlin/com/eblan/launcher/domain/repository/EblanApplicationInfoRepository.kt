@@ -57,12 +57,12 @@ interface EblanApplicationInfoRepository {
         packageName: String,
     ): List<EblanApplicationInfo>
 
-    fun getEblanApplicationInfosByTagId(id: Long): List<EblanApplicationInfo>
-
     fun getEblanApplicationInfoTagsFlow(
         serialNumber: Long,
         componentName: String,
     ): Flow<List<EblanApplicationInfoTag>>
+
+    fun getEblanApplicationInfosByTagId(id: Long): List<EblanApplicationInfo>
 
     fun getEblanApplicationInfosWithoutTag(): List<EblanApplicationInfo>
 }
