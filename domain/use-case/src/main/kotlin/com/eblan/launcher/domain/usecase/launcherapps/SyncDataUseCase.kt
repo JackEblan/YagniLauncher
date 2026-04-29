@@ -128,7 +128,7 @@ class SyncDataUseCase @Inject constructor(
 
         val newEblanShortcutConfigs = mutableSetOf<EblanShortcutConfig>()
 
-        val newApplicationsToHomeScreen = mutableListOf<ApplicationInfoGridItem>()
+        val newApplicationInfoGridItems = mutableListOf<ApplicationInfoGridItem>()
 
         val oldSyncEblanApplicationInfos =
             eblanApplicationInfoRepository.getEblanApplicationInfos().map { eblanApplicationInfo ->
@@ -163,7 +163,7 @@ class SyncDataUseCase @Inject constructor(
             experimentalSettings = experimentalSettings,
             newSyncEblanApplicationInfos = newSyncEblanApplicationInfos,
             oldSyncEblanApplicationInfos = oldSyncEblanApplicationInfos,
-            newApplicationsToHomeScreen = newApplicationsToHomeScreen,
+            applicationInfoGridItems = newApplicationInfoGridItems,
         )
 
         val newDeleteEblanApplicationInfos =
@@ -204,7 +204,7 @@ class SyncDataUseCase @Inject constructor(
             homeSettings = homeSettings,
         )
 
-        applicationInfoGridItemRepository.insertApplicationInfoGridItems(applicationInfoGridItems = newApplicationsToHomeScreen)
+        applicationInfoGridItemRepository.insertApplicationInfoGridItems(applicationInfoGridItems = newApplicationInfoGridItems)
     }
 
     @OptIn(ExperimentalUuidApi::class)
@@ -213,17 +213,19 @@ class SyncDataUseCase @Inject constructor(
         experimentalSettings: ExperimentalSettings,
         newSyncEblanApplicationInfos: List<SyncEblanApplicationInfo>,
         oldSyncEblanApplicationInfos: List<SyncEblanApplicationInfo>,
-        newApplicationsToHomeScreen: MutableList<ApplicationInfoGridItem>,
+        applicationInfoGridItems: MutableList<ApplicationInfoGridItem>,
     ) {
         if (!homeSettings.addNewAppsToHomeScreen || experimentalSettings.firstLaunch) return
 
         val gridItems =
-            (gridRepository.gridItemsFlow.first() + getFolderGridItemsUseCase().first()).toMutableList()
+            (gridRepository.gridItemsFlow.first() + getFolderGridItemsUseCase().first())
+                .filter { gridItem -> gridItem.associate == Associate.Grid }
+                .toMutableList()
 
-        val newlyInstalledSyncEblanApplicationInfos =
+        val syncEblanApplicationInfos =
             newSyncEblanApplicationInfos - oldSyncEblanApplicationInfos.toSet()
 
-        newlyInstalledSyncEblanApplicationInfos.forEach { syncEblanApplicationInfo ->
+        syncEblanApplicationInfos.forEach { syncEblanApplicationInfo ->
             addNewApplicationToHomeScreen(
                 gridItems = gridItems,
                 componentName = syncEblanApplicationInfo.componentName,
@@ -231,7 +233,7 @@ class SyncDataUseCase @Inject constructor(
                 icon = syncEblanApplicationInfo.icon,
                 label = syncEblanApplicationInfo.label,
                 homeSettings = homeSettings,
-                newApplicationsToHomeScreen = newApplicationsToHomeScreen,
+                applicationInfoGridItems = applicationInfoGridItems,
             )
         }
     }

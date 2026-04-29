@@ -524,7 +524,7 @@ internal suspend fun addNewApplicationToHomeScreen(
     icon: String?,
     label: String?,
     homeSettings: HomeSettings,
-    newApplicationsToHomeScreen: MutableList<ApplicationInfoGridItem>,
+    applicationInfoGridItems: MutableList<ApplicationInfoGridItem>,
 ) {
     val alreadyOnHome = gridItems.any { gridItem ->
         when (val data = gridItem.data) {
@@ -533,9 +533,9 @@ internal suspend fun addNewApplicationToHomeScreen(
                     data.componentName == componentName
 
             is GridItemData.Folder ->
-                data.gridItems.any { gridItem ->
-                    gridItem.serialNumber == 0L &&
-                        gridItem.componentName == componentName
+                data.gridItems.any { applicationInfoGridItem ->
+                    applicationInfoGridItem.serialNumber == 0L &&
+                        applicationInfoGridItem.componentName == componentName
                 }
 
             else -> false
@@ -589,7 +589,7 @@ internal suspend fun addNewApplicationToHomeScreen(
     if (newGridItem != null) {
         gridItems.add(newGridItem)
 
-        newApplicationsToHomeScreen.add(
+        applicationInfoGridItems.add(
             ApplicationInfoGridItem(
                 id = newGridItem.id,
                 page = newGridItem.page,
