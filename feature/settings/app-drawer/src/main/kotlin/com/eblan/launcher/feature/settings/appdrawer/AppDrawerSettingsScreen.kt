@@ -209,7 +209,7 @@ private fun Success(
 
             SettingsSwitch(
                 checked = appDrawerSettings.excludeTaggedApps,
-                title = "Exclude Tagged apps",
+                title = "Exclude Tagged Apps",
                 subtitle = "Exclude tagged apps",
                 onCheckedChange = { excludeTaggedApps ->
                     onUpdateAppDrawerSettings(appDrawerSettings.copy(excludeTaggedApps = excludeTaggedApps))
