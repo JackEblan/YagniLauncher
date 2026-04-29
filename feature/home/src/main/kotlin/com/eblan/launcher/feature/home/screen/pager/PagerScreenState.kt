@@ -24,7 +24,6 @@ import android.content.pm.LauncherApps.PinItemRequest
 import android.graphics.Rect
 import android.os.Build
 import android.os.IBinder
-import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.IntentSenderRequest
 import androidx.compose.animation.core.Animatable
@@ -465,6 +464,7 @@ internal class PagerScreenState(
             androidAppWidgetManagerWrapper = androidAppWidgetManagerWrapper,
             androidLauncherAppsWrapper = androidLauncherAppsWrapper,
             androidUserManagerWrapper = androidUserManagerWrapper,
+            context = context,
             drag = drag,
             gridItemSource = gridItemSource,
             isDragging = isDragging,
@@ -478,13 +478,6 @@ internal class PagerScreenState(
             onLaunchShortcutConfigIntent = onLaunchShortcutConfigIntent,
             onLaunchShortcutConfigIntentSenderRequest = onLaunchShortcutConfigIntentSenderRequest,
             onLaunchWidgetIntent = onLaunchWidgetIntent,
-            onToast = {
-                Toast.makeText(
-                    context,
-                    "Layout was canceled due to an invalid position, interruption or locked movement",
-                    Toast.LENGTH_LONG,
-                ).show()
-            },
             onUpdateAppWidgetId = { appWidgetId ->
                 lastAppWidgetId = appWidgetId
             },

@@ -21,6 +21,7 @@ import android.app.Activity
 import android.appwidget.AppWidgetManager
 import android.content.ActivityNotFoundException
 import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
 import android.content.pm.LauncherApps
 import android.content.pm.LauncherApps.PinItemRequest
@@ -28,6 +29,7 @@ import android.graphics.Bitmap
 import android.os.Build
 import android.os.Bundle
 import android.os.Process
+import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.IntentSenderRequest
 import com.eblan.launcher.domain.common.IconKeyGenerator
@@ -50,6 +52,7 @@ internal suspend fun handleDropGridItem(
     androidAppWidgetManagerWrapper: AndroidAppWidgetManagerWrapper,
     androidLauncherAppsWrapper: AndroidLauncherAppsWrapper,
     androidUserManagerWrapper: AndroidUserManagerWrapper,
+    context: Context,
     drag: Drag,
     gridItemSource: GridItemSource?,
     isDragging: Boolean,
@@ -63,7 +66,6 @@ internal suspend fun handleDropGridItem(
     onLaunchShortcutConfigIntent: (Intent) -> Unit,
     onLaunchShortcutConfigIntentSenderRequest: (IntentSenderRequest) -> Unit,
     onLaunchWidgetIntent: (Intent) -> Unit,
-    onToast: () -> Unit,
     onUpdateAppWidgetId: (Int) -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
     onUpdateWidgetGridItem: (GridItem) -> Unit,
@@ -78,7 +80,11 @@ internal suspend fun handleDropGridItem(
 
         onDragCancelAfterMove()
 
-        onToast()
+        Toast.makeText(
+            context,
+            "Please wait for the white box indicator",
+            Toast.LENGTH_LONG,
+        ).show()
     }
 
     val isDropFailed =
