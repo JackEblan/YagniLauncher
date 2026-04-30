@@ -597,6 +597,7 @@ internal class HomeViewModel @Inject constructor(
                 eblanApplicationInfoIcon = eblanApplicationInfoIcon,
                 customIcon = null,
                 customShortLabel = null,
+                folderId = null,
             )
 
             gridCacheRepository.insertGridItem(

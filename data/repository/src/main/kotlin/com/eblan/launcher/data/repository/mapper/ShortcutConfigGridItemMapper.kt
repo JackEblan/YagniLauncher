@@ -42,6 +42,7 @@ internal fun ShortcutConfigGridItemEntity.asGridItem(): GridItem = GridItem(
         shortcutIntentUri = shortcutIntentUri,
         customIcon = customIcon,
         customLabel = customLabel,
+        folderId = folderId,
     ),
     associate = associate,
     override = override,
@@ -76,6 +77,7 @@ internal fun ShortcutConfigGridItemEntity.asModel(): ShortcutConfigGridItem = Sh
     doubleTap = doubleTap,
     swipeUp = swipeUp,
     swipeDown = swipeDown,
+    folderId = folderId,
 )
 
 internal fun ShortcutConfigGridItem.asEntity(): ShortcutConfigGridItemEntity = ShortcutConfigGridItemEntity(
@@ -103,6 +105,7 @@ internal fun ShortcutConfigGridItem.asEntity(): ShortcutConfigGridItemEntity = S
     doubleTap = doubleTap,
     swipeUp = swipeUp,
     swipeDown = swipeDown,
+    folderId = folderId,
 )
 
 internal fun GridItem.asShortcutConfigGridItem(data: GridItemData.ShortcutConfig): ShortcutConfigGridItem = ShortcutConfigGridItem(
@@ -130,4 +133,5 @@ internal fun GridItem.asShortcutConfigGridItem(data: GridItemData.ShortcutConfig
     doubleTap = doubleTap,
     swipeUp = swipeUp,
     swipeDown = swipeDown,
+    folderId = data.folderId,
 )

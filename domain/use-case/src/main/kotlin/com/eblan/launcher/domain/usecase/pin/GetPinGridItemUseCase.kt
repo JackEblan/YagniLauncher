@@ -148,6 +148,7 @@ class GetPinGridItemUseCase @Inject constructor(
                     eblanApplicationInfoIcon = eblanApplicationInfoIcon,
                     customIcon = null,
                     customShortLabel = null,
+                    folderId = null,
                 )
 
                 GridItem(

@@ -40,4 +40,5 @@ data class ShortcutInfoGridItem(
     val doubleTap: EblanAction,
     val swipeUp: EblanAction,
     val swipeDown: EblanAction,
+    val folderId: String?,
 )

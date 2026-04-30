@@ -96,6 +96,7 @@ class AddPinShortcutToHomeScreenUseCase @Inject constructor(
             eblanApplicationInfoIcon = eblanApplicationInfoIcon,
             customIcon = null,
             customShortLabel = null,
+            folderId = null,
         )
 
         val eblanAction = EblanAction(

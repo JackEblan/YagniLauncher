@@ -62,6 +62,7 @@ sealed interface GridItemData {
         val eblanApplicationInfoIcon: String?,
         val customIcon: String?,
         val customShortLabel: String?,
+        val folderId: String?,
     ) : GridItemData
 
     data class Folder(
@@ -88,5 +89,6 @@ sealed interface GridItemData {
         val shortcutIntentUri: String?,
         val customIcon: String?,
         val customLabel: String?,
+        val folderId: String?,
     ) : GridItemData
 }
