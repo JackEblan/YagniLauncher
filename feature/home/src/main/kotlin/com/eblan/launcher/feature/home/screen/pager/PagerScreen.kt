@@ -1027,7 +1027,6 @@ internal fun PagerScreen(
                 isClosingFolder = pagerScreenState.isCloseFolder,
                 isMoveFolderGridItemOutsideFolder = pagerScreenState.isMoveFolderGridItemOutsideFolder,
                 hasShortcutHostPermission = hasShortcutHostPermission,
-                textColor = textColor,
                 onDismissRequest = {
                     pagerScreenState.dismissFolder(onUpdateFolderGridItemId = onUpdateFolderGridItemId)
                 },

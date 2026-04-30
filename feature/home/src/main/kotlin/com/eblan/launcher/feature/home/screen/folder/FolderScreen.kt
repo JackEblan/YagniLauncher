@@ -66,7 +66,7 @@ import com.eblan.launcher.domain.model.GridItemSettings
 import com.eblan.launcher.domain.model.TextColor
 import com.eblan.launcher.domain.usecase.grid.FOLDER_MAX_COLUMNS
 import com.eblan.launcher.domain.usecase.grid.FOLDER_MAX_ROWS
-import com.eblan.launcher.feature.home.component.GridLayout
+import com.eblan.launcher.feature.home.component.FolderGridLayout
 import com.eblan.launcher.feature.home.component.PageIndicator
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
@@ -95,7 +95,6 @@ internal fun SharedTransitionScope.FolderScreen(
     isClosingFolder: Boolean,
     isMoveFolderGridItemOutsideFolder: Boolean,
     hasShortcutHostPermission: Boolean,
-    textColor: TextColor,
     onDismissRequest: () -> Unit,
     onMoveFolderGridItemOutsideFolder: () -> Unit,
     onDraggingGridItem: () -> Unit,
@@ -272,7 +271,7 @@ internal fun SharedTransitionScope.FolderScreen(
                     state = folderGridHorizontalPagerState,
                     userScrollEnabled = !isVisibleOverlay,
                 ) { index ->
-                    GridLayout(
+                    FolderGridLayout(
                         modifier = Modifier.fillMaxSize(),
                         columns = data.columns,
                         gridItems = data.gridItemsByPage[index],
@@ -291,7 +290,7 @@ internal fun SharedTransitionScope.FolderScreen(
                                 iconPackFilePaths = iconPackFilePaths,
                                 isScrollInProgress = folderGridHorizontalPagerState.isScrollInProgress,
                                 statusBarNotifications = statusBarNotifications,
-                                textColor = textColor,
+                                textColor = null,
                                 isVisibleOverlay = isVisibleOverlay,
                                 parent = SharedElementKey.Parent.Folder,
                                 isVisibleFolder = false,

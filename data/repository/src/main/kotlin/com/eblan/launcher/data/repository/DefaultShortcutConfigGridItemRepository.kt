@@ -31,7 +31,9 @@ internal class DefaultShortcutConfigGridItemRepository @Inject constructor(priva
     override val gridItemsFlow =
         shortcutConfigGridItemDao.getShortcutConfigGridItemEntitiesFlow()
             .map { entities ->
-                entities.map { entity ->
+                entities.filter { entity ->
+                    entity.folderId == null
+                }.map { entity ->
                     entity.asGridItem()
                 }
             }

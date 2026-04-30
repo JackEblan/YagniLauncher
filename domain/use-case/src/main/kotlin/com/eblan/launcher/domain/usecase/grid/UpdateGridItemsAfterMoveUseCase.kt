@@ -97,8 +97,6 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
         conflictingIndex: Int,
         movingIndex: Int,
     ) {
-        if (movingGridItem.data is GridItemData.Widget) return
-
         val folderGridItems = data.gridItems.toMutableList()
 
         val index = folderGridItems.size
@@ -121,21 +119,18 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
 
             is GridItemData.Folder,
             is GridItemData.Widget,
-            -> return
+                -> return
         }
 
-        val updatedMovingItem = movingGridItem.copy(data = newData)
+        val updatedMovingGridItem = movingGridItem.copy(data = newData)
 
-        folderGridItems.add(updatedMovingItem)
-
-        val previewGridItemsByPage =
-            data.gridItemsByPage.values.firstOrNull()
-                ?.plus(updatedMovingItem)
-                ?: listOf(updatedMovingItem)
+        folderGridItems.add(updatedMovingGridItem)
 
         val conflictingData = data.copy(
             gridItems = folderGridItems,
-            previewGridItemsByPage = previewGridItemsByPage,
+            previewGridItemsByPage = data.gridItemsByPage.values.firstOrNull()
+                ?.plus(updatedMovingGridItem)
+                ?: listOf(updatedMovingGridItem),
         )
 
         gridItems[conflictingIndex] = conflictingGridItem.copy(data = conflictingData)
@@ -166,15 +161,9 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
             else -> return
         }
 
-        val conflictingApplicationInfoGridItem =
-            conflictingGridItem.copy(data = conflictingData)
-
-        val movingApplicationInfoGridItem =
-            movingGridItem.copy(data = movingData)
-
         val folderGridItems = listOf(
-            conflictingApplicationInfoGridItem,
-            movingApplicationInfoGridItem,
+            conflictingGridItem.copy(data = conflictingData),
+            movingGridItem.copy(data = movingData),
         )
 
         gridItems[conflictingIndex] = conflictingGridItem.copy(data = conflictingData)

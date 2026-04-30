@@ -271,10 +271,6 @@ internal class DefaultGridRepository @Inject constructor(
             applicationInfoGridItems = applicationInfoGridItems,
         )
 
-        applicationInfoGridItemRepository.upsertApplicationInfoGridItems(
-            applicationInfoGridItems = folderApplicationInfoGridItems,
-        )
-
         widgetGridItemRepository.upsertWidgetGridItems(widgetGridItems = widgetGridItems)
 
         shortcutInfoGridItemRepository.upsertShortcutInfoGridItems(shortcutInfoGridItems = shortcutInfoGridItems)
@@ -283,6 +279,18 @@ internal class DefaultGridRepository @Inject constructor(
 
         shortcutConfigGridItemRepository.upsertShortcutConfigGridItems(
             shortcutConfigGridItems = shortcutConfigGridItems,
+        )
+
+        applicationInfoGridItemRepository.upsertApplicationInfoGridItems(
+            applicationInfoGridItems = folderApplicationInfoGridItems,
+        )
+
+        shortcutInfoGridItemRepository.upsertShortcutInfoGridItems(
+            shortcutInfoGridItems = folderShortcutInfoGridItems,
+        )
+
+        shortcutConfigGridItemRepository.upsertShortcutConfigGridItems(
+            shortcutConfigGridItems = folderShortcutConfigGridItems,
         )
     }
 

@@ -97,7 +97,7 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
     iconPackFilePaths: Map<String, String>,
     isScrollInProgress: Boolean,
     statusBarNotifications: Map<String, Int>,
-    textColor: TextColor,
+    textColor: TextColor?,
     isVisibleOverlay: Boolean,
     parent: SharedElementKey.Parent,
     isVisibleFolder: Boolean,
