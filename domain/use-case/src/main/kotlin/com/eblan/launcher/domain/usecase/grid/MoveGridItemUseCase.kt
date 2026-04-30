@@ -165,7 +165,7 @@ class MoveGridItemUseCase @Inject constructor(
 
             ResolveDirection.Center -> {
                 if (movingGridItem.data is GridItemData.Widget ||
-                    conflictingGridItem.data !is GridItemData.Folder
+                    conflictingGridItem.data is GridItemData.Widget
                 ) {
                     return MoveGridItemResult(
                         isSuccess = false,
