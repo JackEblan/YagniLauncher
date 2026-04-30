@@ -83,7 +83,7 @@ internal fun SharedTransitionScope.InteractiveFolderGridItemContent(
     val gridItemSourceFolder = gridItemSource as? GridItemSource.Folder
 
     val isSelected = gridItemSourceFolder != null &&
-            gridItem.id == gridItemSourceFolder.folderGridItem.id
+        gridItem.id == gridItemSourceFolder.folderGridItem.id
 
     val currentGridItemSettings = if (gridItem.override) {
         gridItem.gridItemSettings

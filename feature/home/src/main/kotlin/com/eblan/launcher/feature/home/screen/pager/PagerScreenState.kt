@@ -975,16 +975,39 @@ internal class PagerScreenState(
 
         val gridItemSourceFolder = gridItemSource as? GridItemSource.Folder ?: return
 
-        onUpdateGridItemSource(GridItemSource.Existing(gridItem = gridItemSourceFolder.folderGridItem))
+        val movingGridItem = gridItemSourceFolder.folderGridItem
+
+        val movingData = when (val data = movingGridItem.data) {
+            is GridItemData.ApplicationInfo -> data.copy(
+                index = -1,
+                folderId = null,
+            )
+
+            is GridItemData.ShortcutConfig -> data.copy(
+                index = -1,
+                folderId = null,
+            )
+
+            is GridItemData.ShortcutInfo -> data.copy(
+                index = -1,
+                folderId = null,
+            )
+
+            else -> return
+        }
+
+        val newMovingGridItem = movingGridItem.copy(data = movingData)
+
+        onUpdateGridItemSource(GridItemSource.Existing(gridItem = newMovingGridItem))
 
         sharedElementKey = SharedElementKey(
-            id = gridItemSourceFolder.folderGridItem.id,
+            id = newMovingGridItem.id,
             parent = SharedElementKey.Parent.Grid,
         )
 
         onMoveFolderGridItemOutsideFolder(
             folderGridItem.id,
-            gridItemSourceFolder.folderGridItem.id,
+            newMovingGridItem.id,
             data,
         )
     }
