@@ -215,6 +215,7 @@ private fun ShortcutInfoMenuItem(
                                         eblanApplicationInfoIcon = icon,
                                         customIcon = null,
                                         customShortLabel = null,
+                                        index = -1,
                                         folderId = null,
                                     )
 

@@ -96,6 +96,7 @@ class AddPinShortcutToHomeScreenUseCase @Inject constructor(
             eblanApplicationInfoIcon = eblanApplicationInfoIcon,
             customIcon = null,
             customShortLabel = null,
+            index = -1,
             folderId = null,
         )
 

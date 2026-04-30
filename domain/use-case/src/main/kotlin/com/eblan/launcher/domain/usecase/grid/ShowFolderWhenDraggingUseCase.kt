@@ -19,7 +19,7 @@ package com.eblan.launcher.domain.usecase.grid
 
 import com.eblan.launcher.domain.common.Dispatcher
 import com.eblan.launcher.domain.common.EblanDispatchers
-import com.eblan.launcher.domain.model.ApplicationInfoGridItem
+import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.repository.GridCacheRepository
 import kotlinx.coroutines.CoroutineDispatcher
@@ -32,13 +32,13 @@ class ShowFolderWhenDraggingUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(
         conflictingId: String,
-        movingApplicationInfoGridItem: ApplicationInfoGridItem,
+        movingFolderGridItem: GridItem,
         data: GridItemData.Folder,
     ) {
         withContext(defaultDispatcher) {
             val gridItems = data.gridItems.toMutableList()
 
-            gridItems.add(movingApplicationInfoGridItem)
+            gridItems.add(movingFolderGridItem)
 
             val gridItemsByPage = gridItems.getGridItemsByPage()
 

@@ -581,6 +581,7 @@ private fun EblanShortcutConfigItem(
                                 shortcutIntentUri = null,
                                 customIcon = null,
                                 customLabel = null,
+                                index = -1,
                                 folderId = null,
                             )
 

@@ -20,7 +20,10 @@ package com.eblan.launcher.domain.usecase.grid
 import com.eblan.launcher.domain.model.ApplicationInfoGridItem
 import com.eblan.launcher.domain.model.FolderGridItemWrapper
 import com.eblan.launcher.domain.model.GridItem
+import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.GridItemData.Folder
+import com.eblan.launcher.domain.model.ShortcutConfigGridItem
+import com.eblan.launcher.domain.model.ShortcutInfoGridItem
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
 import kotlin.math.ceil
@@ -32,9 +35,32 @@ const val FOLDER_MAX_COLUMNS = 5
 const val FOLDER_MAX_ROWS = 4
 
 internal suspend fun FolderGridItemWrapper.asGridItem(): GridItem {
-    val sortedApplicationInfoGridItems = applicationInfoGridItems.sortedBy { it.index }
+    val sortedApplicationInfoGridItems =
+        applicationInfoGridItems.map { applicationInfoGridItem ->
+            applicationInfoGridItem.asGridItem()
+        }
 
-    val gridItemsByPage = sortedApplicationInfoGridItems.getGridItemsByPage()
+    val sortedShortcutInfoGridItems =
+        shortcutInfoGridItems.map { shortcutInfoGridItem ->
+            shortcutInfoGridItem.asGridItem()
+        }
+
+    val sortedShortcutConfigGridItems =
+        shortcutConfigGridItems.map { shortcutConfigGridItem ->
+            shortcutConfigGridItem.asGridItem()
+        }
+
+    val gridItems =
+        (sortedApplicationInfoGridItems + sortedShortcutInfoGridItems + sortedShortcutConfigGridItems).sortedBy { gridItem ->
+            when (val data = gridItem.data) {
+                is GridItemData.ApplicationInfo -> data.index
+                is GridItemData.ShortcutInfo -> data.index
+                is GridItemData.ShortcutConfig -> data.index
+                else -> -1
+            }
+        }
+
+    val gridItemsByPage = gridItems.getGridItemsByPage()
 
     val firstPageGridItems = gridItemsByPage[0] ?: emptyList()
 
@@ -43,7 +69,7 @@ internal suspend fun FolderGridItemWrapper.asGridItem(): GridItem {
     val data = Folder(
         id = folderGridItem.id,
         label = folderGridItem.label,
-        gridItems = sortedApplicationInfoGridItems,
+        gridItems = gridItems,
         gridItemsByPage = gridItemsByPage,
         previewGridItemsByPage = gridItemsByPage.values.firstOrNull() ?: emptyList(),
         icon = folderGridItem.icon,
@@ -68,7 +94,7 @@ internal suspend fun FolderGridItemWrapper.asGridItem(): GridItem {
     )
 }
 
-internal suspend fun List<ApplicationInfoGridItem>.getGridItemsByPage(): Map<Int, List<ApplicationInfoGridItem>> = chunked(FOLDER_MAX_COLUMNS * FOLDER_MAX_ROWS)
+internal suspend fun List<GridItem>.getGridItemsByPage(): Map<Int, List<GridItem>> = chunked(FOLDER_MAX_COLUMNS * FOLDER_MAX_ROWS)
     .mapIndexed { pageIndex, pageItems ->
         currentCoroutineContext().ensureActive()
 
@@ -84,3 +110,89 @@ internal fun getGridDimension(count: Int): Pair<Int, Int> {
 
     return columns to rows
 }
+
+private fun ApplicationInfoGridItem.asGridItem(): GridItem = GridItem(
+    id = id,
+    page = page,
+    startColumn = startColumn,
+    startRow = startRow,
+    columnSpan = columnSpan,
+    rowSpan = rowSpan,
+    data = GridItemData.ApplicationInfo(
+        serialNumber = serialNumber,
+        componentName = componentName,
+        packageName = packageName,
+        icon = icon,
+        label = label,
+        customIcon = customIcon,
+        customLabel = customLabel,
+        index = index,
+        folderId = folderId,
+    ),
+    associate = associate,
+    override = override,
+    gridItemSettings = gridItemSettings,
+    doubleTap = doubleTap,
+    swipeUp = swipeUp,
+    swipeDown = swipeDown,
+)
+
+private fun ShortcutInfoGridItem.asGridItem(): GridItem = GridItem(
+    id = id,
+    page = page,
+    startColumn = startColumn,
+    startRow = startRow,
+    columnSpan = columnSpan,
+    rowSpan = rowSpan,
+    data = GridItemData.ShortcutInfo(
+        shortcutId = shortcutId,
+        packageName = packageName,
+        serialNumber = serialNumber,
+        shortLabel = shortLabel,
+        longLabel = longLabel,
+        icon = icon,
+        isEnabled = isEnabled,
+        eblanApplicationInfoIcon = eblanApplicationInfoIcon,
+        customIcon = customIcon,
+        customShortLabel = customShortLabel,
+        index = index,
+        folderId = folderId,
+    ),
+    associate = associate,
+    override = override,
+    gridItemSettings = gridItemSettings,
+    doubleTap = doubleTap,
+    swipeUp = swipeUp,
+    swipeDown = swipeDown,
+)
+
+private fun ShortcutConfigGridItem.asGridItem(): GridItem = GridItem(
+    id = id,
+    page = page,
+    startColumn = startColumn,
+    startRow = startRow,
+    columnSpan = columnSpan,
+    rowSpan = rowSpan,
+    data = GridItemData.ShortcutConfig(
+        serialNumber = serialNumber,
+        componentName = componentName,
+        packageName = packageName,
+        activityIcon = activityIcon,
+        activityLabel = activityLabel,
+        applicationIcon = applicationIcon,
+        applicationLabel = applicationLabel,
+        shortcutIntentName = shortcutIntentName,
+        shortcutIntentIcon = shortcutIntentIcon,
+        shortcutIntentUri = shortcutIntentUri,
+        customIcon = customIcon,
+        customLabel = customLabel,
+        index = index,
+        folderId = folderId,
+    ),
+    associate = associate,
+    override = override,
+    gridItemSettings = gridItemSettings,
+    doubleTap = doubleTap,
+    swipeUp = swipeUp,
+    swipeDown = swipeDown,
+)

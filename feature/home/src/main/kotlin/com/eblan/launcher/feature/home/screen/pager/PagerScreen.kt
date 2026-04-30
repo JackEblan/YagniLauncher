@@ -145,7 +145,6 @@ internal fun PagerScreen(
     resizeGridItem: GridItem?,
     gridItemSource: GridItemSource?,
     isVisibleOverlay: Boolean,
-    onDeleteApplicationInfoGridItem: (ApplicationInfoGridItem) -> Unit,
     onDeleteGridItem: (GridItem) -> Unit,
     onResetGridCacheAfterDeleteGridItemCache: (GridItem) -> Unit,
     onResetGridCacheAfterDeleteWidgetGridItemCache: (
@@ -173,7 +172,7 @@ internal fun PagerScreen(
     onGetPinGridItem: (PinItemRequestType) -> Unit,
     onMoveFolderGridItem: (
         conflictingId: String,
-        movingApplicationInfoGridItem: ApplicationInfoGridItem,
+        movingFolderGridItem: GridItem,
         data: GridItemData.Folder,
         dragX: Int,
         dragY: Int,
@@ -214,7 +213,7 @@ internal fun PagerScreen(
     onUpdateFolderGridItemId: (String?) -> Unit,
     onShowFolderWhenDragging: (
         conflictingId: String,
-        movingApplicationInfoGridItem: ApplicationInfoGridItem,
+        movingFolderGridItem: GridItem,
         data: GridItemData.Folder,
     ) -> Unit,
     onUpdateShortcutConfigGridItemDataCache: (
@@ -1027,6 +1026,8 @@ internal fun PagerScreen(
                 isVisibleOverlay = isVisibleOverlay,
                 isClosingFolder = pagerScreenState.isCloseFolder,
                 isMoveFolderGridItemOutsideFolder = pagerScreenState.isMoveFolderGridItemOutsideFolder,
+                hasShortcutHostPermission = hasShortcutHostPermission,
+                textColor = textColor,
                 onDismissRequest = {
                     pagerScreenState.dismissFolder(onUpdateFolderGridItemId = onUpdateFolderGridItemId)
                 },
@@ -1060,7 +1061,7 @@ internal fun PagerScreen(
                 paddingValues = paddingValues,
                 popupIntOffset = pagerScreenState.popupIntOffset,
                 popupIntSize = pagerScreenState.popupIntSize,
-                onDeleteApplicationInfoGridItem = onDeleteApplicationInfoGridItem,
+                onDeleteGridItem = onDeleteGridItem,
                 onDismissRequest = pagerScreenState::dismissFolderGridItemPopup,
                 onEdit = onEditGridItem,
                 modifier = modifier,

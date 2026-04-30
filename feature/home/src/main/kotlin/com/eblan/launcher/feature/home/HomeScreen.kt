@@ -42,7 +42,6 @@ import androidx.compose.ui.unit.IntSize
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.eblan.launcher.domain.model.AppDrawerSettings
-import com.eblan.launcher.domain.model.ApplicationInfoGridItem
 import com.eblan.launcher.domain.model.Associate
 import com.eblan.launcher.domain.model.EblanAppWidgetProviderInfo
 import com.eblan.launcher.domain.model.EblanApplicationInfo
@@ -136,7 +135,6 @@ internal fun HomeRoute(
         gridItemSource = gridItemSource,
         isVisibleOverlay = isVisibleOverlay,
         onCancelGridCache = viewModel::cancelGridCache,
-        onDeleteApplicationInfoGridItem = viewModel::deleteApplicationInfoGridItem,
         onDeleteGridItem = viewModel::deleteGridItem,
         onResetGridCacheAfterDeleteGridItemCache = viewModel::resetGridCacheAfterDeleteGridItemCache,
         onResetGridCacheAfterDeleteWidgetGridItemCache = viewModel::resetGridCacheAfterDeleteWidgetGridItemCache,
@@ -197,7 +195,6 @@ internal fun HomeScreen(
     gridItemSource: GridItemSource?,
     isVisibleOverlay: Boolean,
     onCancelGridCache: () -> Unit,
-    onDeleteApplicationInfoGridItem: (ApplicationInfoGridItem) -> Unit,
     onDeleteGridItem: (GridItem) -> Unit,
     onResetGridCacheAfterDeleteGridItemCache: (GridItem) -> Unit,
     onResetGridCacheAfterDeleteWidgetGridItemCache: (
@@ -220,7 +217,7 @@ internal fun HomeScreen(
     onGetPinGridItem: (PinItemRequestType) -> Unit,
     onMoveFolderGridItem: (
         conflictingId: String,
-        movingApplicationInfoGridItem: ApplicationInfoGridItem,
+        movingFolderGridItem: GridItem,
         data: GridItemData.Folder,
         dragX: Int,
         dragY: Int,
@@ -270,7 +267,7 @@ internal fun HomeScreen(
     onUpdateFolderGridItemId: (String?) -> Unit,
     onShowFolderWhenDragging: (
         conflictingId: String,
-        movingApplicationInfoGridItem: ApplicationInfoGridItem,
+        movingFolderGridItem: GridItem,
         data: GridItemData.Folder,
     ) -> Unit,
     onUpdateScreen: (Screen) -> Unit,
@@ -321,7 +318,6 @@ internal fun HomeScreen(
                 gridItemSource = gridItemSource,
                 isVisibleOverlay = isVisibleOverlay,
                 onCancelGridCache = onCancelGridCache,
-                onDeleteApplicationInfoGridItem = onDeleteApplicationInfoGridItem,
                 onDeleteGridItem = onDeleteGridItem,
                 onResetGridCacheAfterDeleteGridItemCache = onResetGridCacheAfterDeleteGridItemCache,
                 onResetGridCacheAfterDeleteWidgetGridItemCache = onResetGridCacheAfterDeleteWidgetGridItemCache,
@@ -387,7 +383,6 @@ private fun Success(
     gridItemSource: GridItemSource?,
     isVisibleOverlay: Boolean,
     onCancelGridCache: () -> Unit,
-    onDeleteApplicationInfoGridItem: (ApplicationInfoGridItem) -> Unit,
     onDeleteGridItem: (GridItem) -> Unit,
     onResetGridCacheAfterDeleteGridItemCache: (GridItem) -> Unit,
     onResetGridCacheAfterDeleteWidgetGridItemCache: (
@@ -410,7 +405,7 @@ private fun Success(
     onGetPinGridItem: (PinItemRequestType) -> Unit,
     onMoveFolderGridItem: (
         conflictingId: String,
-        movingApplicationInfoGridItem: ApplicationInfoGridItem,
+        movingFolderGridItem: GridItem,
         data: GridItemData.Folder,
         dragX: Int,
         dragY: Int,
@@ -460,7 +455,7 @@ private fun Success(
     onUpdateFolderGridItemId: (String?) -> Unit,
     onShowFolderWhenDragging: (
         conflictingId: String,
-        movingApplicationInfoGridItem: ApplicationInfoGridItem,
+        movingFolderGridItem: GridItem,
         data: GridItemData.Folder,
     ) -> Unit,
     onUpdateScreen: (Screen) -> Unit,
@@ -520,7 +515,6 @@ private fun Success(
                     resizeGridItem = resizeGridItem,
                     gridItemSource = gridItemSource,
                     isVisibleOverlay = isVisibleOverlay,
-                    onDeleteApplicationInfoGridItem = onDeleteApplicationInfoGridItem,
                     onDeleteGridItem = onDeleteGridItem,
                     onResetGridCacheAfterDeleteGridItemCache = onResetGridCacheAfterDeleteGridItemCache,
                     onResetGridCacheAfterDeleteWidgetGridItemCache = onResetGridCacheAfterDeleteWidgetGridItemCache,

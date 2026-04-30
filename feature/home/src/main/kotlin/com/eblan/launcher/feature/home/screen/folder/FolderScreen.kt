@@ -17,17 +17,19 @@
  */
 package com.eblan.launcher.feature.home.screen.folder
 
+import android.content.Intent.parseUri
 import android.graphics.Rect
+import android.os.Build
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.Animatable
-import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -36,7 +38,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -45,56 +46,35 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.layer.drawLayer
-import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.round
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.lerp
-import coil3.compose.AsyncImage
-import coil3.request.ImageRequest.Builder
-import coil3.request.addLastModifiedToFileCacheKey
-import com.eblan.launcher.domain.model.ApplicationInfoGridItem
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.GridItemSettings
+import com.eblan.launcher.domain.model.TextColor
 import com.eblan.launcher.domain.usecase.grid.FOLDER_MAX_COLUMNS
 import com.eblan.launcher.domain.usecase.grid.FOLDER_MAX_ROWS
-import com.eblan.launcher.feature.home.component.FolderGridLayout
+import com.eblan.launcher.feature.home.component.GridLayout
 import com.eblan.launcher.feature.home.component.PageIndicator
-import com.eblan.launcher.feature.home.component.swipeGestures
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
+import com.eblan.launcher.feature.home.screen.pager.InteractiveGridItemContent
 import com.eblan.launcher.feature.home.util.FOLDER_GRID_PADDING
 import com.eblan.launcher.feature.home.util.PAGE_INDICATOR_HEIGHT
-import com.eblan.launcher.feature.home.util.getHorizontalAlignment
-import com.eblan.launcher.feature.home.util.getVerticalArrangement
-import com.eblan.launcher.feature.home.util.handleDrag
-import com.eblan.launcher.feature.home.util.onDoubleTap
-import com.eblan.launcher.feature.home.util.onLongPress
 import com.eblan.launcher.ui.local.LocalLauncherApps
-import com.eblan.launcher.ui.local.LocalSettings
 
 @Composable
 internal fun SharedTransitionScope.FolderScreen(
@@ -114,6 +94,8 @@ internal fun SharedTransitionScope.FolderScreen(
     isVisibleOverlay: Boolean,
     isClosingFolder: Boolean,
     isMoveFolderGridItemOutsideFolder: Boolean,
+    hasShortcutHostPermission: Boolean,
+    textColor: TextColor,
     onDismissRequest: () -> Unit,
     onMoveFolderGridItemOutsideFolder: () -> Unit,
     onDraggingGridItem: () -> Unit,
@@ -139,6 +121,18 @@ internal fun SharedTransitionScope.FolderScreen(
     val data = folderGridItem.data as? GridItemData.Folder ?: return
 
     val density = LocalDensity.current
+
+    val context = LocalContext.current
+
+    val androidLauncherAppsWrapper = LocalLauncherApps.current
+
+    val leftPadding = with(density) {
+        paddingValues.calculateStartPadding(LayoutDirection.Ltr).roundToPx()
+    }
+
+    val topPadding = with(density) {
+        paddingValues.calculateTopPadding().roundToPx()
+    }
 
     val cellWidth = safeDrawingWidth / FOLDER_MAX_COLUMNS
     val cellHeight = safeDrawingHeight / FOLDER_MAX_ROWS
@@ -278,23 +272,71 @@ internal fun SharedTransitionScope.FolderScreen(
                     state = folderGridHorizontalPagerState,
                     userScrollEnabled = !isVisibleOverlay,
                 ) { index ->
-                    FolderGridLayout(
+                    GridLayout(
                         modifier = Modifier.fillMaxSize(),
                         columns = data.columns,
                         gridItems = data.gridItemsByPage[index],
                         rows = data.rows,
-                        content = { applicationInfoGridItem ->
-                            FolderGridItemContent(
+                        content = { gridItem ->
+                            val x = gridItem.startColumn * cellWidth
+
+                            val y = gridItem.startRow * cellHeight
+
+                            InteractiveGridItemContent(
                                 drag = drag,
-                                folderGridItem = folderGridItem,
-                                gridItem = applicationInfoGridItem,
+                                gridItem = gridItem,
                                 gridItemSettings = gridItemSettings,
                                 gridItemSource = gridItemSource,
+                                hasShortcutHostPermission = hasShortcutHostPermission,
                                 iconPackFilePaths = iconPackFilePaths,
+                                isScrollInProgress = folderGridHorizontalPagerState.isScrollInProgress,
                                 statusBarNotifications = statusBarNotifications,
+                                textColor = textColor,
                                 isVisibleOverlay = isVisibleOverlay,
+                                parent = SharedElementKey.Parent.Folder,
+                                isVisibleFolder = false,
                                 onDraggingGridItem = onDraggingGridItem,
                                 onOpenAppDrawer = onOpenAppDrawer,
+                                onTapApplicationInfo = { serialNumber, componentName ->
+                                    val sourceBoundsX = x + leftPadding
+
+                                    val sourceBoundsY = y + topPadding
+
+                                    androidLauncherAppsWrapper.startMainActivity(
+                                        serialNumber = serialNumber,
+                                        componentName = componentName,
+                                        sourceBounds = Rect(
+                                            sourceBoundsX,
+                                            sourceBoundsY,
+                                            sourceBoundsX + cellWidth,
+                                            sourceBoundsY + cellHeight,
+                                        ),
+                                    )
+                                },
+                                onTapFolderGridItem = {
+                                },
+                                onTapShortcutConfig = { uri ->
+                                    context.startActivity(parseUri(uri, 0))
+                                },
+                                onTapShortcutInfo = { serialNumber, packageName, shortcutId ->
+                                    val sourceBoundsX = x + leftPadding
+
+                                    val sourceBoundsY = y + topPadding
+
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+                                        androidLauncherAppsWrapper.startShortcut(
+                                            serialNumber = serialNumber,
+                                            packageName = packageName,
+                                            id = shortcutId,
+                                            sourceBounds = Rect(
+                                                sourceBoundsX,
+                                                sourceBoundsY,
+                                                sourceBoundsX + cellWidth,
+                                                sourceBoundsY + cellHeight,
+                                            ),
+                                        )
+                                    }
+                                },
                                 onUpdateGridItemSource = onUpdateGridItemSource,
                                 onUpdateImageBitmap = onUpdateImageBitmap,
                                 onUpdateIsDragging = onUpdateIsDragging,
@@ -353,227 +395,6 @@ internal fun FolderTitle(
             Text(
                 text = data.label,
                 style = MaterialTheme.typography.bodySmall,
-            )
-        }
-    }
-}
-
-@Composable
-private fun SharedTransitionScope.FolderGridItemContent(
-    modifier: Modifier = Modifier,
-    drag: Drag,
-    folderGridItem: GridItem,
-    gridItem: ApplicationInfoGridItem,
-    gridItemSettings: GridItemSettings,
-    gridItemSource: GridItemSource?,
-    iconPackFilePaths: Map<String, String>,
-    statusBarNotifications: Map<String, Int>,
-    isVisibleOverlay: Boolean,
-    onDraggingGridItem: () -> Unit,
-    onOpenAppDrawer: () -> Unit,
-    onUpdateGridItemSource: (GridItemSource) -> Unit,
-    onUpdateImageBitmap: (ImageBitmap) -> Unit,
-    onUpdateIsDragging: (Boolean) -> Unit,
-    onUpdateOverlayBounds: (
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) -> Unit,
-    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onShowGridItemPopup: (
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) -> Unit,
-    onDismissGridItemPopup: () -> Unit,
-    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
-) {
-    val launcherApps = LocalLauncherApps.current
-
-    val context = LocalContext.current
-
-    val settings = LocalSettings.current
-
-    val gridItemSourceFolder = gridItemSource as? GridItemSource.Folder
-
-    val isSelected = gridItemSourceFolder != null &&
-        gridItem.id == gridItemSourceFolder.applicationInfoGridItem.id
-
-    val currentGridItemSettings = if (gridItem.override) {
-        gridItem.gridItemSettings
-    } else {
-        gridItemSettings
-    }
-
-    val horizontalAlignment =
-        getHorizontalAlignment(horizontalAlignment = currentGridItemSettings.horizontalAlignment)
-
-    val verticalArrangement =
-        getVerticalArrangement(verticalArrangement = currentGridItemSettings.verticalArrangement)
-
-    var intOffset by remember { mutableStateOf(IntOffset.Zero) }
-
-    var intSize by remember { mutableStateOf(IntSize.Zero) }
-
-    val graphicsLayer = rememberGraphicsLayer()
-
-    val scope = rememberCoroutineScope()
-
-    val maxLines = if (currentGridItemSettings.singleLineLabel) 1 else Int.MAX_VALUE
-
-    val icon = iconPackFilePaths[gridItem.componentName] ?: gridItem.icon
-
-    val hasNotifications =
-        statusBarNotifications[gridItem.packageName] != null && (
-            statusBarNotifications[gridItem.packageName]
-                ?: 0
-            ) > 0
-
-    val hasInteraction = isSelected && isVisibleOverlay
-
-    val alpha = if (hasInteraction) 0f else 1f
-
-    LaunchedEffect(key1 = drag) {
-        handleDrag(
-            drag = drag,
-            isSelected = isSelected,
-            isVisibleOverlay = isVisibleOverlay,
-            onUpdateIsDragging = onUpdateIsDragging,
-            onDismissGridItemPopup = onDismissGridItemPopup,
-            onDraggingGridItem = onDraggingGridItem,
-        )
-    }
-
-    Column(
-        modifier = modifier
-            .pointerInput(key1 = drag) {
-                detectTapGestures(
-                    onDoubleTap = if (!isVisibleOverlay) {
-                        {
-                            onDoubleTap(
-                                context = context,
-                                doubleTap = gridItem.doubleTap,
-                                launcherApps = launcherApps,
-                                scope = scope,
-                                onOpenAppDrawer = onOpenAppDrawer,
-                            )
-                        }
-                    } else {
-                        null
-                    },
-                    onLongPress = if (!isVisibleOverlay) {
-                        {
-                            onLongPress(
-                                scope = scope,
-                                graphicsLayer = graphicsLayer,
-                                intOffset = intOffset,
-                                intSize = intSize,
-                                gridItemSource = GridItemSource.Folder(
-                                    gridItem = folderGridItem,
-                                    applicationInfoGridItem = gridItem,
-                                ),
-                                sharedElementKey = SharedElementKey(
-                                    id = gridItem.id,
-                                    parent = SharedElementKey.Parent.Folder,
-                                ),
-                                onUpdateGridItemSource = onUpdateGridItemSource,
-                                onUpdateImageBitmap = onUpdateImageBitmap,
-                                onUpdateOverlayBounds = onUpdateOverlayBounds,
-                                onUpdateSharedElementKey = onUpdateSharedElementKey,
-                                onShowGridItemPopup = onShowGridItemPopup,
-                                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                            )
-                        }
-                    } else {
-                        null
-                    },
-                    onTap = if (!isVisibleOverlay) {
-                        {
-                            launcherApps.startMainActivity(
-                                serialNumber = gridItem.serialNumber,
-                                componentName = gridItem.componentName,
-                                sourceBounds = Rect(
-                                    intOffset.x,
-                                    intOffset.y,
-                                    intOffset.x + intSize.width,
-                                    intOffset.y + intSize.height,
-                                ),
-                            )
-                        }
-                    } else {
-                        null
-                    },
-                )
-            }
-            .swipeGestures(
-                swipeDown = gridItem.swipeDown,
-                swipeUp = gridItem.swipeUp,
-                onOpenAppDrawer = onOpenAppDrawer,
-            )
-            .fillMaxSize()
-            .padding(currentGridItemSettings.padding.dp),
-        horizontalAlignment = horizontalAlignment,
-        verticalArrangement = verticalArrangement,
-    ) {
-        Box(
-            modifier = Modifier
-                .size(gridItemSettings.iconSize.dp)
-                .alpha(alpha),
-        ) {
-            AsyncImage(
-                model = Builder(LocalContext.current).data(gridItem.customIcon ?: icon)
-                    .addLastModifiedToFileCacheKey(true)
-                    .build(),
-                contentDescription = null,
-                modifier = Modifier
-                    .matchParentSize()
-                    .drawWithContent {
-                        graphicsLayer.record {
-                            this@drawWithContent.drawContent()
-                        }
-
-                        drawLayer(graphicsLayer)
-                    }
-                    .onGloballyPositioned { layoutCoordinates ->
-                        intOffset = layoutCoordinates.positionInRoot().round()
-
-                        intSize = layoutCoordinates.size
-                    }
-                    .run {
-                        if (!hasInteraction) {
-                            sharedElementWithCallerManagedVisibility(
-                                rememberSharedContentState(
-                                    key = SharedElementKey(
-                                        id = gridItem.id,
-                                        parent = SharedElementKey.Parent.Folder,
-                                    ),
-                                ),
-                                visible = true,
-                            )
-                        } else {
-                            this
-                        }
-                    },
-            )
-
-            if (settings.isNotificationAccessGranted() && hasNotifications) {
-                Box(
-                    modifier = Modifier
-                        .size((currentGridItemSettings.iconSize * 0.3).dp)
-                        .align(Alignment.TopEnd)
-                        .background(
-                            color = MaterialTheme.colorScheme.primary,
-                            shape = CircleShape,
-                        ),
-                )
-            }
-        }
-        if (currentGridItemSettings.showLabel) {
-            Text(
-                modifier = Modifier.alpha(alpha),
-                text = gridItem.customLabel ?: gridItem.label,
-                textAlign = TextAlign.Center,
-                maxLines = maxLines,
-                fontSize = currentGridItemSettings.textSize.sp,
-                overflow = TextOverflow.Ellipsis,
             )
         }
     }

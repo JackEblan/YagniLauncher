@@ -61,7 +61,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.round
 import com.eblan.launcher.domain.common.IconKeyGenerator
 import com.eblan.launcher.domain.framework.FileManager
-import com.eblan.launcher.domain.model.ApplicationInfoGridItem
 import com.eblan.launcher.domain.model.Associate
 import com.eblan.launcher.domain.model.EblanAction
 import com.eblan.launcher.domain.model.EblanActionType
@@ -388,7 +387,7 @@ internal class PagerScreenState(
         isVisibleOverlay: Boolean,
         onMoveFolderGridItem: (
             conflictingId: String,
-            movingApplicationInfoGridItem: ApplicationInfoGridItem,
+            movingFolderGridItem: GridItem,
             data: GridItemData.Folder,
             dragX: Int,
             dragY: Int,
@@ -520,7 +519,7 @@ internal class PagerScreenState(
         isVisibleOverlay: Boolean,
         onShowFolderWhenDragging: (
             conflictingId: String,
-            movingApplicationInfoGridItem: ApplicationInfoGridItem,
+            movingFolderGridItem: GridItem,
             data: GridItemData.Folder,
         ) -> Unit,
         onUpdateGridItemSource: (GridItemSource) -> Unit,
@@ -976,44 +975,16 @@ internal class PagerScreenState(
 
         val gridItemSourceFolder = gridItemSource as? GridItemSource.Folder ?: return
 
-        val applicationInfoGridItem = gridItemSourceFolder.applicationInfoGridItem
-
-        val gridItem = GridItem(
-            id = applicationInfoGridItem.id,
-            page = applicationInfoGridItem.page,
-            startColumn = applicationInfoGridItem.startColumn,
-            startRow = applicationInfoGridItem.startRow,
-            columnSpan = applicationInfoGridItem.columnSpan,
-            rowSpan = applicationInfoGridItem.rowSpan,
-            data = GridItemData.ApplicationInfo(
-                serialNumber = applicationInfoGridItem.serialNumber,
-                componentName = applicationInfoGridItem.componentName,
-                packageName = applicationInfoGridItem.packageName,
-                icon = applicationInfoGridItem.icon,
-                label = applicationInfoGridItem.label,
-                customIcon = applicationInfoGridItem.customIcon,
-                customLabel = applicationInfoGridItem.customLabel,
-                index = -1,
-                folderId = null,
-            ),
-            associate = applicationInfoGridItem.associate,
-            override = applicationInfoGridItem.override,
-            gridItemSettings = applicationInfoGridItem.gridItemSettings,
-            doubleTap = applicationInfoGridItem.doubleTap,
-            swipeUp = applicationInfoGridItem.swipeUp,
-            swipeDown = applicationInfoGridItem.swipeDown,
-        )
-
-        onUpdateGridItemSource(GridItemSource.New(gridItem = gridItem))
+        onUpdateGridItemSource(GridItemSource.New(gridItem = gridItemSourceFolder.folderGridItem))
 
         sharedElementKey = SharedElementKey(
-            id = gridItem.id,
+            id = gridItemSourceFolder.folderGridItem.id,
             parent = SharedElementKey.Parent.Grid,
         )
 
         onMoveFolderGridItemOutsideFolder(
             folderGridItem.id,
-            applicationInfoGridItem.id,
+            gridItemSourceFolder.folderGridItem.id,
             data,
         )
     }

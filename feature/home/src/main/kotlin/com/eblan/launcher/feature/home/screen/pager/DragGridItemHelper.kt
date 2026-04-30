@@ -30,7 +30,6 @@ import androidx.compose.ui.unit.dp
 import com.eblan.launcher.domain.grid.getWidgetGridItemSize
 import com.eblan.launcher.domain.grid.getWidgetGridItemSpan
 import com.eblan.launcher.domain.grid.isGridItemSpanWithinBounds
-import com.eblan.launcher.domain.model.ApplicationInfoGridItem
 import com.eblan.launcher.domain.model.Associate
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
@@ -170,7 +169,7 @@ internal fun handleDragGridItem(
     screenWidth: Int,
     onMoveFolderGridItem: (
         conflictingId: String,
-        movingApplicationInfoGridItem: ApplicationInfoGridItem,
+        movingFolderGridItem: GridItem,
         data: GridItemData.Folder,
         dragX: Int,
         dragY: Int,
@@ -312,7 +311,7 @@ private fun handleDragFolderGridItem(
     safeDrawingWidth: Int,
     onMoveFolderGridItem: (
         conflictingId: String,
-        movingApplicationInfoGridItem: ApplicationInfoGridItem,
+        movingFolderGridItem: GridItem,
         data: GridItemData.Folder,
         dragX: Int,
         dragY: Int,
@@ -361,7 +360,7 @@ private fun handleDragFolderGridItem(
     val isInsideFolder = folderDragX in 0..folderGridVisibleWidthPx &&
         folderDragY in 0..folderGridVisibleHeightPx
 
-    val applicationInfoGridItem = gridItemSourceFolder.applicationInfoGridItem
+    val applicationInfoGridItem = gridItemSourceFolder.folderGridItem
 
     if (isInsideFolder) {
         onUpdateSharedElementKey(
@@ -553,7 +552,7 @@ internal suspend fun handleConflictingGridItem(
     lockMovement: Boolean,
     onShowFolderWhenDragging: (
         conflictingId: String,
-        movingApplicationInfoGridItem: ApplicationInfoGridItem,
+        movingFolderGridItem: GridItem,
         data: GridItemData.Folder,
     ) -> Unit,
     onUpdateFolderPopupBounds: (
@@ -579,9 +578,6 @@ internal suspend fun handleConflictingGridItem(
     val conflictingGridItem = moveGridItemResult.conflictingGridItem ?: return
 
     val conflictingData = conflictingGridItem.data as? GridItemData.Folder ?: return
-
-    val movingData =
-        moveGridItemResult.movingGridItem.data as? GridItemData.ApplicationInfo ?: return
 
     val leftPadding = with(density) {
         paddingValues.calculateStartPadding(LayoutDirection.Ltr).roundToPx()
@@ -659,34 +655,10 @@ internal suspend fun handleConflictingGridItem(
         }
     }
 
-    val applicationInfoGridItem = ApplicationInfoGridItem(
-        id = moveGridItemResult.movingGridItem.id,
-        page = moveGridItemResult.movingGridItem.page,
-        startColumn = moveGridItemResult.movingGridItem.startColumn,
-        startRow = moveGridItemResult.movingGridItem.startRow,
-        columnSpan = moveGridItemResult.movingGridItem.columnSpan,
-        rowSpan = moveGridItemResult.movingGridItem.rowSpan,
-        associate = moveGridItemResult.movingGridItem.associate,
-        componentName = movingData.componentName,
-        packageName = movingData.packageName,
-        icon = movingData.icon,
-        label = movingData.label,
-        override = moveGridItemResult.movingGridItem.override,
-        serialNumber = movingData.serialNumber,
-        customIcon = movingData.customIcon,
-        customLabel = movingData.customLabel,
-        gridItemSettings = moveGridItemResult.movingGridItem.gridItemSettings,
-        doubleTap = moveGridItemResult.movingGridItem.doubleTap,
-        swipeUp = moveGridItemResult.movingGridItem.swipeUp,
-        swipeDown = moveGridItemResult.movingGridItem.swipeDown,
-        index = conflictingData.gridItems.lastIndex + 1,
-        folderId = conflictingData.id,
-    )
-
     onUpdateGridItemSource(
         GridItemSource.Folder(
             gridItem = moveGridItemResult.movingGridItem,
-            applicationInfoGridItem = applicationInfoGridItem,
+            folderGridItem = moveGridItemResult.movingGridItem,
         ),
     )
 
@@ -697,14 +669,14 @@ internal suspend fun handleConflictingGridItem(
 
     onUpdateSharedElementKey(
         SharedElementKey(
-            id = applicationInfoGridItem.id,
+            id = moveGridItemResult.movingGridItem.id,
             parent = SharedElementKey.Parent.Folder,
         ),
     )
 
     onShowFolderWhenDragging(
         conflictingData.id,
-        applicationInfoGridItem,
+        moveGridItemResult.movingGridItem,
         conflictingData,
     )
 }
