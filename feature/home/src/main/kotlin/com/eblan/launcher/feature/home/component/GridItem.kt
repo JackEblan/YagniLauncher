@@ -96,6 +96,7 @@ internal fun SharedTransitionScope.InteractiveApplicationInfoGridItem(
     isVisibleOverlay: Boolean,
     newGridItemSource: GridItemSource,
     sharedElementKey: SharedElementKey,
+    isShowWhiteBox: Boolean,
     onDraggingGridItem: () -> Unit,
     onOpenAppDrawer: () -> Unit,
     onTapApplicationInfo: (
@@ -149,7 +150,7 @@ internal fun SharedTransitionScope.InteractiveApplicationInfoGridItem(
 
     val hasInteraction = isSelected && isVisibleOverlay
 
-    val isVisibleWhiteBox = isSelected && drag == Drag.Dragging
+    val isVisibleWhiteBox = isShowWhiteBox && isSelected && drag == Drag.Dragging
 
     val alpha = if (hasInteraction) 0f else 1f
 
@@ -307,6 +308,7 @@ internal fun SharedTransitionScope.InteractiveWidgetGridItem(
     isVisibleOverlay: Boolean,
     newGridItemSource: GridItemSource,
     sharedElementKey: SharedElementKey,
+    isShowWhiteBox: Boolean,
     onDraggingGridItem: () -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
@@ -339,7 +341,7 @@ internal fun SharedTransitionScope.InteractiveWidgetGridItem(
 
     val hasInteraction = isSelected && isVisibleOverlay
 
-    val isVisibleWhiteBox = isSelected && drag == Drag.Dragging
+    val isVisibleWhiteBox = isShowWhiteBox && isSelected && drag == Drag.Dragging
 
     val alpha = if (hasInteraction) 0f else 1f
 
@@ -467,6 +469,7 @@ internal fun SharedTransitionScope.InteractiveShortcutInfoGridItem(
     isVisibleOverlay: Boolean,
     newGridItemSource: GridItemSource,
     sharedElementKey: SharedElementKey,
+    isShowWhiteBox: Boolean,
     onDraggingGridItem: () -> Unit,
     onOpenAppDrawer: () -> Unit,
     onTapShortcutInfo: (
@@ -515,7 +518,7 @@ internal fun SharedTransitionScope.InteractiveShortcutInfoGridItem(
 
     val hasInteraction = isSelected && isVisibleOverlay
 
-    val isVisibleWhiteBox = isSelected && drag == Drag.Dragging
+    val isVisibleWhiteBox = isShowWhiteBox && isSelected && drag == Drag.Dragging
 
     val alpha = if (hasInteraction) 0f else 1f
 
@@ -674,6 +677,7 @@ internal fun SharedTransitionScope.InteractiveFolderGridItem(
     newGridItemSource: GridItemSource,
     sharedElementKey: SharedElementKey,
     isVisibleFolder: Boolean,
+    isShowWhiteBox: Boolean,
     onDraggingGridItem: () -> Unit,
     onOpenAppDrawer: () -> Unit,
     onTap: () -> Unit,
@@ -714,7 +718,7 @@ internal fun SharedTransitionScope.InteractiveFolderGridItem(
 
     val hasInteraction = isSelected && isVisibleOverlay
 
-    val isVisibleWhiteBox = isSelected && drag == Drag.Dragging
+    val isVisibleWhiteBox = isShowWhiteBox && isSelected && drag == Drag.Dragging
 
     val alpha = if (hasInteraction) 0f else 1f
 
@@ -883,6 +887,7 @@ internal fun SharedTransitionScope.InteractiveShortcutConfigGridItem(
     isVisibleOverlay: Boolean,
     newGridItemSource: GridItemSource,
     sharedElementKey: SharedElementKey,
+    isShowWhiteBox: Boolean,
     onDraggingGridItem: () -> Unit,
     onOpenAppDrawer: () -> Unit,
     onTapShortcutConfig: (String) -> Unit,
@@ -959,7 +964,7 @@ internal fun SharedTransitionScope.InteractiveShortcutConfigGridItem(
 
     val hasInteraction = isSelected && isVisibleOverlay
 
-    val isVisibleWhiteBox = isSelected && drag == Drag.Dragging
+    val isVisibleWhiteBox = isShowWhiteBox && isSelected && drag == Drag.Dragging
 
     val alpha = if (hasInteraction) 0f else 1f
 

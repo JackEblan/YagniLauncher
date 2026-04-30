@@ -119,7 +119,7 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
 
             is GridItemData.Folder,
             is GridItemData.Widget,
-            -> return
+            -> error("Unsupported folder item type: ${folderData::class.simpleName}")
         }
 
         val updatedMovingGridItem = movingGridItem.copy(data = newData)
@@ -151,14 +151,14 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
             is GridItemData.ApplicationInfo -> data.copy(folderId = id, index = 0)
             is GridItemData.ShortcutInfo -> data.copy(folderId = id, index = 0)
             is GridItemData.ShortcutConfig -> data.copy(folderId = id, index = 0)
-            else -> return
+            else -> error("Unsupported folder item type: ${data::class.simpleName}")
         }
 
         val movingData = when (val data = movingGridItem.data) {
             is GridItemData.ApplicationInfo -> data.copy(folderId = id, index = 1)
             is GridItemData.ShortcutInfo -> data.copy(folderId = id, index = 1)
             is GridItemData.ShortcutConfig -> data.copy(folderId = id, index = 1)
-            else -> return
+            else -> error("Unsupported folder item type: ${data::class.simpleName}")
         }
 
         val folderGridItems = listOf(

@@ -358,7 +358,7 @@ private fun handleDragFolderGridItem(
         (folderGridHeightPx - folderTitleHeightPx) - (folderGridPaddingPx * 2)
 
     val isInsideFolder = folderDragX in 0..folderGridVisibleWidthPx &&
-        folderDragY in 0..folderGridVisibleHeightPx
+            folderDragY in 0..folderGridVisibleHeightPx
 
     val applicationInfoGridItem = gridItemSourceFolder.folderGridItem
 
@@ -577,7 +577,28 @@ internal suspend fun handleConflictingGridItem(
 
     val conflictingGridItem = moveGridItemResult.conflictingGridItem ?: return
 
+    val movingGridItem = moveGridItemResult.movingGridItem
+
     val conflictingData = conflictingGridItem.data as? GridItemData.Folder ?: return
+
+    val movingData = when (val data = movingGridItem.data) {
+        is GridItemData.ApplicationInfo -> data.copy(
+            index = conflictingData.gridItems.lastIndex + 1,
+            folderId = conflictingData.id,
+        )
+
+        is GridItemData.ShortcutConfig -> data.copy(
+            index = conflictingData.gridItems.lastIndex + 1,
+            folderId = conflictingData.id,
+        )
+
+        is GridItemData.ShortcutInfo -> data.copy(
+            index = conflictingData.gridItems.lastIndex + 1,
+            folderId = conflictingData.id,
+        )
+
+        else -> return
+    }
 
     val leftPadding = with(density) {
         paddingValues.calculateStartPadding(LayoutDirection.Ltr).roundToPx()
@@ -655,10 +676,12 @@ internal suspend fun handleConflictingGridItem(
         }
     }
 
+    val movingFolderGridItem = movingGridItem.copy(data = movingData)
+
     onUpdateGridItemSource(
         GridItemSource.Folder(
-            gridItem = moveGridItemResult.movingGridItem,
-            folderGridItem = moveGridItemResult.movingGridItem,
+            gridItem = movingGridItem,
+            folderGridItem = movingFolderGridItem,
         ),
     )
 
@@ -669,14 +692,14 @@ internal suspend fun handleConflictingGridItem(
 
     onUpdateSharedElementKey(
         SharedElementKey(
-            id = moveGridItemResult.movingGridItem.id,
+            id = movingGridItem.id,
             parent = SharedElementKey.Parent.Folder,
         ),
     )
 
     onShowFolderWhenDragging(
         conflictingData.id,
-        moveGridItemResult.movingGridItem,
+        movingFolderGridItem,
         conflictingData,
     )
 }

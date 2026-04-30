@@ -975,7 +975,7 @@ internal class PagerScreenState(
 
         val gridItemSourceFolder = gridItemSource as? GridItemSource.Folder ?: return
 
-        onUpdateGridItemSource(GridItemSource.New(gridItem = gridItemSourceFolder.folderGridItem))
+        onUpdateGridItemSource(GridItemSource.Existing(gridItem = gridItemSourceFolder.folderGridItem))
 
         sharedElementKey = SharedElementKey(
             id = gridItemSourceFolder.folderGridItem.id,

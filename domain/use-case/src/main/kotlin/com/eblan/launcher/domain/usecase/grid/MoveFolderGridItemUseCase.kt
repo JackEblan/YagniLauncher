@@ -73,7 +73,7 @@ class MoveFolderGridItemUseCase @Inject constructor(
                 )
             }
 
-            val indexedGridItems = folderGridItems.mapIndexedNotNull { index, gridItem ->
+            val indexedGridItems = folderGridItems.mapIndexed { index, gridItem ->
                 ensureActive()
 
                 when (val data = gridItem.data) {
@@ -89,7 +89,7 @@ class MoveFolderGridItemUseCase @Inject constructor(
                         gridItem.copy(data = data.copy(index = index))
                     }
 
-                    else -> null
+                    else -> error("Unsupported folder item type: ${data::class.simpleName}")
                 }
             }
 

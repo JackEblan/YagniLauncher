@@ -37,8 +37,8 @@ class MoveFolderGridItemOutsideFolderUseCase @Inject constructor(
         withContext(defaultDispatcher) {
             val gridItems = data.gridItems.toMutableList()
 
-            gridItems.removeIf { applicationInfoGridItem ->
-                applicationInfoGridItem.id == movingId
+            gridItems.removeIf { gridItem ->
+                gridItem.id == movingId
             }
 
             val gridItemsByPage = gridItems.getGridItemsByPage()
