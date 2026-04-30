@@ -25,7 +25,6 @@ import com.eblan.launcher.domain.framework.FileManager
 import com.eblan.launcher.domain.framework.LauncherAppsWrapper
 import com.eblan.launcher.domain.framework.PackageManagerWrapper
 import com.eblan.launcher.domain.model.AppDrawerSettings
-import com.eblan.launcher.domain.model.ApplicationInfoGridItem
 import com.eblan.launcher.domain.model.Associate
 import com.eblan.launcher.domain.model.EblanApplicationInfo
 import com.eblan.launcher.domain.model.EditPageData
@@ -37,7 +36,6 @@ import com.eblan.launcher.domain.model.LauncherAppsEvent
 import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.domain.model.PageItem
 import com.eblan.launcher.domain.model.PinItemRequestType
-import com.eblan.launcher.domain.repository.ApplicationInfoGridItemRepository
 import com.eblan.launcher.domain.repository.EblanAppWidgetProviderInfoRepository
 import com.eblan.launcher.domain.repository.EblanApplicationInfoTagRepository
 import com.eblan.launcher.domain.repository.GridCacheRepository
@@ -117,7 +115,6 @@ internal class HomeViewModel @Inject constructor(
     getFolderGridItemsByIdUseCase: GetFolderGridItemsByIdUseCase,
     private val moveFolderGridItemUseCase: MoveFolderGridItemUseCase,
     private val moveFolderGridItemOutsideFolderUseCase: MoveFolderGridItemOutsideFolderUseCase,
-    private val applicationInfoGridItemRepository: ApplicationInfoGridItemRepository,
     private val iconKeyGenerator: IconKeyGenerator,
     private val showFolderWhenDraggingUseCase: ShowFolderWhenDraggingUseCase,
 ) : ViewModel() {
@@ -597,6 +594,8 @@ internal class HomeViewModel @Inject constructor(
                 eblanApplicationInfoIcon = eblanApplicationInfoIcon,
                 customIcon = null,
                 customShortLabel = null,
+                index = -1,
+                folderId = null,
             )
 
             gridCacheRepository.insertGridItem(
@@ -688,7 +687,7 @@ internal class HomeViewModel @Inject constructor(
 
     fun moveFolderGridItem(
         conflictingId: String,
-        movingApplicationInfoGridItem: ApplicationInfoGridItem,
+        movingFolderGridItem: GridItem,
         data: GridItemData.Folder,
         dragX: Int,
         dragY: Int,
@@ -705,7 +704,7 @@ internal class HomeViewModel @Inject constructor(
 
             moveFolderGridItemUseCase(
                 conflictingId = conflictingId,
-                movingApplicationInfoGridItem = movingApplicationInfoGridItem,
+                movingFolderGridItem = movingFolderGridItem,
                 data = data,
                 dragX = dragX,
                 dragY = dragY,
@@ -766,12 +765,6 @@ internal class HomeViewModel @Inject constructor(
         }
     }
 
-    fun deleteApplicationInfoGridItem(applicationInfoGridItem: ApplicationInfoGridItem) {
-        viewModelScope.launch {
-            applicationInfoGridItemRepository.deleteApplicationInfoGridItem(applicationInfoGridItem = applicationInfoGridItem)
-        }
-    }
-
     fun updateGridItemSource(gridItemSource: GridItemSource) {
         _gridItemSource.update {
             gridItemSource
@@ -786,7 +779,7 @@ internal class HomeViewModel @Inject constructor(
 
     fun showFolderWhenDragging(
         conflictingId: String,
-        movingApplicationInfoGridItem: ApplicationInfoGridItem,
+        movingFolderGridItem: GridItem,
         data: GridItemData.Folder,
     ) {
         viewModelScope.launch {
@@ -796,7 +789,7 @@ internal class HomeViewModel @Inject constructor(
 
             showFolderWhenDraggingUseCase(
                 conflictingId = conflictingId,
-                movingApplicationInfoGridItem = movingApplicationInfoGridItem,
+                movingFolderGridItem = movingFolderGridItem,
                 data = data,
             )
 

@@ -30,7 +30,9 @@ import javax.inject.Inject
 internal class DefaultShortcutInfoGridItemRepository @Inject constructor(private val shortcutInfoGridItemDao: ShortcutInfoGridItemDao) : ShortcutInfoGridItemRepository {
     override val gridItemsFlow =
         shortcutInfoGridItemDao.getShortcutInfoGridItemEntitiesFlow().map { entities ->
-            entities.map { entity ->
+            entities.filter { entity ->
+                entity.folderId == null
+            }.map { entity ->
                 entity.asGridItem()
             }
         }

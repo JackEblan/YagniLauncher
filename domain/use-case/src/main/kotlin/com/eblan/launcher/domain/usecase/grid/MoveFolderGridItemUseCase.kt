@@ -19,7 +19,7 @@ package com.eblan.launcher.domain.usecase.grid
 
 import com.eblan.launcher.domain.common.Dispatcher
 import com.eblan.launcher.domain.common.EblanDispatchers
-import com.eblan.launcher.domain.model.ApplicationInfoGridItem
+import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.repository.GridCacheRepository
 import kotlinx.coroutines.CoroutineDispatcher
@@ -33,7 +33,7 @@ class MoveFolderGridItemUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(
         conflictingId: String,
-        movingApplicationInfoGridItem: ApplicationInfoGridItem,
+        movingFolderGridItem: GridItem,
         data: GridItemData.Folder,
         dragX: Int,
         dragY: Int,
@@ -54,32 +54,46 @@ class MoveFolderGridItemUseCase @Inject constructor(
 
             val targetIndex = currentPage * gridItemsPerPage + targetRow * columns + targetColumn
 
-            val currentApplicationInfoGridItems = data.gridItems.toMutableList()
+            val folderGridItems = data.gridItems.toMutableList()
 
             val movingIndex =
-                currentApplicationInfoGridItems.indexOfFirst {
+                folderGridItems.indexOfFirst {
                     ensureActive()
 
-                    it.id == movingApplicationInfoGridItem.id
+                    it.id == movingFolderGridItem.id
                 }
 
             if (movingIndex != -1) {
-                currentApplicationInfoGridItems.add(
+                folderGridItems.add(
                     targetIndex.coerceIn(
                         0,
-                        currentApplicationInfoGridItems.size - 1,
+                        folderGridItems.size - 1,
                     ),
-                    currentApplicationInfoGridItems.removeAt(movingIndex),
+                    folderGridItems.removeAt(movingIndex),
                 )
             }
 
-            val gridItems = currentApplicationInfoGridItems.mapIndexed { index, gridItem ->
+            val indexedGridItems = folderGridItems.mapIndexedNotNull { index, gridItem ->
                 ensureActive()
 
-                gridItem.copy(index = index)
+                when (val data = gridItem.data) {
+                    is GridItemData.ApplicationInfo -> {
+                        gridItem.copy(data = data.copy(index = index))
+                    }
+
+                    is GridItemData.ShortcutConfig -> {
+                        gridItem.copy(data = data.copy(index = index))
+                    }
+
+                    is GridItemData.ShortcutInfo -> {
+                        gridItem.copy(data = data.copy(index = index))
+                    }
+
+                    else -> null
+                }
             }
 
-            val gridItemsByPage = gridItems.getGridItemsByPage()
+            val gridItemsByPage = indexedGridItems.getGridItemsByPage()
 
             val firstPageGridItems = gridItemsByPage[0] ?: emptyList()
 
@@ -88,7 +102,7 @@ class MoveFolderGridItemUseCase @Inject constructor(
             gridCacheRepository.updateGridItemData(
                 id = conflictingId,
                 data = data.copy(
-                    gridItems = gridItems,
+                    gridItems = indexedGridItems,
                     gridItemsByPage = gridItemsByPage,
                     columns = columns,
                     rows = rows,

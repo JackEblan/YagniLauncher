@@ -27,7 +27,6 @@ import androidx.compose.ui.layout.ParentDataModifier
 import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Density
-import com.eblan.launcher.domain.model.ApplicationInfoGridItem
 import com.eblan.launcher.domain.model.EblanApplicationInfo
 import com.eblan.launcher.domain.model.GridItem
 
@@ -88,9 +87,9 @@ internal fun GridLayout(
 internal fun FolderGridLayout(
     modifier: Modifier = Modifier,
     columns: Int,
-    gridItems: List<ApplicationInfoGridItem>?,
+    gridItems: List<GridItem>?,
     rows: Int,
-    content: @Composable BoxScope.(ApplicationInfoGridItem) -> Unit,
+    content: @Composable BoxScope.(GridItem) -> Unit,
 ) {
     SubcomposeLayout(modifier = modifier) { constraints ->
         val cellWidth = constraints.maxWidth / columns

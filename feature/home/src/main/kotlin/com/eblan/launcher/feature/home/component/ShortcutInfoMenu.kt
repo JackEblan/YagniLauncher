@@ -215,6 +215,14 @@ private fun ShortcutInfoMenuItem(
                                         eblanApplicationInfoIcon = icon,
                                         customIcon = null,
                                         customShortLabel = null,
+                                        index = -1,
+                                        folderId = null,
+                                    )
+
+                                    val eblanAction = EblanAction(
+                                        eblanActionType = EblanActionType.None,
+                                        serialNumber = 0L,
+                                        componentName = "",
                                     )
 
                                     val gridItem = GridItem(
@@ -228,21 +236,9 @@ private fun ShortcutInfoMenuItem(
                                         associate = Associate.Grid,
                                         override = false,
                                         gridItemSettings = gridItemSettings,
-                                        doubleTap = EblanAction(
-                                            eblanActionType = EblanActionType.None,
-                                            serialNumber = 0L,
-                                            componentName = "",
-                                        ),
-                                        swipeUp = EblanAction(
-                                            eblanActionType = EblanActionType.None,
-                                            serialNumber = 0L,
-                                            componentName = "",
-                                        ),
-                                        swipeDown = EblanAction(
-                                            eblanActionType = EblanActionType.None,
-                                            serialNumber = 0L,
-                                            componentName = "",
-                                        ),
+                                        doubleTap = eblanAction,
+                                        swipeUp = eblanAction,
+                                        swipeDown = eblanAction,
                                     )
 
                                     onUpdateGridItemSource(GridItemSource.New(gridItem = gridItem))

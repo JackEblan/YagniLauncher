@@ -19,7 +19,6 @@ package com.eblan.launcher.domain.usecase.grid
 
 import com.eblan.launcher.domain.common.Dispatcher
 import com.eblan.launcher.domain.common.EblanDispatchers
-import com.eblan.launcher.domain.model.ApplicationInfoGridItem
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.MoveGridItemResult
@@ -98,31 +97,44 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
         conflictingIndex: Int,
         movingIndex: Int,
     ) {
-        val movingData = movingGridItem.data as? GridItemData.ApplicationInfo
-            ?: error("Expected GridItemData.ApplicationInfo")
+        val folderGridItems = data.gridItems.toMutableList()
 
-        val applicationInfoGridItems = data.gridItems.toMutableList()
+        val index = folderGridItems.size
 
-        val newMovingData = movingData.copy(
-            index = applicationInfoGridItems.lastIndex + 1,
-            folderId = data.id,
-        )
+        val newData = when (val folderData = movingGridItem.data) {
+            is GridItemData.ApplicationInfo -> folderData.copy(
+                index = index,
+                folderId = data.id,
+            )
 
-        val applicationInfoGridItem = movingGridItem.asApplicationInfoGridItem(data = newMovingData)
+            is GridItemData.ShortcutInfo -> folderData.copy(
+                index = index,
+                folderId = data.id,
+            )
 
-        applicationInfoGridItems.add(applicationInfoGridItem)
+            is GridItemData.ShortcutConfig -> folderData.copy(
+                index = index,
+                folderId = data.id,
+            )
 
-        val previewGridItemsByPage =
-            data.gridItemsByPage.values.firstOrNull()?.plus(applicationInfoGridItem) ?: emptyList()
+            is GridItemData.Folder,
+            is GridItemData.Widget,
+            -> return
+        }
+
+        val updatedMovingGridItem = movingGridItem.copy(data = newData)
+
+        folderGridItems.add(updatedMovingGridItem)
 
         val conflictingData = data.copy(
-            gridItems = applicationInfoGridItems,
-            previewGridItemsByPage = previewGridItemsByPage,
+            gridItems = folderGridItems,
+            previewGridItemsByPage = data.gridItemsByPage.values.firstOrNull()
+                ?.plus(updatedMovingGridItem)
+                ?: listOf(updatedMovingGridItem),
         )
 
         gridItems[conflictingIndex] = conflictingGridItem.copy(data = conflictingData)
-        gridItems[movingIndex] = movingGridItem.copy(data = movingData)
-        gridItems.remove(movingGridItem)
+        gridItems.removeAt(movingIndex)
     }
 
     @OptIn(ExperimentalUuidApi::class)
@@ -135,36 +147,28 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
     ) {
         val id = Uuid.random().toHexString()
 
-        val conflictingData = conflictingGridItem.data as? GridItemData.ApplicationInfo
-            ?: error("Expected GridItemData.ApplicationInfo")
+        val conflictingData = when (val data = conflictingGridItem.data) {
+            is GridItemData.ApplicationInfo -> data.copy(folderId = id, index = 0)
+            is GridItemData.ShortcutInfo -> data.copy(folderId = id, index = 0)
+            is GridItemData.ShortcutConfig -> data.copy(folderId = id, index = 0)
+            else -> return
+        }
 
-        val movingData = movingGridItem.data as? GridItemData.ApplicationInfo
-            ?: error("Expected GridItemData.ApplicationInfo")
-
-        val newConflictingData = conflictingData.copy(
-            folderId = id,
-            index = 0,
-        )
-
-        val newMovingData = movingData.copy(
-            folderId = id,
-            index = 1,
-        )
-
-        val conflictingApplicationInfoGridItem =
-            conflictingGridItem.asApplicationInfoGridItem(data = newConflictingData)
-
-        val movingApplicationInfoGridItem =
-            movingGridItem.asApplicationInfoGridItem(data = newMovingData)
+        val movingData = when (val data = movingGridItem.data) {
+            is GridItemData.ApplicationInfo -> data.copy(folderId = id, index = 1)
+            is GridItemData.ShortcutInfo -> data.copy(folderId = id, index = 1)
+            is GridItemData.ShortcutConfig -> data.copy(folderId = id, index = 1)
+            else -> return
+        }
 
         val folderGridItems = listOf(
-            conflictingApplicationInfoGridItem,
-            movingApplicationInfoGridItem,
+            conflictingGridItem.copy(data = conflictingData),
+            movingGridItem.copy(data = movingData),
         )
 
-        gridItems[conflictingIndex] = conflictingGridItem.copy(data = newConflictingData)
+        gridItems[conflictingIndex] = conflictingGridItem.copy(data = conflictingData)
 
-        gridItems[movingIndex] = movingGridItem.copy(data = newMovingData)
+        gridItems[movingIndex] = movingGridItem.copy(data = movingData)
 
         gridItems.add(
             conflictingGridItem.copy(
@@ -182,28 +186,4 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
             ),
         )
     }
-
-    private fun GridItem.asApplicationInfoGridItem(data: GridItemData.ApplicationInfo): ApplicationInfoGridItem = ApplicationInfoGridItem(
-        id = id,
-        page = page,
-        startColumn = startColumn,
-        startRow = startRow,
-        columnSpan = columnSpan,
-        rowSpan = rowSpan,
-        associate = associate,
-        componentName = data.componentName,
-        packageName = data.packageName,
-        icon = data.icon,
-        label = data.label,
-        override = override,
-        serialNumber = data.serialNumber,
-        customIcon = data.customIcon,
-        customLabel = data.customLabel,
-        gridItemSettings = gridItemSettings,
-        doubleTap = doubleTap,
-        swipeUp = swipeUp,
-        swipeDown = swipeDown,
-        index = data.index,
-        folderId = data.folderId,
-    )
 }

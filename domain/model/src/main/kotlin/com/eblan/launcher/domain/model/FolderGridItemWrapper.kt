@@ -20,4 +20,6 @@ package com.eblan.launcher.domain.model
 data class FolderGridItemWrapper(
     val folderGridItem: FolderGridItem,
     val applicationInfoGridItems: List<ApplicationInfoGridItem>,
+    val shortcutInfoGridItems: List<ShortcutInfoGridItem>,
+    val shortcutConfigGridItems: List<ShortcutConfigGridItem>,
 )

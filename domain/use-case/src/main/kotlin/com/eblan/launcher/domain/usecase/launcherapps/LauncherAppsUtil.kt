@@ -533,9 +533,15 @@ internal suspend fun addNewApplicationToHomeScreen(
                     data.componentName == componentName
 
             is GridItemData.Folder ->
-                data.gridItems.any { applicationInfoGridItem ->
-                    applicationInfoGridItem.serialNumber == 0L &&
-                        applicationInfoGridItem.componentName == componentName
+                data.gridItems.any { folderGridItem ->
+                    when (val folderData = folderGridItem.data) {
+                        is GridItemData.ApplicationInfo -> {
+                            folderData.serialNumber == 0L &&
+                                folderData.componentName == componentName
+                        }
+
+                        else -> false
+                    }
                 }
 
             else -> false

@@ -339,20 +339,12 @@ private fun FolderGridItem(
                     maxItemsInEachRow = 3,
                     maxLines = 3,
                 ) {
-                    data.previewGridItemsByPage.forEach { applicationInfoFolderGridItem ->
-                        key(applicationInfoFolderGridItem.id) {
-                            val icon =
-                                iconPackFilePaths[applicationInfoFolderGridItem.componentName]
-                                    ?: applicationInfoFolderGridItem.icon
-
-                            AsyncImage(
-                                model = Builder(LocalContext.current)
-                                    .data(applicationInfoFolderGridItem.customIcon ?: icon)
-                                    .addLastModifiedToFileCacheKey(true).build(),
-                                contentDescription = null,
-                                modifier = Modifier.size((gridItemSettings.iconSize * 0.30).dp),
-                            )
-                        }
+                    data.previewGridItemsByPage.forEach { folderGridItem ->
+                        PreviewFolderGridItemContent(
+                            gridItem = folderGridItem,
+                            gridItemSettings = gridItemSettings,
+                            iconPackFilePaths = iconPackFilePaths,
+                        )
                     }
                 }
             }
@@ -476,6 +468,74 @@ private fun ShortcutConfigGridItem(
                 fontSize = gridItemSettings.textSize.sp,
                 overflow = TextOverflow.Ellipsis,
             )
+        }
+    }
+}
+
+@Composable
+private fun PreviewFolderGridItemContent(
+    modifier: Modifier = Modifier,
+    gridItem: GridItem,
+    gridItemSettings: GridItemSettings,
+    iconPackFilePaths: Map<String, String>,
+) {
+    key(gridItem.id) {
+        when (val data = gridItem.data) {
+            is GridItemData.ApplicationInfo -> {
+                val icon =
+                    iconPackFilePaths[data.componentName]
+                        ?: data.icon
+
+                AsyncImage(
+                    model = Builder(LocalContext.current)
+                        .data(data.customIcon ?: icon)
+                        .addLastModifiedToFileCacheKey(true).build(),
+                    contentDescription = null,
+                    modifier = modifier.size((gridItemSettings.iconSize * 0.30).dp),
+                )
+            }
+
+            is GridItemData.ShortcutConfig -> {
+                val icon = when {
+                    data.customIcon != null -> {
+                        data.customIcon
+                    }
+
+                    data.shortcutIntentIcon != null -> {
+                        data.shortcutIntentIcon
+                    }
+
+                    data.activityIcon != null -> {
+                        data.activityIcon
+                    }
+
+                    else -> {
+                        data.applicationIcon
+                    }
+                }
+
+                AsyncImage(
+                    model = Builder(LocalContext.current)
+                        .data(icon)
+                        .addLastModifiedToFileCacheKey(true).build(),
+                    contentDescription = null,
+                    modifier = modifier
+                        .size((gridItemSettings.iconSize * 0.30).dp),
+                )
+            }
+
+            is GridItemData.ShortcutInfo -> {
+                AsyncImage(
+                    model = Builder(LocalContext.current)
+                        .data(data.customIcon ?: data.icon)
+                        .addLastModifiedToFileCacheKey(true).build(),
+                    contentDescription = null,
+                    modifier = modifier
+                        .size((gridItemSettings.iconSize * 0.30).dp),
+                )
+            }
+
+            else -> Unit
         }
     }
 }
