@@ -54,26 +54,26 @@ class MoveFolderGridItemUseCase @Inject constructor(
 
             val targetIndex = currentPage * gridItemsPerPage + targetRow * columns + targetColumn
 
-            val gridItems = data.gridItems.toMutableList()
+            val folderGridItems = data.gridItems.toMutableList()
 
             val movingIndex =
-                gridItems.indexOfFirst {
+                folderGridItems.indexOfFirst {
                     ensureActive()
 
                     it.id == movingFolderGridItem.id
                 }
 
             if (movingIndex != -1) {
-                gridItems.add(
+                folderGridItems.add(
                     targetIndex.coerceIn(
                         0,
-                        gridItems.size - 1,
+                        folderGridItems.size - 1,
                     ),
-                    gridItems.removeAt(movingIndex),
+                    folderGridItems.removeAt(movingIndex),
                 )
             }
 
-            val indexedGridItems = gridItems.mapIndexedNotNull { index, gridItem ->
+            val indexedGridItems = folderGridItems.mapIndexedNotNull { index, gridItem ->
                 ensureActive()
 
                 when (val data = gridItem.data) {

@@ -119,7 +119,7 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
 
             is GridItemData.Folder,
             is GridItemData.Widget,
-                -> return
+            -> return
         }
 
         val updatedMovingGridItem = movingGridItem.copy(data = newData)

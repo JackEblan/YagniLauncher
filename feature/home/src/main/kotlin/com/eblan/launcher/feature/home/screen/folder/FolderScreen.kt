@@ -63,7 +63,6 @@ import androidx.compose.ui.util.lerp
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.GridItemSettings
-import com.eblan.launcher.domain.model.TextColor
 import com.eblan.launcher.domain.usecase.grid.FOLDER_MAX_COLUMNS
 import com.eblan.launcher.domain.usecase.grid.FOLDER_MAX_ROWS
 import com.eblan.launcher.feature.home.component.FolderGridLayout
@@ -71,7 +70,6 @@ import com.eblan.launcher.feature.home.component.PageIndicator
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
-import com.eblan.launcher.feature.home.screen.pager.InteractiveGridItemContent
 import com.eblan.launcher.feature.home.util.FOLDER_GRID_PADDING
 import com.eblan.launcher.feature.home.util.PAGE_INDICATOR_HEIGHT
 import com.eblan.launcher.ui.local.LocalLauncherApps
@@ -281,7 +279,7 @@ internal fun SharedTransitionScope.FolderScreen(
 
                             val y = gridItem.startRow * cellHeight
 
-                            InteractiveGridItemContent(
+                            InteractiveFolderGridItemContent(
                                 drag = drag,
                                 gridItem = gridItem,
                                 gridItemSettings = gridItemSettings,
@@ -290,10 +288,15 @@ internal fun SharedTransitionScope.FolderScreen(
                                 iconPackFilePaths = iconPackFilePaths,
                                 isScrollInProgress = folderGridHorizontalPagerState.isScrollInProgress,
                                 statusBarNotifications = statusBarNotifications,
-                                textColor = null,
                                 isVisibleOverlay = isVisibleOverlay,
-                                parent = SharedElementKey.Parent.Folder,
-                                isVisibleFolder = false,
+                                newGridItemSource = GridItemSource.Folder(
+                                    gridItem = folderGridItem,
+                                    folderGridItem = gridItem,
+                                ),
+                                sharedElementKey = SharedElementKey(
+                                    id = gridItem.id,
+                                    parent = SharedElementKey.Parent.Folder,
+                                ),
                                 onDraggingGridItem = onDraggingGridItem,
                                 onOpenAppDrawer = onOpenAppDrawer,
                                 onTapApplicationInfo = { serialNumber, componentName ->
