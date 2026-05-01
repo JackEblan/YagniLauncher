@@ -115,6 +115,8 @@ internal fun HomeRoute(
 
     val isVisibleOverlay by viewModel.isVisibleOverlay.collectAsStateWithLifecycle()
 
+    val moveFolderGridItem by viewModel.moveFolderGridItem.collectAsStateWithLifecycle()
+
     HomeScreen(
         modifier = modifier,
         configureResultCode = configureResultCode,
@@ -134,6 +136,7 @@ internal fun HomeRoute(
         resizeGridItem = resizeGridItem,
         gridItemSource = gridItemSource,
         isVisibleOverlay = isVisibleOverlay,
+        moveFolderGridItem = moveFolderGridItem,
         onCancelGridCache = viewModel::cancelGridCache,
         onDeleteGridItem = viewModel::deleteGridItem,
         onResetGridCacheAfterDeleteGridItemCache = viewModel::resetGridCacheAfterDeleteGridItemCache,
@@ -192,6 +195,7 @@ internal fun HomeScreen(
     resizeGridItem: GridItem?,
     gridItemSource: GridItemSource?,
     isVisibleOverlay: Boolean,
+    moveFolderGridItem: GridItem?,
     onCancelGridCache: () -> Unit,
     onDeleteGridItem: (GridItem) -> Unit,
     onResetGridCacheAfterDeleteGridItemCache: (GridItem) -> Unit,
@@ -241,7 +245,7 @@ internal fun HomeScreen(
     ) -> Unit,
     onResetConfigureResultCode: () -> Unit,
     onResetGridCacheAfterMove: (MoveGridItemResult) -> Unit,
-    onResetGridCacheAfterMoveFolder: (MoveGridItemResult?) -> Unit,
+    onResetGridCacheAfterMoveFolder: () -> Unit,
     onResetGridCacheAfterResize: (GridItem) -> Unit,
     onResetPinGridItem: () -> Unit,
     onResizeGridItem: (
@@ -308,6 +312,7 @@ internal fun HomeScreen(
                 resizeGridItem = resizeGridItem,
                 gridItemSource = gridItemSource,
                 isVisibleOverlay = isVisibleOverlay,
+                moveFolderGridItem = moveFolderGridItem,
                 onCancelGridCache = onCancelGridCache,
                 onDeleteGridItem = onDeleteGridItem,
                 onResetGridCacheAfterDeleteGridItemCache = onResetGridCacheAfterDeleteGridItemCache,
@@ -371,6 +376,7 @@ private fun Success(
     resizeGridItem: GridItem?,
     gridItemSource: GridItemSource?,
     isVisibleOverlay: Boolean,
+    moveFolderGridItem: GridItem?,
     onCancelGridCache: () -> Unit,
     onDeleteGridItem: (GridItem) -> Unit,
     onResetGridCacheAfterDeleteGridItemCache: (GridItem) -> Unit,
@@ -420,7 +426,7 @@ private fun Success(
     ) -> Unit,
     onResetConfigureResultCode: () -> Unit,
     onResetGridCacheAfterMove: (MoveGridItemResult) -> Unit,
-    onResetGridCacheAfterMoveFolder: (MoveGridItemResult?) -> Unit,
+    onResetGridCacheAfterMoveFolder: () -> Unit,
     onResetGridCacheAfterResize: (GridItem) -> Unit,
     onResetPinGridItem: () -> Unit,
     onResizeGridItem: (
@@ -497,6 +503,7 @@ private fun Success(
                     resizeGridItem = resizeGridItem,
                     gridItemSource = gridItemSource,
                     isVisibleOverlay = isVisibleOverlay,
+                    moveFolderGridItem = moveFolderGridItem,
                     onDeleteGridItem = onDeleteGridItem,
                     onResetGridCacheAfterDeleteGridItemCache = onResetGridCacheAfterDeleteGridItemCache,
                     onResetGridCacheAfterDeleteWidgetGridItemCache = onResetGridCacheAfterDeleteWidgetGridItemCache,

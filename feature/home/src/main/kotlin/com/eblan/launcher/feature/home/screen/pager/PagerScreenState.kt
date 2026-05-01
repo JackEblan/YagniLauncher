@@ -447,6 +447,7 @@ internal class PagerScreenState(
 
     suspend fun handleDropGridItemEffect(
         moveGridItemResult: MoveGridItemResult?,
+        moveFolderGridItem: GridItem?,
         onLaunchShortcutConfigIntent: (Intent) -> Unit,
         onLaunchShortcutConfigIntentSenderRequest: (IntentSenderRequest) -> Unit,
         onLaunchWidgetIntent: (Intent) -> Unit,
@@ -456,7 +457,7 @@ internal class PagerScreenState(
         onResetGridCacheAfterDeleteGridItemCache: (GridItem) -> Unit,
         onDragCancelAfterMove: () -> Unit,
         onDragEndAfterMove: (MoveGridItemResult) -> Unit,
-        onDragEndAfterMoveFolder: (MoveGridItemResult?) -> Unit,
+        onDragEndAfterMoveFolder: () -> Unit,
     ) {
         handleDropGridItem(
             androidAppWidgetHostWrapper = androidAppWidgetHostWrapper,
@@ -470,6 +471,7 @@ internal class PagerScreenState(
             isVisibleOverlay = isVisibleOverlay,
             moveGridItemResult = moveGridItemResult,
             lockMovement = experimentalSettings.lockMovement,
+            moveFolderGridItem = moveFolderGridItem,
             onResetGridCacheAfterDeleteGridItemCache = onResetGridCacheAfterDeleteGridItemCache,
             onDragCancelAfterMove = onDragCancelAfterMove,
             onDragEndAfterMove = onDragEndAfterMove,

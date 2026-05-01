@@ -144,6 +144,7 @@ internal fun PagerScreen(
     resizeGridItem: GridItem?,
     gridItemSource: GridItemSource?,
     isVisibleOverlay: Boolean,
+    moveFolderGridItem: GridItem?,
     onDeleteGridItem: (GridItem) -> Unit,
     onResetGridCacheAfterDeleteGridItemCache: (GridItem) -> Unit,
     onResetGridCacheAfterDeleteWidgetGridItemCache: (
@@ -152,7 +153,7 @@ internal fun PagerScreen(
     ) -> Unit,
     onDragCancelAfterMove: () -> Unit,
     onDragEndAfterMove: (MoveGridItemResult) -> Unit,
-    onDragEndAfterMoveFolder: (MoveGridItemResult?) -> Unit,
+    onDragEndAfterMoveFolder: () -> Unit,
     onDraggingGridItem: (List<GridItem>) -> Unit,
     onEditApplicationInfo: (
         serialNumber: Long,
@@ -470,6 +471,7 @@ internal fun PagerScreen(
             onLaunchWidgetIntent = appWidgetLauncher::launch,
             gridItemSource = gridItemSource,
             isVisibleOverlay = isVisibleOverlay,
+            moveFolderGridItem = moveFolderGridItem,
             onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
             onResetGridCacheAfterDeleteGridItemCache = onResetGridCacheAfterDeleteGridItemCache,
             onDragCancelAfterMove = onDragCancelAfterMove,

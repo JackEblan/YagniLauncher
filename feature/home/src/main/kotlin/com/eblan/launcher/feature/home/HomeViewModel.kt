@@ -240,6 +240,10 @@ internal class HomeViewModel @Inject constructor(
 
     val isVisibleOverlay = _isVisibleOverlay.asStateFlow()
 
+    private val _moveFolderGridItem = MutableStateFlow<GridItem?>(null)
+
+    val moveFolderGridItem = _moveFolderGridItem.asStateFlow()
+
     fun moveGridItem(
         movingGridItem: GridItem,
         x: Int,
@@ -653,31 +657,33 @@ internal class HomeViewModel @Inject constructor(
         moveGridItemJob = viewModelScope.launch {
             delay(moveDelay)
 
-            moveFolderGridItemUseCase(
-                conflictingId = conflictingId,
-                movingFolderGridItem = movingFolderGridItem,
-                data = data,
-                dragX = dragX,
-                dragY = dragY,
-                columns = columns,
-                rows = rows,
-                gridWidth = gridWidth,
-                gridHeight = gridHeight,
-                currentPage = currentPage,
-            )
+            _moveFolderGridItem.update {
+                moveFolderGridItemUseCase(
+                    conflictingId = conflictingId,
+                    movingFolderGridItem = movingFolderGridItem,
+                    data = data,
+                    dragX = dragX,
+                    dragY = dragY,
+                    columns = columns,
+                    rows = rows,
+                    gridWidth = gridWidth,
+                    gridHeight = gridHeight,
+                    currentPage = currentPage,
+                )
+            }
         }
     }
 
-    fun resetGridCacheAfterMoveFolder(moveGridItemResult: MoveGridItemResult?) {
+    fun resetGridCacheAfterMoveFolder() {
         viewModelScope.launch {
             moveGridItemJob?.cancelAndJoin()
 
-            moveGridItemResult?.movingGridItem?.id?.let { id ->
-                gridCacheRepository.deleteGridItemById(id = id)
+            _moveGridItemResult.update {
+                null
+            }
 
-                _moveGridItemResult.update {
-                    null
-                }
+            _moveFolderGridItem.update {
+                null
             }
 
             gridRepository.updateGridItems(gridItems = gridCacheRepository.gridItemsCacheFlow.first())

@@ -42,8 +42,8 @@ class MoveFolderGridItemUseCase @Inject constructor(
         gridWidth: Int,
         gridHeight: Int,
         currentPage: Int,
-    ) {
-        withContext(defaultDispatcher) {
+    ): GridItem {
+        return withContext(defaultDispatcher) {
             val gridItemsPerPage = columns * rows
 
             val cellWidth = gridWidth / columns
@@ -108,6 +108,8 @@ class MoveFolderGridItemUseCase @Inject constructor(
                     rows = rows,
                 ),
             )
+
+            movingFolderGridItem
         }
     }
 }

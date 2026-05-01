@@ -108,7 +108,10 @@ internal fun handleAnimateScrollToPage(
             }
         }
 
-        is GridItemSource.Folder -> {
+        is GridItemSource.Folder,
+        is GridItemSource.FolderNew,
+        is GridItemSource.FolderPin,
+            -> {
             if (folderPopupIntOffset == null || folderPopupIntSize == null) return
 
             val data = folderGridItem?.data as? GridItemData.Folder ?: return
@@ -276,7 +279,10 @@ internal fun handleDragGridItem(
             }
         }
 
-        is GridItemSource.Folder -> {
+        is GridItemSource.Folder,
+        is GridItemSource.FolderNew,
+        is GridItemSource.FolderPin,
+            -> {
             handleDragFolderGridItem(
                 density = density,
                 dragX = dragX,
@@ -358,7 +364,7 @@ private fun handleDragFolderGridItem(
         (folderGridHeightPx - folderTitleHeightPx) - (folderGridPaddingPx * 2)
 
     val isInsideFolder = folderDragX in 0..folderGridVisibleWidthPx &&
-        folderDragY in 0..folderGridVisibleHeightPx
+            folderDragY in 0..folderGridVisibleHeightPx
 
     val applicationInfoGridItem = gridItemSourceFolder.folderGridItem
 
@@ -734,7 +740,8 @@ private fun getMoveGridItem(
     rows: Int,
     currentPage: Int,
 ): GridItem = when (gridItemSource) {
-    is GridItemSource.Existing, is GridItemSource.Folder -> {
+    is GridItemSource.Existing, is GridItemSource.Folder,
+        -> {
         gridItem.copy(
             page = currentPage,
             startColumn = gridX / cellWidth,
@@ -743,7 +750,10 @@ private fun getMoveGridItem(
         )
     }
 
-    is GridItemSource.New, is GridItemSource.Pin -> {
+    is GridItemSource.New, is GridItemSource.Pin,
+    is GridItemSource.FolderNew,
+    is GridItemSource.FolderPin,
+        -> {
         getMoveNewGridItem(
             associate = associate,
             cellHeight = cellHeight,
