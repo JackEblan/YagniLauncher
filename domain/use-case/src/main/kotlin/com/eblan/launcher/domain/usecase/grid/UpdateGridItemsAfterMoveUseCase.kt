@@ -124,7 +124,7 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
 
             is GridItemData.Folder,
             is GridItemData.Widget,
-                -> error("Unsupported folder item type: ${folderData::class.simpleName}")
+            -> error("Unsupported folder item type: ${folderData::class.simpleName}")
         }
 
         val updatedMovingGridItem = movingGridItem.copy(data = newData)

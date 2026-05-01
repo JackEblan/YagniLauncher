@@ -402,31 +402,6 @@ internal class HomeViewModel @Inject constructor(
         }
     }
 
-    fun resetGridCacheAfterMoveWidgetGridItem(moveGridItemResult: MoveGridItemResult) {
-        viewModelScope.launch {
-            moveGridItemJob?.cancelAndJoin()
-
-            _moveGridItemResult.update {
-                null
-            }
-
-            gridCacheRepository.updateGridItemData(
-                id = moveGridItemResult.movingGridItem.id,
-                data = moveGridItemResult.movingGridItem.data,
-            )
-
-            updateGridItemsAfterMoveUseCase(moveGridItemResult = moveGridItemResult)
-
-            _isCache.update {
-                false
-            }
-
-            _gridItemSource.update {
-                null
-            }
-        }
-    }
-
     fun cancelGridCache() {
         viewModelScope.launch {
             moveGridItemJob?.cancelAndJoin()

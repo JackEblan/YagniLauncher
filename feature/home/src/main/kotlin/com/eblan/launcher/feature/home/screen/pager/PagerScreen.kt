@@ -153,7 +153,6 @@ internal fun PagerScreen(
     onDragCancelAfterMove: () -> Unit,
     onDragEndAfterMove: (MoveGridItemResult) -> Unit,
     onDragEndAfterMoveFolder: (MoveGridItemResult?) -> Unit,
-    onDragEndAfterMoveWidgetGridItem: (MoveGridItemResult) -> Unit,
     onDraggingGridItem: (List<GridItem>) -> Unit,
     onEditApplicationInfo: (
         serialNumber: Long,
@@ -496,7 +495,7 @@ internal fun PagerScreen(
             updatedWidgetGridItem = pagerScreenState.updatedWidgetGridItem,
             onDeleteGridItemCache = onResetGridCacheAfterDeleteGridItemCache,
             onDeleteWidgetGridItemCache = onResetGridCacheAfterDeleteWidgetGridItemCache,
-            onDragEndAfterMoveWidgetGridItem = onDragEndAfterMoveWidgetGridItem,
+            onDragEndAfterMove = onDragEndAfterMove,
         )
     }
 
@@ -539,7 +538,7 @@ internal fun PagerScreen(
             resultCode = configureResultCode,
             updatedGridItem = pagerScreenState.updatedWidgetGridItem,
             onDeleteWidgetGridItemCache = onResetGridCacheAfterDeleteWidgetGridItemCache,
-            onDragEndAfterMoveWidgetGridItem = onDragEndAfterMoveWidgetGridItem,
+            onDragEndAfterMove = onDragEndAfterMove,
             onResetConfigureResultCode = onResetConfigureResultCode,
         )
     }

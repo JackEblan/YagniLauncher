@@ -143,7 +143,7 @@ internal suspend fun handleDropGridItem(
                     is GridItemData.ApplicationInfo,
                     is GridItemData.Folder,
                     is GridItemData.ShortcutInfo,
-                        -> onDragEndAfterMove(moveGridItemResult)
+                    -> onDragEndAfterMove(moveGridItemResult)
                 }
             }
         }
@@ -243,7 +243,7 @@ internal fun handleConfigureLauncherResultEffect(
         gridItem: GridItem,
         appWidgetId: Int,
     ) -> Unit,
-    onDragEndAfterMoveWidgetGridItem: (MoveGridItemResult) -> Unit,
+    onDragEndAfterMove: (MoveGridItemResult) -> Unit,
     onResetConfigureResultCode: () -> Unit,
 ) {
     if (resultCode == null || moveGridItemResult == null || updatedGridItem == null) {
@@ -254,7 +254,7 @@ internal fun handleConfigureLauncherResultEffect(
         (updatedGridItem.data as? GridItemData.Widget) ?: error("Expected GridItemData.Widget")
 
     if (resultCode == Activity.RESULT_OK) {
-        onDragEndAfterMoveWidgetGridItem(moveGridItemResult.copy(movingGridItem = updatedGridItem))
+        onDragEndAfterMove(moveGridItemResult.copy(movingGridItem = updatedGridItem))
     } else {
         onDeleteWidgetGridItemCache(updatedGridItem, data.appWidgetId)
     }
@@ -294,7 +294,7 @@ internal fun handleBoundWidgetEffect(
         gridItem: GridItem,
         appWidgetId: Int,
     ) -> Unit,
-    onDragEndAfterMoveWidgetGridItem: (MoveGridItemResult) -> Unit,
+    onDragEndAfterMove: (MoveGridItemResult) -> Unit,
 ) {
     if (gridItemSource == null || moveGridItemResult == null) return
 
@@ -311,7 +311,7 @@ internal fun handleBoundWidgetEffect(
                 moveGridItemResult = moveGridItemResult,
                 updatedWidgetGridItem = updatedWidgetGridItem,
                 onDeleteWidgetGridItemCache = onDeleteWidgetGridItemCache,
-                onDragEndAfterMoveWidgetGridItem = onDragEndAfterMoveWidgetGridItem,
+                onDragEndAfterMove = onDragEndAfterMove,
             )
         }
 
@@ -322,7 +322,7 @@ internal fun handleBoundWidgetEffect(
                 pinItemRequest = gridItemSource.pinItemRequest,
                 updatedWidgetGridItem = updatedWidgetGridItem,
                 onDeleteGridItemCache = onDeleteGridItemCache,
-                onDragEndAfterMove = onDragEndAfterMoveWidgetGridItem,
+                onDragEndAfterMove = onDragEndAfterMove,
             )
         }
 
@@ -622,7 +622,7 @@ private fun startAppWidgetConfigureActivityForResult(
         gridItem: GridItem,
         appWidgetId: Int,
     ) -> Unit,
-    onDragEndAfterMoveWidgetGridItem: (MoveGridItemResult) -> Unit,
+    onDragEndAfterMove: (MoveGridItemResult) -> Unit,
 ) {
     val configureComponent = configure?.let(ComponentName::unflattenFromString)
 
@@ -636,7 +636,7 @@ private fun startAppWidgetConfigureActivityForResult(
                 null,
             )
         } else {
-            onDragEndAfterMoveWidgetGridItem(moveGridItemResult.copy(movingGridItem = updatedWidgetGridItem))
+            onDragEndAfterMove(moveGridItemResult.copy(movingGridItem = updatedWidgetGridItem))
         }
     } catch (_: ActivityNotFoundException) {
         onDeleteWidgetGridItemCache(updatedWidgetGridItem, appWidgetId)
