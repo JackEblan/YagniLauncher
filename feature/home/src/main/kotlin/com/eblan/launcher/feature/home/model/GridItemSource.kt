@@ -39,6 +39,7 @@ internal sealed interface GridItemSource {
 
     data class FolderNew(
         override val gridItem: GridItem,
+        val folderGridItem: GridItem,
     ) : GridItemSource
 
     data class FolderPin(

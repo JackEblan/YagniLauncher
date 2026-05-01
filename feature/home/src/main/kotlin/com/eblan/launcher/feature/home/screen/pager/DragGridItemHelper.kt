@@ -570,7 +570,6 @@ internal suspend fun handleConflictingGridItem(
 ) {
     if (drag != Drag.Dragging ||
         gridItemSource == null ||
-        gridItemSource is GridItemSource.Folder ||
         moveGridItemResult == null ||
         !moveGridItemResult.isSuccess ||
         !(isVisibleOverlay && isDragging) ||
@@ -684,12 +683,37 @@ internal suspend fun handleConflictingGridItem(
 
     val movingFolderGridItem = movingGridItem.copy(data = movingData)
 
-    onUpdateGridItemSource(
-        GridItemSource.Folder(
-            gridItem = movingGridItem,
-            folderGridItem = movingFolderGridItem,
-        ),
-    )
+    when (gridItemSource) {
+        is GridItemSource.Existing -> {
+            onUpdateGridItemSource(
+                GridItemSource.Folder(
+                    gridItem = movingGridItem,
+                    folderGridItem = movingFolderGridItem,
+                ),
+            )
+        }
+
+        is GridItemSource.New -> {
+            onUpdateGridItemSource(
+                GridItemSource.FolderNew(
+                    gridItem = movingGridItem,
+                    folderGridItem = movingFolderGridItem,
+                ),
+            )
+        }
+
+        is GridItemSource.Pin -> {
+            onUpdateGridItemSource(
+                GridItemSource.FolderPin(
+                    gridItem = movingGridItem,
+                    folderGridItem = movingFolderGridItem,
+                    pinItemRequest = gridItemSource.pinItemRequest,
+                ),
+            )
+        }
+
+        else -> Unit
+    }
 
     onUpdateFolderPopupBounds(
         intOffset,
