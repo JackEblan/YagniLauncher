@@ -289,10 +289,7 @@ internal fun SharedTransitionScope.FolderScreen(
                                 isScrollInProgress = folderGridHorizontalPagerState.isScrollInProgress,
                                 statusBarNotifications = statusBarNotifications,
                                 isVisibleOverlay = isVisibleOverlay,
-                                newGridItemSource = GridItemSource.Folder(
-                                    gridItem = folderGridItem,
-                                    folderGridItem = gridItem,
-                                ),
+                                newGridItemSource = GridItemSource.Folder(gridItem = gridItem),
                                 sharedElementKey = SharedElementKey(
                                     id = gridItem.id,
                                     parent = SharedElementKey.Parent.Folder,

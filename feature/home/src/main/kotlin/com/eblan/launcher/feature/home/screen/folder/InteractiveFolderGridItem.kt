@@ -82,15 +82,15 @@ internal fun SharedTransitionScope.InteractiveFolderGridItemContent(
 ) {
     val isSelected = when (gridItemSource) {
         is GridItemSource.Folder -> {
-            gridItem.id == gridItemSource.folderGridItem.id
+            gridItem.id == gridItemSource.gridItem.id
         }
 
         is GridItemSource.FolderNew -> {
-            gridItem.id == gridItemSource.folderGridItem.id
+            gridItem.id == gridItemSource.gridItem.id
         }
 
         is GridItemSource.FolderPin -> {
-            gridItem.id == gridItemSource.folderGridItem.id
+            gridItem.id == gridItemSource.gridItem.id
         }
 
         else -> false

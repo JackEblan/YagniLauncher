@@ -365,9 +365,9 @@ private fun handleDragFolderGridItem(
         folderDragY in 0..folderGridVisibleHeightPx
 
     val movingFolderGridItem = when (gridItemSource) {
-        is GridItemSource.Folder -> gridItemSource.folderGridItem
-        is GridItemSource.FolderNew -> gridItemSource.folderGridItem
-        is GridItemSource.FolderPin -> gridItemSource.folderGridItem
+        is GridItemSource.Folder,
+        is GridItemSource.FolderNew,
+        is GridItemSource.FolderPin -> gridItemSource.gridItem
         else -> return
     }
 
@@ -590,14 +590,14 @@ internal suspend fun handleConflictingGridItem(
 
     val conflictingData = conflictingGridItem.data as? GridItemData.Folder ?: return
 
-    val index = conflictingData.gridItems.maxOf { folderGridItem ->
+    val index = conflictingData.gridItems.maxOfOrNull { folderGridItem ->
         when (val data = folderGridItem.data) {
             is GridItemData.ApplicationInfo -> data.index + 1
             is GridItemData.ShortcutConfig -> data.index + 1
             is GridItemData.ShortcutInfo -> data.index + 1
             else -> return
         }
-    }
+    } ?: 0
 
     val movingData = when (val data = movingGridItem.data) {
         is GridItemData.ApplicationInfo -> data.copy(
@@ -699,22 +699,19 @@ internal suspend fun handleConflictingGridItem(
     val newGridItemSource = when (gridItemSource) {
         is GridItemSource.Existing -> {
             GridItemSource.Folder(
-                gridItem = movingGridItem,
-                folderGridItem = movingFolderGridItem,
+                gridItem = movingFolderGridItem,
             )
         }
 
         is GridItemSource.New -> {
             GridItemSource.FolderNew(
-                gridItem = movingGridItem,
-                folderGridItem = movingFolderGridItem,
+                gridItem = movingFolderGridItem,
             )
         }
 
         is GridItemSource.Pin -> {
             GridItemSource.FolderPin(
-                gridItem = movingGridItem,
-                folderGridItem = movingFolderGridItem,
+                gridItem = movingFolderGridItem,
                 pinItemRequest = gridItemSource.pinItemRequest,
             )
         }

@@ -235,7 +235,7 @@ internal fun FolderGridItemPopup(
                 eblanAppWidgetProviderInfosGroup = eblanAppWidgetProviderInfosGroup,
                 eblanShortcutInfosGroup = eblanShortcutInfosGroup,
                 gridItemSettings = gridItemSettings,
-                folderGridItem = gridItemSourceFolder.folderGridItem,
+                folderGridItem = gridItemSourceFolder.gridItem,
                 hasShortcutHostPermission = hasShortcutHostPermission,
                 onDeleteGridItem = onDeleteGridItem,
                 onDismissFolder = onDismissFolder,

@@ -511,7 +511,10 @@ internal fun PagerScreen(
         )
     }
 
-    LaunchedEffect(key1 = moveGridItemResult) {
+    LaunchedEffect(
+        key1 = moveGridItemResult,
+        key2 = gridItemSource,
+    ) {
         pagerScreenState.handleConflictingGridItemEffect(
             density = density,
             dockHeight = dockHeight,

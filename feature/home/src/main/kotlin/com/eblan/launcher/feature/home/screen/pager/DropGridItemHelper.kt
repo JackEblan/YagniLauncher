@@ -107,9 +107,9 @@ internal suspend fun handleDropGridItem(
 
             if (lockMovement) return cancelWithToast()
 
-            onUpdateIsDragging(false)
-
             onDragEndAfterMove(moveGridItemResult)
+
+            onUpdateIsDragging(false)
         }
 
         is GridItemSource.New -> {
@@ -202,9 +202,9 @@ internal suspend fun handleDropGridItem(
 
             if (lockMovement) return cancelWithToast()
 
-            onUpdateIsDragging(false)
-
             onDragEndAfterMoveFolder()
+
+            onUpdateIsDragging(false)
         }
 
         is GridItemSource.FolderNew -> {
