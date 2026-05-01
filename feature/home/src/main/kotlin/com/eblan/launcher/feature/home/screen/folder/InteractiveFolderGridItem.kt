@@ -121,6 +121,7 @@ internal fun SharedTransitionScope.InteractiveFolderGridItemContent(
                 newGridItemSource = newGridItemSource,
                 sharedElementKey = sharedElementKey,
                 isShowWhiteBox = isShowWhiteBox,
+                isVisibleFolder = false,
                 onDraggingGridItem = onDraggingGridItem,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onTapApplicationInfo = onTapApplicationInfo,

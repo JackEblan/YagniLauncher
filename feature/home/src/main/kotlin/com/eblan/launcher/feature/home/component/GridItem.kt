@@ -97,6 +97,7 @@ internal fun SharedTransitionScope.InteractiveApplicationInfoGridItem(
     newGridItemSource: GridItemSource,
     sharedElementKey: SharedElementKey,
     isShowWhiteBox: Boolean,
+    isVisibleFolder: Boolean,
     onDraggingGridItem: () -> Unit,
     onOpenAppDrawer: () -> Unit,
     onTapApplicationInfo: (
@@ -227,7 +228,10 @@ internal fun SharedTransitionScope.InteractiveApplicationInfoGridItem(
                 color = Color(gridItemSettings.customBackgroundColor),
                 shape = RoundedCornerShape(size = gridItemSettings.cornerRadius.dp),
             )
-            .whiteBox(textColor = textColor, visible = isVisibleWhiteBox),
+            .whiteBox(
+                textColor = textColor,
+                visible = isVisibleWhiteBox && !isVisibleFolder,
+            ),
         horizontalAlignment = horizontalAlignment,
         verticalArrangement = verticalArrangement,
     ) {
@@ -848,14 +852,15 @@ internal fun SharedTransitionScope.InteractiveFolderGridItem(
                 ) {
                     data.previewGridItemsByPage.forEach { folderGridItem ->
                         PreviewFolderGridItemContent(
+                            alpha = alpha,
                             gridItem = folderGridItem,
                             gridItemSettings = gridItemSettings,
+                            gridItemSource = gridItemSource,
                             iconPackFilePaths = iconPackFilePaths,
                             isScrollInProgress = isScrollInProgress,
-                            parent = sharedElementKey.parent,
-                            alpha = alpha,
-                            gridItemSource = gridItemSource,
+                            isVisibleFolder = isVisibleFolder,
                             isVisibleOverlay = isVisibleOverlay,
+                            parent = sharedElementKey.parent,
                         )
                     }
                 }
@@ -1094,14 +1099,15 @@ internal fun SharedTransitionScope.InteractiveShortcutConfigGridItem(
 @Composable
 private fun SharedTransitionScope.PreviewFolderGridItemContent(
     modifier: Modifier = Modifier,
+    alpha: Float,
     gridItem: GridItem,
     gridItemSettings: GridItemSettings,
+    gridItemSource: GridItemSource?,
     iconPackFilePaths: Map<String, String>,
     isScrollInProgress: Boolean,
-    parent: SharedElementKey.Parent,
-    alpha: Float,
-    gridItemSource: GridItemSource?,
+    isVisibleFolder: Boolean,
     isVisibleOverlay: Boolean,
+    parent: SharedElementKey.Parent,
 ) {
     key(gridItem.id) {
         val isSelected = gridItemSource != null && gridItem.id == gridItemSource.gridItem.id
@@ -1112,7 +1118,7 @@ private fun SharedTransitionScope.PreviewFolderGridItemContent(
             .alpha(alpha)
             .size((gridItemSettings.iconSize * 0.30).dp)
             .run {
-                if (!hasInteraction) {
+                if (!hasInteraction && !isVisibleFolder) {
                     sharedElementWithCallerManagedVisibility(
                         rememberSharedContentState(
                             key = SharedElementKey(
