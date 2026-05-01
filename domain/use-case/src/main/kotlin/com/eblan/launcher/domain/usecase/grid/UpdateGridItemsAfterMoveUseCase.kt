@@ -104,7 +104,14 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
     ) {
         val folderGridItems = data.gridItems.toMutableList()
 
-        val index = folderGridItems.size
+        val index = folderGridItems.maxOf { folderGridItem ->
+            when (val folderData = folderGridItem.data) {
+                is GridItemData.ApplicationInfo -> folderData.index + 1
+                is GridItemData.ShortcutConfig -> folderData.index + 1
+                is GridItemData.ShortcutInfo -> folderData.index + 1
+                else -> return
+            }
+        }
 
         val newData = when (val folderData = movingGridItem.data) {
             is GridItemData.ApplicationInfo -> folderData.copy(

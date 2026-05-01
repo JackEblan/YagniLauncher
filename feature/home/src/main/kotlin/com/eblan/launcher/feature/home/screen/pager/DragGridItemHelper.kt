@@ -590,19 +590,28 @@ internal suspend fun handleConflictingGridItem(
 
     val conflictingData = conflictingGridItem.data as? GridItemData.Folder ?: return
 
+    val index = conflictingData.gridItems.maxOf { folderGridItem ->
+        when (val data = folderGridItem.data) {
+            is GridItemData.ApplicationInfo -> data.index + 1
+            is GridItemData.ShortcutConfig -> data.index + 1
+            is GridItemData.ShortcutInfo -> data.index + 1
+            else -> return
+        }
+    }
+
     val movingData = when (val data = movingGridItem.data) {
         is GridItemData.ApplicationInfo -> data.copy(
-            index = conflictingData.gridItems.lastIndex + 1,
+            index = index,
             folderId = conflictingData.id,
         )
 
         is GridItemData.ShortcutConfig -> data.copy(
-            index = conflictingData.gridItems.lastIndex + 1,
+            index = index,
             folderId = conflictingData.id,
         )
 
         is GridItemData.ShortcutInfo -> data.copy(
-            index = conflictingData.gridItems.lastIndex + 1,
+            index = index,
             folderId = conflictingData.id,
         )
 
