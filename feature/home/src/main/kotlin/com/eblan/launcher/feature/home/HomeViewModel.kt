@@ -449,30 +449,6 @@ internal class HomeViewModel @Inject constructor(
         }
     }
 
-    fun updateShortcutConfigGridItemDataCache(
-        byteArray: ByteArray?,
-        moveGridItemResult: MoveGridItemResult,
-        gridItem: GridItem,
-        data: GridItemData.ShortcutConfig,
-    ) {
-        viewModelScope.launch {
-            val shortcutIntentIcon = byteArray?.let { currentByteArray ->
-                fileManager.updateAndGetFilePath(
-                    fileManager.getFilesDirectory(FileManager.SHORTCUT_INTENT_ICONS_DIR),
-                    gridItem.id,
-                    currentByteArray,
-                )
-            }
-
-            gridCacheRepository.updateGridItemData(
-                id = gridItem.id,
-                data = data.copy(shortcutIntentIcon = shortcutIntentIcon),
-            )
-
-            resetGridCacheAfterMove(moveGridItemResult = moveGridItemResult)
-        }
-    }
-
     fun resetGridCacheAfterDeleteGridItemCache(gridItem: GridItem) {
         viewModelScope.launch {
             moveGridItemJob?.cancelAndJoin()

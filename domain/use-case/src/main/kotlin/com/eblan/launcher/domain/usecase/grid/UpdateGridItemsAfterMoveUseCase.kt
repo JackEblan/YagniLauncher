@@ -38,6 +38,11 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(moveGridItemResult: MoveGridItemResult) {
         withContext(defaultDispatcher) {
+            gridCacheRepository.updateGridItemData(
+                id = moveGridItemResult.movingGridItem.id,
+                data = moveGridItemResult.movingGridItem.data,
+            )
+
             val gridItems = gridCacheRepository.gridItemsCacheFlow.first().toMutableList()
 
             groupConflictingGridItemsIntoFolder(
@@ -119,7 +124,7 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
 
             is GridItemData.Folder,
             is GridItemData.Widget,
-            -> error("Unsupported folder item type: ${folderData::class.simpleName}")
+                -> error("Unsupported folder item type: ${folderData::class.simpleName}")
         }
 
         val updatedMovingGridItem = movingGridItem.copy(data = newData)

@@ -215,12 +215,6 @@ internal fun PagerScreen(
         movingFolderGridItem: GridItem,
         data: GridItemData.Folder,
     ) -> Unit,
-    onUpdateShortcutConfigGridItemDataCache: (
-        byteArray: ByteArray?,
-        moveGridItemResult: MoveGridItemResult,
-        gridItem: GridItem,
-        data: GridItemData.ShortcutConfig,
-    ) -> Unit,
     onUpdateShortcutConfigIntoShortcutInfoGridItem: (
         moveGridItemResult: MoveGridItemResult,
         pinItemRequestType: PinItemRequestType.ShortcutInfo,
@@ -315,11 +309,11 @@ internal fun PagerScreen(
         scope.launch {
             handleShortcutConfigLauncherResult(
                 androidImageSerializer = androidImageSerializer,
-                gridItemSource = gridItemSource,
                 moveGridItemResult = moveGridItemResult,
                 result = result,
+                fileManager = fileManager,
                 onDeleteGridItemCache = onResetGridCacheAfterDeleteGridItemCache,
-                onUpdateShortcutConfigGridItemDataCache = onUpdateShortcutConfigGridItemDataCache,
+                onDragEndAfterMove = onDragEndAfterMove,
             )
         }
     }
