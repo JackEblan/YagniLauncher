@@ -978,7 +978,9 @@ internal class PagerScreenState(
         val movingGridItem = when (gridItemSource) {
             is GridItemSource.Folder,
             is GridItemSource.FolderNew,
-            is GridItemSource.FolderPin -> gridItemSource.gridItem
+            is GridItemSource.FolderPin,
+            -> gridItemSource.gridItem
+
             else -> return
         }
 

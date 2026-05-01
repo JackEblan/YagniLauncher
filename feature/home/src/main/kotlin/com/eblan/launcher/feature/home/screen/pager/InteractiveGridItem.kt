@@ -205,6 +205,7 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
                 textColor = currentTextColor,
                 isVisibleOverlay = isVisibleOverlay,
                 isVisibleFolder = isVisibleFolder,
+                gridItemSource = gridItemSource,
                 newGridItemSource = newGridItemSource,
                 sharedElementKey = sharedElementKey,
                 isShowWhiteBox = isShowWhiteBox,

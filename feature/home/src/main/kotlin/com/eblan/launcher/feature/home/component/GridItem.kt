@@ -674,6 +674,7 @@ internal fun SharedTransitionScope.InteractiveFolderGridItem(
     isSelected: Boolean,
     textColor: Color,
     isVisibleOverlay: Boolean,
+    gridItemSource: GridItemSource?,
     newGridItemSource: GridItemSource,
     sharedElementKey: SharedElementKey,
     isVisibleFolder: Boolean,
@@ -849,10 +850,12 @@ internal fun SharedTransitionScope.InteractiveFolderGridItem(
                         PreviewFolderGridItemContent(
                             gridItem = folderGridItem,
                             gridItemSettings = gridItemSettings,
-                            hasInteraction = hasInteraction,
                             iconPackFilePaths = iconPackFilePaths,
                             isScrollInProgress = isScrollInProgress,
                             parent = sharedElementKey.parent,
+                            alpha = alpha,
+                            gridItemSource = gridItemSource,
+                            isVisibleOverlay = isVisibleOverlay,
                         )
                     }
                 }
@@ -1093,12 +1096,37 @@ private fun SharedTransitionScope.PreviewFolderGridItemContent(
     modifier: Modifier = Modifier,
     gridItem: GridItem,
     gridItemSettings: GridItemSettings,
-    hasInteraction: Boolean,
     iconPackFilePaths: Map<String, String>,
     isScrollInProgress: Boolean,
     parent: SharedElementKey.Parent,
+    alpha: Float,
+    gridItemSource: GridItemSource?,
+    isVisibleOverlay: Boolean,
 ) {
     key(gridItem.id) {
+        val isSelected = gridItemSource != null && gridItem.id == gridItemSource.gridItem.id
+
+        val hasInteraction = isSelected && isVisibleOverlay
+
+        val commonModifier = modifier
+            .alpha(alpha)
+            .size((gridItemSettings.iconSize * 0.30).dp)
+            .run {
+                if (!hasInteraction) {
+                    sharedElementWithCallerManagedVisibility(
+                        rememberSharedContentState(
+                            key = SharedElementKey(
+                                id = gridItem.id,
+                                parent = parent,
+                            ),
+                        ),
+                        visible = !isScrollInProgress,
+                    )
+                } else {
+                    this
+                }
+            }
+
         when (val data = gridItem.data) {
             is GridItemData.ApplicationInfo -> {
                 val icon =
@@ -1110,23 +1138,7 @@ private fun SharedTransitionScope.PreviewFolderGridItemContent(
                         .data(data.customIcon ?: icon)
                         .addLastModifiedToFileCacheKey(true).build(),
                     contentDescription = null,
-                    modifier = modifier
-                        .size((gridItemSettings.iconSize * 0.30).dp)
-                        .run {
-                            if (!hasInteraction) {
-                                sharedElementWithCallerManagedVisibility(
-                                    rememberSharedContentState(
-                                        key = SharedElementKey(
-                                            id = gridItem.id,
-                                            parent = parent,
-                                        ),
-                                    ),
-                                    visible = !isScrollInProgress,
-                                )
-                            } else {
-                                this
-                            }
-                        },
+                    modifier = commonModifier,
                 )
             }
 
@@ -1154,23 +1166,7 @@ private fun SharedTransitionScope.PreviewFolderGridItemContent(
                         .data(icon)
                         .addLastModifiedToFileCacheKey(true).build(),
                     contentDescription = null,
-                    modifier = modifier
-                        .size((gridItemSettings.iconSize * 0.30).dp)
-                        .run {
-                            if (!hasInteraction) {
-                                sharedElementWithCallerManagedVisibility(
-                                    rememberSharedContentState(
-                                        key = SharedElementKey(
-                                            id = gridItem.id,
-                                            parent = parent,
-                                        ),
-                                    ),
-                                    visible = !isScrollInProgress,
-                                )
-                            } else {
-                                this
-                            }
-                        },
+                    modifier = commonModifier,
                 )
             }
 
@@ -1180,23 +1176,7 @@ private fun SharedTransitionScope.PreviewFolderGridItemContent(
                         .data(data.customIcon ?: data.icon)
                         .addLastModifiedToFileCacheKey(true).build(),
                     contentDescription = null,
-                    modifier = modifier
-                        .size((gridItemSettings.iconSize * 0.30).dp)
-                        .run {
-                            if (!hasInteraction) {
-                                sharedElementWithCallerManagedVisibility(
-                                    rememberSharedContentState(
-                                        key = SharedElementKey(
-                                            id = gridItem.id,
-                                            parent = parent,
-                                        ),
-                                    ),
-                                    visible = !isScrollInProgress,
-                                )
-                            } else {
-                                this
-                            }
-                        },
+                    modifier = commonModifier,
                 )
             }
 

@@ -367,7 +367,9 @@ private fun handleDragFolderGridItem(
     val movingFolderGridItem = when (gridItemSource) {
         is GridItemSource.Folder,
         is GridItemSource.FolderNew,
-        is GridItemSource.FolderPin -> gridItemSource.gridItem
+        is GridItemSource.FolderPin,
+        -> gridItemSource.gridItem
+
         else -> return
     }
 
