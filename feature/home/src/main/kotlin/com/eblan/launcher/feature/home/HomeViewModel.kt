@@ -742,6 +742,14 @@ internal class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             moveGridItemJob?.cancelAndJoin()
 
+            _moveGridItemResult.update {
+                null
+            }
+
+            _moveFolderGridItem.update {
+                movingFolderGridItem
+            }
+
             delay(moveDelay)
 
             showFolderWhenDraggingUseCase(

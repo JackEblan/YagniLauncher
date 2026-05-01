@@ -858,7 +858,6 @@ internal fun SharedTransitionScope.InteractiveFolderGridItem(
                             gridItemSource = gridItemSource,
                             iconPackFilePaths = iconPackFilePaths,
                             isScrollInProgress = isScrollInProgress,
-                            isVisibleFolder = isVisibleFolder,
                             isVisibleOverlay = isVisibleOverlay,
                             parent = sharedElementKey.parent,
                         )
@@ -1105,7 +1104,6 @@ private fun SharedTransitionScope.PreviewFolderGridItemContent(
     gridItemSource: GridItemSource?,
     iconPackFilePaths: Map<String, String>,
     isScrollInProgress: Boolean,
-    isVisibleFolder: Boolean,
     isVisibleOverlay: Boolean,
     parent: SharedElementKey.Parent,
 ) {
@@ -1118,7 +1116,7 @@ private fun SharedTransitionScope.PreviewFolderGridItemContent(
             .alpha(alpha)
             .size((gridItemSettings.iconSize * 0.30).dp)
             .run {
-                if (!hasInteraction && !isVisibleFolder) {
+                if (!hasInteraction) {
                     sharedElementWithCallerManagedVisibility(
                         rememberSharedContentState(
                             key = SharedElementKey(

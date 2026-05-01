@@ -46,6 +46,8 @@ class ShowFolderWhenDraggingUseCase @Inject constructor(
 
             val (columns, rows) = getGridDimension(count = firstPageGridItems.size)
 
+            gridCacheRepository.deleteGridItemById(id = movingFolderGridItem.id)
+
             gridCacheRepository.updateGridItemData(
                 id = conflictingId,
                 data = data.copy(
