@@ -150,7 +150,7 @@ internal suspend fun handleDropGridItem(
                     is GridItemData.ApplicationInfo,
                     is GridItemData.Folder,
                     is GridItemData.ShortcutInfo,
-                        -> {
+                    -> {
                         onDragEndAfterMove(moveGridItemResult)
 
                         onUpdateIsDragging(false)
@@ -254,7 +254,7 @@ internal suspend fun handleDropGridItem(
                     is GridItemData.Folder,
                     is GridItemData.ShortcutInfo,
                     null,
-                        -> {
+                    -> {
                         onDragEndAfterMoveFolder()
 
                         onUpdateIsDragging(false)

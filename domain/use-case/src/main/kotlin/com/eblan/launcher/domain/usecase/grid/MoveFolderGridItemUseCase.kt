@@ -42,74 +42,72 @@ class MoveFolderGridItemUseCase @Inject constructor(
         gridWidth: Int,
         gridHeight: Int,
         currentPage: Int,
-    ): GridItem {
-        return withContext(defaultDispatcher) {
-            val gridItemsPerPage = columns * rows
+    ): GridItem = withContext(defaultDispatcher) {
+        val gridItemsPerPage = columns * rows
 
-            val cellWidth = gridWidth / columns
-            val cellHeight = gridHeight / rows
+        val cellWidth = gridWidth / columns
+        val cellHeight = gridHeight / rows
 
-            val targetColumn = dragX / cellWidth
-            val targetRow = dragY / cellHeight
+        val targetColumn = dragX / cellWidth
+        val targetRow = dragY / cellHeight
 
-            val targetIndex = currentPage * gridItemsPerPage + targetRow * columns + targetColumn
+        val targetIndex = currentPage * gridItemsPerPage + targetRow * columns + targetColumn
 
-            val folderGridItems = data.gridItems.toMutableList()
+        val folderGridItems = data.gridItems.toMutableList()
 
-            val movingIndex =
-                folderGridItems.indexOfFirst {
-                    ensureActive()
-
-                    it.id == movingFolderGridItem.id
-                }
-
-            if (movingIndex != -1) {
-                folderGridItems.add(
-                    targetIndex.coerceIn(
-                        0,
-                        folderGridItems.size - 1,
-                    ),
-                    folderGridItems.removeAt(movingIndex),
-                )
-            }
-
-            val indexedGridItems = folderGridItems.mapIndexed { index, gridItem ->
+        val movingIndex =
+            folderGridItems.indexOfFirst {
                 ensureActive()
 
-                when (val data = gridItem.data) {
-                    is GridItemData.ApplicationInfo -> {
-                        gridItem.copy(data = data.copy(index = index))
-                    }
-
-                    is GridItemData.ShortcutConfig -> {
-                        gridItem.copy(data = data.copy(index = index))
-                    }
-
-                    is GridItemData.ShortcutInfo -> {
-                        gridItem.copy(data = data.copy(index = index))
-                    }
-
-                    else -> error("Unsupported folder item type: ${data::class.simpleName}")
-                }
+                it.id == movingFolderGridItem.id
             }
 
-            val gridItemsByPage = indexedGridItems.getGridItemsByPage()
-
-            val firstPageGridItems = gridItemsByPage[0] ?: emptyList()
-
-            val (columns, rows) = getGridDimension(count = firstPageGridItems.size)
-
-            gridCacheRepository.updateGridItemData(
-                id = conflictingId,
-                data = data.copy(
-                    gridItems = indexedGridItems,
-                    gridItemsByPage = gridItemsByPage,
-                    columns = columns,
-                    rows = rows,
+        if (movingIndex != -1) {
+            folderGridItems.add(
+                targetIndex.coerceIn(
+                    0,
+                    folderGridItems.size - 1,
                 ),
+                folderGridItems.removeAt(movingIndex),
             )
-
-            movingFolderGridItem
         }
+
+        val indexedGridItems = folderGridItems.mapIndexed { index, gridItem ->
+            ensureActive()
+
+            when (val data = gridItem.data) {
+                is GridItemData.ApplicationInfo -> {
+                    gridItem.copy(data = data.copy(index = index))
+                }
+
+                is GridItemData.ShortcutConfig -> {
+                    gridItem.copy(data = data.copy(index = index))
+                }
+
+                is GridItemData.ShortcutInfo -> {
+                    gridItem.copy(data = data.copy(index = index))
+                }
+
+                else -> error("Unsupported folder item type: ${data::class.simpleName}")
+            }
+        }
+
+        val gridItemsByPage = indexedGridItems.getGridItemsByPage()
+
+        val firstPageGridItems = gridItemsByPage[0] ?: emptyList()
+
+        val (columns, rows) = getGridDimension(count = firstPageGridItems.size)
+
+        gridCacheRepository.updateGridItemData(
+            id = conflictingId,
+            data = data.copy(
+                gridItems = indexedGridItems,
+                gridItemsByPage = gridItemsByPage,
+                columns = columns,
+                rows = rows,
+            ),
+        )
+
+        movingFolderGridItem
     }
 }

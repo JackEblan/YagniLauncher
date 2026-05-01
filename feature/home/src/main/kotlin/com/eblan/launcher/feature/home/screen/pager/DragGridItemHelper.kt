@@ -111,7 +111,7 @@ internal fun handleAnimateScrollToPage(
         is GridItemSource.Folder,
         is GridItemSource.FolderNew,
         is GridItemSource.FolderPin,
-            -> {
+        -> {
             if (folderPopupIntOffset == null || folderPopupIntSize == null) return
 
             val data = folderGridItem?.data as? GridItemData.Folder ?: return
@@ -282,7 +282,7 @@ internal fun handleDragGridItem(
         is GridItemSource.Folder,
         is GridItemSource.FolderNew,
         is GridItemSource.FolderPin,
-            -> {
+        -> {
             handleDragFolderGridItem(
                 density = density,
                 dragX = dragX,
@@ -334,8 +334,6 @@ private fun handleDragFolderGridItem(
 
     val data = folderGridItem?.data as? GridItemData.Folder ?: return
 
-    val gridItemSourceFolder = gridItemSource as? GridItemSource.Folder ?: return
-
     val folderCellWidth = safeDrawingWidth / FOLDER_MAX_COLUMNS
 
     val folderCellHeight = safeDrawingHeight / FOLDER_MAX_ROWS
@@ -364,21 +362,26 @@ private fun handleDragFolderGridItem(
         (folderGridHeightPx - folderTitleHeightPx) - (folderGridPaddingPx * 2)
 
     val isInsideFolder = folderDragX in 0..folderGridVisibleWidthPx &&
-            folderDragY in 0..folderGridVisibleHeightPx
+        folderDragY in 0..folderGridVisibleHeightPx
 
-    val applicationInfoGridItem = gridItemSourceFolder.folderGridItem
+    val movingFolderGridItem = when (gridItemSource) {
+        is GridItemSource.Folder -> gridItemSource.folderGridItem
+        is GridItemSource.FolderNew -> gridItemSource.folderGridItem
+        is GridItemSource.FolderPin -> gridItemSource.folderGridItem
+        else -> return
+    }
 
     if (isInsideFolder) {
         onUpdateSharedElementKey(
             SharedElementKey(
-                id = applicationInfoGridItem.id,
+                id = movingFolderGridItem.id,
                 parent = SharedElementKey.Parent.Folder,
             ),
         )
 
         onMoveFolderGridItem(
             folderGridItem.id,
-            applicationInfoGridItem,
+            movingFolderGridItem,
             data,
             folderDragX,
             folderDragY,
@@ -572,7 +575,8 @@ internal suspend fun handleConflictingGridItem(
         gridItemSource == null ||
         moveGridItemResult == null ||
         !moveGridItemResult.isSuccess ||
-        !(isVisibleOverlay && isDragging) ||
+        !isVisibleOverlay ||
+        !isDragging ||
         lockMovement
     ) {
         return
@@ -683,37 +687,33 @@ internal suspend fun handleConflictingGridItem(
 
     val movingFolderGridItem = movingGridItem.copy(data = movingData)
 
-    when (gridItemSource) {
+    val newGridItemSource = when (gridItemSource) {
         is GridItemSource.Existing -> {
-            onUpdateGridItemSource(
-                GridItemSource.Folder(
-                    gridItem = movingGridItem,
-                    folderGridItem = movingFolderGridItem,
-                ),
+            GridItemSource.Folder(
+                gridItem = movingGridItem,
+                folderGridItem = movingFolderGridItem,
             )
         }
 
         is GridItemSource.New -> {
-            onUpdateGridItemSource(
-                GridItemSource.FolderNew(
-                    gridItem = movingGridItem,
-                    folderGridItem = movingFolderGridItem,
-                ),
+            GridItemSource.FolderNew(
+                gridItem = movingGridItem,
+                folderGridItem = movingFolderGridItem,
             )
         }
 
         is GridItemSource.Pin -> {
-            onUpdateGridItemSource(
-                GridItemSource.FolderPin(
-                    gridItem = movingGridItem,
-                    folderGridItem = movingFolderGridItem,
-                    pinItemRequest = gridItemSource.pinItemRequest,
-                ),
+            GridItemSource.FolderPin(
+                gridItem = movingGridItem,
+                folderGridItem = movingFolderGridItem,
+                pinItemRequest = gridItemSource.pinItemRequest,
             )
         }
 
-        else -> Unit
+        else -> return
     }
+
+    onUpdateGridItemSource(newGridItemSource)
 
     onUpdateFolderPopupBounds(
         intOffset,
@@ -765,7 +765,7 @@ private fun getMoveGridItem(
     currentPage: Int,
 ): GridItem = when (gridItemSource) {
     is GridItemSource.Existing, is GridItemSource.Folder,
-        -> {
+    -> {
         gridItem.copy(
             page = currentPage,
             startColumn = gridX / cellWidth,
@@ -777,7 +777,7 @@ private fun getMoveGridItem(
     is GridItemSource.New, is GridItemSource.Pin,
     is GridItemSource.FolderNew,
     is GridItemSource.FolderPin,
-        -> {
+    -> {
         getMoveNewGridItem(
             associate = associate,
             cellHeight = cellHeight,

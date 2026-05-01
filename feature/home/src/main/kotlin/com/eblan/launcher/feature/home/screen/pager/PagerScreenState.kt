@@ -975,9 +975,12 @@ internal class PagerScreenState(
 
         val data = folderGridItem?.data as? GridItemData.Folder ?: return
 
-        val gridItemSourceFolder = gridItemSource as? GridItemSource.Folder ?: return
-
-        val movingGridItem = gridItemSourceFolder.folderGridItem
+        val movingGridItem = when (gridItemSource) {
+            is GridItemSource.Folder -> gridItemSource.folderGridItem
+            is GridItemSource.FolderNew -> gridItemSource.folderGridItem
+            is GridItemSource.FolderPin -> gridItemSource.folderGridItem
+            else -> return
+        }
 
         val movingData = when (val data = movingGridItem.data) {
             is GridItemData.ApplicationInfo -> data.copy(
@@ -1000,7 +1003,18 @@ internal class PagerScreenState(
 
         val newMovingGridItem = movingGridItem.copy(data = movingData)
 
-        onUpdateGridItemSource(GridItemSource.Existing(gridItem = newMovingGridItem))
+        val newGridItemSource = when (gridItemSource) {
+            is GridItemSource.Folder -> GridItemSource.Existing(gridItem = newMovingGridItem)
+
+            is GridItemSource.FolderNew -> GridItemSource.New(gridItem = newMovingGridItem)
+
+            is GridItemSource.FolderPin -> GridItemSource.Pin(
+                gridItem = newMovingGridItem,
+                pinItemRequest = gridItemSource.pinItemRequest,
+            )
+        }
+
+        onUpdateGridItemSource(newGridItemSource)
 
         sharedElementKey = SharedElementKey(
             id = newMovingGridItem.id,
