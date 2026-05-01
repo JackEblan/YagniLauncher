@@ -491,7 +491,7 @@ internal class PagerScreenState(
     }
 
     fun handleDeleteAppWidgetIdEffect(
-        gridItemSource: GridItemSource?,
+        moveGridItemResult: MoveGridItemResult?,
         onResetGridCacheAfterDeleteWidgetGridItemCache: (
             gridItem: GridItem,
             appWidgetId: Int,
@@ -500,7 +500,7 @@ internal class PagerScreenState(
         handleDeleteAppWidgetId(
             appWidgetId = lastAppWidgetId,
             deleteAppWidgetId = deleteAppWidgetId,
-            gridItemSource = gridItemSource,
+            moveGridItemResult = moveGridItemResult,
             onResetGridCacheAfterDeleteWidgetGridItemCache = onResetGridCacheAfterDeleteWidgetGridItemCache,
             onResetAppWidgetId = {
                 lastAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID
@@ -653,12 +653,12 @@ internal class PagerScreenState(
     }
 
     fun handleAppWidgetLauncherResult(
-        gridItemSource: GridItemSource?,
+        moveGridItemResult: MoveGridItemResult?,
         result: ActivityResult,
     ) {
         handleAppWidgetLauncherResult(
             androidAppWidgetManagerWrapper = androidAppWidgetManagerWrapper,
-            gridItemSource = gridItemSource,
+            moveGridItemResult = moveGridItemResult,
             result = result,
             onDeleteAppWidgetId = {
                 deleteAppWidgetId = true

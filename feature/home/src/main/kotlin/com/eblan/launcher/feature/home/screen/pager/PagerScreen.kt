@@ -297,7 +297,7 @@ internal fun PagerScreen(
         contract = ActivityResultContracts.StartActivityForResult(),
     ) { result ->
         pagerScreenState.handleAppWidgetLauncherResult(
-            gridItemSource = gridItemSource,
+            moveGridItemResult = moveGridItemResult,
             result = result,
         )
     }
@@ -326,7 +326,6 @@ internal fun PagerScreen(
                 androidLauncherAppsWrapper = androidLauncherAppsWrapper,
                 androidUserManagerWrapper = androidUserManagerWrapper,
                 fileManager = fileManager,
-                gridItemSource = gridItemSource,
                 moveGridItemResult = moveGridItemResult,
                 result = result,
                 iconKeyGenerator = iconKeyGenerator,
@@ -481,7 +480,7 @@ internal fun PagerScreen(
 
     LaunchedEffect(key1 = pagerScreenState.deleteAppWidgetId) {
         pagerScreenState.handleDeleteAppWidgetIdEffect(
-            gridItemSource = gridItemSource,
+            moveGridItemResult = moveGridItemResult,
             onResetGridCacheAfterDeleteWidgetGridItemCache = onResetGridCacheAfterDeleteWidgetGridItemCache,
         )
     }
