@@ -595,6 +595,7 @@ internal suspend fun handleConflictingGridItem(
 ) {
     if (drag != Drag.Dragging ||
         gridItemSource == null ||
+        gridItemSource is GridItemSource.Folder ||
         moveGridItemResult == null ||
         !moveGridItemResult.isSuccess ||
         !isVisibleOverlay ||
