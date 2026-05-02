@@ -153,7 +153,7 @@ internal fun PagerScreen(
     ) -> Unit,
     onDragCancelAfterMove: () -> Unit,
     onDragEndAfterMove: (MoveGridItemResult) -> Unit,
-    onDragEndAfterMoveFolder: () -> Unit,
+    onDragEndAfterMoveFolder: (GridItem) -> Unit,
     onDraggingGridItem: (List<GridItem>) -> Unit,
     onEditApplicationInfo: (
         serialNumber: Long,
@@ -312,8 +312,11 @@ internal fun PagerScreen(
                 moveGridItemResult = moveGridItemResult,
                 result = result,
                 fileManager = fileManager,
+                gridItemSource = gridItemSource,
+                moveFolderGridItem = moveFolderGridItem,
                 onDeleteGridItemCache = onResetGridCacheAfterDeleteGridItemCache,
                 onDragEndAfterMove = onDragEndAfterMove,
+                onDragEndAfterMoveFolder = onDragEndAfterMoveFolder,
             )
         }
     }
