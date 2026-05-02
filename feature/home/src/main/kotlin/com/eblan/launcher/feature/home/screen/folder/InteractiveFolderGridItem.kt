@@ -102,8 +102,6 @@ internal fun SharedTransitionScope.InteractiveFolderGridItemContent(
         gridItemSettings
     }
 
-    val isShowWhiteBox = false
-
     when (val data = gridItem.data) {
         is GridItemData.ApplicationInfo -> {
             InteractiveApplicationInfoGridItem(
@@ -120,7 +118,7 @@ internal fun SharedTransitionScope.InteractiveFolderGridItemContent(
                 isVisibleOverlay = isVisibleOverlay,
                 newGridItemSource = newGridItemSource,
                 sharedElementKey = sharedElementKey,
-                isShowWhiteBox = isShowWhiteBox,
+                isShowWhiteBox = false,
                 isVisibleFolder = false,
                 onDraggingGridItem = onDraggingGridItem,
                 onOpenAppDrawer = onOpenAppDrawer,
@@ -147,7 +145,7 @@ internal fun SharedTransitionScope.InteractiveFolderGridItemContent(
                 isVisibleOverlay = isVisibleOverlay,
                 newGridItemSource = newGridItemSource,
                 sharedElementKey = sharedElementKey,
-                isShowWhiteBox = isShowWhiteBox,
+                isShowWhiteBox = false,
                 onDraggingGridItem = onDraggingGridItem,
                 onUpdateGridItemSource = onUpdateGridItemSource,
                 onUpdateImageBitmap = onUpdateImageBitmap,
@@ -174,7 +172,8 @@ internal fun SharedTransitionScope.InteractiveFolderGridItemContent(
                 isVisibleOverlay = isVisibleOverlay,
                 newGridItemSource = newGridItemSource,
                 sharedElementKey = sharedElementKey,
-                isShowWhiteBox = isShowWhiteBox,
+                isShowWhiteBox = false,
+                isVisibleFolder = false,
                 onDraggingGridItem = onDraggingGridItem,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onTapShortcutInfo = onTapShortcutInfo,
@@ -205,7 +204,7 @@ internal fun SharedTransitionScope.InteractiveFolderGridItemContent(
                 gridItemSource = gridItemSource,
                 newGridItemSource = newGridItemSource,
                 sharedElementKey = sharedElementKey,
-                isShowWhiteBox = isShowWhiteBox,
+                isShowWhiteBox = false,
                 onDraggingGridItem = onDraggingGridItem,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onTap = onTapFolderGridItem,
@@ -233,7 +232,8 @@ internal fun SharedTransitionScope.InteractiveFolderGridItemContent(
                 isVisibleOverlay = isVisibleOverlay,
                 newGridItemSource = newGridItemSource,
                 sharedElementKey = sharedElementKey,
-                isShowWhiteBox = isShowWhiteBox,
+                isShowWhiteBox = false,
+                isVisibleFolder = false,
                 onDraggingGridItem = onDraggingGridItem,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onTapShortcutConfig = onTapShortcutConfig,

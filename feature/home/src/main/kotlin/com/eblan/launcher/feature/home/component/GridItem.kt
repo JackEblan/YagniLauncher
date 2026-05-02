@@ -474,6 +474,7 @@ internal fun SharedTransitionScope.InteractiveShortcutInfoGridItem(
     newGridItemSource: GridItemSource,
     sharedElementKey: SharedElementKey,
     isShowWhiteBox: Boolean,
+    isVisibleFolder: Boolean,
     onDraggingGridItem: () -> Unit,
     onOpenAppDrawer: () -> Unit,
     onTapShortcutInfo: (
@@ -602,7 +603,11 @@ internal fun SharedTransitionScope.InteractiveShortcutInfoGridItem(
                 color = Color(gridItemSettings.customBackgroundColor),
                 shape = RoundedCornerShape(size = gridItemSettings.cornerRadius.dp),
             )
-            .whiteBox(textColor = textColor, visible = isVisibleWhiteBox),
+            .whiteBox(
+                textColor = textColor,
+
+                visible = isVisibleWhiteBox && !isVisibleFolder,
+            ),
         horizontalAlignment = horizontalAlignment,
         verticalArrangement = verticalArrangement,
     ) {
@@ -895,6 +900,7 @@ internal fun SharedTransitionScope.InteractiveShortcutConfigGridItem(
     newGridItemSource: GridItemSource,
     sharedElementKey: SharedElementKey,
     isShowWhiteBox: Boolean,
+    isVisibleFolder: Boolean,
     onDraggingGridItem: () -> Unit,
     onOpenAppDrawer: () -> Unit,
     onTapShortcutConfig: (String) -> Unit,
@@ -1043,7 +1049,10 @@ internal fun SharedTransitionScope.InteractiveShortcutConfigGridItem(
                 color = Color(gridItemSettings.customBackgroundColor),
                 shape = RoundedCornerShape(size = gridItemSettings.cornerRadius.dp),
             )
-            .whiteBox(textColor = textColor, visible = isVisibleWhiteBox),
+            .whiteBox(
+                textColor = textColor,
+                visible = isVisibleWhiteBox && !isVisibleFolder,
+            ),
         horizontalAlignment = horizontalAlignment,
         verticalArrangement = verticalArrangement,
     ) {
