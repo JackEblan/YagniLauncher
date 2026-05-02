@@ -457,7 +457,7 @@ internal class PagerScreenState(
         onResetGridCacheAfterDeleteGridItemCache: (GridItem) -> Unit,
         onDragCancelAfterMove: () -> Unit,
         onDragEndAfterMove: (MoveGridItemResult) -> Unit,
-        onDragEndAfterMoveFolder: (GridItem) -> Unit,
+        onDragEndAfterMoveFolder: () -> Unit,
     ) {
         handleDropGridItem(
             androidAppWidgetHostWrapper = androidAppWidgetHostWrapper,

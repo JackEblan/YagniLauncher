@@ -245,7 +245,7 @@ internal fun HomeScreen(
     ) -> Unit,
     onResetConfigureResultCode: () -> Unit,
     onResetGridCacheAfterMove: (MoveGridItemResult) -> Unit,
-    onResetGridCacheAfterMoveFolder: (GridItem) -> Unit,
+    onResetGridCacheAfterMoveFolder: () -> Unit,
     onResetGridCacheAfterResize: (GridItem) -> Unit,
     onResetPinGridItem: () -> Unit,
     onResizeGridItem: (
@@ -426,7 +426,7 @@ private fun Success(
     ) -> Unit,
     onResetConfigureResultCode: () -> Unit,
     onResetGridCacheAfterMove: (MoveGridItemResult) -> Unit,
-    onResetGridCacheAfterMoveFolder: (GridItem) -> Unit,
+    onResetGridCacheAfterMoveFolder: () -> Unit,
     onResetGridCacheAfterResize: (GridItem) -> Unit,
     onResetPinGridItem: () -> Unit,
     onResizeGridItem: (

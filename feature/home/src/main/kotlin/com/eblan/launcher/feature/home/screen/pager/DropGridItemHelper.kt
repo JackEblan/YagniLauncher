@@ -63,7 +63,7 @@ internal suspend fun handleDropGridItem(
     onResetGridCacheAfterDeleteGridItemCache: (GridItem) -> Unit,
     onDragCancelAfterMove: () -> Unit,
     onDragEndAfterMove: (MoveGridItemResult) -> Unit,
-    onDragEndAfterMoveFolder: (GridItem) -> Unit,
+    onDragEndAfterMoveFolder: () -> Unit,
     onLaunchShortcutConfigIntent: (Intent) -> Unit,
     onLaunchShortcutConfigIntentSenderRequest: (IntentSenderRequest) -> Unit,
     onLaunchWidgetIntent: (Intent) -> Unit,
@@ -209,7 +209,7 @@ internal suspend fun handleDropGridItem(
             if (lockMovement) return cancelWithToast()
 
             if (isVisibleOverlay && moveFolderGridItem != null) {
-                onDragEndAfterMoveFolder(moveFolderGridItem)
+                onDragEndAfterMoveFolder()
 
                 onUpdateIsDragging(false)
             }
@@ -245,7 +245,7 @@ internal suspend fun handleDropGridItem(
                     is GridItemData.Folder,
                     is GridItemData.ShortcutInfo,
                     -> {
-                        onDragEndAfterMoveFolder(moveFolderGridItem)
+                        onDragEndAfterMoveFolder()
 
                         onUpdateIsDragging(false)
                     }
@@ -430,69 +430,68 @@ internal suspend fun handleShortcutConfigLauncherResult(
     result: ActivityResult,
     fileManager: FileManager,
     gridItemSource: GridItemSource?,
-    moveFolderGridItem: GridItem?,
     onDeleteGridItemCache: (GridItem) -> Unit,
     onDragEndAfterMove: (MoveGridItemResult) -> Unit,
-    onDragEndAfterMoveFolder: (GridItem) -> Unit,
+    onDragEndAfterMoveFolder: () -> Unit,
 ) {
-    if (gridItemSource == null || moveGridItemResult == null) return
-
-    val movingGridItem = moveGridItemResult.movingGridItem
-
-    if (result.resultCode == Activity.RESULT_CANCELED) {
-        onDeleteGridItemCache(movingGridItem)
-
-        return
-    }
-
-    val name = result.data?.getStringExtra(Intent.EXTRA_SHORTCUT_NAME)
-
-    val icon = result.data?.let { intent ->
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            intent.getParcelableExtra(
-                Intent.EXTRA_SHORTCUT_ICON,
-                Bitmap::class.java,
-            )
-        } else {
-            intent.getParcelableExtra(Intent.EXTRA_SHORTCUT_ICON)
-        }
-    }?.let { bitmap ->
-        androidImageSerializer.createByteArray(bitmap = bitmap)
-    }
-
-    val shortcutIntentUri = result.data?.let { intent ->
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            intent.getParcelableExtra(
-                Intent.EXTRA_SHORTCUT_INTENT,
-                Intent::class.java,
-            )
-        } else {
-            intent.getParcelableExtra(Intent.EXTRA_SHORTCUT_INTENT)
-        }
-    }?.toUri(Intent.URI_INTENT_SCHEME)
-
-    val movingData = (movingGridItem.data as? GridItemData.ShortcutConfig)
-        ?: error("Expected GridItemData.ShortcutConfig")
-
-    val shortcutIntentIcon = icon?.let { currentByteArray ->
-        fileManager.updateAndGetFilePath(
-            fileManager.getFilesDirectory(FileManager.SHORTCUT_INTENT_ICONS_DIR),
-            movingGridItem.id,
-            currentByteArray,
-        )
-    }
-
-    val newData = movingData.copy(
-        shortcutIntentName = name,
-        shortcutIntentIcon = shortcutIntentIcon,
-        shortcutIntentUri = shortcutIntentUri,
-    )
-
     when (gridItemSource) {
         is GridItemSource.Existing,
         is GridItemSource.New,
         is GridItemSource.Pin,
         -> {
+            if (moveGridItemResult == null) return
+
+            val movingGridItem = moveGridItemResult.movingGridItem
+
+            if (result.resultCode == Activity.RESULT_CANCELED) {
+                onDeleteGridItemCache(movingGridItem)
+
+                return
+            }
+
+            val name = result.data?.getStringExtra(Intent.EXTRA_SHORTCUT_NAME)
+
+            val icon = result.data?.let { intent ->
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    intent.getParcelableExtra(
+                        Intent.EXTRA_SHORTCUT_ICON,
+                        Bitmap::class.java,
+                    )
+                } else {
+                    intent.getParcelableExtra(Intent.EXTRA_SHORTCUT_ICON)
+                }
+            }?.let { bitmap ->
+                androidImageSerializer.createByteArray(bitmap = bitmap)
+            }
+
+            val shortcutIntentUri = result.data?.let { intent ->
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    intent.getParcelableExtra(
+                        Intent.EXTRA_SHORTCUT_INTENT,
+                        Intent::class.java,
+                    )
+                } else {
+                    intent.getParcelableExtra(Intent.EXTRA_SHORTCUT_INTENT)
+                }
+            }?.toUri(Intent.URI_INTENT_SCHEME)
+
+            val movingData = (movingGridItem.data as? GridItemData.ShortcutConfig)
+                ?: error("Expected GridItemData.ShortcutConfig")
+
+            val shortcutIntentIcon = icon?.let { currentByteArray ->
+                fileManager.updateAndGetFilePath(
+                    fileManager.getFilesDirectory(FileManager.SHORTCUT_INTENT_ICONS_DIR),
+                    movingGridItem.id,
+                    currentByteArray,
+                )
+            }
+
+            val newData = movingData.copy(
+                shortcutIntentName = name,
+                shortcutIntentIcon = shortcutIntentIcon,
+                shortcutIntentUri = shortcutIntentUri,
+            )
+
             val newMovingGridItem = moveGridItemResult.movingGridItem.copy(data = newData)
 
             onDragEndAfterMove(
@@ -504,12 +503,10 @@ internal suspend fun handleShortcutConfigLauncherResult(
         is GridItemSource.FolderNew,
         is GridItemSource.FolderPin,
         -> {
-            if (moveFolderGridItem != null) {
-                onDragEndAfterMoveFolder(moveFolderGridItem.copy(data = newData))
-            } else {
-                onDragEndAfterMove(moveGridItemResult)
-            }
+            onDragEndAfterMoveFolder()
         }
+
+        else -> Unit
     }
 }
 
@@ -672,12 +669,12 @@ private fun onDragEndFolderPinShortcut(
     gridItem: GridItem,
     pinItemRequest: PinItemRequest?,
     onDeleteGridItemCache: (GridItem) -> Unit,
-    onDragEndAfterMoveFolder: (GridItem) -> Unit,
+    onDragEndAfterMoveFolder: () -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
 ) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && pinItemRequest != null && pinItemRequest.isValid && pinItemRequest.accept()) {
-        onDragEndAfterMoveFolder(gridItem)
+        onDragEndAfterMoveFolder()
     } else {
         onDeleteGridItemCache(gridItem)
     }
