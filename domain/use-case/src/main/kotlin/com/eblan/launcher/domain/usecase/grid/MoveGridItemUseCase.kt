@@ -48,7 +48,6 @@ class MoveGridItemUseCase @Inject constructor(
         rows: Int,
         gridWidth: Int,
         gridHeight: Int,
-        isNew: Boolean,
     ): MoveGridItemResult {
         return withContext(defaultDispatcher) {
             val gridItems = gridCacheRepository.gridItemsCacheFlow.first().filter { gridItem ->
@@ -95,7 +94,6 @@ class MoveGridItemUseCase @Inject constructor(
                     columns = columns,
                     rows = rows,
                     gridWidth = gridWidth,
-                    isNew = isNew,
                 )
             }
 
@@ -136,7 +134,6 @@ class MoveGridItemUseCase @Inject constructor(
         columns: Int,
         rows: Int,
         gridWidth: Int,
-        isNew: Boolean,
     ): MoveGridItemResult {
         val resolveDirection = getResolveDirectionByX(
             gridItem = conflictingGridItem,
@@ -167,8 +164,7 @@ class MoveGridItemUseCase @Inject constructor(
             }
 
             ResolveDirection.Center -> {
-                if (isNew ||
-                    movingGridItem.data is GridItemData.Widget ||
+                if (movingGridItem.data is GridItemData.Widget ||
                     movingGridItem.data is GridItemData.Folder ||
                     conflictingGridItem.data is GridItemData.Widget
                 ) {

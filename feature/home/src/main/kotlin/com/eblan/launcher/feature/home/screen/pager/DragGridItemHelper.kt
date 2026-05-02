@@ -187,7 +187,6 @@ internal fun handleDragGridItem(
         rows: Int,
         gridWidth: Int,
         gridHeight: Int,
-        isNew: Boolean,
     ) -> Unit,
     onUpdateAssociate: (Associate) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
@@ -254,7 +253,6 @@ internal fun handleDragGridItem(
                     gridItemSource = gridItemSource,
                     safeDrawingHeight = safeDrawingHeight,
                     safeDrawingWidth = safeDrawingWidth,
-                    isNew = false,
                     onMoveGridItem = onMoveGridItem,
                     onUpdateAssociate = onUpdateAssociate,
                     onUpdateSharedElementKey = onUpdateSharedElementKey,
@@ -271,7 +269,6 @@ internal fun handleDragGridItem(
                     rows = rows,
                     safeDrawingHeight = safeDrawingHeight,
                     safeDrawingWidth = safeDrawingWidth,
-                    isNew = false,
                     onMoveGridItem = onMoveGridItem,
                     onUpdateAssociate = onUpdateAssociate,
                     onUpdateSharedElementKey = onUpdateSharedElementKey,
@@ -291,7 +288,6 @@ internal fun handleDragGridItem(
                     gridItemSource = gridItemSource,
                     safeDrawingHeight = safeDrawingHeight,
                     safeDrawingWidth = safeDrawingWidth,
-                    isNew = true,
                     onMoveGridItem = onMoveGridItem,
                     onUpdateAssociate = onUpdateAssociate,
                     onUpdateSharedElementKey = onUpdateSharedElementKey,
@@ -308,7 +304,6 @@ internal fun handleDragGridItem(
                     rows = rows,
                     safeDrawingHeight = safeDrawingHeight,
                     safeDrawingWidth = safeDrawingWidth,
-                    isNew = true,
                     onMoveGridItem = onMoveGridItem,
                     onUpdateAssociate = onUpdateAssociate,
                     onUpdateSharedElementKey = onUpdateSharedElementKey,
@@ -434,7 +429,6 @@ private fun dragGridItem(
     rows: Int,
     safeDrawingHeight: Int,
     safeDrawingWidth: Int,
-    isNew: Boolean,
     onMoveGridItem: (
         movingGridItem: GridItem,
         x: Int,
@@ -443,7 +437,6 @@ private fun dragGridItem(
         rows: Int,
         gridWidth: Int,
         gridHeight: Int,
-        isNew: Boolean,
     ) -> Unit,
     onUpdateAssociate: (Associate) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
@@ -495,7 +488,6 @@ private fun dragGridItem(
             rows,
             safeDrawingWidth,
             gridHeightWithPadding,
-            isNew,
         )
     }
 }
@@ -510,7 +502,6 @@ private fun dragDockGridItem(
     gridItemSource: GridItemSource,
     safeDrawingHeight: Int,
     safeDrawingWidth: Int,
-    isNew: Boolean,
     onMoveGridItem: (
         movingGridItem: GridItem,
         x: Int,
@@ -519,7 +510,6 @@ private fun dragDockGridItem(
         rows: Int,
         gridWidth: Int,
         gridHeight: Int,
-        isNew: Boolean,
     ) -> Unit,
     onUpdateAssociate: (Associate) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
@@ -571,7 +561,6 @@ private fun dragDockGridItem(
             dockRows,
             safeDrawingWidth,
             dockHeightPx,
-            isNew,
         )
     }
 }

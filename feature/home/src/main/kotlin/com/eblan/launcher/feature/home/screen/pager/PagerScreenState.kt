@@ -405,7 +405,6 @@ internal class PagerScreenState(
             rows: Int,
             gridWidth: Int,
             gridHeight: Int,
-            isNew: Boolean,
         ) -> Unit,
     ) {
         handleDragGridItem(

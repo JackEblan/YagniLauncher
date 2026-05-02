@@ -252,7 +252,6 @@ internal class HomeViewModel @Inject constructor(
         rows: Int,
         gridWidth: Int,
         gridHeight: Int,
-        isNew: Boolean,
     ) {
         moveGridItemJob?.cancel()
 
@@ -268,7 +267,6 @@ internal class HomeViewModel @Inject constructor(
                     rows = rows,
                     gridWidth = gridWidth,
                     gridHeight = gridHeight,
-                    isNew = isNew,
                 )
             }
         }
@@ -364,18 +362,18 @@ internal class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             moveGridItemJob?.cancelAndJoin()
 
+            updateGridItemsAfterResizeUseCase(resizingGridItem = resizingGridItem)
+
+            _isCache.update {
+                false
+            }
+
             _moveGridItemResult.update {
                 null
             }
 
             _resizeGridItem.update {
                 null
-            }
-
-            updateGridItemsAfterResizeUseCase(resizingGridItem = resizingGridItem)
-
-            _isCache.update {
-                false
             }
 
             _gridItemSource.update {
@@ -388,10 +386,6 @@ internal class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             moveGridItemJob?.cancelAndJoin()
 
-            _moveGridItemResult.update {
-                null
-            }
-
             updateGridItemsAfterMoveUseCase(moveGridItemResult = moveGridItemResult)
 
             _isCache.update {
@@ -400,6 +394,10 @@ internal class HomeViewModel @Inject constructor(
 
             _isVisibleOverlay.update {
                 false
+            }
+
+            _moveGridItemResult.update {
+                null
             }
 
             _gridItemSource.update {
@@ -412,16 +410,16 @@ internal class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             moveGridItemJob?.cancelAndJoin()
 
-            _moveGridItemResult.update {
-                null
-            }
-
             _isCache.update {
                 false
             }
 
             _isVisibleOverlay.update {
                 false
+            }
+
+            _moveGridItemResult.update {
+                null
             }
 
             _gridItemSource.update {
@@ -434,16 +432,16 @@ internal class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             moveGridItemJob?.cancelAndJoin()
 
-            _moveGridItemResult.update {
-                null
-            }
-
             gridCacheRepository.deleteGridItemById(id = gridItem.id)
 
             gridRepository.updateGridItems(gridItems = gridCacheRepository.gridItemsCacheFlow.first())
 
             _isCache.update {
                 false
+            }
+
+            _moveGridItemResult.update {
+                null
             }
 
             _gridItemSource.update {
@@ -459,10 +457,6 @@ internal class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             moveGridItemJob?.cancelAndJoin()
 
-            _moveGridItemResult.update {
-                null
-            }
-
             appWidgetHostWrapper.deleteAppWidgetId(appWidgetId = appWidgetId)
 
             gridCacheRepository.deleteGridItemById(id = gridItem.id)
@@ -471,6 +465,10 @@ internal class HomeViewModel @Inject constructor(
 
             _isCache.update {
                 false
+            }
+
+            _moveGridItemResult.update {
+                null
             }
 
             _gridItemSource.update {
@@ -680,14 +678,6 @@ internal class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             moveGridItemJob?.cancelAndJoin()
 
-            _moveGridItemResult.update {
-                null
-            }
-
-            _moveFolderGridItem.update {
-                null
-            }
-
             gridRepository.updateGridItems(gridItems = gridCacheRepository.gridItemsCacheFlow.first())
 
             _isCache.update {
@@ -696,6 +686,14 @@ internal class HomeViewModel @Inject constructor(
 
             _isVisibleOverlay.update {
                 false
+            }
+
+            _moveGridItemResult.update {
+                null
+            }
+
+            _moveFolderGridItem.update {
+                null
             }
 
             _gridItemSource.update {
@@ -751,8 +749,6 @@ internal class HomeViewModel @Inject constructor(
             _moveFolderGridItem.update {
                 movingFolderGridItem
             }
-
-            delay(moveDelay)
 
             showFolderWhenDraggingUseCase(
                 conflictingId = conflictingId,

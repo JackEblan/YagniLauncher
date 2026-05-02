@@ -194,7 +194,6 @@ internal fun PagerScreen(
         rows: Int,
         gridWidth: Int,
         gridHeight: Int,
-        isNew: Boolean,
     ) -> Unit,
     onResetConfigureResultCode: () -> Unit,
     onResetPinGridItem: () -> Unit,
