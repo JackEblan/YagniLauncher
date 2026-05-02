@@ -108,10 +108,7 @@ internal fun handleAnimateScrollToPage(
             }
         }
 
-        is GridItemSource.Folder,
-        is GridItemSource.FolderNew,
-        is GridItemSource.FolderPin,
-        -> {
+        is GridItemSource.Folder -> {
             if (folderPopupIntOffset == null || folderPopupIntSize == null) return
 
             val data = folderGridItem?.data as? GridItemData.Folder ?: return
@@ -190,6 +187,7 @@ internal fun handleDragGridItem(
         rows: Int,
         gridWidth: Int,
         gridHeight: Int,
+        isNew: Boolean,
     ) -> Unit,
     onUpdateAssociate: (Associate) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
@@ -244,9 +242,9 @@ internal fun handleDragGridItem(
     val isOnDock = dockHeightPx > 0 && dragY > safeDrawingHeight - dockHeightPx
 
     when (gridItemSource) {
-        is GridItemSource.Existing, is GridItemSource.New, is GridItemSource.Pin -> {
+        is GridItemSource.Existing -> {
             if (isOnDock) {
-                handleDragExistingOrNewDockGridItem(
+                dragDockGridItem(
                     currentPage = currentPage,
                     dockColumns = dockColumns,
                     dockHeightPx = dockHeightPx,
@@ -256,12 +254,13 @@ internal fun handleDragGridItem(
                     gridItemSource = gridItemSource,
                     safeDrawingHeight = safeDrawingHeight,
                     safeDrawingWidth = safeDrawingWidth,
+                    isNew = false,
                     onMoveGridItem = onMoveGridItem,
                     onUpdateAssociate = onUpdateAssociate,
                     onUpdateSharedElementKey = onUpdateSharedElementKey,
                 )
             } else {
-                handleDragExistingOrNewGridItem(
+                dragGridItem(
                     columns = columns,
                     currentPage = currentPage,
                     dockHeightPx = dockHeightPx,
@@ -272,6 +271,7 @@ internal fun handleDragGridItem(
                     rows = rows,
                     safeDrawingHeight = safeDrawingHeight,
                     safeDrawingWidth = safeDrawingWidth,
+                    isNew = false,
                     onMoveGridItem = onMoveGridItem,
                     onUpdateAssociate = onUpdateAssociate,
                     onUpdateSharedElementKey = onUpdateSharedElementKey,
@@ -279,11 +279,45 @@ internal fun handleDragGridItem(
             }
         }
 
-        is GridItemSource.Folder,
-        is GridItemSource.FolderNew,
-        is GridItemSource.FolderPin,
-        -> {
-            handleDragFolderGridItem(
+        is GridItemSource.New, is GridItemSource.Pin -> {
+            if (isOnDock) {
+                dragDockGridItem(
+                    currentPage = currentPage,
+                    dockColumns = dockColumns,
+                    dockHeightPx = dockHeightPx,
+                    dockRows = dockRows,
+                    dragX = dragX,
+                    dragY = dragY,
+                    gridItemSource = gridItemSource,
+                    safeDrawingHeight = safeDrawingHeight,
+                    safeDrawingWidth = safeDrawingWidth,
+                    isNew = true,
+                    onMoveGridItem = onMoveGridItem,
+                    onUpdateAssociate = onUpdateAssociate,
+                    onUpdateSharedElementKey = onUpdateSharedElementKey,
+                )
+            } else {
+                dragGridItem(
+                    columns = columns,
+                    currentPage = currentPage,
+                    dockHeightPx = dockHeightPx,
+                    dragX = dragX,
+                    dragY = dragY,
+                    gridItemSource = gridItemSource,
+                    pageIndicatorHeightPx = pageIndicatorHeightPx,
+                    rows = rows,
+                    safeDrawingHeight = safeDrawingHeight,
+                    safeDrawingWidth = safeDrawingWidth,
+                    isNew = true,
+                    onMoveGridItem = onMoveGridItem,
+                    onUpdateAssociate = onUpdateAssociate,
+                    onUpdateSharedElementKey = onUpdateSharedElementKey,
+                )
+            }
+        }
+
+        is GridItemSource.Folder -> {
+            dragFolderGridItem(
                 density = density,
                 dragX = dragX,
                 dragY = dragY,
@@ -303,7 +337,7 @@ internal fun handleDragGridItem(
     }
 }
 
-private fun handleDragFolderGridItem(
+private fun dragFolderGridItem(
     density: Density,
     dragX: Int,
     dragY: Int,
@@ -364,26 +398,17 @@ private fun handleDragFolderGridItem(
     val isInsideFolder = folderDragX in 0..folderGridVisibleWidthPx &&
         folderDragY in 0..folderGridVisibleHeightPx
 
-    val movingFolderGridItem = when (gridItemSource) {
-        is GridItemSource.Folder,
-        is GridItemSource.FolderNew,
-        is GridItemSource.FolderPin,
-        -> gridItemSource.gridItem
-
-        else -> return
-    }
-
     if (isInsideFolder) {
         onUpdateSharedElementKey(
             SharedElementKey(
-                id = movingFolderGridItem.id,
+                id = gridItemSource.gridItem.id,
                 parent = SharedElementKey.Parent.Folder,
             ),
         )
 
         onMoveFolderGridItem(
             folderGridItem.id,
-            movingFolderGridItem,
+            gridItemSource.gridItem,
             data,
             folderDragX,
             folderDragY,
@@ -398,7 +423,7 @@ private fun handleDragFolderGridItem(
     }
 }
 
-private fun handleDragExistingOrNewGridItem(
+private fun dragGridItem(
     columns: Int,
     currentPage: Int,
     dockHeightPx: Int,
@@ -409,6 +434,7 @@ private fun handleDragExistingOrNewGridItem(
     rows: Int,
     safeDrawingHeight: Int,
     safeDrawingWidth: Int,
+    isNew: Boolean,
     onMoveGridItem: (
         movingGridItem: GridItem,
         x: Int,
@@ -417,6 +443,7 @@ private fun handleDragExistingOrNewGridItem(
         rows: Int,
         gridWidth: Int,
         gridHeight: Int,
+        isNew: Boolean,
     ) -> Unit,
     onUpdateAssociate: (Associate) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
@@ -468,11 +495,12 @@ private fun handleDragExistingOrNewGridItem(
             rows,
             safeDrawingWidth,
             gridHeightWithPadding,
+            isNew,
         )
     }
 }
 
-private fun handleDragExistingOrNewDockGridItem(
+private fun dragDockGridItem(
     currentPage: Int,
     dockColumns: Int,
     dockHeightPx: Int,
@@ -482,6 +510,7 @@ private fun handleDragExistingOrNewDockGridItem(
     gridItemSource: GridItemSource,
     safeDrawingHeight: Int,
     safeDrawingWidth: Int,
+    isNew: Boolean,
     onMoveGridItem: (
         movingGridItem: GridItem,
         x: Int,
@@ -490,6 +519,7 @@ private fun handleDragExistingOrNewDockGridItem(
         rows: Int,
         gridWidth: Int,
         gridHeight: Int,
+        isNew: Boolean,
     ) -> Unit,
     onUpdateAssociate: (Associate) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
@@ -541,6 +571,7 @@ private fun handleDragExistingOrNewDockGridItem(
             dockRows,
             safeDrawingWidth,
             dockHeightPx,
+            isNew,
         )
     }
 }
@@ -698,30 +729,11 @@ internal suspend fun handleConflictingGridItem(
 
     val movingFolderGridItem = movingGridItem.copy(data = movingData)
 
-    val newGridItemSource = when (gridItemSource) {
-        is GridItemSource.Existing -> {
-            GridItemSource.Folder(
-                gridItem = movingFolderGridItem,
-            )
-        }
-
-        is GridItemSource.New -> {
-            GridItemSource.FolderNew(
-                gridItem = movingFolderGridItem,
-            )
-        }
-
-        is GridItemSource.Pin -> {
-            GridItemSource.FolderPin(
-                gridItem = movingFolderGridItem,
-                pinItemRequest = gridItemSource.pinItemRequest,
-            )
-        }
-
-        else -> return
-    }
-
-    onUpdateGridItemSource(newGridItemSource)
+    onUpdateGridItemSource(
+        GridItemSource.Folder(
+            gridItem = movingFolderGridItem,
+        ),
+    )
 
     onUpdateFolderPopupBounds(
         intOffset,
@@ -783,8 +795,6 @@ private fun getMoveGridItem(
     }
 
     is GridItemSource.New, is GridItemSource.Pin,
-    is GridItemSource.FolderNew,
-    is GridItemSource.FolderPin,
     -> {
         getMoveNewGridItem(
             associate = associate,

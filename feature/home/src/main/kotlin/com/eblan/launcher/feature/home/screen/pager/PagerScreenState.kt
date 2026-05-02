@@ -405,6 +405,7 @@ internal class PagerScreenState(
             rows: Int,
             gridWidth: Int,
             gridHeight: Int,
+            isNew: Boolean,
         ) -> Unit,
     ) {
         handleDragGridItem(
@@ -975,16 +976,9 @@ internal class PagerScreenState(
 
         val data = folderGridItem?.data as? GridItemData.Folder ?: return
 
-        val movingGridItem = when (gridItemSource) {
-            is GridItemSource.Folder,
-            is GridItemSource.FolderNew,
-            is GridItemSource.FolderPin,
-            -> gridItemSource.gridItem
+        val gridItem = gridItemSource?.gridItem ?: return
 
-            else -> return
-        }
-
-        val movingData = when (val data = movingGridItem.data) {
+        val movingData = when (val data = gridItem.data) {
             is GridItemData.ApplicationInfo -> data.copy(
                 index = -1,
                 folderId = null,
@@ -1003,20 +997,9 @@ internal class PagerScreenState(
             else -> return
         }
 
-        val newMovingGridItem = movingGridItem.copy(data = movingData)
+        val newMovingGridItem = gridItem.copy(data = movingData)
 
-        val newGridItemSource = when (gridItemSource) {
-            is GridItemSource.Folder -> GridItemSource.Existing(gridItem = newMovingGridItem)
-
-            is GridItemSource.FolderNew -> GridItemSource.New(gridItem = newMovingGridItem)
-
-            is GridItemSource.FolderPin -> GridItemSource.Pin(
-                gridItem = newMovingGridItem,
-                pinItemRequest = gridItemSource.pinItemRequest,
-            )
-        }
-
-        onUpdateGridItemSource(newGridItemSource)
+        onUpdateGridItemSource(GridItemSource.Existing(gridItem = newMovingGridItem))
 
         sharedElementKey = SharedElementKey(
             id = newMovingGridItem.id,

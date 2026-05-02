@@ -80,21 +80,7 @@ internal fun SharedTransitionScope.InteractiveFolderGridItemContent(
     onDismissGridItemPopup: () -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
 ) {
-    val isSelected = when (gridItemSource) {
-        is GridItemSource.Folder -> {
-            gridItem.id == gridItemSource.gridItem.id
-        }
-
-        is GridItemSource.FolderNew -> {
-            gridItem.id == gridItemSource.gridItem.id
-        }
-
-        is GridItemSource.FolderPin -> {
-            gridItem.id == gridItemSource.gridItem.id
-        }
-
-        else -> false
-    }
+    val isSelected = gridItemSource != null && gridItem.id == gridItemSource.gridItem.id
 
     val currentGridItemSettings = if (gridItem.override) {
         gridItem.gridItemSettings

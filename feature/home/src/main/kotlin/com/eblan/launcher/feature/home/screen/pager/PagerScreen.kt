@@ -194,6 +194,7 @@ internal fun PagerScreen(
         rows: Int,
         gridWidth: Int,
         gridHeight: Int,
+        isNew: Boolean,
     ) -> Unit,
     onResetConfigureResultCode: () -> Unit,
     onResetPinGridItem: () -> Unit,
@@ -312,10 +313,8 @@ internal fun PagerScreen(
                 moveGridItemResult = moveGridItemResult,
                 result = result,
                 fileManager = fileManager,
-                gridItemSource = gridItemSource,
                 onDeleteGridItemCache = onResetGridCacheAfterDeleteGridItemCache,
                 onDragEndAfterMove = onDragEndAfterMove,
-                onDragEndAfterMoveFolder = onDragEndAfterMoveFolder,
             )
         }
     }

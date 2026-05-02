@@ -252,6 +252,7 @@ internal class HomeViewModel @Inject constructor(
         rows: Int,
         gridWidth: Int,
         gridHeight: Int,
+        isNew: Boolean,
     ) {
         moveGridItemJob?.cancel()
 
@@ -267,6 +268,7 @@ internal class HomeViewModel @Inject constructor(
                     rows = rows,
                     gridWidth = gridWidth,
                     gridHeight = gridHeight,
+                    isNew = isNew,
                 )
             }
         }
