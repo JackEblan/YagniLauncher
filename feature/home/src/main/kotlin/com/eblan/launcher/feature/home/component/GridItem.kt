@@ -91,15 +91,20 @@ internal fun SharedTransitionScope.InteractiveApplicationInfoGridItem(
     iconPackFilePaths: Map<String, String>,
     isScrollInProgress: Boolean,
     isSelected: Boolean,
-    statusBarNotifications: Map<String, Int>,
-    textColor: Color,
+    isShowWhiteBox: Boolean,
+    isVisibleFolder: Boolean,
     isVisibleOverlay: Boolean,
     newGridItemSource: GridItemSource,
     sharedElementKey: SharedElementKey,
-    isShowWhiteBox: Boolean,
-    isVisibleFolder: Boolean,
+    statusBarNotifications: Map<String, Int>,
+    textColor: Color,
+    onDismissGridItemPopup: () -> Unit,
     onDraggingGridItem: () -> Unit,
     onOpenAppDrawer: () -> Unit,
+    onShowGridItemPopup: (
+        intOffset: IntOffset,
+        intSize: IntSize,
+    ) -> Unit,
     onTapApplicationInfo: (
         serialNumber: Long,
         componentName: String,
@@ -107,17 +112,12 @@ internal fun SharedTransitionScope.InteractiveApplicationInfoGridItem(
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
+    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
     ) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onShowGridItemPopup: (
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) -> Unit,
-    onDismissGridItemPopup: () -> Unit,
-    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
 ) {
     val launcherApps = LocalLauncherApps.current
 
@@ -308,26 +308,26 @@ internal fun SharedTransitionScope.InteractiveWidgetGridItem(
     drag: Drag,
     isScrollInProgress: Boolean,
     isSelected: Boolean,
-    textColor: Color,
+    isShowWhiteBox: Boolean,
     isVisibleOverlay: Boolean,
     newGridItemSource: GridItemSource,
     sharedElementKey: SharedElementKey,
-    isShowWhiteBox: Boolean,
+    textColor: Color,
+    onDismissGridItemPopup: () -> Unit,
     onDraggingGridItem: () -> Unit,
+    onShowGridItemPopup: (
+        intOffset: IntOffset,
+        intSize: IntSize,
+    ) -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
+    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
     ) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onShowGridItemPopup: (
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) -> Unit,
-    onDismissGridItemPopup: () -> Unit,
-    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
 ) {
     var intOffset by remember { mutableStateOf(IntOffset.Zero) }
 
@@ -469,14 +469,19 @@ internal fun SharedTransitionScope.InteractiveShortcutInfoGridItem(
     hasShortcutHostPermission: Boolean,
     isScrollInProgress: Boolean,
     isSelected: Boolean,
-    textColor: Color,
+    isShowWhiteBox: Boolean,
+    isVisibleFolder: Boolean,
     isVisibleOverlay: Boolean,
     newGridItemSource: GridItemSource,
     sharedElementKey: SharedElementKey,
-    isShowWhiteBox: Boolean,
-    isVisibleFolder: Boolean,
+    textColor: Color,
+    onDismissGridItemPopup: () -> Unit,
     onDraggingGridItem: () -> Unit,
     onOpenAppDrawer: () -> Unit,
+    onShowGridItemPopup: (
+        intOffset: IntOffset,
+        intSize: IntSize,
+    ) -> Unit,
     onTapShortcutInfo: (
         serialNumber: Long,
         packageName: String,
@@ -485,17 +490,12 @@ internal fun SharedTransitionScope.InteractiveShortcutInfoGridItem(
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
+    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
     ) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onShowGridItemPopup: (
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) -> Unit,
-    onDismissGridItemPopup: () -> Unit,
-    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
 ) {
     val launcherApps = LocalLauncherApps.current
 
@@ -678,33 +678,33 @@ internal fun SharedTransitionScope.InteractiveFolderGridItem(
     drag: Drag,
     gridItem: GridItem,
     gridItemSettings: GridItemSettings,
+    gridItemSource: GridItemSource?,
     iconPackFilePaths: Map<String, String>,
     isScrollInProgress: Boolean,
     isSelected: Boolean,
-    textColor: Color,
+    isShowWhiteBox: Boolean,
+    isVisibleFolder: Boolean,
     isVisibleOverlay: Boolean,
-    gridItemSource: GridItemSource?,
     newGridItemSource: GridItemSource,
     sharedElementKey: SharedElementKey,
-    isVisibleFolder: Boolean,
-    isShowWhiteBox: Boolean,
+    textColor: Color,
+    onDismissGridItemPopup: () -> Unit,
     onDraggingGridItem: () -> Unit,
     onOpenAppDrawer: () -> Unit,
+    onShowGridItemPopup: (
+        intOffset: IntOffset,
+        intSize: IntSize,
+    ) -> Unit,
     onTap: () -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
+    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
     ) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onShowGridItemPopup: (
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) -> Unit,
-    onDismissGridItemPopup: () -> Unit,
-    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
 ) {
     val launcherApps = LocalLauncherApps.current
 
@@ -856,7 +856,7 @@ internal fun SharedTransitionScope.InteractiveFolderGridItem(
                     maxLines = 3,
                 ) {
                     data.previewGridItemsByPage.forEach { folderGridItem ->
-                        PreviewFolderGridItemContent(
+                        PreviewFolderGridItem(
                             alpha = alpha,
                             gridItem = folderGridItem,
                             gridItemSettings = gridItemSettings,
@@ -895,29 +895,29 @@ internal fun SharedTransitionScope.InteractiveShortcutConfigGridItem(
     gridItemSettings: GridItemSettings,
     isScrollInProgress: Boolean,
     isSelected: Boolean,
-    textColor: Color,
+    isShowWhiteBox: Boolean,
+    isVisibleFolder: Boolean,
     isVisibleOverlay: Boolean,
     newGridItemSource: GridItemSource,
     sharedElementKey: SharedElementKey,
-    isShowWhiteBox: Boolean,
-    isVisibleFolder: Boolean,
+    textColor: Color,
+    onDismissGridItemPopup: () -> Unit,
     onDraggingGridItem: () -> Unit,
     onOpenAppDrawer: () -> Unit,
+    onShowGridItemPopup: (
+        intOffset: IntOffset,
+        intSize: IntSize,
+    ) -> Unit,
     onTapShortcutConfig: (String) -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
+    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
     ) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onShowGridItemPopup: (
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) -> Unit,
-    onDismissGridItemPopup: () -> Unit,
-    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
 ) {
     val launcherApps = LocalLauncherApps.current
 
@@ -1105,7 +1105,7 @@ internal fun SharedTransitionScope.InteractiveShortcutConfigGridItem(
 }
 
 @Composable
-private fun SharedTransitionScope.PreviewFolderGridItemContent(
+private fun SharedTransitionScope.PreviewFolderGridItem(
     modifier: Modifier = Modifier,
     alpha: Float,
     gridItem: GridItem,
@@ -1116,8 +1116,10 @@ private fun SharedTransitionScope.PreviewFolderGridItemContent(
     isVisibleOverlay: Boolean,
     parent: SharedElementKey.Parent,
 ) {
+    val context = LocalContext.current
+
     key(gridItem.id) {
-        val isSelected = gridItemSource != null && gridItem.id == gridItemSource.gridItem.id
+        val isSelected = gridItemSource != null && gridItemSource.gridItem.id == gridItem.id
 
         val hasInteraction = isSelected && isVisibleOverlay
 
@@ -1147,7 +1149,7 @@ private fun SharedTransitionScope.PreviewFolderGridItemContent(
                         ?: data.icon
 
                 AsyncImage(
-                    model = Builder(LocalContext.current)
+                    model = Builder(context)
                         .data(data.customIcon ?: icon)
                         .addLastModifiedToFileCacheKey(true).build(),
                     contentDescription = null,
@@ -1175,7 +1177,7 @@ private fun SharedTransitionScope.PreviewFolderGridItemContent(
                 }
 
                 AsyncImage(
-                    model = Builder(LocalContext.current)
+                    model = Builder(context)
                         .data(icon)
                         .addLastModifiedToFileCacheKey(true).build(),
                     contentDescription = null,
@@ -1185,7 +1187,7 @@ private fun SharedTransitionScope.PreviewFolderGridItemContent(
 
             is GridItemData.ShortcutInfo -> {
                 AsyncImage(
-                    model = Builder(LocalContext.current)
+                    model = Builder(context)
                         .data(data.customIcon ?: data.icon)
                         .addLastModifiedToFileCacheKey(true).build(),
                     contentDescription = null,

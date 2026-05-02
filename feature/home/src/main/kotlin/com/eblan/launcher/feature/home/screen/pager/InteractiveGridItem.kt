@@ -84,7 +84,7 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
     onDismissGridItemPopup: () -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
 ) {
-    val isSelected = gridItemSource != null && gridItem.id == gridItemSource.gridItem.id
+    val isSelected = gridItemSource != null && gridItemSource.gridItem.id == gridItem.id
 
     val currentGridItemSettings = if (gridItem.override) {
         gridItem.gridItemSettings
@@ -106,8 +106,6 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
         )
     }
 
-    val isShowWhiteBox = true
-
     when (val data = gridItem.data) {
         is GridItemData.ApplicationInfo -> {
             InteractiveApplicationInfoGridItem(
@@ -119,24 +117,24 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
                 iconPackFilePaths = iconPackFilePaths,
                 isScrollInProgress = isScrollInProgress,
                 isSelected = isSelected,
-                statusBarNotifications = statusBarNotifications,
-                textColor = currentTextColor,
+                isShowWhiteBox = true,
+                isVisibleFolder = isVisibleFolder,
                 isVisibleOverlay = isVisibleOverlay,
                 newGridItemSource = newGridItemSource,
                 sharedElementKey = sharedElementKey,
-                isShowWhiteBox = isShowWhiteBox,
-                isVisibleFolder = isVisibleFolder,
+                statusBarNotifications = statusBarNotifications,
+                textColor = currentTextColor,
+                onDismissGridItemPopup = onDismissGridItemPopup,
                 onDraggingGridItem = onDraggingGridItem,
                 onOpenAppDrawer = onOpenAppDrawer,
+                onShowGridItemPopup = onShowGridItemPopup,
                 onTapApplicationInfo = onTapApplicationInfo,
                 onUpdateGridItemSource = onUpdateGridItemSource,
                 onUpdateImageBitmap = onUpdateImageBitmap,
                 onUpdateIsDragging = onUpdateIsDragging,
+                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                 onUpdateOverlayBounds = onUpdateOverlayBounds,
                 onUpdateSharedElementKey = onUpdateSharedElementKey,
-                onShowGridItemPopup = onShowGridItemPopup,
-                onDismissGridItemPopup = onDismissGridItemPopup,
-                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
             )
         }
 
@@ -147,20 +145,20 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
                 drag = drag,
                 isScrollInProgress = isScrollInProgress,
                 isSelected = isSelected,
-                textColor = currentTextColor,
+                isShowWhiteBox = true,
                 isVisibleOverlay = isVisibleOverlay,
                 newGridItemSource = newGridItemSource,
                 sharedElementKey = sharedElementKey,
-                isShowWhiteBox = isShowWhiteBox,
+                textColor = currentTextColor,
+                onDismissGridItemPopup = onDismissGridItemPopup,
                 onDraggingGridItem = onDraggingGridItem,
+                onShowGridItemPopup = onShowGridItemPopup,
                 onUpdateGridItemSource = onUpdateGridItemSource,
                 onUpdateImageBitmap = onUpdateImageBitmap,
                 onUpdateIsDragging = onUpdateIsDragging,
+                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                 onUpdateOverlayBounds = onUpdateOverlayBounds,
                 onUpdateSharedElementKey = onUpdateSharedElementKey,
-                onShowGridItemPopup = onShowGridItemPopup,
-                onDismissGridItemPopup = onDismissGridItemPopup,
-                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
             )
         }
 
@@ -174,23 +172,23 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
                 hasShortcutHostPermission = hasShortcutHostPermission,
                 isScrollInProgress = isScrollInProgress,
                 isSelected = isSelected,
-                textColor = currentTextColor,
+                isShowWhiteBox = true,
+                isVisibleFolder = isVisibleFolder,
                 isVisibleOverlay = isVisibleOverlay,
                 newGridItemSource = newGridItemSource,
                 sharedElementKey = sharedElementKey,
-                isShowWhiteBox = isShowWhiteBox,
-                isVisibleFolder = isVisibleFolder,
+                textColor = currentTextColor,
+                onDismissGridItemPopup = onDismissGridItemPopup,
                 onDraggingGridItem = onDraggingGridItem,
                 onOpenAppDrawer = onOpenAppDrawer,
+                onShowGridItemPopup = onShowGridItemPopup,
                 onTapShortcutInfo = onTapShortcutInfo,
                 onUpdateGridItemSource = onUpdateGridItemSource,
                 onUpdateImageBitmap = onUpdateImageBitmap,
                 onUpdateIsDragging = onUpdateIsDragging,
+                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                 onUpdateOverlayBounds = onUpdateOverlayBounds,
                 onUpdateSharedElementKey = onUpdateSharedElementKey,
-                onShowGridItemPopup = onShowGridItemPopup,
-                onDismissGridItemPopup = onDismissGridItemPopup,
-                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
             )
         }
 
@@ -201,27 +199,27 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
                 drag = drag,
                 gridItem = gridItem,
                 gridItemSettings = currentGridItemSettings,
+                gridItemSource = gridItemSource,
                 iconPackFilePaths = iconPackFilePaths,
                 isScrollInProgress = isScrollInProgress,
                 isSelected = isSelected,
-                textColor = currentTextColor,
-                isVisibleOverlay = isVisibleOverlay,
+                isShowWhiteBox = true,
                 isVisibleFolder = isVisibleFolder,
-                gridItemSource = gridItemSource,
+                isVisibleOverlay = isVisibleOverlay,
                 newGridItemSource = newGridItemSource,
                 sharedElementKey = sharedElementKey,
-                isShowWhiteBox = isShowWhiteBox,
+                textColor = currentTextColor,
+                onDismissGridItemPopup = onDismissGridItemPopup,
                 onDraggingGridItem = onDraggingGridItem,
                 onOpenAppDrawer = onOpenAppDrawer,
+                onShowGridItemPopup = onShowGridItemPopup,
                 onTap = onTapFolderGridItem,
                 onUpdateGridItemSource = onUpdateGridItemSource,
                 onUpdateImageBitmap = onUpdateImageBitmap,
                 onUpdateIsDragging = onUpdateIsDragging,
+                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                 onUpdateOverlayBounds = onUpdateOverlayBounds,
                 onUpdateSharedElementKey = onUpdateSharedElementKey,
-                onShowGridItemPopup = onShowGridItemPopup,
-                onDismissGridItemPopup = onDismissGridItemPopup,
-                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
             )
         }
 
@@ -234,23 +232,23 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
                 gridItemSettings = currentGridItemSettings,
                 isScrollInProgress = isScrollInProgress,
                 isSelected = isSelected,
-                textColor = currentTextColor,
+                isShowWhiteBox = true,
+                isVisibleFolder = isVisibleFolder,
                 isVisibleOverlay = isVisibleOverlay,
                 newGridItemSource = newGridItemSource,
                 sharedElementKey = sharedElementKey,
-                isShowWhiteBox = isShowWhiteBox,
-                isVisibleFolder = isVisibleFolder,
+                textColor = currentTextColor,
+                onDismissGridItemPopup = onDismissGridItemPopup,
                 onDraggingGridItem = onDraggingGridItem,
                 onOpenAppDrawer = onOpenAppDrawer,
+                onShowGridItemPopup = onShowGridItemPopup,
                 onTapShortcutConfig = onTapShortcutConfig,
                 onUpdateGridItemSource = onUpdateGridItemSource,
                 onUpdateImageBitmap = onUpdateImageBitmap,
                 onUpdateIsDragging = onUpdateIsDragging,
+                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                 onUpdateOverlayBounds = onUpdateOverlayBounds,
                 onUpdateSharedElementKey = onUpdateSharedElementKey,
-                onShowGridItemPopup = onShowGridItemPopup,
-                onDismissGridItemPopup = onDismissGridItemPopup,
-                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
             )
         }
     }
