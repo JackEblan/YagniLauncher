@@ -25,6 +25,8 @@ import kotlinx.coroutines.flow.Flow
 interface ShortcutConfigGridItemRepository {
     val gridItemsFlow: Flow<List<GridItem>>
 
+    val gridItemsWithFolderIdFlow: Flow<List<GridItem>>
+
     fun getShortcutConfigGridItems(): List<ShortcutConfigGridItem>
 
     suspend fun upsertShortcutConfigGridItems(shortcutConfigGridItems: List<ShortcutConfigGridItem>)

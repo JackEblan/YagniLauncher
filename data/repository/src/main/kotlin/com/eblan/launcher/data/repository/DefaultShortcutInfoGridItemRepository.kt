@@ -26,6 +26,7 @@ import com.eblan.launcher.domain.model.UpdateShortcutInfoGridItem
 import com.eblan.launcher.domain.repository.ShortcutInfoGridItemRepository
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
+import kotlin.collections.map
 
 internal class DefaultShortcutInfoGridItemRepository @Inject constructor(private val shortcutInfoGridItemDao: ShortcutInfoGridItemDao) : ShortcutInfoGridItemRepository {
     override val gridItemsFlow =
@@ -33,6 +34,13 @@ internal class DefaultShortcutInfoGridItemRepository @Inject constructor(private
             entities.filter { entity ->
                 entity.folderId == null
             }.map { entity ->
+                entity.asGridItem()
+            }
+        }
+
+    override val gridItemsWithFolderIdFlow =
+        shortcutInfoGridItemDao.getShortcutInfoGridItemEntitiesFlow().map { entities ->
+            entities.map { entity ->
                 entity.asGridItem()
             }
         }
