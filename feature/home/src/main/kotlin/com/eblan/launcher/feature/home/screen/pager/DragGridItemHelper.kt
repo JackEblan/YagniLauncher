@@ -196,7 +196,8 @@ internal fun handleDragGridItem(
         isGridScrollInProgress ||
         isDockScrollInProgress ||
         gridItemSource == null ||
-        !(isVisibleOverlay && isDragging) ||
+        !isVisibleOverlay ||
+        !isDragging ||
         lockMovement
     ) {
         return
@@ -241,42 +242,10 @@ internal fun handleDragGridItem(
     val isOnDock = dockHeightPx > 0 && dragY > safeDrawingHeight - dockHeightPx
 
     when (gridItemSource) {
-        is GridItemSource.Existing -> {
-            if (isOnDock) {
-                dragDockGridItem(
-                    currentPage = currentPage,
-                    dockColumns = dockColumns,
-                    dockHeightPx = dockHeightPx,
-                    dockRows = dockRows,
-                    dragX = dragX,
-                    dragY = dragY,
-                    gridItemSource = gridItemSource,
-                    safeDrawingHeight = safeDrawingHeight,
-                    safeDrawingWidth = safeDrawingWidth,
-                    onMoveGridItem = onMoveGridItem,
-                    onUpdateAssociate = onUpdateAssociate,
-                    onUpdateSharedElementKey = onUpdateSharedElementKey,
-                )
-            } else {
-                dragGridItem(
-                    columns = columns,
-                    currentPage = currentPage,
-                    dockHeightPx = dockHeightPx,
-                    dragX = dragX,
-                    dragY = dragY,
-                    gridItemSource = gridItemSource,
-                    pageIndicatorHeightPx = pageIndicatorHeightPx,
-                    rows = rows,
-                    safeDrawingHeight = safeDrawingHeight,
-                    safeDrawingWidth = safeDrawingWidth,
-                    onMoveGridItem = onMoveGridItem,
-                    onUpdateAssociate = onUpdateAssociate,
-                    onUpdateSharedElementKey = onUpdateSharedElementKey,
-                )
-            }
-        }
-
-        is GridItemSource.New, is GridItemSource.Pin -> {
+        is GridItemSource.Existing,
+        is GridItemSource.New,
+        is GridItemSource.Pin,
+        -> {
             if (isOnDock) {
                 dragDockGridItem(
                     currentPage = currentPage,
