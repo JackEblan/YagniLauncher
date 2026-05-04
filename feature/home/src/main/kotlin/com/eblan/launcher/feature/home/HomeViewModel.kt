@@ -51,7 +51,6 @@ import com.eblan.launcher.domain.usecase.grid.MoveFolderGridItemUseCase
 import com.eblan.launcher.domain.usecase.grid.MoveGridItemUseCase
 import com.eblan.launcher.domain.usecase.grid.ResizeGridItemUseCase
 import com.eblan.launcher.domain.usecase.grid.UpdateGridItemsAfterMoveUseCase
-import com.eblan.launcher.domain.usecase.grid.UpdateGridItemsAfterResizeUseCase
 import com.eblan.launcher.domain.usecase.iconpack.GetIconPackFilePathsUseCase
 import com.eblan.launcher.domain.usecase.launcherapps.AddPackageUseCase
 import com.eblan.launcher.domain.usecase.launcherapps.ChangePackageUseCase
@@ -86,7 +85,6 @@ internal class HomeViewModel @Inject constructor(
     private val cachePageItemsUseCase: CachePageItemsUseCase,
     private val updatePageItemsUseCase: UpdatePageItemsUseCase,
     private val appWidgetHostWrapper: AppWidgetHostWrapper,
-    private val updateGridItemsAfterResizeUseCase: UpdateGridItemsAfterResizeUseCase,
     private val updateGridItemsAfterMoveUseCase: UpdateGridItemsAfterMoveUseCase,
     private val getPinGridItemUseCase: GetPinGridItemUseCase,
     private val fileManager: FileManager,
@@ -334,11 +332,9 @@ internal class HomeViewModel @Inject constructor(
         }
     }
 
-    fun resetGridCacheAfterResize(resizingGridItem: GridItem) {
+    fun resetGridAfterResize() {
         viewModelScope.launch {
             moveGridItemJob?.cancelAndJoin()
-
-            updateGridItemsAfterResizeUseCase(resizingGridItem = resizingGridItem)
 
             _moveGridItemResult.update {
                 null
@@ -354,7 +350,7 @@ internal class HomeViewModel @Inject constructor(
         }
     }
 
-    fun resetGridCacheAfterMove(moveGridItemResult: MoveGridItemResult) {
+    fun resetGridAfterMove(moveGridItemResult: MoveGridItemResult) {
         viewModelScope.launch {
             moveGridItemJob?.cancelAndJoin()
 
@@ -374,7 +370,7 @@ internal class HomeViewModel @Inject constructor(
         }
     }
 
-    fun cancelGridCache() {
+    fun cancelGrid() {
         viewModelScope.launch {
             moveGridItemJob?.cancelAndJoin()
 
@@ -392,7 +388,7 @@ internal class HomeViewModel @Inject constructor(
         }
     }
 
-    fun resetGridCacheAfterDeleteGridItemCache(gridItem: GridItem) {
+    fun resetGridAfterDeleteGridItem(gridItem: GridItem) {
         viewModelScope.launch {
             moveGridItemJob?.cancelAndJoin()
 
@@ -408,7 +404,7 @@ internal class HomeViewModel @Inject constructor(
         }
     }
 
-    fun resetGridCacheAfterDeleteWidgetGridItemCache(
+    fun resetGridAfterDeleteWidgetGridItem(
         gridItem: GridItem,
         appWidgetId: Int,
     ) {
@@ -509,7 +505,7 @@ internal class HomeViewModel @Inject constructor(
 
             gridRepository.insertGridItem(gridItem = movingGridItem.copy(data = data))
 
-            resetGridCacheAfterMove(moveGridItemResult = moveGridItemResult)
+            resetGridAfterMove(moveGridItemResult = moveGridItemResult)
         }
     }
 
@@ -622,7 +618,7 @@ internal class HomeViewModel @Inject constructor(
         }
     }
 
-    fun resetGridCacheAfterMoveFolder() {
+    fun resetGridAfterMoveFolder() {
         viewModelScope.launch {
             moveGridItemJob?.cancelAndJoin()
 

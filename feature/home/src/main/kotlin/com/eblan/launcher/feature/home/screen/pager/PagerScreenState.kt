@@ -449,7 +449,7 @@ internal class PagerScreenState(
         gridItemSource: GridItemSource?,
         isVisibleOverlay: Boolean,
         onUpdateIsVisibleOverlay: (Boolean) -> Unit,
-        onResetGridCacheAfterDeleteGridItemCache: (GridItem) -> Unit,
+        onResetGridAfterDeleteGridItem: (GridItem) -> Unit,
         onDragCancelAfterMove: () -> Unit,
         onDragEndAfterMove: (MoveGridItemResult) -> Unit,
         onDragEndAfterMoveFolder: () -> Unit,
@@ -466,7 +466,7 @@ internal class PagerScreenState(
             isVisibleOverlay = isVisibleOverlay,
             moveGridItemResult = moveGridItemResult,
             lockMovement = experimentalSettings.lockMovement,
-            onResetGridCacheAfterDeleteGridItemCache = onResetGridCacheAfterDeleteGridItemCache,
+            onResetGridAfterDeleteGridItem = onResetGridAfterDeleteGridItem,
             onDragCancelAfterMove = onDragCancelAfterMove,
             onDragEndAfterMove = onDragEndAfterMove,
             onDragEndAfterMoveFolder = onDragEndAfterMoveFolder,
@@ -488,7 +488,7 @@ internal class PagerScreenState(
 
     fun handleDeleteAppWidgetIdEffect(
         moveGridItemResult: MoveGridItemResult?,
-        onResetGridCacheAfterDeleteWidgetGridItemCache: (
+        onResetGridAfterDeleteWidgetGridItem: (
             gridItem: GridItem,
             appWidgetId: Int,
         ) -> Unit,
@@ -497,7 +497,7 @@ internal class PagerScreenState(
             appWidgetId = lastAppWidgetId,
             deleteAppWidgetId = deleteAppWidgetId,
             moveGridItemResult = moveGridItemResult,
-            onResetGridCacheAfterDeleteWidgetGridItemCache = onResetGridCacheAfterDeleteWidgetGridItemCache,
+            onResetGridAfterDeleteWidgetGridItem = onResetGridAfterDeleteWidgetGridItem,
             onResetAppWidgetId = {
                 lastAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID
 

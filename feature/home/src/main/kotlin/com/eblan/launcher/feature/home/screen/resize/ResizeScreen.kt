@@ -51,7 +51,7 @@ internal fun ResizeScreen(
     textColor: TextColor,
     resizeGridItem: GridItem?,
     onResizeCancel: () -> Unit,
-    onResizeEnd: (GridItem) -> Unit,
+    onResizeEnd: () -> Unit,
     onResizeGridItem: (
         gridItem: GridItem,
         columns: Int,
@@ -92,7 +92,7 @@ internal fun ResizeScreen(
                     onTap = {
                         onUpdateIsResizing(false)
 
-                        onResizeEnd(currentGridItem)
+                        onResizeEnd()
                     },
                 )
             }
