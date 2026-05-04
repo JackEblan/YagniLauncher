@@ -986,7 +986,7 @@ internal fun SharedTransitionScope.InteractiveShortcutConfigGridItem(
         modifier = modifier
             .pointerInput(key1 = drag) {
                 detectTapGestures(
-                    onDoubleTap = if (!isVisibleWhiteBox) {
+                    onDoubleTap = if (!isVisibleOverlay) {
                         {
                             onDoubleTap(
                                 context = context,
