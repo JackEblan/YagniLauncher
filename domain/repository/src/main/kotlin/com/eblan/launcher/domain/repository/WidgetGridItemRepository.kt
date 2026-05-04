@@ -18,7 +18,7 @@
 package com.eblan.launcher.domain.repository
 
 import com.eblan.launcher.domain.model.GridItem
-import com.eblan.launcher.domain.model.UpdateWidgetGridItem
+import com.eblan.launcher.domain.model.PartialUpdateWidgetGridItem
 import com.eblan.launcher.domain.model.WidgetGridItem
 import kotlinx.coroutines.flow.Flow
 
@@ -40,5 +40,9 @@ interface WidgetGridItemRepository {
         packageName: String,
     )
 
-    suspend fun updateWidgetGridItems(updateWidgetGridItems: List<UpdateWidgetGridItem>)
+    suspend fun updatePartialWidgetGridItems(partialUpdateWidgetGridItems: List<PartialUpdateWidgetGridItem>)
+
+    suspend fun insertWidgetGridItem(widgetGridItem: WidgetGridItem)
+
+    suspend fun updateWidgetGridItems(widgetGridItems: List<WidgetGridItem>)
 }

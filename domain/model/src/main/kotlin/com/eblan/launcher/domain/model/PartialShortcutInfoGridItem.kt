@@ -17,9 +17,11 @@
  */
 package com.eblan.launcher.domain.model
 
-data class UpdateApplicationInfoGridItem(
+data class PartialShortcutInfoGridItem(
     val id: String,
-    val componentName: String,
+    val shortLabel: String,
+    val longLabel: String,
     val icon: String?,
-    val label: String?,
+    val isEnabled: Boolean,
+    val eblanApplicationInfoIcon: String?,
 )

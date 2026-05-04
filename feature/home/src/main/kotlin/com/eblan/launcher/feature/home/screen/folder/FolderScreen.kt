@@ -95,7 +95,6 @@ internal fun SharedTransitionScope.FolderScreen(
     hasShortcutHostPermission: Boolean,
     onDismissRequest: () -> Unit,
     onMoveFolderGridItemOutsideFolder: () -> Unit,
-    onDraggingGridItem: () -> Unit,
     onOpenAppDrawer: () -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
@@ -294,7 +293,6 @@ internal fun SharedTransitionScope.FolderScreen(
                                     id = gridItem.id,
                                     parent = SharedElementKey.Parent.Folder,
                                 ),
-                                onDraggingGridItem = onDraggingGridItem,
                                 onOpenAppDrawer = onOpenAppDrawer,
                                 onTapApplicationInfo = { serialNumber, componentName ->
                                     val sourceBoundsX = x + leftPadding

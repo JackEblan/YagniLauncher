@@ -19,11 +19,12 @@ package com.eblan.launcher.data.room.dao
 
 import androidx.room.Dao
 import androidx.room.Delete
+import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
 import androidx.room.Upsert
 import com.eblan.launcher.data.room.entity.WidgetGridItemEntity
-import com.eblan.launcher.domain.model.UpdateWidgetGridItem
+import com.eblan.launcher.domain.model.PartialUpdateWidgetGridItem
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -53,5 +54,11 @@ interface WidgetGridItemDao {
     )
 
     @Update(entity = WidgetGridItemEntity::class)
-    suspend fun updateWidgetGridItemEntities(updateWidgetGridItems: List<UpdateWidgetGridItem>)
+    suspend fun updatePartialWidgetGridItems(partialUpdateWidgetGridItems: List<PartialUpdateWidgetGridItem>)
+
+    @Insert
+    suspend fun insertWidgetGridItemEntity(entity: WidgetGridItemEntity)
+
+    @Update
+    suspend fun updateWidgetGridItemEntities(entities: List<WidgetGridItemEntity>)
 }

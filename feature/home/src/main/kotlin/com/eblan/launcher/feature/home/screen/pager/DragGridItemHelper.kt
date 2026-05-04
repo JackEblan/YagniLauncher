@@ -168,7 +168,7 @@ internal fun handleDragGridItem(
     screenHeight: Int,
     screenWidth: Int,
     onMoveFolderGridItem: (
-        conflictingId: String,
+        conflictingGridItem: GridItem,
         movingFolderGridItem: GridItem,
         data: GridItemData.Folder,
         dragX: Int,
@@ -314,7 +314,7 @@ private fun dragFolderGridItem(
     safeDrawingHeight: Int,
     safeDrawingWidth: Int,
     onMoveFolderGridItem: (
-        conflictingId: String,
+        conflictingGridItem: GridItem,
         movingFolderGridItem: GridItem,
         data: GridItemData.Folder,
         dragX: Int,
@@ -371,7 +371,7 @@ private fun dragFolderGridItem(
         )
 
         onMoveFolderGridItem(
-            folderGridItem.id,
+            folderGridItem,
             gridItemSource.gridItem,
             data,
             folderDragX,
@@ -551,9 +551,8 @@ internal suspend fun handleConflictingGridItem(
     screenWidth: Int,
     lockMovement: Boolean,
     onShowFolderWhenDragging: (
-        conflictingId: String,
-        movingFolderGridItem: GridItem,
-        data: GridItemData.Folder,
+        conflictingGridItem: GridItem,
+        movingGridItem: GridItem,
     ) -> Unit,
     onUpdateFolderPopupBounds: (
         intOffset: IntOffset,
@@ -707,9 +706,8 @@ internal suspend fun handleConflictingGridItem(
     )
 
     onShowFolderWhenDragging(
-        conflictingData.id,
+        conflictingGridItem,
         movingFolderGridItem,
-        conflictingData,
     )
 }
 

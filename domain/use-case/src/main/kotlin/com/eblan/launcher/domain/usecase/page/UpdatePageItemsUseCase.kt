@@ -74,7 +74,7 @@ class UpdatePageItemsUseCase @Inject constructor(
                 }
             }
 
-            gridRepository.updateGridItems(gridItems = gridItems)
+            gridRepository.upsertGridItems(gridItems = gridItems)
         }
     }
 }

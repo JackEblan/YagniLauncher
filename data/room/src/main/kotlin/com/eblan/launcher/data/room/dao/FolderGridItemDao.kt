@@ -53,4 +53,7 @@ interface FolderGridItemDao {
 
     @Insert
     suspend fun insertFolderGridItemEntity(entity: FolderGridItemEntity)
+
+    @Update
+    suspend fun updateFolderGridItemEntities(entities: List<FolderGridItemEntity>)
 }

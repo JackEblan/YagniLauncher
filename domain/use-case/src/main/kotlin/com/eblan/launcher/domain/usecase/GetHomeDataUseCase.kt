@@ -28,7 +28,6 @@ import com.eblan.launcher.domain.model.Associate
 import com.eblan.launcher.domain.model.HomeData
 import com.eblan.launcher.domain.model.TextColor
 import com.eblan.launcher.domain.model.Theme
-import com.eblan.launcher.domain.repository.GridCacheRepository
 import com.eblan.launcher.domain.repository.GridRepository
 import com.eblan.launcher.domain.repository.UserDataRepository
 import com.eblan.launcher.domain.usecase.grid.GetFolderGridItemsUseCase
@@ -46,68 +45,55 @@ class GetHomeDataUseCase @Inject constructor(
     private val packageManagerWrapper: PackageManagerWrapper,
     private val gridRepository: GridRepository,
     private val getFolderGridItemsUseCase: GetFolderGridItemsUseCase,
-    private val gridCacheRepository: GridCacheRepository,
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) {
-    operator fun invoke(isCacheFlow: Flow<Boolean>): Flow<HomeData> {
-        val gridItemsFlow = combine(
-            isCacheFlow,
-            gridCacheRepository.gridItemsCacheFlow,
-            gridRepository.gridItemsFlow,
-            getFolderGridItemsUseCase(),
-        ) { isCache, gridItemsCache, gridItems, folderGridItems ->
-            if (isCache) {
-                gridItemsCache
-            } else {
-                gridItems + folderGridItems
+    operator fun invoke(): Flow<HomeData> = combine(
+        userDataRepository.userDataFlow,
+        gridRepository.gridItemsFlow,
+        getFolderGridItemsUseCase(),
+        wallpaperManagerWrapper.getColorsChanged(),
+    ) { userData, gridItems, folderGridItems, colorHints ->
+        val currentGridItems = gridItems + folderGridItems
+
+        val gridItemsByPage = currentGridItems.filter { gridItem ->
+            isGridItemSpanWithinBounds(
+                gridItem = gridItem,
+                columns = userData.homeSettings.columns,
+                rows = userData.homeSettings.rows,
+            ) && gridItem.associate == Associate.Grid
+        }.groupBy { gridItem -> gridItem.page }
+
+        val dockGridItemsByPage = currentGridItems.filter { gridItem ->
+            isGridItemSpanWithinBounds(
+                gridItem = gridItem,
+                columns = userData.homeSettings.dockColumns,
+                rows = userData.homeSettings.dockRows,
+            ) && gridItem.associate == Associate.Dock
+        }.groupBy { gridItem -> gridItem.page }
+
+        val gridItemSettings = userData.homeSettings.gridItemSettings
+
+        val textColor = when (gridItemSettings.textColor) {
+            TextColor.System -> {
+                getTextColorFromWallpaperColors(
+                    theme = userData.generalSettings.theme,
+                    colorHints = colorHints,
+                )
             }
+
+            else -> gridItemSettings.textColor
         }
 
-        return combine(
-            userDataRepository.userDataFlow,
-            gridItemsFlow,
-            wallpaperManagerWrapper.getColorsChanged(),
-        ) { userData, gridItems, colorHints ->
-            val gridItemsByPage = gridItems.filter { gridItem ->
-                isGridItemSpanWithinBounds(
-                    gridItem = gridItem,
-                    columns = userData.homeSettings.columns,
-                    rows = userData.homeSettings.rows,
-                ) && gridItem.associate == Associate.Grid
-            }.groupBy { gridItem -> gridItem.page }
-
-            val dockGridItemsByPage = gridItems.filter { gridItem ->
-                isGridItemSpanWithinBounds(
-                    gridItem = gridItem,
-                    columns = userData.homeSettings.dockColumns,
-                    rows = userData.homeSettings.dockRows,
-                ) && gridItem.associate == Associate.Dock
-            }.groupBy { gridItem -> gridItem.page }
-
-            val gridItemSettings = userData.homeSettings.gridItemSettings
-
-            val textColor = when (gridItemSettings.textColor) {
-                TextColor.System -> {
-                    getTextColorFromWallpaperColors(
-                        theme = userData.generalSettings.theme,
-                        colorHints = colorHints,
-                    )
-                }
-
-                else -> gridItemSettings.textColor
-            }
-
-            HomeData(
-                userData = userData,
-                gridItems = gridItems,
-                gridItemsByPage = gridItemsByPage,
-                dockGridItemsByPage = dockGridItemsByPage,
-                hasShortcutHostPermission = launcherAppsWrapper.hasShortcutHostPermission,
-                hasSystemFeatureAppWidgets = packageManagerWrapper.hasSystemFeatureAppWidgets,
-                textColor = textColor,
-            )
-        }.flowOn(defaultDispatcher)
-    }
+        HomeData(
+            userData = userData,
+            gridItems = currentGridItems,
+            gridItemsByPage = gridItemsByPage,
+            dockGridItemsByPage = dockGridItemsByPage,
+            hasShortcutHostPermission = launcherAppsWrapper.hasShortcutHostPermission,
+            hasSystemFeatureAppWidgets = packageManagerWrapper.hasSystemFeatureAppWidgets,
+            textColor = textColor,
+        )
+    }.flowOn(defaultDispatcher)
 
     private fun getTextColorFromWallpaperColors(
         theme: Theme,

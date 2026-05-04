@@ -18,8 +18,8 @@
 package com.eblan.launcher.domain.repository
 
 import com.eblan.launcher.domain.model.GridItem
+import com.eblan.launcher.domain.model.PartialShortcutConfigGridItem
 import com.eblan.launcher.domain.model.ShortcutConfigGridItem
-import com.eblan.launcher.domain.model.UpdateShortcutConfigGridItem
 import kotlinx.coroutines.flow.Flow
 
 interface ShortcutConfigGridItemRepository {
@@ -47,5 +47,9 @@ interface ShortcutConfigGridItemRepository {
         packageName: String,
     )
 
-    suspend fun updateShortcutConfigGridItems(updateShortcutConfigGridItems: List<UpdateShortcutConfigGridItem>)
+    suspend fun updatePartialShortcutConfigGridItems(partialShortcutConfigGridItems: List<PartialShortcutConfigGridItem>)
+
+    suspend fun insertShortcutConfigGridItem(shortcutConfigGridItem: ShortcutConfigGridItem)
+
+    suspend fun updateShortcutConfigGridItems(shortcutConfigGridItems: List<ShortcutConfigGridItem>)
 }

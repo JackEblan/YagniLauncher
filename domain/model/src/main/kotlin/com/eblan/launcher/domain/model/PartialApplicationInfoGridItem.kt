@@ -15,22 +15,11 @@
  *   limitations under the License.
  *
  */
-package com.eblan.launcher.domain.repository
+package com.eblan.launcher.domain.model
 
-import com.eblan.launcher.domain.model.GridItem
-import com.eblan.launcher.domain.model.GridItemData
-import kotlinx.coroutines.flow.Flow
-
-interface GridCacheRepository {
-    val gridItemsCacheFlow: Flow<List<GridItem>>
-
-    fun insertGridItems(gridItems: List<GridItem>)
-
-    fun insertGridItem(gridItem: GridItem)
-
-    fun deleteGridItemById(id: String)
-
-    suspend fun updateGridItemData(id: String, data: GridItemData)
-
-    suspend fun upsertGridItems(gridItems: List<GridItem>)
-}
+data class PartialApplicationInfoGridItem(
+    val id: String,
+    val componentName: String,
+    val icon: String?,
+    val label: String?,
+)

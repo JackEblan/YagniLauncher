@@ -21,7 +21,6 @@ import com.eblan.launcher.domain.common.Dispatcher
 import com.eblan.launcher.domain.common.EblanDispatchers
 import com.eblan.launcher.domain.model.Associate
 import com.eblan.launcher.domain.model.GridItem
-import com.eblan.launcher.domain.repository.GridCacheRepository
 import com.eblan.launcher.domain.repository.GridRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.first
@@ -29,25 +28,29 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class UpdateGridItemsAfterResizeUseCase @Inject constructor(
-    private val gridCacheRepository: GridCacheRepository,
     private val gridRepository: GridRepository,
+    private val getFolderGridItemsUseCase: GetFolderGridItemsUseCase,
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke(resizingGridItem: GridItem) {
         withContext(defaultDispatcher) {
-            val gridItems = gridCacheRepository.gridItemsCacheFlow.first()
+            val gridItems = gridRepository.gridItemsFlow.first()
+
+            val folderGridItems = getFolderGridItemsUseCase().first()
+
+            val currentGridItems = gridItems.plus(folderGridItems).toMutableList()
 
             when (resizingGridItem.associate) {
                 Associate.Grid -> {
-                    gridRepository.updateGridItems(
-                        gridItems = gridItems.filter { gridItem ->
+                    gridRepository.upsertGridItems(
+                        gridItems = currentGridItems.filter { gridItem ->
                             gridItem.page == resizingGridItem.page
                         },
                     )
                 }
 
                 Associate.Dock -> {
-                    gridRepository.updateGridItems(gridItems = gridItems)
+                    gridRepository.upsertGridItems(gridItems = currentGridItems)
                 }
             }
         }

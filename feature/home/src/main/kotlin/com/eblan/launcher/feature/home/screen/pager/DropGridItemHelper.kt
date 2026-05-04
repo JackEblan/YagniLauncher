@@ -59,7 +59,6 @@ internal suspend fun handleDropGridItem(
     moveGridItemResult: MoveGridItemResult?,
     lockMovement: Boolean,
     isVisibleOverlay: Boolean,
-    moveFolderGridItem: GridItem?,
     onResetGridCacheAfterDeleteGridItemCache: (GridItem) -> Unit,
     onDragCancelAfterMove: () -> Unit,
     onDragEndAfterMove: (MoveGridItemResult) -> Unit,
@@ -208,7 +207,7 @@ internal suspend fun handleDropGridItem(
 
             if (lockMovement) return cancelWithToast()
 
-            if (isVisibleOverlay && moveFolderGridItem != null) {
+            if (isVisibleOverlay) {
                 onDragEndAfterMoveFolder()
 
                 onUpdateIsDragging(false)

@@ -15,24 +15,21 @@
  *   limitations under the License.
  *
  */
-package com.eblan.launcher.data.cache
+package com.eblan.launcher.domain.model
 
-import com.eblan.launcher.domain.model.GridItem
-import com.eblan.launcher.domain.model.GridItemData
-import kotlinx.coroutines.flow.Flow
-
-interface GridCacheDataSource {
-    val gridItemsCacheFlow: Flow<List<GridItem>>
-
-    fun insertGridItems(gridItems: List<GridItem>)
-
-    fun insertGridItem(gridItem: GridItem)
-
-    fun deleteGridItems(gridItems: List<GridItem>)
-
-    fun deleteGridItemById(id: String)
-
-    suspend fun updateGridItemData(id: String, data: GridItemData)
-
-    suspend fun upsertGridItems(gridItems: List<GridItem>)
-}
+data class PartialUpdateWidgetGridItem(
+    val id: String,
+    val componentName: String,
+    val configure: String?,
+    val minWidth: Int,
+    val minHeight: Int,
+    val resizeMode: Int,
+    val minResizeWidth: Int,
+    val minResizeHeight: Int,
+    val maxResizeWidth: Int,
+    val maxResizeHeight: Int,
+    val targetCellHeight: Int,
+    val targetCellWidth: Int,
+    val icon: String?,
+    val label: String,
+)

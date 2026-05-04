@@ -99,7 +99,6 @@ internal fun SharedTransitionScope.InteractiveApplicationInfoGridItem(
     statusBarNotifications: Map<String, Int>,
     textColor: Color,
     onDismissGridItemPopup: () -> Unit,
-    onDraggingGridItem: () -> Unit,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
         intOffset: IntOffset,
@@ -162,7 +161,6 @@ internal fun SharedTransitionScope.InteractiveApplicationInfoGridItem(
             isVisibleOverlay = isVisibleOverlay,
             onUpdateIsDragging = onUpdateIsDragging,
             onDismissGridItemPopup = onDismissGridItemPopup,
-            onDraggingGridItem = onDraggingGridItem,
         )
     }
 
@@ -314,7 +312,6 @@ internal fun SharedTransitionScope.InteractiveWidgetGridItem(
     sharedElementKey: SharedElementKey,
     textColor: Color,
     onDismissGridItemPopup: () -> Unit,
-    onDraggingGridItem: () -> Unit,
     onShowGridItemPopup: (
         intOffset: IntOffset,
         intSize: IntSize,
@@ -356,7 +353,6 @@ internal fun SharedTransitionScope.InteractiveWidgetGridItem(
             isVisibleOverlay = isVisibleOverlay,
             onUpdateIsDragging = onUpdateIsDragging,
             onDismissGridItemPopup = onDismissGridItemPopup,
-            onDraggingGridItem = onDraggingGridItem,
         )
     }
 
@@ -476,7 +472,6 @@ internal fun SharedTransitionScope.InteractiveShortcutInfoGridItem(
     sharedElementKey: SharedElementKey,
     textColor: Color,
     onDismissGridItemPopup: () -> Unit,
-    onDraggingGridItem: () -> Unit,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
         intOffset: IntOffset,
@@ -534,7 +529,6 @@ internal fun SharedTransitionScope.InteractiveShortcutInfoGridItem(
             isVisibleOverlay = isVisibleOverlay,
             onUpdateIsDragging = onUpdateIsDragging,
             onDismissGridItemPopup = onDismissGridItemPopup,
-            onDraggingGridItem = onDraggingGridItem,
         )
     }
 
@@ -689,7 +683,6 @@ internal fun SharedTransitionScope.InteractiveFolderGridItem(
     sharedElementKey: SharedElementKey,
     textColor: Color,
     onDismissGridItemPopup: () -> Unit,
-    onDraggingGridItem: () -> Unit,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
         intOffset: IntOffset,
@@ -739,7 +732,6 @@ internal fun SharedTransitionScope.InteractiveFolderGridItem(
             isVisibleOverlay = isVisibleOverlay,
             onUpdateIsDragging = onUpdateIsDragging,
             onDismissGridItemPopup = onDismissGridItemPopup,
-            onDraggingGridItem = onDraggingGridItem,
         )
     }
 
@@ -902,7 +894,6 @@ internal fun SharedTransitionScope.InteractiveShortcutConfigGridItem(
     sharedElementKey: SharedElementKey,
     textColor: Color,
     onDismissGridItemPopup: () -> Unit,
-    onDraggingGridItem: () -> Unit,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
         intOffset: IntOffset,
@@ -988,7 +979,6 @@ internal fun SharedTransitionScope.InteractiveShortcutConfigGridItem(
             isVisibleOverlay = isVisibleOverlay,
             onUpdateIsDragging = onUpdateIsDragging,
             onDismissGridItemPopup = onDismissGridItemPopup,
-            onDraggingGridItem = onDraggingGridItem,
         )
     }
 

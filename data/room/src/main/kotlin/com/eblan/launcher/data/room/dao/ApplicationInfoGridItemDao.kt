@@ -24,7 +24,7 @@ import androidx.room.Query
 import androidx.room.Update
 import androidx.room.Upsert
 import com.eblan.launcher.data.room.entity.ApplicationInfoGridItemEntity
-import com.eblan.launcher.domain.model.UpdateApplicationInfoGridItem
+import com.eblan.launcher.domain.model.PartialApplicationInfoGridItem
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -60,8 +60,14 @@ interface ApplicationInfoGridItemDao {
     )
 
     @Update(entity = ApplicationInfoGridItemEntity::class)
-    suspend fun updateApplicationInfoGridItemEntities(updateApplicationInfoGridItems: List<UpdateApplicationInfoGridItem>)
+    suspend fun updatePartialApplicationInfoGridItems(partialApplicationInfoGridItems: List<PartialApplicationInfoGridItem>)
 
     @Insert
     suspend fun insertApplicationInfoGridItemEntities(entities: List<ApplicationInfoGridItemEntity>)
+
+    @Insert
+    suspend fun insertApplicationInfoGridItemEntity(entity: ApplicationInfoGridItemEntity)
+
+    @Update
+    suspend fun updateApplicationInfoGridItemEntities(entities: List<ApplicationInfoGridItemEntity>)
 }

@@ -22,7 +22,7 @@ import com.eblan.launcher.data.repository.mapper.asGridItem
 import com.eblan.launcher.data.repository.mapper.asModel
 import com.eblan.launcher.data.room.dao.ApplicationInfoGridItemDao
 import com.eblan.launcher.domain.model.ApplicationInfoGridItem
-import com.eblan.launcher.domain.model.UpdateApplicationInfoGridItem
+import com.eblan.launcher.domain.model.PartialApplicationInfoGridItem
 import com.eblan.launcher.domain.repository.ApplicationInfoGridItemRepository
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -94,9 +94,9 @@ internal class DefaultApplicationInfoGridItemRepository @Inject constructor(priv
         )
     }
 
-    override suspend fun updateApplicationInfoGridItems(updateApplicationInfoGridItems: List<UpdateApplicationInfoGridItem>) {
-        applicationInfoGridItemDao.updateApplicationInfoGridItemEntities(
-            updateApplicationInfoGridItems = updateApplicationInfoGridItems,
+    override suspend fun updatePartialApplicationInfoGridItems(partialApplicationInfoGridItems: List<PartialApplicationInfoGridItem>) {
+        applicationInfoGridItemDao.updatePartialApplicationInfoGridItems(
+            partialApplicationInfoGridItems = partialApplicationInfoGridItems,
         )
     }
 
@@ -106,5 +106,17 @@ internal class DefaultApplicationInfoGridItemRepository @Inject constructor(priv
         }
 
         applicationInfoGridItemDao.insertApplicationInfoGridItemEntities(entities = entities)
+    }
+
+    override suspend fun insertApplicationInfoGridItem(applicationInfoGridItem: ApplicationInfoGridItem) {
+        applicationInfoGridItemDao.insertApplicationInfoGridItemEntity(entity = applicationInfoGridItem.asEntity())
+    }
+
+    override suspend fun updateApplicationInfoGridItems(applicationInfoGridItems: List<ApplicationInfoGridItem>) {
+        val entities = applicationInfoGridItems.map { applicationInfoGridItem ->
+            applicationInfoGridItem.asEntity()
+        }
+
+        applicationInfoGridItemDao.updateApplicationInfoGridItemEntities(entities = entities)
     }
 }

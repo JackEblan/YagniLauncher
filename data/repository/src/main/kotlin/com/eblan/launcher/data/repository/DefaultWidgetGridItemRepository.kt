@@ -21,7 +21,7 @@ import com.eblan.launcher.data.repository.mapper.asEntity
 import com.eblan.launcher.data.repository.mapper.asGridItem
 import com.eblan.launcher.data.repository.mapper.asModel
 import com.eblan.launcher.data.room.dao.WidgetGridItemDao
-import com.eblan.launcher.domain.model.UpdateWidgetGridItem
+import com.eblan.launcher.domain.model.PartialUpdateWidgetGridItem
 import com.eblan.launcher.domain.model.WidgetGridItem
 import com.eblan.launcher.domain.repository.WidgetGridItemRepository
 import kotlinx.coroutines.flow.map
@@ -75,7 +75,19 @@ internal class DefaultWidgetGridItemRepository @Inject constructor(private val w
         )
     }
 
-    override suspend fun updateWidgetGridItems(updateWidgetGridItems: List<UpdateWidgetGridItem>) {
-        widgetGridItemDao.updateWidgetGridItemEntities(updateWidgetGridItems = updateWidgetGridItems)
+    override suspend fun updatePartialWidgetGridItems(partialUpdateWidgetGridItems: List<PartialUpdateWidgetGridItem>) {
+        widgetGridItemDao.updatePartialWidgetGridItems(partialUpdateWidgetGridItems = partialUpdateWidgetGridItems)
+    }
+
+    override suspend fun insertWidgetGridItem(widgetGridItem: WidgetGridItem) {
+        widgetGridItemDao.insertWidgetGridItemEntity(entity = widgetGridItem.asEntity())
+    }
+
+    override suspend fun updateWidgetGridItems(widgetGridItems: List<WidgetGridItem>) {
+        val entities = widgetGridItems.map { widgetGridItem ->
+            widgetGridItem.asEntity()
+        }
+
+        widgetGridItemDao.updateWidgetGridItemEntities(entities = entities)
     }
 }

@@ -19,11 +19,12 @@ package com.eblan.launcher.data.room.dao
 
 import androidx.room.Dao
 import androidx.room.Delete
+import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
 import androidx.room.Upsert
 import com.eblan.launcher.data.room.entity.ShortcutInfoGridItemEntity
-import com.eblan.launcher.domain.model.UpdateShortcutInfoGridItem
+import com.eblan.launcher.domain.model.PartialShortcutInfoGridItem
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -59,5 +60,11 @@ interface ShortcutInfoGridItemDao {
     )
 
     @Update(entity = ShortcutInfoGridItemEntity::class)
-    suspend fun updateShortcutInfoGridItemEntities(updateShortcutInfoGridItems: List<UpdateShortcutInfoGridItem>)
+    suspend fun updatePartialShortcutInfoGridItems(partialShortcutInfoGridItems: List<PartialShortcutInfoGridItem>)
+
+    @Insert
+    suspend fun insertShortcutInfoGridItemEntity(entity: ShortcutInfoGridItemEntity)
+
+    @Update
+    suspend fun updateShortcutInfoGridItemEntities(entities: List<ShortcutInfoGridItemEntity>)
 }

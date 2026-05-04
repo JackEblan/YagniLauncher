@@ -40,14 +40,14 @@ import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.HomeSettings
 import com.eblan.launcher.domain.model.LauncherAppsActivityInfo
 import com.eblan.launcher.domain.model.LauncherAppsShortcutInfo
+import com.eblan.launcher.domain.model.PartialApplicationInfoGridItem
+import com.eblan.launcher.domain.model.PartialShortcutConfigGridItem
+import com.eblan.launcher.domain.model.PartialShortcutInfoGridItem
+import com.eblan.launcher.domain.model.PartialUpdateWidgetGridItem
 import com.eblan.launcher.domain.model.ShortcutConfigActivityInfo
 import com.eblan.launcher.domain.model.ShortcutConfigGridItem
 import com.eblan.launcher.domain.model.ShortcutInfoGridItem
 import com.eblan.launcher.domain.model.SyncEblanApplicationInfo
-import com.eblan.launcher.domain.model.UpdateApplicationInfoGridItem
-import com.eblan.launcher.domain.model.UpdateShortcutConfigGridItem
-import com.eblan.launcher.domain.model.UpdateShortcutInfoGridItem
-import com.eblan.launcher.domain.model.UpdateWidgetGridItem
 import com.eblan.launcher.domain.model.WidgetGridItem
 import com.eblan.launcher.domain.repository.ApplicationInfoGridItemRepository
 import com.eblan.launcher.domain.repository.ShortcutConfigGridItemRepository
@@ -175,7 +175,7 @@ internal suspend fun updateApplicationInfoGridItems(
     eblanApplicationInfos: List<EblanApplicationInfo>,
     applicationInfoGridItemRepository: ApplicationInfoGridItemRepository,
 ) {
-    val updateApplicationInfoGridItems = mutableListOf<UpdateApplicationInfoGridItem>()
+    val partialApplicationInfoGridItems = mutableListOf<PartialApplicationInfoGridItem>()
 
     val deleteApplicationInfoGridItems = mutableListOf<ApplicationInfoGridItem>()
 
@@ -196,8 +196,8 @@ internal suspend fun updateApplicationInfoGridItems(
         }
 
         if (eblanApplicationInfo != null) {
-            updateApplicationInfoGridItems.add(
-                UpdateApplicationInfoGridItem(
+            partialApplicationInfoGridItems.add(
+                PartialApplicationInfoGridItem(
                     id = applicationInfoGridItem.id,
                     componentName = eblanApplicationInfo.componentName,
                     icon = eblanApplicationInfo.icon,
@@ -209,8 +209,8 @@ internal suspend fun updateApplicationInfoGridItems(
         }
     }
 
-    applicationInfoGridItemRepository.updateApplicationInfoGridItems(
-        updateApplicationInfoGridItems = updateApplicationInfoGridItems,
+    applicationInfoGridItemRepository.updatePartialApplicationInfoGridItems(
+        partialApplicationInfoGridItems = partialApplicationInfoGridItems,
     )
 
     applicationInfoGridItemRepository.deleteApplicationInfoGridItems(
@@ -225,7 +225,7 @@ internal suspend fun updateShortcutInfoGridItems(
     packageManagerWrapper: PackageManagerWrapper,
     iconKeyGenerator: IconKeyGenerator,
 ) {
-    val updateShortcutInfoGridItems = mutableListOf<UpdateShortcutInfoGridItem>()
+    val partialShortcutInfoGridItems = mutableListOf<PartialShortcutInfoGridItem>()
 
     val deleteShortcutInfoGridItems = mutableListOf<ShortcutInfoGridItem>()
 
@@ -244,8 +244,8 @@ internal suspend fun updateShortcutInfoGridItems(
             }
 
             if (eblanShortcutInfo != null) {
-                updateShortcutInfoGridItems.add(
-                    UpdateShortcutInfoGridItem(
+                partialShortcutInfoGridItems.add(
+                    PartialShortcutInfoGridItem(
                         id = shortcutInfoGridItem.id,
                         shortLabel = eblanShortcutInfo.shortLabel,
                         longLabel = eblanShortcutInfo.longLabel,
@@ -265,8 +265,8 @@ internal suspend fun updateShortcutInfoGridItems(
             }
         }
 
-        shortcutInfoGridItemRepository.updateShortcutInfoGridItems(
-            updateShortcutInfoGridItems = updateShortcutInfoGridItems,
+        shortcutInfoGridItemRepository.updatePartialShortcutInfoGridItems(
+            partialShortcutInfoGridItems = partialShortcutInfoGridItems,
         )
 
         shortcutInfoGridItemRepository.deleteShortcutInfoGridItems(shortcutInfoGridItems = deleteShortcutInfoGridItems)
@@ -280,7 +280,7 @@ internal suspend fun updateShortcutConfigGridItems(
     packageManagerWrapper: PackageManagerWrapper,
     iconKeyGenerator: IconKeyGenerator,
 ) {
-    val updateShortcutConfigGridItems = mutableListOf<UpdateShortcutConfigGridItem>()
+    val partialShortcutConfigGridItems = mutableListOf<PartialShortcutConfigGridItem>()
 
     val deleteShortcutConfigGridItems = mutableListOf<ShortcutConfigGridItem>()
 
@@ -298,8 +298,8 @@ internal suspend fun updateShortcutConfigGridItems(
         }
 
         if (eblanShortcutConfig != null) {
-            updateShortcutConfigGridItems.add(
-                UpdateShortcutConfigGridItem(
+            partialShortcutConfigGridItems.add(
+                PartialShortcutConfigGridItem(
                     id = shortcutConfigGridItem.id,
                     componentName = eblanShortcutConfig.componentName,
                     activityLabel = eblanShortcutConfig.activityLabel,
@@ -321,8 +321,8 @@ internal suspend fun updateShortcutConfigGridItems(
         }
     }
 
-    shortcutConfigGridItemRepository.updateShortcutConfigGridItems(
-        updateShortcutConfigGridItems = updateShortcutConfigGridItems,
+    shortcutConfigGridItemRepository.updatePartialShortcutConfigGridItems(
+        partialShortcutConfigGridItems = partialShortcutConfigGridItems,
     )
 
     shortcutConfigGridItemRepository.deleteShortcutConfigGridItems(
@@ -339,7 +339,7 @@ internal suspend fun updateWidgetGridItems(
 ) {
     if (!packageManagerWrapper.hasSystemFeatureAppWidgets) return
 
-    val updateWidgetGridItems = mutableListOf<UpdateWidgetGridItem>()
+    val partialUpdateWidgetGridItems = mutableListOf<PartialUpdateWidgetGridItem>()
 
     val deleteWidgetGridItems = mutableListOf<WidgetGridItem>()
 
@@ -358,8 +358,8 @@ internal suspend fun updateWidgetGridItems(
             }
 
         if (eblanAppWidgetProviderInfo != null) {
-            updateWidgetGridItems.add(
-                UpdateWidgetGridItem(
+            partialUpdateWidgetGridItems.add(
+                PartialUpdateWidgetGridItem(
                     id = widgetGridItem.id,
                     componentName = eblanAppWidgetProviderInfo.componentName,
                     configure = eblanAppWidgetProviderInfo.configure,
@@ -389,7 +389,7 @@ internal suspend fun updateWidgetGridItems(
         }
     }
 
-    widgetGridItemRepository.updateWidgetGridItems(updateWidgetGridItems = updateWidgetGridItems)
+    widgetGridItemRepository.updatePartialWidgetGridItems(partialUpdateWidgetGridItems = partialUpdateWidgetGridItems)
 
     widgetGridItemRepository.deleteWidgetGridItemsByPackageName(widgetGridItems = deleteWidgetGridItems)
 }

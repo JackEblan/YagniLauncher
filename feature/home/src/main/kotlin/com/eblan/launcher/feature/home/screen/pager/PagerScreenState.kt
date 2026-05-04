@@ -351,9 +351,7 @@ internal class PagerScreenState(
     private var lastAppWidgetId by mutableIntStateOf(AppWidgetManager.INVALID_APPWIDGET_ID)
 
     suspend fun handlePinGridItemEffect(
-        gridItems: List<GridItem>,
         pinGridItem: GridItem?,
-        onDraggingGridItem: (List<GridItem>) -> Unit,
         onUpdateGridItemSource: (GridItemSource) -> Unit,
         onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     ) {
@@ -365,8 +363,6 @@ internal class PagerScreenState(
             swipeY = swipeY,
             onDraggingGridItem = {
                 isDragging = true
-
-                onDraggingGridItem(gridItems)
             },
             onUpdateGridItemSource = onUpdateGridItemSource,
             onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
@@ -386,7 +382,7 @@ internal class PagerScreenState(
         gridItemSource: GridItemSource?,
         isVisibleOverlay: Boolean,
         onMoveFolderGridItem: (
-            conflictingId: String,
+            conflictingGridItem: GridItem,
             movingFolderGridItem: GridItem,
             data: GridItemData.Folder,
             dragX: Int,
@@ -447,7 +443,6 @@ internal class PagerScreenState(
 
     suspend fun handleDropGridItemEffect(
         moveGridItemResult: MoveGridItemResult?,
-        moveFolderGridItem: GridItem?,
         onLaunchShortcutConfigIntent: (Intent) -> Unit,
         onLaunchShortcutConfigIntentSenderRequest: (IntentSenderRequest) -> Unit,
         onLaunchWidgetIntent: (Intent) -> Unit,
@@ -471,7 +466,6 @@ internal class PagerScreenState(
             isVisibleOverlay = isVisibleOverlay,
             moveGridItemResult = moveGridItemResult,
             lockMovement = experimentalSettings.lockMovement,
-            moveFolderGridItem = moveFolderGridItem,
             onResetGridCacheAfterDeleteGridItemCache = onResetGridCacheAfterDeleteGridItemCache,
             onDragCancelAfterMove = onDragCancelAfterMove,
             onDragEndAfterMove = onDragEndAfterMove,
@@ -520,9 +514,8 @@ internal class PagerScreenState(
         gridItemSource: GridItemSource?,
         isVisibleOverlay: Boolean,
         onShowFolderWhenDragging: (
-            conflictingId: String,
-            movingFolderGridItem: GridItem,
-            data: GridItemData.Folder,
+            conflictingGridItem: GridItem,
+            movingGridItem: GridItem,
         ) -> Unit,
         onUpdateGridItemSource: (GridItemSource) -> Unit,
     ) {
@@ -958,14 +951,9 @@ internal class PagerScreenState(
     }
 
     fun moveFolderGridItemOutsideFolder(
-        folderGridItem: GridItem?,
         gridItemSource: GridItemSource?,
         onUpdateGridItemSource: (GridItemSource) -> Unit,
-        onMoveFolderGridItemOutsideFolder: (
-            conflictingId: String,
-            movingId: String,
-            data: GridItemData.Folder,
-        ) -> Unit,
+        onMoveFolderGridItemOutsideFolder: (GridItem) -> Unit,
     ) {
         folderPopupIntOffset = null
 
@@ -973,11 +961,9 @@ internal class PagerScreenState(
 
         isMoveFolderGridItemOutsideFolder = false
 
-        val data = folderGridItem?.data as? GridItemData.Folder ?: return
-
         val gridItem = gridItemSource?.gridItem ?: return
 
-        val movingData = when (val data = gridItem.data) {
+        val data = when (val data = gridItem.data) {
             is GridItemData.ApplicationInfo -> data.copy(
                 index = -1,
                 folderId = null,
@@ -996,20 +982,16 @@ internal class PagerScreenState(
             else -> return
         }
 
-        val newMovingGridItem = gridItem.copy(data = movingData)
+        val movingGridItem = gridItem.copy(data = data)
 
-        onUpdateGridItemSource(GridItemSource.Existing(gridItem = newMovingGridItem))
+        onUpdateGridItemSource(GridItemSource.Existing(gridItem = movingGridItem))
 
         sharedElementKey = SharedElementKey(
-            id = newMovingGridItem.id,
+            id = movingGridItem.id,
             parent = SharedElementKey.Parent.Grid,
         )
 
-        onMoveFolderGridItemOutsideFolder(
-            folderGridItem.id,
-            newMovingGridItem.id,
-            data,
-        )
+        onMoveFolderGridItemOutsideFolder(movingGridItem)
     }
 
     fun updateOverlayBounds(
@@ -1159,22 +1141,12 @@ internal class PagerScreenState(
         }
     }
 
-    fun draggingShortcutInfoGridItem(
-        gridItems: List<GridItem>,
-        onDraggingGridItem: (List<GridItem>) -> Unit,
-    ) {
+    fun draggingShortcutInfoGridItem() {
         isDragging = true
-
-        onDraggingGridItem(gridItems)
     }
 
-    fun resize(
-        gridItems: List<GridItem>,
-        onDraggingGridItem: (List<GridItem>) -> Unit,
-    ) {
+    fun resize() {
         isResizing = true
-
-        onDraggingGridItem(gridItems)
     }
 
     fun dismissApplicationScreen() {

@@ -22,7 +22,6 @@ import com.eblan.launcher.domain.common.EblanDispatchers
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.MoveGridItemResult
-import com.eblan.launcher.domain.repository.GridCacheRepository
 import com.eblan.launcher.domain.repository.GridRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.first
@@ -32,25 +31,26 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 class UpdateGridItemsAfterMoveUseCase @Inject constructor(
-    private val gridCacheRepository: GridCacheRepository,
     private val gridRepository: GridRepository,
+    private val getFolderGridItemsUseCase: GetFolderGridItemsUseCase,
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke(moveGridItemResult: MoveGridItemResult) {
         withContext(defaultDispatcher) {
-            gridCacheRepository.updateGridItemData(
-                id = moveGridItemResult.movingGridItem.id,
-                data = moveGridItemResult.movingGridItem.data,
-            )
+            gridRepository.updateGridItem(gridItem = moveGridItemResult.movingGridItem)
 
-            val gridItems = gridCacheRepository.gridItemsCacheFlow.first().toMutableList()
+            val gridItems = gridRepository.gridItemsFlow.first()
+
+            val folderGridItems = getFolderGridItemsUseCase().first()
+
+            val currentGridItems = gridItems.plus(folderGridItems).toMutableList()
 
             groupConflictingGridItemsIntoFolder(
-                gridItems = gridItems,
+                gridItems = currentGridItems,
                 moveGridItemResult = moveGridItemResult,
             )
 
-            gridRepository.updateGridItems(gridItems = gridItems)
+            gridRepository.upsertGridItems(gridItems = gridItems)
         }
     }
 

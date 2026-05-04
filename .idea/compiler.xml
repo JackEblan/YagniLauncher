@@ -86,6 +86,7 @@
       <module name="EinsteinLauncher.framework.widget-manager" target="21" />
       <module name="EinsteinLauncher.service" target="21" />
       <module name="EinsteinLauncher.ui" target="21" />
+      <module name="YagniLauncher.data.cache" target="21" />
       <module name="YagniLauncher.feature.settings.folder" target="21" />
     </bytecodeTargetLevel>
   </component>

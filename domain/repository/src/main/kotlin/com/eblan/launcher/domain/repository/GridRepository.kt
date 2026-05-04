@@ -25,11 +25,15 @@ interface GridRepository {
 
     val gridItemsWithFolderIdFlow: Flow<List<GridItem>>
 
+    suspend fun insertGridItem(gridItem: GridItem)
+
     suspend fun updateGridItem(gridItem: GridItem)
 
     suspend fun resetGridItemCustomIcon(gridItem: GridItem)
 
     suspend fun updateGridItems(gridItems: List<GridItem>)
+
+    suspend fun upsertGridItems(gridItems: List<GridItem>)
 
     suspend fun deleteGridItems(gridItems: List<GridItem>)
 

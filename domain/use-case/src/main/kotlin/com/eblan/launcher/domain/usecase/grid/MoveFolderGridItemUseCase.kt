@@ -21,18 +21,18 @@ import com.eblan.launcher.domain.common.Dispatcher
 import com.eblan.launcher.domain.common.EblanDispatchers
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
-import com.eblan.launcher.domain.repository.GridCacheRepository
+import com.eblan.launcher.domain.repository.GridRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class MoveFolderGridItemUseCase @Inject constructor(
-    private val gridCacheRepository: GridCacheRepository,
+    private val gridRepository: GridRepository,
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke(
-        conflictingId: String,
+        conflictingGridItem: GridItem,
         movingFolderGridItem: GridItem,
         data: GridItemData.Folder,
         dragX: Int,
@@ -42,7 +42,7 @@ class MoveFolderGridItemUseCase @Inject constructor(
         gridWidth: Int,
         gridHeight: Int,
         currentPage: Int,
-    ): GridItem = withContext(defaultDispatcher) {
+    ) = withContext(defaultDispatcher) {
         val gridItemsPerPage = columns * rows
 
         val cellWidth = gridWidth / columns
@@ -92,22 +92,6 @@ class MoveFolderGridItemUseCase @Inject constructor(
             }
         }
 
-        val gridItemsByPage = indexedGridItems.getGridItemsByPage()
-
-        val firstPageGridItems = gridItemsByPage[0] ?: emptyList()
-
-        val (columns, rows) = getGridDimension(count = firstPageGridItems.size)
-
-        gridCacheRepository.updateGridItemData(
-            id = conflictingId,
-            data = data.copy(
-                gridItems = indexedGridItems,
-                gridItemsByPage = gridItemsByPage,
-                columns = columns,
-                rows = rows,
-            ),
-        )
-
-        movingFolderGridItem
+        gridRepository.upsertGridItems(gridItems = indexedGridItems)
     }
 }
