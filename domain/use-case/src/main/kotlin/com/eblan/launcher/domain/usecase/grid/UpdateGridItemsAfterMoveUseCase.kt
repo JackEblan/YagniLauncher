@@ -39,6 +39,8 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
 
             val movingGridItem = moveGridItemResult.movingGridItem
 
+            gridRepository.updateGridItem(gridItem = movingGridItem)
+
             when (val data = conflictingGridItem?.data) {
                 is GridItemData.Folder -> {
                     addMovingGridItemIntoFolder(

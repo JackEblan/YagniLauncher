@@ -137,7 +137,6 @@ internal fun HomeRoute(
         onCancelGrid = viewModel::cancelGrid,
         onDeleteGridItem = viewModel::deleteGridItem,
         onResetGridAfterDeleteGridItem = viewModel::resetGridAfterDeleteGridItem,
-        onResetGridAfterDeleteWidgetGridItem = viewModel::resetGridAfterDeleteWidgetGridItem,
         onEditApplicationInfo = onEditApplicationInfo,
         onEditGridItem = onEditGridItem,
         onEditPage = viewModel::showPageCache,
@@ -194,10 +193,6 @@ internal fun HomeScreen(
     onCancelGrid: () -> Unit,
     onDeleteGridItem: (GridItem) -> Unit,
     onResetGridAfterDeleteGridItem: (GridItem) -> Unit,
-    onResetGridAfterDeleteWidgetGridItem: (
-        gridItem: GridItem,
-        appWidgetId: Int,
-    ) -> Unit,
     onEditApplicationInfo: (
         serialNumber: Long,
         componentName: String,
@@ -304,7 +299,6 @@ internal fun HomeScreen(
                 onCancelGrid = onCancelGrid,
                 onDeleteGridItem = onDeleteGridItem,
                 onResetGridAfterDeleteGridItem = onResetGridAfterDeleteGridItem,
-                onResetGridAfterDeleteWidgetGridItem = onResetGridAfterDeleteWidgetGridItem,
                 onEditApplicationInfo = onEditApplicationInfo,
                 onEditGridItem = onEditGridItem,
                 onEditPage = onEditPage,
@@ -366,10 +360,6 @@ private fun Success(
     onCancelGrid: () -> Unit,
     onDeleteGridItem: (GridItem) -> Unit,
     onResetGridAfterDeleteGridItem: (GridItem) -> Unit,
-    onResetGridAfterDeleteWidgetGridItem: (
-        gridItem: GridItem,
-        appWidgetId: Int,
-    ) -> Unit,
     onEditApplicationInfo: (
         serialNumber: Long,
         componentName: String,
@@ -485,7 +475,6 @@ private fun Success(
                     isVisibleOverlay = isVisibleOverlay,
                     onDeleteGridItem = onDeleteGridItem,
                     onResetGridAfterDeleteGridItem = onResetGridAfterDeleteGridItem,
-                    onResetGridAfterDeleteWidgetGridItem = onResetGridAfterDeleteWidgetGridItem,
                     onDragCancelAfterMove = onCancelGrid,
                     onDragEndAfterMove = onResetGridAfterMove,
                     onDragEndAfterMoveFolder = onResetGridAfterMoveFolder,

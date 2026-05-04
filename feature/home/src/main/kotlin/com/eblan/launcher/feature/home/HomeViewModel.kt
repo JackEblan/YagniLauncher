@@ -84,7 +84,6 @@ internal class HomeViewModel @Inject constructor(
     private val resizeGridItemUseCase: ResizeGridItemUseCase,
     private val cachePageItemsUseCase: CachePageItemsUseCase,
     private val updatePageItemsUseCase: UpdatePageItemsUseCase,
-    private val appWidgetHostWrapper: AppWidgetHostWrapper,
     private val updateGridItemsAfterMoveUseCase: UpdateGridItemsAfterMoveUseCase,
     private val getPinGridItemUseCase: GetPinGridItemUseCase,
     private val fileManager: FileManager,
@@ -391,27 +390,6 @@ internal class HomeViewModel @Inject constructor(
     fun resetGridAfterDeleteGridItem(gridItem: GridItem) {
         viewModelScope.launch {
             moveGridItemJob?.cancelAndJoin()
-
-            gridRepository.deleteGridItem(gridItem = gridItem)
-
-            _moveGridItemResult.update {
-                null
-            }
-
-            _gridItemSource.update {
-                null
-            }
-        }
-    }
-
-    fun resetGridAfterDeleteWidgetGridItem(
-        gridItem: GridItem,
-        appWidgetId: Int,
-    ) {
-        viewModelScope.launch {
-            moveGridItemJob?.cancelAndJoin()
-
-            appWidgetHostWrapper.deleteAppWidgetId(appWidgetId = appWidgetId)
 
             gridRepository.deleteGridItem(gridItem = gridItem)
 

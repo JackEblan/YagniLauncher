@@ -245,7 +245,7 @@ internal fun handleDragGridItem(
         is GridItemSource.Existing,
         is GridItemSource.New,
         is GridItemSource.Pin,
-            -> {
+        -> {
             if (isOnDock) {
                 dragDockGridItem(
                     currentPage = currentPage,
@@ -360,7 +360,7 @@ private fun dragFolderGridItem(
         (folderGridHeightPx - folderTitleHeightPx) - (folderGridPaddingPx * 2)
 
     val isInsideFolder = folderDragX in 0..folderGridVisibleWidthPx &&
-            folderDragY in 0..folderGridVisibleHeightPx
+        folderDragY in 0..folderGridVisibleHeightPx
 
     if (isInsideFolder) {
         onUpdateSharedElementKey(
@@ -742,7 +742,7 @@ private fun getMoveGridItem(
     currentPage: Int,
 ): GridItem = when (gridItemSource) {
     is GridItemSource.Existing, is GridItemSource.Folder,
-        -> {
+    -> {
         when (val data = gridItem.data) {
             is GridItemData.ApplicationInfo -> {
                 gridItem.copy(
@@ -785,7 +785,7 @@ private fun getMoveGridItem(
 
             is GridItemData.Widget,
             is GridItemData.Folder,
-                -> {
+            -> {
                 gridItem.copy(
                     page = currentPage,
                     startColumn = gridX / cellWidth,
@@ -797,7 +797,7 @@ private fun getMoveGridItem(
     }
 
     is GridItemSource.New, is GridItemSource.Pin,
-        -> {
+    -> {
         getMoveNewGridItem(
             associate = associate,
             cellHeight = cellHeight,
