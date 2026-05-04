@@ -710,6 +710,10 @@ internal class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             moveGridItemJob?.cancelAndJoin()
 
+            _moveFolderGridItem.update {
+                null
+            }
+
             _folderGridItemId.update {
                 null
             }
