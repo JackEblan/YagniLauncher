@@ -27,7 +27,9 @@ interface ApplicationInfoGridItemRepository {
 
     val gridItemsWithFolderIdFlow: Flow<List<GridItem>>
 
-    fun getApplicationInfoGridItems(): List<ApplicationInfoGridItem>
+    suspend fun getGridItems(): List<GridItem>
+
+    suspend fun getApplicationInfoGridItems(): List<ApplicationInfoGridItem>
 
     suspend fun upsertApplicationInfoGridItems(applicationInfoGridItems: List<ApplicationInfoGridItem>)
 

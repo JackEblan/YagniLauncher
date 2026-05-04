@@ -33,7 +33,7 @@ interface ShortcutInfoGridItemDao {
     fun getShortcutInfoGridItemEntitiesFlow(): Flow<List<ShortcutInfoGridItemEntity>>
 
     @Query("SELECT * FROM ShortcutInfoGridItemEntity")
-    fun getShortcutInfoGridItemEntities(): List<ShortcutInfoGridItemEntity>
+    suspend fun getShortcutInfoGridItemEntities(): List<ShortcutInfoGridItemEntity>
 
     @Upsert
     suspend fun upsertShortcutInfoGridItemEntities(entities: List<ShortcutInfoGridItemEntity>)

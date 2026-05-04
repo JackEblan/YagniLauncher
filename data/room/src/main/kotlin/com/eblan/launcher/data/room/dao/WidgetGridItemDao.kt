@@ -33,7 +33,7 @@ interface WidgetGridItemDao {
     fun getWidgetGridItemEntitiesFlow(): Flow<List<WidgetGridItemEntity>>
 
     @Query("SELECT * FROM WidgetGridItemEntity")
-    fun getWidgetGridItemEntities(): List<WidgetGridItemEntity>
+    suspend fun getWidgetGridItemEntities(): List<WidgetGridItemEntity>
 
     @Upsert
     suspend fun upsertWidgetGridItemEntities(entities: List<WidgetGridItemEntity>)

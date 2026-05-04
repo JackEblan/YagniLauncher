@@ -25,7 +25,9 @@ import kotlinx.coroutines.flow.Flow
 interface WidgetGridItemRepository {
     val gridItemsFlow: Flow<List<GridItem>>
 
-    fun getWidgetGridItems(): List<WidgetGridItem>
+    suspend fun getGridItems(): List<GridItem>
+
+    suspend fun getWidgetGridItems(): List<WidgetGridItem>
 
     suspend fun upsertWidgetGridItems(widgetGridItems: List<WidgetGridItem>)
 

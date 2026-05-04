@@ -65,12 +65,6 @@ class AddPinShortcutToHomeScreenUseCase @Inject constructor(
 
         val initialPage = homeSettings.initialPage
 
-        val gridItems = gridRepository.gridItemsFlow.first()
-
-        val folderGridItems = getFolderGridItemsUseCase().first()
-
-        val currentGridItems = gridItems + folderGridItems
-
         val eblanApplicationInfoIcon =
             packageManagerWrapper.getComponentName(packageName = packageName)
                 ?.let { componentName ->
@@ -125,7 +119,7 @@ class AddPinShortcutToHomeScreenUseCase @Inject constructor(
         )
 
         val newGridItem = findAvailableRegionByPage(
-            gridItems = currentGridItems,
+            gridItems = gridRepository.getGridItems().plus(getFolderGridItemsUseCase()),
             gridItem = gridItem,
             pageCount = pageCount,
             columns = columns,

@@ -24,7 +24,6 @@ import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.domain.repository.GridRepository
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import kotlin.uuid.ExperimentalUuidApi
@@ -39,14 +38,11 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
         withContext(defaultDispatcher) {
             gridRepository.updateGridItem(gridItem = moveGridItemResult.movingGridItem)
 
-            val gridItems = gridRepository.gridItemsFlow.first()
-
-            val folderGridItems = getFolderGridItemsUseCase().first()
-
-            val currentGridItems = gridItems.plus(folderGridItems).toMutableList()
+            val gridItems =
+                gridRepository.getGridItems().plus(getFolderGridItemsUseCase()).toMutableList()
 
             groupConflictingGridItemsIntoFolder(
-                gridItems = currentGridItems,
+                gridItems = gridItems,
                 moveGridItemResult = moveGridItemResult,
             )
 

@@ -23,7 +23,6 @@ import com.eblan.launcher.domain.model.Associate
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.repository.GridRepository
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -34,23 +33,20 @@ class UpdateGridItemsAfterResizeUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(resizingGridItem: GridItem) {
         withContext(defaultDispatcher) {
-            val gridItems = gridRepository.gridItemsFlow.first()
-
-            val folderGridItems = getFolderGridItemsUseCase().first()
-
-            val currentGridItems = gridItems.plus(folderGridItems).toMutableList()
+            val gridItems =
+                gridRepository.getGridItems().plus(getFolderGridItemsUseCase()).toMutableList()
 
             when (resizingGridItem.associate) {
                 Associate.Grid -> {
                     gridRepository.upsertGridItems(
-                        gridItems = currentGridItems.filter { gridItem ->
+                        gridItems = gridItems.filter { gridItem ->
                             gridItem.page == resizingGridItem.page
                         },
                     )
                 }
 
                 Associate.Dock -> {
-                    gridRepository.upsertGridItems(gridItems = currentGridItems)
+                    gridRepository.upsertGridItems(gridItems = gridItems)
                 }
             }
         }

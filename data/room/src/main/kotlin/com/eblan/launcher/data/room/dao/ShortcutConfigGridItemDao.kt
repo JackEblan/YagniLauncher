@@ -33,7 +33,7 @@ interface ShortcutConfigGridItemDao {
     fun getShortcutConfigGridItemEntitiesFlow(): Flow<List<ShortcutConfigGridItemEntity>>
 
     @Query("SELECT * FROM ShortcutConfigGridItemEntity")
-    fun getShortcutConfigGridItemEntities(): List<ShortcutConfigGridItemEntity>
+    suspend fun getShortcutConfigGridItemEntities(): List<ShortcutConfigGridItemEntity>
 
     @Upsert
     suspend fun upsertShortcutConfigGridItemEntities(entities: List<ShortcutConfigGridItemEntity>)

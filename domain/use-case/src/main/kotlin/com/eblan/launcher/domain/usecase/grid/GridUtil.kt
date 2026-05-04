@@ -94,7 +94,7 @@ internal suspend fun FolderGridItemWrapper.asGridItem(): GridItem {
     )
 }
 
-internal suspend fun List<GridItem>.getGridItemsByPage(): Map<Int, List<GridItem>> = chunked(FOLDER_MAX_COLUMNS * FOLDER_MAX_ROWS)
+private suspend fun List<GridItem>.getGridItemsByPage(): Map<Int, List<GridItem>> = chunked(FOLDER_MAX_COLUMNS * FOLDER_MAX_ROWS)
     .mapIndexed { pageIndex, pageItems ->
         currentCoroutineContext().ensureActive()
 
@@ -102,7 +102,7 @@ internal suspend fun List<GridItem>.getGridItemsByPage(): Map<Int, List<GridItem
     }
     .toMap()
 
-internal fun getGridDimension(count: Int): Pair<Int, Int> {
+private fun getGridDimension(count: Int): Pair<Int, Int> {
     if (count <= 0) return 0 to 0
 
     val columns = min(FOLDER_MAX_COLUMNS, ceil(sqrt(count.toDouble())).toInt())

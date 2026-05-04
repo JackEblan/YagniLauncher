@@ -81,12 +81,6 @@ class AddPinWidgetToHomeScreenUseCase @Inject constructor(
 
         val dockHeight = homeSettings.dockHeight
 
-        val gridItems = gridRepository.gridItemsFlow.first()
-
-        val folderGridItems = getFolderGridItemsUseCase().first()
-
-        val currentGridItems = gridItems + folderGridItems
-
         val eblanApplicationInfoIcon =
             packageManagerWrapper.getComponentName(packageName = packageName)
                 ?.let { componentName ->
@@ -172,7 +166,7 @@ class AddPinWidgetToHomeScreenUseCase @Inject constructor(
         )
 
         val newGridItem = findAvailableRegionByPage(
-            gridItems = currentGridItems,
+            gridItems = gridRepository.getGridItems().plus(getFolderGridItemsUseCase()),
             gridItem = gridItem,
             pageCount = pageCount,
             columns = columns,

@@ -32,7 +32,6 @@ import com.eblan.launcher.domain.model.ResolveDirection
 import com.eblan.launcher.domain.repository.GridRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ensureActive
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -51,37 +50,34 @@ class MoveGridItemUseCase @Inject constructor(
         gridHeight: Int,
     ): MoveGridItemResult {
         return withContext(defaultDispatcher) {
-            val gridItems = gridRepository.gridItemsFlow.first()
+            val gridItems =
+                gridRepository.getGridItems().plus(getFolderGridItemsUseCase()).filter { gridItem ->
+                    ensureActive()
 
-            val folderGridItems = getFolderGridItemsUseCase().first()
-
-            val currentGridItems = gridItems.plus(folderGridItems).filter { gridItem ->
-                ensureActive()
-
-                isGridItemSpanWithinBounds(
-                    gridItem = gridItem,
-                    columns = columns,
-                    rows = rows,
-                ) && gridItem.page == movingGridItem.page &&
-                    gridItem.associate == movingGridItem.associate
-            }.toMutableList()
+                    isGridItemSpanWithinBounds(
+                        gridItem = gridItem,
+                        columns = columns,
+                        rows = rows,
+                    ) && gridItem.page == movingGridItem.page &&
+                        gridItem.associate == movingGridItem.associate
+                }.toMutableList()
 
             val index =
-                currentGridItems.indexOfFirst { gridItem ->
+                gridItems.indexOfFirst { gridItem ->
                     ensureActive()
 
                     gridItem.id == movingGridItem.id
                 }
 
             if (index != -1) {
-                currentGridItems[index] = movingGridItem
+                gridItems[index] = movingGridItem
             } else {
-                currentGridItems.add(movingGridItem)
+                gridItems.add(movingGridItem)
             }
 
             val gridItemByCoordinates = getGridItemByCoordinates(
                 id = movingGridItem.id,
-                gridItems = currentGridItems,
+                gridItems = gridItems,
                 columns = columns,
                 rows = rows,
                 x = x,
@@ -92,7 +88,7 @@ class MoveGridItemUseCase @Inject constructor(
 
             if (gridItemByCoordinates != null) {
                 return@withContext handleConflictsOfGridItemCoordinates(
-                    gridItems = currentGridItems,
+                    gridItems = gridItems,
                     movingGridItem = movingGridItem,
                     conflictingGridItem = gridItemByCoordinates,
                     x = x,
@@ -102,7 +98,7 @@ class MoveGridItemUseCase @Inject constructor(
                 )
             }
 
-            val gridItemBySpan = currentGridItems.find { gridItem ->
+            val gridItemBySpan = gridItems.find { gridItem ->
                 ensureActive()
 
                 gridItem.id != movingGridItem.id && rectanglesOverlap(
@@ -115,7 +111,7 @@ class MoveGridItemUseCase @Inject constructor(
                 return@withContext handleConflictsOfGridItemSpan(
                     movingGridItem = movingGridItem,
                     conflictingGridItem = gridItemBySpan,
-                    gridItems = currentGridItems,
+                    gridItems = gridItems,
                     columns = columns,
                     rows = rows,
                 )

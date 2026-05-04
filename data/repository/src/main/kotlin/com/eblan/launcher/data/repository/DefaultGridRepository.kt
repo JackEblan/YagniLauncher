@@ -73,6 +73,11 @@ internal class DefaultGridRepository @Inject constructor(
         applicationInfoGridItems + shortcutInfoGridItems + shortcutConfigGridItems
     }
 
+    override suspend fun getGridItems(): List<GridItem> = applicationInfoGridItemRepository.getGridItems() +
+        widgetGridItemRepository.getGridItems() +
+        shortcutInfoGridItemRepository.getGridItems() +
+        shortcutConfigGridItemRepository.getGridItems()
+
     override suspend fun insertGridItem(gridItem: GridItem) {
         when (val data = gridItem.data) {
             is GridItemData.ApplicationInfo -> {

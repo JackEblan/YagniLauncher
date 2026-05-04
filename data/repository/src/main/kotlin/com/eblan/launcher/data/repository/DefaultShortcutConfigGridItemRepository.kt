@@ -21,12 +21,12 @@ import com.eblan.launcher.data.repository.mapper.asEntity
 import com.eblan.launcher.data.repository.mapper.asGridItem
 import com.eblan.launcher.data.repository.mapper.asModel
 import com.eblan.launcher.data.room.dao.ShortcutConfigGridItemDao
+import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.PartialShortcutConfigGridItem
 import com.eblan.launcher.domain.model.ShortcutConfigGridItem
 import com.eblan.launcher.domain.repository.ShortcutConfigGridItemRepository
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
-import kotlin.collections.map
 
 internal class DefaultShortcutConfigGridItemRepository @Inject constructor(private val shortcutConfigGridItemDao: ShortcutConfigGridItemDao) : ShortcutConfigGridItemRepository {
     override val gridItemsFlow =
@@ -46,7 +46,13 @@ internal class DefaultShortcutConfigGridItemRepository @Inject constructor(priva
             }
         }
 
-    override fun getShortcutConfigGridItems(): List<ShortcutConfigGridItem> = shortcutConfigGridItemDao.getShortcutConfigGridItemEntities().map { entity ->
+    override suspend fun getGridItems(): List<GridItem> = shortcutConfigGridItemDao.getShortcutConfigGridItemEntities().filter { entity ->
+        entity.folderId == null
+    }.map { entity ->
+        entity.asGridItem()
+    }
+
+    override suspend fun getShortcutConfigGridItems(): List<ShortcutConfigGridItem> = shortcutConfigGridItemDao.getShortcutConfigGridItemEntities().map { entity ->
         entity.asModel()
     }
 

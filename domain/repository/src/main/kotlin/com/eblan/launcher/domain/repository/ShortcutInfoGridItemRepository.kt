@@ -27,7 +27,9 @@ interface ShortcutInfoGridItemRepository {
 
     val gridItemsWithFolderIdFlow: Flow<List<GridItem>>
 
-    fun getShortcutInfoGridItems(): List<ShortcutInfoGridItem>
+    suspend fun getGridItems(): List<GridItem>
+
+    suspend fun getShortcutInfoGridItems(): List<ShortcutInfoGridItem>
 
     suspend fun upsertShortcutInfoGridItems(shortcutInfoGridItems: List<ShortcutInfoGridItem>)
 

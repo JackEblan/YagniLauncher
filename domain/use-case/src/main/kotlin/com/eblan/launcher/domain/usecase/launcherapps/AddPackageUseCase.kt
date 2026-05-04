@@ -148,7 +148,7 @@ class AddPackageUseCase @Inject constructor(
 
         if (!homeSettings.addNewAppsToHomeScreen) return
 
-        val gridItems = (gridRepository.gridItemsFlow.first() + getFolderGridItemsUseCase().first())
+        val gridItems = gridRepository.getGridItems().plus(getFolderGridItemsUseCase())
             .filter { gridItem -> gridItem.associate == Associate.Grid }
             .toMutableList()
 

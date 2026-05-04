@@ -33,7 +33,7 @@ interface ApplicationInfoGridItemDao {
     fun getApplicationInfoGridItemEntitiesFlow(): Flow<List<ApplicationInfoGridItemEntity>>
 
     @Query("SELECT * FROM ApplicationInfoGridItemEntity")
-    fun getApplicationInfoGridItemEntities(): List<ApplicationInfoGridItemEntity>
+    suspend fun getApplicationInfoGridItemEntities(): List<ApplicationInfoGridItemEntity>
 
     @Upsert
     suspend fun upsertApplicationInfoGridItemEntities(entities: List<ApplicationInfoGridItemEntity>)

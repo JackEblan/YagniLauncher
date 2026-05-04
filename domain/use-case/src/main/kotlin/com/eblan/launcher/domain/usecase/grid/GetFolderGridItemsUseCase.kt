@@ -22,18 +22,16 @@ import com.eblan.launcher.domain.common.EblanDispatchers
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.repository.FolderGridItemRepository
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class GetFolderGridItemsUseCase @Inject constructor(
     private val folderGridItemRepository: FolderGridItemRepository,
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) {
-    operator fun invoke(): Flow<List<GridItem>> = folderGridItemRepository.folderGridItemWrappersFlow.map { folderGridItemWrappers ->
-        folderGridItemWrappers.map { folderGridItemWrapper ->
+    suspend operator fun invoke(): List<GridItem> = withContext(defaultDispatcher) {
+        folderGridItemRepository.getFolderGridItemWrappers().map { folderGridItemWrapper ->
             folderGridItemWrapper.asGridItem()
         }
-    }.flowOn(defaultDispatcher)
+    }
 }

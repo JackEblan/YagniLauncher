@@ -26,7 +26,6 @@ import com.eblan.launcher.domain.grid.resolveConflicts
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.repository.GridRepository
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -40,11 +39,7 @@ class ResizeGridItemUseCase @Inject constructor(
         columns: Int,
         rows: Int,
     ): GridItem = withContext(defaultDispatcher) {
-        val gridItems = gridRepository.gridItemsFlow.first()
-
-        val folderGridItems = getFolderGridItemsUseCase().first()
-
-        val currentGridItems = gridItems.plus(folderGridItems).filter { gridItem ->
+        val gridItems = gridRepository.getGridItems().plus(getFolderGridItemsUseCase()).filter { gridItem ->
             isGridItemSpanWithinBounds(
                 gridItem = gridItem,
                 columns = columns,
@@ -54,13 +49,13 @@ class ResizeGridItemUseCase @Inject constructor(
         }.toMutableList()
 
         val index =
-            currentGridItems.indexOfFirst { gridItem -> gridItem.id == resizingGridItem.id }
+            gridItems.indexOfFirst { gridItem -> gridItem.id == resizingGridItem.id }
 
-        val oldGridItem = currentGridItems[index]
+        val oldGridItem = gridItems[index]
 
-        currentGridItems[index] = resizingGridItem
+        gridItems[index] = resizingGridItem
 
-        val gridItemBySpan = currentGridItems.find { gridItem ->
+        val gridItemBySpan = gridItems.find { gridItem ->
             gridItem.id != resizingGridItem.id && rectanglesOverlap(
                 moving = resizingGridItem,
                 other = gridItem,
@@ -71,13 +66,13 @@ class ResizeGridItemUseCase @Inject constructor(
             handleConflictsOfGridItemSpan(
                 oldGridItem = oldGridItem,
                 conflictingGridItem = gridItemBySpan,
-                gridItems = currentGridItems,
+                gridItems = gridItems,
                 resizingGridItem = resizingGridItem,
                 columns = columns,
                 rows = rows,
             )
         } else {
-            gridRepository.upsertGridItems(gridItems = currentGridItems)
+            gridRepository.upsertGridItems(gridItems = gridItems)
 
             resizingGridItem
         }

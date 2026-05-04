@@ -50,10 +50,9 @@ class GetHomeDataUseCase @Inject constructor(
     operator fun invoke(): Flow<HomeData> = combine(
         userDataRepository.userDataFlow,
         gridRepository.gridItemsFlow,
-        getFolderGridItemsUseCase(),
         wallpaperManagerWrapper.getColorsChanged(),
-    ) { userData, gridItems, folderGridItems, colorHints ->
-        val currentGridItems = gridItems + folderGridItems
+    ) { userData, gridItems, colorHints ->
+        val currentGridItems = gridItems + getFolderGridItemsUseCase()
 
         val gridItemsByPage = currentGridItems.filter { gridItem ->
             isGridItemSpanWithinBounds(

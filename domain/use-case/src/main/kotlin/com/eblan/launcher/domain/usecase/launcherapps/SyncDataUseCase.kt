@@ -217,10 +217,9 @@ class SyncDataUseCase @Inject constructor(
     ) {
         if (!homeSettings.addNewAppsToHomeScreen || experimentalSettings.firstLaunch) return
 
-        val gridItems =
-            (gridRepository.gridItemsFlow.first() + getFolderGridItemsUseCase().first())
-                .filter { gridItem -> gridItem.associate == Associate.Grid }
-                .toMutableList()
+        val gridItems = gridRepository.getGridItems().plus(getFolderGridItemsUseCase())
+            .filter { gridItem -> gridItem.associate == Associate.Grid }
+            .toMutableList()
 
         val syncEblanApplicationInfos =
             newSyncEblanApplicationInfos - oldSyncEblanApplicationInfos.toSet()
