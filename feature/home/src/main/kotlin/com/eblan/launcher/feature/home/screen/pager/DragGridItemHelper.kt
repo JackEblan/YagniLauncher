@@ -245,7 +245,7 @@ internal fun handleDragGridItem(
         is GridItemSource.Existing,
         is GridItemSource.New,
         is GridItemSource.Pin,
-        -> {
+            -> {
             if (isOnDock) {
                 dragDockGridItem(
                     currentPage = currentPage,
@@ -360,7 +360,7 @@ private fun dragFolderGridItem(
         (folderGridHeightPx - folderTitleHeightPx) - (folderGridPaddingPx * 2)
 
     val isInsideFolder = folderDragX in 0..folderGridVisibleWidthPx &&
-        folderDragY in 0..folderGridVisibleHeightPx
+            folderDragY in 0..folderGridVisibleHeightPx
 
     if (isInsideFolder) {
         onUpdateSharedElementKey(
@@ -742,17 +742,62 @@ private fun getMoveGridItem(
     currentPage: Int,
 ): GridItem = when (gridItemSource) {
     is GridItemSource.Existing, is GridItemSource.Folder,
-    -> {
-        gridItem.copy(
-            page = currentPage,
-            startColumn = gridX / cellWidth,
-            startRow = gridY / cellHeight,
-            associate = associate,
-        )
+        -> {
+        when (val data = gridItem.data) {
+            is GridItemData.ApplicationInfo -> {
+                gridItem.copy(
+                    page = currentPage,
+                    startColumn = gridX / cellWidth,
+                    startRow = gridY / cellHeight,
+                    data = data.copy(
+                        index = -1,
+                        folderId = null,
+                    ),
+                    associate = associate,
+                )
+            }
+
+            is GridItemData.ShortcutConfig -> {
+                gridItem.copy(
+                    page = currentPage,
+                    startColumn = gridX / cellWidth,
+                    startRow = gridY / cellHeight,
+                    data = data.copy(
+                        index = -1,
+                        folderId = null,
+                    ),
+                    associate = associate,
+                )
+            }
+
+            is GridItemData.ShortcutInfo -> {
+                gridItem.copy(
+                    page = currentPage,
+                    startColumn = gridX / cellWidth,
+                    startRow = gridY / cellHeight,
+                    data = data.copy(
+                        index = -1,
+                        folderId = null,
+                    ),
+                    associate = associate,
+                )
+            }
+
+            is GridItemData.Widget,
+            is GridItemData.Folder,
+                -> {
+                gridItem.copy(
+                    page = currentPage,
+                    startColumn = gridX / cellWidth,
+                    startRow = gridY / cellHeight,
+                    associate = associate,
+                )
+            }
+        }
     }
 
     is GridItemSource.New, is GridItemSource.Pin,
-    -> {
+        -> {
         getMoveNewGridItem(
             associate = associate,
             cellHeight = cellHeight,

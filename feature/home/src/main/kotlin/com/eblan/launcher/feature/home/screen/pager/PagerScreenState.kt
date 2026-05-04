@@ -963,35 +963,14 @@ internal class PagerScreenState(
 
         val gridItem = gridItemSource?.gridItem ?: return
 
-        val data = when (val data = gridItem.data) {
-            is GridItemData.ApplicationInfo -> data.copy(
-                index = -1,
-                folderId = null,
-            )
-
-            is GridItemData.ShortcutConfig -> data.copy(
-                index = -1,
-                folderId = null,
-            )
-
-            is GridItemData.ShortcutInfo -> data.copy(
-                index = -1,
-                folderId = null,
-            )
-
-            else -> return
-        }
-
-        val movingGridItem = gridItem.copy(data = data)
-
-        onUpdateGridItemSource(GridItemSource.Existing(gridItem = movingGridItem))
+        onUpdateGridItemSource(GridItemSource.Existing(gridItem = gridItem))
 
         sharedElementKey = SharedElementKey(
-            id = movingGridItem.id,
+            id = gridItem.id,
             parent = SharedElementKey.Parent.Grid,
         )
 
-        onMoveFolderGridItemOutsideFolder(movingGridItem)
+        onMoveFolderGridItemOutsideFolder(gridItem)
     }
 
     fun updateOverlayBounds(
