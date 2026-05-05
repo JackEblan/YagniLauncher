@@ -428,12 +428,13 @@ internal suspend fun AppWidgetManagerAppWidgetProviderInfo.toEblanAppWidgetProvi
     description = description,
 )
 
-internal fun EblanApplicationInfo.toFastLauncherAppsActivityInfo(): FastLauncherAppsActivityInfo = FastLauncherAppsActivityInfo(
-    serialNumber = serialNumber,
-    componentName = componentName,
-    packageName = packageName,
-    lastUpdateTime = lastUpdateTime,
-)
+internal fun EblanApplicationInfo.toFastLauncherAppsActivityInfo(): FastLauncherAppsActivityInfo =
+    FastLauncherAppsActivityInfo(
+        serialNumber = serialNumber,
+        componentName = componentName,
+        packageName = packageName,
+        lastUpdateTime = lastUpdateTime,
+    )
 
 internal fun EblanApplicationInfo.toSyncEblanApplicationInfo() = SyncEblanApplicationInfo(
     serialNumber = serialNumber,
@@ -442,6 +443,7 @@ internal fun EblanApplicationInfo.toSyncEblanApplicationInfo() = SyncEblanApplic
     icon = icon,
     label = label,
     lastUpdateTime = lastUpdateTime,
+    flags = flags,
 )
 
 internal fun LauncherAppsActivityInfo.toSyncEblanApplicationInfo() = SyncEblanApplicationInfo(
@@ -451,6 +453,7 @@ internal fun LauncherAppsActivityInfo.toSyncEblanApplicationInfo() = SyncEblanAp
     icon = activityIcon,
     label = activityLabel,
     lastUpdateTime = lastUpdateTime,
+    flags = flags,
 )
 
 internal fun SyncEblanApplicationInfo.toDeleteEblanApplicationInfo() = DeleteEblanApplicationInfo(
@@ -482,13 +485,14 @@ internal suspend fun ShortcutConfigActivityInfo.toEblanShortcutConfig(
     ),
 )
 
-internal fun EblanAppWidgetProviderInfo.toDeleteEblanAppWidgetProviderInfo(): DeleteEblanAppWidgetProviderInfo = DeleteEblanAppWidgetProviderInfo(
-    componentName = componentName,
-    serialNumber = serialNumber,
-    packageName = packageName,
-    preview = preview,
-    applicationIcon = applicationIcon,
-)
+internal fun EblanAppWidgetProviderInfo.toDeleteEblanAppWidgetProviderInfo(): DeleteEblanAppWidgetProviderInfo =
+    DeleteEblanAppWidgetProviderInfo(
+        componentName = componentName,
+        serialNumber = serialNumber,
+        packageName = packageName,
+        preview = preview,
+        applicationIcon = applicationIcon,
+    )
 
 internal fun LauncherAppsShortcutInfo.toEblanShortcutInfo(): EblanShortcutInfo = EblanShortcutInfo(
     shortcutId = shortcutId,
@@ -502,19 +506,21 @@ internal fun LauncherAppsShortcutInfo.toEblanShortcutInfo(): EblanShortcutInfo =
     lastChangedTimestamp = lastChangedTimestamp,
 )
 
-internal fun EblanShortcutInfo.toDeleteEblanShortcutInfo(): DeleteEblanShortcutInfo = DeleteEblanShortcutInfo(
-    serialNumber = serialNumber,
-    shortcutId = shortcutId,
-    packageName = packageName,
-    icon = icon,
-)
+internal fun EblanShortcutInfo.toDeleteEblanShortcutInfo(): DeleteEblanShortcutInfo =
+    DeleteEblanShortcutInfo(
+        serialNumber = serialNumber,
+        shortcutId = shortcutId,
+        packageName = packageName,
+        icon = icon,
+    )
 
-internal fun EblanShortcutConfig.toDeleteEblanShortcutConfig(): DeleteEblanShortcutConfig = DeleteEblanShortcutConfig(
-    componentName = componentName,
-    packageName = packageName,
-    serialNumber = serialNumber,
-    activityIcon = activityIcon,
-)
+internal fun EblanShortcutConfig.toDeleteEblanShortcutConfig(): DeleteEblanShortcutConfig =
+    DeleteEblanShortcutConfig(
+        componentName = componentName,
+        packageName = packageName,
+        serialNumber = serialNumber,
+        activityIcon = activityIcon,
+    )
 
 @OptIn(ExperimentalUuidApi::class)
 internal suspend fun addNewApplicationToHomeScreen(
@@ -523,21 +529,24 @@ internal suspend fun addNewApplicationToHomeScreen(
     packageName: String,
     icon: String?,
     label: String?,
+    isSystem: Boolean,
     homeSettings: HomeSettings,
     applicationInfoGridItems: MutableList<ApplicationInfoGridItem>,
 ) {
+    if (isSystem) return
+
     val alreadyOnHome = gridItems.any { gridItem ->
         when (val data = gridItem.data) {
             is GridItemData.ApplicationInfo ->
                 data.serialNumber == 0L &&
-                    data.componentName == componentName
+                        data.componentName == componentName
 
             is GridItemData.Folder ->
                 data.gridItems.any { folderGridItem ->
                     when (val folderData = folderGridItem.data) {
                         is GridItemData.ApplicationInfo -> {
                             folderData.serialNumber == 0L &&
-                                folderData.componentName == componentName
+                                    folderData.componentName == componentName
                         }
 
                         else -> false

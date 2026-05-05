@@ -19,6 +19,7 @@ package com.eblan.launcher.framework.packagemanager
 
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
 import android.os.UserHandle
@@ -37,8 +38,7 @@ internal class DefaultPackageManagerWrapper @Inject constructor(
     @param:ApplicationContext private val context: Context,
     private val imageSerializer: AndroidImageSerializer,
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
-) : PackageManagerWrapper,
-    AndroidPackageManagerWrapper {
+) : PackageManagerWrapper, AndroidPackageManagerWrapper {
     private val packageManager = context.packageManager
 
     override val hasSystemFeatureAppWidgets
@@ -62,16 +62,17 @@ internal class DefaultPackageManagerWrapper @Inject constructor(
         }
     }
 
-    override suspend fun getApplicationLabel(packageName: String): String? = withContext(defaultDispatcher) {
-        try {
-            val applicationInfo =
-                packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
+    override suspend fun getApplicationLabel(packageName: String): String? =
+        withContext(defaultDispatcher) {
+            try {
+                val applicationInfo =
+                    packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
 
-            packageManager.getApplicationLabel(applicationInfo).toString()
-        } catch (_: PackageManager.NameNotFoundException) {
-            null
+                packageManager.getApplicationLabel(applicationInfo).toString()
+            } catch (_: PackageManager.NameNotFoundException) {
+                null
+            }
         }
-    }
 
     override fun getComponentName(packageName: String): String? {
         val launchIntent = packageManager.getLaunchIntentForPackage(packageName)
@@ -133,5 +134,9 @@ internal class DefaultPackageManagerWrapper @Inject constructor(
         0L
     }
 
-    override fun getUserBadgedLabel(label: CharSequence, userHandle: UserHandle): CharSequence = packageManager.getUserBadgedLabel(label, userHandle)
+    override fun isSystem(flags: Int): Boolean =
+        (flags and ApplicationInfo.FLAG_SYSTEM) != 0 || (flags and ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) != 0
+
+    override fun getUserBadgedLabel(label: CharSequence, userHandle: UserHandle): CharSequence =
+        packageManager.getUserBadgedLabel(label, userHandle)
 }
