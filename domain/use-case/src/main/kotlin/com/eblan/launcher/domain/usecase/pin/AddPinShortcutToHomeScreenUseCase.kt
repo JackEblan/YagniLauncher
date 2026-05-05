@@ -28,9 +28,10 @@ import com.eblan.launcher.domain.model.EblanAction
 import com.eblan.launcher.domain.model.EblanActionType
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
+import com.eblan.launcher.domain.repository.FolderGridItemRepository
 import com.eblan.launcher.domain.repository.GridRepository
 import com.eblan.launcher.domain.repository.UserDataRepository
-import com.eblan.launcher.domain.usecase.grid.GetFolderGridItemsUseCase
+import com.eblan.launcher.domain.usecase.grid.asGridItems
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
@@ -42,8 +43,8 @@ class AddPinShortcutToHomeScreenUseCase @Inject constructor(
     private val fileManager: FileManager,
     private val gridRepository: GridRepository,
     private val packageManagerWrapper: PackageManagerWrapper,
-    private val getFolderGridItemsUseCase: GetFolderGridItemsUseCase,
     private val iconKeyGenerator: IconKeyGenerator,
+    private val folderGridItemRepository: FolderGridItemRepository,
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke(
@@ -119,7 +120,9 @@ class AddPinShortcutToHomeScreenUseCase @Inject constructor(
         )
 
         val newGridItem = findAvailableRegionByPage(
-            gridItems = gridRepository.getGridItems().plus(getFolderGridItemsUseCase()),
+            gridItems = gridRepository.getGridItems().plus(
+                folderGridItemRepository.getFolderGridItemWrappers().asGridItems(),
+            ),
             gridItem = gridItem,
             pageCount = pageCount,
             columns = columns,

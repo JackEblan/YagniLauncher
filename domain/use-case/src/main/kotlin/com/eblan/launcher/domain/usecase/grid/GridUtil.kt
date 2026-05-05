@@ -34,6 +34,10 @@ const val FOLDER_MAX_COLUMNS = 5
 
 const val FOLDER_MAX_ROWS = 4
 
+internal suspend fun List<FolderGridItemWrapper>.asGridItems(): List<GridItem> = map { folderGridItemWrapper ->
+    folderGridItemWrapper.asGridItem()
+}
+
 internal suspend fun FolderGridItemWrapper.asGridItem(): GridItem {
     val sortedApplicationInfoGridItems =
         applicationInfoGridItems.map { applicationInfoGridItem ->

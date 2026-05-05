@@ -21,6 +21,7 @@ import com.eblan.launcher.domain.common.Dispatcher
 import com.eblan.launcher.domain.common.EblanDispatchers
 import com.eblan.launcher.domain.model.Associate
 import com.eblan.launcher.domain.model.GridItem
+import com.eblan.launcher.domain.repository.FolderGridItemRepository
 import com.eblan.launcher.domain.repository.GridRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
@@ -28,13 +29,15 @@ import javax.inject.Inject
 
 class UpdateGridItemsAfterResizeUseCase @Inject constructor(
     private val gridRepository: GridRepository,
-    private val getFolderGridItemsUseCase: GetFolderGridItemsUseCase,
+    private val folderGridItemRepository: FolderGridItemRepository,
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke(resizingGridItem: GridItem) {
         withContext(defaultDispatcher) {
             val gridItems =
-                gridRepository.getGridItems().plus(getFolderGridItemsUseCase()).toMutableList()
+                gridRepository.getGridItems().plus(
+                    folderGridItemRepository.getFolderGridItemWrappers().asGridItems(),
+                ).toMutableList()
 
             when (resizingGridItem.associate) {
                 Associate.Grid -> {

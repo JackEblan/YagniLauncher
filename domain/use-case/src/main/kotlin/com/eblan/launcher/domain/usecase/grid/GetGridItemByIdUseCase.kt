@@ -20,6 +20,7 @@ package com.eblan.launcher.domain.usecase.grid
 import com.eblan.launcher.domain.common.Dispatcher
 import com.eblan.launcher.domain.common.EblanDispatchers
 import com.eblan.launcher.domain.model.GridItem
+import com.eblan.launcher.domain.repository.FolderGridItemRepository
 import com.eblan.launcher.domain.repository.GridRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.first
@@ -28,12 +29,14 @@ import javax.inject.Inject
 
 class GetGridItemByIdUseCase @Inject constructor(
     private val gridRepository: GridRepository,
-    private val getFolderGridItemsUseCase: GetFolderGridItemsUseCase,
+    private val folderGridItemRepository: FolderGridItemRepository,
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke(id: String): GridItem? = withContext(defaultDispatcher) {
         val gridItems =
-            gridRepository.gridItemsWithFolderIdFlow.first() + getFolderGridItemsUseCase()
+            gridRepository.getGridItems().plus(
+                folderGridItemRepository.getFolderGridItemWrappers().asGridItems(),
+            )
 
         gridItems.find { gridItem ->
             gridItem.id == id
