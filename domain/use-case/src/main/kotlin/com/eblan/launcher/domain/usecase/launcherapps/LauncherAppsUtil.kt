@@ -21,6 +21,7 @@ import com.eblan.launcher.domain.common.IconKeyGenerator
 import com.eblan.launcher.domain.framework.FileManager
 import com.eblan.launcher.domain.framework.PackageManagerWrapper
 import com.eblan.launcher.domain.grid.findAvailableRegionByPage
+import com.eblan.launcher.domain.model.AddNewEblanApplicationInfo
 import com.eblan.launcher.domain.model.AppWidgetManagerAppWidgetProviderInfo
 import com.eblan.launcher.domain.model.ApplicationInfoGridItem
 import com.eblan.launcher.domain.model.Associate
@@ -525,12 +526,9 @@ internal suspend fun addNewApplicationToHomeScreen(
     packageName: String,
     icon: String?,
     label: String?,
-    isSystem: Boolean,
     homeSettings: HomeSettings,
     applicationInfoGridItems: MutableList<ApplicationInfoGridItem>,
 ) {
-    if (isSystem) return
-
     val alreadyOnHome = gridItems.any { gridItem ->
         when (val data = gridItem.data) {
             is GridItemData.ApplicationInfo ->
@@ -627,6 +625,14 @@ internal suspend fun addNewApplicationToHomeScreen(
         )
     }
 }
+
+internal fun SyncEblanApplicationInfo.asAddNewEblanApplicationInfo(): AddNewEblanApplicationInfo = AddNewEblanApplicationInfo(
+    serialNumber = serialNumber,
+    componentName = componentName,
+    packageName = packageName,
+    icon = icon,
+    label = label,
+)
 
 private suspend fun resolveApplicationIcon(
     fileManager: FileManager,

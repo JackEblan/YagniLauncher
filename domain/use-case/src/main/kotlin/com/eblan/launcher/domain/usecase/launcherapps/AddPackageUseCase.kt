@@ -161,7 +161,6 @@ class AddPackageUseCase @Inject constructor(
             packageName = packageName,
             icon = activityIcon,
             label = activityLabel.toString(),
-            isSystem = packageManagerWrapper.isSystem(flags = flags),
             homeSettings = homeSettings,
             applicationInfoGridItems = applicationInfoGridItems,
         )

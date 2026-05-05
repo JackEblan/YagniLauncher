@@ -221,17 +221,30 @@ class SyncDataUseCase @Inject constructor(
             .filter { gridItem -> gridItem.associate == Associate.Grid }
             .toMutableList()
 
-        val syncEblanApplicationInfos =
-            newSyncEblanApplicationInfos - oldSyncEblanApplicationInfos.toSet()
+        val oldAddNewEblanApplicationInfos =
+            oldSyncEblanApplicationInfos.filterNot { syncEblanApplicationInfo ->
+                packageManagerWrapper.isSystem(flags = syncEblanApplicationInfo.flags)
+            }.map { syncEblanApplicationInfo ->
+                syncEblanApplicationInfo.asAddNewEblanApplicationInfo()
+            }
 
-        syncEblanApplicationInfos.forEach { syncEblanApplicationInfo ->
+        val newAddNewEblanApplicationInfos =
+            newSyncEblanApplicationInfos.filterNot { syncEblanApplicationInfo ->
+                packageManagerWrapper.isSystem(flags = syncEblanApplicationInfo.flags)
+            }.map { syncEblanApplicationInfo ->
+                syncEblanApplicationInfo.asAddNewEblanApplicationInfo()
+            }
+
+        val addNewEblanApplicationInfos =
+            newAddNewEblanApplicationInfos - oldAddNewEblanApplicationInfos.toSet()
+
+        addNewEblanApplicationInfos.forEach { addNewEblanApplicationInfo ->
             addNewApplicationToHomeScreen(
                 gridItems = gridItems,
-                componentName = syncEblanApplicationInfo.componentName,
-                packageName = syncEblanApplicationInfo.packageName,
-                icon = syncEblanApplicationInfo.icon,
-                label = syncEblanApplicationInfo.label,
-                isSystem = packageManagerWrapper.isSystem(flags = syncEblanApplicationInfo.flags),
+                componentName = addNewEblanApplicationInfo.componentName,
+                packageName = addNewEblanApplicationInfo.packageName,
+                icon = addNewEblanApplicationInfo.icon,
+                label = addNewEblanApplicationInfo.label,
                 homeSettings = homeSettings,
                 applicationInfoGridItems = applicationInfoGridItems,
             )
