@@ -35,5 +35,6 @@ data class EblanApplicationInfoEntity(
     val lastUpdateTime: Long,
     @ColumnInfo(defaultValue = "-1")
     val index: Int,
+    @ColumnInfo(defaultValue = "0")
     val flags: Int,
 )
