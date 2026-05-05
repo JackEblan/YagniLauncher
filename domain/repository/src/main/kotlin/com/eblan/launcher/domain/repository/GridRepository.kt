@@ -27,6 +27,8 @@ interface GridRepository {
 
     suspend fun getGridItems(): List<GridItem>
 
+    suspend fun getGridItemsWithFolderId(): List<GridItem>
+
     suspend fun insertGridItem(gridItem: GridItem)
 
     suspend fun updateGridItem(gridItem: GridItem)

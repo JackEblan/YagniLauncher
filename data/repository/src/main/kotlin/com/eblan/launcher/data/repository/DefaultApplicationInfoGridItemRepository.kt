@@ -51,6 +51,10 @@ internal class DefaultApplicationInfoGridItemRepository @Inject constructor(priv
         entity.asGridItem()
     }
 
+    override suspend fun getGridItemsWithFolderId(): List<GridItem> = applicationInfoGridItemDao.getApplicationInfoGridItemEntities().map { entity ->
+        entity.asGridItem()
+    }
+
     override suspend fun getApplicationInfoGridItems(): List<ApplicationInfoGridItem> = applicationInfoGridItemDao.getApplicationInfoGridItemEntities().map { entity ->
         entity.asModel()
     }

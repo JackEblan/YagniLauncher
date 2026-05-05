@@ -24,7 +24,6 @@ import com.eblan.launcher.domain.grid.isGridItemSpanWithinBounds
 import com.eblan.launcher.domain.grid.rectanglesOverlap
 import com.eblan.launcher.domain.grid.resolveConflicts
 import com.eblan.launcher.domain.model.GridItem
-import com.eblan.launcher.domain.repository.FolderGridItemRepository
 import com.eblan.launcher.domain.repository.GridRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
@@ -32,7 +31,7 @@ import javax.inject.Inject
 
 class ResizeGridItemUseCase @Inject constructor(
     private val gridRepository: GridRepository,
-    private val folderGridItemRepository: FolderGridItemRepository,
+    private val getFolderGridItemsUseCase: GetFolderGridItemsUseCase,
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke(
@@ -40,16 +39,15 @@ class ResizeGridItemUseCase @Inject constructor(
         columns: Int,
         rows: Int,
     ): GridItem = withContext(defaultDispatcher) {
-        val gridItems = gridRepository.getGridItems().plus(
-            folderGridItemRepository.getFolderGridItemWrappers().asGridItems(),
-        ).filter { gridItem ->
-            isGridItemSpanWithinBounds(
-                gridItem = gridItem,
-                columns = columns,
-                rows = rows,
-            ) && gridItem.page == resizingGridItem.page &&
-                gridItem.associate == resizingGridItem.associate
-        }.toMutableList()
+        val gridItems =
+            gridRepository.getGridItems().plus(getFolderGridItemsUseCase()).filter { gridItem ->
+                isGridItemSpanWithinBounds(
+                    gridItem = gridItem,
+                    columns = columns,
+                    rows = rows,
+                ) && gridItem.page == resizingGridItem.page &&
+                    gridItem.associate == resizingGridItem.associate
+            }.toMutableList()
 
         val index =
             gridItems.indexOfFirst { gridItem -> gridItem.id == resizingGridItem.id }

@@ -29,6 +29,8 @@ interface ShortcutInfoGridItemRepository {
 
     suspend fun getGridItems(): List<GridItem>
 
+    suspend fun getGridItemsWithFolderId(): List<GridItem>
+
     suspend fun getShortcutInfoGridItems(): List<ShortcutInfoGridItem>
 
     suspend fun upsertShortcutInfoGridItems(shortcutInfoGridItems: List<ShortcutInfoGridItem>)

@@ -51,6 +51,10 @@ internal class DefaultShortcutInfoGridItemRepository @Inject constructor(private
         entity.asGridItem()
     }
 
+    override suspend fun getGridItemsWithFolderId(): List<GridItem> = shortcutInfoGridItemDao.getShortcutInfoGridItemEntities().map { entity ->
+        entity.asGridItem()
+    }
+
     override suspend fun getShortcutInfoGridItems(): List<ShortcutInfoGridItem> = shortcutInfoGridItemDao.getShortcutInfoGridItemEntities().map { entity ->
         entity.asModel()
     }

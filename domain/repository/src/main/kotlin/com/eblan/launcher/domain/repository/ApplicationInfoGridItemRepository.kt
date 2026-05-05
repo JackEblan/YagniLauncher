@@ -29,6 +29,8 @@ interface ApplicationInfoGridItemRepository {
 
     suspend fun getGridItems(): List<GridItem>
 
+    suspend fun getGridItemsWithFolderId(): List<GridItem>
+
     suspend fun getApplicationInfoGridItems(): List<ApplicationInfoGridItem>
 
     suspend fun upsertApplicationInfoGridItems(applicationInfoGridItems: List<ApplicationInfoGridItem>)

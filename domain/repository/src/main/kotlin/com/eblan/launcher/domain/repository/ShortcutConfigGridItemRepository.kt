@@ -29,6 +29,8 @@ interface ShortcutConfigGridItemRepository {
 
     suspend fun getGridItems(): List<GridItem>
 
+    suspend fun getGridItemsWithFolderId(): List<GridItem>
+
     suspend fun getShortcutConfigGridItems(): List<ShortcutConfigGridItem>
 
     suspend fun upsertShortcutConfigGridItems(shortcutConfigGridItems: List<ShortcutConfigGridItem>)
