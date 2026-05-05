@@ -24,6 +24,8 @@ import kotlinx.coroutines.flow.Flow
 interface FolderGridItemRepository {
     val folderGridItemWrappersFlow: Flow<List<FolderGridItemWrapper>>
 
+    suspend fun getFolderGridItemWrappers(): List<FolderGridItemWrapper>
+
     suspend fun upsertFolderGridItems(folderGridItems: List<FolderGridItem>)
 
     suspend fun updateFolderGridItem(folderGridItem: FolderGridItem)
@@ -31,4 +33,8 @@ interface FolderGridItemRepository {
     suspend fun deleteFolderGridItem(folderGridItem: FolderGridItem)
 
     suspend fun deleteFolderGridItems(folderGridItems: List<FolderGridItem>)
+
+    suspend fun insertFolderGridItem(folderGridItem: FolderGridItem)
+
+    suspend fun updateFolderGridItems(folderGridItems: List<FolderGridItem>)
 }

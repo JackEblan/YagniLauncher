@@ -26,7 +26,6 @@ android {
 }
 
 dependencies {
-    implementation(projects.data.cache)
     implementation(projects.data.datastore)
     implementation(projects.data.room)
     implementation(projects.domain.common)

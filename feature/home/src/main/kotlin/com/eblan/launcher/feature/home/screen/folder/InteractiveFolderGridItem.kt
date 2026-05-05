@@ -15,19 +15,19 @@
  *   limitations under the License.
  *
  */
-package com.eblan.launcher.feature.home.screen.pager
+package com.eblan.launcher.feature.home.screen.folder
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.GridItemSettings
-import com.eblan.launcher.domain.model.TextColor
 import com.eblan.launcher.feature.home.component.InteractiveApplicationInfoGridItem
 import com.eblan.launcher.feature.home.component.InteractiveFolderGridItem
 import com.eblan.launcher.feature.home.component.InteractiveShortcutConfigGridItem
@@ -36,12 +36,10 @@ import com.eblan.launcher.feature.home.component.InteractiveWidgetGridItem
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
-import com.eblan.launcher.feature.home.util.getGridItemTextColor
-import com.eblan.launcher.feature.home.util.getSystemTextColor
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-internal fun SharedTransitionScope.InteractiveGridItemContent(
+internal fun SharedTransitionScope.InteractiveFolderGridItemContent(
     modifier: Modifier = Modifier,
     drag: Drag,
     gridItem: GridItem,
@@ -51,9 +49,7 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
     iconPackFilePaths: Map<String, String>,
     isScrollInProgress: Boolean,
     statusBarNotifications: Map<String, Int>,
-    textColor: TextColor,
     isVisibleOverlay: Boolean,
-    isVisibleFolder: Boolean,
     newGridItemSource: GridItemSource,
     sharedElementKey: SharedElementKey,
     onOpenAppDrawer: () -> Unit,
@@ -91,20 +87,6 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
         gridItemSettings
     }
 
-    val currentTextColor = if (gridItem.override) {
-        getGridItemTextColor(
-            gridItemCustomTextColor = gridItem.gridItemSettings.customTextColor,
-            gridItemTextColor = gridItem.gridItemSettings.textColor,
-            systemCustomTextColor = gridItemSettings.customTextColor,
-            systemTextColor = textColor,
-        )
-    } else {
-        getSystemTextColor(
-            systemCustomTextColor = gridItemSettings.customTextColor,
-            systemTextColor = textColor,
-        )
-    }
-
     when (val data = gridItem.data) {
         is GridItemData.ApplicationInfo -> {
             InteractiveApplicationInfoGridItem(
@@ -116,13 +98,13 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
                 iconPackFilePaths = iconPackFilePaths,
                 isScrollInProgress = isScrollInProgress,
                 isSelected = isSelected,
-                isShowWhiteBox = true,
-                isVisibleFolder = isVisibleFolder,
+                isShowWhiteBox = false,
+                isVisibleFolder = false,
                 isVisibleOverlay = isVisibleOverlay,
                 newGridItemSource = newGridItemSource,
                 sharedElementKey = sharedElementKey,
                 statusBarNotifications = statusBarNotifications,
-                textColor = currentTextColor,
+                textColor = Color.Unspecified,
                 onDismissGridItemPopup = onDismissGridItemPopup,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
@@ -143,11 +125,11 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
                 drag = drag,
                 isScrollInProgress = isScrollInProgress,
                 isSelected = isSelected,
-                isShowWhiteBox = true,
+                isShowWhiteBox = false,
                 isVisibleOverlay = isVisibleOverlay,
                 newGridItemSource = newGridItemSource,
                 sharedElementKey = sharedElementKey,
-                textColor = currentTextColor,
+                textColor = Color.Unspecified,
                 onDismissGridItemPopup = onDismissGridItemPopup,
                 onShowGridItemPopup = onShowGridItemPopup,
                 onUpdateGridItemSource = onUpdateGridItemSource,
@@ -169,12 +151,12 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
                 hasShortcutHostPermission = hasShortcutHostPermission,
                 isScrollInProgress = isScrollInProgress,
                 isSelected = isSelected,
-                isShowWhiteBox = true,
-                isVisibleFolder = isVisibleFolder,
+                isShowWhiteBox = false,
+                isVisibleFolder = false,
                 isVisibleOverlay = isVisibleOverlay,
                 newGridItemSource = newGridItemSource,
                 sharedElementKey = sharedElementKey,
-                textColor = currentTextColor,
+                textColor = Color.Unspecified,
                 onDismissGridItemPopup = onDismissGridItemPopup,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
@@ -199,12 +181,12 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
                 iconPackFilePaths = iconPackFilePaths,
                 isScrollInProgress = isScrollInProgress,
                 isSelected = isSelected,
-                isShowWhiteBox = true,
-                isVisibleFolder = isVisibleFolder,
+                isShowWhiteBox = false,
+                isVisibleFolder = false,
                 isVisibleOverlay = isVisibleOverlay,
                 newGridItemSource = newGridItemSource,
                 sharedElementKey = sharedElementKey,
-                textColor = currentTextColor,
+                textColor = Color.Unspecified,
                 onDismissGridItemPopup = onDismissGridItemPopup,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
@@ -227,12 +209,12 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
                 gridItemSettings = currentGridItemSettings,
                 isScrollInProgress = isScrollInProgress,
                 isSelected = isSelected,
-                isShowWhiteBox = true,
-                isVisibleFolder = isVisibleFolder,
+                isShowWhiteBox = false,
+                isVisibleFolder = false,
                 isVisibleOverlay = isVisibleOverlay,
                 newGridItemSource = newGridItemSource,
                 sharedElementKey = sharedElementKey,
-                textColor = currentTextColor,
+                textColor = Color.Unspecified,
                 onDismissGridItemPopup = onDismissGridItemPopup,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,

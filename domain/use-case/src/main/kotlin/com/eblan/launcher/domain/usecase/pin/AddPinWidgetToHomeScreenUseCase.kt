@@ -30,10 +30,10 @@ import com.eblan.launcher.domain.model.EblanAction
 import com.eblan.launcher.domain.model.EblanActionType
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
-import com.eblan.launcher.domain.repository.GridCacheRepository
+import com.eblan.launcher.domain.repository.FolderGridItemRepository
 import com.eblan.launcher.domain.repository.GridRepository
 import com.eblan.launcher.domain.repository.UserDataRepository
-import com.eblan.launcher.domain.usecase.grid.GetFolderGridItemsUseCase
+import com.eblan.launcher.domain.usecase.grid.asGridItems
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
@@ -43,13 +43,12 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 class AddPinWidgetToHomeScreenUseCase @Inject constructor(
-    private val gridCacheRepository: GridCacheRepository,
     private val userDataRepository: UserDataRepository,
     private val fileManager: FileManager,
     private val packageManagerWrapper: PackageManagerWrapper,
     private val gridRepository: GridRepository,
-    private val getFolderGridItemsUseCase: GetFolderGridItemsUseCase,
     private val iconKeyGenerator: IconKeyGenerator,
+    private val folderGridItemRepository: FolderGridItemRepository,
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) {
     @OptIn(ExperimentalUuidApi::class)
@@ -82,8 +81,6 @@ class AddPinWidgetToHomeScreenUseCase @Inject constructor(
         val initialPage = homeSettings.initialPage
 
         val dockHeight = homeSettings.dockHeight
-
-        val gridItems = gridRepository.gridItemsFlow.first() + getFolderGridItemsUseCase().first()
 
         val eblanApplicationInfoIcon =
             packageManagerWrapper.getComponentName(packageName = packageName)
@@ -170,7 +167,9 @@ class AddPinWidgetToHomeScreenUseCase @Inject constructor(
         )
 
         val newGridItem = findAvailableRegionByPage(
-            gridItems = gridItems,
+            gridItems = gridRepository.getGridItems().plus(
+                folderGridItemRepository.getFolderGridItemWrappers().asGridItems(),
+            ),
             gridItem = gridItem,
             pageCount = pageCount,
             columns = columns,
@@ -178,7 +177,7 @@ class AddPinWidgetToHomeScreenUseCase @Inject constructor(
         )
 
         if (newGridItem != null) {
-            gridCacheRepository.insertGridItems(gridItems = gridItems + newGridItem)
+            gridRepository.insertGridItem(gridItem = newGridItem)
         }
 
         newGridItem

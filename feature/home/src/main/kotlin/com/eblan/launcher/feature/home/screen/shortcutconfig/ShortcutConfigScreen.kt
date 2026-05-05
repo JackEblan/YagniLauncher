@@ -126,7 +126,6 @@ internal fun ShortcutConfigScreen(
     alpha: Float,
     cornerSize: Dp,
     onDismiss: () -> Unit,
-    onDraggingGridItem: () -> Unit,
     onGetEblanShortcutConfigsByLabel: (String) -> Unit,
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
@@ -163,7 +162,6 @@ internal fun ShortcutConfigScreen(
             paddingValues = paddingValues,
             onDismiss = onDismiss,
             onDragEnd = onDragEnd,
-            onDraggingGridItem = onDraggingGridItem,
             onGetEblanShortcutConfigsByLabel = onGetEblanShortcutConfigsByLabel,
             onUpdateOverlayBounds = onUpdateOverlayBounds,
             onVerticalDrag = onVerticalDrag,
@@ -188,7 +186,6 @@ private fun Success(
     paddingValues: PaddingValues,
     onDismiss: () -> Unit,
     onDragEnd: (Float) -> Unit,
-    onDraggingGridItem: () -> Unit,
     onGetEblanShortcutConfigsByLabel: (String) -> Unit,
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
@@ -284,7 +281,6 @@ private fun Success(
                     index = index,
                     paddingValues = paddingValues,
                     onDragEnd = onDragEnd,
-                    onDraggingGridItem = onDraggingGridItem,
                     onUpdateOverlayBounds = onUpdateOverlayBounds,
                     onVerticalDrag = onVerticalDrag,
                     onUpdateImageBitmap = onUpdateImageBitmap,
@@ -304,7 +300,6 @@ private fun Success(
                 index = 0,
                 paddingValues = paddingValues,
                 onDragEnd = onDragEnd,
-                onDraggingGridItem = onDraggingGridItem,
                 onUpdateOverlayBounds = onUpdateOverlayBounds,
                 onVerticalDrag = onVerticalDrag,
                 onUpdateImageBitmap = onUpdateImageBitmap,
@@ -358,7 +353,6 @@ private fun EblanShortcutConfigsPage(
     index: Int,
     paddingValues: PaddingValues,
     onDragEnd: (Float) -> Unit,
-    onDraggingGridItem: () -> Unit,
     onUpdateOverlayBounds: (IntOffset, IntSize) -> Unit,
     onVerticalDrag: (Float) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
@@ -432,7 +426,6 @@ private fun EblanShortcutConfigsPage(
                         eblanApplicationInfoGroup = eblanApplicationInfoGroup,
                         eblanShortcutConfigs = eblanShortcutConfigs[serialNumber].orEmpty(),
                         gridItemSettings = gridItemSettings,
-                        onDraggingGridItem = onDraggingGridItem,
                         onUpdateOverlayBounds = onUpdateOverlayBounds,
                         onUpdateImageBitmap = onUpdateImageBitmap,
                         onUpdateGridItemSource = onUpdateGridItemSource,
@@ -456,7 +449,6 @@ private fun EblanApplicationInfoItem(
     eblanApplicationInfoGroup: EblanApplicationInfoGroup,
     eblanShortcutConfigs: Map<EblanApplicationInfoGroup, List<EblanShortcutConfig>>,
     gridItemSettings: GridItemSettings,
-    onDraggingGridItem: () -> Unit,
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
@@ -517,7 +509,6 @@ private fun EblanApplicationInfoItem(
                         drag = drag,
                         eblanShortcutConfig = eblanShortcutConfig,
                         gridItemSettings = gridItemSettings,
-                        onDraggingGridItem = onDraggingGridItem,
                         onUpdateOverlayBounds = onUpdateOverlayBounds,
                         onUpdateImageBitmap = onUpdateImageBitmap,
                         onUpdateGridItemSource = onUpdateGridItemSource,
@@ -540,7 +531,6 @@ private fun EblanShortcutConfigItem(
     drag: Drag,
     eblanShortcutConfig: EblanShortcutConfig,
     gridItemSettings: GridItemSettings,
-    onDraggingGridItem: () -> Unit,
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
@@ -581,6 +571,14 @@ private fun EblanShortcutConfigItem(
                                 shortcutIntentUri = null,
                                 customIcon = null,
                                 customLabel = null,
+                                index = -1,
+                                folderId = null,
+                            )
+
+                            val eblanAction = EblanAction(
+                                eblanActionType = EblanActionType.None,
+                                serialNumber = 0L,
+                                componentName = "",
                             )
 
                             val gridItem = GridItem(
@@ -594,21 +592,9 @@ private fun EblanShortcutConfigItem(
                                 associate = Associate.Grid,
                                 override = false,
                                 gridItemSettings = gridItemSettings,
-                                doubleTap = EblanAction(
-                                    eblanActionType = EblanActionType.None,
-                                    serialNumber = 0L,
-                                    componentName = "",
-                                ),
-                                swipeUp = EblanAction(
-                                    eblanActionType = EblanActionType.None,
-                                    serialNumber = 0L,
-                                    componentName = "",
-                                ),
-                                swipeDown = EblanAction(
-                                    eblanActionType = EblanActionType.None,
-                                    serialNumber = 0L,
-                                    componentName = "",
-                                ),
+                                doubleTap = eblanAction,
+                                swipeUp = eblanAction,
+                                swipeDown = eblanAction,
                             )
 
                             onUpdateGridItemSource(GridItemSource.New(gridItem = gridItem))
@@ -632,8 +618,6 @@ private fun EblanShortcutConfigItem(
                             onDismiss()
 
                             onUpdateIsDragging(true)
-
-                            onDraggingGridItem()
                         }
                     },
                 )

@@ -8,7 +8,6 @@
       <module name="EblanLauncher.buildSrc.main" target="17" />
       <module name="EblanLauncher.buildSrc.test" target="17" />
       <module name="EblanLauncher.common" target="21" />
-      <module name="EblanLauncher.data.cache" target="21" />
       <module name="EblanLauncher.data.datastore" target="21" />
       <module name="EblanLauncher.data.repository" target="21" />
       <module name="EblanLauncher.data.room" target="21" />
@@ -86,6 +85,7 @@
       <module name="EinsteinLauncher.framework.widget-manager" target="21" />
       <module name="EinsteinLauncher.service" target="21" />
       <module name="EinsteinLauncher.ui" target="21" />
+      <module name="YagniLauncher.data.cache" target="21" />
       <module name="YagniLauncher.feature.settings.folder" target="21" />
     </bytecodeTargetLevel>
   </component>

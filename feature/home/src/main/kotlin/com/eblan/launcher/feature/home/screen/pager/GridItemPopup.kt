@@ -45,7 +45,6 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
-import com.eblan.launcher.domain.model.ApplicationInfoGridItem
 import com.eblan.launcher.domain.model.EblanAppWidgetProviderInfo
 import com.eblan.launcher.domain.model.EblanApplicationInfoGroup
 import com.eblan.launcher.domain.model.EblanShortcutInfo
@@ -168,17 +167,22 @@ internal fun GridItemPopup(
 @Composable
 internal fun FolderGridItemPopup(
     modifier: Modifier = Modifier,
-    gridItemSource: GridItemSource?,
-    paddingValues: PaddingValues,
-    popupIntOffset: IntOffset?,
-    popupIntSize: IntSize?,
     currentPage: Int,
     drag: Drag,
     eblanAppWidgetProviderInfosGroup: Map<String, List<EblanAppWidgetProviderInfo>>,
     eblanShortcutInfosGroup: Map<EblanShortcutInfoByGroup, List<EblanShortcutInfo>>,
     gridItemSettings: GridItemSettings,
+    gridItemSource: GridItemSource?,
     hasShortcutHostPermission: Boolean,
+    paddingValues: PaddingValues,
+    popupIntOffset: IntOffset?,
+    popupIntSize: IntSize?,
+    onDeleteGridItem: (GridItem) -> Unit,
+    onDismissFolder: () -> Unit,
+    onDismissRequest: () -> Unit,
     onDraggingShortcutInfoGridItem: () -> Unit,
+    onEdit: (String) -> Unit,
+    onInfo: (Long, String) -> Unit,
     onTapShortcutInfo: (
         serialNumber: Long,
         packageName: String,
@@ -186,18 +190,13 @@ internal fun FolderGridItemPopup(
     ) -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
+    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
     ) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onWidgets: (EblanApplicationInfoGroup) -> Unit,
-    onDeleteApplicationInfoGridItem: (ApplicationInfoGridItem) -> Unit,
-    onDismissRequest: () -> Unit,
-    onEdit: (String) -> Unit,
-    onDismissFolder: () -> Unit,
-    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
-    onInfo: (Long, String) -> Unit,
 ) {
     if (popupIntOffset == null || popupIntSize == null) return
 
@@ -231,72 +230,26 @@ internal fun FolderGridItemPopup(
             .padding(paddingValues),
         content = {
             FolderGridItemPopupContent(
-                modifier = modifier,
                 currentPage = currentPage,
                 drag = drag,
-                eblanAppWidgetProviderInfosByPackageName = eblanAppWidgetProviderInfosGroup[gridItemSourceFolder.applicationInfoGridItem.packageName],
-                eblanShortcutInfosByPackageName = eblanShortcutInfosGroup[
-                    EblanShortcutInfoByGroup(
-                        serialNumber = gridItemSourceFolder.applicationInfoGridItem.serialNumber,
-                        packageName = gridItemSourceFolder.applicationInfoGridItem.packageName,
-                    ),
-                ],
+                eblanAppWidgetProviderInfosGroup = eblanAppWidgetProviderInfosGroup,
+                eblanShortcutInfosGroup = eblanShortcutInfosGroup,
                 gridItemSettings = gridItemSettings,
+                folderGridItem = gridItemSourceFolder.gridItem,
                 hasShortcutHostPermission = hasShortcutHostPermission,
-                icon = gridItemSourceFolder.applicationInfoGridItem.icon,
-                onDraggingShortcutInfoGridItem = {
-                    onDraggingShortcutInfoGridItem()
-
-                    onDismissRequest()
-
-                    onDismissFolder()
-                },
-                onDelete = {
-                    onDeleteApplicationInfoGridItem(gridItemSource.applicationInfoGridItem)
-
-                    onDismissRequest()
-                },
-                onEdit = {
-                    onEdit(gridItemSourceFolder.applicationInfoGridItem.id)
-
-                    onDismissRequest()
-                },
-                onTapShortcutInfo = { serialNumber, packageName, shortcutId ->
-                    onTapShortcutInfo(
-                        serialNumber,
-                        packageName,
-                        shortcutId,
-                    )
-
-                    onDismissRequest()
-                },
+                onDeleteGridItem = onDeleteGridItem,
+                onDismissFolder = onDismissFolder,
+                onDismissRequest = onDismissRequest,
+                onDraggingShortcutInfoGridItem = onDraggingShortcutInfoGridItem,
+                onEdit = onEdit,
+                onInfo = onInfo,
+                onTapShortcutInfo = onTapShortcutInfo,
                 onUpdateGridItemSource = onUpdateGridItemSource,
                 onUpdateImageBitmap = onUpdateImageBitmap,
+                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                 onUpdateOverlayBounds = onUpdateOverlayBounds,
                 onUpdateSharedElementKey = onUpdateSharedElementKey,
-                onWidgets = {
-                    onWidgets(
-                        EblanApplicationInfoGroup(
-                            serialNumber = gridItemSourceFolder.applicationInfoGridItem.serialNumber,
-                            packageName = gridItemSourceFolder.applicationInfoGridItem.packageName,
-                            icon = gridItemSourceFolder.applicationInfoGridItem.icon,
-                            label = gridItemSourceFolder.applicationInfoGridItem.label,
-                        ),
-                    )
-
-                    onDismissRequest()
-
-                    onDismissFolder()
-                },
-                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                onInfo = {
-                    onInfo(
-                        gridItemSourceFolder.applicationInfoGridItem.serialNumber,
-                        gridItemSourceFolder.applicationInfoGridItem.componentName,
-                    )
-
-                    onDismissRequest()
-                },
+                onWidgets = onWidgets,
             )
         },
     ) { measurables, constraints ->
@@ -479,6 +432,137 @@ private fun GridItemPopupContent(
 
 @Composable
 private fun FolderGridItemPopupContent(
+    modifier: Modifier = Modifier,
+    currentPage: Int,
+    drag: Drag,
+    eblanAppWidgetProviderInfosGroup: Map<String, List<EblanAppWidgetProviderInfo>>,
+    eblanShortcutInfosGroup: Map<EblanShortcutInfoByGroup, List<EblanShortcutInfo>>,
+    gridItemSettings: GridItemSettings,
+    folderGridItem: GridItem,
+    hasShortcutHostPermission: Boolean,
+    onDeleteGridItem: (GridItem) -> Unit,
+    onDismissFolder: () -> Unit,
+    onDismissRequest: () -> Unit,
+    onDraggingShortcutInfoGridItem: () -> Unit,
+    onEdit: (String) -> Unit,
+    onInfo: (Long, String) -> Unit,
+    onTapShortcutInfo: (
+        serialNumber: Long,
+        packageName: String,
+        shortcutId: String,
+    ) -> Unit,
+    onUpdateGridItemSource: (GridItemSource) -> Unit,
+    onUpdateImageBitmap: (ImageBitmap) -> Unit,
+    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+    onUpdateOverlayBounds: (
+        intOffset: IntOffset,
+        intSize: IntSize,
+    ) -> Unit,
+    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
+    onWidgets: (EblanApplicationInfoGroup) -> Unit,
+) {
+    Surface(
+        modifier = modifier.width(IntrinsicSize.Max),
+        shape = RoundedCornerShape(30.dp),
+        shadowElevation = 2.dp,
+        content = {
+            when (val data = folderGridItem.data) {
+                is GridItemData.ApplicationInfo -> {
+                    ApplicationInfoFolderGridItemPopupContent(
+                        modifier = modifier,
+                        currentPage = currentPage,
+                        drag = drag,
+                        eblanAppWidgetProviderInfosByPackageName = eblanAppWidgetProviderInfosGroup[data.packageName],
+                        eblanShortcutInfosByPackageName = eblanShortcutInfosGroup[
+                            EblanShortcutInfoByGroup(
+                                serialNumber = data.serialNumber,
+                                packageName = data.packageName,
+                            ),
+                        ],
+                        gridItemSettings = gridItemSettings,
+                        hasShortcutHostPermission = hasShortcutHostPermission,
+                        icon = data.icon,
+                        onDraggingShortcutInfoGridItem = {
+                            onDraggingShortcutInfoGridItem()
+
+                            onDismissRequest()
+
+                            onDismissFolder()
+                        },
+                        onDelete = {
+                            onDeleteGridItem(folderGridItem)
+
+                            onDismissRequest()
+                        },
+                        onEdit = {
+                            onEdit(folderGridItem.id)
+
+                            onDismissRequest()
+                        },
+                        onTapShortcutInfo = { serialNumber, packageName, shortcutId ->
+                            onTapShortcutInfo(
+                                serialNumber,
+                                packageName,
+                                shortcutId,
+                            )
+
+                            onDismissRequest()
+                        },
+                        onUpdateGridItemSource = onUpdateGridItemSource,
+                        onUpdateImageBitmap = onUpdateImageBitmap,
+                        onUpdateOverlayBounds = onUpdateOverlayBounds,
+                        onUpdateSharedElementKey = onUpdateSharedElementKey,
+                        onWidgets = {
+                            onWidgets(
+                                EblanApplicationInfoGroup(
+                                    serialNumber = data.serialNumber,
+                                    packageName = data.packageName,
+                                    icon = data.icon,
+                                    label = data.label,
+                                ),
+                            )
+
+                            onDismissRequest()
+
+                            onDismissFolder()
+                        },
+                        onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                        onInfo = {
+                            onInfo(
+                                data.serialNumber,
+                                data.componentName,
+                            )
+
+                            onDismissRequest()
+                        },
+                    )
+                }
+
+                is GridItemData.ShortcutInfo,
+                is GridItemData.ShortcutConfig,
+                -> {
+                    FolderGridItemMenu(
+                        onDelete = {
+                            onDeleteGridItem(folderGridItem)
+
+                            onDismissRequest()
+                        },
+                        onEdit = {
+                            onEdit(folderGridItem.id)
+
+                            onDismissRequest()
+                        },
+                    )
+                }
+
+                else -> Unit
+            }
+        },
+    )
+}
+
+@Composable
+private fun ApplicationInfoFolderGridItemPopupContent(
     modifier: Modifier = Modifier,
     currentPage: Int,
     drag: Drag,
@@ -721,6 +805,27 @@ private fun WidgetGridItemMenu(
                 imageVector = EblanLauncherIcons.Delete,
                 contentDescription = null,
             )
+        }
+    }
+}
+
+@Composable
+private fun FolderGridItemMenu(
+    modifier: Modifier = Modifier,
+    onDelete: () -> Unit,
+    onEdit: () -> Unit,
+) {
+    Row(modifier = modifier) {
+        IconButton(
+            onClick = onEdit,
+        ) {
+            Icon(imageVector = EblanLauncherIcons.Edit, contentDescription = null)
+        }
+
+        IconButton(
+            onClick = onDelete,
+        ) {
+            Icon(imageVector = EblanLauncherIcons.Delete, contentDescription = null)
         }
     }
 }

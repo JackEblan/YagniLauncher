@@ -21,8 +21,9 @@ import com.eblan.launcher.data.repository.mapper.asEntity
 import com.eblan.launcher.data.repository.mapper.asGridItem
 import com.eblan.launcher.data.repository.mapper.asModel
 import com.eblan.launcher.data.room.dao.ShortcutConfigGridItemDao
+import com.eblan.launcher.domain.model.GridItem
+import com.eblan.launcher.domain.model.PartialShortcutConfigGridItem
 import com.eblan.launcher.domain.model.ShortcutConfigGridItem
-import com.eblan.launcher.domain.model.UpdateShortcutConfigGridItem
 import com.eblan.launcher.domain.repository.ShortcutConfigGridItemRepository
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -31,12 +32,27 @@ internal class DefaultShortcutConfigGridItemRepository @Inject constructor(priva
     override val gridItemsFlow =
         shortcutConfigGridItemDao.getShortcutConfigGridItemEntitiesFlow()
             .map { entities ->
-                entities.map { entity ->
+                entities.filter { entity ->
+                    entity.folderId == null
+                }.map { entity ->
                     entity.asGridItem()
                 }
             }
 
-    override fun getShortcutConfigGridItems(): List<ShortcutConfigGridItem> = shortcutConfigGridItemDao.getShortcutConfigGridItemEntities().map { entity ->
+    override val gridItemsWithFolderIdFlow =
+        shortcutConfigGridItemDao.getShortcutConfigGridItemEntitiesFlow().map { entities ->
+            entities.map { entity ->
+                entity.asGridItem()
+            }
+        }
+
+    override suspend fun getGridItems(): List<GridItem> = shortcutConfigGridItemDao.getShortcutConfigGridItemEntities().filter { entity ->
+        entity.folderId == null
+    }.map { entity ->
+        entity.asGridItem()
+    }
+
+    override suspend fun getShortcutConfigGridItems(): List<ShortcutConfigGridItem> = shortcutConfigGridItemDao.getShortcutConfigGridItemEntities().map { entity ->
         entity.asModel()
     }
 
@@ -86,11 +102,23 @@ internal class DefaultShortcutConfigGridItemRepository @Inject constructor(priva
         )
     }
 
-    override suspend fun updateShortcutConfigGridItems(
-        updateShortcutConfigGridItems: List<UpdateShortcutConfigGridItem>,
+    override suspend fun updatePartialShortcutConfigGridItems(
+        partialShortcutConfigGridItems: List<PartialShortcutConfigGridItem>,
     ) {
-        shortcutConfigGridItemDao.updateShortcutConfigGridItemEntities(
-            updateShortcutConfigGridItems = updateShortcutConfigGridItems,
+        shortcutConfigGridItemDao.updatePartialShortcutConfigGridItems(
+            partialShortcutConfigGridItems = partialShortcutConfigGridItems,
         )
+    }
+
+    override suspend fun insertShortcutConfigGridItem(shortcutConfigGridItem: ShortcutConfigGridItem) {
+        shortcutConfigGridItemDao.insertShortcutConfigGridItemEntity(entity = shortcutConfigGridItem.asEntity())
+    }
+
+    override suspend fun updateShortcutConfigGridItems(shortcutConfigGridItems: List<ShortcutConfigGridItem>) {
+        val entities = shortcutConfigGridItems.map { shortcutConfigGridItem ->
+            shortcutConfigGridItem.asEntity()
+        }
+
+        shortcutConfigGridItemDao.updateShortcutConfigGridItemEntities(entities = entities)
     }
 }

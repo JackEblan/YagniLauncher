@@ -19,21 +19,21 @@ package com.eblan.launcher.domain.usecase.grid
 
 import com.eblan.launcher.domain.common.Dispatcher
 import com.eblan.launcher.domain.common.EblanDispatchers
-import com.eblan.launcher.domain.model.ApplicationInfoGridItem
+import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
-import com.eblan.launcher.domain.repository.GridCacheRepository
+import com.eblan.launcher.domain.repository.GridRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class MoveFolderGridItemUseCase @Inject constructor(
-    private val gridCacheRepository: GridCacheRepository,
+    private val gridRepository: GridRepository,
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke(
-        conflictingId: String,
-        movingApplicationInfoGridItem: ApplicationInfoGridItem,
+        conflictingGridItem: GridItem,
+        movingFolderGridItem: GridItem,
         data: GridItemData.Folder,
         dragX: Int,
         dragY: Int,
@@ -42,58 +42,56 @@ class MoveFolderGridItemUseCase @Inject constructor(
         gridWidth: Int,
         gridHeight: Int,
         currentPage: Int,
-    ) {
-        withContext(defaultDispatcher) {
-            val gridItemsPerPage = columns * rows
+    ) = withContext(defaultDispatcher) {
+        val gridItemsPerPage = columns * rows
 
-            val cellWidth = gridWidth / columns
-            val cellHeight = gridHeight / rows
+        val cellWidth = gridWidth / columns
+        val cellHeight = gridHeight / rows
 
-            val targetColumn = dragX / cellWidth
-            val targetRow = dragY / cellHeight
+        val targetColumn = dragX / cellWidth
+        val targetRow = dragY / cellHeight
 
-            val targetIndex = currentPage * gridItemsPerPage + targetRow * columns + targetColumn
+        val targetIndex = currentPage * gridItemsPerPage + targetRow * columns + targetColumn
 
-            val currentApplicationInfoGridItems = data.gridItems.toMutableList()
+        val folderGridItems = data.gridItems.toMutableList()
 
-            val movingIndex =
-                currentApplicationInfoGridItems.indexOfFirst {
-                    ensureActive()
-
-                    it.id == movingApplicationInfoGridItem.id
-                }
-
-            if (movingIndex != -1) {
-                currentApplicationInfoGridItems.add(
-                    targetIndex.coerceIn(
-                        0,
-                        currentApplicationInfoGridItems.size - 1,
-                    ),
-                    currentApplicationInfoGridItems.removeAt(movingIndex),
-                )
-            }
-
-            val gridItems = currentApplicationInfoGridItems.mapIndexed { index, gridItem ->
+        val movingIndex =
+            folderGridItems.indexOfFirst {
                 ensureActive()
 
-                gridItem.copy(index = index)
+                it.id == movingFolderGridItem.id
             }
 
-            val gridItemsByPage = gridItems.getGridItemsByPage()
-
-            val firstPageGridItems = gridItemsByPage[0] ?: emptyList()
-
-            val (columns, rows) = getGridDimension(count = firstPageGridItems.size)
-
-            gridCacheRepository.updateGridItemData(
-                id = conflictingId,
-                data = data.copy(
-                    gridItems = gridItems,
-                    gridItemsByPage = gridItemsByPage,
-                    columns = columns,
-                    rows = rows,
+        if (movingIndex != -1) {
+            folderGridItems.add(
+                targetIndex.coerceIn(
+                    0,
+                    folderGridItems.size - 1,
                 ),
+                folderGridItems.removeAt(movingIndex),
             )
         }
+
+        val indexedGridItems = folderGridItems.mapIndexed { index, gridItem ->
+            ensureActive()
+
+            when (val data = gridItem.data) {
+                is GridItemData.ApplicationInfo -> {
+                    gridItem.copy(data = data.copy(index = index))
+                }
+
+                is GridItemData.ShortcutConfig -> {
+                    gridItem.copy(data = data.copy(index = index))
+                }
+
+                is GridItemData.ShortcutInfo -> {
+                    gridItem.copy(data = data.copy(index = index))
+                }
+
+                else -> error("Unsupported folder item type: ${data::class.simpleName}")
+            }
+        }
+
+        gridRepository.upsertGridItems(gridItems = indexedGridItems)
     }
 }

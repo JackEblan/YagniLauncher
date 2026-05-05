@@ -30,7 +30,6 @@ rootProject.name = "YagniLauncher"
 include(":app")
 include(":common")
 include(":design-system")
-include(":data:cache")
 include(":data:datastore")
 include(":data:datastore-proto")
 include(":data:repository")

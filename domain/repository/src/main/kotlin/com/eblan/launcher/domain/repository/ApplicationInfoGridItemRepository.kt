@@ -19,7 +19,7 @@ package com.eblan.launcher.domain.repository
 
 import com.eblan.launcher.domain.model.ApplicationInfoGridItem
 import com.eblan.launcher.domain.model.GridItem
-import com.eblan.launcher.domain.model.UpdateApplicationInfoGridItem
+import com.eblan.launcher.domain.model.PartialApplicationInfoGridItem
 import kotlinx.coroutines.flow.Flow
 
 interface ApplicationInfoGridItemRepository {
@@ -27,7 +27,9 @@ interface ApplicationInfoGridItemRepository {
 
     val gridItemsWithFolderIdFlow: Flow<List<GridItem>>
 
-    fun getApplicationInfoGridItems(): List<ApplicationInfoGridItem>
+    suspend fun getGridItems(): List<GridItem>
+
+    suspend fun getApplicationInfoGridItems(): List<ApplicationInfoGridItem>
 
     suspend fun upsertApplicationInfoGridItems(applicationInfoGridItems: List<ApplicationInfoGridItem>)
 
@@ -47,7 +49,11 @@ interface ApplicationInfoGridItemRepository {
         packageName: String,
     )
 
-    suspend fun updateApplicationInfoGridItems(updateApplicationInfoGridItems: List<UpdateApplicationInfoGridItem>)
+    suspend fun updatePartialApplicationInfoGridItems(partialApplicationInfoGridItems: List<PartialApplicationInfoGridItem>)
 
     suspend fun insertApplicationInfoGridItems(applicationInfoGridItems: List<ApplicationInfoGridItem>)
+
+    suspend fun insertApplicationInfoGridItem(applicationInfoGridItem: ApplicationInfoGridItem)
+
+    suspend fun updateApplicationInfoGridItems(applicationInfoGridItems: List<ApplicationInfoGridItem>)
 }

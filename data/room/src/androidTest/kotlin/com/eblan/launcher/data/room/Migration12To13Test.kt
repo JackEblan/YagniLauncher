@@ -42,56 +42,76 @@ class Migration12To13Test {
     @Test
     @Throws(IOException::class)
     fun migrate12To13() {
-        // Create database at version 12
         helper.createDatabase(testDatabase, 12).use { db ->
             db.execSQL(
                 """
-        INSERT INTO EblanShortcutInfoEntity (
-            shortcutId, 
-            serialNumber, 
-            packageName, 
-            shortLabel, 
-            longLabel, 
-            icon, 
-            shortcutQueryFlag, 
-            isEnabled, 
-            lastUpdateTime
-        ) VALUES (
-            'id_1', 
-            101, 
-            'com.example.app', 
-            'Label', 
-            'Long Label', 
-            null, 
-            'Pinned', 
-            1, 
-            123456789
-        )
+                INSERT INTO EblanShortcutInfoEntity (
+                    shortcutId,
+                    serialNumber,
+                    packageName,
+                    shortLabel,
+                    longLabel,
+                    icon,
+                    shortcutQueryFlag,
+                    isEnabled,
+                    lastUpdateTime
+                ) VALUES (
+                    'id_1',
+                    101,
+                    'com.example.app',
+                    'Label',
+                    'Long Label',
+                    NULL,
+                    'Pinned',
+                    1,
+                    123456789
+                )
                 """.trimIndent(),
             )
         }
 
-        // Run migration → validate version 13
         helper.runMigrationsAndValidate(
             testDatabase,
             13,
             true,
             Migration12To13(),
         ).use { db ->
-            db.query("SELECT * FROM EblanShortcutInfoEntity").use { cursor ->
-                assertTrue(cursor.moveToFirst())
 
-                assertEquals("id_1", cursor.getString(cursor.getColumnIndexOrThrow("shortcutId")))
-                assertEquals(
-                    "com.example.app",
-                    cursor.getString(cursor.getColumnIndexOrThrow("packageName")),
-                )
-                assertEquals(101L, cursor.getLong(cursor.getColumnIndexOrThrow("serialNumber")))
-                assertEquals(
-                    123456789L,
-                    cursor.getLong(cursor.getColumnIndexOrThrow("lastChangedTimestamp")),
-                )
-            }
+            // -----------------------------
+            // 1. Verify old data survived
+            // -----------------------------
+            db.query("SELECT * FROM EblanShortcutInfoEntity WHERE shortcutId = 'id_1'")
+                .use { cursor ->
+                    assertTrue(cursor.moveToFirst())
+
+                    assertEquals(
+                        "com.example.app",
+                        cursor.getString(cursor.getColumnIndexOrThrow("packageName")),
+                    )
+
+                    assertEquals(
+                        101L,
+                        cursor.getLong(cursor.getColumnIndexOrThrow("serialNumber")),
+                    )
+
+                    assertEquals(
+                        "Label",
+                        cursor.getString(cursor.getColumnIndexOrThrow("shortLabel")),
+                    )
+                }
+
+            // -----------------------------
+            // 2. Verify new column
+            // -----------------------------
+            db.query("SELECT lastChangedTimestamp FROM EblanShortcutInfoEntity WHERE shortcutId = 'id_1'")
+                .use { cursor ->
+                    assertTrue(cursor.moveToFirst())
+
+                    assertEquals(
+                        123456789L,
+                        cursor.getLong(cursor.getColumnIndexOrThrow("lastChangedTimestamp")),
+                    )
+                }
         }
     }
 }

@@ -103,7 +103,6 @@ internal fun SharedTransitionScope.EblanApplicationInfoItem(
     isVisibleOverlay: Boolean,
     appDrawerType: AppDrawerType,
     onDismiss: () -> Unit,
-    onDraggingGridItem: () -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
@@ -170,7 +169,6 @@ internal fun SharedTransitionScope.EblanApplicationInfoItem(
             isLongPress = isLongPress,
             isVisibleOverlay = isVisibleOverlay,
             onDismiss = onDismiss,
-            onDraggingGridItem = onDraggingGridItem,
             onUpdateGridItemSource = onUpdateGridItemSource,
             onUpdateIsDragging = onUpdateIsDragging,
             onUpdateIsLongPress = { newIsLongPress ->
@@ -319,7 +317,6 @@ internal fun handleDragEblanApplicationInfoItem(
     isLongPress: Boolean,
     isVisibleOverlay: Boolean,
     onDismiss: () -> Unit,
-    onDraggingGridItem: () -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
     onUpdateIsLongPress: (Boolean) -> Unit,
@@ -371,8 +368,6 @@ internal fun handleDragEblanApplicationInfoItem(
             onUpdateGridItemSource(GridItemSource.New(gridItem = gridItem))
 
             onUpdateIsDragging(true)
-
-            onDraggingGridItem()
         }
 
         Drag.Cancel, Drag.End -> {

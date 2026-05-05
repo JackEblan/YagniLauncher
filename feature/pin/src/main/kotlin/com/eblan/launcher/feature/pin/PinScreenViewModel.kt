@@ -22,21 +22,18 @@ import androidx.lifecycle.viewModelScope
 import com.eblan.launcher.domain.framework.AppWidgetHostWrapper
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
-import com.eblan.launcher.domain.repository.GridCacheRepository
 import com.eblan.launcher.domain.repository.GridRepository
 import com.eblan.launcher.domain.usecase.pin.AddPinShortcutToHomeScreenUseCase
 import com.eblan.launcher.domain.usecase.pin.AddPinWidgetToHomeScreenUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class PinScreenViewModel @Inject constructor(
-    private val gridCacheRepository: GridCacheRepository,
     private val addPinShortcutToHomeScreenUseCase: AddPinShortcutToHomeScreenUseCase,
     private val addPinWidgetToHomeScreenUseCase: AddPinWidgetToHomeScreenUseCase,
     private val appWidgetHostWrapper: AppWidgetHostWrapper,
@@ -122,7 +119,7 @@ class PinScreenViewModel @Inject constructor(
 
     fun updateGridItemDataCache(gridItem: GridItem) {
         viewModelScope.launch {
-            gridCacheRepository.updateGridItemData(id = gridItem.id, data = gridItem.data)
+            gridRepository.updateGridItem(gridItem = gridItem)
 
             _isBoundWidget.update {
                 true
@@ -132,17 +129,13 @@ class PinScreenViewModel @Inject constructor(
 
     fun deleteGridItemCache(gridItem: GridItem) {
         viewModelScope.launch {
-            when (val data = gridItem.data) {
-                is GridItemData.Widget -> {
-                    appWidgetHostWrapper.deleteAppWidgetId(appWidgetId = data.appWidgetId)
+            val data = gridItem.data
 
-                    gridCacheRepository.deleteGridItemById(id = gridItem.id)
-                }
-
-                else -> {
-                    gridCacheRepository.deleteGridItemById(id = gridItem.id)
-                }
+            if (data is GridItemData.Widget) {
+                appWidgetHostWrapper.deleteAppWidgetId(appWidgetId = data.appWidgetId)
             }
+
+            gridRepository.deleteGridItem(gridItem = gridItem)
 
             _isFinished.update {
                 true
@@ -152,8 +145,6 @@ class PinScreenViewModel @Inject constructor(
 
     fun updateGridItems() {
         viewModelScope.launch {
-            gridRepository.updateGridItems(gridItems = gridCacheRepository.gridItemsCacheFlow.first())
-
             _isFinished.update {
                 true
             }

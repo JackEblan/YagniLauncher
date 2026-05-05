@@ -40,6 +40,8 @@ internal fun ShortcutInfoGridItemEntity.asGridItem(): GridItem = GridItem(
         eblanApplicationInfoIcon = eblanApplicationInfoIcon,
         customIcon = customIcon,
         customShortLabel = customShortLabel,
+        index = index,
+        folderId = folderId,
     ),
     associate = associate,
     override = override,
@@ -72,6 +74,8 @@ internal fun ShortcutInfoGridItemEntity.asModel(): ShortcutInfoGridItem = Shortc
     doubleTap = doubleTap,
     swipeUp = swipeUp,
     swipeDown = swipeDown,
+    index = index,
+    folderId = folderId,
 )
 
 internal fun ShortcutInfoGridItem.asEntity(): ShortcutInfoGridItemEntity = ShortcutInfoGridItemEntity(
@@ -97,6 +101,8 @@ internal fun ShortcutInfoGridItem.asEntity(): ShortcutInfoGridItemEntity = Short
     doubleTap = doubleTap,
     swipeUp = swipeUp,
     swipeDown = swipeDown,
+    index = index,
+    folderId = folderId,
 )
 
 internal fun GridItem.asShortcutInfoGridItem(data: GridItemData.ShortcutInfo): ShortcutInfoGridItem = ShortcutInfoGridItem(
@@ -122,4 +128,6 @@ internal fun GridItem.asShortcutInfoGridItem(data: GridItemData.ShortcutInfo): S
     doubleTap = doubleTap,
     swipeUp = swipeUp,
     swipeDown = swipeDown,
+    index = data.index,
+    folderId = data.folderId,
 )

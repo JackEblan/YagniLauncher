@@ -28,14 +28,15 @@ import com.eblan.launcher.domain.model.Associate
 import com.eblan.launcher.domain.model.HomeData
 import com.eblan.launcher.domain.model.TextColor
 import com.eblan.launcher.domain.model.Theme
-import com.eblan.launcher.domain.repository.GridCacheRepository
+import com.eblan.launcher.domain.repository.FolderGridItemRepository
 import com.eblan.launcher.domain.repository.GridRepository
 import com.eblan.launcher.domain.repository.UserDataRepository
-import com.eblan.launcher.domain.usecase.grid.GetFolderGridItemsUseCase
+import com.eblan.launcher.domain.usecase.grid.asGridItem
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class GetHomeDataUseCase @Inject constructor(
@@ -45,30 +46,26 @@ class GetHomeDataUseCase @Inject constructor(
     private val resourcesWrapper: ResourcesWrapper,
     private val packageManagerWrapper: PackageManagerWrapper,
     private val gridRepository: GridRepository,
-    private val getFolderGridItemsUseCase: GetFolderGridItemsUseCase,
-    private val gridCacheRepository: GridCacheRepository,
+    private val folderGridItemRepository: FolderGridItemRepository,
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) {
-    operator fun invoke(isCacheFlow: Flow<Boolean>): Flow<HomeData> {
-        val gridItemsFlow = combine(
-            isCacheFlow,
-            gridCacheRepository.gridItemsCacheFlow,
-            gridRepository.gridItemsFlow,
-            getFolderGridItemsUseCase(),
-        ) { isCache, gridItemsCache, gridItems, folderGridItems ->
-            if (isCache) {
-                gridItemsCache
-            } else {
-                gridItems + folderGridItems
+    operator fun invoke(): Flow<HomeData> {
+        val folderGridItemsFlow =
+            folderGridItemRepository.folderGridItemWrappersFlow.map { folderGridItemWrappers ->
+                folderGridItemWrappers.map { folderGridItemWrapper ->
+                    folderGridItemWrapper.asGridItem()
+                }
             }
-        }
 
         return combine(
             userDataRepository.userDataFlow,
-            gridItemsFlow,
+            gridRepository.gridItemsFlow,
+            folderGridItemsFlow,
             wallpaperManagerWrapper.getColorsChanged(),
-        ) { userData, gridItems, colorHints ->
-            val gridItemsByPage = gridItems.filter { gridItem ->
+        ) { userData, gridItems, folderGridItems, colorHints ->
+            val currentGridItems = gridItems + folderGridItems
+
+            val gridItemsByPage = currentGridItems.filter { gridItem ->
                 isGridItemSpanWithinBounds(
                     gridItem = gridItem,
                     columns = userData.homeSettings.columns,
@@ -76,7 +73,7 @@ class GetHomeDataUseCase @Inject constructor(
                 ) && gridItem.associate == Associate.Grid
             }.groupBy { gridItem -> gridItem.page }
 
-            val dockGridItemsByPage = gridItems.filter { gridItem ->
+            val dockGridItemsByPage = currentGridItems.filter { gridItem ->
                 isGridItemSpanWithinBounds(
                     gridItem = gridItem,
                     columns = userData.homeSettings.dockColumns,
@@ -99,7 +96,7 @@ class GetHomeDataUseCase @Inject constructor(
 
             HomeData(
                 userData = userData,
-                gridItems = gridItems,
+                gridItems = currentGridItems,
                 gridItemsByPage = gridItemsByPage,
                 dockGridItemsByPage = dockGridItemsByPage,
                 hasShortcutHostPermission = launcherAppsWrapper.hasShortcutHostPermission,

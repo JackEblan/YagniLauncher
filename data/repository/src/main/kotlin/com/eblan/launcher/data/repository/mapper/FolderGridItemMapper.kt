@@ -29,6 +29,12 @@ internal fun FolderGridItemWrapperEntity.asFolderGridItemData(): FolderGridItemW
     applicationInfoGridItems = applicationInfoGridItemEntities.map { applicationInfoGridItemEntity ->
         applicationInfoGridItemEntity.asModel()
     },
+    shortcutInfoGridItems = shortcutInfoGridItemEntities.map { shortcutInfoGridItemEntity ->
+        shortcutInfoGridItemEntity.asModel()
+    },
+    shortcutConfigGridItems = shortcutConfigGridItemEntities.map { shortcutConfigGridItemEntity ->
+        shortcutConfigGridItemEntity.asModel()
+    },
 )
 
 @JvmName("FolderGridItemEntity")

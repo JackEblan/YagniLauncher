@@ -29,15 +29,16 @@ import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.domain.model.ResolveDirection
-import com.eblan.launcher.domain.repository.GridCacheRepository
+import com.eblan.launcher.domain.repository.FolderGridItemRepository
+import com.eblan.launcher.domain.repository.GridRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ensureActive
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class MoveGridItemUseCase @Inject constructor(
-    private val gridCacheRepository: GridCacheRepository,
+    private val gridRepository: GridRepository,
+    private val folderGridItemRepository: FolderGridItemRepository,
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke(
@@ -50,16 +51,19 @@ class MoveGridItemUseCase @Inject constructor(
         gridHeight: Int,
     ): MoveGridItemResult {
         return withContext(defaultDispatcher) {
-            val gridItems = gridCacheRepository.gridItemsCacheFlow.first().filter { gridItem ->
-                ensureActive()
+            val gridItems =
+                gridRepository.getGridItems().plus(
+                    folderGridItemRepository.getFolderGridItemWrappers().asGridItems(),
+                ).filter { gridItem ->
+                    ensureActive()
 
-                isGridItemSpanWithinBounds(
-                    gridItem = gridItem,
-                    columns = columns,
-                    rows = rows,
-                ) && gridItem.page == movingGridItem.page &&
-                    gridItem.associate == movingGridItem.associate
-            }.toMutableList()
+                    isGridItemSpanWithinBounds(
+                        gridItem = gridItem,
+                        columns = columns,
+                        rows = rows,
+                    ) && gridItem.page == movingGridItem.page &&
+                        gridItem.associate == movingGridItem.associate
+                }.toMutableList()
 
             val index =
                 gridItems.indexOfFirst { gridItem ->
@@ -116,7 +120,7 @@ class MoveGridItemUseCase @Inject constructor(
                 )
             }
 
-            gridCacheRepository.upsertGridItems(gridItems = gridItems)
+            gridRepository.upsertGridItems(gridItems = gridItems)
 
             return@withContext MoveGridItemResult(
                 isSuccess = true,
@@ -153,7 +157,7 @@ class MoveGridItemUseCase @Inject constructor(
                 )
 
                 if (resolvedConflicts) {
-                    gridCacheRepository.upsertGridItems(gridItems = gridItems)
+                    gridRepository.upsertGridItems(gridItems = gridItems)
                 }
 
                 MoveGridItemResult(
@@ -164,11 +168,9 @@ class MoveGridItemUseCase @Inject constructor(
             }
 
             ResolveDirection.Center -> {
-                if (movingGridItem.data !is GridItemData.ApplicationInfo ||
-                    (
-                        conflictingGridItem.data !is GridItemData.ApplicationInfo &&
-                            conflictingGridItem.data !is GridItemData.Folder
-                        )
+                if (movingGridItem.data is GridItemData.Widget ||
+                    movingGridItem.data is GridItemData.Folder ||
+                    conflictingGridItem.data is GridItemData.Widget
                 ) {
                     return MoveGridItemResult(
                         isSuccess = false,
@@ -177,7 +179,7 @@ class MoveGridItemUseCase @Inject constructor(
                     )
                 }
 
-                gridCacheRepository.upsertGridItems(gridItems = gridItems)
+                gridRepository.upsertGridItems(gridItems = gridItems)
 
                 MoveGridItemResult(
                     isSuccess = true,
@@ -213,7 +215,7 @@ class MoveGridItemUseCase @Inject constructor(
         )
 
         if (resolvedConflicts) {
-            gridCacheRepository.upsertGridItems(gridItems = gridItems)
+            gridRepository.upsertGridItems(gridItems = gridItems)
         }
 
         return MoveGridItemResult(

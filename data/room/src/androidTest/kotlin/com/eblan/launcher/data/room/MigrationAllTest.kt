@@ -23,6 +23,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.eblan.launcher.data.room.migration.Migration12To13
 import com.eblan.launcher.data.room.migration.Migration13To14
+import com.eblan.launcher.data.room.migration.Migration14To15
 import com.eblan.launcher.data.room.migration.Migration3To4
 import com.eblan.launcher.data.room.migration.Migration7To8
 import org.junit.Rule
@@ -56,6 +57,7 @@ class MigrationAllTest {
             Migration7To8(),
             Migration12To13(),
             Migration13To14(),
+            Migration14To15(),
         ).fallbackToDestructiveMigrationFrom(
             dropAllTables = true,
             1,

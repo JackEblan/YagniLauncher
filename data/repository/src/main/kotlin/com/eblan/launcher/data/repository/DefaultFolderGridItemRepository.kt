@@ -21,9 +21,11 @@ import com.eblan.launcher.data.repository.mapper.asEntity
 import com.eblan.launcher.data.repository.mapper.asFolderGridItemData
 import com.eblan.launcher.data.room.dao.FolderGridItemDao
 import com.eblan.launcher.domain.model.FolderGridItem
+import com.eblan.launcher.domain.model.FolderGridItemWrapper
 import com.eblan.launcher.domain.repository.FolderGridItemRepository
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
+import kotlin.collections.map
 
 internal class DefaultFolderGridItemRepository @Inject constructor(private val folderGridItemDao: FolderGridItemDao) : FolderGridItemRepository {
     override val folderGridItemWrappersFlow =
@@ -32,6 +34,10 @@ internal class DefaultFolderGridItemRepository @Inject constructor(private val f
                 entity.asFolderGridItemData()
             }
         }
+
+    override suspend fun getFolderGridItemWrappers(): List<FolderGridItemWrapper> = folderGridItemDao.getFolderGridItemWrappers().map { entity ->
+        entity.asFolderGridItemData()
+    }
 
     override suspend fun upsertFolderGridItems(folderGridItems: List<FolderGridItem>) {
         val entities = folderGridItems.map { folderGridItem ->
@@ -55,5 +61,17 @@ internal class DefaultFolderGridItemRepository @Inject constructor(private val f
         }
 
         folderGridItemDao.deleteFolderGridItemEntities(entities = entities)
+    }
+
+    override suspend fun insertFolderGridItem(folderGridItem: FolderGridItem) {
+        folderGridItemDao.insertFolderGridItemEntity(entity = folderGridItem.asEntity())
+    }
+
+    override suspend fun updateFolderGridItems(folderGridItems: List<FolderGridItem>) {
+        val entities = folderGridItems.map { folderGridItem ->
+            folderGridItem.asEntity()
+        }
+
+        folderGridItemDao.updateFolderGridItemEntities(entities = entities)
     }
 }

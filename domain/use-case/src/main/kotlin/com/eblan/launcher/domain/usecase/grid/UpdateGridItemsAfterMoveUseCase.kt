@@ -19,155 +19,163 @@ package com.eblan.launcher.domain.usecase.grid
 
 import com.eblan.launcher.domain.common.Dispatcher
 import com.eblan.launcher.domain.common.EblanDispatchers
-import com.eblan.launcher.domain.model.ApplicationInfoGridItem
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.MoveGridItemResult
-import com.eblan.launcher.domain.repository.GridCacheRepository
 import com.eblan.launcher.domain.repository.GridRepository
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 class UpdateGridItemsAfterMoveUseCase @Inject constructor(
-    private val gridCacheRepository: GridCacheRepository,
     private val gridRepository: GridRepository,
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke(moveGridItemResult: MoveGridItemResult) {
         withContext(defaultDispatcher) {
-            val gridItems = gridCacheRepository.gridItemsCacheFlow.first().toMutableList()
+            val conflictingGridItem = moveGridItemResult.conflictingGridItem
 
-            groupConflictingGridItemsIntoFolder(
-                gridItems = gridItems,
-                moveGridItemResult = moveGridItemResult,
-            )
+            val movingGridItem = moveGridItemResult.movingGridItem
 
-            gridRepository.updateGridItems(gridItems = gridItems)
+            gridRepository.updateGridItem(gridItem = movingGridItem)
+
+            when (val data = conflictingGridItem?.data) {
+                is GridItemData.Folder -> {
+                    addMovingGridItemIntoFolder(
+                        data = data,
+                        movingGridItem = movingGridItem,
+                    )
+                }
+
+                is GridItemData.ApplicationInfo,
+                is GridItemData.ShortcutConfig,
+                is GridItemData.ShortcutInfo,
+                is GridItemData.Widget,
+                -> {
+                    createNewFolder(
+                        conflictingGridItem = conflictingGridItem,
+                        movingGridItem = movingGridItem,
+                    )
+                }
+
+                null -> Unit
+            }
         }
     }
 
-    @OptIn(ExperimentalUuidApi::class)
-    private fun groupConflictingGridItemsIntoFolder(
-        gridItems: MutableList<GridItem>,
-        moveGridItemResult: MoveGridItemResult,
+    private suspend fun addMovingGridItemIntoFolder(
+        data: GridItemData.Folder,
+        movingGridItem: GridItem,
     ) {
-        val conflictingGridItem = moveGridItemResult.conflictingGridItem ?: return
+        val index = data.gridItems.maxOfOrNull { folderGridItem ->
+            when (val folderData = folderGridItem.data) {
+                is GridItemData.ApplicationInfo -> folderData.index + 1
+                is GridItemData.ShortcutConfig -> folderData.index + 1
+                is GridItemData.ShortcutInfo -> folderData.index + 1
+                else -> return
+            }
+        } ?: 0
 
-        val conflictingIndex = gridItems.indexOfFirst { it.id == conflictingGridItem.id }
+        val newData = when (val folderData = movingGridItem.data) {
+            is GridItemData.ApplicationInfo -> folderData.copy(
+                index = index,
+                folderId = data.id,
+            )
 
-        val movingGridItem = moveGridItemResult.movingGridItem
+            is GridItemData.ShortcutInfo -> folderData.copy(
+                index = index,
+                folderId = data.id,
+            )
 
-        val movingIndex =
-            gridItems.indexOfFirst { it.id == movingGridItem.id }
+            is GridItemData.ShortcutConfig -> folderData.copy(
+                index = index,
+                folderId = data.id,
+            )
 
-        if (conflictingIndex == -1 || movingIndex == -1) return
+            else -> return
+        }
 
-        when (val data = conflictingGridItem.data) {
-            is GridItemData.Folder -> {
-                addMovingGridItemIntoFolder(
-                    data = data,
-                    movingGridItem = movingGridItem,
-                    gridItems = gridItems,
-                    conflictingGridItem = conflictingGridItem,
-                    conflictingIndex = conflictingIndex,
-                    movingIndex = movingIndex,
+        gridRepository.updateGridItem(gridItem = movingGridItem.copy(data = newData))
+    }
+
+    @OptIn(ExperimentalUuidApi::class)
+    private suspend fun createNewFolder(
+        conflictingGridItem: GridItem,
+        movingGridItem: GridItem,
+    ) {
+        val id = Uuid.random().toHexString()
+
+        val conflictingData = when (val data = conflictingGridItem.data) {
+            is GridItemData.ApplicationInfo -> {
+                data.copy(
+                    folderId = id,
+                    index = 0,
+                )
+            }
+
+            is GridItemData.ShortcutInfo -> {
+                data.copy(
+                    folderId = id,
+                    index = 0,
+                )
+            }
+
+            is GridItemData.ShortcutConfig -> {
+                data.copy(
+                    folderId = id,
+                    index = 0,
                 )
             }
 
             else -> {
-                createNewFolder(
-                    conflictingGridItem = conflictingGridItem,
-                    movingGridItem = movingGridItem,
-                    gridItems = gridItems,
-                    conflictingIndex = conflictingIndex,
-                    movingIndex = movingIndex,
-                )
+                return
             }
         }
-    }
 
-    private fun addMovingGridItemIntoFolder(
-        data: GridItemData.Folder,
-        movingGridItem: GridItem,
-        gridItems: MutableList<GridItem>,
-        conflictingGridItem: GridItem,
-        conflictingIndex: Int,
-        movingIndex: Int,
-    ) {
-        val movingData = movingGridItem.data as? GridItemData.ApplicationInfo
-            ?: error("Expected GridItemData.ApplicationInfo")
+        val movingData = when (val data = movingGridItem.data) {
+            is GridItemData.ApplicationInfo -> {
+                data.copy(
+                    folderId = id,
+                    index = 1,
+                )
+            }
 
-        val applicationInfoGridItems = data.gridItems.toMutableList()
+            is GridItemData.ShortcutInfo -> {
+                data.copy(
+                    folderId = id,
+                    index = 1,
+                )
+            }
 
-        val newMovingData = movingData.copy(
-            index = applicationInfoGridItems.lastIndex + 1,
-            folderId = data.id,
-        )
+            is GridItemData.ShortcutConfig -> {
+                data.copy(
+                    folderId = id,
+                    index = 1,
+                )
+            }
 
-        val applicationInfoGridItem = movingGridItem.asApplicationInfoGridItem(data = newMovingData)
+            else -> {
+                return
+            }
+        }
 
-        applicationInfoGridItems.add(applicationInfoGridItem)
+        val newConflictingGridItem = conflictingGridItem.copy(data = conflictingData)
 
-        val previewGridItemsByPage =
-            data.gridItemsByPage.values.firstOrNull()?.plus(applicationInfoGridItem) ?: emptyList()
+        val newMovingGridItem = movingGridItem.copy(data = movingData)
 
-        val conflictingData = data.copy(
-            gridItems = applicationInfoGridItems,
-            previewGridItemsByPage = previewGridItemsByPage,
-        )
+        gridRepository.updateGridItem(gridItem = newConflictingGridItem)
 
-        gridItems[conflictingIndex] = conflictingGridItem.copy(data = conflictingData)
-        gridItems[movingIndex] = movingGridItem.copy(data = movingData)
-        gridItems.remove(movingGridItem)
-    }
-
-    @OptIn(ExperimentalUuidApi::class)
-    private fun createNewFolder(
-        conflictingGridItem: GridItem,
-        movingGridItem: GridItem,
-        gridItems: MutableList<GridItem>,
-        conflictingIndex: Int,
-        movingIndex: Int,
-    ) {
-        val id = Uuid.random().toHexString()
-
-        val conflictingData = conflictingGridItem.data as? GridItemData.ApplicationInfo
-            ?: error("Expected GridItemData.ApplicationInfo")
-
-        val movingData = movingGridItem.data as? GridItemData.ApplicationInfo
-            ?: error("Expected GridItemData.ApplicationInfo")
-
-        val newConflictingData = conflictingData.copy(
-            folderId = id,
-            index = 0,
-        )
-
-        val newMovingData = movingData.copy(
-            folderId = id,
-            index = 1,
-        )
-
-        val conflictingApplicationInfoGridItem =
-            conflictingGridItem.asApplicationInfoGridItem(data = newConflictingData)
-
-        val movingApplicationInfoGridItem =
-            movingGridItem.asApplicationInfoGridItem(data = newMovingData)
+        gridRepository.updateGridItem(gridItem = newMovingGridItem)
 
         val folderGridItems = listOf(
-            conflictingApplicationInfoGridItem,
-            movingApplicationInfoGridItem,
+            newConflictingGridItem,
+            newMovingGridItem,
         )
 
-        gridItems[conflictingIndex] = conflictingGridItem.copy(data = newConflictingData)
-
-        gridItems[movingIndex] = movingGridItem.copy(data = newMovingData)
-
-        gridItems.add(
-            conflictingGridItem.copy(
+        gridRepository.insertGridItem(
+            gridItem = conflictingGridItem.copy(
                 id = id,
                 data = GridItemData.Folder(
                     id = id,
@@ -182,28 +190,4 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
             ),
         )
     }
-
-    private fun GridItem.asApplicationInfoGridItem(data: GridItemData.ApplicationInfo): ApplicationInfoGridItem = ApplicationInfoGridItem(
-        id = id,
-        page = page,
-        startColumn = startColumn,
-        startRow = startRow,
-        columnSpan = columnSpan,
-        rowSpan = rowSpan,
-        associate = associate,
-        componentName = data.componentName,
-        packageName = data.packageName,
-        icon = data.icon,
-        label = data.label,
-        override = override,
-        serialNumber = data.serialNumber,
-        customIcon = data.customIcon,
-        customLabel = data.customLabel,
-        gridItemSettings = gridItemSettings,
-        doubleTap = doubleTap,
-        swipeUp = swipeUp,
-        swipeDown = swipeDown,
-        index = data.index,
-        folderId = data.folderId,
-    )
 }

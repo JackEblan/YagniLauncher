@@ -28,10 +28,10 @@ import com.eblan.launcher.domain.model.EblanAction
 import com.eblan.launcher.domain.model.EblanActionType
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
-import com.eblan.launcher.domain.repository.GridCacheRepository
+import com.eblan.launcher.domain.repository.FolderGridItemRepository
 import com.eblan.launcher.domain.repository.GridRepository
 import com.eblan.launcher.domain.repository.UserDataRepository
-import com.eblan.launcher.domain.usecase.grid.GetFolderGridItemsUseCase
+import com.eblan.launcher.domain.usecase.grid.asGridItems
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
@@ -39,13 +39,12 @@ import java.io.File
 import javax.inject.Inject
 
 class AddPinShortcutToHomeScreenUseCase @Inject constructor(
-    private val gridCacheRepository: GridCacheRepository,
     private val userDataRepository: UserDataRepository,
     private val fileManager: FileManager,
     private val gridRepository: GridRepository,
     private val packageManagerWrapper: PackageManagerWrapper,
-    private val getFolderGridItemsUseCase: GetFolderGridItemsUseCase,
     private val iconKeyGenerator: IconKeyGenerator,
+    private val folderGridItemRepository: FolderGridItemRepository,
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke(
@@ -66,8 +65,6 @@ class AddPinShortcutToHomeScreenUseCase @Inject constructor(
         val pageCount = homeSettings.pageCount
 
         val initialPage = homeSettings.initialPage
-
-        val gridItems = gridRepository.gridItemsFlow.first() + getFolderGridItemsUseCase().first()
 
         val eblanApplicationInfoIcon =
             packageManagerWrapper.getComponentName(packageName = packageName)
@@ -96,6 +93,8 @@ class AddPinShortcutToHomeScreenUseCase @Inject constructor(
             eblanApplicationInfoIcon = eblanApplicationInfoIcon,
             customIcon = null,
             customShortLabel = null,
+            index = -1,
+            folderId = null,
         )
 
         val eblanAction = EblanAction(
@@ -121,7 +120,9 @@ class AddPinShortcutToHomeScreenUseCase @Inject constructor(
         )
 
         val newGridItem = findAvailableRegionByPage(
-            gridItems = gridItems,
+            gridItems = gridRepository.getGridItems().plus(
+                folderGridItemRepository.getFolderGridItemWrappers().asGridItems(),
+            ),
             gridItem = gridItem,
             pageCount = pageCount,
             columns = columns,
@@ -129,7 +130,7 @@ class AddPinShortcutToHomeScreenUseCase @Inject constructor(
         )
 
         if (newGridItem != null) {
-            gridCacheRepository.insertGridItems(gridItems = gridItems + newGridItem)
+            gridRepository.insertGridItem(gridItem = newGridItem)
         }
 
         newGridItem

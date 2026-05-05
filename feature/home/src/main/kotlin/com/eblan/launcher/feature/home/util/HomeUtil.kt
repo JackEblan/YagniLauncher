@@ -175,14 +175,11 @@ internal fun handleDrag(
     isVisibleOverlay: Boolean,
     onUpdateIsDragging: (Boolean) -> Unit,
     onDismissGridItemPopup: () -> Unit,
-    onDraggingGridItem: () -> Unit,
 ) {
     if (drag == Drag.Dragging && isSelected && isVisibleOverlay) {
         onUpdateIsDragging(true)
 
         onDismissGridItemPopup()
-
-        onDraggingGridItem()
     }
 }
 

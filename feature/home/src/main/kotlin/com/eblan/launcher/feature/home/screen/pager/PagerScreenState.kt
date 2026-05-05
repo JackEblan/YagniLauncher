@@ -61,7 +61,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.round
 import com.eblan.launcher.domain.common.IconKeyGenerator
 import com.eblan.launcher.domain.framework.FileManager
-import com.eblan.launcher.domain.model.ApplicationInfoGridItem
 import com.eblan.launcher.domain.model.Associate
 import com.eblan.launcher.domain.model.EblanAction
 import com.eblan.launcher.domain.model.EblanActionType
@@ -352,9 +351,7 @@ internal class PagerScreenState(
     private var lastAppWidgetId by mutableIntStateOf(AppWidgetManager.INVALID_APPWIDGET_ID)
 
     suspend fun handlePinGridItemEffect(
-        gridItems: List<GridItem>,
         pinGridItem: GridItem?,
-        onDraggingGridItem: (List<GridItem>) -> Unit,
         onUpdateGridItemSource: (GridItemSource) -> Unit,
         onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     ) {
@@ -366,8 +363,6 @@ internal class PagerScreenState(
             swipeY = swipeY,
             onDraggingGridItem = {
                 isDragging = true
-
-                onDraggingGridItem(gridItems)
             },
             onUpdateGridItemSource = onUpdateGridItemSource,
             onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
@@ -387,8 +382,8 @@ internal class PagerScreenState(
         gridItemSource: GridItemSource?,
         isVisibleOverlay: Boolean,
         onMoveFolderGridItem: (
-            conflictingId: String,
-            movingApplicationInfoGridItem: ApplicationInfoGridItem,
+            conflictingGridItem: GridItem,
+            movingFolderGridItem: GridItem,
             data: GridItemData.Folder,
             dragX: Int,
             dragY: Int,
@@ -454,10 +449,10 @@ internal class PagerScreenState(
         gridItemSource: GridItemSource?,
         isVisibleOverlay: Boolean,
         onUpdateIsVisibleOverlay: (Boolean) -> Unit,
-        onResetGridCacheAfterDeleteGridItemCache: (GridItem) -> Unit,
+        onResetGridAfterDeleteGridItem: (GridItem) -> Unit,
         onDragCancelAfterMove: () -> Unit,
         onDragEndAfterMove: (MoveGridItemResult) -> Unit,
-        onDragEndAfterMoveFolder: (MoveGridItemResult?) -> Unit,
+        onDragEndAfterMoveFolder: () -> Unit,
     ) {
         handleDropGridItem(
             androidAppWidgetHostWrapper = androidAppWidgetHostWrapper,
@@ -471,7 +466,7 @@ internal class PagerScreenState(
             isVisibleOverlay = isVisibleOverlay,
             moveGridItemResult = moveGridItemResult,
             lockMovement = experimentalSettings.lockMovement,
-            onResetGridCacheAfterDeleteGridItemCache = onResetGridCacheAfterDeleteGridItemCache,
+            onResetGridAfterDeleteGridItem = onResetGridAfterDeleteGridItem,
             onDragCancelAfterMove = onDragCancelAfterMove,
             onDragEndAfterMove = onDragEndAfterMove,
             onDragEndAfterMoveFolder = onDragEndAfterMoveFolder,
@@ -492,17 +487,14 @@ internal class PagerScreenState(
     }
 
     fun handleDeleteAppWidgetIdEffect(
-        gridItemSource: GridItemSource?,
-        onResetGridCacheAfterDeleteWidgetGridItemCache: (
-            gridItem: GridItem,
-            appWidgetId: Int,
-        ) -> Unit,
+        moveGridItemResult: MoveGridItemResult?,
+        onResetGridAfterDeleteGridItem: (GridItem) -> Unit,
     ) {
         handleDeleteAppWidgetId(
             appWidgetId = lastAppWidgetId,
             deleteAppWidgetId = deleteAppWidgetId,
-            gridItemSource = gridItemSource,
-            onResetGridCacheAfterDeleteWidgetGridItemCache = onResetGridCacheAfterDeleteWidgetGridItemCache,
+            moveGridItemResult = moveGridItemResult,
+            onResetGridAfterDeleteGridItem = onResetGridAfterDeleteGridItem,
             onResetAppWidgetId = {
                 lastAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID
 
@@ -519,9 +511,8 @@ internal class PagerScreenState(
         gridItemSource: GridItemSource?,
         isVisibleOverlay: Boolean,
         onShowFolderWhenDragging: (
-            conflictingId: String,
-            movingApplicationInfoGridItem: ApplicationInfoGridItem,
-            data: GridItemData.Folder,
+            conflictingGridItem: GridItem,
+            movingGridItem: GridItem,
         ) -> Unit,
         onUpdateGridItemSource: (GridItemSource) -> Unit,
     ) {
@@ -654,12 +645,12 @@ internal class PagerScreenState(
     }
 
     fun handleAppWidgetLauncherResult(
-        gridItemSource: GridItemSource?,
+        moveGridItemResult: MoveGridItemResult?,
         result: ActivityResult,
     ) {
         handleAppWidgetLauncherResult(
             androidAppWidgetManagerWrapper = androidAppWidgetManagerWrapper,
-            gridItemSource = gridItemSource,
+            moveGridItemResult = moveGridItemResult,
             result = result,
             onDeleteAppWidgetId = {
                 deleteAppWidgetId = true
@@ -957,14 +948,9 @@ internal class PagerScreenState(
     }
 
     fun moveFolderGridItemOutsideFolder(
-        folderGridItem: GridItem?,
         gridItemSource: GridItemSource?,
         onUpdateGridItemSource: (GridItemSource) -> Unit,
-        onMoveFolderGridItemOutsideFolder: (
-            conflictingId: String,
-            movingId: String,
-            data: GridItemData.Folder,
-        ) -> Unit,
+        onMoveFolderGridItemOutsideFolder: (GridItem) -> Unit,
     ) {
         folderPopupIntOffset = null
 
@@ -972,50 +958,16 @@ internal class PagerScreenState(
 
         isMoveFolderGridItemOutsideFolder = false
 
-        val data = folderGridItem?.data as? GridItemData.Folder ?: return
+        val gridItem = gridItemSource?.gridItem ?: return
 
-        val gridItemSourceFolder = gridItemSource as? GridItemSource.Folder ?: return
-
-        val applicationInfoGridItem = gridItemSourceFolder.applicationInfoGridItem
-
-        val gridItem = GridItem(
-            id = applicationInfoGridItem.id,
-            page = applicationInfoGridItem.page,
-            startColumn = applicationInfoGridItem.startColumn,
-            startRow = applicationInfoGridItem.startRow,
-            columnSpan = applicationInfoGridItem.columnSpan,
-            rowSpan = applicationInfoGridItem.rowSpan,
-            data = GridItemData.ApplicationInfo(
-                serialNumber = applicationInfoGridItem.serialNumber,
-                componentName = applicationInfoGridItem.componentName,
-                packageName = applicationInfoGridItem.packageName,
-                icon = applicationInfoGridItem.icon,
-                label = applicationInfoGridItem.label,
-                customIcon = applicationInfoGridItem.customIcon,
-                customLabel = applicationInfoGridItem.customLabel,
-                index = -1,
-                folderId = null,
-            ),
-            associate = applicationInfoGridItem.associate,
-            override = applicationInfoGridItem.override,
-            gridItemSettings = applicationInfoGridItem.gridItemSettings,
-            doubleTap = applicationInfoGridItem.doubleTap,
-            swipeUp = applicationInfoGridItem.swipeUp,
-            swipeDown = applicationInfoGridItem.swipeDown,
-        )
-
-        onUpdateGridItemSource(GridItemSource.New(gridItem = gridItem))
+        onUpdateGridItemSource(GridItemSource.Existing(gridItem = gridItem))
 
         sharedElementKey = SharedElementKey(
             id = gridItem.id,
             parent = SharedElementKey.Parent.Grid,
         )
 
-        onMoveFolderGridItemOutsideFolder(
-            folderGridItem.id,
-            applicationInfoGridItem.id,
-            data,
-        )
+        onMoveFolderGridItemOutsideFolder(gridItem)
     }
 
     fun updateOverlayBounds(
@@ -1165,22 +1117,12 @@ internal class PagerScreenState(
         }
     }
 
-    fun draggingShortcutInfoGridItem(
-        gridItems: List<GridItem>,
-        onDraggingGridItem: (List<GridItem>) -> Unit,
-    ) {
+    fun draggingShortcutInfoGridItem() {
         isDragging = true
-
-        onDraggingGridItem(gridItems)
     }
 
-    fun resize(
-        gridItems: List<GridItem>,
-        onDraggingGridItem: (List<GridItem>) -> Unit,
-    ) {
+    fun resize() {
         isResizing = true
-
-        onDraggingGridItem(gridItems)
     }
 
     fun dismissApplicationScreen() {

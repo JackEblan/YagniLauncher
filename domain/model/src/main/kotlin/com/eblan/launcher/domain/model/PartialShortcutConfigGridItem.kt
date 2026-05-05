@@ -17,19 +17,11 @@
  */
 package com.eblan.launcher.domain.model
 
-data class UpdateWidgetGridItem(
+data class PartialShortcutConfigGridItem(
     val id: String,
     val componentName: String,
-    val configure: String?,
-    val minWidth: Int,
-    val minHeight: Int,
-    val resizeMode: Int,
-    val minResizeWidth: Int,
-    val minResizeHeight: Int,
-    val maxResizeWidth: Int,
-    val maxResizeHeight: Int,
-    val targetCellHeight: Int,
-    val targetCellWidth: Int,
-    val icon: String?,
-    val label: String,
+    val activityLabel: String?,
+    val activityIcon: String?,
+    val applicationLabel: String?,
+    val applicationIcon: String?,
 )

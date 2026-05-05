@@ -30,7 +30,6 @@ import androidx.compose.ui.unit.dp
 import com.eblan.launcher.domain.grid.getWidgetGridItemSize
 import com.eblan.launcher.domain.grid.getWidgetGridItemSpan
 import com.eblan.launcher.domain.grid.isGridItemSpanWithinBounds
-import com.eblan.launcher.domain.model.ApplicationInfoGridItem
 import com.eblan.launcher.domain.model.Associate
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
@@ -169,8 +168,8 @@ internal fun handleDragGridItem(
     screenHeight: Int,
     screenWidth: Int,
     onMoveFolderGridItem: (
-        conflictingId: String,
-        movingApplicationInfoGridItem: ApplicationInfoGridItem,
+        conflictingGridItem: GridItem,
+        movingFolderGridItem: GridItem,
         data: GridItemData.Folder,
         dragX: Int,
         dragY: Int,
@@ -197,7 +196,8 @@ internal fun handleDragGridItem(
         isGridScrollInProgress ||
         isDockScrollInProgress ||
         gridItemSource == null ||
-        !(isVisibleOverlay && isDragging) ||
+        !isVisibleOverlay ||
+        !isDragging ||
         lockMovement
     ) {
         return
@@ -242,9 +242,12 @@ internal fun handleDragGridItem(
     val isOnDock = dockHeightPx > 0 && dragY > safeDrawingHeight - dockHeightPx
 
     when (gridItemSource) {
-        is GridItemSource.Existing, is GridItemSource.New, is GridItemSource.Pin -> {
+        is GridItemSource.Existing,
+        is GridItemSource.New,
+        is GridItemSource.Pin,
+        -> {
             if (isOnDock) {
-                handleDragExistingOrNewDockGridItem(
+                dragDockGridItem(
                     currentPage = currentPage,
                     dockColumns = dockColumns,
                     dockHeightPx = dockHeightPx,
@@ -259,7 +262,7 @@ internal fun handleDragGridItem(
                     onUpdateSharedElementKey = onUpdateSharedElementKey,
                 )
             } else {
-                handleDragExistingOrNewGridItem(
+                dragGridItem(
                     columns = columns,
                     currentPage = currentPage,
                     dockHeightPx = dockHeightPx,
@@ -278,7 +281,7 @@ internal fun handleDragGridItem(
         }
 
         is GridItemSource.Folder -> {
-            handleDragFolderGridItem(
+            dragFolderGridItem(
                 density = density,
                 dragX = dragX,
                 dragY = dragY,
@@ -298,7 +301,7 @@ internal fun handleDragGridItem(
     }
 }
 
-private fun handleDragFolderGridItem(
+private fun dragFolderGridItem(
     density: Density,
     dragX: Int,
     dragY: Int,
@@ -311,8 +314,8 @@ private fun handleDragFolderGridItem(
     safeDrawingHeight: Int,
     safeDrawingWidth: Int,
     onMoveFolderGridItem: (
-        conflictingId: String,
-        movingApplicationInfoGridItem: ApplicationInfoGridItem,
+        conflictingGridItem: GridItem,
+        movingFolderGridItem: GridItem,
         data: GridItemData.Folder,
         dragX: Int,
         dragY: Int,
@@ -328,8 +331,6 @@ private fun handleDragFolderGridItem(
     if (folderPopupIntOffset == null || folderPopupIntSize == null) return
 
     val data = folderGridItem?.data as? GridItemData.Folder ?: return
-
-    val gridItemSourceFolder = gridItemSource as? GridItemSource.Folder ?: return
 
     val folderCellWidth = safeDrawingWidth / FOLDER_MAX_COLUMNS
 
@@ -361,19 +362,17 @@ private fun handleDragFolderGridItem(
     val isInsideFolder = folderDragX in 0..folderGridVisibleWidthPx &&
         folderDragY in 0..folderGridVisibleHeightPx
 
-    val applicationInfoGridItem = gridItemSourceFolder.applicationInfoGridItem
-
     if (isInsideFolder) {
         onUpdateSharedElementKey(
             SharedElementKey(
-                id = applicationInfoGridItem.id,
+                id = gridItemSource.gridItem.id,
                 parent = SharedElementKey.Parent.Folder,
             ),
         )
 
         onMoveFolderGridItem(
-            folderGridItem.id,
-            applicationInfoGridItem,
+            folderGridItem,
+            gridItemSource.gridItem,
             data,
             folderDragX,
             folderDragY,
@@ -388,7 +387,7 @@ private fun handleDragFolderGridItem(
     }
 }
 
-private fun handleDragExistingOrNewGridItem(
+private fun dragGridItem(
     columns: Int,
     currentPage: Int,
     dockHeightPx: Int,
@@ -462,7 +461,7 @@ private fun handleDragExistingOrNewGridItem(
     }
 }
 
-private fun handleDragExistingOrNewDockGridItem(
+private fun dragDockGridItem(
     currentPage: Int,
     dockColumns: Int,
     dockHeightPx: Int,
@@ -552,9 +551,8 @@ internal suspend fun handleConflictingGridItem(
     screenWidth: Int,
     lockMovement: Boolean,
     onShowFolderWhenDragging: (
-        conflictingId: String,
-        movingApplicationInfoGridItem: ApplicationInfoGridItem,
-        data: GridItemData.Folder,
+        conflictingGridItem: GridItem,
+        movingGridItem: GridItem,
     ) -> Unit,
     onUpdateFolderPopupBounds: (
         intOffset: IntOffset,
@@ -568,7 +566,8 @@ internal suspend fun handleConflictingGridItem(
         gridItemSource is GridItemSource.Folder ||
         moveGridItemResult == null ||
         !moveGridItemResult.isSuccess ||
-        !(isVisibleOverlay && isDragging) ||
+        !isVisibleOverlay ||
+        !isDragging ||
         lockMovement
     ) {
         return
@@ -578,10 +577,37 @@ internal suspend fun handleConflictingGridItem(
 
     val conflictingGridItem = moveGridItemResult.conflictingGridItem ?: return
 
+    val movingGridItem = moveGridItemResult.movingGridItem
+
     val conflictingData = conflictingGridItem.data as? GridItemData.Folder ?: return
 
-    val movingData =
-        moveGridItemResult.movingGridItem.data as? GridItemData.ApplicationInfo ?: return
+    val index = conflictingData.gridItems.maxOfOrNull { folderGridItem ->
+        when (val data = folderGridItem.data) {
+            is GridItemData.ApplicationInfo -> data.index + 1
+            is GridItemData.ShortcutConfig -> data.index + 1
+            is GridItemData.ShortcutInfo -> data.index + 1
+            else -> return
+        }
+    } ?: 0
+
+    val movingData = when (val data = movingGridItem.data) {
+        is GridItemData.ApplicationInfo -> data.copy(
+            index = index,
+            folderId = conflictingData.id,
+        )
+
+        is GridItemData.ShortcutConfig -> data.copy(
+            index = index,
+            folderId = conflictingData.id,
+        )
+
+        is GridItemData.ShortcutInfo -> data.copy(
+            index = index,
+            folderId = conflictingData.id,
+        )
+
+        else -> return
+    }
 
     val leftPadding = with(density) {
         paddingValues.calculateStartPadding(LayoutDirection.Ltr).roundToPx()
@@ -659,34 +685,11 @@ internal suspend fun handleConflictingGridItem(
         }
     }
 
-    val applicationInfoGridItem = ApplicationInfoGridItem(
-        id = moveGridItemResult.movingGridItem.id,
-        page = moveGridItemResult.movingGridItem.page,
-        startColumn = moveGridItemResult.movingGridItem.startColumn,
-        startRow = moveGridItemResult.movingGridItem.startRow,
-        columnSpan = moveGridItemResult.movingGridItem.columnSpan,
-        rowSpan = moveGridItemResult.movingGridItem.rowSpan,
-        associate = moveGridItemResult.movingGridItem.associate,
-        componentName = movingData.componentName,
-        packageName = movingData.packageName,
-        icon = movingData.icon,
-        label = movingData.label,
-        override = moveGridItemResult.movingGridItem.override,
-        serialNumber = movingData.serialNumber,
-        customIcon = movingData.customIcon,
-        customLabel = movingData.customLabel,
-        gridItemSettings = moveGridItemResult.movingGridItem.gridItemSettings,
-        doubleTap = moveGridItemResult.movingGridItem.doubleTap,
-        swipeUp = moveGridItemResult.movingGridItem.swipeUp,
-        swipeDown = moveGridItemResult.movingGridItem.swipeDown,
-        index = conflictingData.gridItems.lastIndex + 1,
-        folderId = conflictingData.id,
-    )
+    val movingFolderGridItem = movingGridItem.copy(data = movingData)
 
     onUpdateGridItemSource(
         GridItemSource.Folder(
-            gridItem = moveGridItemResult.movingGridItem,
-            applicationInfoGridItem = applicationInfoGridItem,
+            gridItem = movingFolderGridItem,
         ),
     )
 
@@ -697,15 +700,14 @@ internal suspend fun handleConflictingGridItem(
 
     onUpdateSharedElementKey(
         SharedElementKey(
-            id = applicationInfoGridItem.id,
+            id = movingFolderGridItem.id,
             parent = SharedElementKey.Parent.Folder,
         ),
     )
 
     onShowFolderWhenDragging(
-        conflictingData.id,
-        applicationInfoGridItem,
-        conflictingData,
+        conflictingGridItem,
+        movingFolderGridItem,
     )
 }
 
@@ -739,16 +741,63 @@ private fun getMoveGridItem(
     rows: Int,
     currentPage: Int,
 ): GridItem = when (gridItemSource) {
-    is GridItemSource.Existing, is GridItemSource.Folder -> {
-        gridItem.copy(
-            page = currentPage,
-            startColumn = gridX / cellWidth,
-            startRow = gridY / cellHeight,
-            associate = associate,
-        )
+    is GridItemSource.Existing, is GridItemSource.Folder,
+    -> {
+        when (val data = gridItem.data) {
+            is GridItemData.ApplicationInfo -> {
+                gridItem.copy(
+                    page = currentPage,
+                    startColumn = gridX / cellWidth,
+                    startRow = gridY / cellHeight,
+                    data = data.copy(
+                        index = -1,
+                        folderId = null,
+                    ),
+                    associate = associate,
+                )
+            }
+
+            is GridItemData.ShortcutConfig -> {
+                gridItem.copy(
+                    page = currentPage,
+                    startColumn = gridX / cellWidth,
+                    startRow = gridY / cellHeight,
+                    data = data.copy(
+                        index = -1,
+                        folderId = null,
+                    ),
+                    associate = associate,
+                )
+            }
+
+            is GridItemData.ShortcutInfo -> {
+                gridItem.copy(
+                    page = currentPage,
+                    startColumn = gridX / cellWidth,
+                    startRow = gridY / cellHeight,
+                    data = data.copy(
+                        index = -1,
+                        folderId = null,
+                    ),
+                    associate = associate,
+                )
+            }
+
+            is GridItemData.Widget,
+            is GridItemData.Folder,
+            -> {
+                gridItem.copy(
+                    page = currentPage,
+                    startColumn = gridX / cellWidth,
+                    startRow = gridY / cellHeight,
+                    associate = associate,
+                )
+            }
+        }
     }
 
-    is GridItemSource.New, is GridItemSource.Pin -> {
+    is GridItemSource.New, is GridItemSource.Pin,
+    -> {
         getMoveNewGridItem(
             associate = associate,
             cellHeight = cellHeight,
