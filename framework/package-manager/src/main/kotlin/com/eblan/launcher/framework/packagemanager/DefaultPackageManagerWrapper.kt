@@ -134,7 +134,7 @@ internal class DefaultPackageManagerWrapper @Inject constructor(
         0L
     }
 
-    override fun isSystem(flags: Int): Boolean = (flags and ApplicationInfo.FLAG_SYSTEM) != 0 || (flags and ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) != 0
+    override fun isSystem(flags: Int): Boolean = (flags and (ApplicationInfo.FLAG_SYSTEM or ApplicationInfo.FLAG_UPDATED_SYSTEM_APP)) != 0
 
     override fun getUserBadgedLabel(label: CharSequence, userHandle: UserHandle): CharSequence = packageManager.getUserBadgedLabel(label, userHandle)
 }
