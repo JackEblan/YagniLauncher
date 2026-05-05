@@ -223,9 +223,7 @@ internal fun handleAppWidgetLauncherResult(
     onDeleteAppWidgetId: () -> Unit,
     onUpdateWidgetGridItem: (GridItem) -> Unit,
 ) {
-    if (moveGridItemResult == null) return
-
-    val movingGridItem = moveGridItemResult.movingGridItem
+    val movingGridItem = requireNotNull(moveGridItemResult?.movingGridItem)
 
     val data = (movingGridItem.data as? GridItemData.Widget)
         ?: error("Expected GridItemData.Widget")
@@ -261,9 +259,13 @@ internal fun handleConfigureLauncherResultEffect(
     onDragEndAfterMove: (MoveGridItemResult) -> Unit,
     onResetConfigureResultCode: () -> Unit,
 ) {
-    if (resultCode == null || moveGridItemResult == null || updatedGridItem == null) {
+    if (resultCode == null) {
         return
     }
+
+    requireNotNull(moveGridItemResult)
+
+    requireNotNull(updatedGridItem)
 
     check(updatedGridItem.data is GridItemData.Widget)
 
@@ -283,12 +285,13 @@ internal fun handleDeleteAppWidgetId(
     onResetGridAfterDeleteGridItem: (GridItem) -> Unit,
     onResetAppWidgetId: () -> Unit,
 ) {
-    if (moveGridItemResult == null ||
-        appWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID ||
+    if (appWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID ||
         !deleteAppWidgetId
     ) {
         return
     }
+
+    requireNotNull(moveGridItemResult)
 
     val movingGridItem = moveGridItemResult.movingGridItem
 
@@ -308,9 +311,13 @@ internal fun handleBoundWidgetEffect(
     onDeleteGridItem: (GridItem) -> Unit,
     onDragEndAfterMove: (MoveGridItemResult) -> Unit,
 ) {
-    if (gridItemSource == null || moveGridItemResult == null) return
+    if (updatedWidgetGridItem == null) return
 
-    val data = (updatedWidgetGridItem?.data as? GridItemData.Widget)
+    requireNotNull(gridItemSource)
+
+    requireNotNull(moveGridItemResult)
+
+    val data = (updatedWidgetGridItem.data as? GridItemData.Widget)
         ?: error("Expected GridItemData.Widget")
 
     when (gridItemSource) {
@@ -351,7 +358,7 @@ internal suspend fun handleShortcutConfigLauncherResult(
     onDeleteGridItem: (GridItem) -> Unit,
     onDragEndAfterMove: (MoveGridItemResult) -> Unit,
 ) {
-    if (moveGridItemResult == null) return
+    requireNotNull(moveGridItemResult)
 
     val movingGridItem = moveGridItemResult.movingGridItem
 
@@ -426,7 +433,7 @@ internal suspend fun handleShortcutConfigIntentSenderLauncherResult(
         pinItemRequestType: PinItemRequestType.ShortcutInfo,
     ) -> Unit,
 ) {
-    if (moveGridItemResult == null) return
+    requireNotNull(moveGridItemResult)
 
     val movingGridItem = moveGridItemResult.movingGridItem
 

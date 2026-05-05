@@ -508,7 +508,6 @@ internal class PagerScreenState(
         dockHeight: Dp,
         moveGridItemResult: MoveGridItemResult?,
         paddingValues: PaddingValues,
-        gridItemSource: GridItemSource?,
         isVisibleOverlay: Boolean,
         onShowFolderWhenDragging: (
             conflictingGridItem: GridItem,
@@ -523,7 +522,6 @@ internal class PagerScreenState(
             density = density,
             dockHeight = dockHeight,
             drag = drag,
-            gridItemSource = gridItemSource,
             isDragging = isDragging,
             isVisibleOverlay = isVisibleOverlay,
             moveGridItemResult = moveGridItemResult,

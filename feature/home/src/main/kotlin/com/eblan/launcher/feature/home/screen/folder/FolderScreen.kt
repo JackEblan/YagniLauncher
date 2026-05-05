@@ -114,7 +114,7 @@ internal fun SharedTransitionScope.FolderScreen(
 ) {
     if (folderPopupIntOffset == null || folderPopupIntSize == null) return
 
-    val data = folderGridItem.data as? GridItemData.Folder ?: return
+    val data = folderGridItem.data as? GridItemData.Folder ?: error("Expected GridItemData.Folder")
 
     val density = LocalDensity.current
 

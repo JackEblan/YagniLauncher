@@ -540,7 +540,6 @@ internal suspend fun handleConflictingGridItem(
     density: Density,
     dockHeight: Dp,
     drag: Drag,
-    gridItemSource: GridItemSource?,
     isDragging: Boolean,
     isVisibleOverlay: Boolean,
     moveGridItemResult: MoveGridItemResult?,
@@ -562,8 +561,6 @@ internal suspend fun handleConflictingGridItem(
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
 ) {
     if (drag != Drag.Dragging ||
-        gridItemSource == null ||
-        gridItemSource is GridItemSource.Folder ||
         moveGridItemResult == null ||
         !moveGridItemResult.isSuccess ||
         !isVisibleOverlay ||
@@ -572,21 +569,20 @@ internal suspend fun handleConflictingGridItem(
     ) {
         return
     }
+    val conflictingGridItem = moveGridItemResult.conflictingGridItem ?: return
+
+    val conflictingData = conflictingGridItem.data as? GridItemData.Folder ?: return
 
     delay(1000L)
 
-    val conflictingGridItem = moveGridItemResult.conflictingGridItem ?: return
-
     val movingGridItem = moveGridItemResult.movingGridItem
-
-    val conflictingData = conflictingGridItem.data as? GridItemData.Folder ?: return
 
     val index = conflictingData.gridItems.maxOfOrNull { folderGridItem ->
         when (val data = folderGridItem.data) {
             is GridItemData.ApplicationInfo -> data.index + 1
             is GridItemData.ShortcutConfig -> data.index + 1
             is GridItemData.ShortcutInfo -> data.index + 1
-            else -> return
+            else -> error("Unsupported Folder GridItem ")
         }
     } ?: 0
 
@@ -606,7 +602,7 @@ internal suspend fun handleConflictingGridItem(
             folderId = conflictingData.id,
         )
 
-        else -> return
+        else -> error("Unsupported Folder GridItem ")
     }
 
     val leftPadding = with(density) {

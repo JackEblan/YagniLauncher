@@ -496,16 +496,12 @@ internal fun PagerScreen(
         )
     }
 
-    LaunchedEffect(
-        key1 = moveGridItemResult,
-        key2 = gridItemSource,
-    ) {
+    LaunchedEffect(key1 = moveGridItemResult) {
         pagerScreenState.handleConflictingGridItemEffect(
             density = density,
             dockHeight = dockHeight,
             moveGridItemResult = moveGridItemResult,
             paddingValues = paddingValues,
-            gridItemSource = gridItemSource,
             isVisibleOverlay = isVisibleOverlay,
             onShowFolderWhenDragging = onShowFolderWhenDragging,
             onUpdateGridItemSource = onUpdateGridItemSource,
