@@ -43,6 +43,9 @@ class Migration12To13Test {
     @Throws(IOException::class)
     fun migrate12To13() {
         helper.createDatabase(testDatabase, 12).use { db ->
+            // ---------------------------
+            // EblanShortcutInfoEntity
+            // ---------------------------
             db.execSQL(
                 """
                 INSERT INTO EblanShortcutInfoEntity (
@@ -78,7 +81,7 @@ class Migration12To13Test {
         ).use { db ->
 
             // -----------------------------
-            // 1. Verify old data survived
+            // EblanShortcutInfoEntity
             // -----------------------------
             db.query("SELECT * FROM EblanShortcutInfoEntity WHERE shortcutId = 'id_1'")
                 .use { cursor ->
@@ -98,14 +101,6 @@ class Migration12To13Test {
                         "Label",
                         cursor.getString(cursor.getColumnIndexOrThrow("shortLabel")),
                     )
-                }
-
-            // -----------------------------
-            // 2. Verify new column
-            // -----------------------------
-            db.query("SELECT lastChangedTimestamp FROM EblanShortcutInfoEntity WHERE shortcutId = 'id_1'")
-                .use { cursor ->
-                    assertTrue(cursor.moveToFirst())
 
                     assertEquals(
                         123456789L,

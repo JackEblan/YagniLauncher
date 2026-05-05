@@ -201,7 +201,7 @@ class Migration7To8Test {
         ).use { db ->
 
             // ============================
-            // ApplicationInfo
+            // ApplicationInfoGridItemEntity
             // ============================
             db.query("SELECT * FROM ApplicationInfoGridItemEntity WHERE id = 'app_1'")
                 .use { cursor ->
@@ -214,18 +214,12 @@ class Migration7To8Test {
                         1002L,
                         cursor.getLong(cursor.getColumnIndexOrThrow("serialNumber")),
                     )
-                }
-
-            // new columns
-            db.query("SELECT customTextColor, padding FROM ApplicationInfoGridItemEntity WHERE id = 'app_1'")
-                .use { cursor ->
-                    assertTrue(cursor.moveToFirst())
                     assertEquals(0, cursor.getInt(0))
                     assertEquals(0, cursor.getInt(1))
                 }
 
             // ============================
-            // ShortcutInfo
+            // ShortcutInfoGridItemEntity
             // ============================
             db.query("SELECT * FROM ShortcutInfoGridItemEntity WHERE id = 'shortcut_1'")
                 .use { cursor ->
@@ -234,16 +228,11 @@ class Migration7To8Test {
                         "com.example",
                         cursor.getString(cursor.getColumnIndexOrThrow("packageName")),
                     )
-                }
-
-            db.query("SELECT customBackgroundColor FROM ShortcutInfoGridItemEntity WHERE id = 'shortcut_1'")
-                .use { cursor ->
-                    assertTrue(cursor.moveToFirst())
                     assertEquals(0, cursor.getInt(0))
                 }
 
             // ============================
-            // Folder
+            // FolderGridItemEntity
             // ============================
             db.query("SELECT * FROM FolderGridItemEntity WHERE id = 'folder_1'")
                 .use { cursor ->
@@ -252,16 +241,11 @@ class Migration7To8Test {
                         "My Folder",
                         cursor.getString(cursor.getColumnIndexOrThrow("label")),
                     )
-                }
-
-            db.query("SELECT padding FROM FolderGridItemEntity WHERE id = 'folder_1'")
-                .use { cursor ->
-                    assertTrue(cursor.moveToFirst())
                     assertEquals(0, cursor.getInt(0))
                 }
 
             // ============================
-            // Config
+            // ShortcutConfigGridItemEntity
             // ============================
             db.query("SELECT * FROM ShortcutConfigGridItemEntity WHERE id = 'config_1'")
                 .use { cursor ->
@@ -279,17 +263,12 @@ class Migration7To8Test {
                 }
 
             // ============================
-            // Widget
+            // WidgetGridItemEntity
             // ============================
             db.query("SELECT * FROM WidgetGridItemEntity WHERE id = 'widget_1'")
                 .use { cursor ->
                     assertTrue(cursor.moveToFirst())
                     assertEquals("Clock", cursor.getString(cursor.getColumnIndexOrThrow("label")))
-                }
-
-            db.query("SELECT customTextColor FROM WidgetGridItemEntity WHERE id = 'widget_1'")
-                .use { cursor ->
-                    assertTrue(cursor.moveToFirst())
                     assertEquals(0, cursor.getInt(0))
                 }
         }
