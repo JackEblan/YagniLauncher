@@ -538,6 +538,7 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
             activityIcon = activityIcon,
             activityLabel = label.toString(),
             lastUpdateTime = packageManagerWrapper.getLastUpdateTime(packageName = applicationInfo.packageName),
+            flags = applicationInfo.flags,
         )
     }
 

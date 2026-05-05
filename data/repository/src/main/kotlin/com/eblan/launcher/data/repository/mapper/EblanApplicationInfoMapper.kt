@@ -31,6 +31,7 @@ fun EblanApplicationInfo.asEntity(): EblanApplicationInfoEntity = EblanApplicati
     isHidden = isHidden,
     lastUpdateTime = lastUpdateTime,
     index = index,
+    flags = flags,
 )
 
 fun EblanApplicationInfoEntity.asModel(): EblanApplicationInfo = EblanApplicationInfo(
@@ -44,4 +45,5 @@ fun EblanApplicationInfoEntity.asModel(): EblanApplicationInfo = EblanApplicatio
     isHidden = isHidden,
     lastUpdateTime = lastUpdateTime,
     index = index,
+    flags = flags,
 )

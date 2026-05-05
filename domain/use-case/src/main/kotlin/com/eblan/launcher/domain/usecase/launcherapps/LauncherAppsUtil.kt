@@ -442,6 +442,7 @@ internal fun EblanApplicationInfo.toSyncEblanApplicationInfo() = SyncEblanApplic
     icon = icon,
     label = label,
     lastUpdateTime = lastUpdateTime,
+    flags = flags,
 )
 
 internal fun LauncherAppsActivityInfo.toSyncEblanApplicationInfo() = SyncEblanApplicationInfo(
@@ -451,6 +452,7 @@ internal fun LauncherAppsActivityInfo.toSyncEblanApplicationInfo() = SyncEblanAp
     icon = activityIcon,
     label = activityLabel,
     lastUpdateTime = lastUpdateTime,
+    flags = flags,
 )
 
 internal fun SyncEblanApplicationInfo.toDeleteEblanApplicationInfo() = DeleteEblanApplicationInfo(
@@ -523,9 +525,12 @@ internal suspend fun addNewApplicationToHomeScreen(
     packageName: String,
     icon: String?,
     label: String?,
+    isSystem: Boolean,
     homeSettings: HomeSettings,
     applicationInfoGridItems: MutableList<ApplicationInfoGridItem>,
 ) {
+    if (isSystem) return
+
     val alreadyOnHome = gridItems.any { gridItem ->
         when (val data = gridItem.data) {
             is GridItemData.ApplicationInfo ->

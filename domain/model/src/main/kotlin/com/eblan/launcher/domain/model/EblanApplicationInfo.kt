@@ -28,4 +28,5 @@ data class EblanApplicationInfo(
     val isHidden: Boolean,
     val lastUpdateTime: Long,
     val index: Int,
+    val flags: Int,
 )

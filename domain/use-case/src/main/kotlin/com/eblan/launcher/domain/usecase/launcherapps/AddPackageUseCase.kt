@@ -91,6 +91,7 @@ class AddPackageUseCase @Inject constructor(
                     activityIcon = launcherAppsActivityInfo.activityIcon,
                     activityLabel = launcherAppsActivityInfo.activityLabel,
                     lastUpdateTime = launcherAppsActivityInfo.lastUpdateTime,
+                    flags = launcherAppsActivityInfo.flags,
                     applicationInfoGridItems = newApplicationInfoGridItems,
                 )
             }
@@ -130,6 +131,7 @@ class AddPackageUseCase @Inject constructor(
         activityIcon: String?,
         activityLabel: String?,
         lastUpdateTime: Long,
+        flags: Int,
         applicationInfoGridItems: MutableList<ApplicationInfoGridItem>,
     ) {
         eblanApplicationInfoRepository.upsertEblanApplicationInfo(
@@ -144,6 +146,7 @@ class AddPackageUseCase @Inject constructor(
                 isHidden = false,
                 lastUpdateTime = lastUpdateTime,
                 index = -1,
+                flags = flags,
             ),
         )
 
@@ -161,6 +164,7 @@ class AddPackageUseCase @Inject constructor(
             packageName = packageName,
             icon = activityIcon,
             label = activityLabel.toString(),
+            isSystem = packageManagerWrapper.isSystem(flags = flags),
             homeSettings = homeSettings,
             applicationInfoGridItems = applicationInfoGridItems,
         )

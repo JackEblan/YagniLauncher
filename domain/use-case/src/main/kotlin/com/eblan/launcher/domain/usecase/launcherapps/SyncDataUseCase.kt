@@ -233,6 +233,7 @@ class SyncDataUseCase @Inject constructor(
                 packageName = syncEblanApplicationInfo.packageName,
                 icon = syncEblanApplicationInfo.icon,
                 label = syncEblanApplicationInfo.label,
+                isSystem = packageManagerWrapper.isSystem(flags = syncEblanApplicationInfo.flags),
                 homeSettings = homeSettings,
                 applicationInfoGridItems = applicationInfoGridItems,
             )

@@ -24,6 +24,13 @@ class Migration14To15 : Migration(14, 15) {
     override fun migrate(db: SupportSQLiteDatabase) {
         db.execSQL(
             """
+            ALTER TABLE EblanApplicationInfoEntity 
+            ADD COLUMN `flags` INTEGER NOT NULL DEFAULT 0
+        """,
+        )
+
+        db.execSQL(
+            """
             ALTER TABLE ShortcutInfoGridItemEntity 
             ADD COLUMN `index` INTEGER NOT NULL DEFAULT 0
         """,
