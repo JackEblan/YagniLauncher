@@ -66,6 +66,15 @@ internal suspend fun FolderGridItemWrapper.asGridItem(): GridItem {
 
     val (columns, rows) = getGridDimension(count = firstPageGridItems.size)
 
+    val maxIndex = gridItems.maxOfOrNull { folderGridItem ->
+        when (val data = folderGridItem.data) {
+            is GridItemData.ApplicationInfo -> data.index + 1
+            is GridItemData.ShortcutConfig -> data.index + 1
+            is GridItemData.ShortcutInfo -> data.index + 1
+            else -> error("Unsupported Folder GridItem ")
+        }
+    } ?: 0
+
     val data = Folder(
         id = folderGridItem.id,
         label = folderGridItem.label,
@@ -75,6 +84,7 @@ internal suspend fun FolderGridItemWrapper.asGridItem(): GridItem {
         icon = folderGridItem.icon,
         columns = columns,
         rows = rows,
+        maxIndex = maxIndex,
     )
 
     return GridItem(

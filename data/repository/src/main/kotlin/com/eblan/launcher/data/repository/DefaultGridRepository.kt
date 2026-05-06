@@ -128,6 +128,8 @@ internal class DefaultGridRepository @Inject constructor(
                 folderGridItemRepository.updateFolderGridItem(
                     folderGridItem = gridItem.asFolderGridItem(data = data),
                 )
+
+                updateGridItems(gridItems = data.gridItems)
             }
 
             is GridItemData.ShortcutInfo -> {
@@ -251,6 +253,8 @@ internal class DefaultGridRepository @Inject constructor(
                     folderGridItems.add(
                         gridItem.asFolderGridItem(data = data),
                     )
+
+                    updateGridItems(gridItems = data.gridItems)
                 }
 
                 is GridItemData.Widget -> {
@@ -309,6 +313,8 @@ internal class DefaultGridRepository @Inject constructor(
                     folderGridItems.add(
                         gridItem.asFolderGridItem(data = data),
                     )
+
+                    upsertGridItems(gridItems = data.gridItems)
                 }
 
                 is GridItemData.Widget -> {

@@ -165,10 +165,6 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
 
         val newMovingGridItem = movingGridItem.copy(data = movingData)
 
-        gridRepository.updateGridItem(gridItem = newConflictingGridItem)
-
-        gridRepository.updateGridItem(gridItem = newMovingGridItem)
-
         val folderGridItems = listOf(
             newConflictingGridItem,
             newMovingGridItem,
@@ -179,13 +175,14 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
                 id = id,
                 data = GridItemData.Folder(
                     id = id,
-                    label = "Unknown",
+                    label = "New Folder",
                     gridItems = folderGridItems,
                     gridItemsByPage = mapOf(0 to folderGridItems),
                     previewGridItemsByPage = folderGridItems,
                     icon = null,
                     columns = 1,
                     rows = 2,
+                    maxIndex = 1,
                 ),
             ),
         )
