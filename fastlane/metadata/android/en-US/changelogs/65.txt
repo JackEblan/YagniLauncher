@@ -1,0 +1,4 @@
+- Don't add new system apps to home screen (#763)
+- Add shortcuts to folder (#762)
+- Implemented support for excluding tagged applications from the main app drawer: (#754)
+- Stability improvements
