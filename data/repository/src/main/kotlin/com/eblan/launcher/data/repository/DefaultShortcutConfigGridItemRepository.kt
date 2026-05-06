@@ -133,4 +133,8 @@ internal class DefaultShortcutConfigGridItemRepository @Inject constructor(priva
 
         shortcutConfigGridItemDao.insertShortcutConfigGridItemEntities(entities = entities)
     }
+
+    override suspend fun upsertShortcutConfigGridItem(shortcutConfigGridItem: ShortcutConfigGridItem) {
+        shortcutConfigGridItemDao.upsertShortcutConfigGridItemEntity(entity = shortcutConfigGridItem.asEntity())
+    }
 }

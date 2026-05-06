@@ -104,4 +104,8 @@ internal class DefaultWidgetGridItemRepository @Inject constructor(private val w
 
         widgetGridItemDao.insertWidgetGridItemEntities(entities = entities)
     }
+
+    override suspend fun upsertWidgetGridItem(widgetGridItem: WidgetGridItem) {
+        widgetGridItemDao.upsertWidgetGridItemEntity(entity = widgetGridItem.asEntity())
+    }
 }

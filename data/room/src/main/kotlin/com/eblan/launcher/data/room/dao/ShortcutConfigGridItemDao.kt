@@ -70,4 +70,7 @@ interface ShortcutConfigGridItemDao {
 
     @Insert
     suspend fun insertShortcutConfigGridItemEntities(entities: List<ShortcutConfigGridItemEntity>)
+
+    @Upsert
+    suspend fun upsertShortcutConfigGridItemEntity(entity: ShortcutConfigGridItemEntity)
 }

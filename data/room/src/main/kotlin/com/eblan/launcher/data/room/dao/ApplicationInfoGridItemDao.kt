@@ -70,4 +70,7 @@ interface ApplicationInfoGridItemDao {
 
     @Update
     suspend fun updateApplicationInfoGridItemEntities(entities: List<ApplicationInfoGridItemEntity>)
+
+    @Upsert
+    suspend fun upsertApplicationInfoGridItemEntity(entity: ApplicationInfoGridItemEntity)
 }

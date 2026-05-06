@@ -64,4 +64,7 @@ interface WidgetGridItemDao {
 
     @Insert
     suspend fun insertWidgetGridItemEntities(entities: List<WidgetGridItemEntity>)
+
+    @Upsert
+    suspend fun upsertWidgetGridItemEntity(entity: WidgetGridItemEntity)
 }

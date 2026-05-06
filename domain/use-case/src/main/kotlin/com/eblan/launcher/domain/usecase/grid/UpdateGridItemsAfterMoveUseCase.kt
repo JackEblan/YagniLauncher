@@ -74,7 +74,7 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
                 is GridItemData.ApplicationInfo -> folderData.index + 1
                 is GridItemData.ShortcutConfig -> folderData.index + 1
                 is GridItemData.ShortcutInfo -> folderData.index + 1
-                else -> return
+                else -> error("Unsupported folder creation")
             }
         } ?: 0
 
@@ -94,7 +94,7 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
                 folderId = data.id,
             )
 
-            else -> return
+            else -> error("Unsupported folder creation")
         }
 
         gridRepository.updateGridItem(gridItem = movingGridItem.copy(data = newData))
@@ -129,9 +129,7 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
                 )
             }
 
-            else -> {
-                return
-            }
+            else -> error("Unsupported folder creation")
         }
 
         val movingData = when (val data = movingGridItem.data) {
@@ -156,9 +154,7 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
                 )
             }
 
-            else -> {
-                return
-            }
+            else -> error("Unsupported folder creation")
         }
 
         val newConflictingGridItem = conflictingGridItem.copy(data = conflictingData)
@@ -170,7 +166,7 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
             newMovingGridItem,
         )
 
-        gridRepository.insertGridItem(
+        gridRepository.upsertGridItem(
             gridItem = conflictingGridItem.copy(
                 id = id,
                 data = GridItemData.Folder(
