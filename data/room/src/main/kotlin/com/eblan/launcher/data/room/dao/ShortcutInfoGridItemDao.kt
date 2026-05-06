@@ -67,4 +67,10 @@ interface ShortcutInfoGridItemDao {
 
     @Update
     suspend fun updateShortcutInfoGridItemEntities(entities: List<ShortcutInfoGridItemEntity>)
+
+    @Insert
+    suspend fun insertShortcutInfoGridItemEntities(entities: List<ShortcutInfoGridItemEntity>)
+
+    @Upsert
+    suspend fun upsertShortcutInfoGridItemEntity(entity: ShortcutInfoGridItemEntity)
 }

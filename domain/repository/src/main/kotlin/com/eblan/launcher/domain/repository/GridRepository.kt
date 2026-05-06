@@ -42,4 +42,6 @@ interface GridRepository {
     suspend fun deleteGridItems(gridItems: List<GridItem>)
 
     suspend fun deleteGridItem(gridItem: GridItem)
+
+    suspend fun upsertGridItem(gridItem: GridItem)
 }

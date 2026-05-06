@@ -56,4 +56,8 @@ interface ShortcutConfigGridItemRepository {
     suspend fun insertShortcutConfigGridItem(shortcutConfigGridItem: ShortcutConfigGridItem)
 
     suspend fun updateShortcutConfigGridItems(shortcutConfigGridItems: List<ShortcutConfigGridItem>)
+
+    suspend fun insertShortcutConfigGridItems(shortcutConfigGridItems: List<ShortcutConfigGridItem>)
+
+    suspend fun upsertShortcutConfigGridItem(shortcutConfigGridItem: ShortcutConfigGridItem)
 }

@@ -96,4 +96,16 @@ internal class DefaultWidgetGridItemRepository @Inject constructor(private val w
 
         widgetGridItemDao.updateWidgetGridItemEntities(entities = entities)
     }
+
+    override suspend fun insertWidgetGridItems(widgetGridItems: List<WidgetGridItem>) {
+        val entities = widgetGridItems.map { widgetGridItem ->
+            widgetGridItem.asEntity()
+        }
+
+        widgetGridItemDao.insertWidgetGridItemEntities(entities = entities)
+    }
+
+    override suspend fun upsertWidgetGridItem(widgetGridItem: WidgetGridItem) {
+        widgetGridItemDao.upsertWidgetGridItemEntity(entity = widgetGridItem.asEntity())
+    }
 }
