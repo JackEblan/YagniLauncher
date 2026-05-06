@@ -67,4 +67,7 @@ interface ShortcutConfigGridItemDao {
 
     @Update
     suspend fun updateShortcutConfigGridItemEntities(entities: List<ShortcutConfigGridItemEntity>)
+
+    @Insert
+    suspend fun insertShortcutConfigGridItemEntities(entities: List<ShortcutConfigGridItemEntity>)
 }

@@ -94,6 +94,8 @@ internal class DefaultGridRepository @Inject constructor(
                 folderGridItemRepository.insertFolderGridItem(
                     folderGridItem = gridItem.asFolderGridItem(data = data),
                 )
+
+                insertGridItems(gridItems = data.gridItems)
             }
 
             is GridItemData.ShortcutInfo -> {
@@ -452,5 +454,67 @@ internal class DefaultGridRepository @Inject constructor(
                 )
             }
         }
+    }
+
+    private suspend fun insertGridItems(gridItems: List<GridItem>) {
+        val applicationInfoGridItems = mutableListOf<ApplicationInfoGridItem>()
+
+        val widgetGridItems = mutableListOf<WidgetGridItem>()
+
+        val shortcutInfoGridItems = mutableListOf<ShortcutInfoGridItem>()
+
+        val folderGridItems = mutableListOf<FolderGridItem>()
+
+        val shortcutConfigGridItems = mutableListOf<ShortcutConfigGridItem>()
+
+        gridItems.forEach { gridItem ->
+            when (val data = gridItem.data) {
+                is GridItemData.ApplicationInfo -> {
+                    applicationInfoGridItems.add(
+                        gridItem.asApplicationInfoGridItem(data = data),
+                    )
+                }
+
+                is GridItemData.Folder -> {
+                    folderGridItems.add(
+                        gridItem.asFolderGridItem(data = data),
+                    )
+
+                    insertGridItems(gridItems = data.gridItems)
+                }
+
+                is GridItemData.Widget -> {
+                    widgetGridItems.add(
+                        gridItem.asWidgetGridItem(data = data),
+                    )
+                }
+
+                is GridItemData.ShortcutInfo -> {
+                    shortcutInfoGridItems.add(
+                        gridItem.asShortcutInfoGridItem(data = data),
+                    )
+                }
+
+                is GridItemData.ShortcutConfig -> {
+                    shortcutConfigGridItems.add(
+                        gridItem.asShortcutConfigGridItem(data = data),
+                    )
+                }
+            }
+        }
+
+        applicationInfoGridItemRepository.insertApplicationInfoGridItems(
+            applicationInfoGridItems = applicationInfoGridItems,
+        )
+
+        widgetGridItemRepository.insertWidgetGridItems(widgetGridItems = widgetGridItems)
+
+        shortcutInfoGridItemRepository.insertShortcutInfoGridItems(shortcutInfoGridItems = shortcutInfoGridItems)
+
+        folderGridItemRepository.insertFolderGridItems(folderGridItems = folderGridItems)
+
+        shortcutConfigGridItemRepository.insertShortcutConfigGridItems(
+            shortcutConfigGridItems = shortcutConfigGridItems,
+        )
     }
 }

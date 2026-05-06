@@ -47,4 +47,6 @@ interface WidgetGridItemRepository {
     suspend fun insertWidgetGridItem(widgetGridItem: WidgetGridItem)
 
     suspend fun updateWidgetGridItems(widgetGridItems: List<WidgetGridItem>)
+
+    suspend fun insertWidgetGridItems(widgetGridItems: List<WidgetGridItem>)
 }

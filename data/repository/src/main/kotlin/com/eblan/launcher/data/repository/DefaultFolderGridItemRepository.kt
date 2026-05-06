@@ -74,4 +74,12 @@ internal class DefaultFolderGridItemRepository @Inject constructor(private val f
 
         folderGridItemDao.updateFolderGridItemEntities(entities = entities)
     }
+
+    override suspend fun insertFolderGridItems(folderGridItems: List<FolderGridItem>) {
+        val entities = folderGridItems.map { folderGridItem ->
+            folderGridItem.asEntity()
+        }
+
+        folderGridItemDao.insertFolderGridItemEntities(entities = entities)
+    }
 }
