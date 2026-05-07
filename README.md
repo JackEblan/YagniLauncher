@@ -63,7 +63,7 @@ Thanks for all your support. I’m continuously improving the user experience, e
 </div>
 
 ## Documentation
-If you're interested in contributing to the project, I recommend reading the [Yagni Launcher Architecture](Link here) first.
+If you're interested in contributing to the project, I recommend reading the [Yagni Launcher Architecture](docs/ARCHITECTURE.md) first.
 
 ## Links
 - [Android Launchers Memory Usage In The Cached Processes](https://youtu.be/-0cEKr-H5FU?si=RhaWvdf5ElBFoHnJ)
