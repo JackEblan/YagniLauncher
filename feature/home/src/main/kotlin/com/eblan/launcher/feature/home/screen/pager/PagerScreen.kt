@@ -1005,7 +1005,7 @@ internal fun PagerScreen(
                 },
                 onMoveFolderGridItemOutsideFolder = {
                     pagerScreenState.moveFolderGridItemOutsideFolder(
-                        moveFolderGridItem = null,
+                        moveGridItemResult = moveGridItemResult,
                         onUpdateGridItemSource = onUpdateGridItemSource,
                         onMoveFolderGridItemOutsideFolder = onMoveFolderGridItemOutsideFolder,
                     )

@@ -21,6 +21,7 @@ import com.eblan.launcher.domain.common.Dispatcher
 import com.eblan.launcher.domain.common.EblanDispatchers
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
+import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.domain.repository.GridRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ensureActive
@@ -33,7 +34,7 @@ class MoveFolderGridItemUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(
         conflictingGridItem: GridItem,
-        movingFolderGridItem: GridItem,
+        movingGridItem: GridItem,
         data: GridItemData.Folder,
         dragX: Int,
         dragY: Int,
@@ -42,56 +43,64 @@ class MoveFolderGridItemUseCase @Inject constructor(
         gridWidth: Int,
         gridHeight: Int,
         currentPage: Int,
-    ) = withContext(defaultDispatcher) {
-        val gridItemsPerPage = columns * rows
+    ): MoveGridItemResult {
+        return withContext(defaultDispatcher) {
+            val gridItemsPerPage = columns * rows
 
-        val cellWidth = gridWidth / columns
-        val cellHeight = gridHeight / rows
+            val cellWidth = gridWidth / columns
+            val cellHeight = gridHeight / rows
 
-        val targetColumn = dragX / cellWidth
-        val targetRow = dragY / cellHeight
+            val targetColumn = dragX / cellWidth
+            val targetRow = dragY / cellHeight
 
-        val targetIndex = currentPage * gridItemsPerPage + targetRow * columns + targetColumn
+            val targetIndex = currentPage * gridItemsPerPage + targetRow * columns + targetColumn
 
-        val folderGridItems = data.gridItems.toMutableList()
+            val folderGridItems = data.gridItems.toMutableList()
 
-        val movingIndex =
-            folderGridItems.indexOfFirst {
+            val movingIndex =
+                folderGridItems.indexOfFirst {
+                    ensureActive()
+
+                    it.id == movingGridItem.id
+                }
+
+            if (movingIndex != -1) {
+                folderGridItems.add(
+                    targetIndex.coerceIn(
+                        0,
+                        folderGridItems.size - 1,
+                    ),
+                    folderGridItems.removeAt(movingIndex),
+                )
+            }
+
+            val indexedGridItems = folderGridItems.mapIndexed { index, gridItem ->
                 ensureActive()
 
-                it.id == movingFolderGridItem.id
+                when (val data = gridItem.data) {
+                    is GridItemData.ApplicationInfo -> {
+                        gridItem.copy(data = data.copy(index = index))
+                    }
+
+                    is GridItemData.ShortcutConfig -> {
+                        gridItem.copy(data = data.copy(index = index))
+                    }
+
+                    is GridItemData.ShortcutInfo -> {
+                        gridItem.copy(data = data.copy(index = index))
+                    }
+
+                    else -> error("Unsupported folder item type: ${data::class.simpleName}")
+                }
             }
 
-        if (movingIndex != -1) {
-            folderGridItems.add(
-                targetIndex.coerceIn(
-                    0,
-                    folderGridItems.size - 1,
-                ),
-                folderGridItems.removeAt(movingIndex),
+            gridRepository.upsertGridItems(gridItems = indexedGridItems)
+
+            MoveGridItemResult(
+                isSuccess = true,
+                movingGridItem = movingGridItem,
+                conflictingGridItem = null,
             )
         }
-
-        val indexedGridItems = folderGridItems.mapIndexed { index, gridItem ->
-            ensureActive()
-
-            when (val data = gridItem.data) {
-                is GridItemData.ApplicationInfo -> {
-                    gridItem.copy(data = data.copy(index = index))
-                }
-
-                is GridItemData.ShortcutConfig -> {
-                    gridItem.copy(data = data.copy(index = index))
-                }
-
-                is GridItemData.ShortcutInfo -> {
-                    gridItem.copy(data = data.copy(index = index))
-                }
-
-                else -> error("Unsupported folder item type: ${data::class.simpleName}")
-            }
-        }
-
-        gridRepository.upsertGridItems(gridItems = indexedGridItems)
     }
 }

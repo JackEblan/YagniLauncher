@@ -945,26 +945,26 @@ internal class PagerScreenState(
     }
 
     fun moveFolderGridItemOutsideFolder(
-        moveFolderGridItem: GridItem?,
+        moveGridItemResult: MoveGridItemResult?,
         onUpdateGridItemSource: (GridItemSource) -> Unit,
         onMoveFolderGridItemOutsideFolder: (GridItem) -> Unit,
     ) {
+        val movingGridItem = requireNotNull(moveGridItemResult?.movingGridItem)
+
         folderPopupIntOffset = null
 
         folderPopupIntSize = null
 
         isMoveFolderGridItemOutsideFolder = false
 
-        if (moveFolderGridItem == null) return
-
         onUpdateGridItemSource(GridItemSource.Existing)
 
         sharedElementKey = SharedElementKey(
-            id = moveFolderGridItem.id,
+            id = movingGridItem.id,
             parent = SharedElementKey.Parent.Grid,
         )
 
-        onMoveFolderGridItemOutsideFolder(moveFolderGridItem)
+        onMoveFolderGridItemOutsideFolder(movingGridItem)
     }
 
     fun updateOverlayBounds(
