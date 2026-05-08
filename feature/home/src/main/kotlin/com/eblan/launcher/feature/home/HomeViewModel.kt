@@ -346,8 +346,6 @@ internal class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             moveGridItemJob?.cancelAndJoin()
 
-            updateGridItemsAfterMoveUseCase(moveGridItemResult = moveGridItemResult)
-
             _isVisibleOverlay.update {
                 false
             }
@@ -359,6 +357,8 @@ internal class HomeViewModel @Inject constructor(
             _gridItemSource.update {
                 null
             }
+
+            updateGridItemsAfterMoveUseCase(moveGridItemResult = moveGridItemResult)
         }
     }
 
@@ -384,8 +384,6 @@ internal class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             moveGridItemJob?.cancelAndJoin()
 
-            gridRepository.deleteGridItem(gridItem = gridItem)
-
             _moveGridItemResult.update {
                 null
             }
@@ -393,6 +391,8 @@ internal class HomeViewModel @Inject constructor(
             _gridItemSource.update {
                 null
             }
+
+            gridRepository.deleteGridItem(gridItem = gridItem)
         }
     }
 
