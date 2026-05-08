@@ -144,6 +144,7 @@ internal fun PagerScreen(
     resizeGridItem: GridItem?,
     gridItemSource: GridItemSource?,
     isVisibleOverlay: Boolean,
+    moveFolderGridItem: GridItem?,
     onDeleteGridItem: (GridItem) -> Unit,
     onResetGridAfterDeleteGridItem: (GridItem) -> Unit,
     onDragCancelAfterMove: () -> Unit,
@@ -1024,7 +1025,12 @@ internal fun PagerScreen(
             )
         }
 
-        if (gridItemSource != null && pagerScreenState.showFolderGridItemPopup && pagerScreenState.popupIntOffset != null && pagerScreenState.popupIntSize != null) {
+        if (gridItemSource != null &&
+            pagerScreenState.showFolderGridItemPopup &&
+            pagerScreenState.popupIntOffset != null &&
+            pagerScreenState.popupIntSize != null &&
+            moveFolderGridItem != null
+        ) {
             FolderGridItemPopup(
                 modifier = modifier,
                 currentPage = currentPage,
@@ -1036,7 +1042,7 @@ internal fun PagerScreen(
                 paddingValues = paddingValues,
                 popupIntOffset = pagerScreenState.popupIntOffset,
                 popupIntSize = pagerScreenState.popupIntSize,
-                folderGridItem = null,
+                moveFolderGridItem = moveFolderGridItem,
                 onDeleteGridItem = onDeleteGridItem,
                 onDismissFolder = {
                     pagerScreenState.showFolder(
@@ -1114,6 +1120,7 @@ internal fun PagerScreen(
                 onWidgets = pagerScreenState::openAppWidgetScreen,
                 onDraggingShortcutInfoGridItem = pagerScreenState::draggingShortcutInfoGridItem,
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
             )
         }
 

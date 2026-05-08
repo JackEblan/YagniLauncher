@@ -115,6 +115,8 @@ internal fun HomeRoute(
 
     val isVisibleOverlay by viewModel.isVisibleOverlay.collectAsStateWithLifecycle()
 
+    val moveFolderGridItem by viewModel.moveFolderGridItem.collectAsStateWithLifecycle()
+
     HomeScreen(
         modifier = modifier,
         configureResultCode = configureResultCode,
@@ -134,6 +136,7 @@ internal fun HomeRoute(
         resizeGridItem = resizeGridItem,
         gridItemSource = gridItemSource,
         isVisibleOverlay = isVisibleOverlay,
+        moveFolderGridItem = moveFolderGridItem,
         onCancelGrid = viewModel::cancelGrid,
         onDeleteGridItem = viewModel::deleteGridItem,
         onResetGridAfterDeleteGridItem = viewModel::resetGridAfterDeleteGridItem,
@@ -191,6 +194,7 @@ internal fun HomeScreen(
     resizeGridItem: GridItem?,
     gridItemSource: GridItemSource?,
     isVisibleOverlay: Boolean,
+    moveFolderGridItem: GridItem?,
     onCancelGrid: () -> Unit,
     onDeleteGridItem: (GridItem) -> Unit,
     onResetGridAfterDeleteGridItem: (GridItem) -> Unit,
@@ -298,6 +302,7 @@ internal fun HomeScreen(
                 resizeGridItem = resizeGridItem,
                 gridItemSource = gridItemSource,
                 isVisibleOverlay = isVisibleOverlay,
+                moveFolderGridItem = moveFolderGridItem,
                 onCancelGrid = onCancelGrid,
                 onDeleteGridItem = onDeleteGridItem,
                 onResetGridAfterDeleteGridItem = onResetGridAfterDeleteGridItem,
@@ -360,6 +365,7 @@ private fun Success(
     resizeGridItem: GridItem?,
     gridItemSource: GridItemSource?,
     isVisibleOverlay: Boolean,
+    moveFolderGridItem: GridItem?,
     onCancelGrid: () -> Unit,
     onDeleteGridItem: (GridItem) -> Unit,
     onResetGridAfterDeleteGridItem: (GridItem) -> Unit,
@@ -477,6 +483,7 @@ private fun Success(
                     resizeGridItem = resizeGridItem,
                     gridItemSource = gridItemSource,
                     isVisibleOverlay = isVisibleOverlay,
+                    moveFolderGridItem = moveFolderGridItem,
                     onDeleteGridItem = onDeleteGridItem,
                     onResetGridAfterDeleteGridItem = onResetGridAfterDeleteGridItem,
                     onDragCancelAfterMove = onCancelGrid,

@@ -155,6 +155,14 @@ internal fun onLongPress(
     scope.launch {
         onUpdateGridItemSource(gridItemSource)
 
+        onUpdateMoveGridItemResult(
+            MoveGridItemResult(
+                isSuccess = true,
+                movingGridItem = gridItem,
+                conflictingGridItem = null,
+            ),
+        )
+
         onUpdateImageBitmap(graphicsLayer.toImageBitmap())
 
         onUpdateOverlayBounds(
@@ -169,14 +177,6 @@ internal fun onLongPress(
         onShowGridItemPopup(
             intOffset,
             intSize,
-        )
-
-        onUpdateMoveGridItemResult(
-            MoveGridItemResult(
-                isSuccess = true,
-                movingGridItem = gridItem,
-                conflictingGridItem = null,
-            ),
         )
     }
 }

@@ -226,6 +226,10 @@ internal class HomeViewModel @Inject constructor(
 
     val isVisibleOverlay = _isVisibleOverlay.asStateFlow()
 
+    private val _moveFolderGridItem = MutableStateFlow<GridItem?>(null)
+
+    val moveFolderGridItem = _moveFolderGridItem.asStateFlow()
+
     fun moveGridItem(
         movingGridItem: GridItem,
         x: Int,
@@ -613,6 +617,10 @@ internal class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             moveGridItemJob?.cancelAndJoin()
 
+            _moveFolderGridItem.update {
+                null
+            }
+
             _folderGridItemId.update {
                 null
             }
@@ -645,6 +653,10 @@ internal class HomeViewModel @Inject constructor(
             }
 
             gridRepository.updateGridItem(gridItem = movingGridItem)
+
+            _moveFolderGridItem.update {
+                movingGridItem
+            }
 
             _folderGridItemId.update {
                 conflictingGridItem.id

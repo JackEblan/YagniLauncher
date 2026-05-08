@@ -74,6 +74,7 @@ import com.eblan.launcher.domain.model.EblanActionType
 import com.eblan.launcher.domain.model.EblanApplicationInfo
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
+import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
@@ -114,6 +115,7 @@ internal fun SharedTransitionScope.EblanApplicationInfoItem(
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onUpdateEblanApplicationInfo: (EblanApplicationInfo) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
     var intOffset by remember { mutableStateOf(IntOffset.Zero) }
 
@@ -176,6 +178,7 @@ internal fun SharedTransitionScope.EblanApplicationInfoItem(
             },
             onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
             onUpdatePopupMenu = onUpdatePopupMenu,
+            onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
         )
     }
 
@@ -322,6 +325,7 @@ internal fun handleDragEblanApplicationInfoItem(
     onUpdateIsLongPress: (Boolean) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdatePopupMenu: (Boolean) -> Unit,
+    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
     when (drag) {
         Drag.Dragging if isLongPress -> {
@@ -366,6 +370,14 @@ internal fun handleDragEblanApplicationInfoItem(
             )
 
             onUpdateGridItemSource(GridItemSource.New)
+
+            onUpdateMoveGridItemResult(
+                MoveGridItemResult(
+                    isSuccess = false,
+                    movingGridItem = gridItem,
+                    conflictingGridItem = null,
+                ),
+            )
 
             onUpdateIsDragging(true)
         }
