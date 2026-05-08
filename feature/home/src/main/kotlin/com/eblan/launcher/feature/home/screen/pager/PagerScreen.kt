@@ -1063,14 +1063,7 @@ internal fun PagerScreen(
                 moveFolderGridItem = moveGridItemResult.movingGridItem,
                 onDeleteGridItem = onDeleteGridItem,
                 onDismissFolder = {
-                    pagerScreenState.showFolder(
-                        height = 0,
-                        id = null,
-                        width = 0,
-                        x = 0,
-                        y = 0,
-                        onUpdateFolderGridItemId = onUpdateFolderGridItemId,
-                    )
+                    pagerScreenState.dismissFolder(onUpdateFolderGridItemId = onUpdateFolderGridItemId)
                 },
                 onDismissRequest = pagerScreenState::dismissFolderGridItemPopup,
                 onDraggingShortcutInfoGridItem = pagerScreenState::draggingShortcutInfoGridItem,

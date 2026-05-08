@@ -56,7 +56,7 @@ internal fun SettingsPopup(
     onWallpaper: () -> Unit,
     onWidgets: () -> Unit,
 ) {
-    if (popupSettingsIntOffset == null) return
+    requireNotNull(popupSettingsIntOffset)
 
     Popup(
         popupPositionProvider = SettingsPopupPositionProvider(

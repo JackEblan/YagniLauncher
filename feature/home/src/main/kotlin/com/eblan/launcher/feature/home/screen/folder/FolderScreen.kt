@@ -113,7 +113,9 @@ internal fun SharedTransitionScope.FolderScreen(
     onUpdateIsClosingFolder: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
-    if (folderPopupIntOffset == null || folderPopupIntSize == null) return
+    requireNotNull(folderPopupIntOffset)
+
+    requireNotNull(folderPopupIntSize)
 
     val data = folderGridItem.data as? GridItemData.Folder ?: error("Expected GridItemData.Folder")
 

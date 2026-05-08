@@ -947,6 +947,12 @@ internal class PagerScreenState(
     }
 
     fun dismissFolder(onUpdateFolderGridItemId: (String?) -> Unit) {
+        lastFolderPopupX = 0
+        lastFolderPopupY = 0
+
+        lastFolderPopupWidth = 0
+        lastFolderPopupHeight = 0
+
         folderPopupIntOffset = null
 
         folderPopupIntSize = null
