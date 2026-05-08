@@ -479,7 +479,7 @@ private fun EblanAppWidgetProviderInfoItem(
                                 targetCellWidth = eblanAppWidgetProviderInfo.targetCellWidth,
                             )
 
-                            onUpdateGridItemSource(GridItemSource.New(gridItem = gridItem))
+                            onUpdateGridItemSource(GridItemSource.New)
 
                             onUpdateOverlayBounds(
                                 intOffset,

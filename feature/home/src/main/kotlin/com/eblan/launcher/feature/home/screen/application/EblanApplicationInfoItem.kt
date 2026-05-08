@@ -365,7 +365,7 @@ internal fun handleDragEblanApplicationInfoItem(
                 swipeDown = eblanAction,
             )
 
-            onUpdateGridItemSource(GridItemSource.New(gridItem = gridItem))
+            onUpdateGridItemSource(GridItemSource.New)
 
             onUpdateIsDragging(true)
         }

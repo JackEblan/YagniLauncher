@@ -172,11 +172,11 @@ internal fun FolderGridItemPopup(
     eblanAppWidgetProviderInfosGroup: Map<String, List<EblanAppWidgetProviderInfo>>,
     eblanShortcutInfosGroup: Map<EblanShortcutInfoByGroup, List<EblanShortcutInfo>>,
     gridItemSettings: GridItemSettings,
-    gridItemSource: GridItemSource?,
     hasShortcutHostPermission: Boolean,
     paddingValues: PaddingValues,
     popupIntOffset: IntOffset?,
     popupIntSize: IntSize?,
+    folderGridItem: GridItem?,
     onDeleteGridItem: (GridItem) -> Unit,
     onDismissFolder: () -> Unit,
     onDismissRequest: () -> Unit,
@@ -198,9 +198,11 @@ internal fun FolderGridItemPopup(
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onWidgets: (EblanApplicationInfoGroup) -> Unit,
 ) {
-    if (popupIntOffset == null || popupIntSize == null) return
+    requireNotNull(folderGridItem)
 
-    val gridItemSourceFolder = gridItemSource as? GridItemSource.Folder ?: return
+    requireNotNull(popupIntOffset)
+
+    requireNotNull(popupIntSize)
 
     val density = LocalDensity.current
 
@@ -235,7 +237,7 @@ internal fun FolderGridItemPopup(
                 eblanAppWidgetProviderInfosGroup = eblanAppWidgetProviderInfosGroup,
                 eblanShortcutInfosGroup = eblanShortcutInfosGroup,
                 gridItemSettings = gridItemSettings,
-                folderGridItem = gridItemSourceFolder.gridItem,
+                folderGridItem = folderGridItem,
                 hasShortcutHostPermission = hasShortcutHostPermission,
                 onDeleteGridItem = onDeleteGridItem,
                 onDismissFolder = onDismissFolder,

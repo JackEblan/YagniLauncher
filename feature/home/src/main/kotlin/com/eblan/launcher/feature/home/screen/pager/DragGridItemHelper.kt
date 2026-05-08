@@ -167,6 +167,7 @@ internal fun handleDragGridItem(
     rows: Int,
     screenHeight: Int,
     screenWidth: Int,
+    moveGridItemResult: MoveGridItemResult?,
     onMoveFolderGridItem: (
         conflictingGridItem: GridItem,
         movingFolderGridItem: GridItem,
@@ -198,7 +199,8 @@ internal fun handleDragGridItem(
         gridItemSource == null ||
         !isVisibleOverlay ||
         !isDragging ||
-        lockMovement
+        lockMovement ||
+        moveGridItemResult == null
     ) {
         return
     }
@@ -257,6 +259,7 @@ internal fun handleDragGridItem(
                     gridItemSource = gridItemSource,
                     safeDrawingHeight = safeDrawingHeight,
                     safeDrawingWidth = safeDrawingWidth,
+                    moveGridItemResult = moveGridItemResult,
                     onMoveGridItem = onMoveGridItem,
                     onUpdateAssociate = onUpdateAssociate,
                     onUpdateSharedElementKey = onUpdateSharedElementKey,
@@ -273,6 +276,7 @@ internal fun handleDragGridItem(
                     rows = rows,
                     safeDrawingHeight = safeDrawingHeight,
                     safeDrawingWidth = safeDrawingWidth,
+                    moveGridItemResult = moveGridItemResult,
                     onMoveGridItem = onMoveGridItem,
                     onUpdateAssociate = onUpdateAssociate,
                     onUpdateSharedElementKey = onUpdateSharedElementKey,
@@ -290,7 +294,7 @@ internal fun handleDragGridItem(
                 folderPopupIntOffset = folderPopupIntOffset,
                 folderPopupIntSize = folderPopupIntSize,
                 folderTitleHeightPx = folderTitleHeightPx,
-                gridItemSource = gridItemSource,
+                movingFolderGridItem = null,
                 safeDrawingHeight = safeDrawingHeight,
                 safeDrawingWidth = safeDrawingWidth,
                 onMoveFolderGridItem = onMoveFolderGridItem,
@@ -310,9 +314,9 @@ private fun dragFolderGridItem(
     folderPopupIntOffset: IntOffset?,
     folderPopupIntSize: IntSize?,
     folderTitleHeightPx: Int,
-    gridItemSource: GridItemSource,
     safeDrawingHeight: Int,
     safeDrawingWidth: Int,
+    movingFolderGridItem: GridItem?,
     onMoveFolderGridItem: (
         conflictingGridItem: GridItem,
         movingFolderGridItem: GridItem,
@@ -328,9 +332,14 @@ private fun dragFolderGridItem(
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onUpdateIsMoveFolderGridItemOutsideFolder: (Boolean) -> Unit,
 ) {
-    if (folderPopupIntOffset == null || folderPopupIntSize == null) return
+    if (movingFolderGridItem == null ||
+        folderPopupIntOffset == null ||
+        folderPopupIntSize == null
+    ) {
+        return
+    }
 
-    val data = folderGridItem?.data as? GridItemData.Folder ?: return
+    val data = folderGridItem?.data as? GridItemData.Folder ?: error("Expected GridItemData.Folder")
 
     val folderCellWidth = safeDrawingWidth / FOLDER_MAX_COLUMNS
 
@@ -365,14 +374,14 @@ private fun dragFolderGridItem(
     if (isInsideFolder) {
         onUpdateSharedElementKey(
             SharedElementKey(
-                id = gridItemSource.gridItem.id,
+                id = movingFolderGridItem.id,
                 parent = SharedElementKey.Parent.Folder,
             ),
         )
 
         onMoveFolderGridItem(
             folderGridItem,
-            gridItemSource.gridItem,
+            movingFolderGridItem,
             data,
             folderDragX,
             folderDragY,
@@ -398,6 +407,7 @@ private fun dragGridItem(
     rows: Int,
     safeDrawingHeight: Int,
     safeDrawingWidth: Int,
+    moveGridItemResult: MoveGridItemResult,
     onMoveGridItem: (
         movingGridItem: GridItem,
         x: Int,
@@ -410,7 +420,7 @@ private fun dragGridItem(
     onUpdateAssociate: (Associate) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
 ) {
-    val gridItem = requireNotNull(gridItemSource.gridItem)
+    val gridItem = moveGridItemResult.movingGridItem
 
     onUpdateAssociate(Associate.Grid)
 
@@ -471,6 +481,7 @@ private fun dragDockGridItem(
     gridItemSource: GridItemSource,
     safeDrawingHeight: Int,
     safeDrawingWidth: Int,
+    moveGridItemResult: MoveGridItemResult,
     onMoveGridItem: (
         movingGridItem: GridItem,
         x: Int,
@@ -483,7 +494,7 @@ private fun dragDockGridItem(
     onUpdateAssociate: (Associate) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
 ) {
-    val gridItem = requireNotNull(gridItemSource.gridItem)
+    val gridItem = moveGridItemResult.movingGridItem
 
     onUpdateAssociate(Associate.Dock)
 
@@ -674,11 +685,7 @@ internal suspend fun handleConflictingGridItem(
 
     val movingFolderGridItem = movingGridItem.copy(data = movingData)
 
-    onUpdateGridItemSource(
-        GridItemSource.Folder(
-            gridItem = movingFolderGridItem,
-        ),
-    )
+    onUpdateGridItemSource(GridItemSource.Folder)
 
     onUpdateFolderPopupBounds(
         intOffset,

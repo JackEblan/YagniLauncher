@@ -166,6 +166,7 @@ internal fun HomeRoute(
         onUpdateShortcutConfigIntoShortcutInfoGridItem = viewModel::updateShortcutConfigIntoShortcutInfoGridItem,
         onUpdateGridItemSource = viewModel::updateGridItemSource,
         onUpdateIsVisibleOverlay = viewModel::updateIsVisibleOverlay,
+        onUpdateMoveGridItemResult = viewModel::updateMoveGridItemResult,
     )
 }
 
@@ -262,6 +263,7 @@ internal fun HomeScreen(
     ) -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
     val paddingValues = WindowInsets.safeDrawing.asPaddingValues()
 
@@ -328,6 +330,7 @@ internal fun HomeScreen(
                 onUpdateShortcutConfigIntoShortcutInfoGridItem = onUpdateShortcutConfigIntoShortcutInfoGridItem,
                 onUpdateGridItemSource = onUpdateGridItemSource,
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
             )
         }
     }
@@ -429,6 +432,7 @@ private fun Success(
     ) -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
     val activity = LocalActivity.current
 
@@ -504,6 +508,7 @@ private fun Success(
                     onUpdateShortcutConfigIntoShortcutInfoGridItem = onUpdateShortcutConfigIntoShortcutInfoGridItem,
                     onUpdateGridItemSource = onUpdateGridItemSource,
                     onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                    onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                 )
             }
 

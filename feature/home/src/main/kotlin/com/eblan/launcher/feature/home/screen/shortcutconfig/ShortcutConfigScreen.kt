@@ -597,7 +597,7 @@ private fun EblanShortcutConfigItem(
                                 swipeDown = eblanAction,
                             )
 
-                            onUpdateGridItemSource(GridItemSource.New(gridItem = gridItem))
+                            onUpdateGridItemSource(GridItemSource.New)
 
                             onUpdateImageBitmap(graphicsLayer.toImageBitmap())
 

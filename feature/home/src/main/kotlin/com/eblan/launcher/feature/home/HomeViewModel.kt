@@ -651,4 +651,10 @@ internal class HomeViewModel @Inject constructor(
             }
         }
     }
+
+    fun updateMoveGridItemResult(moveGridItemResult: MoveGridItemResult) {
+        _moveGridItemResult.update {
+            moveGridItemResult
+        }
+    }
 }

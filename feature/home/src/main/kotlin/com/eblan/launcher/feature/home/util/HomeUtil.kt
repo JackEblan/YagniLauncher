@@ -28,6 +28,8 @@ import androidx.compose.ui.unit.dp
 import com.eblan.launcher.domain.model.EblanAction
 import com.eblan.launcher.domain.model.EblanActionType
 import com.eblan.launcher.domain.model.GlobalAction
+import com.eblan.launcher.domain.model.GridItem
+import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
@@ -135,6 +137,7 @@ internal fun onLongPress(
     intSize: IntSize,
     gridItemSource: GridItemSource,
     sharedElementKey: SharedElementKey,
+    gridItem: GridItem,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
     onUpdateOverlayBounds: (
@@ -147,6 +150,7 @@ internal fun onLongPress(
         intSize: IntSize,
     ) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
     scope.launch {
         onUpdateGridItemSource(gridItemSource)
@@ -165,6 +169,14 @@ internal fun onLongPress(
         onShowGridItemPopup(
             intOffset,
             intSize,
+        )
+
+        onUpdateMoveGridItemResult(
+            MoveGridItemResult(
+                isSuccess = true,
+                movingGridItem = gridItem,
+                conflictingGridItem = null,
+            ),
         )
     }
 }

@@ -241,7 +241,7 @@ private fun ShortcutInfoMenuItem(
                                         swipeDown = eblanAction,
                                     )
 
-                                    onUpdateGridItemSource(GridItemSource.New(gridItem = gridItem))
+                                    onUpdateGridItemSource(GridItemSource.New)
 
                                     onUpdateImageBitmap(graphicsLayer.toImageBitmap())
 

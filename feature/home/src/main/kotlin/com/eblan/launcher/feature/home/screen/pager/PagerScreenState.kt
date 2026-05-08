@@ -381,6 +381,7 @@ internal class PagerScreenState(
         paddingValues: PaddingValues,
         gridItemSource: GridItemSource?,
         isVisibleOverlay: Boolean,
+        moveGridItemResult: MoveGridItemResult?,
         onMoveFolderGridItem: (
             conflictingGridItem: GridItem,
             movingFolderGridItem: GridItem,
@@ -428,6 +429,7 @@ internal class PagerScreenState(
             screenHeight = screenHeight,
             screenWidth = screenWidth,
             onMoveFolderGridItem = onMoveFolderGridItem,
+            moveGridItemResult = moveGridItemResult,
             onMoveGridItem = onMoveGridItem,
             onUpdateAssociate = { newAssociate ->
                 associate = newAssociate
@@ -861,10 +863,7 @@ internal class PagerScreenState(
         }
 
         onUpdateGridItemSource(
-            GridItemSource.Pin(
-                gridItem = pinGridItem,
-                pinItemRequest = pinItemRequest,
-            ),
+            GridItemSource.Pin(pinItemRequest = pinItemRequest),
         )
 
         onUpdateIsVisibleOverlay(true)
@@ -946,7 +945,7 @@ internal class PagerScreenState(
     }
 
     fun moveFolderGridItemOutsideFolder(
-        gridItemSource: GridItemSource?,
+        moveFolderGridItem: GridItem?,
         onUpdateGridItemSource: (GridItemSource) -> Unit,
         onMoveFolderGridItemOutsideFolder: (GridItem) -> Unit,
     ) {
@@ -956,16 +955,16 @@ internal class PagerScreenState(
 
         isMoveFolderGridItemOutsideFolder = false
 
-        val gridItem = gridItemSource?.gridItem ?: return
+        if (moveFolderGridItem == null) return
 
-        onUpdateGridItemSource(GridItemSource.Existing(gridItem = gridItem))
+        onUpdateGridItemSource(GridItemSource.Existing)
 
         sharedElementKey = SharedElementKey(
-            id = gridItem.id,
+            id = moveFolderGridItem.id,
             parent = SharedElementKey.Parent.Grid,
         )
 
-        onMoveFolderGridItemOutsideFolder(gridItem)
+        onMoveFolderGridItemOutsideFolder(moveFolderGridItem)
     }
 
     fun updateOverlayBounds(
