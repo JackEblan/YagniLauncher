@@ -428,8 +428,8 @@ internal class PagerScreenState(
             rows = homeSettings.rows,
             screenHeight = screenHeight,
             screenWidth = screenWidth,
-            onMoveFolderGridItem = onMoveFolderGridItem,
             moveGridItemResult = moveGridItemResult,
+            onMoveFolderGridItem = onMoveFolderGridItem,
             onMoveGridItem = onMoveGridItem,
             onUpdateAssociate = { newAssociate ->
                 associate = newAssociate

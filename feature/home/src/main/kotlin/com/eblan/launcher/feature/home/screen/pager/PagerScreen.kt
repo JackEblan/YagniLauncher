@@ -144,7 +144,6 @@ internal fun PagerScreen(
     resizeGridItem: GridItem?,
     gridItemSource: GridItemSource?,
     isVisibleOverlay: Boolean,
-    moveFolderGridItem: GridItem?,
     onDeleteGridItem: (GridItem) -> Unit,
     onResetGridAfterDeleteGridItem: (GridItem) -> Unit,
     onDragCancelAfterMove: () -> Unit,
@@ -1029,7 +1028,7 @@ internal fun PagerScreen(
             pagerScreenState.showFolderGridItemPopup &&
             pagerScreenState.popupIntOffset != null &&
             pagerScreenState.popupIntSize != null &&
-            moveFolderGridItem != null
+            moveGridItemResult != null
         ) {
             FolderGridItemPopup(
                 modifier = modifier,
@@ -1042,7 +1041,7 @@ internal fun PagerScreen(
                 paddingValues = paddingValues,
                 popupIntOffset = pagerScreenState.popupIntOffset,
                 popupIntSize = pagerScreenState.popupIntSize,
-                moveFolderGridItem = moveFolderGridItem,
+                moveFolderGridItem = moveGridItemResult.movingGridItem,
                 onDeleteGridItem = onDeleteGridItem,
                 onDismissFolder = {
                     pagerScreenState.showFolder(

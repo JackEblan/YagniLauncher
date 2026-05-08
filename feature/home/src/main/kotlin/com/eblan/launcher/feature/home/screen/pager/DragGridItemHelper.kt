@@ -247,7 +247,7 @@ internal fun handleDragGridItem(
         is GridItemSource.Existing,
         is GridItemSource.New,
         is GridItemSource.Pin,
-        -> {
+            -> {
             if (isOnDock) {
                 dragDockGridItem(
                     currentPage = currentPage,
@@ -294,7 +294,7 @@ internal fun handleDragGridItem(
                 folderPopupIntOffset = folderPopupIntOffset,
                 folderPopupIntSize = folderPopupIntSize,
                 folderTitleHeightPx = folderTitleHeightPx,
-                movingFolderGridItem = null,
+                moveGridItemResult = moveGridItemResult,
                 safeDrawingHeight = safeDrawingHeight,
                 safeDrawingWidth = safeDrawingWidth,
                 onMoveFolderGridItem = onMoveFolderGridItem,
@@ -316,7 +316,7 @@ private fun dragFolderGridItem(
     folderTitleHeightPx: Int,
     safeDrawingHeight: Int,
     safeDrawingWidth: Int,
-    movingFolderGridItem: GridItem?,
+    moveGridItemResult: MoveGridItemResult,
     onMoveFolderGridItem: (
         conflictingGridItem: GridItem,
         movingFolderGridItem: GridItem,
@@ -332,12 +332,7 @@ private fun dragFolderGridItem(
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onUpdateIsMoveFolderGridItemOutsideFolder: (Boolean) -> Unit,
 ) {
-    if (movingFolderGridItem == null ||
-        folderPopupIntOffset == null ||
-        folderPopupIntSize == null
-    ) {
-        return
-    }
+    if (folderPopupIntOffset == null || folderPopupIntSize == null) return
 
     val data = folderGridItem?.data as? GridItemData.Folder ?: error("Expected GridItemData.Folder")
 
@@ -369,19 +364,21 @@ private fun dragFolderGridItem(
         (folderGridHeightPx - folderTitleHeightPx) - (folderGridPaddingPx * 2)
 
     val isInsideFolder = folderDragX in 0..folderGridVisibleWidthPx &&
-        folderDragY in 0..folderGridVisibleHeightPx
+            folderDragY in 0..folderGridVisibleHeightPx
+
+    val moveFolderGridItem = moveGridItemResult.movingGridItem
 
     if (isInsideFolder) {
         onUpdateSharedElementKey(
             SharedElementKey(
-                id = movingFolderGridItem.id,
+                id = moveFolderGridItem.id,
                 parent = SharedElementKey.Parent.Folder,
             ),
         )
 
         onMoveFolderGridItem(
             folderGridItem,
-            movingFolderGridItem,
+            moveFolderGridItem,
             data,
             folderDragX,
             folderDragY,
@@ -736,7 +733,7 @@ private fun getMoveGridItem(
     currentPage: Int,
 ): GridItem = when (gridItemSource) {
     is GridItemSource.Existing, is GridItemSource.Folder,
-    -> {
+        -> {
         when (val data = gridItem.data) {
             is GridItemData.ApplicationInfo -> {
                 gridItem.copy(
@@ -779,7 +776,7 @@ private fun getMoveGridItem(
 
             is GridItemData.Widget,
             is GridItemData.Folder,
-            -> {
+                -> {
                 gridItem.copy(
                     page = currentPage,
                     startColumn = gridX / cellWidth,
@@ -791,7 +788,7 @@ private fun getMoveGridItem(
     }
 
     is GridItemSource.New, is GridItemSource.Pin,
-    -> {
+        -> {
         getMoveNewGridItem(
             associate = associate,
             cellHeight = cellHeight,
