@@ -667,4 +667,10 @@ internal class HomeViewModel @Inject constructor(
             moveGridItemResult
         }
     }
+
+    fun updateResizeGridItem(resizeGridItem: GridItem) {
+        _resizeGridItem.update {
+            resizeGridItem
+        }
+    }
 }

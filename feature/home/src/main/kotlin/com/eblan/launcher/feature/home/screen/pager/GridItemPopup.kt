@@ -76,7 +76,7 @@ internal fun GridItemPopup(
     onDraggingShortcutInfoGridItem: () -> Unit,
     onEdit: (String) -> Unit,
     onInfo: (Long, String) -> Unit,
-    onResize: () -> Unit,
+    onResize: (GridItem) -> Unit,
     onTapShortcutInfo: (Long, String, String) -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
@@ -302,7 +302,7 @@ private fun GridItemPopupContent(
         serialNumber: Long,
         componentName: String,
     ) -> Unit,
-    onResize: () -> Unit,
+    onResize: (GridItem) -> Unit,
     onTapShortcutInfo: (
         serialNumber: Long,
         packageName: String,
@@ -363,7 +363,7 @@ private fun GridItemPopupContent(
                             onDismissRequest()
                         },
                         onResize = {
-                            onResize()
+                            onResize(gridItem)
 
                             onDismissRequest()
                         },
@@ -410,7 +410,7 @@ private fun GridItemPopupContent(
                             onDismissRequest()
                         },
                         onResize = {
-                            onResize()
+                            onResize(gridItem)
 
                             onDismissRequest()
                         },
@@ -428,7 +428,7 @@ private fun GridItemPopupContent(
                             onDismissRequest()
                         },
                         onResize = {
-                            onResize()
+                            onResize(gridItem)
 
                             onDismissRequest()
                         },

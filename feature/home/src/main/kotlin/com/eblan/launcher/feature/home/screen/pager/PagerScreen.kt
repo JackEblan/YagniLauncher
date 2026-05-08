@@ -211,6 +211,7 @@ internal fun PagerScreen(
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
+    onUpdateResizeGridItem: (GridItem) -> Unit,
 ) {
     val context = LocalContext.current
 
@@ -949,7 +950,12 @@ internal fun PagerScreen(
                         componentName = componentName,
                     )
                 },
-                onResize = pagerScreenState::resize,
+                onResize = { newResizeGridItem ->
+                    pagerScreenState.resize(
+                        resizeGridItem = newResizeGridItem,
+                        onUpdateResizeGridItem = onUpdateResizeGridItem,
+                    )
+                },
                 onTapShortcutInfo = { serialNumber, packageName, shortcutId ->
                     pagerScreenState.startPopupShortcut(
                         leftPadding = leftPadding,

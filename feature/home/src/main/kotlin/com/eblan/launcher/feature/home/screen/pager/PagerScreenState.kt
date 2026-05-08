@@ -1125,8 +1125,13 @@ internal class PagerScreenState(
         isDragging = true
     }
 
-    fun resize() {
+    fun resize(
+        resizeGridItem: GridItem,
+        onUpdateResizeGridItem: (GridItem) -> Unit,
+    ) {
         isResizing = true
+
+        onUpdateResizeGridItem(resizeGridItem)
     }
 
     fun dismissApplicationScreen() {
