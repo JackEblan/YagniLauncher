@@ -26,7 +26,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -151,7 +150,7 @@ internal fun SharedTransitionScope.EblanApplicationInfoItem(
         getVerticalArrangement(verticalArrangement = appDrawerSettings.gridItemSettings.verticalArrangement)
 
     val leftPadding = with(density) {
-        paddingValues.calculateStartPadding(layoutDirection).roundToPx()
+        paddingValues.calculateLeftPadding(layoutDirection).roundToPx()
     }
 
     val topPadding = with(density) {

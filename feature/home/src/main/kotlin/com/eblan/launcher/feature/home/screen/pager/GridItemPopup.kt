@@ -98,7 +98,7 @@ internal fun GridItemPopup(
     val layoutDirection = LocalLayoutDirection.current
 
     val leftPadding = with(density) {
-        paddingValues.calculateStartPadding(layoutDirection).roundToPx()
+        paddingValues.calculateLeftPadding(layoutDirection).roundToPx()
     }
 
     val topPadding = with(density) {
@@ -215,7 +215,7 @@ internal fun FolderGridItemPopup(
     val layoutDirection = LocalLayoutDirection.current
 
     val leftPadding = with(density) {
-        paddingValues.calculateStartPadding(layoutDirection).roundToPx()
+        paddingValues.calculateLeftPadding(layoutDirection).roundToPx()
     }
 
     val topPadding = with(density) {

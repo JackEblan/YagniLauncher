@@ -30,7 +30,6 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -93,7 +92,6 @@ internal fun LazyGridScope.privateSpace(
     paddingValues: PaddingValues,
     privateEblanApplicationInfos: List<EblanApplicationInfo>,
     privateEblanUser: EblanUser?,
-    onDismiss: () -> Unit,
     onUpdateIsQuietModeEnabled: (Boolean) -> Unit,
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
@@ -101,7 +99,6 @@ internal fun LazyGridScope.privateSpace(
     ) -> Unit,
     onUpdatePopupMenu: (Boolean) -> Unit,
     onUpdateEblanApplicationInfo: (EblanApplicationInfo) -> Unit,
-    onScrollToItem: suspend (Int) -> Unit,
 ) {
     if (privateEblanUser == null || privateEblanUser.isPrivateSpaceEntryPointHidden) return
 
@@ -269,7 +266,7 @@ internal fun PrivateSpaceEblanApplicationInfoItem(
         getVerticalArrangement(verticalArrangement = appDrawerSettings.gridItemSettings.verticalArrangement)
 
     val leftPadding = with(density) {
-        paddingValues.calculateStartPadding(layoutDirection).roundToPx()
+        paddingValues.calculateLeftPadding(layoutDirection).roundToPx()
     }
 
     val topPadding = with(density) {

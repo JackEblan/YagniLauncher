@@ -185,7 +185,7 @@ internal fun SharedTransitionScope.ListApplicationScreen(
     val launcherApps = LocalLauncherApps.current
 
     val leftPadding = with(density) {
-        paddingValues.calculateStartPadding(layoutDirection).roundToPx()
+        paddingValues.calculateLeftPadding(layoutDirection).roundToPx()
     }
 
     val topPadding = with(density) {
@@ -788,7 +788,7 @@ private fun SharedTransitionScope.EblanApplicationInfoItem(
     val icon = iconPackFilePaths[eblanApplicationInfo.componentName] ?: eblanApplicationInfo.icon
 
     val leftPadding = with(density) {
-        paddingValues.calculateStartPadding(layoutDirection).roundToPx()
+        paddingValues.calculateLeftPadding(layoutDirection).roundToPx()
     }
 
     val topPadding = with(density) {

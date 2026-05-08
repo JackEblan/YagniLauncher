@@ -24,7 +24,6 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -161,7 +160,7 @@ private fun PrivateSpaceEblanApplicationInfoItem(
     val icon = iconPackFilePaths[eblanApplicationInfo.componentName] ?: eblanApplicationInfo.icon
 
     val leftPadding = with(density) {
-        paddingValues.calculateStartPadding(layoutDirection).roundToPx()
+        paddingValues.calculateLeftPadding(layoutDirection).roundToPx()
     }
 
     val topPadding = with(density) {

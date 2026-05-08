@@ -18,8 +18,6 @@
 package com.eblan.launcher.feature.home.screen.pager
 
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.calculateEndPadding
-import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
@@ -63,11 +61,11 @@ internal fun handleAnimateScrollToPage(
     if (gridItemSource == null || !isDragging) return
 
     val leftPadding = with(density) {
-        paddingValues.calculateStartPadding(layoutDirection).roundToPx()
+        paddingValues.calculateLeftPadding(layoutDirection).roundToPx()
     }
 
     val rightPadding = with(density) {
-        paddingValues.calculateEndPadding(layoutDirection).roundToPx()
+        paddingValues.calculateRightPadding(layoutDirection).roundToPx()
     }
 
     val horizontalPadding = leftPadding + rightPadding
@@ -210,11 +208,11 @@ internal suspend fun handleDragGridItem(
     delay(100L)
 
     val leftPadding = with(density) {
-        paddingValues.calculateStartPadding(layoutDirection).roundToPx()
+        paddingValues.calculateLeftPadding(layoutDirection).roundToPx()
     }
 
     val rightPadding = with(density) {
-        paddingValues.calculateEndPadding(layoutDirection).roundToPx()
+        paddingValues.calculateRightPadding(layoutDirection).roundToPx()
     }
 
     val topPadding = with(density) {
@@ -614,11 +612,11 @@ internal suspend fun handleConflictingGridItem(
     }
 
     val leftPadding = with(density) {
-        paddingValues.calculateStartPadding(layoutDirection).roundToPx()
+        paddingValues.calculateLeftPadding(layoutDirection).roundToPx()
     }
 
     val rightPadding = with(density) {
-        paddingValues.calculateEndPadding(layoutDirection).roundToPx()
+        paddingValues.calculateRightPadding(layoutDirection).roundToPx()
     }
 
     val topPadding = with(density) {

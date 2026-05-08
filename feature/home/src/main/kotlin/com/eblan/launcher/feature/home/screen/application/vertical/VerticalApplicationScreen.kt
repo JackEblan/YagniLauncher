@@ -158,7 +158,7 @@ internal fun SharedTransitionScope.VerticalApplicationScreen(
     var popupIntSize by remember { mutableStateOf(IntSize.Zero) }
 
     val leftPadding = with(density) {
-        paddingValues.calculateStartPadding(layoutDirection).roundToPx()
+        paddingValues.calculateLeftPadding(layoutDirection).roundToPx()
     }
 
     val topPadding = with(density) {
@@ -676,7 +676,6 @@ private fun SharedTransitionScope.EblanApplicationInfos(
                         isQuietModeEnabled = isQuietModeEnabled,
                         managedProfileResult = managedProfileResult,
                         paddingValues = paddingValues,
-                        onDismiss = onDismiss,
                         privateEblanApplicationInfos = getEblanApplicationInfosByLabelAndTag.privateEblanApplicationInfos,
                         privateEblanUser = getEblanApplicationInfosByLabelAndTag.privateEblanUser,
                         onUpdateIsQuietModeEnabled = { newIsQuiteModeEnabled ->
@@ -685,7 +684,6 @@ private fun SharedTransitionScope.EblanApplicationInfos(
                         onUpdateOverlayBounds = onUpdateOverlayBounds,
                         onUpdatePopupMenu = onUpdatePrivatePopupMenu,
                         onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
-                        onScrollToItem = lazyGridState::scrollToItem,
                     )
                 }
 

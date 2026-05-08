@@ -256,11 +256,11 @@ internal fun PagerScreen(
     }
 
     val leftPadding = with(density) {
-        paddingValues.calculateStartPadding(layoutDirection).roundToPx()
+        paddingValues.calculateLeftPadding(layoutDirection).roundToPx()
     }
 
     val rightPadding = with(density) {
-        paddingValues.calculateEndPadding(layoutDirection).roundToPx()
+        paddingValues.calculateRightPadding(layoutDirection).roundToPx()
     }
 
     val topPadding = with(density) {
