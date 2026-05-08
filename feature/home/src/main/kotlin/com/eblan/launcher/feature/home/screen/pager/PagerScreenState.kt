@@ -368,7 +368,7 @@ internal class PagerScreenState(
         )
     }
 
-    fun handleDragGridItemEffect(
+    suspend fun handleDragGridItemEffect(
         currentPage: Int,
         density: Density,
         dockHeight: Dp,
