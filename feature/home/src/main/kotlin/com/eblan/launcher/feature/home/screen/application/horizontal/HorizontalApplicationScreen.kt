@@ -309,6 +309,7 @@ internal fun SharedTransitionScope.HorizontalApplicationScreen(
             onUpdateSharedElementKey = onUpdateSharedElementKey,
             onWidgets = onWidgets,
             onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+            onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
         )
     }
 

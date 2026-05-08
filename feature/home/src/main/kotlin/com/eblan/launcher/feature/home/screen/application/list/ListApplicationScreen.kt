@@ -366,6 +366,7 @@ internal fun SharedTransitionScope.ListApplicationScreen(
             onUpdateSharedElementKey = onUpdateSharedElementKey,
             onWidgets = onWidgets,
             onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+            onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
         )
     }
 

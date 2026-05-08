@@ -66,6 +66,7 @@ import coil3.compose.AsyncImage
 import com.eblan.launcher.domain.model.EblanAppWidgetProviderInfo
 import com.eblan.launcher.domain.model.EblanApplicationInfoGroup
 import com.eblan.launcher.domain.model.GridItemSettings
+import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
@@ -103,6 +104,7 @@ internal fun AppWidgetScreen(
     onVerticalDrag: (Float) -> Unit,
     onDragEnd: () -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
     if (eblanApplicationInfoGroup == null) return
 
@@ -170,6 +172,7 @@ internal fun AppWidgetScreen(
                 onDismissApplicationScreen = onDismissApplicationScreen,
                 onUpdateIsDragging = onUpdateIsDragging,
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
             )
         }
     }
@@ -196,6 +199,7 @@ private fun Success(
     onDismissApplicationScreen: () -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
     val lazyListState = rememberLazyListState()
 
@@ -238,6 +242,7 @@ private fun Success(
                     onDismissApplicationScreen = onDismissApplicationScreen,
                     onUpdateIsDragging = onUpdateIsDragging,
                     onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                    onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                 )
             }
         }
@@ -267,6 +272,7 @@ private fun EblanAppWidgetProviderInfoItem(
     onDismissApplicationScreen: () -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
 
@@ -309,6 +315,14 @@ private fun EblanAppWidgetProviderInfoItem(
                             )
 
                             onUpdateGridItemSource(GridItemSource.New)
+
+                            onUpdateMoveGridItemResult(
+                                MoveGridItemResult(
+                                    isSuccess = false,
+                                    movingGridItem = gridItem,
+                                    conflictingGridItem = null,
+                                ),
+                            )
 
                             onUpdateImageBitmap(graphicsLayer.toImageBitmap())
 

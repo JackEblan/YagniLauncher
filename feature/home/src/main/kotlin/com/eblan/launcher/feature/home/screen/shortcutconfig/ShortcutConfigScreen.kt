@@ -97,6 +97,7 @@ import com.eblan.launcher.domain.model.EblanUser
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.GridItemSettings
+import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.feature.home.component.OffsetNestedScrollConnection
 import com.eblan.launcher.feature.home.component.OffsetOverscrollEffect
 import com.eblan.launcher.feature.home.model.Drag
@@ -138,6 +139,7 @@ internal fun ShortcutConfigScreen(
     onVerticalDrag: (Float) -> Unit,
     onDragEnd: (Float) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
     BackHandler(enabled = offsetY < screenHeight.toFloat()) {
         onDismiss()
@@ -170,6 +172,7 @@ internal fun ShortcutConfigScreen(
             onUpdateSharedElementKey = onUpdateSharedElementKey,
             onUpdateIsDragging = onUpdateIsDragging,
             onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+            onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
         )
     }
 }
@@ -197,6 +200,7 @@ private fun Success(
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
     val horizontalPagerState = rememberPagerState(
         pageCount = {
@@ -289,6 +293,7 @@ private fun Success(
                     onDismiss = onDismiss,
                     onUpdateIsDragging = onUpdateIsDragging,
                     onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                    onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                 )
             }
         } else {
@@ -308,6 +313,7 @@ private fun Success(
                 onDismiss = onDismiss,
                 onUpdateIsDragging = onUpdateIsDragging,
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
             )
         }
     }
@@ -361,6 +367,7 @@ private fun EblanShortcutConfigsPage(
     onDismiss: () -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
 
@@ -433,6 +440,7 @@ private fun EblanShortcutConfigsPage(
                         onDismiss = onDismiss,
                         onUpdateIsDragging = onUpdateIsDragging,
                         onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                        onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                     )
                 }
             }
@@ -459,6 +467,7 @@ private fun EblanApplicationInfoItem(
     onDismiss: () -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -516,6 +525,7 @@ private fun EblanApplicationInfoItem(
                         onDismiss = onDismiss,
                         onUpdateIsDragging = onUpdateIsDragging,
                         onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                        onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                     )
                 }
             }
@@ -541,6 +551,7 @@ private fun EblanShortcutConfigItem(
     onDismiss: () -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
 
@@ -598,6 +609,14 @@ private fun EblanShortcutConfigItem(
                             )
 
                             onUpdateGridItemSource(GridItemSource.New)
+
+                            onUpdateMoveGridItemResult(
+                                MoveGridItemResult(
+                                    isSuccess = false,
+                                    movingGridItem = gridItem,
+                                    conflictingGridItem = null,
+                                ),
+                            )
 
                             onUpdateImageBitmap(graphicsLayer.toImageBitmap())
 

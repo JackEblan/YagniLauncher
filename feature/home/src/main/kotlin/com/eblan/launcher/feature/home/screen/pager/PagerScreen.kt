@@ -421,6 +421,7 @@ internal fun PagerScreen(
             pinGridItem = pinGridItem,
             onUpdateGridItemSource = onUpdateGridItemSource,
             onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+            onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
         )
     }
 
@@ -917,13 +918,18 @@ internal fun PagerScreen(
             }
         }
 
-        if (gridItemSource != null && pagerScreenState.showGridItemPopup && pagerScreenState.popupIntOffset != null && pagerScreenState.popupIntSize != null) {
+        if (gridItemSource != null &&
+            pagerScreenState.showGridItemPopup &&
+            pagerScreenState.popupIntOffset != null &&
+            pagerScreenState.popupIntSize != null &&
+            moveGridItemResult != null
+        ) {
             GridItemPopup(
                 currentPage = currentPage,
                 drag = pagerScreenState.drag,
                 eblanAppWidgetProviderInfosGroup = eblanAppWidgetProviderInfosGroup,
                 eblanShortcutInfosGroup = eblanShortcutInfosGroup,
-                gridItem = moveGridItemResult?.movingGridItem,
+                gridItem = moveGridItemResult.movingGridItem,
                 gridItemSettings = homeSettings.gridItemSettings,
                 hasShortcutHostPermission = hasShortcutHostPermission,
                 paddingValues = paddingValues,
@@ -959,6 +965,7 @@ internal fun PagerScreen(
                 onUpdateSharedElementKey = pagerScreenState::updateSharedElementKey,
                 onWidgets = pagerScreenState::openAppWidgetScreen,
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
             )
         }
 
@@ -1081,6 +1088,7 @@ internal fun PagerScreen(
                 onUpdateOverlayBounds = pagerScreenState::updateOverlayBounds,
                 onUpdateSharedElementKey = pagerScreenState::updateSharedElementKey,
                 onWidgets = pagerScreenState::openAppWidgetScreen,
+                onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
             )
         }
 
@@ -1147,6 +1155,7 @@ internal fun PagerScreen(
             onVerticalDrag = pagerScreenState::verticalDragWidgetScreen,
             onDragEnd = pagerScreenState::handleOnDragEndWidgetScreen,
             onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+            onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
         )
 
         ShortcutConfigScreen(
@@ -1170,6 +1179,7 @@ internal fun PagerScreen(
             onVerticalDrag = pagerScreenState::verticalDragShortcutConfigScreen,
             onDragEnd = pagerScreenState::handleOnDragEndShortcutConfigScreen,
             onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+            onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
         )
 
         AppWidgetScreen(
@@ -1195,6 +1205,7 @@ internal fun PagerScreen(
             onVerticalDrag = pagerScreenState::verticalDragAppWidgetScreen,
             onDragEnd = pagerScreenState::handleOnDragEndAppWidgetScreen,
             onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+            onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
         )
 
         if (pagerScreenState.isResizing && resizeGridItem != null) {

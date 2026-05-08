@@ -52,6 +52,7 @@ import com.eblan.launcher.domain.model.EblanShortcutInfoByGroup
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.GridItemSettings
+import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.feature.home.component.ShortcutInfoMenu
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
@@ -64,7 +65,7 @@ internal fun GridItemPopup(
     drag: Drag,
     eblanAppWidgetProviderInfosGroup: Map<String, List<EblanAppWidgetProviderInfo>>,
     eblanShortcutInfosGroup: Map<EblanShortcutInfoByGroup, List<EblanShortcutInfo>>,
-    gridItem: GridItem?,
+    gridItem: GridItem,
     gridItemSettings: GridItemSettings,
     hasShortcutHostPermission: Boolean,
     paddingValues: PaddingValues,
@@ -86,8 +87,11 @@ internal fun GridItemPopup(
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onWidgets: (EblanApplicationInfoGroup) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
-    if (gridItem == null || popupIntOffset == null || popupIntSize == null) return
+    requireNotNull(popupIntOffset)
+
+    requireNotNull(popupIntSize)
 
     val density = LocalDensity.current
 
@@ -137,6 +141,7 @@ internal fun GridItemPopup(
                 onUpdateSharedElementKey = onUpdateSharedElementKey,
                 onWidgets = onWidgets,
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
             )
         },
     ) { measurables, constraints ->
@@ -197,6 +202,7 @@ internal fun FolderGridItemPopup(
     ) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onWidgets: (EblanApplicationInfoGroup) -> Unit,
+    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
     requireNotNull(popupIntOffset)
 
@@ -250,6 +256,7 @@ internal fun FolderGridItemPopup(
                 onUpdateOverlayBounds = onUpdateOverlayBounds,
                 onUpdateSharedElementKey = onUpdateSharedElementKey,
                 onWidgets = onWidgets,
+                onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
             )
         },
     ) { measurables, constraints ->
@@ -310,6 +317,7 @@ private fun GridItemPopupContent(
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onWidgets: (EblanApplicationInfoGroup) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
     Surface(
         modifier = modifier.padding(5.dp),
@@ -385,6 +393,7 @@ private fun GridItemPopupContent(
                             onDismissRequest()
                         },
                         onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                        onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                     )
                 }
 
@@ -460,6 +469,7 @@ private fun FolderGridItemPopupContent(
     ) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onWidgets: (EblanApplicationInfoGroup) -> Unit,
+    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
     Surface(
         modifier = modifier.width(IntrinsicSize.Max),
@@ -535,6 +545,7 @@ private fun FolderGridItemPopupContent(
 
                             onDismissRequest()
                         },
+                        onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                     )
                 }
 
@@ -589,6 +600,7 @@ private fun ApplicationInfoFolderGridItemPopupContent(
     onWidgets: () -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onInfo: () -> Unit,
+    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
     Surface(
         modifier = modifier.width(IntrinsicSize.Max),
@@ -616,6 +628,7 @@ private fun ApplicationInfoFolderGridItemPopupContent(
                         onUpdateOverlayBounds = onUpdateOverlayBounds,
                         onUpdateSharedElementKey = onUpdateSharedElementKey,
                         onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                        onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                     )
 
                     Spacer(modifier = Modifier.height(5.dp))
@@ -685,6 +698,7 @@ private fun ApplicationInfoGridItemMenu(
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onWidgets: () -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
     Column(
         modifier = modifier,
@@ -707,6 +721,7 @@ private fun ApplicationInfoGridItemMenu(
                 onUpdateOverlayBounds = onUpdateOverlayBounds,
                 onUpdateSharedElementKey = onUpdateSharedElementKey,
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
             )
 
             Spacer(modifier = Modifier.height(5.dp))

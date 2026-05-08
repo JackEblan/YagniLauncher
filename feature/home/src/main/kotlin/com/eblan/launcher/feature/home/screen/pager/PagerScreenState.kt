@@ -354,6 +354,7 @@ internal class PagerScreenState(
         pinGridItem: GridItem?,
         onUpdateGridItemSource: (GridItemSource) -> Unit,
         onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+        onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
     ) {
         handlePinGridItem(
             isApplicationScreenVisible = isApplicationScreenVisible,
@@ -361,11 +362,9 @@ internal class PagerScreenState(
             pinItemRequestWrapper = pinItemRequestWrapper,
             screenHeight = screenHeight,
             swipeY = swipeY,
-            onDraggingGridItem = {
-                isDragging = true
-            },
             onUpdateGridItemSource = onUpdateGridItemSource,
             onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+            onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
         )
     }
 
@@ -845,9 +844,9 @@ internal class PagerScreenState(
         pinItemRequestWrapper: PinItemRequestWrapper,
         screenHeight: Int,
         swipeY: Animatable<Float, AnimationVector1D>,
-        onDraggingGridItem: () -> Unit,
         onUpdateGridItemSource: (GridItemSource) -> Unit,
         onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+        onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
     ) {
         if (pinGridItem == null) return
 
@@ -866,9 +865,17 @@ internal class PagerScreenState(
             GridItemSource.Pin(pinItemRequest = pinItemRequest),
         )
 
+        onUpdateMoveGridItemResult(
+            MoveGridItemResult(
+                isSuccess = false,
+                movingGridItem = pinGridItem,
+                conflictingGridItem = null,
+            ),
+        )
+
         onUpdateIsVisibleOverlay(true)
 
-        onDraggingGridItem()
+        isDragging = true
     }
 
     fun dragStart(offset: Offset) {
