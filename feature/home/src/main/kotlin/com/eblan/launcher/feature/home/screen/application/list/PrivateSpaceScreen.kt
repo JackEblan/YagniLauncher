@@ -48,12 +48,12 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.round
 import androidx.compose.ui.unit.sp
@@ -82,7 +82,6 @@ internal fun LazyListScope.privateSpace(
     paddingValues: PaddingValues,
     privateEblanApplicationInfos: List<EblanApplicationInfo>,
     privateEblanUser: EblanUser?,
-    onDismiss: () -> Unit,
     onUpdateIsQuietModeEnabled: (Boolean) -> Unit,
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
@@ -90,7 +89,6 @@ internal fun LazyListScope.privateSpace(
     ) -> Unit,
     onUpdatePopupMenu: (Boolean) -> Unit,
     onUpdateEblanApplicationInfo: (EblanApplicationInfo) -> Unit,
-    onScrollToItem: suspend (Int) -> Unit,
 ) {
     if (privateEblanUser == null || privateEblanUser.isPrivateSpaceEntryPointHidden) return
 
@@ -111,11 +109,9 @@ internal fun LazyListScope.privateSpace(
                 eblanApplicationInfo = eblanApplicationInfo,
                 iconPackFilePaths = iconPackFilePaths,
                 paddingValues = paddingValues,
-                onDismiss = onDismiss,
                 onUpdateOverlayBounds = onUpdateOverlayBounds,
                 onUpdatePopupMenu = onUpdatePopupMenu,
                 onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
-                onScrollToItem = onScrollToItem,
             )
         }
     }
@@ -134,14 +130,12 @@ private fun PrivateSpaceEblanApplicationInfoItem(
     eblanApplicationInfo: EblanApplicationInfo,
     iconPackFilePaths: Map<String, String>,
     paddingValues: PaddingValues,
-    onDismiss: () -> Unit,
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
     ) -> Unit,
     onUpdatePopupMenu: (Boolean) -> Unit,
     onUpdateEblanApplicationInfo: (EblanApplicationInfo) -> Unit,
-    onScrollToItem: suspend (Int) -> Unit,
 ) {
     var intOffset by remember { mutableStateOf(IntOffset.Zero) }
 
@@ -152,6 +146,8 @@ private fun PrivateSpaceEblanApplicationInfoItem(
     val launcherApps = LocalLauncherApps.current
 
     val keyboardController = LocalSoftwareKeyboardController.current
+
+    val layoutDirection = LocalLayoutDirection.current
 
     val scope = rememberCoroutineScope()
 
@@ -165,7 +161,7 @@ private fun PrivateSpaceEblanApplicationInfoItem(
     val icon = iconPackFilePaths[eblanApplicationInfo.componentName] ?: eblanApplicationInfo.icon
 
     val leftPadding = with(density) {
-        paddingValues.calculateStartPadding(LayoutDirection.Ltr).roundToPx()
+        paddingValues.calculateStartPadding(layoutDirection).roundToPx()
     }
 
     val topPadding = with(density) {

@@ -61,9 +61,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.AppDrawerSettings
@@ -145,6 +145,10 @@ internal fun SharedTransitionScope.VerticalApplicationScreen(
 ) {
     val density = LocalDensity.current
 
+    val layoutDirection = LocalLayoutDirection.current
+
+    val launcherApps = LocalLauncherApps.current
+
     var showPopupApplicationMenu by remember { mutableStateOf(false) }
 
     var showPrivatePopupApplicationMenu by remember { mutableStateOf(false) }
@@ -153,10 +157,8 @@ internal fun SharedTransitionScope.VerticalApplicationScreen(
 
     var popupIntSize by remember { mutableStateOf(IntSize.Zero) }
 
-    val launcherApps = LocalLauncherApps.current
-
     val leftPadding = with(density) {
-        paddingValues.calculateStartPadding(LayoutDirection.Ltr).roundToPx()
+        paddingValues.calculateStartPadding(layoutDirection).roundToPx()
     }
 
     val topPadding = with(density) {
@@ -209,8 +211,8 @@ internal fun SharedTransitionScope.VerticalApplicationScreen(
             .fillMaxSize()
             .padding(
                 top = paddingValues.calculateTopPadding(),
-                start = paddingValues.calculateStartPadding(LayoutDirection.Ltr),
-                end = paddingValues.calculateEndPadding(LayoutDirection.Ltr),
+                start = paddingValues.calculateStartPadding(layoutDirection),
+                end = paddingValues.calculateEndPadding(layoutDirection),
             ),
     ) {
         ApplicationSearchBar(

@@ -50,9 +50,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.AppDrawerSettings
@@ -129,6 +129,10 @@ internal fun SharedTransitionScope.HorizontalApplicationScreen(
 ) {
     val density = LocalDensity.current
 
+    val layoutDirection = LocalLayoutDirection.current
+
+    val launcherApps = LocalLauncherApps.current
+
     var showPopupApplicationMenu by remember { mutableStateOf(false) }
 
     var showPrivatePopupApplicationMenu by remember { mutableStateOf(false) }
@@ -137,10 +141,8 @@ internal fun SharedTransitionScope.HorizontalApplicationScreen(
 
     var popupIntSize by remember { mutableStateOf(IntSize.Zero) }
 
-    val launcherApps = LocalLauncherApps.current
-
     val leftPadding = with(density) {
-        paddingValues.calculateStartPadding(LayoutDirection.Ltr).roundToPx()
+        paddingValues.calculateStartPadding(layoutDirection).roundToPx()
     }
 
     val topPadding = with(density) {
@@ -253,9 +255,6 @@ internal fun SharedTransitionScope.HorizontalApplicationScreen(
                     selectedEblanApplicationInfo = eblanApplicationInfo
                 },
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                onScrollToItem = {
-                    horizontalPagerState.scrollToPage(0)
-                },
                 onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
             )
         }
@@ -377,7 +376,6 @@ private fun SharedTransitionScope.EblanApplicationInfosPage(
     onVerticalDrag: (Float) -> Unit,
     onUpdateEblanApplicationInfo: (EblanApplicationInfo) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
-    onScrollToItem: suspend (Int) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
     val userManager = LocalUserManager.current
@@ -450,7 +448,6 @@ private fun SharedTransitionScope.EblanApplicationInfosPage(
                 onVerticalDrag = onVerticalDrag,
                 onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                onScrollToItem = onScrollToItem,
                 onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
             )
 
@@ -510,7 +507,6 @@ private fun SharedTransitionScope.EblanApplicationInfos(
     onVerticalDrag: (Float) -> Unit,
     onUpdateEblanApplicationInfo: (EblanApplicationInfo) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
-    onScrollToItem: suspend (Int) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
     HorizontalAppDrawerGridLayout(
@@ -564,11 +560,9 @@ private fun SharedTransitionScope.EblanApplicationInfos(
                         eblanApplicationInfo = eblanApplicationInfo,
                         iconPackFilePaths = iconPackFilePaths,
                         paddingValues = paddingValues,
-                        onDismiss = onDismiss,
                         onUpdateOverlayBounds = onUpdateOverlayBounds,
                         onUpdatePopupMenu = onUpdatePrivatePopupMenu,
                         onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
-                        onScrollToItem = onScrollToItem,
                     )
                 }
             }

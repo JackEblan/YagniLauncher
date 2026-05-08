@@ -62,7 +62,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.core.util.Consumer
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
@@ -98,6 +98,8 @@ internal fun EditPageScreen(
     requireNotNull(editPageData)
 
     val density = LocalDensity.current
+
+    val layoutDirection = LocalLayoutDirection.current
 
     val topPadding = with(density) {
         paddingValues.calculateTopPadding().roundToPx()
@@ -257,7 +259,7 @@ internal fun EditPageScreen(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(
-                    end = paddingValues.calculateEndPadding(LayoutDirection.Ltr),
+                    end = paddingValues.calculateEndPadding(layoutDirection),
                     bottom = paddingValues.calculateBottomPadding(),
                 ),
             expanded = expanded,

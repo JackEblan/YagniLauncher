@@ -55,9 +55,9 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import com.eblan.launcher.domain.model.GridItem
@@ -122,10 +122,12 @@ internal fun SharedTransitionScope.FolderScreen(
 
     val context = LocalContext.current
 
+    val layoutDirection = LocalLayoutDirection.current
+
     val androidLauncherAppsWrapper = LocalLauncherApps.current
 
     val leftPadding = with(density) {
-        paddingValues.calculateStartPadding(LayoutDirection.Ltr).roundToPx()
+        paddingValues.calculateStartPadding(layoutDirection).roundToPx()
     }
 
     val topPadding = with(density) {

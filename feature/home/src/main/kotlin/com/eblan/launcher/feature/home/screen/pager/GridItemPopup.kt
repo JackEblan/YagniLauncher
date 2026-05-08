@@ -40,9 +40,9 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.EblanAppWidgetProviderInfo
@@ -95,8 +95,10 @@ internal fun GridItemPopup(
 
     val density = LocalDensity.current
 
+    val layoutDirection = LocalLayoutDirection.current
+
     val leftPadding = with(density) {
-        paddingValues.calculateStartPadding(LayoutDirection.Ltr).roundToPx()
+        paddingValues.calculateStartPadding(layoutDirection).roundToPx()
     }
 
     val topPadding = with(density) {
@@ -210,8 +212,10 @@ internal fun FolderGridItemPopup(
 
     val density = LocalDensity.current
 
+    val layoutDirection = LocalLayoutDirection.current
+
     val leftPadding = with(density) {
-        paddingValues.calculateStartPadding(LayoutDirection.Ltr).roundToPx()
+        paddingValues.calculateStartPadding(layoutDirection).roundToPx()
     }
 
     val topPadding = with(density) {
