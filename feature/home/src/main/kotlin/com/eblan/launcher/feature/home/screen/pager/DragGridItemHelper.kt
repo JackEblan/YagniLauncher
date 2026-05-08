@@ -18,8 +18,6 @@
 package com.eblan.launcher.feature.home.screen.pager
 
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.calculateEndPadding
-import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
@@ -55,6 +53,7 @@ internal fun handleAnimateScrollToPage(
     isDragging: Boolean,
     paddingValues: PaddingValues,
     screenWidth: Int,
+    layoutDirection: LayoutDirection,
     onUpdateDockPageDirection: (PageDirection?) -> Unit,
     onUpdateFolderPageDirection: (PageDirection?) -> Unit,
     onUpdateGridPageDirection: (PageDirection?) -> Unit,
@@ -62,11 +61,11 @@ internal fun handleAnimateScrollToPage(
     if (gridItemSource == null || !isDragging) return
 
     val leftPadding = with(density) {
-        paddingValues.calculateStartPadding(LayoutDirection.Ltr).roundToPx()
+        paddingValues.calculateLeftPadding(layoutDirection).roundToPx()
     }
 
     val rightPadding = with(density) {
-        paddingValues.calculateEndPadding(LayoutDirection.Ltr).roundToPx()
+        paddingValues.calculateRightPadding(layoutDirection).roundToPx()
     }
 
     val horizontalPadding = leftPadding + rightPadding
@@ -168,6 +167,7 @@ internal suspend fun handleDragGridItem(
     screenHeight: Int,
     screenWidth: Int,
     moveGridItemResult: MoveGridItemResult?,
+    layoutDirection: LayoutDirection,
     onMoveFolderGridItem: (
         conflictingGridItem: GridItem,
         movingFolderGridItem: GridItem,
@@ -208,11 +208,11 @@ internal suspend fun handleDragGridItem(
     delay(100L)
 
     val leftPadding = with(density) {
-        paddingValues.calculateStartPadding(LayoutDirection.Ltr).roundToPx()
+        paddingValues.calculateLeftPadding(layoutDirection).roundToPx()
     }
 
     val rightPadding = with(density) {
-        paddingValues.calculateEndPadding(LayoutDirection.Ltr).roundToPx()
+        paddingValues.calculateRightPadding(layoutDirection).roundToPx()
     }
 
     val topPadding = with(density) {
@@ -563,6 +563,7 @@ internal suspend fun handleConflictingGridItem(
     screenHeight: Int,
     screenWidth: Int,
     lockMovement: Boolean,
+    layoutDirection: LayoutDirection,
     onShowFolderWhenDragging: (
         conflictingGridItem: GridItem,
         movingGridItem: GridItem,
@@ -611,11 +612,11 @@ internal suspend fun handleConflictingGridItem(
     }
 
     val leftPadding = with(density) {
-        paddingValues.calculateStartPadding(LayoutDirection.Ltr).roundToPx()
+        paddingValues.calculateLeftPadding(layoutDirection).roundToPx()
     }
 
     val rightPadding = with(density) {
-        paddingValues.calculateEndPadding(LayoutDirection.Ltr).roundToPx()
+        paddingValues.calculateRightPadding(layoutDirection).roundToPx()
     }
 
     val topPadding = with(density) {

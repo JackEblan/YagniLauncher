@@ -76,12 +76,12 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.round
 import androidx.compose.ui.unit.sp
@@ -172,6 +172,8 @@ internal fun SharedTransitionScope.ListApplicationScreen(
 ) {
     val density = LocalDensity.current
 
+    val layoutDirection = LocalLayoutDirection.current
+
     var showPopupApplicationMenu by remember { mutableStateOf(false) }
 
     var showPrivatePopupApplicationMenu by remember { mutableStateOf(false) }
@@ -183,7 +185,7 @@ internal fun SharedTransitionScope.ListApplicationScreen(
     val launcherApps = LocalLauncherApps.current
 
     val leftPadding = with(density) {
-        paddingValues.calculateStartPadding(LayoutDirection.Ltr).roundToPx()
+        paddingValues.calculateLeftPadding(layoutDirection).roundToPx()
     }
 
     val topPadding = with(density) {
@@ -234,8 +236,8 @@ internal fun SharedTransitionScope.ListApplicationScreen(
             .fillMaxSize()
             .padding(
                 top = paddingValues.calculateTopPadding(),
-                start = paddingValues.calculateStartPadding(LayoutDirection.Ltr),
-                end = paddingValues.calculateEndPadding(LayoutDirection.Ltr),
+                start = paddingValues.calculateStartPadding(layoutDirection),
+                end = paddingValues.calculateEndPadding(layoutDirection),
             ),
     ) {
         ApplicationSearchBarWithoutMenu(
@@ -678,7 +680,6 @@ private fun SharedTransitionScope.EblanApplicationInfos(
                         isQuietModeEnabled = isQuietModeEnabled,
                         managedProfileResult = managedProfileResult,
                         paddingValues = paddingValues,
-                        onDismiss = onDismiss,
                         privateEblanApplicationInfos = getEblanApplicationInfosByLabelAndTag.privateEblanApplicationInfos,
                         privateEblanUser = getEblanApplicationInfosByLabelAndTag.privateEblanUser,
                         onUpdateIsQuietModeEnabled = { newIsQuiteModeEnabled ->
@@ -687,7 +688,6 @@ private fun SharedTransitionScope.EblanApplicationInfos(
                         onUpdateOverlayBounds = onUpdateOverlayBounds,
                         onUpdatePopupMenu = onUpdatePrivatePopupMenu,
                         onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
-                        onScrollToItem = lazyListState::scrollToItem,
                     )
                 }
 
@@ -774,6 +774,8 @@ private fun SharedTransitionScope.EblanApplicationInfoItem(
 
     val launcherApps = LocalLauncherApps.current
 
+    val layoutDirection = LocalLayoutDirection.current
+
     val keyboardController = LocalSoftwareKeyboardController.current
 
     val textColor = getSystemTextColor(
@@ -786,7 +788,7 @@ private fun SharedTransitionScope.EblanApplicationInfoItem(
     val icon = iconPackFilePaths[eblanApplicationInfo.componentName] ?: eblanApplicationInfo.icon
 
     val leftPadding = with(density) {
-        paddingValues.calculateStartPadding(LayoutDirection.Ltr).roundToPx()
+        paddingValues.calculateLeftPadding(layoutDirection).roundToPx()
     }
 
     val topPadding = with(density) {

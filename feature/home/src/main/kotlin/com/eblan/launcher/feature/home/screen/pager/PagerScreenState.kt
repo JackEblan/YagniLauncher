@@ -57,6 +57,7 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.round
 import com.eblan.launcher.domain.common.IconKeyGenerator
@@ -381,6 +382,7 @@ internal class PagerScreenState(
         gridItemSource: GridItemSource?,
         isVisibleOverlay: Boolean,
         moveGridItemResult: MoveGridItemResult?,
+        layoutDirection: LayoutDirection,
         onMoveFolderGridItem: (
             conflictingGridItem: GridItem,
             movingFolderGridItem: GridItem,
@@ -428,6 +430,7 @@ internal class PagerScreenState(
             screenHeight = screenHeight,
             screenWidth = screenWidth,
             moveGridItemResult = moveGridItemResult,
+            layoutDirection = layoutDirection,
             onMoveFolderGridItem = onMoveFolderGridItem,
             onMoveGridItem = onMoveGridItem,
             onUpdateAssociate = { newAssociate ->
@@ -510,6 +513,7 @@ internal class PagerScreenState(
         moveGridItemResult: MoveGridItemResult?,
         paddingValues: PaddingValues,
         isVisibleOverlay: Boolean,
+        layoutDirection: LayoutDirection,
         onShowFolderWhenDragging: (
             conflictingGridItem: GridItem,
             movingGridItem: GridItem,
@@ -530,6 +534,7 @@ internal class PagerScreenState(
             screenHeight = screenHeight,
             screenWidth = screenWidth,
             lockMovement = experimentalSettings.lockMovement,
+            layoutDirection = layoutDirection,
             onShowFolderWhenDragging = onShowFolderWhenDragging,
             onUpdateFolderPopupBounds = { intOffset, intSize ->
                 lastFolderPopupX = intOffset.x
@@ -553,6 +558,7 @@ internal class PagerScreenState(
         folderGridItem: GridItem?,
         paddingValues: PaddingValues,
         gridItemSource: GridItemSource?,
+        layoutDirection: LayoutDirection,
     ) {
         handleAnimateScrollToPage(
             associate = associate,
@@ -565,6 +571,7 @@ internal class PagerScreenState(
             isDragging = isDragging,
             paddingValues = paddingValues,
             screenWidth = screenWidth,
+            layoutDirection = layoutDirection,
             onUpdateDockPageDirection = { pageDirection ->
                 dockPageDirection = pageDirection
             },

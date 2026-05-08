@@ -62,8 +62,8 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.core.util.Consumer
 import com.eblan.launcher.domain.model.AppDrawerSettings
@@ -215,6 +215,8 @@ internal fun PagerScreen(
 ) {
     val context = LocalContext.current
 
+    val layoutDirection = LocalLayoutDirection.current
+
     val androidLauncherAppsWrapper = LocalLauncherApps.current
 
     val androidWallpaperManagerWrapper = LocalWallpaperManager.current
@@ -254,11 +256,11 @@ internal fun PagerScreen(
     }
 
     val leftPadding = with(density) {
-        paddingValues.calculateStartPadding(LayoutDirection.Ltr).roundToPx()
+        paddingValues.calculateLeftPadding(layoutDirection).roundToPx()
     }
 
     val rightPadding = with(density) {
-        paddingValues.calculateEndPadding(LayoutDirection.Ltr).roundToPx()
+        paddingValues.calculateRightPadding(layoutDirection).roundToPx()
     }
 
     val topPadding = with(density) {
@@ -449,6 +451,7 @@ internal fun PagerScreen(
             gridItemSource = gridItemSource,
             isVisibleOverlay = isVisibleOverlay,
             moveGridItemResult = moveGridItemResult,
+            layoutDirection = layoutDirection,
             onMoveFolderGridItem = onMoveFolderGridItem,
             onMoveGridItem = onMoveGridItem,
         )
@@ -507,6 +510,7 @@ internal fun PagerScreen(
             moveGridItemResult = moveGridItemResult,
             paddingValues = paddingValues,
             isVisibleOverlay = isVisibleOverlay,
+            layoutDirection = layoutDirection,
             onShowFolderWhenDragging = onShowFolderWhenDragging,
         )
     }
@@ -517,6 +521,7 @@ internal fun PagerScreen(
             folderGridItem = folderGridItem,
             paddingValues = paddingValues,
             gridItemSource = gridItemSource,
+            layoutDirection = layoutDirection,
         )
     }
 
@@ -688,8 +693,8 @@ internal fun PagerScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(
-                            start = paddingValues.calculateStartPadding(LayoutDirection.Ltr),
-                            end = paddingValues.calculateEndPadding(LayoutDirection.Ltr),
+                            start = paddingValues.calculateStartPadding(layoutDirection),
+                            end = paddingValues.calculateEndPadding(layoutDirection),
                         ),
                     columns = homeSettings.columns,
                     gridItems = gridItemsByPage[page],
@@ -808,8 +813,8 @@ internal fun PagerScreen(
                     .fillMaxWidth()
                     .height(dockHeight)
                     .padding(
-                        start = paddingValues.calculateStartPadding(LayoutDirection.Ltr),
-                        end = paddingValues.calculateEndPadding(LayoutDirection.Ltr),
+                        start = paddingValues.calculateStartPadding(layoutDirection),
+                        end = paddingValues.calculateEndPadding(layoutDirection),
                     ),
                 userScrollEnabled = !isVisibleOverlay,
             ) { index ->

@@ -25,12 +25,16 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -39,13 +43,15 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
@@ -56,6 +62,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.core.util.Consumer
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
@@ -91,6 +98,8 @@ internal fun EditPageScreen(
     requireNotNull(editPageData)
 
     val density = LocalDensity.current
+
+    val layoutDirection = LocalLayoutDirection.current
 
     val topPadding = with(density) {
         paddingValues.calculateTopPadding().roundToPx()
@@ -129,12 +138,6 @@ internal fun EditPageScreen(
             }
         }
 
-    val isAtTop by remember(key1 = lazyListState) {
-        derivedStateOf {
-            lazyListState.firstVisibleItemIndex == 0 && lazyListState.firstVisibleItemScrollOffset == 0
-        }
-    }
-
     val activity = LocalActivity.current as ComponentActivity
 
     val scope = rememberCoroutineScope()
@@ -156,6 +159,8 @@ internal fun EditPageScreen(
 
         Associate.Dock -> homeSettings.dockHeight.dp
     }
+
+    var expanded by remember { mutableStateOf(false) }
 
     DisposableEffect(key1 = activity) {
         val listener = Consumer<Intent> { intent ->
@@ -250,33 +255,34 @@ internal fun EditPageScreen(
             }
         }
 
-        AnimatedVisibility(
+        ExpandableFloatingActionButton(
             modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(paddingValues),
-            visible = isAtTop,
-            enter = fadeIn(),
-            exit = fadeOut(),
-        ) {
-            ActionButtons(
-                onAdd = {
-                    currentPageItems = currentPageItems.toMutableList().apply {
-                        add(PageItem(id = maxOf { it.id } + 1, gridItems = emptyList()))
-                    }
-                },
-                onCancel = {
-                    onUpdateScreen(Screen.Pager)
-                },
-                onSave = {
-                    onSaveEditPage(
-                        selectedId,
-                        currentPageItems,
-                        pageItemsToDelete,
-                        editPageData.associate,
-                    )
-                },
-            )
-        }
+                .align(Alignment.BottomEnd)
+                .padding(
+                    end = paddingValues.calculateEndPadding(layoutDirection),
+                    bottom = paddingValues.calculateBottomPadding(),
+                ),
+            expanded = expanded,
+            onExpandedChange = { expanded = it },
+            onAdd = {
+                currentPageItems = currentPageItems.toMutableList().apply {
+                    add(PageItem(id = maxOf { it.id } + 1, gridItems = emptyList()))
+                }
+            },
+            onSave = {
+                onSaveEditPage(
+                    selectedId,
+                    currentPageItems,
+                    pageItemsToDelete,
+                    editPageData.associate,
+                )
+
+                expanded = false
+            },
+            onCancel = {
+                onUpdateScreen(Screen.Pager)
+            },
+        )
     }
 }
 
@@ -321,41 +327,67 @@ private fun PageButtons(
 }
 
 @Composable
-private fun ActionButtons(
+private fun ExpandableFloatingActionButton(
     modifier: Modifier = Modifier,
+    expanded: Boolean,
+    onExpandedChange: (Boolean) -> Unit,
     onAdd: () -> Unit,
-    onCancel: () -> Unit,
     onSave: () -> Unit,
+    onCancel: () -> Unit,
 ) {
-    Surface(
-        modifier = modifier.padding(10.dp),
-        shape = RoundedCornerShape(30.dp),
-        tonalElevation = 10.dp,
-    ) {
-        Row(
-            modifier = Modifier.padding(5.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly,
+    Column(modifier = modifier.padding(15.dp)) {
+        AnimatedVisibility(
+            visible = expanded,
+            enter = fadeIn() + slideInHorizontally { it },
+            exit = fadeOut() + slideOutHorizontally { it },
         ) {
-            IconButton(onClick = onCancel) {
-                Icon(
-                    imageVector = EblanLauncherIcons.Close,
-                    contentDescription = null,
-                )
-            }
+            Column(
+                horizontalAlignment = Alignment.End,
+                verticalArrangement = Arrangement.spacedBy(5.dp),
+            ) {
+                ElevatedButton(onClick = onAdd) {
+                    Text(
+                        text = "Add",
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
 
-            IconButton(onClick = onSave) {
-                Icon(
-                    imageVector = EblanLauncherIcons.Save,
-                    contentDescription = null,
-                )
-            }
+                ElevatedButton(
+                    onClick = onSave,
+                ) {
+                    Text(
+                        text = "Save",
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
 
-            IconButton(onClick = onAdd) {
-                Icon(
-                    imageVector = EblanLauncherIcons.Add,
-                    contentDescription = null,
-                )
+                ElevatedButton(
+                    onClick = onCancel,
+                ) {
+                    Text(
+                        text = "Cancel",
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
             }
+        }
+
+        Spacer(modifier = Modifier.height(15.dp))
+
+        FloatingActionButton(
+            modifier = Modifier.align(Alignment.End),
+            onClick = {
+                onExpandedChange(!expanded)
+            },
+        ) {
+            Icon(
+                imageVector = if (expanded) {
+                    EblanLauncherIcons.Close
+                } else {
+                    EblanLauncherIcons.Add
+                },
+                contentDescription = null,
+            )
         }
     }
 }
