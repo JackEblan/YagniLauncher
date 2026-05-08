@@ -166,6 +166,8 @@ internal fun HomeRoute(
         onUpdateShortcutConfigIntoShortcutInfoGridItem = viewModel::updateShortcutConfigIntoShortcutInfoGridItem,
         onUpdateGridItemSource = viewModel::updateGridItemSource,
         onUpdateIsVisibleOverlay = viewModel::updateIsVisibleOverlay,
+        onUpdateMoveGridItemResult = viewModel::updateMoveGridItemResult,
+        onUpdateResizeGridItem = viewModel::updateResizeGridItem,
     )
 }
 
@@ -262,6 +264,8 @@ internal fun HomeScreen(
     ) -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
+    onUpdateResizeGridItem: (GridItem) -> Unit,
 ) {
     val paddingValues = WindowInsets.safeDrawing.asPaddingValues()
 
@@ -328,6 +332,8 @@ internal fun HomeScreen(
                 onUpdateShortcutConfigIntoShortcutInfoGridItem = onUpdateShortcutConfigIntoShortcutInfoGridItem,
                 onUpdateGridItemSource = onUpdateGridItemSource,
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                onUpdateResizeGridItem = onUpdateResizeGridItem,
             )
         }
     }
@@ -429,6 +435,8 @@ private fun Success(
     ) -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
+    onUpdateResizeGridItem: (GridItem) -> Unit,
 ) {
     val activity = LocalActivity.current
 
@@ -504,6 +512,8 @@ private fun Success(
                     onUpdateShortcutConfigIntoShortcutInfoGridItem = onUpdateShortcutConfigIntoShortcutInfoGridItem,
                     onUpdateGridItemSource = onUpdateGridItemSource,
                     onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                    onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                    onUpdateResizeGridItem = onUpdateResizeGridItem,
                 )
             }
 

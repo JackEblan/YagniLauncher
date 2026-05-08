@@ -21,6 +21,7 @@ import com.eblan.launcher.domain.common.Dispatcher
 import com.eblan.launcher.domain.common.EblanDispatchers
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
+import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.domain.repository.GridRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ensureActive
@@ -33,7 +34,7 @@ class MoveFolderGridItemUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(
         conflictingGridItem: GridItem,
-        movingFolderGridItem: GridItem,
+        movingGridItem: GridItem,
         data: GridItemData.Folder,
         dragX: Int,
         dragY: Int,
@@ -42,7 +43,7 @@ class MoveFolderGridItemUseCase @Inject constructor(
         gridWidth: Int,
         gridHeight: Int,
         currentPage: Int,
-    ) = withContext(defaultDispatcher) {
+    ): MoveGridItemResult = withContext(defaultDispatcher) {
         val gridItemsPerPage = columns * rows
 
         val cellWidth = gridWidth / columns
@@ -59,7 +60,7 @@ class MoveFolderGridItemUseCase @Inject constructor(
             folderGridItems.indexOfFirst {
                 ensureActive()
 
-                it.id == movingFolderGridItem.id
+                it.id == movingGridItem.id
             }
 
         if (movingIndex != -1) {
@@ -93,5 +94,11 @@ class MoveFolderGridItemUseCase @Inject constructor(
         }
 
         gridRepository.upsertGridItems(gridItems = indexedGridItems)
+
+        MoveGridItemResult(
+            isSuccess = true,
+            movingGridItem = movingGridItem,
+            conflictingGridItem = null,
+        )
     }
 }

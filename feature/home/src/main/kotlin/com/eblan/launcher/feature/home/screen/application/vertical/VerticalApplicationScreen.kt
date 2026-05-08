@@ -79,6 +79,7 @@ import com.eblan.launcher.domain.model.EblanUserPageKey
 import com.eblan.launcher.domain.model.EblanUserType
 import com.eblan.launcher.domain.model.GetEblanApplicationInfosByLabelAndTag
 import com.eblan.launcher.domain.model.ManagedProfileResult
+import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.feature.home.component.OffsetNestedScrollConnection
 import com.eblan.launcher.feature.home.component.OffsetOverscrollEffect
 import com.eblan.launcher.feature.home.dialog.EblanApplicationInfoOrderDialog
@@ -140,6 +141,7 @@ internal fun SharedTransitionScope.VerticalApplicationScreen(
     onWidgets: (EblanApplicationInfoGroup) -> Unit,
     onDraggingShortcutInfoGridItem: () -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
     val density = LocalDensity.current
 
@@ -289,6 +291,7 @@ internal fun SharedTransitionScope.VerticalApplicationScreen(
                     selectedEblanApplicationInfo = eblanApplicationInfo
                 },
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
             )
         }
     }
@@ -341,6 +344,7 @@ internal fun SharedTransitionScope.VerticalApplicationScreen(
             onUpdateSharedElementKey = onUpdateSharedElementKey,
             onWidgets = onWidgets,
             onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+            onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
         )
     }
 
@@ -430,6 +434,7 @@ private fun SharedTransitionScope.EblanApplicationInfosPage(
     onVerticalDrag: (Float) -> Unit,
     onUpdateEblanApplicationInfo: (EblanApplicationInfo) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
     val userManager = LocalUserManager.current
 
@@ -514,6 +519,7 @@ private fun SharedTransitionScope.EblanApplicationInfosPage(
                 onVerticalDrag = onVerticalDrag,
                 onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
             )
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && packageManager.isDefaultLauncher() &&
@@ -575,6 +581,7 @@ private fun SharedTransitionScope.EblanApplicationInfos(
     onVerticalDrag: (Float) -> Unit,
     onUpdateEblanApplicationInfo: (EblanApplicationInfo) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
 
@@ -656,6 +663,7 @@ private fun SharedTransitionScope.EblanApplicationInfos(
                             onUpdateSharedElementKey = onUpdateSharedElementKey,
                             onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
                             onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                            onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                         )
                     }
 
@@ -702,6 +710,7 @@ private fun SharedTransitionScope.EblanApplicationInfos(
                             onUpdateSharedElementKey = onUpdateSharedElementKey,
                             onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
                             onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                            onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                         )
                     }
                 }

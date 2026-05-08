@@ -54,6 +54,7 @@ import com.eblan.launcher.domain.model.EblanShortcutInfo
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.GridItemSettings
+import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
@@ -83,6 +84,7 @@ internal fun ShortcutInfoMenu(
     ) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
     Column(
         modifier = modifier
@@ -106,6 +108,7 @@ internal fun ShortcutInfoMenu(
                 onUpdateOverlayBounds = onUpdateOverlayBounds,
                 onUpdateSharedElementKey = onUpdateSharedElementKey,
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
             )
         }
     }
@@ -159,6 +162,7 @@ private fun ShortcutInfoMenuItem(
     ) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
     var intOffset by remember { mutableStateOf(IntOffset.Zero) }
 
@@ -241,7 +245,15 @@ private fun ShortcutInfoMenuItem(
                                         swipeDown = eblanAction,
                                     )
 
-                                    onUpdateGridItemSource(GridItemSource.New(gridItem = gridItem))
+                                    onUpdateGridItemSource(GridItemSource.New)
+
+                                    onUpdateMoveGridItemResult(
+                                        MoveGridItemResult(
+                                            isSuccess = false,
+                                            movingGridItem = gridItem,
+                                            conflictingGridItem = null,
+                                        ),
+                                    )
 
                                     onUpdateImageBitmap(graphicsLayer.toImageBitmap())
 
