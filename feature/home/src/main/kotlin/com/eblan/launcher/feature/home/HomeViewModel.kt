@@ -123,8 +123,6 @@ internal class HomeViewModel @Inject constructor(
 
     private val defaultDelay = 500L
 
-    private val moveDelay = 100L
-
     private val _editPageData = MutableStateFlow<EditPageData?>(null)
 
     val editPageData = _editPageData.asStateFlow()
@@ -238,8 +236,6 @@ internal class HomeViewModel @Inject constructor(
         moveGridItemJob?.cancel()
 
         moveGridItemJob = viewModelScope.launch {
-            delay(moveDelay)
-
             _moveGridItemResult.update {
                 moveGridItemUseCase(
                     movingGridItem = movingGridItem,
@@ -262,8 +258,6 @@ internal class HomeViewModel @Inject constructor(
         moveGridItemJob?.cancel()
 
         moveGridItemJob = viewModelScope.launch {
-            delay(moveDelay)
-
             _resizeGridItem.update {
                 resizeGridItemUseCase(
                     resizingGridItem = resizingGridItem,
@@ -352,8 +346,6 @@ internal class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             moveGridItemJob?.cancelAndJoin()
 
-            updateGridItemsAfterMoveUseCase(moveGridItemResult = moveGridItemResult)
-
             _isVisibleOverlay.update {
                 false
             }
@@ -365,6 +357,8 @@ internal class HomeViewModel @Inject constructor(
             _gridItemSource.update {
                 null
             }
+
+            updateGridItemsAfterMoveUseCase(moveGridItemResult = moveGridItemResult)
         }
     }
 
@@ -390,8 +384,6 @@ internal class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             moveGridItemJob?.cancelAndJoin()
 
-            gridRepository.deleteGridItem(gridItem = gridItem)
-
             _moveGridItemResult.update {
                 null
             }
@@ -399,6 +391,8 @@ internal class HomeViewModel @Inject constructor(
             _gridItemSource.update {
                 null
             }
+
+            gridRepository.deleteGridItem(gridItem = gridItem)
         }
     }
 
@@ -565,7 +559,7 @@ internal class HomeViewModel @Inject constructor(
 
     fun moveFolderGridItem(
         conflictingGridItem: GridItem,
-        movingFolderGridItem: GridItem,
+        movingGridItem: GridItem,
         data: GridItemData.Folder,
         dragX: Int,
         dragY: Int,
@@ -578,20 +572,20 @@ internal class HomeViewModel @Inject constructor(
         moveGridItemJob?.cancel()
 
         moveGridItemJob = viewModelScope.launch {
-            delay(moveDelay)
-
-            moveFolderGridItemUseCase(
-                conflictingGridItem = conflictingGridItem,
-                movingFolderGridItem = movingFolderGridItem,
-                data = data,
-                dragX = dragX,
-                dragY = dragY,
-                columns = columns,
-                rows = rows,
-                gridWidth = gridWidth,
-                gridHeight = gridHeight,
-                currentPage = currentPage,
-            )
+            _moveGridItemResult.update {
+                moveFolderGridItemUseCase(
+                    conflictingGridItem = conflictingGridItem,
+                    movingGridItem = movingGridItem,
+                    data = data,
+                    dragX = dragX,
+                    dragY = dragY,
+                    columns = columns,
+                    rows = rows,
+                    gridWidth = gridWidth,
+                    gridHeight = gridHeight,
+                    currentPage = currentPage,
+                )
+            }
         }
     }
 
@@ -601,6 +595,10 @@ internal class HomeViewModel @Inject constructor(
 
             _isVisibleOverlay.update {
                 false
+            }
+
+            _moveGridItemResult.update {
+                null
             }
 
             _gridItemSource.update {
@@ -618,6 +616,18 @@ internal class HomeViewModel @Inject constructor(
             }
 
             gridRepository.updateGridItem(gridItem = movingGridItem)
+
+            _moveGridItemResult.update {
+                MoveGridItemResult(
+                    isSuccess = false,
+                    movingGridItem = movingGridItem,
+                    conflictingGridItem = null,
+                )
+            }
+
+            _gridItemSource.update {
+                GridItemSource.Existing
+            }
         }
     }
 
@@ -640,15 +650,35 @@ internal class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             moveGridItemJob?.cancelAndJoin()
 
-            _moveGridItemResult.update {
-                null
-            }
-
             gridRepository.updateGridItem(gridItem = movingGridItem)
 
             _folderGridItemId.update {
                 conflictingGridItem.id
             }
+
+            _moveGridItemResult.update {
+                MoveGridItemResult(
+                    isSuccess = false,
+                    movingGridItem = movingGridItem,
+                    conflictingGridItem = null,
+                )
+            }
+
+            _gridItemSource.update {
+                GridItemSource.Folder
+            }
+        }
+    }
+
+    fun updateMoveGridItemResult(moveGridItemResult: MoveGridItemResult) {
+        _moveGridItemResult.update {
+            moveGridItemResult
+        }
+    }
+
+    fun updateResizeGridItem(resizeGridItem: GridItem) {
+        _resizeGridItem.update {
+            resizeGridItem
         }
     }
 }

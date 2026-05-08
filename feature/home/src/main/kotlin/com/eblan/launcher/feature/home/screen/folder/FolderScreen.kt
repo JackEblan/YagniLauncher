@@ -63,6 +63,7 @@ import androidx.compose.ui.util.lerp
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.GridItemSettings
+import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.domain.usecase.grid.FOLDER_MAX_COLUMNS
 import com.eblan.launcher.domain.usecase.grid.FOLDER_MAX_ROWS
 import com.eblan.launcher.feature.home.component.FolderGridLayout
@@ -83,7 +84,6 @@ internal fun SharedTransitionScope.FolderScreen(
     folderPopupIntOffset: IntOffset?,
     folderPopupIntSize: IntSize?,
     gridItemSettings: GridItemSettings,
-    gridItemSource: GridItemSource?,
     iconPackFilePaths: Map<String, String>,
     paddingValues: PaddingValues,
     safeDrawingHeight: Int,
@@ -93,6 +93,7 @@ internal fun SharedTransitionScope.FolderScreen(
     isClosingFolder: Boolean,
     isMoveFolderGridItemOutsideFolder: Boolean,
     hasShortcutHostPermission: Boolean,
+    moveGridItemResult: MoveGridItemResult?,
     onDismissRequest: () -> Unit,
     onMoveFolderGridItemOutsideFolder: () -> Unit,
     onOpenAppDrawer: () -> Unit,
@@ -111,6 +112,7 @@ internal fun SharedTransitionScope.FolderScreen(
     onDismissGridItemPopup: () -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateIsClosingFolder: (Boolean) -> Unit,
+    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
     if (folderPopupIntOffset == null || folderPopupIntSize == null) return
 
@@ -282,17 +284,17 @@ internal fun SharedTransitionScope.FolderScreen(
                                 drag = drag,
                                 gridItem = gridItem,
                                 gridItemSettings = gridItemSettings,
-                                gridItemSource = gridItemSource,
                                 hasShortcutHostPermission = hasShortcutHostPermission,
                                 iconPackFilePaths = iconPackFilePaths,
                                 isScrollInProgress = folderGridHorizontalPagerState.isScrollInProgress,
                                 statusBarNotifications = statusBarNotifications,
                                 isVisibleOverlay = isVisibleOverlay,
-                                newGridItemSource = GridItemSource.Folder(gridItem = gridItem),
+                                newGridItemSource = GridItemSource.Folder,
                                 sharedElementKey = SharedElementKey(
                                     id = gridItem.id,
                                     parent = SharedElementKey.Parent.Folder,
                                 ),
+                                moveGridItemResult = moveGridItemResult,
                                 onOpenAppDrawer = onOpenAppDrawer,
                                 onTapApplicationInfo = { serialNumber, componentName ->
                                     val sourceBoundsX = x + leftPadding
@@ -342,6 +344,7 @@ internal fun SharedTransitionScope.FolderScreen(
                                 onShowGridItemPopup = onShowGridItemPopup,
                                 onDismissGridItemPopup = onDismissGridItemPopup,
                                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                                onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                             )
                         },
                     )

@@ -25,11 +25,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
@@ -44,12 +39,11 @@ import com.eblan.launcher.feature.home.util.PAGE_INDICATOR_HEIGHT
 @Composable
 internal fun ResizeScreen(
     modifier: Modifier = Modifier,
-    gridItem: GridItem,
     homeSettings: HomeSettings,
     lockMovement: Boolean,
     paddingValues: PaddingValues,
     textColor: TextColor,
-    resizeGridItem: GridItem?,
+    resizeGridItem: GridItem,
     onResizeCancel: () -> Unit,
     onResizeEnd: () -> Unit,
     onResizeGridItem: (
@@ -71,16 +65,6 @@ internal fun ResizeScreen(
         PAGE_INDICATOR_HEIGHT.roundToPx()
     }
 
-    var currentGridItem by remember {
-        mutableStateOf(gridItem)
-    }
-
-    LaunchedEffect(key1 = resizeGridItem) {
-        resizeGridItem?.let { newGridItem ->
-            currentGridItem = newGridItem
-        }
-    }
-
     BackHandler {
         onResizeCancel()
     }
@@ -99,7 +83,7 @@ internal fun ResizeScreen(
             .fillMaxSize()
             .padding(paddingValues),
     ) {
-        when (currentGridItem.associate) {
+        when (resizeGridItem.associate) {
             Associate.Grid -> {
                 val gridHeight = constraints.maxHeight - pageIndicatorHeightPx - dockHeightPx
 
@@ -107,20 +91,20 @@ internal fun ResizeScreen(
 
                 val cellHeight = gridHeight / homeSettings.rows
 
-                val x = currentGridItem.startColumn * cellWidth
+                val x = resizeGridItem.startColumn * cellWidth
 
-                val y = currentGridItem.startRow * cellHeight
+                val y = resizeGridItem.startRow * cellHeight
 
-                val width = currentGridItem.columnSpan * cellWidth
+                val width = resizeGridItem.columnSpan * cellWidth
 
-                val height = currentGridItem.rowSpan * cellHeight
+                val height = resizeGridItem.rowSpan * cellHeight
 
                 ResizeOverlay(
                     cellHeight = cellHeight,
                     cellWidth = cellWidth,
                     columns = homeSettings.columns,
                     gridHeight = gridHeight,
-                    gridItem = currentGridItem,
+                    gridItem = resizeGridItem,
                     gridItemSettings = homeSettings.gridItemSettings,
                     gridWidth = constraints.maxWidth,
                     height = height,
@@ -139,22 +123,22 @@ internal fun ResizeScreen(
 
                 val cellHeight = dockHeightPx / homeSettings.dockRows
 
-                val x = currentGridItem.startColumn * cellWidth
+                val x = resizeGridItem.startColumn * cellWidth
 
-                val y = currentGridItem.startRow * cellHeight
+                val y = resizeGridItem.startRow * cellHeight
 
                 val dockY = y + constraints.maxHeight - dockHeightPx
 
-                val width = currentGridItem.columnSpan * cellWidth
+                val width = resizeGridItem.columnSpan * cellWidth
 
-                val height = currentGridItem.rowSpan * cellHeight
+                val height = resizeGridItem.rowSpan * cellHeight
 
                 ResizeOverlay(
                     cellHeight = cellHeight,
                     cellWidth = cellWidth,
                     columns = homeSettings.dockColumns,
                     gridHeight = dockHeightPx,
-                    gridItem = currentGridItem,
+                    gridItem = resizeGridItem,
                     gridItemSettings = homeSettings.gridItemSettings,
                     gridWidth = constraints.maxWidth,
                     height = height,

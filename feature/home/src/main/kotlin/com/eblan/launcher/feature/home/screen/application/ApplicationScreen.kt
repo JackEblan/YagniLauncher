@@ -73,6 +73,7 @@ import com.eblan.launcher.domain.model.EblanShortcutInfoByGroup
 import com.eblan.launcher.domain.model.EblanUserPageKey
 import com.eblan.launcher.domain.model.GetEblanApplicationInfosByLabelAndTag
 import com.eblan.launcher.domain.model.ManagedProfileResult
+import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.domain.model.TextColor
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
@@ -132,6 +133,7 @@ internal fun SharedTransitionScope.ApplicationScreen(
     onWidgets: (EblanApplicationInfoGroup) -> Unit,
     onDraggingShortcutInfoGridItem: () -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
     Surface(
         modifier = modifier
@@ -193,6 +195,7 @@ internal fun SharedTransitionScope.ApplicationScreen(
                     onWidgets = onWidgets,
                     onDraggingShortcutInfoGridItem = onDraggingShortcutInfoGridItem,
                     onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                    onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                 )
             }
 
@@ -227,6 +230,7 @@ internal fun SharedTransitionScope.ApplicationScreen(
                     onWidgets = onWidgets,
                     onDraggingShortcutInfoGridItem = onDraggingShortcutInfoGridItem,
                     onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                    onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                 )
             }
 
@@ -262,6 +266,7 @@ internal fun SharedTransitionScope.ApplicationScreen(
                     onWidgets = onWidgets,
                     onDraggingShortcutInfoGridItem = onDraggingShortcutInfoGridItem,
                     onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                    onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                 )
             }
         }

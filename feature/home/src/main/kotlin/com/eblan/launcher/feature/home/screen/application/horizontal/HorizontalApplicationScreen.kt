@@ -67,6 +67,7 @@ import com.eblan.launcher.domain.model.EblanUserPageKey
 import com.eblan.launcher.domain.model.EblanUserType
 import com.eblan.launcher.domain.model.GetEblanApplicationInfosByLabelAndTag
 import com.eblan.launcher.domain.model.ManagedProfileResult
+import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.feature.home.component.HorizontalAppDrawerGridLayout
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
@@ -124,6 +125,7 @@ internal fun SharedTransitionScope.HorizontalApplicationScreen(
     onWidgets: (EblanApplicationInfoGroup) -> Unit,
     onDraggingShortcutInfoGridItem: () -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
     val density = LocalDensity.current
 
@@ -254,6 +256,7 @@ internal fun SharedTransitionScope.HorizontalApplicationScreen(
                 onScrollToItem = {
                     horizontalPagerState.scrollToPage(0)
                 },
+                onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
             )
         }
     }
@@ -306,6 +309,7 @@ internal fun SharedTransitionScope.HorizontalApplicationScreen(
             onUpdateSharedElementKey = onUpdateSharedElementKey,
             onWidgets = onWidgets,
             onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+            onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
         )
     }
 
@@ -374,6 +378,7 @@ private fun SharedTransitionScope.EblanApplicationInfosPage(
     onUpdateEblanApplicationInfo: (EblanApplicationInfo) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onScrollToItem: suspend (Int) -> Unit,
+    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
     val userManager = LocalUserManager.current
 
@@ -446,6 +451,7 @@ private fun SharedTransitionScope.EblanApplicationInfosPage(
                 onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                 onScrollToItem = onScrollToItem,
+                onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
             )
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && packageManager.isDefaultLauncher() &&
@@ -505,6 +511,7 @@ private fun SharedTransitionScope.EblanApplicationInfos(
     onUpdateEblanApplicationInfo: (EblanApplicationInfo) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onScrollToItem: suspend (Int) -> Unit,
+    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
     HorizontalAppDrawerGridLayout(
         modifier = modifier
@@ -546,6 +553,7 @@ private fun SharedTransitionScope.EblanApplicationInfos(
                         onUpdateSharedElementKey = onUpdateSharedElementKey,
                         onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
                         onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                        onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                     )
                 }
 

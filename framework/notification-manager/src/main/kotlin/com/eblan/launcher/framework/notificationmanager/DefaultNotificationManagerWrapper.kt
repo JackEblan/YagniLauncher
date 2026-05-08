@@ -37,13 +37,13 @@ internal class DefaultNotificationManagerWrapper @Inject constructor(@param:Appl
         name: String,
         importance: Int,
     ) {
-        val channel = NotificationChannel(
-            channelId,
-            name,
-            importance,
+        notificationManager.createNotificationChannel(
+            NotificationChannel(
+                channelId,
+                name,
+                importance,
+            ),
         )
-
-        notificationManager.createNotificationChannel(channel)
     }
 
     override fun notify(id: Int, notification: Notification) {

@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.IntSize
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.GridItemSettings
+import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.domain.model.TextColor
 import com.eblan.launcher.feature.home.component.InteractiveApplicationInfoGridItem
 import com.eblan.launcher.feature.home.component.InteractiveFolderGridItem
@@ -46,7 +47,6 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
     drag: Drag,
     gridItem: GridItem,
     gridItemSettings: GridItemSettings,
-    gridItemSource: GridItemSource?,
     hasShortcutHostPermission: Boolean,
     iconPackFilePaths: Map<String, String>,
     isScrollInProgress: Boolean,
@@ -56,6 +56,7 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
     isVisibleFolder: Boolean,
     newGridItemSource: GridItemSource,
     sharedElementKey: SharedElementKey,
+    moveGridItemResult: MoveGridItemResult?,
     onOpenAppDrawer: () -> Unit,
     onTapApplicationInfo: (
         serialNumber: Long,
@@ -82,8 +83,9 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
     ) -> Unit,
     onDismissGridItemPopup: () -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
-    val isSelected = gridItemSource != null && gridItemSource.gridItem.id == gridItem.id
+    val isSelected = moveGridItemResult != null && moveGridItemResult.movingGridItem.id == gridItem.id
 
     val currentGridItemSettings = if (gridItem.override) {
         gridItem.gridItemSettings
@@ -133,6 +135,7 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                 onUpdateOverlayBounds = onUpdateOverlayBounds,
                 onUpdateSharedElementKey = onUpdateSharedElementKey,
+                onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
             )
         }
 
@@ -148,6 +151,7 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
                 newGridItemSource = newGridItemSource,
                 sharedElementKey = sharedElementKey,
                 textColor = currentTextColor,
+                gridItem = gridItem,
                 onDismissGridItemPopup = onDismissGridItemPopup,
                 onShowGridItemPopup = onShowGridItemPopup,
                 onUpdateGridItemSource = onUpdateGridItemSource,
@@ -156,6 +160,7 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                 onUpdateOverlayBounds = onUpdateOverlayBounds,
                 onUpdateSharedElementKey = onUpdateSharedElementKey,
+                onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
             )
         }
 
@@ -185,6 +190,7 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                 onUpdateOverlayBounds = onUpdateOverlayBounds,
                 onUpdateSharedElementKey = onUpdateSharedElementKey,
+                onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
             )
         }
 
@@ -195,7 +201,6 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
                 drag = drag,
                 gridItem = gridItem,
                 gridItemSettings = currentGridItemSettings,
-                gridItemSource = gridItemSource,
                 iconPackFilePaths = iconPackFilePaths,
                 isScrollInProgress = isScrollInProgress,
                 isSelected = isSelected,
@@ -205,6 +210,7 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
                 newGridItemSource = newGridItemSource,
                 sharedElementKey = sharedElementKey,
                 textColor = currentTextColor,
+                moveGridItemResult = moveGridItemResult,
                 onDismissGridItemPopup = onDismissGridItemPopup,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
@@ -215,6 +221,7 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                 onUpdateOverlayBounds = onUpdateOverlayBounds,
                 onUpdateSharedElementKey = onUpdateSharedElementKey,
+                onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
             )
         }
 
@@ -243,6 +250,7 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                 onUpdateOverlayBounds = onUpdateOverlayBounds,
                 onUpdateSharedElementKey = onUpdateSharedElementKey,
+                onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
             )
         }
     }

@@ -66,6 +66,7 @@ import coil3.request.addLastModifiedToFileCacheKey
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.GridItemSettings
+import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
@@ -117,6 +118,7 @@ internal fun SharedTransitionScope.InteractiveApplicationInfoGridItem(
         intSize: IntSize,
     ) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
+    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
     val launcherApps = LocalLauncherApps.current
 
@@ -190,12 +192,14 @@ internal fun SharedTransitionScope.InteractiveApplicationInfoGridItem(
                                 intSize = intSize,
                                 gridItemSource = newGridItemSource,
                                 sharedElementKey = sharedElementKey,
+                                gridItem = gridItem,
                                 onUpdateGridItemSource = onUpdateGridItemSource,
                                 onUpdateImageBitmap = onUpdateImageBitmap,
                                 onUpdateOverlayBounds = onUpdateOverlayBounds,
                                 onUpdateSharedElementKey = onUpdateSharedElementKey,
                                 onShowGridItemPopup = onShowGridItemPopup,
                                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                                onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                             )
                         }
                     } else {
@@ -311,6 +315,7 @@ internal fun SharedTransitionScope.InteractiveWidgetGridItem(
     newGridItemSource: GridItemSource,
     sharedElementKey: SharedElementKey,
     textColor: Color,
+    gridItem: GridItem,
     onDismissGridItemPopup: () -> Unit,
     onShowGridItemPopup: (
         intOffset: IntOffset,
@@ -325,6 +330,7 @@ internal fun SharedTransitionScope.InteractiveWidgetGridItem(
         intSize: IntSize,
     ) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
+    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
     var intOffset by remember { mutableStateOf(IntOffset.Zero) }
 
@@ -408,12 +414,14 @@ internal fun SharedTransitionScope.InteractiveWidgetGridItem(
                                 intSize = intSize,
                                 gridItemSource = newGridItemSource,
                                 sharedElementKey = sharedElementKey,
+                                gridItem = gridItem,
                                 onUpdateGridItemSource = onUpdateGridItemSource,
                                 onUpdateImageBitmap = onUpdateImageBitmap,
                                 onUpdateOverlayBounds = onUpdateOverlayBounds,
                                 onUpdateSharedElementKey = onUpdateSharedElementKey,
                                 onShowGridItemPopup = onShowGridItemPopup,
                                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                                onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                             )
 
                             true
@@ -436,12 +444,14 @@ internal fun SharedTransitionScope.InteractiveWidgetGridItem(
                                     intSize = intSize,
                                     gridItemSource = newGridItemSource,
                                     sharedElementKey = sharedElementKey,
+                                    gridItem = gridItem,
                                     onUpdateGridItemSource = onUpdateGridItemSource,
                                     onUpdateImageBitmap = onUpdateImageBitmap,
                                     onUpdateOverlayBounds = onUpdateOverlayBounds,
                                     onUpdateSharedElementKey = onUpdateSharedElementKey,
                                     onShowGridItemPopup = onShowGridItemPopup,
                                     onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                                    onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                                 )
                             }
                         } else {
@@ -491,6 +501,7 @@ internal fun SharedTransitionScope.InteractiveShortcutInfoGridItem(
         intSize: IntSize,
     ) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
+    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
     val launcherApps = LocalLauncherApps.current
 
@@ -558,12 +569,14 @@ internal fun SharedTransitionScope.InteractiveShortcutInfoGridItem(
                                 intSize = intSize,
                                 gridItemSource = newGridItemSource,
                                 sharedElementKey = sharedElementKey,
+                                gridItem = gridItem,
                                 onUpdateGridItemSource = onUpdateGridItemSource,
                                 onUpdateImageBitmap = onUpdateImageBitmap,
                                 onUpdateOverlayBounds = onUpdateOverlayBounds,
                                 onUpdateSharedElementKey = onUpdateSharedElementKey,
                                 onShowGridItemPopup = onShowGridItemPopup,
                                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                                onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                             )
                         }
                     } else {
@@ -672,7 +685,6 @@ internal fun SharedTransitionScope.InteractiveFolderGridItem(
     drag: Drag,
     gridItem: GridItem,
     gridItemSettings: GridItemSettings,
-    gridItemSource: GridItemSource?,
     iconPackFilePaths: Map<String, String>,
     isScrollInProgress: Boolean,
     isSelected: Boolean,
@@ -682,6 +694,7 @@ internal fun SharedTransitionScope.InteractiveFolderGridItem(
     newGridItemSource: GridItemSource,
     sharedElementKey: SharedElementKey,
     textColor: Color,
+    moveGridItemResult: MoveGridItemResult?,
     onDismissGridItemPopup: () -> Unit,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
@@ -698,6 +711,7 @@ internal fun SharedTransitionScope.InteractiveFolderGridItem(
         intSize: IntSize,
     ) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
+    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
     val launcherApps = LocalLauncherApps.current
 
@@ -761,12 +775,14 @@ internal fun SharedTransitionScope.InteractiveFolderGridItem(
                                 intSize = intSize,
                                 gridItemSource = newGridItemSource,
                                 sharedElementKey = sharedElementKey,
+                                gridItem = gridItem,
                                 onUpdateGridItemSource = onUpdateGridItemSource,
                                 onUpdateImageBitmap = onUpdateImageBitmap,
                                 onUpdateOverlayBounds = onUpdateOverlayBounds,
                                 onUpdateSharedElementKey = onUpdateSharedElementKey,
                                 onShowGridItemPopup = onShowGridItemPopup,
                                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                                onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                             )
                         }
                     } else {
@@ -852,11 +868,11 @@ internal fun SharedTransitionScope.InteractiveFolderGridItem(
                             alpha = alpha,
                             gridItem = folderGridItem,
                             gridItemSettings = gridItemSettings,
-                            gridItemSource = gridItemSource,
                             iconPackFilePaths = iconPackFilePaths,
                             isScrollInProgress = isScrollInProgress,
                             isVisibleOverlay = isVisibleOverlay,
                             parent = sharedElementKey.parent,
+                            moveGridItemResult = moveGridItemResult,
                         )
                     }
                 }
@@ -909,6 +925,7 @@ internal fun SharedTransitionScope.InteractiveShortcutConfigGridItem(
         intSize: IntSize,
     ) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
+    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
     val launcherApps = LocalLauncherApps.current
 
@@ -1008,12 +1025,14 @@ internal fun SharedTransitionScope.InteractiveShortcutConfigGridItem(
                                 intSize = intSize,
                                 gridItemSource = newGridItemSource,
                                 sharedElementKey = sharedElementKey,
+                                gridItem = gridItem,
                                 onUpdateGridItemSource = onUpdateGridItemSource,
                                 onUpdateImageBitmap = onUpdateImageBitmap,
                                 onUpdateOverlayBounds = onUpdateOverlayBounds,
                                 onUpdateSharedElementKey = onUpdateSharedElementKey,
                                 onShowGridItemPopup = onShowGridItemPopup,
                                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                                onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                             )
                         }
                     } else {
@@ -1100,16 +1119,16 @@ private fun SharedTransitionScope.PreviewFolderGridItem(
     alpha: Float,
     gridItem: GridItem,
     gridItemSettings: GridItemSettings,
-    gridItemSource: GridItemSource?,
     iconPackFilePaths: Map<String, String>,
     isScrollInProgress: Boolean,
     isVisibleOverlay: Boolean,
     parent: SharedElementKey.Parent,
+    moveGridItemResult: MoveGridItemResult?,
 ) {
     val context = LocalContext.current
 
     key(gridItem.id) {
-        val isSelected = gridItemSource != null && gridItemSource.gridItem.id == gridItem.id
+        val isSelected = moveGridItemResult != null && moveGridItemResult.movingGridItem.id == gridItem.id
 
         val hasInteraction = isSelected && isVisibleOverlay
 

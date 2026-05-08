@@ -45,6 +45,7 @@ import com.eblan.launcher.domain.grid.resizeGridItemWithPixels
 import com.eblan.launcher.domain.model.Anchor
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.feature.home.util.DRAG_HANDLE_SIZE
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
@@ -260,6 +261,8 @@ internal fun GridItemResizeOverlay(
                 rows = rows,
             ) && !lockMovement
         ) {
+            delay(100L)
+
             onResizeGridItem(
                 resizingGridItem,
                 columns,
