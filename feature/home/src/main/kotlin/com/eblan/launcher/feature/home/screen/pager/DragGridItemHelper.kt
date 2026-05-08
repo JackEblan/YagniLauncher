@@ -334,9 +334,13 @@ private fun dragFolderGridItem(
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onUpdateIsMoveFolderGridItemOutsideFolder: (Boolean) -> Unit,
 ) {
-    if (folderPopupIntOffset == null || folderPopupIntSize == null) return
+    requireNotNull(folderGridItem)
 
-    val data = folderGridItem?.data as? GridItemData.Folder ?: error("Expected GridItemData.Folder")
+    requireNotNull(folderPopupIntOffset)
+
+    requireNotNull(folderPopupIntSize)
+
+    val data = folderGridItem.data as? GridItemData.Folder ?: error("Expected GridItemData.Folder")
 
     val folderCellWidth = safeDrawingWidth / FOLDER_MAX_COLUMNS
 
@@ -567,7 +571,6 @@ internal suspend fun handleConflictingGridItem(
         intOffset: IntOffset,
         intSize: IntSize,
     ) -> Unit,
-    onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
 ) {
     if (drag != Drag.Dragging ||
@@ -579,6 +582,7 @@ internal suspend fun handleConflictingGridItem(
     ) {
         return
     }
+
     val conflictingGridItem = moveGridItemResult.conflictingGridItem ?: return
 
     val conflictingData = conflictingGridItem.data as? GridItemData.Folder ?: return
@@ -683,8 +687,6 @@ internal suspend fun handleConflictingGridItem(
     }
 
     val movingFolderGridItem = movingGridItem.copy(data = movingData)
-
-    onUpdateGridItemSource(GridItemSource.Folder)
 
     onUpdateFolderPopupBounds(
         intOffset,

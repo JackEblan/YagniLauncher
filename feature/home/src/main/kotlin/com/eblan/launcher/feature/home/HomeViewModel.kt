@@ -624,6 +624,10 @@ internal class HomeViewModel @Inject constructor(
                     conflictingGridItem = null,
                 )
             }
+
+            _gridItemSource.update {
+                GridItemSource.Existing
+            }
         }
     }
 
@@ -658,6 +662,10 @@ internal class HomeViewModel @Inject constructor(
                     movingGridItem = movingGridItem,
                     conflictingGridItem = null,
                 )
+            }
+
+            _gridItemSource.update {
+                GridItemSource.Folder
             }
         }
     }

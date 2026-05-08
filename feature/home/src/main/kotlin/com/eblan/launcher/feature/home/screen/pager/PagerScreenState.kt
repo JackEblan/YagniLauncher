@@ -514,7 +514,6 @@ internal class PagerScreenState(
             conflictingGridItem: GridItem,
             movingGridItem: GridItem,
         ) -> Unit,
-        onUpdateGridItemSource: (GridItemSource) -> Unit,
     ) {
         handleConflictingGridItem(
             columns = homeSettings.columns,
@@ -543,7 +542,6 @@ internal class PagerScreenState(
 
                 folderPopupIntSize = intSize
             },
-            onUpdateGridItemSource = onUpdateGridItemSource,
             onUpdateSharedElementKey = { newSharedElementKey ->
                 sharedElementKey = newSharedElementKey
             },
@@ -953,7 +951,6 @@ internal class PagerScreenState(
 
     fun moveFolderGridItemOutsideFolder(
         moveGridItemResult: MoveGridItemResult?,
-        onUpdateGridItemSource: (GridItemSource) -> Unit,
         onMoveFolderGridItemOutsideFolder: (GridItem) -> Unit,
     ) {
         val movingGridItem = requireNotNull(moveGridItemResult?.movingGridItem)
@@ -963,8 +960,6 @@ internal class PagerScreenState(
         folderPopupIntSize = null
 
         isMoveFolderGridItemOutsideFolder = false
-
-        onUpdateGridItemSource(GridItemSource.Existing)
 
         sharedElementKey = SharedElementKey(
             id = movingGridItem.id,

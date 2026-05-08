@@ -508,7 +508,6 @@ internal fun PagerScreen(
             paddingValues = paddingValues,
             isVisibleOverlay = isVisibleOverlay,
             onShowFolderWhenDragging = onShowFolderWhenDragging,
-            onUpdateGridItemSource = onUpdateGridItemSource,
         )
     }
 
@@ -995,7 +994,10 @@ internal fun PagerScreen(
             )
         }
 
-        if (folderGridItem != null && pagerScreenState.folderPopupIntOffset != null && pagerScreenState.folderPopupIntSize != null) {
+        if (folderGridItem != null &&
+            pagerScreenState.folderPopupIntOffset != null &&
+            pagerScreenState.folderPopupIntSize != null
+        ) {
             FolderScreen(
                 drag = pagerScreenState.drag,
                 folderGridHorizontalPagerState = folderGridHorizontalPagerState,
@@ -1019,7 +1021,6 @@ internal fun PagerScreen(
                 onMoveFolderGridItemOutsideFolder = {
                     pagerScreenState.moveFolderGridItemOutsideFolder(
                         moveGridItemResult = moveGridItemResult,
-                        onUpdateGridItemSource = onUpdateGridItemSource,
                         onMoveFolderGridItemOutsideFolder = onMoveFolderGridItemOutsideFolder,
                     )
                 },
@@ -1098,7 +1099,9 @@ internal fun PagerScreen(
             )
         }
 
-        if (gestureSettings.swipeUp.eblanActionType == EblanActionType.OpenAppDrawer || gestureSettings.swipeDown.eblanActionType == EblanActionType.OpenAppDrawer) {
+        if (gestureSettings.swipeUp.eblanActionType == EblanActionType.OpenAppDrawer ||
+            gestureSettings.swipeDown.eblanActionType == EblanActionType.OpenAppDrawer
+        ) {
             ApplicationScreen(
                 alpha = pagerScreenState.applicationScreenAlpha,
                 appDrawerSettings = appDrawerSettings,
