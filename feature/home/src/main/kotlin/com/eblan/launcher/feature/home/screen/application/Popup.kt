@@ -59,7 +59,6 @@ import com.eblan.launcher.ui.local.LocalLauncherApps
 @Composable
 internal fun ApplicationInfoPopup(
     modifier: Modifier = Modifier,
-    currentPage: Int,
     drag: Drag,
     eblanAppWidgetProviderInfos: Map<String, List<EblanAppWidgetProviderInfo>>,
     eblanShortcutInfosGroup: Map<EblanShortcutInfoByGroup, List<EblanShortcutInfo>>,
@@ -126,7 +125,6 @@ internal fun ApplicationInfoPopup(
             .padding(paddingValues),
         content = {
             ApplicationInfoMenu(
-                currentPage = currentPage,
                 drag = drag,
                 eblanAppWidgetProviderInfosByPackageName = eblanAppWidgetProviderInfos[eblanApplicationInfo.packageName],
                 eblanShortcutInfosGroup = eblanShortcutInfosGroup[
@@ -340,7 +338,6 @@ internal fun PrivateApplicationInfoPopup(
 @Composable
 private fun ApplicationInfoMenu(
     modifier: Modifier = Modifier,
-    currentPage: Int,
     drag: Drag,
     eblanAppWidgetProviderInfosByPackageName: List<EblanAppWidgetProviderInfo>?,
     eblanShortcutInfosGroup: List<EblanShortcutInfo>?,
@@ -379,7 +376,6 @@ private fun ApplicationInfoMenu(
                 ) {
                     ShortcutInfoMenu(
                         modifier = modifier,
-                        currentPage = currentPage,
                         drag = drag,
                         eblanShortcutInfosGroup = eblanShortcutInfosGroup,
                         gridItemSettings = gridItemSettings,

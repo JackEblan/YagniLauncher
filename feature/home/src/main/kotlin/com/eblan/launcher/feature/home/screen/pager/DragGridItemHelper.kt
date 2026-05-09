@@ -144,7 +144,8 @@ internal fun handleAnimateScrollToPage(
 
 internal suspend fun handleDragGridItem(
     columns: Int,
-    currentPage: Int,
+    gridCurrentPage: Int,
+    dockGridCurrentPage: Int,
     density: Density,
     dockColumns: Int,
     dockHeight: Dp,
@@ -252,7 +253,7 @@ internal suspend fun handleDragGridItem(
         -> {
             if (isOnDock) {
                 dragDockGridItem(
-                    currentPage = currentPage,
+                    currentPage = dockGridCurrentPage,
                     dockColumns = dockColumns,
                     dockHeightPx = dockHeightPx,
                     dockRows = dockRows,
@@ -269,7 +270,7 @@ internal suspend fun handleDragGridItem(
             } else {
                 dragGridItem(
                     columns = columns,
-                    currentPage = currentPage,
+                    currentPage = gridCurrentPage,
                     dockHeightPx = dockHeightPx,
                     dragX = dragX,
                     dragY = dragY,

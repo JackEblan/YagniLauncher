@@ -95,7 +95,6 @@ import kotlin.uuid.Uuid
 internal fun SharedTransitionScope.EblanApplicationInfoItem(
     modifier: Modifier = Modifier,
     appDrawerSettings: AppDrawerSettings,
-    currentPage: Int,
     drag: Drag,
     eblanApplicationInfo: EblanApplicationInfo,
     iconPackFilePaths: Map<String, String>,
@@ -166,7 +165,6 @@ internal fun SharedTransitionScope.EblanApplicationInfoItem(
     LaunchedEffect(key1 = drag) {
         handleDragEblanApplicationInfoItem(
             appDrawerSettings = appDrawerSettings,
-            currentPage = currentPage,
             drag = drag,
             eblanApplicationInfo = eblanApplicationInfo,
             isLongPress = isLongPress,
@@ -315,7 +313,6 @@ internal fun handleOnTapEblanApplicationInfoItem(
 @OptIn(ExperimentalUuidApi::class)
 internal fun handleDragEblanApplicationInfoItem(
     appDrawerSettings: AppDrawerSettings,
-    currentPage: Int,
     drag: Drag,
     eblanApplicationInfo: EblanApplicationInfo,
     isLongPress: Boolean,
@@ -356,7 +353,7 @@ internal fun handleDragEblanApplicationInfoItem(
 
             val gridItem = GridItem(
                 id = pagerScreenId,
-                page = currentPage,
+                page = 0,
                 startColumn = -1,
                 startRow = -1,
                 columnSpan = 1,

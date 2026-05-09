@@ -80,7 +80,6 @@ import kotlin.uuid.Uuid
 internal fun AppWidgetScreen(
     modifier: Modifier = Modifier,
     columns: Int,
-    currentPage: Int,
     drag: Drag,
     eblanAppWidgetProviderInfosGroup: Map<String, List<EblanAppWidgetProviderInfo>>,
     eblanApplicationInfoGroup: EblanApplicationInfoGroup?,
@@ -156,7 +155,6 @@ internal fun AppWidgetScreen(
                     .fillMaxWidth()
                     .padding(paddingValues),
                 columns = columns,
-                currentPage = currentPage,
                 drag = drag,
                 eblanAppWidgetProviderInfos = eblanAppWidgetProviderInfosGroup[eblanApplicationInfoGroup.packageName].orEmpty(),
                 eblanApplicationInfoGroup = eblanApplicationInfoGroup,
@@ -183,7 +181,6 @@ internal fun AppWidgetScreen(
 private fun Success(
     modifier: Modifier = Modifier,
     columns: Int,
-    currentPage: Int,
     drag: Drag,
     eblanAppWidgetProviderInfos: List<EblanAppWidgetProviderInfo>,
     eblanApplicationInfoGroup: EblanApplicationInfoGroup,
@@ -227,7 +224,6 @@ private fun Success(
             items(eblanAppWidgetProviderInfos) { eblanAppWidgetProviderInfo ->
                 EblanAppWidgetProviderInfoItem(
                     columns = columns,
-                    currentPage = currentPage,
                     drag = drag,
                     eblanAppWidgetProviderInfo = eblanAppWidgetProviderInfo,
                     gridItemSettings = gridItemSettings,
@@ -254,7 +250,6 @@ private fun Success(
 private fun EblanAppWidgetProviderInfoItem(
     modifier: Modifier = Modifier,
     columns: Int,
-    currentPage: Int,
     drag: Drag,
     eblanAppWidgetProviderInfo: EblanAppWidgetProviderInfo,
     gridItemSettings: GridItemSettings,
@@ -306,7 +301,7 @@ private fun EblanAppWidgetProviderInfoItem(
                                 minResizeWidth = eblanAppWidgetProviderInfo.minResizeWidth,
                                 minWidth = eblanAppWidgetProviderInfo.minWidth,
                                 packageName = eblanAppWidgetProviderInfo.packageName,
-                                page = currentPage,
+                                page = 0,
                                 preview = eblanAppWidgetProviderInfo.preview,
                                 resizeMode = eblanAppWidgetProviderInfo.resizeMode,
                                 serialNumber = eblanAppWidgetProviderInfo.serialNumber,

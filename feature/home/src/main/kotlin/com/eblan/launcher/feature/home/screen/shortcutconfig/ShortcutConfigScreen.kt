@@ -115,7 +115,6 @@ import kotlin.uuid.Uuid
 @Composable
 internal fun ShortcutConfigScreen(
     modifier: Modifier = Modifier,
-    currentPage: Int,
     drag: Drag,
     eblanShortcutConfigs: Map<EblanUser, Map<EblanApplicationInfoGroup, List<EblanShortcutConfig>>>,
     gridItemSettings: GridItemSettings,
@@ -155,7 +154,6 @@ internal fun ShortcutConfigScreen(
     ) {
         Success(
             modifier = modifier,
-            currentPage = currentPage,
             drag = drag,
             eblanShortcutConfigs = eblanShortcutConfigs,
             gridItemSettings = gridItemSettings,
@@ -180,7 +178,6 @@ internal fun ShortcutConfigScreen(
 @Composable
 private fun Success(
     modifier: Modifier = Modifier,
-    currentPage: Int,
     drag: Drag,
     eblanShortcutConfigs: Map<EblanUser, Map<EblanApplicationInfoGroup, List<EblanShortcutConfig>>>,
     gridItemSettings: GridItemSettings,
@@ -279,7 +276,6 @@ private fun Success(
                 state = horizontalPagerState,
             ) { index ->
                 EblanShortcutConfigsPage(
-                    currentPage = currentPage,
                     drag = drag,
                     eblanShortcutConfigs = eblanShortcutConfigs,
                     gridItemSettings = gridItemSettings,
@@ -299,7 +295,6 @@ private fun Success(
             }
         } else {
             EblanShortcutConfigsPage(
-                currentPage = currentPage,
                 drag = drag,
                 eblanShortcutConfigs = eblanShortcutConfigs,
                 gridItemSettings = gridItemSettings,
@@ -353,7 +348,6 @@ private fun EblanShortcutConfigTabRow(
 @Composable
 private fun EblanShortcutConfigsPage(
     modifier: Modifier = Modifier,
-    currentPage: Int,
     drag: Drag,
     eblanShortcutConfigs: Map<EblanUser, Map<EblanApplicationInfoGroup, List<EblanShortcutConfig>>>,
     gridItemSettings: GridItemSettings,
@@ -429,7 +423,6 @@ private fun EblanShortcutConfigsPage(
                 key(eblanApplicationInfoGroup.serialNumber, eblanApplicationInfoGroup.packageName) {
                     EblanApplicationInfoItem(
                         modifier = modifier,
-                        currentPage = currentPage,
                         drag = drag,
                         eblanApplicationInfoGroup = eblanApplicationInfoGroup,
                         eblanShortcutConfigs = eblanShortcutConfigs[serialNumber].orEmpty(),
@@ -453,7 +446,6 @@ private fun EblanShortcutConfigsPage(
 @Composable
 private fun EblanApplicationInfoItem(
     modifier: Modifier = Modifier,
-    currentPage: Int,
     drag: Drag,
     eblanApplicationInfoGroup: EblanApplicationInfoGroup,
     eblanShortcutConfigs: Map<EblanApplicationInfoGroup, List<EblanShortcutConfig>>,
@@ -515,7 +507,6 @@ private fun EblanApplicationInfoItem(
 
                 eblanShortcutConfigs[eblanApplicationInfoGroup]?.forEach { eblanShortcutConfig ->
                     EblanShortcutConfigItem(
-                        currentPage = currentPage,
                         drag = drag,
                         eblanShortcutConfig = eblanShortcutConfig,
                         gridItemSettings = gridItemSettings,
@@ -538,7 +529,6 @@ private fun EblanApplicationInfoItem(
 @Composable
 private fun EblanShortcutConfigItem(
     modifier: Modifier = Modifier,
-    currentPage: Int,
     drag: Drag,
     eblanShortcutConfig: EblanShortcutConfig,
     gridItemSettings: GridItemSettings,
@@ -595,7 +585,7 @@ private fun EblanShortcutConfigItem(
 
                             val gridItem = GridItem(
                                 id = id,
-                                page = currentPage,
+                                page = 0,
                                 startColumn = -1,
                                 startRow = -1,
                                 columnSpan = 1,

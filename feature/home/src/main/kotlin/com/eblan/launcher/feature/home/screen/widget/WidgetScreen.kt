@@ -106,7 +106,6 @@ import kotlin.uuid.Uuid
 internal fun WidgetScreen(
     modifier: Modifier = Modifier,
     columns: Int,
-    currentPage: Int,
     drag: Drag,
     eblanAppWidgetProviderInfos: Map<EblanApplicationInfoGroup, List<EblanAppWidgetProviderInfo>>,
     gridItemSettings: GridItemSettings,
@@ -144,7 +143,6 @@ internal fun WidgetScreen(
     ) {
         Success(
             columns = columns,
-            currentPage = currentPage,
             drag = drag,
             eblanAppWidgetProviderInfos = eblanAppWidgetProviderInfos,
             gridItemSettings = gridItemSettings,
@@ -174,7 +172,6 @@ internal fun WidgetScreen(
 private fun Success(
     modifier: Modifier = Modifier,
     columns: Int,
-    currentPage: Int,
     drag: Drag,
     eblanAppWidgetProviderInfos: Map<EblanApplicationInfoGroup, List<EblanAppWidgetProviderInfo>>,
     gridItemSettings: GridItemSettings,
@@ -307,7 +304,6 @@ private fun Success(
                 key(eblanApplicationInfoGroup.packageName) {
                     EblanApplicationInfoItem(
                         columns = columns,
-                        currentPage = currentPage,
                         drag = drag,
                         eblanAppWidgetProviderInfos = eblanAppWidgetProviderInfos,
                         eblanApplicationInfoGroup = eblanApplicationInfoGroup,
@@ -335,7 +331,6 @@ private fun Success(
 private fun EblanApplicationInfoItem(
     modifier: Modifier = Modifier,
     columns: Int,
-    currentPage: Int,
     drag: Drag,
     eblanAppWidgetProviderInfos: Map<EblanApplicationInfoGroup, List<EblanAppWidgetProviderInfo>>,
     eblanApplicationInfoGroup: EblanApplicationInfoGroup,
@@ -401,7 +396,6 @@ private fun EblanApplicationInfoItem(
                 eblanAppWidgetProviderInfos[eblanApplicationInfoGroup]?.forEach { eblanAppWidgetProviderInfo ->
                     EblanAppWidgetProviderInfoItem(
                         columns = columns,
-                        currentPage = currentPage,
                         drag = drag,
                         eblanAppWidgetProviderInfo = eblanAppWidgetProviderInfo,
                         gridItemSettings = gridItemSettings,
@@ -428,7 +422,6 @@ private fun EblanApplicationInfoItem(
 private fun EblanAppWidgetProviderInfoItem(
     modifier: Modifier = Modifier,
     columns: Int,
-    currentPage: Int,
     drag: Drag,
     eblanAppWidgetProviderInfo: EblanAppWidgetProviderInfo,
     gridItemSettings: GridItemSettings,
@@ -481,7 +474,7 @@ private fun EblanAppWidgetProviderInfoItem(
                                 minResizeWidth = eblanAppWidgetProviderInfo.minResizeWidth,
                                 minWidth = eblanAppWidgetProviderInfo.minWidth,
                                 packageName = eblanAppWidgetProviderInfo.packageName,
-                                page = currentPage,
+                                page = 0,
                                 preview = eblanAppWidgetProviderInfo.preview,
                                 resizeMode = eblanAppWidgetProviderInfo.resizeMode,
                                 serialNumber = eblanAppWidgetProviderInfo.serialNumber,

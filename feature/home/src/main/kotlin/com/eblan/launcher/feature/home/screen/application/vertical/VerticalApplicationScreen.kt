@@ -105,7 +105,6 @@ import kotlinx.coroutines.FlowPreview
 internal fun SharedTransitionScope.VerticalApplicationScreen(
     modifier: Modifier = Modifier,
     appDrawerSettings: AppDrawerSettings,
-    currentPage: Int,
     drag: Drag,
     eblanAppWidgetProviderInfosGroup: Map<String, List<EblanAppWidgetProviderInfo>>,
     eblanApplicationInfoTags: List<EblanApplicationInfoTag>,
@@ -253,7 +252,6 @@ internal fun SharedTransitionScope.VerticalApplicationScreen(
         ) { index ->
             EblanApplicationInfosPage(
                 appDrawerSettings = appDrawerSettings,
-                currentPage = currentPage,
                 drag = drag,
                 eblanApplicationInfoOrder = appDrawerSettings.eblanApplicationInfoOrder,
                 getEblanApplicationInfosByLabelAndTag = getEblanApplicationInfosByLabelAndTag,
@@ -300,7 +298,6 @@ internal fun SharedTransitionScope.VerticalApplicationScreen(
 
     if (showPopupApplicationMenu && selectedEblanApplicationInfo != null) {
         ApplicationInfoPopup(
-            currentPage = currentPage,
             drag = drag,
             eblanAppWidgetProviderInfos = eblanAppWidgetProviderInfosGroup,
             eblanShortcutInfosGroup = eblanShortcutInfosGroup,
@@ -407,7 +404,6 @@ internal fun SharedTransitionScope.VerticalApplicationScreen(
 private fun SharedTransitionScope.EblanApplicationInfosPage(
     modifier: Modifier = Modifier,
     appDrawerSettings: AppDrawerSettings,
-    currentPage: Int,
     drag: Drag,
     eblanApplicationInfoOrder: EblanApplicationInfoOrder,
     getEblanApplicationInfosByLabelAndTag: GetEblanApplicationInfosByLabelAndTag,
@@ -499,7 +495,6 @@ private fun SharedTransitionScope.EblanApplicationInfosPage(
         } else {
             EblanApplicationInfos(
                 appDrawerSettings = appDrawerSettings,
-                currentPage = currentPage,
                 drag = drag,
                 eblanUserPageKey = eblanUserPageKey,
                 getEblanApplicationInfosByLabelAndTag = getEblanApplicationInfosByLabelAndTag,
@@ -558,7 +553,6 @@ private fun SharedTransitionScope.EblanApplicationInfosPage(
 private fun SharedTransitionScope.EblanApplicationInfos(
     modifier: Modifier = Modifier,
     appDrawerSettings: AppDrawerSettings,
-    currentPage: Int,
     drag: Drag,
     eblanUserPageKey: EblanUserPageKey,
     getEblanApplicationInfosByLabelAndTag: GetEblanApplicationInfosByLabelAndTag,
@@ -649,7 +643,6 @@ private fun SharedTransitionScope.EblanApplicationInfos(
                     ) { eblanApplicationInfo ->
                         EblanApplicationInfoItem(
                             appDrawerSettings = appDrawerSettings,
-                            currentPage = currentPage,
                             drag = drag,
                             eblanApplicationInfo = eblanApplicationInfo,
                             iconPackFilePaths = iconPackFilePaths,
@@ -694,7 +687,6 @@ private fun SharedTransitionScope.EblanApplicationInfos(
                     ) { eblanApplicationInfo ->
                         EblanApplicationInfoItem(
                             appDrawerSettings = appDrawerSettings,
-                            currentPage = currentPage,
                             drag = drag,
                             eblanApplicationInfo = eblanApplicationInfo,
                             iconPackFilePaths = iconPackFilePaths,

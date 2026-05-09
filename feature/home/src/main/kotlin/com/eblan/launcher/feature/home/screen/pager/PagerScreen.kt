@@ -372,7 +372,7 @@ internal fun PagerScreen(
         }
     }
 
-    val dockCurrentPage by remember(
+    val dockGridCurrentPage by remember(
         key1 = dockGridHorizontalPagerState,
         key2 = homeSettings,
     ) {
@@ -382,28 +382,6 @@ internal fun PagerScreen(
                 infiniteScroll = homeSettings.dockInfiniteScroll,
                 pageCount = homeSettings.dockPageCount,
             )
-        }
-    }
-
-    val currentPage by remember(
-        key1 = gridHorizontalPagerState,
-        key2 = dockGridHorizontalPagerState,
-        key3 = homeSettings,
-    ) {
-        derivedStateOf {
-            when (pagerScreenState.associate) {
-                Associate.Grid -> {
-                    gridCurrentPage
-                }
-
-                Associate.Dock -> {
-                    dockCurrentPage
-                }
-
-                null -> {
-                    0
-                }
-            }
         }
     }
 
@@ -439,7 +417,8 @@ internal fun PagerScreen(
 
     LaunchedEffect(key1 = pagerScreenState.dragIntOffset) {
         pagerScreenState.handleDragGridItemEffect(
-            currentPage = currentPage,
+            gridCurrentPage = gridCurrentPage,
+            dockGridCurrentPage = dockGridCurrentPage,
             density = density,
             dockHeight = dockHeight,
             folderCurrentPage = folderGridHorizontalPagerState.currentPage,
@@ -927,10 +906,10 @@ internal fun PagerScreen(
             pagerScreenState.showGridItemPopup &&
             pagerScreenState.popupIntOffset != null &&
             pagerScreenState.popupIntSize != null &&
-            moveGridItemResult != null
+            moveGridItemResult != null &&
+            pagerScreenState.associate != null
         ) {
             GridItemPopup(
-                currentPage = currentPage,
                 drag = pagerScreenState.drag,
                 eblanAppWidgetProviderInfosGroup = eblanAppWidgetProviderInfosGroup,
                 eblanShortcutInfosGroup = eblanShortcutInfosGroup,
@@ -1047,11 +1026,11 @@ internal fun PagerScreen(
             pagerScreenState.showFolderGridItemPopup &&
             pagerScreenState.popupIntOffset != null &&
             pagerScreenState.popupIntSize != null &&
-            moveGridItemResult != null
+            moveGridItemResult != null &&
+            pagerScreenState.associate != null
         ) {
             FolderGridItemPopup(
                 modifier = modifier,
-                currentPage = currentPage,
                 drag = pagerScreenState.drag,
                 eblanAppWidgetProviderInfosGroup = eblanAppWidgetProviderInfosGroup,
                 eblanShortcutInfosGroup = eblanShortcutInfosGroup,
@@ -1104,7 +1083,6 @@ internal fun PagerScreen(
                 alpha = pagerScreenState.applicationScreenAlpha,
                 appDrawerSettings = appDrawerSettings,
                 cornerSize = pagerScreenState.applicationScreenCornerSize,
-                currentPage = currentPage,
                 drag = pagerScreenState.drag,
                 eblanAppWidgetProviderInfosGroup = eblanAppWidgetProviderInfosGroup,
                 eblanApplicationInfoTags = eblanApplicationInfoTags,
@@ -1140,7 +1118,6 @@ internal fun PagerScreen(
 
         WidgetScreen(
             columns = homeSettings.columns,
-            currentPage = currentPage,
             drag = pagerScreenState.drag,
             eblanAppWidgetProviderInfos = eblanAppWidgetProviderInfos,
             gridItemSettings = homeSettings.gridItemSettings,
@@ -1166,7 +1143,6 @@ internal fun PagerScreen(
         )
 
         ShortcutConfigScreen(
-            currentPage = currentPage,
             drag = pagerScreenState.drag,
             eblanShortcutConfigs = eblanShortcutConfigs,
             gridItemSettings = homeSettings.gridItemSettings,
@@ -1191,7 +1167,6 @@ internal fun PagerScreen(
 
         AppWidgetScreen(
             columns = homeSettings.columns,
-            currentPage = currentPage,
             drag = pagerScreenState.drag,
             eblanAppWidgetProviderInfosGroup = eblanAppWidgetProviderInfosGroup,
             eblanApplicationInfoGroup = pagerScreenState.eblanApplicationInfoGroup,

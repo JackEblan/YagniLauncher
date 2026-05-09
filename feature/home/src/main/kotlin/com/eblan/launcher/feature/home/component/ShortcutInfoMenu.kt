@@ -65,7 +65,6 @@ import kotlin.uuid.Uuid
 @Composable
 internal fun ShortcutInfoMenu(
     modifier: Modifier = Modifier,
-    currentPage: Int,
     drag: Drag,
     eblanShortcutInfosGroup: List<EblanShortcutInfo>,
     gridItemSettings: GridItemSettings,
@@ -96,7 +95,6 @@ internal fun ShortcutInfoMenu(
     ) {
         eblanShortcutInfosGroup.forEach { eblanShortcutInfo ->
             ShortcutInfoMenuItem(
-                currentPage = currentPage,
                 drag = drag,
                 eblanShortcutInfo = eblanShortcutInfo,
                 gridItemSettings = gridItemSettings,
@@ -147,7 +145,6 @@ internal fun PrivateShortcutInfoMenu(
 @Composable
 private fun ShortcutInfoMenuItem(
     modifier: Modifier = Modifier,
-    currentPage: Int,
     drag: Drag,
     eblanShortcutInfo: EblanShortcutInfo,
     gridItemSettings: GridItemSettings,
@@ -231,7 +228,7 @@ private fun ShortcutInfoMenuItem(
 
                                     val gridItem = GridItem(
                                         id = id,
-                                        page = currentPage,
+                                        page = 0,
                                         startColumn = -1,
                                         startRow = -1,
                                         columnSpan = 1,

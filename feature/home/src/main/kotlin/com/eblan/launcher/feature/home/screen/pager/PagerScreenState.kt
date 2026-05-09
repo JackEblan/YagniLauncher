@@ -370,7 +370,8 @@ internal class PagerScreenState(
     }
 
     suspend fun handleDragGridItemEffect(
-        currentPage: Int,
+        gridCurrentPage: Int,
+        dockGridCurrentPage: Int,
         density: Density,
         dockHeight: Dp,
         folderCurrentPage: Int,
@@ -407,7 +408,8 @@ internal class PagerScreenState(
     ) {
         handleDragGridItem(
             columns = homeSettings.columns,
-            currentPage = currentPage,
+            gridCurrentPage = gridCurrentPage,
+            dockGridCurrentPage = dockGridCurrentPage,
             density = density,
             dockColumns = homeSettings.dockColumns,
             dockHeight = dockHeight,

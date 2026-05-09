@@ -97,7 +97,6 @@ internal fun SharedTransitionScope.ApplicationScreen(
     alpha: Float,
     appDrawerSettings: AppDrawerSettings,
     cornerSize: Dp,
-    currentPage: Int,
     drag: Drag,
     eblanAppWidgetProviderInfosGroup: Map<String, List<EblanAppWidgetProviderInfo>>,
     eblanApplicationInfoTags: List<EblanApplicationInfoTag>,
@@ -165,7 +164,6 @@ internal fun SharedTransitionScope.ApplicationScreen(
             AppDrawerType.Vertical -> {
                 VerticalApplicationScreen(
                     appDrawerSettings = appDrawerSettings,
-                    currentPage = currentPage,
                     drag = drag,
                     eblanAppWidgetProviderInfosGroup = eblanAppWidgetProviderInfosGroup,
                     eblanApplicationInfoTags = eblanApplicationInfoTags,
@@ -202,7 +200,6 @@ internal fun SharedTransitionScope.ApplicationScreen(
             AppDrawerType.Horizontal -> {
                 HorizontalApplicationScreen(
                     appDrawerSettings = appDrawerSettings,
-                    currentPage = currentPage,
                     drag = drag,
                     eblanAppWidgetProviderInfosGroup = eblanAppWidgetProviderInfosGroup,
                     eblanApplicationInfoTags = eblanApplicationInfoTags,
@@ -237,7 +234,6 @@ internal fun SharedTransitionScope.ApplicationScreen(
             AppDrawerType.List -> {
                 ListApplicationScreen(
                     appDrawerSettings = appDrawerSettings,
-                    currentPage = currentPage,
                     drag = drag,
                     eblanAppWidgetProviderInfosGroup = eblanAppWidgetProviderInfosGroup,
                     eblanApplicationInfoTags = eblanApplicationInfoTags,

@@ -60,7 +60,6 @@ import com.eblan.launcher.feature.home.model.SharedElementKey
 @Composable
 internal fun GridItemPopup(
     modifier: Modifier = Modifier,
-    currentPage: Int,
     drag: Drag,
     eblanAppWidgetProviderInfosGroup: Map<String, List<EblanAppWidgetProviderInfo>>,
     eblanShortcutInfosGroup: Map<EblanShortcutInfoByGroup, List<EblanShortcutInfo>>,
@@ -122,7 +121,6 @@ internal fun GridItemPopup(
             .padding(paddingValues),
         content = {
             GridItemPopupContent(
-                currentPage = currentPage,
                 drag = drag,
                 eblanAppWidgetProviderInfosGroup = eblanAppWidgetProviderInfosGroup,
                 eblanShortcutInfosGroup = eblanShortcutInfosGroup,
@@ -173,7 +171,6 @@ internal fun GridItemPopup(
 @Composable
 internal fun FolderGridItemPopup(
     modifier: Modifier = Modifier,
-    currentPage: Int,
     drag: Drag,
     eblanAppWidgetProviderInfosGroup: Map<String, List<EblanAppWidgetProviderInfo>>,
     eblanShortcutInfosGroup: Map<EblanShortcutInfoByGroup, List<EblanShortcutInfo>>,
@@ -239,7 +236,6 @@ internal fun FolderGridItemPopup(
             .padding(paddingValues),
         content = {
             FolderGridItemPopupContent(
-                currentPage = currentPage,
                 drag = drag,
                 eblanAppWidgetProviderInfosGroup = eblanAppWidgetProviderInfosGroup,
                 eblanShortcutInfosGroup = eblanShortcutInfosGroup,
@@ -290,7 +286,6 @@ internal fun FolderGridItemPopup(
 @Composable
 private fun GridItemPopupContent(
     modifier: Modifier = Modifier,
-    currentPage: Int,
     drag: Drag,
     eblanAppWidgetProviderInfosGroup: Map<String, List<EblanAppWidgetProviderInfo>>,
     eblanShortcutInfosGroup: Map<EblanShortcutInfoByGroup, List<EblanShortcutInfo>>,
@@ -330,7 +325,6 @@ private fun GridItemPopupContent(
             when (val data = gridItem.data) {
                 is GridItemData.ApplicationInfo -> {
                     ApplicationInfoGridItemMenu(
-                        currentPage = currentPage,
                         drag = drag,
                         eblanAppWidgetProviderInfosByPackageName = eblanAppWidgetProviderInfosGroup[data.packageName],
                         eblanShortcutInfosByPackageName = eblanShortcutInfosGroup[
@@ -445,7 +439,6 @@ private fun GridItemPopupContent(
 @Composable
 private fun FolderGridItemPopupContent(
     modifier: Modifier = Modifier,
-    currentPage: Int,
     drag: Drag,
     eblanAppWidgetProviderInfosGroup: Map<String, List<EblanAppWidgetProviderInfo>>,
     eblanShortcutInfosGroup: Map<EblanShortcutInfoByGroup, List<EblanShortcutInfo>>,
@@ -483,7 +476,6 @@ private fun FolderGridItemPopupContent(
                 is GridItemData.ApplicationInfo -> {
                     ApplicationInfoFolderGridItemPopupContent(
                         modifier = modifier,
-                        currentPage = currentPage,
                         drag = drag,
                         eblanAppWidgetProviderInfosByPackageName = eblanAppWidgetProviderInfosGroup[data.packageName],
                         eblanShortcutInfosByPackageName = eblanShortcutInfosGroup[
@@ -578,7 +570,6 @@ private fun FolderGridItemPopupContent(
 @Composable
 private fun ApplicationInfoFolderGridItemPopupContent(
     modifier: Modifier = Modifier,
-    currentPage: Int,
     drag: Drag,
     eblanAppWidgetProviderInfosByPackageName: List<EblanAppWidgetProviderInfo>?,
     eblanShortcutInfosByPackageName: List<EblanShortcutInfo>?,
@@ -619,7 +610,6 @@ private fun ApplicationInfoFolderGridItemPopupContent(
                 ) {
                     ShortcutInfoMenu(
                         modifier = modifier,
-                        currentPage = currentPage,
                         drag = drag,
                         eblanShortcutInfosGroup = eblanShortcutInfosByPackageName,
                         gridItemSettings = gridItemSettings,
@@ -675,7 +665,6 @@ private fun ApplicationInfoFolderGridItemPopupContent(
 @Composable
 private fun ApplicationInfoGridItemMenu(
     modifier: Modifier = Modifier,
-    currentPage: Int,
     drag: Drag,
     eblanAppWidgetProviderInfosByPackageName: List<EblanAppWidgetProviderInfo>?,
     eblanShortcutInfosByPackageName: List<EblanShortcutInfo>?,
@@ -712,7 +701,6 @@ private fun ApplicationInfoGridItemMenu(
         ) {
             ShortcutInfoMenu(
                 modifier = modifier,
-                currentPage = currentPage,
                 drag = drag,
                 eblanShortcutInfosGroup = eblanShortcutInfosByPackageName,
                 gridItemSettings = gridItemSettings,
