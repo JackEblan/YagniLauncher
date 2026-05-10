@@ -249,7 +249,7 @@ private fun Success(
         SettingsSwitch(
             checked = eblanApplicationInfo.isHidden,
             title = "Hide From Drawer",
-            subtitle = "Hide from drawer",
+            subtitle = "View hidden apps in App Drawer settings",
             onCheckedChange = { isHidden ->
                 onUpdateEblanApplicationInfo(eblanApplicationInfo.copy(isHidden = isHidden))
             },

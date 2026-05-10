@@ -906,8 +906,7 @@ internal fun PagerScreen(
             pagerScreenState.showGridItemPopup &&
             pagerScreenState.popupIntOffset != null &&
             pagerScreenState.popupIntSize != null &&
-            moveGridItemResult != null &&
-            pagerScreenState.associate != null
+            moveGridItemResult != null
         ) {
             GridItemPopup(
                 drag = pagerScreenState.drag,
@@ -1026,8 +1025,7 @@ internal fun PagerScreen(
             pagerScreenState.showFolderGridItemPopup &&
             pagerScreenState.popupIntOffset != null &&
             pagerScreenState.popupIntSize != null &&
-            moveGridItemResult != null &&
-            pagerScreenState.associate != null
+            moveGridItemResult != null
         ) {
             FolderGridItemPopup(
                 modifier = modifier,

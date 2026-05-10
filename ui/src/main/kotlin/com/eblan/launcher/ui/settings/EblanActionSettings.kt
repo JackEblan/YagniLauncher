@@ -17,8 +17,6 @@
  */
 package com.eblan.launcher.ui.settings
 
-import android.content.Intent
-import android.provider.Settings
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ElevatedCard
@@ -48,8 +46,6 @@ fun EblanActionSettings(
     onUpdateSwipeUp: (EblanAction) -> Unit,
     onUpdateSwipeDown: (EblanAction) -> Unit,
 ) {
-    val context = LocalContext.current
-
     var showDoubleTapDialog by remember { mutableStateOf(false) }
 
     var showSwipeUpDialog by remember { mutableStateOf(false) }
@@ -61,17 +57,6 @@ fun EblanActionSettings(
             .fillMaxWidth()
             .padding(horizontal = 15.dp),
     ) {
-        SettingsColumn(
-            title = "Accessibility Services",
-            subtitle = "Perform global actions",
-            onClick = {
-                val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
-                context.startActivity(intent)
-            },
-        )
-
-        HorizontalDivider(modifier = Modifier.fillMaxWidth())
-
         SettingsColumn(
             title = "Double Tap",
             subtitle = doubleTap.eblanActionType.getEblanActionTypeSubtitle(componentName = doubleTap.componentName),
