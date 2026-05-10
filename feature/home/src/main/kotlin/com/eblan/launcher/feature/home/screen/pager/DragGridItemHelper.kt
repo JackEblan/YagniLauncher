@@ -108,9 +108,7 @@ internal fun handleAnimateScrollToPage(
         }
 
         is GridItemSource.Folder -> {
-            requireNotNull(folderPopupIntOffset)
-
-            requireNotNull(folderPopupIntSize)
+            if (folderPopupIntOffset == null || folderPopupIntSize == null) return
 
             val data = folderGridItem?.data as GridItemData.Folder
 
@@ -337,11 +335,12 @@ private fun dragFolderGridItem(
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onUpdateIsMoveFolderGridItemOutsideFolder: (Boolean) -> Unit,
 ) {
-    requireNotNull(folderGridItem)
-
-    requireNotNull(folderPopupIntOffset)
-
-    requireNotNull(folderPopupIntSize)
+    if (folderGridItem == null ||
+        folderPopupIntOffset == null ||
+        folderPopupIntSize == null
+    ) {
+        return
+    }
 
     val data = folderGridItem.data as GridItemData.Folder
 
