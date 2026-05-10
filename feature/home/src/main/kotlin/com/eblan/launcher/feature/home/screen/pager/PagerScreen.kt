@@ -980,9 +980,7 @@ internal fun PagerScreen(
 
         if (folderGridItem != null &&
             pagerScreenState.folderPopupIntOffset != null &&
-            pagerScreenState.folderPopupIntSize != null &&
-            !pagerScreenState.isCloseFolder &&
-            !pagerScreenState.isMoveFolderGridItemOutsideFolder
+            pagerScreenState.folderPopupIntSize != null
         ) {
             FolderScreen(
                 drag = pagerScreenState.drag,

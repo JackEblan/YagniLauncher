@@ -968,7 +968,7 @@ internal class PagerScreenState(
         moveGridItemResult: MoveGridItemResult?,
         onMoveFolderGridItemOutsideFolder: (GridItem) -> Unit,
     ) {
-        val movingGridItem = requireNotNull(moveGridItemResult?.movingGridItem)
+        val movingGridItem = moveGridItemResult?.movingGridItem ?: return
 
         folderPopupIntOffset = null
 
