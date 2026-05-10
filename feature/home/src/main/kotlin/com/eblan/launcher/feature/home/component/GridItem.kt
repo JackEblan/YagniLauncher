@@ -21,10 +21,8 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -856,17 +854,15 @@ internal fun SharedTransitionScope.InteractiveFolderGridItem(
                     shape = RoundedCornerShape(5.dp),
                 ),
             ) {
-                FlowRow(
+                FolderGridLayout(
                     modifier = Modifier.matchParentSize(),
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                    verticalArrangement = Arrangement.SpaceEvenly,
-                    maxItemsInEachRow = 3,
-                    maxLines = 3,
-                ) {
-                    data.previewGridItemsByPage.forEach { folderGridItem ->
+                    columns = 3,
+                    gridItems = data.previewGridItemsByPage.take(9),
+                    rows = 3,
+                    content = { gridItem ->
                         PreviewFolderGridItem(
                             alpha = alpha,
-                            gridItem = folderGridItem,
+                            gridItem = gridItem,
                             gridItemSettings = gridItemSettings,
                             iconPackFilePaths = iconPackFilePaths,
                             isScrollInProgress = isScrollInProgress,
@@ -874,8 +870,8 @@ internal fun SharedTransitionScope.InteractiveFolderGridItem(
                             parent = sharedElementKey.parent,
                             moveGridItemResult = moveGridItemResult,
                         )
-                    }
-                }
+                    },
+                )
             }
         }
 
