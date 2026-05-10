@@ -589,7 +589,7 @@ internal suspend fun handleConflictingGridItem(
 
     val conflictingGridItem = moveGridItemResult.conflictingGridItem ?: return
 
-    val conflictingData = conflictingGridItem.data as GridItemData.Folder
+    val conflictingData = conflictingGridItem.data as? GridItemData.Folder ?: return
 
     delay(1000L)
 

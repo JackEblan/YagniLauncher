@@ -89,7 +89,7 @@ internal fun SharedTransitionScope.FolderScreen(
     safeDrawingWidth: Int,
     statusBarNotifications: Map<String, Int>,
     isVisibleOverlay: Boolean,
-    isClosingFolder: Boolean,
+    isCloseFolder: Boolean,
     isMoveFolderGridItemOutsideFolder: Boolean,
     hasShortcutHostPermission: Boolean,
     moveGridItemResult: MoveGridItemResult?,
@@ -214,12 +214,12 @@ internal fun SharedTransitionScope.FolderScreen(
         progress.animateTo(targetValue = 1f)
     }
 
-    BackHandler(enabled = !isClosingFolder) {
+    BackHandler(enabled = !isCloseFolder) {
         onUpdateIsClosingFolder(true)
     }
 
-    LaunchedEffect(key1 = isClosingFolder) {
-        if (isClosingFolder) {
+    LaunchedEffect(key1 = isCloseFolder) {
+        if (isCloseFolder) {
             progress.animateTo(targetValue = 0f)
 
             onDismissRequest()

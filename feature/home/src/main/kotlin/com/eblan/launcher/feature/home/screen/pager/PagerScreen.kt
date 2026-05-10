@@ -980,7 +980,9 @@ internal fun PagerScreen(
 
         if (folderGridItem != null &&
             pagerScreenState.folderPopupIntOffset != null &&
-            pagerScreenState.folderPopupIntSize != null
+            pagerScreenState.folderPopupIntSize != null &&
+            !pagerScreenState.isCloseFolder &&
+            !pagerScreenState.isMoveFolderGridItemOutsideFolder
         ) {
             FolderScreen(
                 drag = pagerScreenState.drag,
@@ -995,7 +997,7 @@ internal fun PagerScreen(
                 safeDrawingWidth = safeDrawingWidth,
                 statusBarNotifications = pagerScreenState.statusBarNotifications,
                 isVisibleOverlay = isVisibleOverlay,
-                isClosingFolder = pagerScreenState.isCloseFolder,
+                isCloseFolder = pagerScreenState.isCloseFolder,
                 isMoveFolderGridItemOutsideFolder = pagerScreenState.isMoveFolderGridItemOutsideFolder,
                 hasShortcutHostPermission = hasShortcutHostPermission,
                 moveGridItemResult = moveGridItemResult,
