@@ -108,9 +108,11 @@ internal fun handleAnimateScrollToPage(
         }
 
         is GridItemSource.Folder -> {
-            if (folderPopupIntOffset == null || folderPopupIntSize == null) return
+            requireNotNull(folderPopupIntOffset)
 
-            val data = folderGridItem?.data as? GridItemData.Folder ?: return
+            requireNotNull(folderPopupIntSize)
+
+            val data = folderGridItem?.data as GridItemData.Folder
 
             val folderCellWidth = safeDrawingWidth / FOLDER_MAX_COLUMNS
 
@@ -341,7 +343,7 @@ private fun dragFolderGridItem(
 
     requireNotNull(folderPopupIntSize)
 
-    val data = folderGridItem.data as? GridItemData.Folder ?: error("Expected GridItemData.Folder")
+    val data = folderGridItem.data as GridItemData.Folder
 
     val folderCellWidth = safeDrawingWidth / FOLDER_MAX_COLUMNS
 
@@ -587,7 +589,7 @@ internal suspend fun handleConflictingGridItem(
 
     val conflictingGridItem = moveGridItemResult.conflictingGridItem ?: return
 
-    val conflictingData = conflictingGridItem.data as? GridItemData.Folder ?: return
+    val conflictingData = conflictingGridItem.data as GridItemData.Folder
 
     delay(1000L)
 

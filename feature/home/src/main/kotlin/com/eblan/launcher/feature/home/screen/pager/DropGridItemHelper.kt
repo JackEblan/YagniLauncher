@@ -225,8 +225,7 @@ internal fun handleAppWidgetLauncherResult(
 ) {
     val movingGridItem = requireNotNull(moveGridItemResult?.movingGridItem)
 
-    val data = (movingGridItem.data as? GridItemData.Widget)
-        ?: error("Expected GridItemData.Widget")
+    val data = movingGridItem.data as GridItemData.Widget
 
     if (result.resultCode == Activity.RESULT_OK) {
         val appWidgetId = result.data?.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, -1) ?: -1
@@ -317,8 +316,7 @@ internal fun handleBoundWidgetEffect(
 
     requireNotNull(moveGridItemResult)
 
-    val data = (updatedWidgetGridItem.data as? GridItemData.Widget)
-        ?: error("Expected GridItemData.Widget")
+    val data = updatedWidgetGridItem.data as GridItemData.Widget
 
     when (gridItemSource) {
         is GridItemSource.New -> {
@@ -394,8 +392,7 @@ internal suspend fun handleShortcutConfigLauncherResult(
         }
     }?.toUri(Intent.URI_INTENT_SCHEME)
 
-    val movingData = (movingGridItem.data as? GridItemData.ShortcutConfig)
-        ?: error("Expected GridItemData.ShortcutConfig")
+    val movingData = movingGridItem.data as GridItemData.ShortcutConfig
 
     val shortcutIntentIcon = icon?.let { currentByteArray ->
         fileManager.updateAndGetFilePath(
