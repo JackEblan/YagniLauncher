@@ -232,7 +232,7 @@ internal fun WidgetGridItemResizeOverlay(
                 rows = rows,
             ) && !lockMovement
         ) {
-            delay(100L)
+            delay(50L)
 
             val options = Bundle().apply {
                 putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, data.minWidth)

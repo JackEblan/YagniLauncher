@@ -261,7 +261,7 @@ internal fun GridItemResizeOverlay(
                 rows = rows,
             ) && !lockMovement
         ) {
-            delay(100L)
+            delay(50L)
 
             onResizeGridItem(
                 resizingGridItem,

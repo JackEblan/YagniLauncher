@@ -80,7 +80,7 @@ fun getResolveDirectionByX(
     }
 }
 
-fun getGridItemByCoordinates(
+suspend fun getGridItemByCoordinates(
     id: String,
     gridItems: List<GridItem>,
     columns: Int,
@@ -95,6 +95,8 @@ fun getGridItemByCoordinates(
     val cellHeight = gridHeight / rows
 
     return gridItems.find { gridItem ->
+        currentCoroutineContext().ensureActive()
+
         val startColumn = x / cellWidth
 
         val startRow = y / cellHeight
@@ -127,6 +129,8 @@ suspend fun findAvailableRegionByPage(
     rows: Int,
 ): GridItem? {
     for (page in 0 until pageCount) {
+        currentCoroutineContext().ensureActive()
+
         for (row in 0..(rows - gridItem.rowSpan)) {
             currentCoroutineContext().ensureActive()
 
@@ -138,6 +142,8 @@ suspend fun findAvailableRegionByPage(
                 )
 
                 val isFree = gridItems.none { otherGridItem ->
+                    currentCoroutineContext().ensureActive()
+
                     otherGridItem.page == page && rectanglesOverlap(
                         moving = candidateGridItem,
                         other = otherGridItem,
