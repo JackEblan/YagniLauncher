@@ -41,7 +41,6 @@ import androidx.compose.material.icons.filled.LockOpen
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.OpenInFull
 import androidx.compose.material.icons.filled.Pages
-import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Widgets
@@ -69,7 +68,6 @@ object EblanLauncherIcons {
     val WorkOff = Icons.Default.WorkOff
     val DeveloperMode = Icons.Default.DeveloperMode
     val Close = Icons.Default.Close
-    val Save = Icons.Default.Save
     val Shortcut = Icons.AutoMirrored.Filled.Shortcut
     val Search = Icons.Default.Search
     val Lock = Icons.Default.Lock

@@ -32,6 +32,7 @@ import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -40,11 +41,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.eblan.launcher.designsystem.component.EblanDialogContainer
 import com.eblan.launcher.designsystem.component.EblanRadioButton
+import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.EblanAction
 import com.eblan.launcher.domain.model.EblanActionType
 import com.eblan.launcher.domain.model.EblanApplicationInfo
@@ -62,8 +65,6 @@ internal fun EblanActionDialog(
     onSelectEblanAction: (EblanAction) -> Unit,
     onDismissRequest: () -> Unit,
 ) {
-    val context = LocalContext.current
-
     val accessibilityManager = LocalAccessibilityManager.current
 
     var selectedEblanAction by remember { mutableStateOf(eblanAction) }
@@ -89,22 +90,7 @@ internal fun EblanActionDialog(
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                ElevatedCard(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(10.dp),
-                    onClick = {
-                        val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
-
-                        context.startActivity(intent)
-                    },
-                ) {
-                    Text(
-                        modifier = Modifier.padding(15.dp),
-                        text = "Enable the Accessibility Services permission to use additional actions",
-                        style = MaterialTheme.typography.bodySmall,
-                    )
-                }
+                AccessibilityServicesCard()
 
                 Spacer(modifier = Modifier.height(10.dp))
 
@@ -189,5 +175,38 @@ internal fun EblanActionDialog(
                 showSelectApplicationDialog = false
             },
         )
+    }
+}
+
+@Composable
+private fun AccessibilityServicesCard(modifier: Modifier = Modifier) {
+    val context = LocalContext.current
+
+    ElevatedCard(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(10.dp),
+        onClick = {
+            val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
+
+            context.startActivity(intent)
+        },
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(15.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(imageVector = EblanLauncherIcons.Info, contentDescription = null)
+
+            Spacer(modifier = Modifier.width(5.dp))
+
+            Text(
+                modifier = Modifier,
+                text = "Enable the Accessibility Services permission to use additional actions",
+                style = MaterialTheme.typography.bodySmall,
+            )
+        }
     }
 }
