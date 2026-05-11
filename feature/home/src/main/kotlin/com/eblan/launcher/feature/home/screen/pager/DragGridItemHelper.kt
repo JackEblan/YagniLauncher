@@ -80,64 +80,27 @@ internal fun handleAnimateScrollToPage(
 
     when (gridItemSource) {
         is GridItemSource.Existing, is GridItemSource.New, is GridItemSource.Pin -> {
-            val isOnLeftGrid = dragX < edgeDistance
-
-            val isOnRightGrid = dragX > safeDrawingWidth - edgeDistance
-
-            fun animateScrollToPage(onUpdatePageDirection: (PageDirection?) -> Unit) {
-                if (isOnLeftGrid) {
-                    onUpdatePageDirection(PageDirection.Left)
-                } else if (isOnRightGrid) {
-                    onUpdatePageDirection(PageDirection.Right)
-                } else {
-                    onUpdatePageDirection(null)
-                }
-            }
-
-            when (associate) {
-                Associate.Grid -> {
-                    animateScrollToPage(onUpdatePageDirection = onUpdateGridPageDirection)
-                }
-
-                Associate.Dock -> {
-                    animateScrollToPage(onUpdatePageDirection = onUpdateDockPageDirection)
-                }
-
-                null -> Unit
-            }
+            animateScrollToPage(
+                associate = associate,
+                dragX = dragX,
+                edgeDistance = edgeDistance,
+                safeDrawingWidth = safeDrawingWidth,
+                onUpdateDockPageDirection = onUpdateDockPageDirection,
+                onUpdateGridPageDirection = onUpdateGridPageDirection,
+            )
         }
 
         is GridItemSource.Folder -> {
-            if (folderPopupIntOffset == null || folderPopupIntSize == null) return
-
-            val data = folderGridItem?.data as GridItemData.Folder
-
-            val folderCellWidth = safeDrawingWidth / FOLDER_MAX_COLUMNS
-
-            val folderGridPaddingPx = with(density) {
-                FOLDER_GRID_PADDING.roundToPx()
-            }
-
-            val folderGridWidthPx = folderCellWidth * data.columns
-
-            val centeredX =
-                folderPopupIntOffset.x + (folderPopupIntSize.width / 2) - (folderGridWidthPx / 2)
-
-            val popupX = centeredX.coerceIn(0, safeDrawingWidth - folderGridWidthPx)
-
-            val folderDragX = dragX - popupX - folderGridPaddingPx
-
-            val isOnLeftGrid = folderDragX < edgeDistance
-
-            val isOnRightGrid = folderDragX > folderGridWidthPx - folderGridPaddingPx - edgeDistance
-
-            if (isOnLeftGrid) {
-                onUpdateFolderPageDirection(PageDirection.Left)
-            } else if (isOnRightGrid) {
-                onUpdateFolderPageDirection(PageDirection.Right)
-            } else {
-                onUpdateFolderPageDirection(null)
-            }
+            animateScrollToPageFolder(
+                density = density,
+                dragX = dragX,
+                edgeDistance = edgeDistance,
+                folderGridItem = folderGridItem,
+                folderPopupIntOffset = folderPopupIntOffset,
+                folderPopupIntSize = folderPopupIntSize,
+                safeDrawingWidth = safeDrawingWidth,
+                onUpdateFolderPageDirection = onUpdateFolderPageDirection,
+            )
         }
     }
 }
@@ -869,5 +832,82 @@ private fun getMoveNewGridItem(
             startRow = gridY / cellHeight,
             associate = associate,
         )
+    }
+}
+
+private fun animateScrollToPage(
+    associate: Associate?,
+    dragX: Int,
+    edgeDistance: Int,
+    safeDrawingWidth: Int,
+    onUpdateDockPageDirection: (PageDirection?) -> Unit,
+    onUpdateGridPageDirection: (PageDirection?) -> Unit,
+) {
+    val isOnLeftGrid = dragX < edgeDistance
+
+    val isOnRightGrid = dragX > safeDrawingWidth - edgeDistance
+
+    fun animateScrollToPage(onUpdatePageDirection: (PageDirection?) -> Unit) {
+        if (isOnLeftGrid) {
+            onUpdatePageDirection(PageDirection.Left)
+        } else if (isOnRightGrid) {
+            onUpdatePageDirection(PageDirection.Right)
+        } else {
+            onUpdatePageDirection(null)
+        }
+    }
+
+    when (associate) {
+        Associate.Grid -> {
+            animateScrollToPage(onUpdatePageDirection = onUpdateGridPageDirection)
+        }
+
+        Associate.Dock -> {
+            animateScrollToPage(onUpdatePageDirection = onUpdateDockPageDirection)
+        }
+
+        null -> Unit
+    }
+}
+
+private fun animateScrollToPageFolder(
+    density: Density,
+    dragX: Int,
+    edgeDistance: Int,
+    folderGridItem: GridItem?,
+    folderPopupIntOffset: IntOffset?,
+    folderPopupIntSize: IntSize?,
+    safeDrawingWidth: Int,
+    onUpdateFolderPageDirection: (PageDirection?) -> Unit,
+) {
+    if (folderPopupIntOffset == null || folderPopupIntSize == null) return
+
+    val data = folderGridItem?.data as GridItemData.Folder
+
+    val folderCellWidth = safeDrawingWidth / FOLDER_MAX_COLUMNS
+
+    val folderGridPaddingPx = with(density) {
+        FOLDER_GRID_PADDING.roundToPx()
+    }
+
+    val folderGridWidthPx = folderCellWidth * data.columns
+
+    val centeredX =
+        folderPopupIntOffset.x + (folderPopupIntSize.width / 2) - (folderGridWidthPx / 2)
+
+    val popupX = centeredX.coerceIn(0, safeDrawingWidth - folderGridWidthPx)
+
+    val folderDragX = dragX - popupX - folderGridPaddingPx
+
+    val isOnLeftGrid = folderDragX < edgeDistance
+
+    val isOnRightGrid = folderDragX > folderGridWidthPx - folderGridPaddingPx - edgeDistance
+
+    if (isOnLeftGrid) {
+        onUpdateFolderPageDirection(PageDirection.Left)
+    } else if (isOnRightGrid) {
+        onUpdateFolderPageDirection(PageDirection.Right)
+    } else {
+        onUpdateFolderPageDirection(null)
     }
 }

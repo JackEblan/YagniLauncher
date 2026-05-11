@@ -71,7 +71,11 @@ internal suspend fun handleDropGridItem(
     onUpdateWidgetGridItem: (GridItem) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
 ) {
-    if (drag == Drag.None || drag == Drag.Start || drag == Drag.Dragging || gridItemSource == null) {
+    if (drag == Drag.None ||
+        drag == Drag.Start ||
+        drag == Drag.Dragging ||
+        gridItemSource == null
+    ) {
         return
     }
 

@@ -19,7 +19,6 @@ package com.eblan.launcher.ui.dialog
 
 import android.content.Intent
 import android.provider.Settings
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -43,7 +42,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.eblan.launcher.designsystem.component.EblanDialogContainer
 import com.eblan.launcher.designsystem.component.EblanRadioButton
@@ -105,7 +103,6 @@ internal fun EblanActionDialog(
                         modifier = Modifier.padding(15.dp),
                         text = "Enable the Accessibility Services permission to use additional actions",
                         style = MaterialTheme.typography.bodySmall,
-                        textAlign = TextAlign.Center,
                     )
                 }
 
