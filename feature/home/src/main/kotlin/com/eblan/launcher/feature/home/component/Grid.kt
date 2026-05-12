@@ -103,18 +103,14 @@ internal fun FolderGridLayout(
                 val column = index % columns
 
                 subcompose(gridItem.id) {
-                    val width by animateIntAsState(cellWidth)
-
-                    val height by animateIntAsState(cellHeight)
-
                     val x by animateIntAsState(column * cellWidth)
 
                     val y by animateIntAsState(row * cellHeight)
 
                     Box(
                         modifier = Modifier.gridItem(
-                            width = width,
-                            height = height,
+                            width = cellWidth,
+                            height = cellHeight,
                             x = x,
                             y = y,
                         ),

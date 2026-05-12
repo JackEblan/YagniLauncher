@@ -71,8 +71,6 @@ import com.eblan.launcher.feature.home.util.FOLDER_COLUMNS
 import com.eblan.launcher.feature.home.util.FOLDER_ROWS
 import com.eblan.launcher.feature.home.util.PAGE_INDICATOR_HEIGHT
 import com.eblan.launcher.ui.local.LocalLauncherApps
-import kotlinx.coroutines.joinAll
-import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 @Composable
@@ -221,16 +219,19 @@ internal fun SharedTransitionScope.FolderScreen(
         }
     }
 
-    val animatedColumns = remember { Animatable(FOLDER_COLUMNS.toFloat()) }
-
-    val animatedRows = remember { Animatable(FOLDER_ROWS.toFloat()) }
+    val animatedColumns by remember {
+        derivedStateOf {
+            lerp(FOLDER_COLUMNS.toFloat(), data.columns.toFloat(), progress.value)
+        }
+    }
+    val animatedRows by remember {
+        derivedStateOf {
+            lerp(FOLDER_ROWS.toFloat(), data.rows.toFloat(), progress.value)
+        }
+    }
 
     LaunchedEffect(key1 = Unit) {
-        launch { progress.animateTo(targetValue = 1f) }
-
-        launch { animatedColumns.animateTo(targetValue = data.columns.toFloat()) }
-
-        launch { animatedRows.animateTo(targetValue = data.rows.toFloat()) }
+        progress.animateTo(targetValue = 1f)
     }
 
     BackHandler(enabled = !isCloseFolder) {
@@ -239,29 +240,25 @@ internal fun SharedTransitionScope.FolderScreen(
 
     LaunchedEffect(key1 = isCloseFolder) {
         if (isCloseFolder) {
-            folderGridHorizontalPagerState.animateScrollToPage(0)
+            try {
+                folderGridHorizontalPagerState.animateScrollToPage(0)
 
-            joinAll(
-                launch { progress.animateTo(targetValue = 0f) },
-                launch { animatedColumns.animateTo(targetValue = 3f) },
-                launch { animatedRows.animateTo(targetValue = 3f) },
-            )
-
-            onDismissRequest()
+                progress.animateTo(targetValue = 0f)
+            } finally {
+                onDismissRequest()
+            }
         }
     }
 
     LaunchedEffect(key1 = isMoveFolderGridItemOutsideFolder) {
         if (isMoveFolderGridItemOutsideFolder) {
-            folderGridHorizontalPagerState.animateScrollToPage(0)
+            try {
+                folderGridHorizontalPagerState.animateScrollToPage(0)
 
-            joinAll(
-                launch { progress.animateTo(targetValue = 0f) },
-                launch { animatedColumns.animateTo(targetValue = 3f) },
-                launch { animatedRows.animateTo(targetValue = 3f) },
-            )
-
-            onMoveFolderGridItemOutsideFolder()
+                progress.animateTo(targetValue = 0f)
+            } finally {
+                onMoveFolderGridItemOutsideFolder()
+            }
         }
     }
 
@@ -296,9 +293,9 @@ internal fun SharedTransitionScope.FolderScreen(
                 ) { index ->
                     FolderGridLayout(
                         modifier = Modifier.fillMaxSize(),
-                        columns = animatedColumns.value.roundToInt(),
+                        columns = animatedColumns.roundToInt(),
                         gridItems = data.gridItemsByPage[index],
-                        rows = animatedRows.value.roundToInt(),
+                        rows = animatedRows.roundToInt(),
                         content = { gridItem ->
                             val x = gridItem.startColumn * cellWidth
 
