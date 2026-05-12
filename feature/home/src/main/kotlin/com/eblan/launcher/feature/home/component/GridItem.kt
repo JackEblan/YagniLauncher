@@ -1200,7 +1200,9 @@ private fun SharedTransitionScope.PreviewFolderGridItem(
                 AsyncImage(
                     model = Builder(context)
                         .data(data.customIcon ?: icon)
-                        .addLastModifiedToFileCacheKey(true).build(),
+                        .addLastModifiedToFileCacheKey(true)
+                        .size(Size.ORIGINAL)
+                        .build(),
                     contentDescription = null,
                     modifier = commonModifier,
                 )
@@ -1228,7 +1230,9 @@ private fun SharedTransitionScope.PreviewFolderGridItem(
                 AsyncImage(
                     model = Builder(context)
                         .data(icon)
-                        .addLastModifiedToFileCacheKey(true).build(),
+                        .addLastModifiedToFileCacheKey(true)
+                        .size(Size.ORIGINAL)
+                        .build(),
                     contentDescription = null,
                     modifier = commonModifier,
                 )
@@ -1238,7 +1242,9 @@ private fun SharedTransitionScope.PreviewFolderGridItem(
                 AsyncImage(
                     model = Builder(context)
                         .data(data.customIcon ?: data.icon)
-                        .addLastModifiedToFileCacheKey(true).build(),
+                        .addLastModifiedToFileCacheKey(true)
+                        .size(Size.ORIGINAL)
+                        .build(),
                     contentDescription = null,
                     modifier = commonModifier,
                 )
