@@ -67,6 +67,8 @@ import com.eblan.launcher.feature.home.component.PageIndicator
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
+import com.eblan.launcher.feature.home.util.FOLDER_COLUMNS
+import com.eblan.launcher.feature.home.util.FOLDER_ROWS
 import com.eblan.launcher.feature.home.util.PAGE_INDICATOR_HEIGHT
 import com.eblan.launcher.ui.local.LocalLauncherApps
 import kotlinx.coroutines.joinAll
@@ -209,13 +211,15 @@ internal fun SharedTransitionScope.FolderScreen(
         }
     }
 
-    val animatedColumns = remember { Animatable(3f) }
+    val animatedColumns = remember { Animatable(FOLDER_COLUMNS.toFloat()) }
 
-    val animatedRows = remember { Animatable(3f) }
+    val animatedRows = remember { Animatable(FOLDER_ROWS.toFloat()) }
 
     LaunchedEffect(key1 = Unit) {
         launch { progress.animateTo(targetValue = 1f) }
+    }
 
+    LaunchedEffect(key1 = data.columns, key2 = data.rows) {
         launch { animatedColumns.animateTo(targetValue = data.columns.toFloat()) }
 
         launch { animatedRows.animateTo(targetValue = data.rows.toFloat()) }
@@ -323,8 +327,6 @@ internal fun SharedTransitionScope.FolderScreen(
                                             sourceBoundsY + cellHeight,
                                         ),
                                     )
-                                },
-                                onTapFolderGridItem = { _, _ ->
                                 },
                                 onTapShortcutConfig = { uri ->
                                     context.startActivity(parseUri(uri, 0))

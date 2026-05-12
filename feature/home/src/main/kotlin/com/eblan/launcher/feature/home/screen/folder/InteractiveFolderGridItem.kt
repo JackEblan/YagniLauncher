@@ -57,10 +57,6 @@ internal fun SharedTransitionScope.InteractiveFolderGridItemContent(
         serialNumber: Long,
         componentName: String,
     ) -> Unit,
-    onTapFolderGridItem: (
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) -> Unit,
     onTapShortcutConfig: (String) -> Unit,
     onTapShortcutInfo: (
         serialNumber: Long,
@@ -176,7 +172,7 @@ internal fun SharedTransitionScope.InteractiveFolderGridItemContent(
                 onDismissGridItemPopup = onDismissGridItemPopup,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
-                onTap = onTapFolderGridItem,
+                onTap = { _, _ -> },
                 onUpdateGridItemSource = onUpdateGridItemSource,
                 onUpdateImageBitmap = onUpdateImageBitmap,
                 onUpdateIsDragging = onUpdateIsDragging,

@@ -69,6 +69,8 @@ import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
+import com.eblan.launcher.feature.home.util.FOLDER_COLUMNS
+import com.eblan.launcher.feature.home.util.FOLDER_ROWS
 import com.eblan.launcher.feature.home.util.getHorizontalAlignment
 import com.eblan.launcher.feature.home.util.getVerticalArrangement
 import com.eblan.launcher.feature.home.util.handleDrag
@@ -869,9 +871,9 @@ internal fun SharedTransitionScope.InteractiveFolderGridItem(
             ) {
                 FolderGridLayout(
                     modifier = Modifier.matchParentSize(),
-                    columns = 3,
-                    gridItems = data.previewGridItemsByPage.take(9),
-                    rows = 3,
+                    columns = FOLDER_COLUMNS,
+                    gridItems = data.previewGridItemsByPage.take(FOLDER_COLUMNS * FOLDER_ROWS),
+                    rows = FOLDER_ROWS,
                     content = { gridItem ->
                         PreviewFolderGridItem(
                             alpha = alpha,
