@@ -69,6 +69,8 @@ import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
 import com.eblan.launcher.feature.home.util.PAGE_INDICATOR_HEIGHT
 import com.eblan.launcher.ui.local.LocalLauncherApps
+import kotlinx.coroutines.joinAll
+import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 @Composable
@@ -207,10 +209,16 @@ internal fun SharedTransitionScope.FolderScreen(
         }
     }
 
-    LaunchedEffect(key1 = Unit) {
-        progress.snapTo(targetValue = 0f)
+    val animatedColumns = remember { Animatable(3f) }
 
-        progress.animateTo(targetValue = 1f)
+    val animatedRows = remember { Animatable(3f) }
+
+    LaunchedEffect(key1 = Unit) {
+        launch { progress.animateTo(targetValue = 1f) }
+
+        launch { animatedColumns.animateTo(targetValue = data.columns.toFloat()) }
+
+        launch { animatedRows.animateTo(targetValue = data.rows.toFloat()) }
     }
 
     BackHandler(enabled = !isCloseFolder) {
@@ -219,7 +227,11 @@ internal fun SharedTransitionScope.FolderScreen(
 
     LaunchedEffect(key1 = isCloseFolder) {
         if (isCloseFolder) {
-            progress.animateTo(targetValue = 0f)
+            joinAll(
+                launch { progress.animateTo(targetValue = 0f) },
+                launch { animatedColumns.animateTo(targetValue = 3f) },
+                launch { animatedRows.animateTo(targetValue = 3f) },
+            )
 
             onDismissRequest()
         }
@@ -227,7 +239,11 @@ internal fun SharedTransitionScope.FolderScreen(
 
     LaunchedEffect(key1 = isMoveFolderGridItemOutsideFolder) {
         if (isMoveFolderGridItemOutsideFolder) {
-            progress.animateTo(targetValue = 0f)
+            joinAll(
+                launch { progress.animateTo(targetValue = 0f) },
+                launch { animatedColumns.animateTo(targetValue = 3f) },
+                launch { animatedRows.animateTo(targetValue = 3f) },
+            )
 
             onMoveFolderGridItemOutsideFolder()
         }
@@ -264,9 +280,9 @@ internal fun SharedTransitionScope.FolderScreen(
                 ) { index ->
                     FolderGridLayout(
                         modifier = Modifier.fillMaxSize(),
-                        columns = data.columns,
+                        columns = animatedColumns.value.roundToInt(),
                         gridItems = data.gridItemsByPage[index],
-                        rows = data.rows,
+                        rows = animatedRows.value.roundToInt(),
                         content = { gridItem ->
                             val x = gridItem.startColumn * cellWidth
 
@@ -342,10 +358,12 @@ internal fun SharedTransitionScope.FolderScreen(
                     )
                 }
 
-                FolderTitle(
-                    data = data,
-                    folderGridHorizontalPagerState = folderGridHorizontalPagerState,
-                )
+                if (progress.value == 1f) {
+                    FolderTitle(
+                        data = data,
+                        folderGridHorizontalPagerState = folderGridHorizontalPagerState,
+                    )
+                }
             }
         }
     }
