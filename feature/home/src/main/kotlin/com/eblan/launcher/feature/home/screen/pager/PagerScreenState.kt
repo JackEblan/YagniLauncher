@@ -922,28 +922,20 @@ internal class PagerScreenState(
     }
 
     fun showFolder(
-        height: Int,
         id: String?,
-        width: Int,
-        x: Int,
-        y: Int,
+        intOffset: IntOffset,
+        intSize: IntSize,
         onUpdateFolderGridItemId: (String?) -> Unit,
     ) {
-        lastFolderPopupX = x
-        lastFolderPopupY = y
+        lastFolderPopupX = intOffset.x
+        lastFolderPopupY = intOffset.y
 
-        lastFolderPopupWidth = width
-        lastFolderPopupHeight = height
+        lastFolderPopupWidth = intSize.width
+        lastFolderPopupHeight = intSize.height
 
-        folderPopupIntOffset = IntOffset(
-            x = x,
-            y = y,
-        )
+        folderPopupIntOffset = intOffset
 
-        folderPopupIntSize = IntSize(
-            width = width,
-            height = height,
-        )
+        folderPopupIntSize = intSize
 
         onUpdateFolderGridItemId(id)
     }

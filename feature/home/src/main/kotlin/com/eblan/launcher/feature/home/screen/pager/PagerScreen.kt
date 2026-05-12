@@ -727,13 +727,11 @@ internal fun PagerScreen(
                                     ),
                                 )
                             },
-                            onTapFolderGridItem = {
+                            onTapFolderGridItem = { intOffset, intSize ->
                                 pagerScreenState.showFolder(
-                                    height = height,
                                     id = gridItem.id,
-                                    width = width,
-                                    x = x,
-                                    y = y,
+                                    intOffset = intOffset,
+                                    intSize = intSize,
                                     onUpdateFolderGridItemId = onUpdateFolderGridItemId,
                                 )
                             },
@@ -855,13 +853,11 @@ internal fun PagerScreen(
                                     ),
                                 )
                             },
-                            onTapFolderGridItem = {
+                            onTapFolderGridItem = { intOffset, intSize ->
                                 pagerScreenState.showFolder(
-                                    height = height,
                                     id = gridItem.id,
-                                    width = width,
-                                    x = x,
-                                    y = y + dockTopLeft,
+                                    intOffset = intOffset,
+                                    intSize = intSize,
                                     onUpdateFolderGridItemId = onUpdateFolderGridItemId,
                                 )
                             },

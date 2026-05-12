@@ -43,14 +43,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.TransformOrigin
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -58,7 +54,6 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.lerp
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.GridItemSettings
@@ -70,7 +65,6 @@ import com.eblan.launcher.feature.home.component.PageIndicator
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
-import com.eblan.launcher.feature.home.util.FOLDER_GRID_PADDING
 import com.eblan.launcher.feature.home.util.PAGE_INDICATOR_HEIGHT
 import com.eblan.launcher.ui.local.LocalLauncherApps
 
@@ -151,62 +145,19 @@ internal fun SharedTransitionScope.FolderScreen(
 
     val progress = remember { Animatable(0f) }
 
-    val centeredX =
-        folderPopupIntOffset.x + (folderPopupIntSize.width / 2) - (folderGridWidthPx / 2)
+    val x = folderPopupIntOffset.x - leftPadding
+    val y = folderPopupIntOffset.y - topPadding
 
-    val centeredY =
-        folderPopupIntOffset.y + (folderPopupIntSize.height / 2) - (folderGridHeightPx / 2)
-
-    val endOffset = IntOffset(
-        x = centeredX.coerceIn(0, safeDrawingWidth - folderGridWidthPx),
-        y = centeredY.coerceIn(0, safeDrawingHeight - folderGridHeightPx),
+    val intOffset = IntOffset(
+        x = x.coerceIn(
+            0,
+            safeDrawingWidth - folderGridWidthPx,
+        ) + leftPadding,
+        y = y.coerceIn(
+            0,
+            safeDrawingHeight - folderGridHeightPx,
+        ) + topPadding,
     )
-
-    val startCenterX = folderPopupIntOffset.x + folderPopupIntSize.width / 2f
-    val startCenterY = folderPopupIntOffset.y + folderPopupIntSize.height / 2f
-
-    val endCenterX = endOffset.x + folderGridWidthPx / 2f
-    val endCenterY = endOffset.y + folderGridHeightPx / 2f
-
-    val scaleX by remember {
-        derivedStateOf {
-            lerp(
-                folderPopupIntSize.width.toFloat() / folderGridWidthPx,
-                1f,
-                progress.value,
-            )
-        }
-    }
-
-    val scaleY by remember {
-        derivedStateOf {
-            lerp(
-                folderPopupIntSize.height.toFloat() / folderGridHeightPx,
-                1f,
-                progress.value,
-            )
-        }
-    }
-
-    val translationX by remember {
-        derivedStateOf {
-            lerp(
-                startCenterX - endCenterX,
-                0f,
-                progress.value,
-            )
-        }
-    }
-
-    val translationY by remember {
-        derivedStateOf {
-            lerp(
-                startCenterY - endCenterY,
-                0f,
-                progress.value,
-            )
-        }
-    }
 
     LaunchedEffect(key1 = Unit) {
         progress.snapTo(targetValue = 0f)
@@ -245,24 +196,15 @@ internal fun SharedTransitionScope.FolderScreen(
                     },
                 )
             }
-            .fillMaxSize()
-            .padding(paddingValues),
+            .fillMaxSize(),
     ) {
         Surface(
             modifier = Modifier
-                .offset { endOffset }
-                .graphicsLayer(
-                    scaleX = scaleX,
-                    scaleY = scaleY,
-                    translationX = translationX,
-                    translationY = translationY,
-                    transformOrigin = TransformOrigin.Center,
-                )
+                .offset { intOffset }
                 .size(
                     width = folderGridWidthDp,
                     height = folderGridHeightDp,
                 )
-                .padding(FOLDER_GRID_PADDING)
                 .alpha(progress.value),
             shape = RoundedCornerShape(5.dp),
             shadowElevation = 2.dp,
@@ -315,7 +257,7 @@ internal fun SharedTransitionScope.FolderScreen(
                                         ),
                                     )
                                 },
-                                onTapFolderGridItem = {
+                                onTapFolderGridItem = { _, _ ->
                                 },
                                 onTapShortcutConfig = { uri ->
                                     context.startActivity(parseUri(uri, 0))

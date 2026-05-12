@@ -144,9 +144,9 @@ internal fun SharedTransitionScope.InteractiveApplicationInfoGridItem(
 
     val hasNotifications =
         statusBarNotifications[data.packageName] != null && (
-            statusBarNotifications[data.packageName]
-                ?: 0
-            ) > 0
+                statusBarNotifications[data.packageName]
+                    ?: 0
+                ) > 0
 
     val hasInteraction = isSelected && isVisibleOverlay
 
@@ -699,7 +699,10 @@ internal fun SharedTransitionScope.InteractiveFolderGridItem(
         intOffset: IntOffset,
         intSize: IntSize,
     ) -> Unit,
-    onTap: () -> Unit,
+    onTap: (
+        intOffset: IntOffset,
+        intSize: IntSize,
+    ) -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
@@ -788,7 +791,10 @@ internal fun SharedTransitionScope.InteractiveFolderGridItem(
                     },
                     onTap = if (!isVisibleOverlay) {
                         {
-                            onTap()
+                            onTap(
+                                intOffset,
+                                intSize,
+                            )
                         }
                     } else {
                         null
@@ -1124,7 +1130,8 @@ private fun SharedTransitionScope.PreviewFolderGridItem(
     val context = LocalContext.current
 
     key(gridItem.id) {
-        val isSelected = moveGridItemResult != null && moveGridItemResult.movingGridItem.id == gridItem.id
+        val isSelected =
+            moveGridItemResult != null && moveGridItemResult.movingGridItem.id == gridItem.id
 
         val hasInteraction = isSelected && isVisibleOverlay
 

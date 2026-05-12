@@ -57,7 +57,10 @@ internal fun SharedTransitionScope.InteractiveFolderGridItemContent(
         serialNumber: Long,
         componentName: String,
     ) -> Unit,
-    onTapFolderGridItem: () -> Unit,
+    onTapFolderGridItem: (
+        intOffset: IntOffset,
+        intSize: IntSize,
+    ) -> Unit,
     onTapShortcutConfig: (String) -> Unit,
     onTapShortcutInfo: (
         serialNumber: Long,
@@ -80,7 +83,8 @@ internal fun SharedTransitionScope.InteractiveFolderGridItemContent(
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
-    val isSelected = moveGridItemResult != null && moveGridItemResult.movingGridItem.id == gridItem.id
+    val isSelected =
+        moveGridItemResult != null && moveGridItemResult.movingGridItem.id == gridItem.id
 
     val currentGridItemSettings = if (gridItem.override) {
         gridItem.gridItemSettings
