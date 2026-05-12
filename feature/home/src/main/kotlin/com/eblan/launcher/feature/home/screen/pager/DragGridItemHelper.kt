@@ -38,7 +38,6 @@ import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.PageDirection
 import com.eblan.launcher.feature.home.model.SharedElementKey
-import com.eblan.launcher.feature.home.util.FOLDER_GRID_PADDING
 import com.eblan.launcher.feature.home.util.PAGE_INDICATOR_HEIGHT
 import kotlinx.coroutines.delay
 
@@ -92,13 +91,13 @@ internal fun handleAnimateScrollToPage(
 
         is GridItemSource.Folder -> {
             animateScrollToPageFolder(
-                density = density,
                 dragX = dragX,
                 edgeDistance = edgeDistance,
                 folderGridItem = folderGridItem,
                 folderPopupIntOffset = folderPopupIntOffset,
                 folderPopupIntSize = folderPopupIntSize,
                 safeDrawingWidth = safeDrawingWidth,
+                leftPadding = leftPadding,
                 onUpdateFolderPageDirection = onUpdateFolderPageDirection,
             )
         }
@@ -252,7 +251,8 @@ internal suspend fun handleDragGridItem(
 
         is GridItemSource.Folder -> {
             dragFolderGridItem(
-                density = density,
+                leftPadding = leftPadding,
+                topPadding = topPadding,
                 dragX = dragX,
                 dragY = dragY,
                 folderCurrentPage = folderCurrentPage,
@@ -272,7 +272,8 @@ internal suspend fun handleDragGridItem(
 }
 
 private fun dragFolderGridItem(
-    density: Density,
+    leftPadding: Int,
+    topPadding: Int,
     dragX: Int,
     dragY: Int,
     folderCurrentPage: Int,
@@ -307,35 +308,25 @@ private fun dragFolderGridItem(
 
     val data = folderGridItem.data as GridItemData.Folder
 
-    val folderCellWidth = safeDrawingWidth / FOLDER_MAX_COLUMNS
+    val cellWidth = safeDrawingWidth / FOLDER_MAX_COLUMNS
 
-    val folderCellHeight = safeDrawingHeight / FOLDER_MAX_ROWS
+    val cellHeight = safeDrawingHeight / FOLDER_MAX_ROWS
 
-    val folderGridPaddingPx = with(density) {
-        FOLDER_GRID_PADDING.roundToPx()
-    }
+    val folderGridWidthPx = cellWidth * data.columns
+    val folderGridHeightPx = cellHeight * data.rows
 
-    val folderGridWidthPx = folderCellWidth * data.columns
-    val folderGridHeightPx = folderCellHeight * data.rows
+    val x = folderPopupIntOffset.x - leftPadding
+    val y = folderPopupIntOffset.y - topPadding
 
-    val centeredX =
-        folderPopupIntOffset.x + (folderPopupIntSize.width / 2) - (folderGridWidthPx / 2)
-    val centeredY =
-        folderPopupIntOffset.y + (folderPopupIntSize.height / 2) - (folderGridHeightPx / 2)
+    val popupX = x.coerceIn(0, safeDrawingWidth - folderGridWidthPx) + leftPadding
+    val popupY = y.coerceIn(0, safeDrawingHeight - folderGridHeightPx) + topPadding
 
-    val popupX = centeredX.coerceIn(0, safeDrawingWidth - folderGridWidthPx)
-    val popupY = centeredY.coerceIn(0, safeDrawingHeight - folderGridHeightPx)
+    val folderDragX = dragX - popupX
 
-    val folderDragX = dragX - popupX - folderGridPaddingPx
+    val folderDragY = dragY - popupY
 
-    val folderDragY = dragY - popupY - folderGridPaddingPx
-
-    val folderGridVisibleWidthPx = folderGridWidthPx - (folderGridPaddingPx * 2)
-    val folderGridVisibleHeightPx =
-        (folderGridHeightPx - folderTitleHeightPx) - (folderGridPaddingPx * 2)
-
-    val isInsideFolder = folderDragX in 0..folderGridVisibleWidthPx &&
-        folderDragY in 0..folderGridVisibleHeightPx
+    val isInsideFolder = folderDragX in 0..folderGridWidthPx &&
+        folderDragY in 0..folderGridHeightPx - folderTitleHeightPx
 
     val moveFolderGridItem = moveGridItemResult.movingGridItem
 
@@ -788,37 +779,32 @@ private fun animateScrollToPage(
 }
 
 private fun animateScrollToPageFolder(
-    density: Density,
     dragX: Int,
     edgeDistance: Int,
     folderGridItem: GridItem?,
     folderPopupIntOffset: IntOffset?,
     folderPopupIntSize: IntSize?,
     safeDrawingWidth: Int,
+    leftPadding: Int,
     onUpdateFolderPageDirection: (PageDirection?) -> Unit,
 ) {
     if (folderPopupIntOffset == null || folderPopupIntSize == null) return
 
     val data = folderGridItem?.data as GridItemData.Folder
 
-    val folderCellWidth = safeDrawingWidth / FOLDER_MAX_COLUMNS
+    val cellWidth = safeDrawingWidth / FOLDER_MAX_COLUMNS
 
-    val folderGridPaddingPx = with(density) {
-        FOLDER_GRID_PADDING.roundToPx()
-    }
+    val folderGridWidthPx = cellWidth * data.columns
 
-    val folderGridWidthPx = folderCellWidth * data.columns
+    val x = folderPopupIntOffset.x - leftPadding
 
-    val centeredX =
-        folderPopupIntOffset.x + (folderPopupIntSize.width / 2) - (folderGridWidthPx / 2)
+    val popupX = x.coerceIn(0, safeDrawingWidth - folderGridWidthPx) + leftPadding
 
-    val popupX = centeredX.coerceIn(0, safeDrawingWidth - folderGridWidthPx)
-
-    val folderDragX = dragX - popupX - folderGridPaddingPx
+    val folderDragX = dragX - popupX
 
     val isOnLeftGrid = folderDragX < edgeDistance
 
-    val isOnRightGrid = folderDragX > folderGridWidthPx - folderGridPaddingPx - edgeDistance
+    val isOnRightGrid = folderDragX > folderGridWidthPx - edgeDistance
 
     if (isOnLeftGrid) {
         onUpdateFolderPageDirection(PageDirection.Left)

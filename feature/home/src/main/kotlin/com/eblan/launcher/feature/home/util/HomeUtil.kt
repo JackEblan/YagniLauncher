@@ -197,6 +197,5 @@ internal fun handleDrag(
 
 internal val PAGE_INDICATOR_HEIGHT = 30.dp
 internal val DRAG_HANDLE_SIZE = 30.dp
-internal val FOLDER_GRID_PADDING = 10.dp
 internal const val FOLDER_COLUMNS = 3
 internal const val FOLDER_ROWS = 3
