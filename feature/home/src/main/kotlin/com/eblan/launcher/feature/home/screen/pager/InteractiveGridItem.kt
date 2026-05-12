@@ -57,6 +57,8 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
     newGridItemSource: GridItemSource,
     sharedElementKey: SharedElementKey,
     moveGridItemResult: MoveGridItemResult?,
+    isDragging: Boolean,
+    lockMovement: Boolean,
     onOpenAppDrawer: () -> Unit,
     onTapApplicationInfo: (
         serialNumber: Long,
@@ -87,6 +89,14 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
     onDismissGridItemPopup: () -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
+    onShowFolderWhenDragging: (
+        conflictingGridItem: GridItem,
+        movingGridItem: GridItem,
+    ) -> Unit,
+    onUpdateFolderPopupBounds: (
+        intOffset: IntOffset,
+        intSize: IntSize,
+    ) -> Unit,
 ) {
     val isSelected =
         moveGridItemResult != null && moveGridItemResult.movingGridItem.id == gridItem.id
@@ -215,6 +225,8 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
                 sharedElementKey = sharedElementKey,
                 textColor = currentTextColor,
                 moveGridItemResult = moveGridItemResult,
+                isDragging = isDragging,
+                lockMovement = lockMovement,
                 onDismissGridItemPopup = onDismissGridItemPopup,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
@@ -226,6 +238,8 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
                 onUpdateOverlayBounds = onUpdateOverlayBounds,
                 onUpdateSharedElementKey = onUpdateSharedElementKey,
                 onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                onShowFolderWhenDragging = onShowFolderWhenDragging,
+                onUpdateFolderPopupBounds = onUpdateFolderPopupBounds,
             )
         }
 

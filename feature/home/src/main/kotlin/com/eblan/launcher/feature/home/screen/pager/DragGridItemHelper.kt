@@ -514,21 +514,14 @@ private fun dragDockGridItem(
 }
 
 internal suspend fun handleConflictingGridItem(
-    columns: Int,
-    dockColumns: Int,
-    density: Density,
-    dockHeight: Dp,
     drag: Drag,
     isDragging: Boolean,
     isVisibleOverlay: Boolean,
     moveGridItemResult: MoveGridItemResult?,
-    paddingValues: PaddingValues,
-    rows: Int,
-    dockRows: Int,
-    screenHeight: Int,
-    screenWidth: Int,
     lockMovement: Boolean,
-    layoutDirection: LayoutDirection,
+    intOffset: IntOffset,
+    intSize: IntSize,
+    gridItem: GridItem,
     onShowFolderWhenDragging: (
         conflictingGridItem: GridItem,
         movingGridItem: GridItem,
@@ -539,19 +532,19 @@ internal suspend fun handleConflictingGridItem(
     ) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
 ) {
+    val conflictingGridItem = moveGridItemResult?.conflictingGridItem ?: return
+
+    val conflictingData = conflictingGridItem.data as? GridItemData.Folder ?: return
+
     if (drag != Drag.Dragging ||
-        moveGridItemResult == null ||
         !moveGridItemResult.isSuccess ||
         !isVisibleOverlay ||
         !isDragging ||
-        lockMovement
+        lockMovement ||
+        conflictingGridItem.id != gridItem.id
     ) {
         return
     }
-
-    val conflictingGridItem = moveGridItemResult.conflictingGridItem ?: return
-
-    val conflictingData = conflictingGridItem.data as? GridItemData.Folder ?: return
 
     delay(1000L)
 
@@ -574,82 +567,6 @@ internal suspend fun handleConflictingGridItem(
         )
 
         else -> error("Unsupported Folder GridItem ")
-    }
-
-    val leftPadding = with(density) {
-        paddingValues.calculateLeftPadding(layoutDirection).roundToPx()
-    }
-
-    val rightPadding = with(density) {
-        paddingValues.calculateRightPadding(layoutDirection).roundToPx()
-    }
-
-    val topPadding = with(density) {
-        paddingValues.calculateTopPadding().roundToPx()
-    }
-
-    val bottomPadding = with(density) {
-        paddingValues.calculateBottomPadding().roundToPx()
-    }
-
-    val dockHeightPx = with(density) {
-        dockHeight.roundToPx()
-    }
-
-    val pageIndicatorHeightPx = with(density) {
-        PAGE_INDICATOR_HEIGHT.roundToPx()
-    }
-
-    val horizontalPadding = leftPadding + rightPadding
-
-    val verticalPadding = topPadding + bottomPadding
-
-    val safeDrawingWidth = screenWidth - horizontalPadding
-
-    val safeDrawingHeight = screenHeight - verticalPadding
-
-    val gridHeight = safeDrawingHeight - pageIndicatorHeightPx - dockHeightPx
-
-    val gridCellWidth = safeDrawingWidth / columns
-
-    val gridCellHeight = gridHeight / rows
-
-    val dockCellWidth = safeDrawingWidth / dockColumns
-
-    val dockCellHeight = dockHeightPx / dockRows
-
-    val dockTopLeft = gridHeight + pageIndicatorHeightPx
-
-    val intOffset = when (conflictingGridItem.associate) {
-        Associate.Grid -> {
-            IntOffset(
-                x = conflictingGridItem.startColumn * gridCellWidth,
-                y = conflictingGridItem.startRow * gridCellHeight,
-            )
-        }
-
-        Associate.Dock -> {
-            IntOffset(
-                x = conflictingGridItem.startColumn * dockCellWidth,
-                y = conflictingGridItem.startRow * dockCellHeight + dockTopLeft,
-            )
-        }
-    }
-
-    val intSize = when (conflictingGridItem.associate) {
-        Associate.Grid -> {
-            IntSize(
-                width = conflictingGridItem.columnSpan * gridCellWidth,
-                height = conflictingGridItem.rowSpan * gridCellHeight,
-            )
-        }
-
-        Associate.Dock -> {
-            IntSize(
-                width = conflictingGridItem.columnSpan * dockCellWidth,
-                height = conflictingGridItem.rowSpan * dockCellHeight,
-            )
-        }
     }
 
     val movingFolderGridItem = movingGridItem.copy(data = movingData)

@@ -69,6 +69,7 @@ import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
+import com.eblan.launcher.feature.home.screen.pager.handleConflictingGridItem
 import com.eblan.launcher.feature.home.util.FOLDER_COLUMNS
 import com.eblan.launcher.feature.home.util.FOLDER_ROWS
 import com.eblan.launcher.feature.home.util.getHorizontalAlignment
@@ -702,6 +703,8 @@ internal fun SharedTransitionScope.InteractiveFolderGridItem(
     sharedElementKey: SharedElementKey,
     textColor: Color,
     moveGridItemResult: MoveGridItemResult?,
+    isDragging: Boolean,
+    lockMovement: Boolean,
     onDismissGridItemPopup: () -> Unit,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
@@ -722,6 +725,14 @@ internal fun SharedTransitionScope.InteractiveFolderGridItem(
     ) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
+    onShowFolderWhenDragging: (
+        conflictingGridItem: GridItem,
+        movingGridItem: GridItem,
+    ) -> Unit,
+    onUpdateFolderPopupBounds: (
+        intOffset: IntOffset,
+        intSize: IntSize,
+    ) -> Unit,
 ) {
     val launcherApps = LocalLauncherApps.current
 
@@ -756,6 +767,22 @@ internal fun SharedTransitionScope.InteractiveFolderGridItem(
             isVisibleOverlay = isVisibleOverlay,
             onUpdateIsDragging = onUpdateIsDragging,
             onDismissGridItemPopup = onDismissGridItemPopup,
+        )
+    }
+
+    LaunchedEffect(key1 = moveGridItemResult) {
+        handleConflictingGridItem(
+            drag = drag,
+            isDragging = isDragging,
+            isVisibleOverlay = isVisibleOverlay,
+            moveGridItemResult = moveGridItemResult,
+            lockMovement = lockMovement,
+            intOffset = intOffset,
+            intSize = intSize,
+            gridItem = gridItem,
+            onShowFolderWhenDragging = onShowFolderWhenDragging,
+            onUpdateFolderPopupBounds = onUpdateFolderPopupBounds,
+            onUpdateSharedElementKey = onUpdateSharedElementKey,
         )
     }
 

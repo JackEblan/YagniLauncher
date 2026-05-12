@@ -509,52 +509,6 @@ internal class PagerScreenState(
         )
     }
 
-    suspend fun handleConflictingGridItemEffect(
-        density: Density,
-        dockHeight: Dp,
-        moveGridItemResult: MoveGridItemResult?,
-        paddingValues: PaddingValues,
-        isVisibleOverlay: Boolean,
-        layoutDirection: LayoutDirection,
-        onShowFolderWhenDragging: (
-            conflictingGridItem: GridItem,
-            movingGridItem: GridItem,
-        ) -> Unit,
-    ) {
-        handleConflictingGridItem(
-            columns = homeSettings.columns,
-            dockRows = homeSettings.dockRows,
-            dockColumns = homeSettings.dockColumns,
-            density = density,
-            dockHeight = dockHeight,
-            drag = drag,
-            isDragging = isDragging,
-            isVisibleOverlay = isVisibleOverlay,
-            moveGridItemResult = moveGridItemResult,
-            paddingValues = paddingValues,
-            rows = homeSettings.rows,
-            screenHeight = screenHeight,
-            screenWidth = screenWidth,
-            lockMovement = experimentalSettings.lockMovement,
-            layoutDirection = layoutDirection,
-            onShowFolderWhenDragging = onShowFolderWhenDragging,
-            onUpdateFolderPopupBounds = { intOffset, intSize ->
-                lastFolderPopupX = intOffset.x
-                lastFolderPopupY = intOffset.y
-
-                lastFolderPopupWidth = intSize.width
-                lastFolderPopupHeight = intSize.height
-
-                folderPopupIntOffset = intOffset
-
-                folderPopupIntSize = intSize
-            },
-            onUpdateSharedElementKey = { newSharedElementKey ->
-                sharedElementKey = newSharedElementKey
-            },
-        )
-    }
-
     fun handleAnimateScrollToPageEffect(
         density: Density,
         folderGridItem: GridItem?,
@@ -1494,6 +1448,21 @@ internal class PagerScreenState(
                 )
             }
         }
+    }
+
+    fun updateFolderPopupBounds(
+        intOffset: IntOffset,
+        intSize: IntSize,
+    ) {
+        lastFolderPopupX = intOffset.x
+        lastFolderPopupY = intOffset.y
+
+        lastFolderPopupWidth = intSize.width
+        lastFolderPopupHeight = intSize.height
+
+        folderPopupIntOffset = intOffset
+
+        folderPopupIntSize = intSize
     }
 
     private fun handleApplyFling(

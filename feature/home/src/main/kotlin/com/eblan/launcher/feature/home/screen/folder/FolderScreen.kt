@@ -94,6 +94,8 @@ internal fun SharedTransitionScope.FolderScreen(
     isMoveFolderGridItemOutsideFolder: Boolean,
     hasShortcutHostPermission: Boolean,
     moveGridItemResult: MoveGridItemResult?,
+    isDragging: Boolean,
+    lockMovement: Boolean,
     onDismissRequest: () -> Unit,
     onMoveFolderGridItemOutsideFolder: () -> Unit,
     onOpenAppDrawer: () -> Unit,
@@ -113,6 +115,14 @@ internal fun SharedTransitionScope.FolderScreen(
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateIsClosingFolder: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
+    onShowFolderWhenDragging: (
+        conflictingGridItem: GridItem,
+        movingGridItem: GridItem,
+    ) -> Unit,
+    onUpdateFolderPopupBounds: (
+        intOffset: IntOffset,
+        intSize: IntSize,
+    ) -> Unit,
 ) {
     requireNotNull(folderPopupIntOffset)
 
@@ -217,9 +227,7 @@ internal fun SharedTransitionScope.FolderScreen(
 
     LaunchedEffect(key1 = Unit) {
         launch { progress.animateTo(targetValue = 1f) }
-    }
 
-    LaunchedEffect(key1 = data.columns, key2 = data.rows) {
         launch { animatedColumns.animateTo(targetValue = data.columns.toFloat()) }
 
         launch { animatedRows.animateTo(targetValue = data.rows.toFloat()) }
@@ -311,6 +319,8 @@ internal fun SharedTransitionScope.FolderScreen(
                                     parent = SharedElementKey.Parent.Folder,
                                 ),
                                 moveGridItemResult = moveGridItemResult,
+                                isDragging = isDragging,
+                                lockMovement = lockMovement,
                                 onOpenAppDrawer = onOpenAppDrawer,
                                 onTapApplicationInfo = { serialNumber, componentName ->
                                     val sourceBoundsX = x + leftPadding
@@ -359,6 +369,8 @@ internal fun SharedTransitionScope.FolderScreen(
                                 onDismissGridItemPopup = onDismissGridItemPopup,
                                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                                 onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                                onShowFolderWhenDragging = onShowFolderWhenDragging,
+                                onUpdateFolderPopupBounds = onUpdateFolderPopupBounds,
                             )
                         },
                     )
