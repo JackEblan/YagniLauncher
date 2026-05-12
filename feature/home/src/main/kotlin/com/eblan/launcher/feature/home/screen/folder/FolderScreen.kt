@@ -227,6 +227,8 @@ internal fun SharedTransitionScope.FolderScreen(
 
     LaunchedEffect(key1 = isCloseFolder) {
         if (isCloseFolder) {
+            folderGridHorizontalPagerState.animateScrollToPage(0)
+
             joinAll(
                 launch { progress.animateTo(targetValue = 0f) },
                 launch { animatedColumns.animateTo(targetValue = 3f) },
@@ -239,6 +241,8 @@ internal fun SharedTransitionScope.FolderScreen(
 
     LaunchedEffect(key1 = isMoveFolderGridItemOutsideFolder) {
         if (isMoveFolderGridItemOutsideFolder) {
+            folderGridHorizontalPagerState.animateScrollToPage(0)
+
             joinAll(
                 launch { progress.animateTo(targetValue = 0f) },
                 launch { animatedColumns.animateTo(targetValue = 3f) },

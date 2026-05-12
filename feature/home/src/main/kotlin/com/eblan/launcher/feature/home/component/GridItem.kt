@@ -61,6 +61,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest.Builder
 import coil3.request.addLastModifiedToFileCacheKey
+import coil3.size.Size
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.GridItemSettings
@@ -243,6 +244,7 @@ internal fun SharedTransitionScope.InteractiveApplicationInfoGridItem(
             AsyncImage(
                 model = Builder(LocalContext.current).data(data.customIcon ?: icon)
                     .addLastModifiedToFileCacheKey(true)
+                    .size(Size.ORIGINAL)
                     .build(),
                 contentDescription = null,
                 modifier = Modifier
@@ -622,7 +624,10 @@ internal fun SharedTransitionScope.InteractiveShortcutInfoGridItem(
                 .alpha(alpha),
         ) {
             AsyncImage(
-                model = customIcon,
+                model = Builder(LocalContext.current).data(customIcon)
+                    .addLastModifiedToFileCacheKey(true)
+                    .size(Size.ORIGINAL)
+                    .build(),
                 modifier = Modifier
                     .matchParentSize()
                     .drawWithContent {
@@ -653,7 +658,9 @@ internal fun SharedTransitionScope.InteractiveShortcutInfoGridItem(
             )
 
             AsyncImage(
-                model = data.eblanApplicationInfoIcon,
+                model = Builder(LocalContext.current).data(data.eblanApplicationInfoIcon)
+                    .size(Size.ORIGINAL)
+                    .build(),
                 modifier = Modifier
                     .size((gridItemSettings.iconSize * 0.25).dp)
                     .align(Alignment.BottomEnd),
@@ -1070,6 +1077,7 @@ internal fun SharedTransitionScope.InteractiveShortcutConfigGridItem(
         AsyncImage(
             model = Builder(LocalContext.current).data(icon)
                 .addLastModifiedToFileCacheKey(true)
+                .size(Size.ORIGINAL)
                 .build(),
             contentDescription = null,
             modifier = Modifier
