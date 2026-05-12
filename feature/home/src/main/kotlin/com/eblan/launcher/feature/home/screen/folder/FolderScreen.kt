@@ -186,25 +186,25 @@ internal fun SharedTransitionScope.FolderScreen(
     val endCenterX = intOffset.x + endWidth / 2f
     val endCenterY = intOffset.y + endHeight / 2f
 
-    val animatedWidth by remember {
+    val animatedWidth by remember(key1 = startWidth, key2 = endWidth) {
         derivedStateOf {
             lerp(startWidth, endWidth, progress.value)
         }
     }
 
-    val animatedHeight by remember {
+    val animatedHeight by remember(key1 = startHeight, key2 = endHeight) {
         derivedStateOf {
             lerp(startHeight, endHeight, progress.value)
         }
     }
 
-    val animatedCenterX by remember {
+    val animatedCenterX by remember(key1 = startCenterX, key2 = endCenterX) {
         derivedStateOf {
             lerp(startCenterX, endCenterX, progress.value)
         }
     }
 
-    val animatedCenterY by remember {
+    val animatedCenterY by remember(key1 = startCenterY, key2 = endCenterY) {
         derivedStateOf {
             lerp(startCenterY, endCenterY, progress.value)
         }
@@ -219,12 +219,12 @@ internal fun SharedTransitionScope.FolderScreen(
         }
     }
 
-    val animatedColumns by remember {
+    val animatedColumns by remember(key1 = data.columns) {
         derivedStateOf {
             lerp(FOLDER_COLUMNS.toFloat(), data.columns.toFloat(), progress.value)
         }
     }
-    val animatedRows by remember {
+    val animatedRows by remember(key1 = data.rows) {
         derivedStateOf {
             lerp(FOLDER_ROWS.toFloat(), data.rows.toFloat(), progress.value)
         }
