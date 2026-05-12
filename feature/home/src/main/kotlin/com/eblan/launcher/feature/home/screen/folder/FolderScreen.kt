@@ -43,9 +43,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
@@ -54,6 +55,7 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.lerp
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.GridItemSettings
@@ -67,6 +69,7 @@ import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
 import com.eblan.launcher.feature.home.util.PAGE_INDICATOR_HEIGHT
 import com.eblan.launcher.ui.local.LocalLauncherApps
+import kotlin.math.roundToInt
 
 @Composable
 internal fun SharedTransitionScope.FolderScreen(
@@ -159,6 +162,51 @@ internal fun SharedTransitionScope.FolderScreen(
         ) + topPadding,
     )
 
+    val startWidth = folderPopupIntSize.width.toFloat()
+    val startHeight = folderPopupIntSize.height.toFloat()
+
+    val endWidth = folderGridWidthPx.toFloat()
+    val endHeight = folderGridHeightPx.toFloat()
+
+    val startCenterX = folderPopupIntOffset.x + startWidth / 2f
+    val startCenterY = folderPopupIntOffset.y + startHeight / 2f
+
+    val endCenterX = intOffset.x + endWidth / 2f
+    val endCenterY = intOffset.y + endHeight / 2f
+
+    val animatedWidth by remember {
+        derivedStateOf {
+            lerp(startWidth, endWidth, progress.value)
+        }
+    }
+
+    val animatedHeight by remember {
+        derivedStateOf {
+            lerp(startHeight, endHeight, progress.value)
+        }
+    }
+
+    val animatedCenterX by remember {
+        derivedStateOf {
+            lerp(startCenterX, endCenterX, progress.value)
+        }
+    }
+
+    val animatedCenterY by remember {
+        derivedStateOf {
+            lerp(startCenterY, endCenterY, progress.value)
+        }
+    }
+
+    val animatedOffset by remember {
+        derivedStateOf {
+            IntOffset(
+                x = (animatedCenterX - animatedWidth / 2f).roundToInt(),
+                y = (animatedCenterY - animatedHeight / 2f).roundToInt(),
+            )
+        }
+    }
+
     LaunchedEffect(key1 = Unit) {
         progress.snapTo(targetValue = 0f)
 
@@ -200,12 +248,11 @@ internal fun SharedTransitionScope.FolderScreen(
     ) {
         Surface(
             modifier = Modifier
-                .offset { intOffset }
+                .offset { animatedOffset }
                 .size(
-                    width = folderGridWidthDp,
-                    height = folderGridHeightDp,
-                )
-                .alpha(progress.value),
+                    width = with(density) { animatedWidth.toDp() },
+                    height = with(density) { animatedHeight.toDp() },
+                ),
             shape = RoundedCornerShape(5.dp),
             shadowElevation = 2.dp,
         ) {
