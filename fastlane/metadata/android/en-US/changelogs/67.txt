@@ -1,0 +1,1 @@
+- Improved folder enter and exit animation
