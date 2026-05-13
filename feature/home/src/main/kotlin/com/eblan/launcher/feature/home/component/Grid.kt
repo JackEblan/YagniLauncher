@@ -103,20 +103,64 @@ internal fun FolderGridLayout(
                 val column = index % columns
 
                 subcompose(gridItem.id) {
-                    val width by animateIntAsState(cellWidth)
-
-                    val height by animateIntAsState(cellHeight)
-
                     val x by animateIntAsState(column * cellWidth)
 
                     val y by animateIntAsState(row * cellHeight)
 
                     Box(
                         modifier = Modifier.gridItem(
-                            width = width,
-                            height = height,
+                            width = cellWidth,
+                            height = cellHeight,
                             x = x,
                             y = y,
+                        ),
+                    ) {
+                        content(gridItem)
+                    }
+                }.forEach { measurable ->
+                    val parentData = measurable.parentData as GridItemParentData
+
+                    measurable.measure(
+                        Constraints.fixed(
+                            width = parentData.width,
+                            height = parentData.height,
+                        ),
+                    ).placeRelative(
+                        x = parentData.x,
+                        y = parentData.y,
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+internal fun PreviewFolderGridLayout(
+    modifier: Modifier = Modifier,
+    columns: Int,
+    gridItems: List<GridItem>?,
+    rows: Int,
+    content: @Composable BoxScope.(GridItem) -> Unit,
+) {
+    SubcomposeLayout(modifier = modifier) { constraints ->
+        val cellWidth = constraints.maxWidth / columns
+
+        val cellHeight = constraints.maxHeight / rows
+
+        layout(constraints.maxWidth, constraints.maxHeight) {
+            gridItems?.forEachIndexed { index, gridItem ->
+                val row = index / columns
+
+                val column = index % columns
+
+                subcompose(gridItem.id) {
+                    Box(
+                        modifier = Modifier.gridItem(
+                            width = cellWidth,
+                            height = cellHeight,
+                            x = column * cellWidth,
+                            y = row * cellHeight,
                         ),
                     ) {
                         content(gridItem)

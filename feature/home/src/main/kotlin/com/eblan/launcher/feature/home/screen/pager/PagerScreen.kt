@@ -482,18 +482,6 @@ internal fun PagerScreen(
         )
     }
 
-    LaunchedEffect(key1 = moveGridItemResult) {
-        pagerScreenState.handleConflictingGridItemEffect(
-            density = density,
-            dockHeight = dockHeight,
-            moveGridItemResult = moveGridItemResult,
-            paddingValues = paddingValues,
-            isVisibleOverlay = isVisibleOverlay,
-            layoutDirection = layoutDirection,
-            onShowFolderWhenDragging = onShowFolderWhenDragging,
-        )
-    }
-
     LaunchedEffect(key1 = pagerScreenState.dragIntOffset) {
         pagerScreenState.handleAnimateScrollToPageEffect(
             density = density,
@@ -710,6 +698,8 @@ internal fun PagerScreen(
                             ),
                             isVisibleFolder = folderGridItem != null,
                             moveGridItemResult = moveGridItemResult,
+                            isDragging = pagerScreenState.isDragging,
+                            lockMovement = lockMovement,
                             onOpenAppDrawer = pagerScreenState::openApplicationScreen,
                             onTapApplicationInfo = { serialNumber, componentName ->
                                 val sourceBoundsX = x + leftPadding
@@ -727,13 +717,11 @@ internal fun PagerScreen(
                                     ),
                                 )
                             },
-                            onTapFolderGridItem = {
+                            onTapFolderGridItem = { intOffset, intSize ->
                                 pagerScreenState.showFolder(
-                                    height = height,
                                     id = gridItem.id,
-                                    width = width,
-                                    x = x,
-                                    y = y,
+                                    intOffset = intOffset,
+                                    intSize = intSize,
                                     onUpdateFolderGridItemId = onUpdateFolderGridItemId,
                                 )
                             },
@@ -768,6 +756,8 @@ internal fun PagerScreen(
                             onDismissGridItemPopup = pagerScreenState::dismissGridItemPopup,
                             onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                             onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                            onShowFolderWhenDragging = onShowFolderWhenDragging,
+                            onUpdateFolderPopupBounds = pagerScreenState::updateFolderPopupBounds,
                         )
                     },
                 )
@@ -838,6 +828,8 @@ internal fun PagerScreen(
                             ),
                             isVisibleFolder = folderGridItem != null,
                             moveGridItemResult = moveGridItemResult,
+                            isDragging = pagerScreenState.isDragging,
+                            lockMovement = lockMovement,
                             onOpenAppDrawer = pagerScreenState::openApplicationScreen,
                             onTapApplicationInfo = { serialNumber, componentName ->
                                 val left = x + leftPadding
@@ -855,13 +847,11 @@ internal fun PagerScreen(
                                     ),
                                 )
                             },
-                            onTapFolderGridItem = {
+                            onTapFolderGridItem = { intOffset, intSize ->
                                 pagerScreenState.showFolder(
-                                    height = height,
                                     id = gridItem.id,
-                                    width = width,
-                                    x = x,
-                                    y = y + dockTopLeft,
+                                    intOffset = intOffset,
+                                    intSize = intSize,
                                     onUpdateFolderGridItemId = onUpdateFolderGridItemId,
                                 )
                             },
@@ -896,6 +886,8 @@ internal fun PagerScreen(
                             onDismissGridItemPopup = pagerScreenState::dismissGridItemPopup,
                             onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                             onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                            onShowFolderWhenDragging = onShowFolderWhenDragging,
+                            onUpdateFolderPopupBounds = pagerScreenState::updateFolderPopupBounds,
                         )
                     },
                 )
