@@ -990,8 +990,6 @@ internal fun PagerScreen(
                 isMoveFolderGridItemOutsideFolder = pagerScreenState.isMoveFolderGridItemOutsideFolder,
                 hasShortcutHostPermission = hasShortcutHostPermission,
                 moveGridItemResult = moveGridItemResult,
-                isDragging = pagerScreenState.isDragging,
-                lockMovement = lockMovement,
                 onDismissRequest = {
                     pagerScreenState.dismissFolder(onUpdateFolderGridItemId = onUpdateFolderGridItemId)
                 },
@@ -1012,8 +1010,6 @@ internal fun PagerScreen(
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                 onUpdateIsClosingFolder = pagerScreenState::updateIsCloseFolder,
                 onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
-                onShowFolderWhenDragging = onShowFolderWhenDragging,
-                onUpdateFolderPopupBounds = pagerScreenState::updateFolderPopupBounds,
             )
         }
 

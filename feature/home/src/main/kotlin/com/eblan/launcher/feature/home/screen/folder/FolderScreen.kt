@@ -55,7 +55,6 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.lerp
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.GridItemSettings
@@ -93,8 +92,6 @@ internal fun SharedTransitionScope.FolderScreen(
     isMoveFolderGridItemOutsideFolder: Boolean,
     hasShortcutHostPermission: Boolean,
     moveGridItemResult: MoveGridItemResult?,
-    isDragging: Boolean,
-    lockMovement: Boolean,
     onDismissRequest: () -> Unit,
     onMoveFolderGridItemOutsideFolder: () -> Unit,
     onOpenAppDrawer: () -> Unit,
@@ -114,14 +111,6 @@ internal fun SharedTransitionScope.FolderScreen(
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateIsClosingFolder: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
-    onShowFolderWhenDragging: (
-        conflictingGridItem: GridItem,
-        movingGridItem: GridItem,
-    ) -> Unit,
-    onUpdateFolderPopupBounds: (
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) -> Unit,
 ) {
     requireNotNull(folderPopupIntOffset)
 
@@ -189,25 +178,25 @@ internal fun SharedTransitionScope.FolderScreen(
 
     val animatedWidth by remember(key1 = startWidth, key2 = endWidth) {
         derivedStateOf {
-            lerp(startWidth, endWidth, progress.value)
+            androidx.compose.ui.util.lerp(startWidth, endWidth, progress.value)
         }
     }
 
     val animatedHeight by remember(key1 = startHeight, key2 = endHeight) {
         derivedStateOf {
-            lerp(startHeight, endHeight, progress.value)
+            androidx.compose.ui.util.lerp(startHeight, endHeight, progress.value)
         }
     }
 
     val animatedCenterX by remember(key1 = startCenterX, key2 = endCenterX) {
         derivedStateOf {
-            lerp(startCenterX, endCenterX, progress.value)
+            androidx.compose.ui.util.lerp(startCenterX, endCenterX, progress.value)
         }
     }
 
     val animatedCenterY by remember(key1 = startCenterY, key2 = endCenterY) {
         derivedStateOf {
-            lerp(startCenterY, endCenterY, progress.value)
+            androidx.compose.ui.util.lerp(startCenterY, endCenterY, progress.value)
         }
     }
 
@@ -222,12 +211,20 @@ internal fun SharedTransitionScope.FolderScreen(
 
     val animatedColumns by remember(key1 = data.columns) {
         derivedStateOf {
-            lerp(FOLDER_COLUMNS.toFloat(), data.columns.toFloat(), progress.value)
+            androidx.compose.ui.util.lerp(
+                FOLDER_COLUMNS.toFloat(),
+                data.columns.toFloat(),
+                progress.value,
+            )
         }
     }
     val animatedRows by remember(key1 = data.rows) {
         derivedStateOf {
-            lerp(FOLDER_ROWS.toFloat(), data.rows.toFloat(), progress.value)
+            androidx.compose.ui.util.lerp(
+                FOLDER_ROWS.toFloat(),
+                data.rows.toFloat(),
+                progress.value,
+            )
         }
     }
 
@@ -312,8 +309,7 @@ internal fun SharedTransitionScope.FolderScreen(
                                         parent = SharedElementKey.Parent.Folder,
                                     ),
                                     moveGridItemResult = moveGridItemResult,
-                                    isDragging = isDragging,
-                                    lockMovement = lockMovement,
+                                    progress = progress.value,
                                     onOpenAppDrawer = {},
                                     onTapApplicationInfo = { _, _ -> },
                                     onTapShortcutConfig = { _ -> },
@@ -327,8 +323,6 @@ internal fun SharedTransitionScope.FolderScreen(
                                     onDismissGridItemPopup = {},
                                     onUpdateIsVisibleOverlay = {},
                                     onUpdateMoveGridItemResult = {},
-                                    onShowFolderWhenDragging = { _, _ -> },
-                                    onUpdateFolderPopupBounds = { _, _ -> },
                                 )
                             },
                         )
@@ -358,8 +352,7 @@ internal fun SharedTransitionScope.FolderScreen(
                                         parent = SharedElementKey.Parent.Folder,
                                     ),
                                     moveGridItemResult = moveGridItemResult,
-                                    isDragging = isDragging,
-                                    lockMovement = lockMovement,
+                                    progress = progress.value,
                                     onOpenAppDrawer = onOpenAppDrawer,
                                     onTapApplicationInfo = { serialNumber, componentName ->
                                         val sourceBoundsX = x + leftPadding
@@ -408,8 +401,6 @@ internal fun SharedTransitionScope.FolderScreen(
                                     onDismissGridItemPopup = onDismissGridItemPopup,
                                     onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                                     onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
-                                    onShowFolderWhenDragging = onShowFolderWhenDragging,
-                                    onUpdateFolderPopupBounds = onUpdateFolderPopupBounds,
                                 )
                             },
                         )
