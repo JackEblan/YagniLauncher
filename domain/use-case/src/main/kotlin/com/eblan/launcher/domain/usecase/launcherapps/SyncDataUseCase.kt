@@ -174,8 +174,9 @@ class SyncDataUseCase @Inject constructor(
         val oldDeleteEblanApplicationInfos =
             oldSyncEblanApplicationInfos.map { syncEblanApplicationInfo ->
                 syncEblanApplicationInfo.toDeleteEblanApplicationInfo()
+            }.filter { deleteEblanApplicationInfo ->
+                deleteEblanApplicationInfo !in newDeleteEblanApplicationInfos
             }
-                .filter { deleteEblanApplicationInfo -> deleteEblanApplicationInfo !in newDeleteEblanApplicationInfos }
 
         eblanApplicationInfoRepository.upsertSyncEblanApplicationInfos(
             syncEblanApplicationInfos = newSyncEblanApplicationInfos,
