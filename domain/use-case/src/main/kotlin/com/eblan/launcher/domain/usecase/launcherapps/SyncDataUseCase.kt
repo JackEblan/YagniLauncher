@@ -218,8 +218,7 @@ class SyncDataUseCase @Inject constructor(
         if (!homeSettings.addNewAppsToHomeScreen || experimentalSettings.firstLaunch) return
 
         val gridItems = gridRepository.getGridItems().plus(getFolderGridItemsUseCase())
-            .filter { gridItem -> gridItem.associate == Associate.Grid }
-            .toMutableList()
+            .filter { gridItem -> gridItem.associate == Associate.Grid }.toMutableList()
 
         val oldAddNewEblanApplicationInfos =
             oldSyncEblanApplicationInfos.filterNot { syncEblanApplicationInfo ->
@@ -396,35 +395,35 @@ class SyncDataUseCase @Inject constructor(
     ) {
         val oldEblanShortcutConfigs = eblanShortcutConfigRepository.getEblanShortcutConfigs()
 
-        if (oldEblanShortcutConfigs.toSet() != newEblanShortcutConfigs) {
-            val newDeleteEblanShortcutConfigs = newEblanShortcutConfigs.map { eblanShortcutConfig ->
-                eblanShortcutConfig.toDeleteEblanShortcutConfig()
-            }.toSet()
+        if (oldEblanShortcutConfigs.toSet() == newEblanShortcutConfigs) return
 
-            val oldDeleteEblanShortcutConfigs = oldEblanShortcutConfigs.map { eblanShortcutConfig ->
-                eblanShortcutConfig.toDeleteEblanShortcutConfig()
-            }.filter { deleteEblanShortcutConfig ->
-                deleteEblanShortcutConfig !in newDeleteEblanShortcutConfigs
-            }
+        val newDeleteEblanShortcutConfigs = newEblanShortcutConfigs.map { eblanShortcutConfig ->
+            eblanShortcutConfig.toDeleteEblanShortcutConfig()
+        }.toSet()
 
-            eblanShortcutConfigRepository.upsertEblanShortcutConfigs(
-                eblanShortcutConfigs = newEblanShortcutConfigs.toList(),
-            )
-
-            eblanShortcutConfigRepository.deleteEblanShortcutConfigs(
-                deleteEblanShortcutConfigs = oldDeleteEblanShortcutConfigs,
-            )
-
-            deleteEblanShortcutConfigIcons(oldDeleteEblanShortcutConfigs = oldDeleteEblanShortcutConfigs)
-
-            updateShortcutConfigGridItems(
-                eblanShortcutConfigs = eblanShortcutConfigRepository.getEblanShortcutConfigs(),
-                shortcutConfigGridItemRepository = shortcutConfigGridItemRepository,
-                fileManager = fileManager,
-                packageManagerWrapper = packageManagerWrapper,
-                iconKeyGenerator = iconKeyGenerator,
-            )
+        val oldDeleteEblanShortcutConfigs = oldEblanShortcutConfigs.map { eblanShortcutConfig ->
+            eblanShortcutConfig.toDeleteEblanShortcutConfig()
+        }.filter { deleteEblanShortcutConfig ->
+            deleteEblanShortcutConfig !in newDeleteEblanShortcutConfigs
         }
+
+        eblanShortcutConfigRepository.upsertEblanShortcutConfigs(
+            eblanShortcutConfigs = newEblanShortcutConfigs.toList(),
+        )
+
+        eblanShortcutConfigRepository.deleteEblanShortcutConfigs(
+            deleteEblanShortcutConfigs = oldDeleteEblanShortcutConfigs,
+        )
+
+        deleteEblanShortcutConfigIcons(oldDeleteEblanShortcutConfigs = oldDeleteEblanShortcutConfigs)
+
+        updateShortcutConfigGridItems(
+            eblanShortcutConfigs = eblanShortcutConfigRepository.getEblanShortcutConfigs(),
+            shortcutConfigGridItemRepository = shortcutConfigGridItemRepository,
+            fileManager = fileManager,
+            packageManagerWrapper = packageManagerWrapper,
+            iconKeyGenerator = iconKeyGenerator,
+        )
     }
 
     @OptIn(ExperimentalUuidApi::class)

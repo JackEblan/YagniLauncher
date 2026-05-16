@@ -111,6 +111,11 @@ class RemovePackageUseCase @Inject constructor(
                 serialNumber = serialNumber,
                 packageName = packageName,
             )
+
+            shortcutConfigGridItemRepository.deleteShortcutConfigGridItem(
+                serialNumber = serialNumber,
+                packageName = packageName,
+            )
         }
     }
 
