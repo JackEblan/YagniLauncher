@@ -21,7 +21,6 @@ import android.Manifest
 import android.content.pm.ActivityInfo
 import android.os.Build
 import androidx.activity.compose.LocalActivity
-import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.layout.Box
@@ -67,8 +66,7 @@ import com.eblan.launcher.feature.home.screen.editpage.EditPageScreen
 import com.eblan.launcher.feature.home.screen.loading.LoadingScreen
 import com.eblan.launcher.feature.home.screen.pager.PagerScreen
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.rememberPermissionState
-import com.google.accompanist.permissions.shouldShowRationale
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
 
 @Composable
 internal fun HomeRoute(
@@ -537,35 +535,39 @@ private fun Success(
         }
     }
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        PostNotificationPermissionEffect()
-    }
+    RequestPermissionsEffect()
 }
 
-@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-private fun PostNotificationPermissionEffect(modifier: Modifier = Modifier) {
+private fun RequestPermissionsEffect(modifier: Modifier = Modifier) {
     val notificationsPermissionState =
-        rememberPermissionState(permission = Manifest.permission.POST_NOTIFICATIONS)
+        rememberMultiplePermissionsState(
+            permissions = buildList {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    add(Manifest.permission.POST_NOTIFICATIONS)
+                }
+                add(Manifest.permission.CALL_PHONE)
+            },
+        )
 
     var showTextDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(key1 = notificationsPermissionState) {
-        if (notificationsPermissionState.status.shouldShowRationale) {
+        if (notificationsPermissionState.shouldShowRationale) {
             showTextDialog = true
         } else {
-            notificationsPermissionState.launchPermissionRequest()
+            notificationsPermissionState.launchMultiplePermissionRequest()
         }
     }
 
     if (showTextDialog) {
         TextDialog(
             modifier = modifier,
-            title = "Notification Permission",
-            text = "Allow notification permission so we can inform you about data sync status and important crash reports.",
+            title = "Request Permissions",
+            text = "Allow permissions so we can inform you about important crash reports and make phone shortcuts",
             onClick = {
-                notificationsPermissionState.launchPermissionRequest()
+                notificationsPermissionState.launchMultiplePermissionRequest()
 
                 showTextDialog = false
             },
