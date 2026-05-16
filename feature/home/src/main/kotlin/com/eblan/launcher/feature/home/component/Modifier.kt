@@ -125,7 +125,7 @@ internal fun Modifier.whiteBox(
     visible: Boolean,
 ): Modifier = if (visible) {
     drawWithCache {
-        val strokeWidth = 1.5.dp.toPx()
+        val strokeWidth = 2.dp.toPx()
 
         val cornerRadius = 5.dp.toPx()
 

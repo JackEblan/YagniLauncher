@@ -262,9 +262,7 @@ internal fun handleConfigureLauncherResultEffect(
     onDragEndAfterMove: (MoveGridItemResult) -> Unit,
     onResetConfigureResultCode: () -> Unit,
 ) {
-    if (resultCode == null) {
-        return
-    }
+    if (resultCode == null) return
 
     requireNotNull(moveGridItemResult)
 

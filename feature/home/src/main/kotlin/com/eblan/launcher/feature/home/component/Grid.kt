@@ -141,7 +141,7 @@ internal fun PreviewFolderGridLayout(
     columns: Int,
     gridItems: List<GridItem>?,
     rows: Int,
-    content: @Composable BoxScope.(GridItem) -> Unit,
+    content: @Composable (GridItem) -> Unit,
 ) {
     SubcomposeLayout(modifier = modifier) { constraints ->
         val cellWidth = constraints.maxWidth / columns
@@ -155,27 +155,16 @@ internal fun PreviewFolderGridLayout(
                 val column = index % columns
 
                 subcompose(gridItem.id) {
-                    Box(
-                        modifier = Modifier.gridItem(
-                            width = cellWidth,
-                            height = cellHeight,
-                            x = column * cellWidth,
-                            y = row * cellHeight,
-                        ),
-                    ) {
-                        content(gridItem)
-                    }
+                    content(gridItem)
                 }.forEach { measurable ->
-                    val parentData = measurable.parentData as GridItemParentData
-
                     measurable.measure(
                         Constraints.fixed(
-                            width = parentData.width,
-                            height = parentData.height,
+                            width = cellWidth,
+                            height = cellHeight,
                         ),
                     ).placeRelative(
-                        x = parentData.x,
-                        y = parentData.y,
+                        x = column * cellWidth,
+                        y = row * cellHeight,
                     )
                 }
             }
@@ -214,16 +203,14 @@ internal fun HorizontalAppDrawerGridLayout(
                         content(eblanApplicationInfo)
                     }
                 }.forEach { measurable ->
-                    val parentData = measurable.parentData as GridItemParentData
-
                     measurable.measure(
                         Constraints.fixed(
-                            width = parentData.width,
-                            height = parentData.height,
+                            width = cellWidth,
+                            height = cellHeight,
                         ),
                     ).placeRelative(
-                        x = parentData.x,
-                        y = parentData.y,
+                        x = column * cellWidth,
+                        y = row * cellHeight,
                     )
                 }
             }
