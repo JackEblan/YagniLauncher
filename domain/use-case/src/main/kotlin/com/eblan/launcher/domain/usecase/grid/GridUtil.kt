@@ -35,28 +35,21 @@ const val FOLDER_MAX_COLUMNS = 5
 const val FOLDER_MAX_ROWS = 4
 
 internal suspend fun FolderGridItemWrapper.asGridItem(): GridItem {
-    val sortedApplicationInfoGridItems =
-        applicationInfoGridItems.map { applicationInfoGridItem ->
-            applicationInfoGridItem.asGridItem()
-        }
-
-    val sortedShortcutInfoGridItems =
-        shortcutInfoGridItems.map { shortcutInfoGridItem ->
-            shortcutInfoGridItem.asGridItem()
-        }
-
-    val sortedShortcutConfigGridItems =
-        shortcutConfigGridItems.map { shortcutConfigGridItem ->
-            shortcutConfigGridItem.asGridItem()
-        }
-
     val gridItems =
-        (sortedApplicationInfoGridItems + sortedShortcutInfoGridItems + sortedShortcutConfigGridItems).sortedBy { gridItem ->
+        (
+            applicationInfoGridItems.map { applicationInfoGridItem ->
+                applicationInfoGridItem.asGridItem()
+            } + shortcutInfoGridItems.map { shortcutInfoGridItem ->
+                shortcutInfoGridItem.asGridItem()
+            } + shortcutConfigGridItems.map { shortcutConfigGridItem ->
+                shortcutConfigGridItem.asGridItem()
+            }
+            ).sortedBy { gridItem ->
             when (val data = gridItem.data) {
                 is GridItemData.ApplicationInfo -> data.index
                 is GridItemData.ShortcutInfo -> data.index
                 is GridItemData.ShortcutConfig -> data.index
-                else -> -1
+                else -> error("Unsupported Folder GridItem")
             }
         }
 
@@ -71,7 +64,7 @@ internal suspend fun FolderGridItemWrapper.asGridItem(): GridItem {
             is GridItemData.ApplicationInfo -> data.index + 1
             is GridItemData.ShortcutConfig -> data.index + 1
             is GridItemData.ShortcutInfo -> data.index + 1
-            else -> error("Unsupported Folder GridItem ")
+            else -> error("Unsupported Folder GridItem")
         }
     } ?: 0
 

@@ -89,7 +89,7 @@ class MoveFolderGridItemUseCase @Inject constructor(
                     gridItem.copy(data = data.copy(index = index))
                 }
 
-                else -> error("Unsupported folder item type: ${data::class.simpleName}")
+                else -> error("Unsupported Folder GridItem")
             }
         }
 
