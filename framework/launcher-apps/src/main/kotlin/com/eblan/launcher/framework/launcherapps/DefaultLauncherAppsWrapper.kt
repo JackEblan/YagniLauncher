@@ -140,7 +140,7 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
                 shortcuts: MutableList<ShortcutInfo>,
                 user: UserHandle,
             ) {
-                launch {
+                launch(defaultDispatcher) {
                     trySend(
                         LauncherAppsEvent.ShortcutsChanged(
                             serialNumber = userManagerWrapper.getSerialNumberForUser(userHandle = user),
@@ -162,11 +162,13 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
         awaitClose {
             launcherApps.unregisterCallback(callback)
         }
-    }.flowOn(defaultDispatcher)
+    }
 
     override suspend fun getActivityList(): List<LauncherAppsActivityInfo> = withContext(defaultDispatcher) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             launcherApps.profiles.filterNot { userHandle ->
+                currentCoroutineContext().ensureActive()
+
                 isPrivateSpaceEntryPointHidden(userHandle = userHandle)
             }.flatMap { userHandle ->
                 currentCoroutineContext().ensureActive()
@@ -188,6 +190,8 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
 
     override suspend fun getFastActivityList(): List<FastLauncherAppsActivityInfo> = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         launcherApps.profiles.filterNot { userHandle ->
+            currentCoroutineContext().ensureActive()
+
             isPrivateSpaceEntryPointHidden(userHandle = userHandle)
         }.flatMap { userHandle ->
             currentCoroutineContext().ensureActive()
@@ -242,6 +246,8 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 launcherApps.profiles.filter { userHandle ->
+                    currentCoroutineContext().ensureActive()
+
                     isUserAvailable(userHandle = userHandle)
                 }.flatMap { userHandle ->
                     currentCoroutineContext().ensureActive()
@@ -273,6 +279,8 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             launcherApps.profiles.filter { userHandle ->
+                currentCoroutineContext().ensureActive()
+
                 isUserAvailable(userHandle = userHandle)
             }.flatMap { userHandle ->
                 currentCoroutineContext().ensureActive()

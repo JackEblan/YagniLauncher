@@ -28,16 +28,12 @@ internal class DefaultAccessibilityManagerWrapper @Inject constructor(@param:App
     private val accessibilityManager = context.getSystemService(Context.ACCESSIBILITY_SERVICE)
         as AccessibilityManager
 
-    override fun isAccessibilityServiceEnabled(): Boolean {
-        if (!accessibilityManager.isEnabled) return false
+    override fun isAccessibilityServiceEnabled(): Boolean = accessibilityManager.isEnabled && accessibilityManager
+        .getEnabledAccessibilityServiceList(AccessibilityServiceInfo.FEEDBACK_ALL_MASK)
+        .any { serviceInfo ->
+            val resolvedInfo = serviceInfo.resolveInfo.serviceInfo
 
-        return accessibilityManager
-            .getEnabledAccessibilityServiceList(AccessibilityServiceInfo.FEEDBACK_ALL_MASK)
-            .any { serviceInfo ->
-                val resolvedInfo = serviceInfo.resolveInfo.serviceInfo
-
-                resolvedInfo.packageName == context.packageName &&
-                    resolvedInfo.name == EblanAccessibilityService::class.java.name
-            }
-    }
+            resolvedInfo.packageName == context.packageName &&
+                resolvedInfo.name == EblanAccessibilityService::class.java.name
+        }
 }
