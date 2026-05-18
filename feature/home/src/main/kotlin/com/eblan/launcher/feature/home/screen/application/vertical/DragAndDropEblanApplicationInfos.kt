@@ -17,6 +17,7 @@
  */
 package com.eblan.launcher.feature.home.screen.application.vertical
 
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.fadeIn
@@ -89,6 +90,8 @@ internal fun DragAndDropEblanApplicationInfos(
     onDismissDragAndDrop: () -> Unit,
     onUpdateEblanApplicationInfos: (List<EblanApplicationInfo>) -> Unit,
 ) {
+    val context = LocalContext.current
+
     val layoutDirection = LocalLayoutDirection.current
 
     val lazyGridState = rememberLazyGridState()
@@ -110,6 +113,14 @@ internal fun DragAndDropEblanApplicationInfos(
     var isDismiss by remember { mutableStateOf(false) }
 
     var expanded by remember { mutableStateOf(false) }
+
+    LaunchedEffect(key1 = Unit) {
+        Toast.makeText(
+            context,
+            "Drag an item to rearrange",
+            Toast.LENGTH_LONG,
+        ).show()
+    }
 
     LaunchedEffect(key1 = eblanApplicationInfos) {
         if (isDismiss) {
