@@ -33,11 +33,11 @@ class AndroidRoomConventionPlugin : Plugin<Project> {
                 apply(libs.plugins.ksp.get().pluginId)
             }
 
-            configure<KspExtension> {
+            extensions.configure<KspExtension> {
                 arg("room.generateKotlin", "true")
             }
 
-            configure<RoomExtension> {
+            extensions.configure<RoomExtension> {
                 // The schemas directory contains a schema file for each version of the Room database.
                 // This is required to enable Room auto migrations.
                 // See https://developer.android.com/reference/kotlin/androidx/room/AutoMigration.

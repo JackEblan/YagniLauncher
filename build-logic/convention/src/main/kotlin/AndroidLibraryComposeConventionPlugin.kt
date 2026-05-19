@@ -17,9 +17,9 @@
  */
 
 import com.android.build.api.dsl.LibraryExtension
+import com.eblan.launcher.configureAndroid
 import com.eblan.launcher.configureCompose
 import com.eblan.launcher.libs
-import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
@@ -34,30 +34,15 @@ class AndroidLibraryComposeConventionPlugin : Plugin<Project> {
             apply(plugin = libs.plugins.android.library.get().pluginId)
             apply(plugin = libs.plugins.compose.get().pluginId)
 
-            configure<LibraryExtension> {
-                compileSdk = 36
-
-                defaultConfig {
-                    minSdk = 24
-                }
+            extensions.configure<LibraryExtension> {
+                configureAndroid()
 
                 buildFeatures {
                     compose = true
                 }
-
-                compileOptions {
-                    sourceCompatibility = JavaVersion.VERSION_11
-                    targetCompatibility = JavaVersion.VERSION_11
-                }
-
-                packaging {
-                    resources {
-                        excludes += "/META-INF/{AL2.0,LGPL2.1}"
-                    }
-                }
             }
 
-            configure<KotlinAndroidProjectExtension> {
+            extensions.configure<KotlinAndroidProjectExtension> {
                 compilerOptions {
                     jvmTarget = JvmTarget.JVM_11
                 }

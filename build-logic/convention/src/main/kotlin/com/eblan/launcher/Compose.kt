@@ -32,7 +32,7 @@ internal fun Project.configureCompose() {
         add("implementation", libs.androidx.compose.ui.tooling.preview)
     }
 
-    configure<ComposeCompilerGradlePluginExtension> {
+    extensions.configure<ComposeCompilerGradlePluginExtension> {
         fun Provider<String>.onlyIfTrue() = flatMap { provider { it.takeIf(String::toBoolean) } }
         fun Provider<*>.relativeToRootProject(dir: String) = flatMap {
             rootProject.layout.buildDirectory.dir(projectDir.toRelativeString(rootDir))
