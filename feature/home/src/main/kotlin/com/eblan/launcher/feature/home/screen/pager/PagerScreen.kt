@@ -415,7 +415,13 @@ internal fun PagerScreen(
         onStopSyncData = onStopSyncData,
     )
 
-    LaunchedEffect(key1 = pagerScreenState.dragIntOffset) {
+    LaunchedEffect(
+        pagerScreenState.dragIntOffset,
+        gridItemSource,
+        isVisibleOverlay,
+        pagerScreenState.isDragging,
+        moveGridItemResult,
+    ) {
         pagerScreenState.handleDragGridItemEffect(
             gridCurrentPage = gridCurrentPage,
             dockGridCurrentPage = dockGridCurrentPage,
@@ -436,7 +442,10 @@ internal fun PagerScreen(
         )
     }
 
-    LaunchedEffect(key1 = pagerScreenState.drag) {
+    LaunchedEffect(
+        pagerScreenState.drag,
+        gridItemSource,
+    ) {
         pagerScreenState.handleDropGridItemEffect(
             moveGridItemResult = moveGridItemResult,
             onLaunchShortcutConfigIntent = shortcutConfigLauncher::launch,
@@ -482,7 +491,11 @@ internal fun PagerScreen(
         )
     }
 
-    LaunchedEffect(key1 = pagerScreenState.dragIntOffset) {
+    LaunchedEffect(
+        pagerScreenState.dragIntOffset,
+        gridItemSource,
+        pagerScreenState.isDragging,
+    ) {
         pagerScreenState.handleAnimateScrollToPageEffect(
             density = density,
             folderGridItem = folderGridItem,

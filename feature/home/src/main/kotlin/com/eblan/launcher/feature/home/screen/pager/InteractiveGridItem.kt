@@ -1009,7 +1009,12 @@ private fun SharedTransitionScope.InteractiveFolderGridItem(
         )
     }
 
-    LaunchedEffect(key1 = moveGridItemResult) {
+    LaunchedEffect(
+        drag,
+        moveGridItemResult,
+        isVisibleOverlay,
+        isDragging,
+    ) {
         handleConflictingGridItem(
             drag = drag,
             isDragging = isDragging,

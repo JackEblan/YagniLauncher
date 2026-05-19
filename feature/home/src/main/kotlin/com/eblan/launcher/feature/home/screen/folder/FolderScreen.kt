@@ -176,39 +176,6 @@ internal fun SharedTransitionScope.FolderScreen(
     val endCenterX = intOffset.x + endWidth / 2f
     val endCenterY = intOffset.y + endHeight / 2f
 
-    val animatedWidth by remember(key1 = startWidth, key2 = endWidth) {
-        derivedStateOf {
-            androidx.compose.ui.util.lerp(startWidth, endWidth, progress.value)
-        }
-    }
-
-    val animatedHeight by remember(key1 = startHeight, key2 = endHeight) {
-        derivedStateOf {
-            androidx.compose.ui.util.lerp(startHeight, endHeight, progress.value)
-        }
-    }
-
-    val animatedCenterX by remember(key1 = startCenterX, key2 = endCenterX) {
-        derivedStateOf {
-            androidx.compose.ui.util.lerp(startCenterX, endCenterX, progress.value)
-        }
-    }
-
-    val animatedCenterY by remember(key1 = startCenterY, key2 = endCenterY) {
-        derivedStateOf {
-            androidx.compose.ui.util.lerp(startCenterY, endCenterY, progress.value)
-        }
-    }
-
-    val animatedOffset by remember {
-        derivedStateOf {
-            IntOffset(
-                x = (animatedCenterX - animatedWidth / 2f).roundToInt(),
-                y = (animatedCenterY - animatedHeight / 2f).roundToInt(),
-            )
-        }
-    }
-
     val animatedColumns by remember(key1 = data.columns) {
         derivedStateOf {
             androidx.compose.ui.util.lerp(
@@ -224,6 +191,47 @@ internal fun SharedTransitionScope.FolderScreen(
                 FOLDER_ROWS.toFloat(),
                 data.rows.toFloat(),
                 progress.value,
+            )
+        }
+    }
+
+    val animatedRect by remember(
+        startWidth,
+        endWidth,
+        startCenterX,
+        endCenterY,
+    ) {
+        derivedStateOf {
+            val currentWidth = androidx.compose.ui.util.lerp(
+                startWidth,
+                endWidth,
+                progress.value,
+            )
+
+            val currentHeight =
+                androidx.compose.ui.util.lerp(
+                    startHeight,
+                    endHeight,
+                    progress.value,
+                )
+
+            val currentX = androidx.compose.ui.util.lerp(
+                startCenterX,
+                endCenterX,
+                progress.value,
+            ) - currentWidth / 2f
+
+            val currentY = androidx.compose.ui.util.lerp(
+                startCenterY,
+                endCenterY,
+                progress.value,
+            ) - currentHeight / 2f
+
+            Rect(
+                currentX.roundToInt(),
+                currentY.roundToInt(),
+                currentX.roundToInt() + currentWidth.roundToInt(),
+                currentY.roundToInt() + currentHeight.roundToInt(),
             )
         }
     }
@@ -273,10 +281,10 @@ internal fun SharedTransitionScope.FolderScreen(
     ) {
         Surface(
             modifier = Modifier
-                .offset { animatedOffset }
+                .offset { IntOffset(animatedRect.left, animatedRect.top) }
                 .size(
-                    width = with(density) { animatedWidth.toDp() },
-                    height = with(density) { animatedHeight.toDp() },
+                    width = with(density) { animatedRect.width().toDp() },
+                    height = with(density) { animatedRect.height().toDp() },
                 ),
             shape = RoundedCornerShape(5.dp),
             shadowElevation = 2.dp,
