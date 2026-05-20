@@ -339,6 +339,7 @@ private fun FolderGridItem(
                     gridItems = data.gridItemsByPage.values.firstOrNull()
                         ?.take(FOLDER_COLUMNS * FOLDER_ROWS),
                     rows = FOLDER_ROWS,
+                    isProgress = false,
                     content = { gridItem ->
                         PreviewFolderGridItemContent(
                             gridItem = gridItem,

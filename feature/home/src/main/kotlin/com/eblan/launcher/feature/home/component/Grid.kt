@@ -17,7 +17,10 @@
  */
 package com.eblan.launcher.feature.home.component
 
+import androidx.compose.animation.core.VisibilityThreshold
 import androidx.compose.animation.core.animateIntAsState
+import androidx.compose.animation.core.snap
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.runtime.Composable
@@ -89,6 +92,7 @@ internal fun FolderGridLayout(
     columns: Int,
     gridItems: List<GridItem>?,
     rows: Int,
+    isProgress: Boolean,
     content: @Composable BoxScope.(GridItem) -> Unit,
 ) {
     SubcomposeLayout(modifier = modifier) { constraints ->
@@ -103,9 +107,18 @@ internal fun FolderGridLayout(
                 val column = index % columns
 
                 subcompose(gridItem.id) {
-                    val x by animateIntAsState(column * cellWidth)
+                    val animationSpec =
+                        if (isProgress) snap() else spring(visibilityThreshold = Int.VisibilityThreshold)
 
-                    val y by animateIntAsState(row * cellHeight)
+                    val x by animateIntAsState(
+                        column * cellWidth,
+                        animationSpec = animationSpec,
+                    )
+
+                    val y by animateIntAsState(
+                        row * cellHeight,
+                        animationSpec = animationSpec,
+                    )
 
                     Box(
                         modifier = Modifier.gridItem(
@@ -128,43 +141,6 @@ internal fun FolderGridLayout(
                     ).placeRelative(
                         x = parentData.x,
                         y = parentData.y,
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-internal fun PreviewFolderGridLayout(
-    modifier: Modifier = Modifier,
-    columns: Int,
-    gridItems: List<GridItem>?,
-    rows: Int,
-    content: @Composable (GridItem) -> Unit,
-) {
-    SubcomposeLayout(modifier = modifier) { constraints ->
-        val cellWidth = constraints.maxWidth / columns
-
-        val cellHeight = constraints.maxHeight / rows
-
-        layout(constraints.maxWidth, constraints.maxHeight) {
-            gridItems?.forEachIndexed { index, gridItem ->
-                val row = index / columns
-
-                val column = index % columns
-
-                subcompose(gridItem.id) {
-                    content(gridItem)
-                }.forEach { measurable ->
-                    measurable.measure(
-                        Constraints.fixed(
-                            width = cellWidth,
-                            height = cellHeight,
-                        ),
-                    ).placeRelative(
-                        x = column * cellWidth,
-                        y = row * cellHeight,
                     )
                 }
             }
