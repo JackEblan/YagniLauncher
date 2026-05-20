@@ -19,10 +19,8 @@ package com.eblan.launcher.feature.home.screen.editpage
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -51,6 +49,9 @@ import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.GridItemSettings
 import com.eblan.launcher.domain.model.TextColor
+import com.eblan.launcher.feature.home.component.FolderGridLayout
+import com.eblan.launcher.feature.home.util.FOLDER_COLUMNS
+import com.eblan.launcher.feature.home.util.FOLDER_ROWS
 import com.eblan.launcher.feature.home.util.getGridItemTextColor
 import com.eblan.launcher.feature.home.util.getHorizontalAlignment
 import com.eblan.launcher.feature.home.util.getSystemTextColor
@@ -332,21 +333,19 @@ private fun FolderGridItem(
                     shape = RoundedCornerShape(5.dp),
                 ),
             ) {
-                FlowRow(
+                FolderGridLayout(
                     modifier = Modifier.matchParentSize(),
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                    verticalArrangement = Arrangement.SpaceEvenly,
-                    maxItemsInEachRow = 3,
-                    maxLines = 3,
-                ) {
-                    data.previewGridItems.forEach { folderGridItem ->
+                    columns = FOLDER_COLUMNS,
+                    gridItems = data.gridItemsByPage.values.firstOrNull()
+                        ?.take(FOLDER_COLUMNS * FOLDER_ROWS),
+                    rows = FOLDER_ROWS,
+                    content = { gridItem ->
                         PreviewFolderGridItemContent(
-                            gridItem = folderGridItem,
-                            gridItemSettings = gridItemSettings,
+                            gridItem = gridItem,
                             iconPackFilePaths = iconPackFilePaths,
                         )
-                    }
-                }
+                    },
+                )
             }
         }
 
@@ -476,10 +475,12 @@ private fun ShortcutConfigGridItem(
 private fun PreviewFolderGridItemContent(
     modifier: Modifier = Modifier,
     gridItem: GridItem,
-    gridItemSettings: GridItemSettings,
     iconPackFilePaths: Map<String, String>,
 ) {
     key(gridItem.id) {
+        val commonModifier = modifier
+            .padding(1.dp)
+
         when (val data = gridItem.data) {
             is GridItemData.ApplicationInfo -> {
                 val icon =
@@ -491,7 +492,7 @@ private fun PreviewFolderGridItemContent(
                         .data(data.customIcon ?: icon)
                         .addLastModifiedToFileCacheKey(true).build(),
                     contentDescription = null,
-                    modifier = modifier.size((gridItemSettings.iconSize * 0.30).dp),
+                    modifier = commonModifier,
                 )
             }
 
@@ -519,8 +520,7 @@ private fun PreviewFolderGridItemContent(
                         .data(icon)
                         .addLastModifiedToFileCacheKey(true).build(),
                     contentDescription = null,
-                    modifier = modifier
-                        .size((gridItemSettings.iconSize * 0.30).dp),
+                    modifier = commonModifier,
                 )
             }
 
@@ -530,8 +530,7 @@ private fun PreviewFolderGridItemContent(
                         .data(data.customIcon ?: data.icon)
                         .addLastModifiedToFileCacheKey(true).build(),
                     contentDescription = null,
-                    modifier = modifier
-                        .size((gridItemSettings.iconSize * 0.30).dp),
+                    modifier = commonModifier,
                 )
             }
 

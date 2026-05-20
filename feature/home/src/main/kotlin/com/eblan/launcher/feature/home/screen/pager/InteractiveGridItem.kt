@@ -1143,7 +1143,7 @@ private fun SharedTransitionScope.InteractiveFolderGridItem(
                 FolderGridLayout(
                     modifier = Modifier.matchParentSize(),
                     columns = FOLDER_COLUMNS,
-                    gridItems = data.previewGridItems.take(FOLDER_COLUMNS * FOLDER_ROWS),
+                    gridItems = data.gridItemsByPage.values.firstOrNull()?.take(FOLDER_COLUMNS * FOLDER_ROWS),
                     rows = FOLDER_ROWS,
                     content = { gridItem ->
                         PreviewFolderGridItem(

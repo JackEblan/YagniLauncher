@@ -71,7 +71,6 @@ sealed interface GridItemData {
         val label: String,
         val gridItems: List<GridItem>,
         val gridItemsByPage: Map<Int, List<GridItem>>,
-        val previewGridItems: List<GridItem>,
         val icon: String?,
         val columns: Int,
         val rows: Int,

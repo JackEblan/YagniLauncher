@@ -73,7 +73,6 @@ internal suspend fun FolderGridItemWrapper.asGridItem(): GridItem {
         label = folderGridItem.label,
         gridItems = gridItems,
         gridItemsByPage = gridItemsByPage,
-        previewGridItems = firstPageGridItems,
         icon = folderGridItem.icon,
         columns = columns,
         rows = rows,
