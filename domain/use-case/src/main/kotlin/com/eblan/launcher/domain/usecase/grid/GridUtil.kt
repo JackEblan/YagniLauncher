@@ -55,7 +55,7 @@ internal suspend fun FolderGridItemWrapper.asGridItem(): GridItem {
 
     val gridItemsByPage = gridItems.getGridItemsByPage()
 
-    val firstPageGridItems = gridItemsByPage[0] ?: emptyList()
+    val firstPageGridItems = gridItemsByPage.values.firstOrNull() ?: emptyList()
 
     val (columns, rows) = getGridDimension(count = firstPageGridItems.size)
 
@@ -73,7 +73,7 @@ internal suspend fun FolderGridItemWrapper.asGridItem(): GridItem {
         label = folderGridItem.label,
         gridItems = gridItems,
         gridItemsByPage = gridItemsByPage,
-        previewGridItemsByPage = gridItemsByPage.values.firstOrNull() ?: emptyList(),
+        previewGridItems = firstPageGridItems,
         icon = folderGridItem.icon,
         columns = columns,
         rows = rows,

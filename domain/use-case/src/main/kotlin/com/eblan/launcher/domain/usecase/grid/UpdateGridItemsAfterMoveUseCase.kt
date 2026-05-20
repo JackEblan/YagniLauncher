@@ -174,7 +174,7 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
                     label = "New Folder",
                     gridItems = folderGridItems,
                     gridItemsByPage = mapOf(0 to folderGridItems),
-                    previewGridItemsByPage = folderGridItems,
+                    previewGridItems = folderGridItems,
                     icon = null,
                     columns = 1,
                     rows = 2,

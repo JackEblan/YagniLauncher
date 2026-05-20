@@ -339,7 +339,7 @@ private fun FolderGridItem(
                     maxItemsInEachRow = 3,
                     maxLines = 3,
                 ) {
-                    data.previewGridItemsByPage.forEach { folderGridItem ->
+                    data.previewGridItems.forEach { folderGridItem ->
                         PreviewFolderGridItemContent(
                             gridItem = folderGridItem,
                             gridItemSettings = gridItemSettings,
