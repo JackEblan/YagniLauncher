@@ -60,8 +60,6 @@ import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.GridItemSettings
 import com.eblan.launcher.domain.model.MoveGridItemResult
-import com.eblan.launcher.domain.usecase.grid.FOLDER_MAX_COLUMNS
-import com.eblan.launcher.domain.usecase.grid.FOLDER_MAX_ROWS
 import com.eblan.launcher.feature.home.component.FolderGridLayout
 import com.eblan.launcher.feature.home.component.PageIndicator
 import com.eblan.launcher.feature.home.model.Drag
@@ -134,35 +132,42 @@ internal fun SharedTransitionScope.FolderScreen(
         paddingValues.calculateTopPadding().roundToPx()
     }
 
-    val cellWidth = safeDrawingWidth / FOLDER_MAX_COLUMNS
-    val cellHeight = safeDrawingHeight / FOLDER_MAX_ROWS
+    val minCellWidthDp = 80.dp
+    val maxCellWidthDp = 100.dp
 
-    val folderGridWidthDp = with(density) {
-        (cellWidth * data.columns).toDp()
-    }
+    val minCellHeightDp = 100.dp
+    val maxCellHeightDp = 150.dp
 
-    val folderGridHeightDp = with(density) {
-        (cellHeight * data.rows).toDp()
-    }
+    val minCellWidthPx = with(density) { minCellWidthDp.roundToPx() }
+    val maxCellWidthPx = with(density) { maxCellWidthDp.roundToPx() }
 
-    val folderGridWidthPx = with(density) { folderGridWidthDp.roundToPx() }
-    val folderGridHeightPx = with(density) { folderGridHeightDp.roundToPx() }
+    val minCellHeightPx = with(density) { minCellHeightDp.roundToPx() }
+    val maxCellHeightPx = with(density) { maxCellHeightDp.roundToPx() }
 
-    val progress = remember { Animatable(0f) }
+    val availableWidth = (safeDrawingWidth - leftPadding * 2).coerceAtLeast(0)
+    val availableHeight = (safeDrawingHeight - topPadding * 2).coerceAtLeast(0)
+
+    val rawCellWidth = if (data.columns > 0) availableWidth / data.columns else minCellWidthPx
+    val rawCellHeight = if (data.rows > 0) availableHeight / data.rows else minCellHeightPx
+
+    val cellWidth = rawCellWidth.coerceIn(minCellWidthPx, maxCellWidthPx)
+    val cellHeight = rawCellHeight.coerceIn(minCellHeightPx, maxCellHeightPx)
+
+    val folderGridWidthPx = (cellWidth * data.columns).coerceAtMost(availableWidth)
+    val folderGridHeightPx = (cellHeight * data.rows).coerceAtMost(availableHeight)
 
     val x = folderPopupIntOffset.x - leftPadding
     val y = folderPopupIntOffset.y - topPadding
 
+    val maximumX = (safeDrawingWidth - folderGridWidthPx).coerceAtLeast(0)
+    val maximumY = (safeDrawingHeight - folderGridHeightPx).coerceAtLeast(0)
+
     val intOffset = IntOffset(
-        x = x.coerceIn(
-            0,
-            safeDrawingWidth - folderGridWidthPx,
-        ) + leftPadding,
-        y = y.coerceIn(
-            0,
-            safeDrawingHeight - folderGridHeightPx,
-        ) + topPadding,
+        x = x.coerceIn(0, maximumX) + leftPadding,
+        y = y.coerceIn(0, maximumY) + topPadding,
     )
+
+    val progress = remember { Animatable(0f) }
 
     val startWidth = folderPopupIntSize.width.toFloat()
     val startHeight = folderPopupIntSize.height.toFloat()
