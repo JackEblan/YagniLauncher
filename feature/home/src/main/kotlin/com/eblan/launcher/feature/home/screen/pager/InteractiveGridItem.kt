@@ -67,14 +67,14 @@ import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.GridItemSettings
 import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.domain.model.TextColor
-import com.eblan.launcher.feature.home.component.PreviewFolderGridLayout
+import com.eblan.launcher.feature.home.component.FolderGridLayout
 import com.eblan.launcher.feature.home.component.swipeGestures
 import com.eblan.launcher.feature.home.component.whiteBox
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
-import com.eblan.launcher.feature.home.util.FOLDER_COLUMNS
-import com.eblan.launcher.feature.home.util.FOLDER_ROWS
+import com.eblan.launcher.feature.home.util.FOLDER_PREVIEW_COLUMNS
+import com.eblan.launcher.feature.home.util.FOLDER_PREVIEW_ROWS
 import com.eblan.launcher.feature.home.util.getGridItemTextColor
 import com.eblan.launcher.feature.home.util.getHorizontalAlignment
 import com.eblan.launcher.feature.home.util.getSystemTextColor
@@ -1140,12 +1140,12 @@ private fun SharedTransitionScope.InteractiveFolderGridItem(
                     shape = RoundedCornerShape(5.dp),
                 ),
             ) {
-                PreviewFolderGridLayout(
+                FolderGridLayout(
                     modifier = Modifier.matchParentSize(),
-                    columns = FOLDER_COLUMNS,
-                    gridItems = data.gridItemsByPage.values.firstOrNull()?.take(FOLDER_COLUMNS * FOLDER_ROWS),
-                    rows = FOLDER_ROWS,
-                    progress = 0f,
+                    columns = FOLDER_PREVIEW_COLUMNS,
+                    gridItems = data.gridItemsByPage.values.firstOrNull()
+                        ?.take(FOLDER_PREVIEW_COLUMNS * FOLDER_PREVIEW_ROWS),
+                    rows = FOLDER_PREVIEW_ROWS,
                     content = { gridItem ->
                         PreviewFolderGridItem(
                             alpha = alpha,

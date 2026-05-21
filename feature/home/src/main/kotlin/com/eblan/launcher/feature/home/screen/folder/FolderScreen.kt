@@ -64,10 +64,11 @@ import com.eblan.launcher.domain.usecase.grid.FOLDER_MAX_COLUMNS
 import com.eblan.launcher.domain.usecase.grid.FOLDER_MAX_ROWS
 import com.eblan.launcher.feature.home.component.FolderGridLayout
 import com.eblan.launcher.feature.home.component.PageIndicator
-import com.eblan.launcher.feature.home.component.PreviewFolderGridLayout
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
+import com.eblan.launcher.feature.home.util.FOLDER_PREVIEW_COLUMNS
+import com.eblan.launcher.feature.home.util.FOLDER_PREVIEW_ROWS
 import com.eblan.launcher.feature.home.util.PAGE_INDICATOR_HEIGHT
 import com.eblan.launcher.ui.local.LocalLauncherApps
 import kotlin.math.roundToInt
@@ -278,82 +279,66 @@ internal fun SharedTransitionScope.FolderScreen(
                     state = folderGridHorizontalPagerState,
                     userScrollEnabled = !isVisibleOverlay,
                 ) { index ->
-                    if (progress.value < 1f) {
-                        PreviewFolderGridLayout(
-                            modifier = Modifier.fillMaxSize(),
-                            columns = data.columns,
-                            gridItems = data.gridItemsByPage[index],
-                            rows = data.rows,
-                            progress = progress.value,
-                            content = { gridItem ->
-                                InteractiveFolderGridItemContent(
-                                    drag = drag,
-                                    gridItem = gridItem,
-                                    gridItemSettings = gridItemSettings,
-                                    hasShortcutHostPermission = hasShortcutHostPermission,
-                                    iconPackFilePaths = iconPackFilePaths,
-                                    isScrollInProgress = folderGridHorizontalPagerState.isScrollInProgress,
-                                    statusBarNotifications = statusBarNotifications,
-                                    isVisibleOverlay = false,
-                                    newGridItemSource = GridItemSource.Folder,
-                                    sharedElementKey = SharedElementKey(
-                                        id = gridItem.id,
-                                        parent = SharedElementKey.Parent.Folder,
-                                    ),
-                                    moveGridItemResult = moveGridItemResult,
-                                    progress = progress.value,
-                                    onOpenAppDrawer = {},
-                                    onTapApplicationInfo = { _, _ -> },
-                                    onTapShortcutConfig = { _ -> },
-                                    onTapShortcutInfo = { _, _, _ -> },
-                                    onUpdateGridItemSource = {},
-                                    onUpdateImageBitmap = {},
-                                    onUpdateIsDragging = {},
-                                    onUpdateOverlayBounds = { _, _ -> },
-                                    onUpdateSharedElementKey = {},
-                                    onShowGridItemPopup = { _, _ -> },
-                                    onDismissGridItemPopup = {},
-                                    onUpdateIsVisibleOverlay = {},
-                                    onUpdateMoveGridItemResult = {},
-                                )
-                            },
-                        )
-                    } else {
-                        FolderGridLayout(
-                            modifier = Modifier.fillMaxSize(),
-                            columns = data.columns,
-                            gridItems = data.gridItemsByPage[index],
-                            rows = data.rows,
-                            content = { gridItem ->
-                                val x = gridItem.startColumn * cellWidth
+                    FolderGridLayout(
+                        modifier = Modifier.fillMaxSize(),
+                        columns = data.columns,
+                        gridItems = data.gridItemsByPage[index],
+                        rows = data.rows,
+                        previewEnabled = true,
+                        previewColumns = FOLDER_PREVIEW_COLUMNS,
+                        previewRows = FOLDER_PREVIEW_ROWS,
+                        progress = progress.value,
+                        content = { gridItem ->
+                            val x = gridItem.startColumn * cellWidth
 
-                                val y = gridItem.startRow * cellHeight
+                            val y = gridItem.startRow * cellHeight
 
-                                InteractiveFolderGridItemContent(
-                                    drag = drag,
-                                    gridItem = gridItem,
-                                    gridItemSettings = gridItemSettings,
-                                    hasShortcutHostPermission = hasShortcutHostPermission,
-                                    iconPackFilePaths = iconPackFilePaths,
-                                    isScrollInProgress = folderGridHorizontalPagerState.isScrollInProgress,
-                                    statusBarNotifications = statusBarNotifications,
-                                    isVisibleOverlay = isVisibleOverlay,
-                                    newGridItemSource = GridItemSource.Folder,
-                                    sharedElementKey = SharedElementKey(
-                                        id = gridItem.id,
-                                        parent = SharedElementKey.Parent.Folder,
-                                    ),
-                                    moveGridItemResult = moveGridItemResult,
-                                    progress = progress.value,
-                                    onOpenAppDrawer = onOpenAppDrawer,
-                                    onTapApplicationInfo = { serialNumber, componentName ->
-                                        val sourceBoundsX = x + leftPadding
+                            InteractiveFolderGridItemContent(
+                                drag = drag,
+                                gridItem = gridItem,
+                                gridItemSettings = gridItemSettings,
+                                hasShortcutHostPermission = hasShortcutHostPermission,
+                                iconPackFilePaths = iconPackFilePaths,
+                                isScrollInProgress = folderGridHorizontalPagerState.isScrollInProgress,
+                                statusBarNotifications = statusBarNotifications,
+                                isVisibleOverlay = isVisibleOverlay,
+                                newGridItemSource = GridItemSource.Folder,
+                                sharedElementKey = SharedElementKey(
+                                    id = gridItem.id,
+                                    parent = SharedElementKey.Parent.Folder,
+                                ),
+                                moveGridItemResult = moveGridItemResult,
+                                progress = progress.value,
+                                onOpenAppDrawer = onOpenAppDrawer,
+                                onTapApplicationInfo = { serialNumber, componentName ->
+                                    val sourceBoundsX = x + leftPadding
 
-                                        val sourceBoundsY = y + topPadding
+                                    val sourceBoundsY = y + topPadding
 
-                                        androidLauncherAppsWrapper.startMainActivity(
+                                    androidLauncherAppsWrapper.startMainActivity(
+                                        serialNumber = serialNumber,
+                                        componentName = componentName,
+                                        sourceBounds = Rect(
+                                            sourceBoundsX,
+                                            sourceBoundsY,
+                                            sourceBoundsX + cellWidth,
+                                            sourceBoundsY + cellHeight,
+                                        ),
+                                    )
+                                },
+                                onTapShortcutConfig = { uri ->
+                                    context.startActivity(parseUri(uri, 0))
+                                },
+                                onTapShortcutInfo = { serialNumber, packageName, shortcutId ->
+                                    val sourceBoundsX = x + leftPadding
+
+                                    val sourceBoundsY = y + topPadding
+
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+                                        androidLauncherAppsWrapper.startShortcut(
                                             serialNumber = serialNumber,
-                                            componentName = componentName,
+                                            packageName = packageName,
+                                            id = shortcutId,
                                             sourceBounds = Rect(
                                                 sourceBoundsX,
                                                 sourceBoundsY,
@@ -361,42 +346,20 @@ internal fun SharedTransitionScope.FolderScreen(
                                                 sourceBoundsY + cellHeight,
                                             ),
                                         )
-                                    },
-                                    onTapShortcutConfig = { uri ->
-                                        context.startActivity(parseUri(uri, 0))
-                                    },
-                                    onTapShortcutInfo = { serialNumber, packageName, shortcutId ->
-                                        val sourceBoundsX = x + leftPadding
-
-                                        val sourceBoundsY = y + topPadding
-
-                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
-                                            androidLauncherAppsWrapper.startShortcut(
-                                                serialNumber = serialNumber,
-                                                packageName = packageName,
-                                                id = shortcutId,
-                                                sourceBounds = Rect(
-                                                    sourceBoundsX,
-                                                    sourceBoundsY,
-                                                    sourceBoundsX + cellWidth,
-                                                    sourceBoundsY + cellHeight,
-                                                ),
-                                            )
-                                        }
-                                    },
-                                    onUpdateGridItemSource = onUpdateGridItemSource,
-                                    onUpdateImageBitmap = onUpdateImageBitmap,
-                                    onUpdateIsDragging = onUpdateIsDragging,
-                                    onUpdateOverlayBounds = onUpdateOverlayBounds,
-                                    onUpdateSharedElementKey = onUpdateSharedElementKey,
-                                    onShowGridItemPopup = onShowGridItemPopup,
-                                    onDismissGridItemPopup = onDismissGridItemPopup,
-                                    onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                                    onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
-                                )
-                            },
-                        )
-                    }
+                                    }
+                                },
+                                onUpdateGridItemSource = onUpdateGridItemSource,
+                                onUpdateImageBitmap = onUpdateImageBitmap,
+                                onUpdateIsDragging = onUpdateIsDragging,
+                                onUpdateOverlayBounds = onUpdateOverlayBounds,
+                                onUpdateSharedElementKey = onUpdateSharedElementKey,
+                                onShowGridItemPopup = onShowGridItemPopup,
+                                onDismissGridItemPopup = onDismissGridItemPopup,
+                                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                                onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                            )
+                        },
+                    )
                 }
 
                 if (progress.value > 0.5f) {
