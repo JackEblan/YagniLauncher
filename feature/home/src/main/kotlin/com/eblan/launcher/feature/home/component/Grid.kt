@@ -17,7 +17,6 @@
  */
 package com.eblan.launcher.feature.home.component
 
-import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.animation.core.snap
@@ -54,13 +53,25 @@ internal fun GridLayout(
         layout(width = constraints.maxWidth, height = constraints.maxHeight) {
             gridItems?.forEach { gridItem ->
                 subcompose(gridItem.id) {
-                    val width by animateIntAsState(targetValue = gridItem.columnSpan * cellWidth)
+                    val width by animateIntAsState(
+                        targetValue = gridItem.columnSpan * cellWidth,
+                        label = "width",
+                    )
 
-                    val height by animateIntAsState(targetValue = gridItem.rowSpan * cellHeight)
+                    val height by animateIntAsState(
+                        targetValue = gridItem.rowSpan * cellHeight,
+                        label = "height",
+                    )
 
-                    val x by animateIntAsState(targetValue = gridItem.startColumn * cellWidth)
+                    val x by animateIntAsState(
+                        targetValue = gridItem.startColumn * cellWidth,
+                        label = "x",
+                    )
 
-                    val y by animateIntAsState(targetValue = gridItem.startRow * cellHeight)
+                    val y by animateIntAsState(
+                        targetValue = gridItem.startRow * cellHeight,
+                        label = "y",
+                    )
 
                     Box(
                         modifier = Modifier.gridItem(
@@ -111,8 +122,8 @@ internal fun FolderGridLayout(
         val endCellHeight = containerHeight / rows
 
         val previewItemCount = previewColumns * previewRows
-        val previewCellSize = minOf(containerWidth, containerHeight) /
-            maxOf(previewColumns, previewRows).toFloat()
+        val previewCellSize =
+            minOf(containerWidth, containerHeight) / maxOf(previewColumns, previewRows).toFloat()
 
         val previewOffsetX = (containerWidth - (previewCellSize * previewColumns)) / 2f
         val previewOffsetY = (containerHeight - (previewCellSize * previewRows)) / 2f
@@ -157,38 +168,36 @@ internal fun FolderGridLayout(
                     val animationSpec = if (previewEnabled && progress < 1f) {
                         snap<Float>()
                     } else {
-                        spring(
-                            dampingRatio = Spring.DampingRatioNoBouncy,
-                            stiffness = Spring.StiffnessMediumLow,
-                        )
+                        spring()
                     }
 
                     val animatedX by animateFloatAsState(
-                        targetX,
-                        animationSpec,
+                        targetValue = targetX,
+                        animationSpec = animationSpec,
                         label = "x",
                     )
 
                     val animatedY by animateFloatAsState(
-                        targetY,
-                        animationSpec,
+                        targetValue = targetY,
+                        animationSpec = animationSpec,
                         label = "y",
                     )
 
                     val animatedWidth by animateFloatAsState(
-                        targetWidth,
-                        animationSpec,
-                        label = "w",
+                        targetValue = targetWidth,
+                        animationSpec = animationSpec,
+                        label = "width",
                     )
+
                     val animatedHeight by animateFloatAsState(
-                        targetHeight,
-                        animationSpec,
-                        label = "h",
+                        targetValue = targetHeight,
+                        animationSpec = animationSpec,
+                        label = "height",
                     )
 
                     val animatedAlpha by animateFloatAsState(
-                        targetAlpha,
-                        label = "a",
+                        targetValue = targetAlpha,
+                        label = "alpha",
                     )
 
                     Box(
