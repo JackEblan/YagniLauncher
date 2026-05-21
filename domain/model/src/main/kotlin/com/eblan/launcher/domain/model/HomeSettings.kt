@@ -33,8 +33,8 @@ data class HomeSettings(
     val dockInfiniteScroll: Boolean,
     val dockInitialPage: Int,
     val addNewAppsToHomeScreen: Boolean,
-    val minCellWidth: Int,
-    val minCellHeight: Int,
-    val maxCellWidth: Int,
-    val maxCellHeight: Int,
+    val minFolderCellWidth: Int,
+    val minFolderCellHeight: Int,
+    val maxFolderCellWidth: Int,
+    val maxFolderCellHeight: Int,
 )

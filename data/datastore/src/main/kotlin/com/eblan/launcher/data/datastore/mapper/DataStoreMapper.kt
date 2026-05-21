@@ -62,10 +62,10 @@ internal fun HomeSettingsProto.toHomeSettings(): HomeSettings = HomeSettings(
     dockInfiniteScroll = dockInfiniteScroll,
     dockInitialPage = dockInitialPage,
     addNewAppsToHomeScreen = addNewAppsToHomeScreen,
-    minCellWidth = minCellWidth,
-    minCellHeight = minCellHeight,
-    maxCellWidth = maxCellWidth,
-    maxCellHeight = maxCellHeight,
+    minFolderCellWidth = minFolderCellWidth,
+    minFolderCellHeight = minFolderCellHeight,
+    maxFolderCellWidth = maxFolderCellWidth,
+    maxFolderCellHeight = maxFolderCellHeight,
 )
 
 internal fun AppDrawerSettingsProto.toAppDrawerSettings(): AppDrawerSettings = AppDrawerSettings(
@@ -116,10 +116,10 @@ internal fun HomeSettings.toHomeSettingsProto(): HomeSettingsProto = HomeSetting
     .setLockScreenOrientation(lockScreenOrientation).setDockPageCount(dockPageCount)
     .setDockInfiniteScroll(dockInfiniteScroll).setDockInitialPage(dockInitialPage)
     .setAddNewAppsToHomeScreen(addNewAppsToHomeScreen)
-    .setMinCellWidth(minCellWidth)
-    .setMinCellHeight(minCellHeight)
-    .setMaxCellWidth(maxCellWidth)
-    .setMaxCellHeight(maxCellHeight)
+    .setMinFolderCellWidth(minFolderCellWidth)
+    .setMinFolderCellHeight(minFolderCellHeight)
+    .setMaxFolderCellWidth(maxFolderCellWidth)
+    .setMaxFolderCellHeight(maxFolderCellHeight)
     .build()
 
 internal fun AppDrawerSettings.toAppDrawerSettingsProto(): AppDrawerSettingsProto = AppDrawerSettingsProto.newBuilder().setAppDrawerColumns(appDrawerColumns)

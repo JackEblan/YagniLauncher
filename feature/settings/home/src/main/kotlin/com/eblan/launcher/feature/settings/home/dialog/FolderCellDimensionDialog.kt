@@ -48,15 +48,15 @@ internal fun FolderCellDimensionDialog(
     onDismissRequest: () -> Unit,
     onUpdateHomeSettings: (HomeSettings) -> Unit,
 ) {
-    var minCellWidth by remember { mutableStateOf("${homeSettings.minCellWidth}") }
-    var minCellHeight by remember { mutableStateOf("${homeSettings.minCellHeight}") }
-    var maxCellWidth by remember { mutableStateOf("${homeSettings.maxCellWidth}") }
-    var maxCellHeight by remember { mutableStateOf("${homeSettings.maxCellHeight}") }
+    var minFolderCellWidth by remember { mutableStateOf("${homeSettings.minFolderCellWidth}") }
+    var minFolderCellHeight by remember { mutableStateOf("${homeSettings.minFolderCellHeight}") }
+    var maxFolderCellWidth by remember { mutableStateOf("${homeSettings.maxFolderCellWidth}") }
+    var maxFolderCellHeight by remember { mutableStateOf("${homeSettings.maxFolderCellHeight}") }
 
-    var minCellWidthIsError by remember { mutableStateOf(false) }
-    var minCellHeightIsError by remember { mutableStateOf(false) }
-    var maxCellWidthIsError by remember { mutableStateOf(false) }
-    var maxCellHeightIsError by remember { mutableStateOf(false) }
+    var minFolderCellWidthIsError by remember { mutableStateOf(false) }
+    var minFolderCellHeightIsError by remember { mutableStateOf(false) }
+    var maxFolderCellWidthIsError by remember { mutableStateOf(false) }
+    var maxFolderCellHeightIsError by remember { mutableStateOf(false) }
 
     EblanDialogContainer(
         content = {
@@ -78,20 +78,20 @@ internal fun FolderCellDimensionDialog(
 
                     Row(modifier = Modifier.fillMaxWidth()) {
                         TextField(
-                            value = minCellWidth,
+                            value = minFolderCellWidth,
                             onValueChange = {
-                                minCellWidth = it
+                                minFolderCellWidth = it
                             },
                             modifier = Modifier.weight(1f),
                             label = {
                                 Text(text = "Min Cell Width")
                             },
                             supportingText = {
-                                if (minCellWidthIsError) {
+                                if (minFolderCellWidthIsError) {
                                     Text(text = "Min Cell Width is not valid")
                                 }
                             },
-                            isError = minCellWidthIsError,
+                            isError = minFolderCellWidthIsError,
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             singleLine = true,
                         )
@@ -99,20 +99,20 @@ internal fun FolderCellDimensionDialog(
                         Spacer(modifier = Modifier.width(5.dp))
 
                         TextField(
-                            value = minCellHeight,
+                            value = minFolderCellHeight,
                             onValueChange = {
-                                minCellHeight = it
+                                minFolderCellHeight = it
                             },
                             modifier = Modifier.weight(1f),
                             label = {
                                 Text(text = "Min Cell Height")
                             },
                             supportingText = {
-                                if (minCellHeightIsError) {
+                                if (minFolderCellHeightIsError) {
                                     Text(text = "Min Cell Height is not valid")
                                 }
                             },
-                            isError = minCellHeightIsError,
+                            isError = minFolderCellHeightIsError,
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             singleLine = true,
                         )
@@ -126,20 +126,20 @@ internal fun FolderCellDimensionDialog(
 
                     Row(modifier = Modifier.fillMaxWidth()) {
                         TextField(
-                            value = maxCellWidth,
+                            value = maxFolderCellWidth,
                             onValueChange = {
-                                maxCellWidth = it
+                                maxFolderCellWidth = it
                             },
                             modifier = Modifier.weight(1f),
                             label = {
                                 Text(text = "Max Cell Width")
                             },
                             supportingText = {
-                                if (maxCellWidthIsError) {
+                                if (maxFolderCellWidthIsError) {
                                     Text(text = "Max Cell Width is not valid")
                                 }
                             },
-                            isError = maxCellWidthIsError,
+                            isError = maxFolderCellWidthIsError,
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             singleLine = true,
                         )
@@ -147,20 +147,20 @@ internal fun FolderCellDimensionDialog(
                         Spacer(modifier = Modifier.width(5.dp))
 
                         TextField(
-                            value = maxCellHeight,
+                            value = maxFolderCellHeight,
                             onValueChange = {
-                                maxCellHeight = it
+                                maxFolderCellHeight = it
                             },
                             modifier = Modifier.weight(1f),
                             label = {
                                 Text(text = "Max Cell Height")
                             },
                             supportingText = {
-                                if (maxCellHeightIsError) {
+                                if (maxFolderCellHeightIsError) {
                                     Text(text = "Max Cell Height is not valid")
                                 }
                             },
-                            isError = maxCellHeightIsError,
+                            isError = maxFolderCellHeightIsError,
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             singleLine = true,
                         )
@@ -180,30 +180,30 @@ internal fun FolderCellDimensionDialog(
                         TextButton(
                             onClick = {
                                 val minCellWidth = try {
-                                    minCellWidth.toInt()
+                                    minFolderCellWidth.toInt()
                                 } catch (_: NumberFormatException) {
-                                    minCellWidthIsError = true
+                                    minFolderCellWidthIsError = true
                                     0
                                 }
 
                                 val minCellHeight = try {
-                                    minCellHeight.toInt()
+                                    minFolderCellHeight.toInt()
                                 } catch (_: NumberFormatException) {
-                                    minCellHeightIsError = true
+                                    minFolderCellHeightIsError = true
                                     0
                                 }
 
                                 val maxCellWidth = try {
-                                    maxCellWidth.toInt()
+                                    maxFolderCellWidth.toInt()
                                 } catch (_: NumberFormatException) {
-                                    maxCellWidthIsError = true
+                                    maxFolderCellWidthIsError = true
                                     0
                                 }
 
                                 val maxCellHeight = try {
-                                    maxCellHeight.toInt()
+                                    maxFolderCellHeight.toInt()
                                 } catch (_: NumberFormatException) {
-                                    maxCellHeightIsError = true
+                                    maxFolderCellHeightIsError = true
                                     0
                                 }
 
@@ -212,10 +212,10 @@ internal fun FolderCellDimensionDialog(
                                 ) {
                                     onUpdateHomeSettings(
                                         homeSettings.copy(
-                                            minCellWidth = minCellWidth,
-                                            minCellHeight = minCellHeight,
-                                            maxCellWidth = maxCellWidth,
-                                            maxCellHeight = maxCellHeight,
+                                            minFolderCellWidth = minCellWidth,
+                                            minFolderCellHeight = minCellHeight,
+                                            maxFolderCellWidth = maxCellWidth,
+                                            maxFolderCellHeight = maxCellHeight,
                                         ),
                                     )
 
