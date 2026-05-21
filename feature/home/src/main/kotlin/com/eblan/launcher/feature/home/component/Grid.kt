@@ -17,10 +17,7 @@
  */
 package com.eblan.launcher.feature.home.component
 
-import androidx.compose.animation.core.VisibilityThreshold
 import androidx.compose.animation.core.animateIntAsState
-import androidx.compose.animation.core.snap
-import androidx.compose.animation.core.spring
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.runtime.Composable
@@ -32,6 +29,7 @@ import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Density
 import com.eblan.launcher.domain.model.EblanApplicationInfo
 import com.eblan.launcher.domain.model.GridItem
+import kotlin.math.roundToInt
 
 @Composable
 internal fun GridLayout(
@@ -92,7 +90,6 @@ internal fun FolderGridLayout(
     columns: Int,
     gridItems: List<GridItem>?,
     rows: Int,
-    isProgress: Boolean,
     content: @Composable BoxScope.(GridItem) -> Unit,
 ) {
     SubcomposeLayout(modifier = modifier) { constraints ->
@@ -107,18 +104,9 @@ internal fun FolderGridLayout(
                 val column = index % columns
 
                 subcompose(gridItem.id) {
-                    val animationSpec =
-                        if (isProgress) snap() else spring(visibilityThreshold = Int.VisibilityThreshold)
+                    val x by animateIntAsState(column * cellWidth)
 
-                    val x by animateIntAsState(
-                        column * cellWidth,
-                        animationSpec = animationSpec,
-                    )
-
-                    val y by animateIntAsState(
-                        row * cellHeight,
-                        animationSpec = animationSpec,
-                    )
+                    val y by animateIntAsState(row * cellHeight)
 
                     Box(
                         modifier = Modifier.gridItem(
@@ -142,6 +130,155 @@ internal fun FolderGridLayout(
                         x = parentData.x,
                         y = parentData.y,
                     )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+internal fun PreviewFolderGridLayout(
+    modifier: Modifier = Modifier,
+    columns: Int,
+    rows: Int,
+    previewColumns: Int = 2,
+    previewRows: Int = 2,
+    gridItems: List<GridItem>?,
+    progress: Float,
+    content: @Composable BoxScope.(GridItem) -> Unit,
+) {
+    SubcomposeLayout(
+        modifier = modifier,
+    ) { constraints ->
+
+        val containerWidth = constraints.maxWidth
+        val containerHeight = constraints.maxHeight
+
+        // Final grid cell size
+        val endCellWidth =
+            containerWidth / columns
+
+        val endCellHeight =
+            containerHeight / rows
+
+        val previewItemCount =
+            previewColumns * previewRows
+
+        // Static preview item size
+        val previewCellSize =
+            minOf(
+                containerWidth,
+                containerHeight,
+            ) / maxOf(
+                previewColumns,
+                previewRows,
+            ).toFloat()
+
+        val previewWidth =
+            previewCellSize * previewColumns
+
+        val previewHeight =
+            previewCellSize * previewRows
+
+        // Center preview
+        val previewOffsetX =
+            (containerWidth - previewWidth) / 2f
+
+        val previewOffsetY =
+            (containerHeight - previewHeight) / 2f
+
+        layout(
+            width = containerWidth,
+            height = containerHeight,
+        ) {
+            gridItems?.forEachIndexed { index, gridItem ->
+                subcompose(gridItem.id) {
+                    Box {
+                        content(gridItem)
+                    }
+                }.forEach { measurable ->
+
+                    // Final grid position
+                    val endX =
+                        (index % columns) * endCellWidth
+
+                    val endY =
+                        (index / columns) * endCellHeight
+
+                    // Preview position
+                    val startX =
+                        previewOffsetX +
+                            (index % previewColumns) * previewCellSize
+
+                    val startY =
+                        previewOffsetY +
+                            (index / previewColumns) * previewCellSize
+
+                    val isPreviewItem =
+                        index < previewItemCount
+
+                    val currentX =
+                        if (isPreviewItem) {
+                            androidx.compose.ui.util.lerp(
+                                startX,
+                                endX.toFloat(),
+                                progress,
+                            )
+                        } else {
+                            endX.toFloat()
+                        }
+
+                    val currentY =
+                        if (isPreviewItem) {
+                            androidx.compose.ui.util.lerp(
+                                startY,
+                                endY.toFloat(),
+                                progress,
+                            )
+                        } else {
+                            endY.toFloat()
+                        }
+
+                    val currentWidth =
+                        if (isPreviewItem) {
+                            androidx.compose.ui.util.lerp(
+                                previewCellSize,
+                                endCellWidth.toFloat(),
+                                progress,
+                            ).roundToInt()
+                        } else {
+                            endCellWidth
+                        }
+
+                    val currentHeight =
+                        if (isPreviewItem) {
+                            androidx.compose.ui.util.lerp(
+                                previewCellSize,
+                                endCellHeight.toFloat(),
+                                progress,
+                            ).roundToInt()
+                        } else {
+                            endCellHeight
+                        }
+
+                    val placeable =
+                        measurable.measure(
+                            Constraints.fixed(
+                                width = currentWidth,
+                                height = currentHeight,
+                            ),
+                        )
+
+                    placeable.placeRelativeWithLayer(
+                        x = currentX.roundToInt(),
+                        y = currentY.roundToInt(),
+                    ) {
+                        alpha = if (isPreviewItem) {
+                            1f
+                        } else {
+                            progress
+                        }
+                    }
                 }
             }
         }

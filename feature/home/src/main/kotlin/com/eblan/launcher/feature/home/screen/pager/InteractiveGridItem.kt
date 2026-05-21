@@ -67,7 +67,7 @@ import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.GridItemSettings
 import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.domain.model.TextColor
-import com.eblan.launcher.feature.home.component.FolderGridLayout
+import com.eblan.launcher.feature.home.component.PreviewFolderGridLayout
 import com.eblan.launcher.feature.home.component.swipeGestures
 import com.eblan.launcher.feature.home.component.whiteBox
 import com.eblan.launcher.feature.home.model.Drag
@@ -1140,12 +1140,12 @@ private fun SharedTransitionScope.InteractiveFolderGridItem(
                     shape = RoundedCornerShape(5.dp),
                 ),
             ) {
-                FolderGridLayout(
+                PreviewFolderGridLayout(
                     modifier = Modifier.matchParentSize(),
                     columns = FOLDER_COLUMNS,
                     gridItems = data.gridItemsByPage.values.firstOrNull()?.take(FOLDER_COLUMNS * FOLDER_ROWS),
                     rows = FOLDER_ROWS,
-                    isProgress = false,
+                    progress = 0f,
                     content = { gridItem ->
                         PreviewFolderGridItem(
                             alpha = alpha,
