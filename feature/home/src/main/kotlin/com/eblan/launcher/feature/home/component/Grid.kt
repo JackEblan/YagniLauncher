@@ -150,21 +150,14 @@ internal fun PreviewFolderGridLayout(
     SubcomposeLayout(
         modifier = modifier,
     ) { constraints ->
-
         val containerWidth = constraints.maxWidth
         val containerHeight = constraints.maxHeight
 
-        // Final grid cell size
-        val endCellWidth =
-            containerWidth / columns
+        val endCellWidth = containerWidth / columns
+        val endCellHeight = containerHeight / rows
 
-        val endCellHeight =
-            containerHeight / rows
+        val previewItemCount = previewColumns * previewRows
 
-        val previewItemCount =
-            previewColumns * previewRows
-
-        // Static preview item size
         val previewCellSize =
             minOf(
                 containerWidth,
@@ -176,14 +169,11 @@ internal fun PreviewFolderGridLayout(
 
         val previewWidth =
             previewCellSize * previewColumns
-
         val previewHeight =
             previewCellSize * previewRows
 
-        // Center preview
         val previewOffsetX =
             (containerWidth - previewWidth) / 2f
-
         val previewOffsetY =
             (containerHeight - previewHeight) / 2f
 
@@ -197,47 +187,35 @@ internal fun PreviewFolderGridLayout(
                         content(gridItem)
                     }
                 }.forEach { measurable ->
+                    val endX = (index % columns) * endCellWidth
+                    val endY = (index / columns) * endCellHeight
 
-                    // Final grid position
-                    val endX =
-                        (index % columns) * endCellWidth
+                    val startX = previewOffsetX +
+                        (index % previewColumns) * previewCellSize
+                    val startY = previewOffsetY +
+                        (index / previewColumns) * previewCellSize
 
-                    val endY =
-                        (index / columns) * endCellHeight
+                    val isPreviewItem = index < previewItemCount
 
-                    // Preview position
-                    val startX =
-                        previewOffsetX +
-                            (index % previewColumns) * previewCellSize
+                    val currentX = if (isPreviewItem) {
+                        androidx.compose.ui.util.lerp(
+                            startX,
+                            endX.toFloat(),
+                            progress,
+                        )
+                    } else {
+                        endX.toFloat()
+                    }
 
-                    val startY =
-                        previewOffsetY +
-                            (index / previewColumns) * previewCellSize
-
-                    val isPreviewItem =
-                        index < previewItemCount
-
-                    val currentX =
-                        if (isPreviewItem) {
-                            androidx.compose.ui.util.lerp(
-                                startX,
-                                endX.toFloat(),
-                                progress,
-                            )
-                        } else {
-                            endX.toFloat()
-                        }
-
-                    val currentY =
-                        if (isPreviewItem) {
-                            androidx.compose.ui.util.lerp(
-                                startY,
-                                endY.toFloat(),
-                                progress,
-                            )
-                        } else {
-                            endY.toFloat()
-                        }
+                    val currentY = if (isPreviewItem) {
+                        androidx.compose.ui.util.lerp(
+                            startY,
+                            endY.toFloat(),
+                            progress,
+                        )
+                    } else {
+                        endY.toFloat()
+                    }
 
                     val currentWidth =
                         if (isPreviewItem) {
@@ -261,15 +239,12 @@ internal fun PreviewFolderGridLayout(
                             endCellHeight
                         }
 
-                    val placeable =
-                        measurable.measure(
-                            Constraints.fixed(
-                                width = currentWidth,
-                                height = currentHeight,
-                            ),
-                        )
-
-                    placeable.placeRelativeWithLayer(
+                    measurable.measure(
+                        Constraints.fixed(
+                            width = currentWidth,
+                            height = currentHeight,
+                        ),
+                    ).placeRelativeWithLayer(
                         x = currentX.roundToInt(),
                         y = currentY.roundToInt(),
                     ) {
