@@ -30,11 +30,10 @@ import kotlin.math.ceil
 import kotlin.math.min
 import kotlin.math.sqrt
 
-private const val FOLDER_MAX_COLUMNS = 5
-
-private const val FOLDER_MAX_ROWS = 4
-
-internal suspend fun FolderGridItemWrapper.asGridItem(): GridItem {
+internal suspend fun FolderGridItemWrapper.asGridItem(
+    maxFolderColumns: Int,
+    maxFolderRows: Int,
+): GridItem {
     val gridItems =
         (
             applicationInfoGridItems.map { applicationInfoGridItem ->
@@ -53,11 +52,18 @@ internal suspend fun FolderGridItemWrapper.asGridItem(): GridItem {
             }
         }
 
-    val gridItemsByPage = gridItems.getGridItemsByPage()
+    val gridItemsByPage = gridItems.getGridItemsByPage(
+        maxFolderColumns = maxFolderColumns,
+        maxFolderRows = maxFolderRows,
+    )
 
     val firstPageGridItems = gridItemsByPage.values.firstOrNull() ?: emptyList()
 
-    val (columns, rows) = getGridDimension(count = firstPageGridItems.size)
+    val (columns, rows) = getGridDimension(
+        count = firstPageGridItems.size,
+        maxFolderColumns = maxFolderColumns,
+        maxFolderRows = maxFolderRows,
+    )
 
     val maxIndex = gridItems.maxOfOrNull { folderGridItem ->
         when (val data = folderGridItem.data) {
@@ -96,7 +102,10 @@ internal suspend fun FolderGridItemWrapper.asGridItem(): GridItem {
     )
 }
 
-private suspend fun List<GridItem>.getGridItemsByPage(): Map<Int, List<GridItem>> = chunked(FOLDER_MAX_COLUMNS * FOLDER_MAX_ROWS)
+private suspend fun List<GridItem>.getGridItemsByPage(
+    maxFolderColumns: Int,
+    maxFolderRows: Int,
+): Map<Int, List<GridItem>> = chunked(maxFolderColumns * maxFolderRows)
     .mapIndexed { pageIndex, pageItems ->
         currentCoroutineContext().ensureActive()
 
@@ -104,11 +113,15 @@ private suspend fun List<GridItem>.getGridItemsByPage(): Map<Int, List<GridItem>
     }
     .toMap()
 
-private fun getGridDimension(count: Int): Pair<Int, Int> {
+private fun getGridDimension(
+    count: Int,
+    maxFolderColumns: Int,
+    maxFolderRows: Int,
+): Pair<Int, Int> {
     if (count <= 0) return 0 to 0
 
-    val columns = min(FOLDER_MAX_COLUMNS, ceil(sqrt(count.toDouble())).toInt())
-    val rows = min(FOLDER_MAX_ROWS, ceil(count / columns.toDouble()).toInt())
+    val columns = min(maxFolderColumns, ceil(sqrt(count.toDouble())).toInt())
+    val rows = min(maxFolderRows, ceil(count / columns.toDouble()).toInt())
 
     return columns to rows
 }

@@ -66,6 +66,8 @@ internal fun HomeSettingsProto.toHomeSettings(): HomeSettings = HomeSettings(
     minFolderCellHeight = minFolderCellHeight,
     maxFolderCellWidth = maxFolderCellWidth,
     maxFolderCellHeight = maxFolderCellHeight,
+    maxFolderColumns = maxFolderColumns,
+    maxFolderRows = maxFolderRows,
 )
 
 internal fun AppDrawerSettingsProto.toAppDrawerSettings(): AppDrawerSettings = AppDrawerSettings(
@@ -120,6 +122,8 @@ internal fun HomeSettings.toHomeSettingsProto(): HomeSettingsProto = HomeSetting
     .setMinFolderCellHeight(minFolderCellHeight)
     .setMaxFolderCellWidth(maxFolderCellWidth)
     .setMaxFolderCellHeight(maxFolderCellHeight)
+    .setMaxFolderColumns(maxFolderColumns)
+    .setMaxFolderRows(maxFolderRows)
     .build()
 
 internal fun AppDrawerSettings.toAppDrawerSettingsProto(): AppDrawerSettingsProto = AppDrawerSettingsProto.newBuilder().setAppDrawerColumns(appDrawerColumns)

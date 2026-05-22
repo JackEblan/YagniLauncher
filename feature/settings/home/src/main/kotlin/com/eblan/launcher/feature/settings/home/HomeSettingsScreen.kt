@@ -128,6 +128,8 @@ private fun Success(
 
     var showFolderCellDimensionDialog by remember { mutableStateOf(false) }
 
+    var showFolderMaxGridDialog by remember { mutableStateOf(false) }
+
     Column(
         modifier = modifier
             .verticalScroll(rememberScrollState())
@@ -250,6 +252,16 @@ private fun Success(
                     showFolderCellDimensionDialog = true
                 },
             )
+
+            HorizontalDivider(modifier = Modifier.fillMaxWidth())
+
+            SettingsColumn(
+                title = "Folder Max Grid",
+                subtitle = "Folder max grid",
+                onClick = {
+                    showFolderMaxGridDialog = true
+                },
+            )
         }
 
         GridItemSettings(
@@ -288,25 +300,25 @@ private fun Success(
                 showGridDialog = false
             },
             onUpdateClick = {
-                val columns = try {
+                val newColumns = try {
                     columns.toInt()
                 } catch (_: NumberFormatException) {
                     firstTextFieldIsError = true
                     0
                 }
 
-                val rows = try {
+                val newRows = try {
                     rows.toInt()
                 } catch (_: NumberFormatException) {
                     secondTextFieldIsError = true
                     0
                 }
 
-                if (columns > 0 && rows > 0) {
+                if (newColumns > 0 && newRows > 0) {
                     onUpdateHomeSettings(
                         homeSettings.copy(
-                            columns = columns,
-                            rows = rows,
+                            columns = newColumns,
+                            rows = newRows,
                         ),
                     )
 
@@ -344,25 +356,25 @@ private fun Success(
                 showDockGridDialog = false
             },
             onUpdateClick = {
-                val dockColumns = try {
+                val newDockColumns = try {
                     dockColumns.toInt()
                 } catch (_: NumberFormatException) {
                     firstTextFieldIsError = true
                     0
                 }
 
-                val dockRows = try {
+                val newDockRows = try {
                     dockRows.toInt()
                 } catch (_: NumberFormatException) {
                     secondTextFieldIsError = true
                     0
                 }
 
-                if (dockColumns > 0 && dockRows > 0) {
+                if (newDockColumns > 0 && newDockRows > 0) {
                     onUpdateHomeSettings(
                         homeSettings.copy(
-                            dockColumns = dockColumns,
-                            dockRows = dockRows,
+                            dockColumns = newDockColumns,
+                            dockRows = newDockRows,
                         ),
                     )
 
@@ -415,6 +427,62 @@ private fun Success(
                 showFolderCellDimensionDialog = false
             },
             onUpdateHomeSettings = onUpdateHomeSettings,
+        )
+    }
+
+    if (showFolderMaxGridDialog) {
+        var maxFolderColumns by remember { mutableStateOf("${homeSettings.maxFolderColumns}") }
+
+        var maxFolderRows by remember { mutableStateOf("${homeSettings.maxFolderRows}") }
+
+        var firstTextFieldIsError by remember { mutableStateOf(false) }
+
+        var secondTextFieldIsError by remember { mutableStateOf(false) }
+
+        TwoTextFieldsDialog(
+            title = "Folder Max Grid",
+            firstTextFieldTitle = "Columns",
+            secondTextFieldTitle = "Rows",
+            firstTextFieldValue = maxFolderColumns,
+            secondTextFieldValue = maxFolderRows,
+            firstTextFieldIsError = firstTextFieldIsError,
+            secondTextFieldIsError = secondTextFieldIsError,
+            keyboardType = KeyboardType.Number,
+            onFirstValueChange = {
+                maxFolderColumns = it
+            },
+            onSecondValueChange = {
+                maxFolderRows = it
+            },
+            onDismissRequest = {
+                showFolderMaxGridDialog = false
+            },
+            onUpdateClick = {
+                val newMaxFolderColumns = try {
+                    maxFolderColumns.toInt()
+                } catch (_: NumberFormatException) {
+                    firstTextFieldIsError = true
+                    0
+                }
+
+                val newMaxFolderRows = try {
+                    maxFolderRows.toInt()
+                } catch (_: NumberFormatException) {
+                    secondTextFieldIsError = true
+                    0
+                }
+
+                if (newMaxFolderColumns > 0 && newMaxFolderRows > 0) {
+                    onUpdateHomeSettings(
+                        homeSettings.copy(
+                            maxFolderColumns = newMaxFolderColumns,
+                            maxFolderRows = newMaxFolderRows,
+                        ),
+                    )
+
+                    showFolderMaxGridDialog = false
+                }
+            },
         )
     }
 }

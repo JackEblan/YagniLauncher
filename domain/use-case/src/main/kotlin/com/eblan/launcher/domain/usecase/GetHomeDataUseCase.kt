@@ -51,9 +51,15 @@ class GetHomeDataUseCase @Inject constructor(
 ) {
     operator fun invoke(): Flow<HomeData> {
         val folderGridItemsFlow =
-            folderGridItemRepository.folderGridItemWrappersFlow.map { folderGridItemWrappers ->
+            combine(
+                userDataRepository.userDataFlow,
+                folderGridItemRepository.folderGridItemWrappersFlow,
+            ) { userData, folderGridItemWrappers ->
                 folderGridItemWrappers.map { folderGridItemWrapper ->
-                    folderGridItemWrapper.asGridItem()
+                    folderGridItemWrapper.asGridItem(
+                        maxFolderColumns = userData.homeSettings.maxFolderColumns,
+                        maxFolderRows = userData.homeSettings.maxFolderRows,
+                    )
                 }
             }
 

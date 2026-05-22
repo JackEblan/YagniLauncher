@@ -28,7 +28,9 @@ internal class DataStoreMigration : DataMigration<UserDataProto> {
         currentData.homeSettingsProto.minFolderCellWidth == 0 ||
         currentData.homeSettingsProto.minFolderCellHeight == 0 ||
         currentData.homeSettingsProto.maxFolderCellWidth == 0 ||
-        currentData.homeSettingsProto.maxFolderCellHeight == 0
+        currentData.homeSettingsProto.maxFolderCellHeight == 0 ||
+        currentData.homeSettingsProto.maxFolderColumns == 0 ||
+        currentData.homeSettingsProto.maxFolderRows == 0
 
     override suspend fun migrate(currentData: UserDataProto): UserDataProto = currentData.copy {
         homeSettingsProto = homeSettingsProto.toBuilder()
@@ -37,6 +39,8 @@ internal class DataStoreMigration : DataMigration<UserDataProto> {
             .setMinFolderCellHeight(96)
             .setMaxFolderCellWidth(80)
             .setMaxFolderCellHeight(120)
+            .setMaxFolderColumns(5)
+            .setMaxFolderRows(4)
             .build()
 
         appDrawerSettingsProto = appDrawerSettingsProto.toBuilder()

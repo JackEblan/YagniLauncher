@@ -21,17 +21,25 @@ import com.eblan.launcher.domain.common.Dispatcher
 import com.eblan.launcher.domain.common.EblanDispatchers
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.repository.FolderGridItemRepository
+import com.eblan.launcher.domain.repository.UserDataRepository
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class GetFolderGridItemsUseCase @Inject constructor(
     private val folderGridItemRepository: FolderGridItemRepository,
+    private val userDataRepository: UserDataRepository,
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke(): List<GridItem> = withContext(defaultDispatcher) {
+        val homeSettings = userDataRepository.userDataFlow.first().homeSettings
+
         folderGridItemRepository.getFolderGridItemWrappers().map { folderGridItemWrapper ->
-            folderGridItemWrapper.asGridItem()
+            folderGridItemWrapper.asGridItem(
+                maxFolderColumns = homeSettings.maxFolderColumns,
+                maxFolderRows = homeSettings.maxFolderRows,
+            )
         }
     }
 }

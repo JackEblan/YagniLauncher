@@ -37,4 +37,6 @@ data class HomeSettings(
     val minFolderCellHeight: Int,
     val maxFolderCellWidth: Int,
     val maxFolderCellHeight: Int,
+    val maxFolderColumns: Int,
+    val maxFolderRows: Int,
 )
