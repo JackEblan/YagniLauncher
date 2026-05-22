@@ -208,11 +208,11 @@ internal suspend fun handleDragGridItem(
 
     val safeDrawingHeight = screenHeight - verticalPadding
 
-    val dragX = dragIntOffset.x - leftPadding
+    val localDragX = dragIntOffset.x - leftPadding
 
-    val dragY = dragIntOffset.y - topPadding
+    val localDragY = dragIntOffset.y - topPadding
 
-    val isOnDock = dockHeightPx > 0 && dragY > safeDrawingHeight - dockHeightPx
+    val isOnDock = dockHeightPx > 0 && localDragY > safeDrawingHeight - dockHeightPx
 
     when (gridItemSource) {
         is GridItemSource.Existing,
@@ -225,8 +225,8 @@ internal suspend fun handleDragGridItem(
                     dockColumns = dockColumns,
                     dockHeightPx = dockHeightPx,
                     dockRows = dockRows,
-                    dragX = dragX,
-                    dragY = dragY,
+                    dragX = localDragX,
+                    dragY = localDragY,
                     gridItemSource = gridItemSource,
                     safeDrawingHeight = safeDrawingHeight,
                     safeDrawingWidth = safeDrawingWidth,
@@ -240,8 +240,8 @@ internal suspend fun handleDragGridItem(
                     columns = columns,
                     currentPage = gridCurrentPage,
                     dockHeightPx = dockHeightPx,
-                    dragX = dragX,
-                    dragY = dragY,
+                    dragX = localDragX,
+                    dragY = localDragY,
                     gridItemSource = gridItemSource,
                     pageIndicatorHeightPx = pageIndicatorHeightPx,
                     rows = rows,
@@ -260,8 +260,8 @@ internal suspend fun handleDragGridItem(
                 density = density,
                 leftPadding = leftPadding,
                 topPadding = topPadding,
-                dragX = dragX,
-                dragY = dragY,
+                dragX = localDragX,
+                dragY = localDragY,
                 folderCurrentPage = folderCurrentPage,
                 folderGridItem = folderGridItem,
                 folderPopupIntOffset = folderPopupIntOffset,
