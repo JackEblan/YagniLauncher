@@ -70,6 +70,8 @@ import com.eblan.launcher.feature.home.component.swipeGestures
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
+import com.eblan.launcher.feature.home.util.getHorizontalAlignment
+import com.eblan.launcher.feature.home.util.getVerticalArrangement
 import com.eblan.launcher.feature.home.util.handleDrag
 import com.eblan.launcher.feature.home.util.onDoubleTap
 import com.eblan.launcher.feature.home.util.onLongPress
@@ -273,6 +275,12 @@ private fun SharedTransitionScope.InteractiveFolderApplicationInfoGridItem(
 
     val scope = rememberCoroutineScope()
 
+    val horizontalAlignment =
+        getHorizontalAlignment(horizontalAlignment = gridItemSettings.horizontalAlignment)
+
+    val verticalArrangement =
+        getVerticalArrangement(verticalArrangement = gridItemSettings.verticalArrangement)
+
     val maxLines = if (gridItemSettings.singleLineLabel) 1 else Int.MAX_VALUE
 
     val icon = iconPackFilePaths[data.componentName] ?: data.icon
@@ -361,7 +369,8 @@ private fun SharedTransitionScope.InteractiveFolderApplicationInfoGridItem(
                 color = Color(gridItemSettings.customBackgroundColor),
                 shape = RoundedCornerShape(size = gridItemSettings.cornerRadius.dp),
             ),
-        horizontalAlignment = Alignment.CenterHorizontally,
+        horizontalAlignment = horizontalAlignment,
+        verticalArrangement = verticalArrangement,
     ) {
         Box(
             modifier = Modifier
@@ -477,6 +486,12 @@ private fun SharedTransitionScope.InteractiveFolderShortcutInfoGridItem(
 
     val scope = rememberCoroutineScope()
 
+    val horizontalAlignment =
+        getHorizontalAlignment(horizontalAlignment = gridItemSettings.horizontalAlignment)
+
+    val verticalArrangement =
+        getVerticalArrangement(verticalArrangement = gridItemSettings.verticalArrangement)
+
     val maxLines = if (gridItemSettings.singleLineLabel) 1 else Int.MAX_VALUE
 
     val customIcon = data.customIcon ?: data.icon
@@ -564,7 +579,8 @@ private fun SharedTransitionScope.InteractiveFolderShortcutInfoGridItem(
                 color = Color(gridItemSettings.customBackgroundColor),
                 shape = RoundedCornerShape(size = gridItemSettings.cornerRadius.dp),
             ),
-        horizontalAlignment = Alignment.CenterHorizontally,
+        horizontalAlignment = horizontalAlignment,
+        verticalArrangement = verticalArrangement,
     ) {
         Box(
             modifier = Modifier
@@ -672,6 +688,12 @@ private fun SharedTransitionScope.InteractiveFolderShortcutConfigGridItem(
     val graphicsLayer = rememberGraphicsLayer()
 
     val scope = rememberCoroutineScope()
+
+    val horizontalAlignment =
+        getHorizontalAlignment(horizontalAlignment = gridItemSettings.horizontalAlignment)
+
+    val verticalArrangement =
+        getVerticalArrangement(verticalArrangement = gridItemSettings.verticalArrangement)
 
     val maxLines = if (gridItemSettings.singleLineLabel) 1 else Int.MAX_VALUE
 
@@ -784,7 +806,8 @@ private fun SharedTransitionScope.InteractiveFolderShortcutConfigGridItem(
                 color = Color(gridItemSettings.customBackgroundColor),
                 shape = RoundedCornerShape(size = gridItemSettings.cornerRadius.dp),
             ),
-        horizontalAlignment = Alignment.CenterHorizontally,
+        horizontalAlignment = horizontalAlignment,
+        verticalArrangement = verticalArrangement,
     ) {
         AsyncImage(
             model = Builder(LocalContext.current).data(icon)

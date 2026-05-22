@@ -59,6 +59,7 @@ import androidx.compose.ui.unit.dp
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.GridItemSettings
+import com.eblan.launcher.domain.model.HomeSettings
 import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.feature.home.component.FolderGridLayout
 import com.eblan.launcher.feature.home.component.PageIndicator
@@ -90,6 +91,7 @@ internal fun SharedTransitionScope.FolderScreen(
     isMoveFolderGridItemOutsideFolder: Boolean,
     hasShortcutHostPermission: Boolean,
     moveGridItemResult: MoveGridItemResult?,
+    homeSettings: HomeSettings,
     onDismissRequest: () -> Unit,
     onMoveFolderGridItemOutsideFolder: () -> Unit,
     onOpenAppDrawer: () -> Unit,
@@ -132,16 +134,16 @@ internal fun SharedTransitionScope.FolderScreen(
         paddingValues.calculateTopPadding().roundToPx()
     }
 
-    val minCellWidthDp = 80.dp
-    val maxCellWidthDp = 100.dp
+    val minCellWidthDp = homeSettings.minFolderCellWidth.dp
+    val minCellHeightDp = homeSettings.minFolderCellHeight.dp
 
-    val minCellHeightDp = 100.dp
-    val maxCellHeightDp = 150.dp
+    val maxCellWidthDp = homeSettings.maxFolderCellWidth.dp
+    val maxCellHeightDp = homeSettings.maxFolderCellHeight.dp
 
     val minCellWidthPx = with(density) { minCellWidthDp.roundToPx() }
-    val maxCellWidthPx = with(density) { maxCellWidthDp.roundToPx() }
-
     val minCellHeightPx = with(density) { minCellHeightDp.roundToPx() }
+
+    val maxCellWidthPx = with(density) { maxCellWidthDp.roundToPx() }
     val maxCellHeightPx = with(density) { maxCellHeightDp.roundToPx() }
 
     val availableWidth = (safeDrawingWidth - leftPadding * 2).coerceAtLeast(0)
@@ -167,8 +169,6 @@ internal fun SharedTransitionScope.FolderScreen(
         y = y.coerceIn(0, maximumY) + topPadding,
     )
 
-    val progress = remember { Animatable(0f) }
-
     val startWidth = folderPopupIntSize.width.toFloat()
     val startHeight = folderPopupIntSize.height.toFloat()
 
@@ -180,6 +180,8 @@ internal fun SharedTransitionScope.FolderScreen(
 
     val endCenterX = intOffset.x + endWidth / 2f
     val endCenterY = intOffset.y + endHeight / 2f
+
+    val progress = remember { Animatable(0f) }
 
     val animatedRect by remember(
         startWidth,
