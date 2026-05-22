@@ -1,0 +1,1 @@
+- Added folder settings for cell dimension and max grid count
