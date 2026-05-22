@@ -103,11 +103,92 @@ internal fun GridLayout(
 }
 
 @Composable
+internal fun PreviewFolderGridLayout(
+    modifier: Modifier = Modifier,
+    gridItems: List<GridItem>?,
+    previewColumns: Int = FOLDER_PREVIEW_COLUMNS,
+    previewRows: Int = FOLDER_PREVIEW_ROWS,
+    content: @Composable BoxScope.(GridItem) -> Unit,
+) {
+    SubcomposeLayout(modifier = modifier) { constraints ->
+        val previewItemCount =
+            previewColumns * previewRows
+
+        val previewCellSize =
+            minOf(
+                constraints.maxWidth,
+                constraints.maxHeight,
+            ) / maxOf(
+                previewColumns,
+                previewRows,
+            ).toFloat()
+
+        val previewGridWidth =
+            previewCellSize * previewColumns
+
+        val previewGridHeight =
+            previewCellSize * previewRows
+
+        val previewOffsetX =
+            (constraints.maxWidth - previewGridWidth) / 2f
+
+        val previewOffsetY =
+            (constraints.maxHeight - previewGridHeight) / 2f
+
+        layout(
+            width = constraints.maxWidth,
+            height = constraints.maxHeight,
+        ) {
+            gridItems
+                ?.take(previewItemCount)
+                ?.forEachIndexed { index, gridItem ->
+                    subcompose(slotId = gridItem.id) {
+                        val x =
+                            previewOffsetX +
+                                (index % previewColumns) * previewCellSize
+
+                        val y =
+                            previewOffsetY +
+                                (index / previewColumns) * previewCellSize
+
+                        Box(
+                            modifier = Modifier.folderGridItem(
+                                x = x.roundToInt(),
+                                y = y.roundToInt(),
+                                width = previewCellSize.roundToInt(),
+                                height = previewCellSize.roundToInt(),
+                                alpha = 1f,
+                            ),
+                        ) {
+                            content(gridItem)
+                        }
+                    }.forEach { measurable ->
+                        val parentData =
+                            measurable.parentData as FolderGridItemParentData
+
+                        measurable.measure(
+                            Constraints.fixed(
+                                width = parentData.width,
+                                height = parentData.height,
+                            ),
+                        ).placeRelative(
+                            x = parentData.x,
+                            y = parentData.y,
+                        )
+                    }
+                }
+        }
+    }
+}
+
+@Composable
 internal fun FolderGridLayout(
     modifier: Modifier = Modifier,
     gridItems: List<GridItem>?,
     columns: Int,
     rows: Int,
+    layoutWidth: Int,
+    layoutHeight: Int,
     previewEnabled: Boolean = false,
     previewColumns: Int = FOLDER_PREVIEW_COLUMNS,
     previewRows: Int = FOLDER_PREVIEW_ROWS,
@@ -115,57 +196,111 @@ internal fun FolderGridLayout(
     content: @Composable BoxScope.(GridItem) -> Unit,
 ) {
     SubcomposeLayout(modifier = modifier) { constraints ->
-        val containerWidth = constraints.maxWidth
-        val containerHeight = constraints.maxHeight
+        val endCellWidth = layoutWidth / columns
 
-        val endCellWidth = containerWidth / columns
-        val endCellHeight = containerHeight / rows
+        val endCellHeight = layoutHeight / rows
 
         val previewItemCount = previewColumns * previewRows
+
         val previewCellSize =
-            minOf(containerWidth, containerHeight) / maxOf(previewColumns, previewRows).toFloat()
+            minOf(
+                constraints.maxWidth,
+                constraints.maxHeight,
+            ) / maxOf(
+                previewColumns,
+                previewRows,
+            ).toFloat()
 
-        val previewOffsetX = (containerWidth - (previewCellSize * previewColumns)) / 2f
-        val previewOffsetY = (containerHeight - (previewCellSize * previewRows)) / 2f
+        val previewGridWidth = previewCellSize * previewColumns
+        val previewGridHeight = previewCellSize * previewRows
 
-        layout(width = containerWidth, height = containerHeight) {
+        val previewOffsetX =
+            (constraints.maxWidth - previewGridWidth) / 2f
+
+        val previewOffsetY =
+            (constraints.maxHeight - previewGridHeight) / 2f
+
+        layout(
+            width = constraints.maxWidth,
+            height = constraints.maxHeight,
+        ) {
             gridItems?.forEachIndexed { index, gridItem ->
                 subcompose(gridItem.id) {
-                    val endX = (index % columns) * endCellWidth
-                    val endY = (index / columns) * endCellHeight
-                    val isPreview = index < previewItemCount
+                    val endX =
+                        (index % columns) * endCellWidth
 
-                    // 1. Determine Starting Points
-                    // If preview is disabled, we start and end at the same grid position
-                    val startX = if (previewEnabled && isPreview) {
-                        previewOffsetX + (index % previewColumns) * previewCellSize
-                    } else {
-                        endX.toFloat()
-                    }
+                    val endY =
+                        (index / columns) * endCellHeight
 
-                    val startY = if (previewEnabled && isPreview) {
-                        previewOffsetY + (index / previewColumns) * previewCellSize
-                    } else {
-                        endY.toFloat()
-                    }
+                    val isPreview =
+                        previewEnabled && index < previewItemCount
 
-                    val startSize = if (previewEnabled && isPreview) {
-                        previewCellSize
-                    } else {
-                        endCellWidth.toFloat()
-                    }
+                    val startX =
+                        if (isPreview) {
+                            previewOffsetX +
+                                (index % previewColumns) * previewCellSize
+                        } else {
+                            endX.toFloat()
+                        }
 
-                    // 2. Calculate Targets based on progress
-                    val targetX = lerp(startX, endX.toFloat(), progress)
-                    val targetY = lerp(startY, endY.toFloat(), progress)
-                    val targetWidth = lerp(startSize, endCellWidth.toFloat(), progress)
-                    val targetHeight = lerp(startSize, endCellHeight.toFloat(), progress)
-                    val targetAlpha = if (previewEnabled && !isPreview) progress else 1f
+                    val startY =
+                        if (isPreview) {
+                            previewOffsetY +
+                                (index / previewColumns) * previewCellSize
+                        } else {
+                            endY.toFloat()
+                        }
 
-                    // 3. Select Animation Spec
-                    // Use snap during opening (progress < 1) to avoid lag/shake.
-                    // Use spring if preview is disabled OR if folder is fully open (for reordering).
-                    val animationSpec = if (previewEnabled && progress < 1f) {
+                    val startWidth =
+                        if (isPreview) {
+                            previewCellSize
+                        } else {
+                            endCellWidth.toFloat()
+                        }
+
+                    val startHeight =
+                        if (isPreview) {
+                            previewCellSize
+                        } else {
+                            endCellHeight.toFloat()
+                        }
+
+                    val targetX =
+                        lerp(
+                            startX,
+                            endX.toFloat(),
+                            progress,
+                        )
+
+                    val targetY =
+                        lerp(
+                            startY,
+                            endY.toFloat(),
+                            progress,
+                        )
+
+                    val targetWidth =
+                        lerp(
+                            startWidth,
+                            endCellWidth.toFloat(),
+                            progress,
+                        )
+
+                    val targetHeight =
+                        lerp(
+                            startHeight,
+                            endCellHeight.toFloat(),
+                            progress,
+                        )
+
+                    val targetAlpha =
+                        if (previewEnabled && !isPreview) {
+                            progress
+                        } else {
+                            1f
+                        }
+
+                    val animationSpec = if (progress < 1f) {
                         snap<Float>()
                     } else {
                         spring()
@@ -183,36 +318,26 @@ internal fun FolderGridLayout(
                         label = "y",
                     )
 
-                    val animatedWidth by animateFloatAsState(
-                        targetValue = targetWidth,
-                        animationSpec = animationSpec,
-                        label = "width",
-                    )
-
-                    val animatedHeight by animateFloatAsState(
-                        targetValue = targetHeight,
-                        animationSpec = animationSpec,
-                        label = "height",
-                    )
-
                     val animatedAlpha by animateFloatAsState(
                         targetValue = targetAlpha,
+                        animationSpec = animationSpec,
                         label = "alpha",
                     )
 
                     Box(
                         modifier = Modifier.folderGridItem(
-                            animatedX.roundToInt(),
-                            animatedY.roundToInt(),
-                            animatedWidth.roundToInt(),
-                            animatedHeight.roundToInt(),
-                            animatedAlpha,
+                            x = animatedX.roundToInt(),
+                            y = animatedY.roundToInt(),
+                            width = targetWidth.roundToInt(),
+                            height = targetHeight.roundToInt(),
+                            alpha = animatedAlpha,
                         ),
                     ) {
                         content(gridItem)
                     }
                 }.forEach { measurable ->
-                    val parentData = measurable.parentData as FolderGridItemParentData
+                    val parentData =
+                        measurable.parentData as FolderGridItemParentData
 
                     measurable.measure(
                         Constraints.fixed(

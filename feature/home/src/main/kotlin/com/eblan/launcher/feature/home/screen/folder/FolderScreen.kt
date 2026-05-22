@@ -47,6 +47,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
@@ -291,6 +292,8 @@ internal fun SharedTransitionScope.FolderScreen(
                         columns = data.columns,
                         gridItems = data.gridItemsByPage[index],
                         rows = data.rows,
+                        layoutWidth = folderGridWidthPx,
+                        layoutHeight = folderGridHeightPx,
                         previewEnabled = true,
                         previewColumns = FOLDER_PREVIEW_COLUMNS,
                         previewRows = FOLDER_PREVIEW_ROWS,
@@ -391,6 +394,7 @@ internal fun FolderTitle(
             modifier = modifier
                 .fillMaxWidth()
                 .padding(10.dp),
+            verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Text(

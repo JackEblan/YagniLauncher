@@ -49,7 +49,7 @@ import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.GridItemSettings
 import com.eblan.launcher.domain.model.TextColor
-import com.eblan.launcher.feature.home.component.FolderGridLayout
+import com.eblan.launcher.feature.home.component.PreviewFolderGridLayout
 import com.eblan.launcher.feature.home.util.FOLDER_PREVIEW_COLUMNS
 import com.eblan.launcher.feature.home.util.FOLDER_PREVIEW_ROWS
 import com.eblan.launcher.feature.home.util.getGridItemTextColor
@@ -333,12 +333,10 @@ private fun FolderGridItem(
                     shape = RoundedCornerShape(5.dp),
                 ),
             ) {
-                FolderGridLayout(
+                PreviewFolderGridLayout(
                     modifier = Modifier.matchParentSize(),
-                    columns = FOLDER_PREVIEW_COLUMNS,
                     gridItems = data.gridItemsByPage.values.firstOrNull()
                         ?.take(FOLDER_PREVIEW_COLUMNS * FOLDER_PREVIEW_ROWS),
-                    rows = FOLDER_PREVIEW_ROWS,
                     content = { gridItem ->
                         PreviewFolderGridItemContent(
                             gridItem = gridItem,

@@ -104,6 +104,7 @@ internal fun PageIndicator(
 
     Row(
         modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
     ) {
         if (pageCount > 1) {
