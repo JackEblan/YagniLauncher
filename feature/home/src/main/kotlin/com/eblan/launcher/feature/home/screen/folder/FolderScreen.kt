@@ -156,14 +156,26 @@ internal fun SharedTransitionScope.FolderScreen(
     val cellWidth = rawCellWidth.coerceIn(minCellWidthPx, maxCellWidthPx)
     val cellHeight = rawCellHeight.coerceIn(minCellHeightPx, maxCellHeightPx)
 
+    val folderTitleHeightPx = with(density) {
+        PAGE_INDICATOR_HEIGHT.roundToPx()
+    }
+
     val folderGridWidthPx = (cellWidth * data.columns).coerceAtMost(availableWidth)
-    val folderGridHeightPx = (cellHeight * data.rows).coerceAtMost(availableHeight)
+
+    val folderGridHeightPx = (cellHeight * data.rows)
+        .coerceAtMost(
+            (availableHeight - folderTitleHeightPx).coerceAtLeast(0),
+        )
+
+    val finalFolderHeightPx = folderGridHeightPx + folderTitleHeightPx
 
     val x = folderPopupIntOffset.x - leftPadding
     val y = folderPopupIntOffset.y - topPadding
 
     val maximumX = (safeDrawingWidth - folderGridWidthPx).coerceAtLeast(0)
-    val maximumY = (safeDrawingHeight - folderGridHeightPx).coerceAtLeast(0)
+
+    val maximumY = (safeDrawingHeight - finalFolderHeightPx)
+        .coerceAtLeast(0)
 
     val intOffset = IntOffset(
         x = x.coerceIn(0, maximumX) + leftPadding,
@@ -174,7 +186,8 @@ internal fun SharedTransitionScope.FolderScreen(
     val startHeight = folderPopupIntSize.height.toFloat()
 
     val endWidth = folderGridWidthPx.toFloat()
-    val endHeight = folderGridHeightPx.toFloat()
+
+    val endHeight = finalFolderHeightPx.toFloat()
 
     val startCenterX = folderPopupIntOffset.x + startWidth / 2f
     val startCenterY = folderPopupIntOffset.y + startHeight / 2f
@@ -389,38 +402,32 @@ internal fun FolderTitle(
     data: GridItemData.Folder,
     folderGridHorizontalPagerState: PagerState,
 ) {
-    if (data.gridItemsByPage.size > 1) {
-        Row(
-            modifier = modifier
-                .fillMaxWidth()
-                .padding(10.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
-        ) {
-            Text(
-                text = data.label,
-                style = MaterialTheme.typography.bodySmall,
-            )
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(PAGE_INDICATOR_HEIGHT)
+            .padding(horizontal = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = if (data.gridItemsByPage.size > 1) {
+            Arrangement.SpaceBetween
+        } else {
+            Arrangement.Center
+        },
+    ) {
+        Text(
+            text = data.label,
+            style = MaterialTheme.typography.bodySmall,
+        )
 
-            PageIndicator(
-                modifier = Modifier.height(PAGE_INDICATOR_HEIGHT),
-                color = MaterialTheme.colorScheme.onSurface,
-                gridHorizontalPagerState = folderGridHorizontalPagerState,
-                infiniteScroll = false,
-                pageCount = data.gridItemsByPage.size,
-            )
-        }
-    } else {
-        Row(
-            modifier = modifier
-                .fillMaxWidth()
-                .padding(10.dp),
-            horizontalArrangement = Arrangement.Center,
-        ) {
-            Text(
-                text = data.label,
-                style = MaterialTheme.typography.bodySmall,
-            )
+        if (data.gridItemsByPage.size > 1) {
+            Box(contentAlignment = Alignment.Center) {
+                PageIndicator(
+                    color = MaterialTheme.colorScheme.onSurface,
+                    gridHorizontalPagerState = folderGridHorizontalPagerState,
+                    infiniteScroll = false,
+                    pageCount = data.gridItemsByPage.size,
+                )
+            }
         }
     }
 }

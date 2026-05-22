@@ -347,8 +347,6 @@ internal class PagerScreenState(
 
     private var accumulatedDragOffset by mutableStateOf(Offset.Zero)
 
-    private var folderTitleHeightPx by mutableIntStateOf(0)
-
     private var lastAppWidgetId by mutableIntStateOf(AppWidgetManager.INVALID_APPWIDGET_ID)
 
     suspend fun handlePinGridItemEffect(
@@ -420,7 +418,6 @@ internal class PagerScreenState(
             folderGridItem = folderGridItem,
             folderPopupIntOffset = folderPopupIntOffset,
             folderPopupIntSize = folderPopupIntSize,
-            folderTitleHeightPx = folderTitleHeightPx,
             gridItemSource = gridItemSource,
             isDragging = isDragging,
             isVisibleOverlay = isVisibleOverlay,
@@ -433,6 +430,10 @@ internal class PagerScreenState(
             screenWidth = screenWidth,
             moveGridItemResult = moveGridItemResult,
             layoutDirection = layoutDirection,
+            minFolderCellWidth = homeSettings.minFolderCellWidth,
+            minFolderCellHeight = homeSettings.minFolderCellHeight,
+            maxFolderCellWidth = homeSettings.maxFolderCellWidth,
+            maxFolderCellHeight = homeSettings.maxFolderCellHeight,
             onMoveFolderGridItem = onMoveFolderGridItem,
             onMoveGridItem = onMoveGridItem,
             onUpdateAssociate = { newAssociate ->
@@ -528,6 +529,8 @@ internal class PagerScreenState(
             paddingValues = paddingValues,
             screenWidth = screenWidth,
             layoutDirection = layoutDirection,
+            minFolderCellWidth = homeSettings.minFolderCellWidth,
+            maxFolderCellWidth = homeSettings.maxFolderCellWidth,
             onUpdateDockPageDirection = { pageDirection ->
                 dockPageDirection = pageDirection
             },

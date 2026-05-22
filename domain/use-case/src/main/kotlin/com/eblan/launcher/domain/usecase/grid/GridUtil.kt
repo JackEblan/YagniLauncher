@@ -30,9 +30,9 @@ import kotlin.math.ceil
 import kotlin.math.min
 import kotlin.math.sqrt
 
-const val FOLDER_MAX_COLUMNS = 5
+private const val FOLDER_MAX_COLUMNS = 5
 
-const val FOLDER_MAX_ROWS = 4
+private const val FOLDER_MAX_ROWS = 4
 
 internal suspend fun FolderGridItemWrapper.asGridItem(): GridItem {
     val gridItems =
