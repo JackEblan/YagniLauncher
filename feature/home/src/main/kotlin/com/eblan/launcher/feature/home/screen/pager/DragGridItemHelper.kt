@@ -313,7 +313,8 @@ private fun dragFolderGridItem(
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onUpdateIsMoveFolderGridItemOutsideFolder: (Boolean) -> Unit,
 ) {
-    if (folderGridItem == null ||
+    if (
+        folderGridItem == null ||
         folderPopupIntOffset == null ||
         folderPopupIntSize == null
     ) {
@@ -322,67 +323,88 @@ private fun dragFolderGridItem(
 
     val data = folderGridItem.data as GridItemData.Folder
 
-    val minCellWidthDp = minFolderCellWidth.dp
-    val minCellHeightDp = minFolderCellHeight.dp
+    val minCellWidthPx = with(density) {
+        minFolderCellWidth.dp.roundToPx()
+    }
 
-    val maxCellWidthDp = maxFolderCellWidth.dp
-    val maxCellHeightDp = maxFolderCellHeight.dp
+    val minCellHeightPx = with(density) {
+        minFolderCellHeight.dp.roundToPx()
+    }
 
-    val minCellWidthPx = with(density) { minCellWidthDp.roundToPx() }
-    val minCellHeightPx = with(density) { minCellHeightDp.roundToPx() }
+    val maxCellWidthPx = with(density) {
+        maxFolderCellWidth.dp.roundToPx()
+    }
 
-    val maxCellWidthPx = with(density) { maxCellWidthDp.roundToPx() }
-    val maxCellHeightPx = with(density) { maxCellHeightDp.roundToPx() }
+    val maxCellHeightPx = with(density) {
+        maxFolderCellHeight.dp.roundToPx()
+    }
 
-    val availableWidth = (safeDrawingWidth - leftPadding * 2).coerceAtLeast(0)
-    val availableHeight = (safeDrawingHeight - topPadding * 2).coerceAtLeast(0)
+    val cellWidth = maxCellWidthPx
+        .coerceAtLeast(minCellWidthPx)
 
-    val rawCellWidth = if (data.columns > 0) availableWidth / data.columns else minCellWidthPx
-    val rawCellHeight = if (data.rows > 0) availableHeight / data.rows else minCellHeightPx
-
-    val cellWidth = rawCellWidth.coerceIn(minCellWidthPx, maxCellWidthPx)
-    val cellHeight = rawCellHeight.coerceIn(minCellHeightPx, maxCellHeightPx)
-
-    val folderGridWidthPx = cellWidth * data.columns
-    val folderGridHeightPx = cellHeight * data.rows
+    val cellHeight = maxCellHeightPx
+        .coerceAtLeast(minCellHeightPx)
 
     val folderTitleHeightPx = with(density) {
         PAGE_INDICATOR_HEIGHT.roundToPx()
     }
 
-    val x = folderPopupIntOffset.x - leftPadding
-    val y = folderPopupIntOffset.y - topPadding
+    val gridWidth = cellWidth * data.columns
 
-    val popupX = x.coerceIn(0, safeDrawingWidth - folderGridWidthPx) + leftPadding
-    val popupY = y.coerceIn(0, safeDrawingHeight - folderGridHeightPx) + topPadding
+    val gridHeight = cellHeight * data.rows
 
-    val folderDragX = dragX - popupX
+    val popupHeight = gridHeight + folderTitleHeightPx
 
-    val folderDragY = dragY - popupY
+    val maxPopupX = (
+        safeDrawingWidth -
+            gridWidth -
+            leftPadding
+        ).coerceAtLeast(leftPadding)
 
-    val isInsideFolder = folderDragX in 0..folderGridWidthPx &&
-        folderDragY in 0..folderGridHeightPx - folderTitleHeightPx
+    val maxPopupY = (
+        safeDrawingHeight -
+            popupHeight -
+            topPadding
+        ).coerceAtLeast(topPadding)
 
-    val moveFolderGridItem = moveGridItemResult.movingGridItem
+    val popupX = folderPopupIntOffset.x.coerceIn(
+        leftPadding,
+        maxPopupX,
+    )
+
+    val popupY = folderPopupIntOffset.y.coerceIn(
+        topPadding,
+        maxPopupY,
+    )
+
+    val localDragX = dragX - popupX
+
+    val localDragY = dragY - popupY
+
+    val isInsideFolder =
+        localDragX in 0 until gridWidth &&
+            localDragY in 0 until gridHeight
+
+    val movingGridItem = moveGridItemResult.movingGridItem
 
     if (isInsideFolder) {
         onUpdateSharedElementKey(
             SharedElementKey(
-                id = moveFolderGridItem.id,
+                id = movingGridItem.id,
                 parent = SharedElementKey.Parent.Folder,
             ),
         )
 
         onMoveFolderGridItem(
             folderGridItem,
-            moveFolderGridItem,
+            movingGridItem,
             data,
-            folderDragX,
-            folderDragY,
+            localDragX,
+            localDragY,
             data.columns,
             data.rows,
-            folderGridWidthPx,
-            folderGridHeightPx - folderTitleHeightPx,
+            gridWidth,
+            gridHeight,
             folderCurrentPage,
         )
     } else {
