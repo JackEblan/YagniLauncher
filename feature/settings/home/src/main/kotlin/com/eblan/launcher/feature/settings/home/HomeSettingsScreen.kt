@@ -45,6 +45,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.HomeSettings
+import com.eblan.launcher.feature.settings.home.dialog.FolderCellDimensionDialog
 import com.eblan.launcher.feature.settings.home.model.HomeSettingsUiState
 import com.eblan.launcher.ui.dialog.SingleTextFieldDialog
 import com.eblan.launcher.ui.dialog.TwoTextFieldsDialog
@@ -124,6 +125,8 @@ private fun Success(
     var showDockGridDialog by remember { mutableStateOf(false) }
 
     var showDockHeightDialog by remember { mutableStateOf(false) }
+
+    var showFolderCellDimensionDialog by remember { mutableStateOf(false) }
 
     Column(
         modifier = modifier
@@ -225,6 +228,26 @@ private fun Success(
                 subtitle = "Seamless loop page scroll",
                 onCheckedChange = { dockInfiniteScroll ->
                     onUpdateHomeSettings(homeSettings.copy(dockInfiniteScroll = dockInfiniteScroll))
+                },
+            )
+        }
+
+        Text(
+            modifier = Modifier.padding(15.dp),
+            text = "Folder",
+            style = MaterialTheme.typography.bodySmall,
+        )
+
+        ElevatedCard(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 15.dp),
+        ) {
+            SettingsColumn(
+                title = "Folder Cell Dimension",
+                subtitle = "Folder cell dimension",
+                onClick = {
+                    showFolderCellDimensionDialog = true
                 },
             )
         }
@@ -382,6 +405,16 @@ private fun Success(
                     showDockHeightDialog = false
                 }
             },
+        )
+    }
+
+    if (showFolderCellDimensionDialog) {
+        FolderCellDimensionDialog(
+            homeSettings = homeSettings,
+            onDismissRequest = {
+                showFolderCellDimensionDialog = false
+            },
+            onUpdateHomeSettings = onUpdateHomeSettings,
         )
     }
 }

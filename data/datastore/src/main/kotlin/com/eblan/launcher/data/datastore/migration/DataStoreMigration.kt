@@ -24,11 +24,19 @@ import com.eblan.launcher.data.datastore.proto.copy
 internal class DataStoreMigration : DataMigration<UserDataProto> {
     override suspend fun shouldMigrate(currentData: UserDataProto): Boolean = currentData.homeSettingsProto.dockPageCount == 0 ||
         currentData.appDrawerSettingsProto.horizontalAppDrawerColumns == 0 ||
-        currentData.appDrawerSettingsProto.horizontalAppDrawerRows == 0
+        currentData.appDrawerSettingsProto.horizontalAppDrawerRows == 0 ||
+        currentData.homeSettingsProto.minFolderCellWidth == 0 ||
+        currentData.homeSettingsProto.minFolderCellHeight == 0 ||
+        currentData.homeSettingsProto.maxFolderCellWidth == 0 ||
+        currentData.homeSettingsProto.maxFolderCellHeight == 0
 
     override suspend fun migrate(currentData: UserDataProto): UserDataProto = currentData.copy {
         homeSettingsProto = homeSettingsProto.toBuilder()
             .setDockPageCount(1)
+            .setMinFolderCellWidth(64)
+            .setMinFolderCellHeight(96)
+            .setMaxFolderCellWidth(80)
+            .setMaxFolderCellHeight(120)
             .build()
 
         appDrawerSettingsProto = appDrawerSettingsProto.toBuilder()
