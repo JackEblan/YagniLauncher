@@ -561,31 +561,32 @@ internal class PagerScreenState(
     }
 
     suspend fun handleNewIntent(
-        gridHorizontalPagerState: PagerState,
         dockGridHorizontalPagerState: PagerState,
+        gridHorizontalPagerState: PagerState,
         intent: Intent,
         windowToken: IBinder,
     ) {
         handleActionMainIntent(
+            dockGridHorizontalPagerState = dockGridHorizontalPagerState,
+            dockInfiniteScroll = homeSettings.dockInfiniteScroll,
+            dockInitialPage = homeSettings.dockInitialPage,
+            dockPageCount = homeSettings.dockPageCount,
             eblanApplicationInfoGroup = eblanApplicationInfoGroup,
             gridHorizontalPagerState = gridHorizontalPagerState,
             gridInfiniteScroll = homeSettings.infiniteScroll,
             gridInitialPage = homeSettings.initialPage,
+            gridPageCount = homeSettings.pageCount,
             intent = intent,
-            pageCount = homeSettings.pageCount,
             screenHeight = screenHeight,
-            swipeY = swipeY.value,
-            widgetScreenOffsetY = widgetScreenOffsetY.value,
             shortcutConfigScreenOffsetY = shortcutConfigScreenOffsetY.value,
+            swipeY = swipeY.value,
             wallpaperManagerWrapper = androidWallpaperManagerWrapper,
             wallpaperScroll = homeSettings.wallpaperScroll,
+            widgetScreenOffsetY = widgetScreenOffsetY.value,
             windowToken = windowToken,
             onHome = {
                 isPressHome = true
             },
-            dockGridHorizontalPagerState = dockGridHorizontalPagerState,
-            dockInfiniteScroll = homeSettings.dockInfiniteScroll,
-            dockInitialPage = homeSettings.dockInitialPage,
         )
 
         handleEblanActionIntent(
@@ -694,21 +695,22 @@ internal class PagerScreenState(
     }
 
     suspend fun handleActionMainIntent(
+        dockGridHorizontalPagerState: PagerState,
+        dockInfiniteScroll: Boolean,
+        dockInitialPage: Int,
+        dockPageCount: Int,
         eblanApplicationInfoGroup: EblanApplicationInfoGroup?,
         gridHorizontalPagerState: PagerState,
-        dockGridHorizontalPagerState: PagerState,
         gridInfiniteScroll: Boolean,
-        dockInfiniteScroll: Boolean,
         gridInitialPage: Int,
-        dockInitialPage: Int,
+        gridPageCount: Int,
         intent: Intent,
-        pageCount: Int,
         screenHeight: Int,
-        swipeY: Float,
-        widgetScreenOffsetY: Float,
         shortcutConfigScreenOffsetY: Float,
+        swipeY: Float,
         wallpaperManagerWrapper: AndroidWallpaperManagerWrapper,
         wallpaperScroll: Boolean,
+        widgetScreenOffsetY: Float,
         windowToken: IBinder,
         onHome: () -> Unit,
     ) {
@@ -726,17 +728,44 @@ internal class PagerScreenState(
             return
         }
 
-        gridHorizontalPagerState.scrollToPage(
+        fun getInfiniteScrollInitialPage(
+            currentPage: Int,
+            initialPage: Int,
+            pageCount: Int,
+            center: Int = Int.MAX_VALUE / 2,
+        ): Int {
+            var diff = initialPage - Math.floorMod(currentPage - center, pageCount)
+
+            val halfCount = pageCount / 2
+
+            if (diff > halfCount) {
+                diff -= pageCount
+            } else if (diff < -halfCount) {
+                diff += pageCount
+            }
+
+            return currentPage + diff
+        }
+
+        gridHorizontalPagerState.animateScrollToPage(
             if (gridInfiniteScroll) {
-                (Int.MAX_VALUE / 2) + gridInitialPage
+                getInfiniteScrollInitialPage(
+                    currentPage = gridHorizontalPagerState.currentPage,
+                    initialPage = gridInitialPage,
+                    pageCount = gridPageCount,
+                )
             } else {
                 gridInitialPage
             },
         )
 
-        dockGridHorizontalPagerState.scrollToPage(
+        dockGridHorizontalPagerState.animateScrollToPage(
             if (dockInfiniteScroll) {
-                (Int.MAX_VALUE / 2) + dockInitialPage
+                getInfiniteScrollInitialPage(
+                    currentPage = dockGridHorizontalPagerState.currentPage,
+                    initialPage = dockInitialPage,
+                    pageCount = dockPageCount,
+                )
             } else {
                 dockInitialPage
             },
@@ -746,17 +775,17 @@ internal class PagerScreenState(
             val page = calculatePage(
                 index = gridHorizontalPagerState.currentPage,
                 infiniteScroll = gridInfiniteScroll,
-                pageCount = pageCount,
+                pageCount = gridPageCount,
             )
 
             wallpaperManagerWrapper.setWallpaperOffsetSteps(
-                xStep = 1f / (pageCount.toFloat() - 1),
+                xStep = 1f / (gridPageCount.toFloat() - 1),
                 yStep = 1f,
             )
 
             wallpaperManagerWrapper.setWallpaperOffsets(
                 windowToken = windowToken,
-                xOffset = page / (pageCount.toFloat() - 1),
+                xOffset = page / (gridPageCount.toFloat() - 1),
                 yOffset = 0f,
             )
         }

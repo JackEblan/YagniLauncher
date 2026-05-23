@@ -546,8 +546,8 @@ internal fun PagerScreen(
         val listener = Consumer<Intent> { intent ->
             scope.launch {
                 pagerScreenState.handleNewIntent(
-                    gridHorizontalPagerState = gridHorizontalPagerState,
                     dockGridHorizontalPagerState = dockGridHorizontalPagerState,
+                    gridHorizontalPagerState = gridHorizontalPagerState,
                     intent = intent,
                     windowToken = view.windowToken,
                 )
