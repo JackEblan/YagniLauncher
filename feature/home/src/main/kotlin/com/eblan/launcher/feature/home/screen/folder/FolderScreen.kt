@@ -138,50 +138,37 @@ internal fun SharedTransitionScope.FolderScreen(
     val minCellWidthDp = homeSettings.minFolderCellWidth.dp
     val minCellHeightDp = homeSettings.minFolderCellHeight.dp
 
-    val maxCellWidthDp = homeSettings.maxFolderCellWidth.dp
-    val maxCellHeightDp = homeSettings.maxFolderCellHeight.dp
-
     val minCellWidthPx = with(density) { minCellWidthDp.roundToPx() }
     val minCellHeightPx = with(density) { minCellHeightDp.roundToPx() }
 
-    val maxCellWidthPx = with(density) { maxCellWidthDp.roundToPx() }
-    val maxCellHeightPx = with(density) { maxCellHeightDp.roundToPx() }
-
     val availableWidth = (safeDrawingWidth - leftPadding * 2).coerceAtLeast(0)
     val availableHeight = (safeDrawingHeight - topPadding * 2).coerceAtLeast(0)
-
-    val rawCellWidth = if (data.columns > 0) availableWidth / data.columns else minCellWidthPx
-    val rawCellHeight = if (data.rows > 0) availableHeight / data.rows else minCellHeightPx
-
-    val cellWidth = rawCellWidth.coerceIn(minCellWidthPx, maxCellWidthPx)
-    val cellHeight = rawCellHeight.coerceIn(minCellHeightPx, maxCellHeightPx)
 
     val folderTitleHeightPx = with(density) {
         PAGE_INDICATOR_HEIGHT.roundToPx()
     }
 
-    val folderGridWidthPx = (cellWidth * data.columns).coerceAtMost(availableWidth)
+    val folderGridWidthPx = (minCellWidthPx * data.columns).coerceAtMost(availableWidth)
 
-    val folderGridHeightPx = (cellHeight * data.rows)
-        .coerceAtMost(
-            (availableHeight - folderTitleHeightPx).coerceAtLeast(0),
-        )
+    val folderGridHeightPx = (minCellHeightPx * data.rows).coerceAtMost(
+        (availableHeight - folderTitleHeightPx).coerceAtLeast(0),
+    )
 
-    val finalFolderHeightPx = folderGridHeightPx + folderTitleHeightPx
+    val endHeight = folderGridHeightPx + folderTitleHeightPx
 
     val maximumX = (
-        safeDrawingWidth -
-            folderGridWidthPx -
-            leftPadding
-        ).coerceAtLeast(leftPadding)
+            safeDrawingWidth -
+                    folderGridWidthPx +
+                    leftPadding
+            ).coerceAtLeast(leftPadding)
 
     val maximumY = (
-        safeDrawingHeight -
-            finalFolderHeightPx -
-            topPadding
-        ).coerceAtLeast(topPadding)
+            safeDrawingHeight -
+                    endHeight +
+                    topPadding
+            ).coerceAtLeast(topPadding)
 
-    val intOffset = IntOffset(
+    val endIntOffset = IntOffset(
         x = folderPopupIntOffset.x.coerceIn(
             leftPadding,
             maximumX,
@@ -195,37 +182,32 @@ internal fun SharedTransitionScope.FolderScreen(
     val startWidth = folderPopupIntSize.width.toFloat()
     val startHeight = folderPopupIntSize.height.toFloat()
 
-    val endWidth = folderGridWidthPx.toFloat()
-
-    val endHeight = finalFolderHeightPx.toFloat()
-
     val startCenterX = folderPopupIntOffset.x + startWidth / 2f
     val startCenterY = folderPopupIntOffset.y + startHeight / 2f
 
-    val endCenterX = intOffset.x + endWidth / 2f
-    val endCenterY = intOffset.y + endHeight / 2f
+    val endCenterX = endIntOffset.x + folderGridWidthPx.toFloat() / 2f
+    val endCenterY = endIntOffset.y + endHeight.toFloat() / 2f
 
     val progress = remember { Animatable(0f) }
 
     val animatedRect by remember(
         startWidth,
-        endWidth,
+        folderGridWidthPx.toFloat(),
         startCenterX,
         endCenterY,
     ) {
         derivedStateOf {
             val currentWidth = androidx.compose.ui.util.lerp(
                 startWidth,
-                endWidth,
+                folderGridWidthPx.toFloat(),
                 progress.value,
             )
 
-            val currentHeight =
-                androidx.compose.ui.util.lerp(
-                    startHeight,
-                    endHeight,
-                    progress.value,
-                )
+            val currentHeight = androidx.compose.ui.util.lerp(
+                startHeight,
+                endHeight.toFloat(),
+                progress.value,
+            )
 
             val currentX = androidx.compose.ui.util.lerp(
                 startCenterX,
@@ -322,9 +304,9 @@ internal fun SharedTransitionScope.FolderScreen(
                         previewRows = FOLDER_PREVIEW_ROWS,
                         progress = progress.value,
                         content = { gridItem ->
-                            val x = gridItem.startColumn * cellWidth
+                            val x = gridItem.startColumn * minCellWidthPx
 
-                            val y = gridItem.startRow * cellHeight
+                            val y = gridItem.startRow * minCellHeightPx
 
                             InteractiveFolderGridItemContent(
                                 drag = drag,
@@ -354,8 +336,8 @@ internal fun SharedTransitionScope.FolderScreen(
                                         sourceBounds = Rect(
                                             sourceBoundsX,
                                             sourceBoundsY,
-                                            sourceBoundsX + cellWidth,
-                                            sourceBoundsY + cellHeight,
+                                            sourceBoundsX + minCellWidthPx,
+                                            sourceBoundsY + minCellHeightPx,
                                         ),
                                     )
                                 },
@@ -375,8 +357,8 @@ internal fun SharedTransitionScope.FolderScreen(
                                             sourceBounds = Rect(
                                                 sourceBoundsX,
                                                 sourceBoundsY,
-                                                sourceBoundsX + cellWidth,
-                                                sourceBoundsY + cellHeight,
+                                                sourceBoundsX + minCellWidthPx,
+                                                sourceBoundsY + minCellHeightPx,
                                             ),
                                         )
                                     }

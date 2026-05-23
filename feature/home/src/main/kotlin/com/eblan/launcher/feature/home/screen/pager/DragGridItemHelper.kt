@@ -135,8 +135,6 @@ internal suspend fun handleDragGridItem(
     layoutDirection: LayoutDirection,
     minFolderCellWidth: Int,
     minFolderCellHeight: Int,
-    maxFolderCellWidth: Int,
-    maxFolderCellHeight: Int,
     onMoveFolderGridItem: (
         conflictingGridItem: GridItem,
         movingFolderGridItem: GridItem,
@@ -218,7 +216,7 @@ internal suspend fun handleDragGridItem(
         is GridItemSource.Existing,
         is GridItemSource.New,
         is GridItemSource.Pin,
-        -> {
+            -> {
             if (isOnDock) {
                 dragDockGridItem(
                     currentPage = dockGridCurrentPage,
@@ -271,8 +269,6 @@ internal suspend fun handleDragGridItem(
                 safeDrawingWidth = safeDrawingWidth,
                 minFolderCellWidth = minFolderCellWidth,
                 minFolderCellHeight = minFolderCellHeight,
-                maxFolderCellWidth = maxFolderCellWidth,
-                maxFolderCellHeight = maxFolderCellHeight,
                 onMoveFolderGridItem = onMoveFolderGridItem,
                 onUpdateSharedElementKey = onUpdateSharedElementKey,
                 onUpdateIsMoveFolderGridItemOutsideFolder = onUpdateIsMoveFolderGridItemOutsideFolder,
@@ -296,8 +292,6 @@ private fun dragFolderGridItem(
     moveGridItemResult: MoveGridItemResult,
     minFolderCellWidth: Int,
     minFolderCellHeight: Int,
-    maxFolderCellWidth: Int,
-    maxFolderCellHeight: Int,
     onMoveFolderGridItem: (
         conflictingGridItem: GridItem,
         movingFolderGridItem: GridItem,
@@ -331,59 +325,51 @@ private fun dragFolderGridItem(
         minFolderCellHeight.dp.roundToPx()
     }
 
-    val maxCellWidthPx = with(density) {
-        maxFolderCellWidth.dp.roundToPx()
-    }
-
-    val maxCellHeightPx = with(density) {
-        maxFolderCellHeight.dp.roundToPx()
-    }
-
-    val cellWidth = maxCellWidthPx
-        .coerceAtLeast(minCellWidthPx)
-
-    val cellHeight = maxCellHeightPx
-        .coerceAtLeast(minCellHeightPx)
+    val availableWidth = (safeDrawingWidth - leftPadding * 2).coerceAtLeast(0)
+    val availableHeight = (safeDrawingHeight - topPadding * 2).coerceAtLeast(0)
 
     val folderTitleHeightPx = with(density) {
         PAGE_INDICATOR_HEIGHT.roundToPx()
     }
 
-    val gridWidth = cellWidth * data.columns
+    val folderGridWidthPx = (minCellWidthPx * data.columns).coerceAtMost(availableWidth)
 
-    val gridHeight = cellHeight * data.rows
-
-    val popupHeight = gridHeight + folderTitleHeightPx
-
-    val maxPopupX = (
-        safeDrawingWidth -
-            gridWidth -
-            leftPadding
-        ).coerceAtLeast(leftPadding)
-
-    val maxPopupY = (
-        safeDrawingHeight -
-            popupHeight -
-            topPadding
-        ).coerceAtLeast(topPadding)
-
-    val popupX = folderPopupIntOffset.x.coerceIn(
-        leftPadding,
-        maxPopupX,
+    val folderGridHeightPx = (minCellHeightPx * data.rows).coerceAtMost(
+        (availableHeight - folderTitleHeightPx).coerceAtLeast(0),
     )
 
-    val popupY = folderPopupIntOffset.y.coerceIn(
-        topPadding,
-        maxPopupY,
+    val endHeight = folderGridHeightPx + folderTitleHeightPx
+
+    val maximumX = (
+            safeDrawingWidth -
+                    folderGridWidthPx +
+                    leftPadding
+            ).coerceAtLeast(leftPadding)
+
+    val maximumY = (
+            safeDrawingHeight -
+                    endHeight +
+                    topPadding
+            ).coerceAtLeast(topPadding)
+
+    val endIntOffset = IntOffset(
+        x = folderPopupIntOffset.x.coerceIn(
+            leftPadding,
+            maximumX,
+        ),
+        y = folderPopupIntOffset.y.coerceIn(
+            topPadding,
+            maximumY,
+        ),
     )
 
-    val localDragX = dragX - popupX
+    val localDragX = dragX - endIntOffset.x
 
-    val localDragY = dragY - popupY
+    val localDragY = dragY - endIntOffset.y
 
     val isInsideFolder =
-        localDragX in 0 until gridWidth &&
-            localDragY in 0 until gridHeight
+        localDragX in 0 until folderGridWidthPx &&
+                localDragY in 0 until folderGridHeightPx
 
     val movingGridItem = moveGridItemResult.movingGridItem
 
@@ -403,8 +389,8 @@ private fun dragFolderGridItem(
             localDragY,
             data.columns,
             data.rows,
-            gridWidth,
-            gridHeight,
+            folderGridWidthPx,
+            folderGridHeightPx,
             folderCurrentPage,
         )
     } else {
@@ -668,7 +654,7 @@ private fun getMoveGridItem(
     currentPage: Int,
 ): GridItem = when (gridItemSource) {
     is GridItemSource.Existing, is GridItemSource.Folder,
-    -> {
+        -> {
         when (val data = gridItem.data) {
             is GridItemData.ApplicationInfo -> {
                 gridItem.copy(
@@ -711,7 +697,7 @@ private fun getMoveGridItem(
 
             is GridItemData.Widget,
             is GridItemData.Folder,
-            -> {
+                -> {
                 gridItem.copy(
                     page = currentPage,
                     startColumn = gridX / cellWidth,
@@ -723,7 +709,7 @@ private fun getMoveGridItem(
     }
 
     is GridItemSource.New, is GridItemSource.Pin,
-    -> {
+        -> {
         getMoveNewGridItem(
             associate = associate,
             cellHeight = cellHeight,

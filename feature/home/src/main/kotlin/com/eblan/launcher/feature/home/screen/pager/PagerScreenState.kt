@@ -432,8 +432,6 @@ internal class PagerScreenState(
             layoutDirection = layoutDirection,
             minFolderCellWidth = homeSettings.minFolderCellWidth,
             minFolderCellHeight = homeSettings.minFolderCellHeight,
-            maxFolderCellWidth = homeSettings.maxFolderCellWidth,
-            maxFolderCellHeight = homeSettings.maxFolderCellHeight,
             onMoveFolderGridItem = onMoveFolderGridItem,
             onMoveGridItem = onMoveGridItem,
             onUpdateAssociate = { newAssociate ->
