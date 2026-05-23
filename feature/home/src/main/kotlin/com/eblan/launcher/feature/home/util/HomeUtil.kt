@@ -37,21 +37,6 @@ import com.eblan.launcher.framework.launcherapps.AndroidLauncherAppsWrapper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-internal fun handleActionMainIntent(
-    intent: Intent,
-    onActionMainIntent: () -> Unit,
-) {
-    if (intent.action != Intent.ACTION_MAIN && !intent.hasCategory(Intent.CATEGORY_HOME)) {
-        return
-    }
-
-    if ((intent.flags and Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
-        return
-    }
-
-    onActionMainIntent()
-}
-
 internal suspend fun handleEblanAction(
     context: Context,
     eblanAction: EblanAction,

@@ -25,6 +25,7 @@ import android.content.Intent.parseUri
 import android.graphics.Rect
 import android.os.Build
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -587,6 +588,12 @@ internal fun PagerScreen(
             isFolderScrollInProgress = folderGridHorizontalPagerState.isScrollInProgress,
         )
     }
+
+    BackHandler(
+        enabled = pagerScreenState.swipeY.value == screenHeight.toFloat() &&
+            !pagerScreenState.showGridItemPopup && !pagerScreenState.showSettingsPopup &&
+            !pagerScreenState.showFolderGridItemPopup,
+    ) { }
 
     SharedTransitionLayout(
         modifier = modifier

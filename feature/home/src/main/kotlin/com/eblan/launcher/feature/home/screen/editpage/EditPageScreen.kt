@@ -73,7 +73,6 @@ import com.eblan.launcher.domain.model.PageItem
 import com.eblan.launcher.domain.model.TextColor
 import com.eblan.launcher.feature.home.component.GridLayout
 import com.eblan.launcher.feature.home.model.Screen
-import com.eblan.launcher.feature.home.util.handleActionMainIntent
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -167,9 +166,7 @@ internal fun EditPageScreen(
             scope.launch {
                 handleActionMainIntent(
                     intent = intent,
-                    onActionMainIntent = {
-                        onUpdateScreen(Screen.Pager)
-                    },
+                    onUpdateScreen = onUpdateScreen,
                 )
             }
         }
@@ -390,4 +387,19 @@ private fun ExpandableFloatingActionButton(
             )
         }
     }
+}
+
+private fun handleActionMainIntent(
+    intent: Intent,
+    onUpdateScreen: (Screen) -> Unit,
+) {
+    if (intent.action != Intent.ACTION_MAIN && !intent.hasCategory(Intent.CATEGORY_HOME)) {
+        return
+    }
+
+    if ((intent.flags and Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
+        return
+    }
+
+    onUpdateScreen(Screen.Pager)
 }

@@ -18,6 +18,7 @@
 package com.eblan.launcher.feature.home.screen.pager
 
 import android.appwidget.AppWidgetProviderInfo
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -221,6 +222,10 @@ internal fun FolderGridItemPopup(
 
     val y = popupIntOffset.y - topPadding
 
+    BackHandler {
+        onDismissRequest()
+    }
+
     Layout(
         modifier = modifier
             .pointerInput(Unit) {
@@ -317,6 +322,10 @@ private fun GridItemPopupContent(
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
+    BackHandler {
+        onDismissRequest()
+    }
+
     Surface(
         modifier = modifier.padding(5.dp),
         shape = RoundedCornerShape(30.dp),

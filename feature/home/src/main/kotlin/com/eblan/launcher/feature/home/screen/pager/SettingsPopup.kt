@@ -17,6 +17,7 @@
  */
 package com.eblan.launcher.feature.home.screen.pager
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -57,6 +58,10 @@ internal fun SettingsPopup(
     onWidgets: () -> Unit,
 ) {
     requireNotNull(popupSettingsIntOffset)
+
+    BackHandler {
+        onDismissRequest()
+    }
 
     Popup(
         popupPositionProvider = SettingsPopupPositionProvider(
