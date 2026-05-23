@@ -430,8 +430,8 @@ internal class PagerScreenState(
             screenWidth = screenWidth,
             moveGridItemResult = moveGridItemResult,
             layoutDirection = layoutDirection,
-            minFolderCellWidth = homeSettings.minFolderCellWidth,
-            minFolderCellHeight = homeSettings.minFolderCellHeight,
+            minFolderCellWidth = homeSettings.folderCellWidth,
+            minFolderCellHeight = homeSettings.folderCellHeight,
             onMoveFolderGridItem = onMoveFolderGridItem,
             onMoveGridItem = onMoveGridItem,
             onUpdateAssociate = { newAssociate ->
@@ -527,8 +527,7 @@ internal class PagerScreenState(
             paddingValues = paddingValues,
             screenWidth = screenWidth,
             layoutDirection = layoutDirection,
-            minFolderCellWidth = homeSettings.minFolderCellWidth,
-            maxFolderCellWidth = homeSettings.maxFolderCellWidth,
+            folderCellWidth = homeSettings.folderCellWidth,
             onUpdateDockPageDirection = { pageDirection ->
                 dockPageDirection = pageDirection
             },

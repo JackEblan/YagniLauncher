@@ -77,10 +77,8 @@ class UserDataSerializer @Inject constructor() : Serializer<UserDataProto> {
         dockPageCount = 1
         dockInfiniteScroll = false
         addNewAppsToHomeScreen = true
-        minFolderCellWidth = 64
-        minFolderCellHeight = 96
-        maxFolderCellWidth = 80
-        maxFolderCellHeight = 120
+        folderCellWidth = 64
+        folderCellHeight = 96
         maxFolderColumns = 5
         maxFolderRows = 4
     }.build()

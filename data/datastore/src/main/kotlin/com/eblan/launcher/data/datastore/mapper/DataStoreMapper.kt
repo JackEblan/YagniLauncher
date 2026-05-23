@@ -62,10 +62,8 @@ internal fun HomeSettingsProto.toHomeSettings(): HomeSettings = HomeSettings(
     dockInfiniteScroll = dockInfiniteScroll,
     dockInitialPage = dockInitialPage,
     addNewAppsToHomeScreen = addNewAppsToHomeScreen,
-    minFolderCellWidth = minFolderCellWidth,
-    minFolderCellHeight = minFolderCellHeight,
-    maxFolderCellWidth = maxFolderCellWidth,
-    maxFolderCellHeight = maxFolderCellHeight,
+    folderCellWidth = folderCellWidth,
+    folderCellHeight = folderCellHeight,
     maxFolderColumns = maxFolderColumns,
     maxFolderRows = maxFolderRows,
 )
@@ -118,10 +116,8 @@ internal fun HomeSettings.toHomeSettingsProto(): HomeSettingsProto = HomeSetting
     .setLockScreenOrientation(lockScreenOrientation).setDockPageCount(dockPageCount)
     .setDockInfiniteScroll(dockInfiniteScroll).setDockInitialPage(dockInitialPage)
     .setAddNewAppsToHomeScreen(addNewAppsToHomeScreen)
-    .setMinFolderCellWidth(minFolderCellWidth)
-    .setMinFolderCellHeight(minFolderCellHeight)
-    .setMaxFolderCellWidth(maxFolderCellWidth)
-    .setMaxFolderCellHeight(maxFolderCellHeight)
+    .setFolderCellWidth(folderCellWidth)
+    .setFolderCellHeight(folderCellHeight)
     .setMaxFolderColumns(maxFolderColumns)
     .setMaxFolderRows(maxFolderRows)
     .build()

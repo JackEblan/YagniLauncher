@@ -135,8 +135,8 @@ internal fun SharedTransitionScope.FolderScreen(
         paddingValues.calculateTopPadding().roundToPx()
     }
 
-    val minCellWidthDp = homeSettings.minFolderCellWidth.dp
-    val minCellHeightDp = homeSettings.minFolderCellHeight.dp
+    val minCellWidthDp = homeSettings.folderCellWidth.dp
+    val minCellHeightDp = homeSettings.folderCellHeight.dp
 
     val minCellWidthPx = with(density) { minCellWidthDp.roundToPx() }
     val minCellHeightPx = with(density) { minCellHeightDp.roundToPx() }
@@ -157,16 +157,16 @@ internal fun SharedTransitionScope.FolderScreen(
     val endHeight = folderGridHeightPx + folderTitleHeightPx
 
     val maximumX = (
-            safeDrawingWidth -
-                    folderGridWidthPx +
-                    leftPadding
-            ).coerceAtLeast(leftPadding)
+        safeDrawingWidth -
+            folderGridWidthPx +
+            leftPadding
+        ).coerceAtLeast(leftPadding)
 
     val maximumY = (
-            safeDrawingHeight -
-                    endHeight +
-                    topPadding
-            ).coerceAtLeast(topPadding)
+        safeDrawingHeight -
+            endHeight +
+            topPadding
+        ).coerceAtLeast(topPadding)
 
     val endIntOffset = IntOffset(
         x = folderPopupIntOffset.x.coerceIn(

@@ -21,10 +21,8 @@ message HomeSettingsProto {
   bool dockInfiniteScroll = 15;
   int32 dockInitialPage = 16;
   bool addNewAppsToHomeScreen = 17;
-  int32 minFolderCellWidth = 18;
-  int32 minFolderCellHeight = 19;
-  int32 maxFolderCellWidth = 20;
-  int32 maxFolderCellHeight = 21;
-  int32 maxFolderColumns = 22;
-  int32 maxFolderRows = 23;
+  int32 folderCellWidth = 18;
+  int32 folderCellHeight = 19;
+  int32 maxFolderColumns = 20;
+  int32 maxFolderRows = 21;
 }

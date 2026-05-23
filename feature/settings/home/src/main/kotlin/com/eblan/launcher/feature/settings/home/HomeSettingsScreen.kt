@@ -45,7 +45,6 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.HomeSettings
-import com.eblan.launcher.feature.settings.home.dialog.FolderCellDimensionDialog
 import com.eblan.launcher.feature.settings.home.model.HomeSettingsUiState
 import com.eblan.launcher.ui.dialog.SingleTextFieldDialog
 import com.eblan.launcher.ui.dialog.TwoTextFieldsDialog
@@ -421,12 +420,58 @@ private fun Success(
     }
 
     if (showFolderCellDimensionDialog) {
-        FolderCellDimensionDialog(
-            homeSettings = homeSettings,
+        var folderCellWidth by remember { mutableStateOf("${homeSettings.folderCellWidth}") }
+
+        var folderCellHeight by remember { mutableStateOf("${homeSettings.folderCellHeight}") }
+
+        var firstTextFieldIsError by remember { mutableStateOf(false) }
+
+        var secondTextFieldIsError by remember { mutableStateOf(false) }
+
+        TwoTextFieldsDialog(
+            title = "Folder Cell Dimension",
+            firstTextFieldTitle = "Cell Width",
+            secondTextFieldTitle = "Cell Height",
+            firstTextFieldValue = folderCellWidth,
+            secondTextFieldValue = folderCellHeight,
+            firstTextFieldIsError = firstTextFieldIsError,
+            secondTextFieldIsError = secondTextFieldIsError,
+            keyboardType = KeyboardType.Number,
+            onFirstValueChange = {
+                folderCellWidth = it
+            },
+            onSecondValueChange = {
+                folderCellHeight = it
+            },
             onDismissRequest = {
                 showFolderCellDimensionDialog = false
             },
-            onUpdateHomeSettings = onUpdateHomeSettings,
+            onUpdateClick = {
+                val newFolderCellWidth = try {
+                    folderCellWidth.toInt()
+                } catch (_: NumberFormatException) {
+                    firstTextFieldIsError = true
+                    0
+                }
+
+                val newFolderCellHeight = try {
+                    folderCellHeight.toInt()
+                } catch (_: NumberFormatException) {
+                    secondTextFieldIsError = true
+                    0
+                }
+
+                if (newFolderCellWidth > 0 && newFolderCellHeight > 0) {
+                    onUpdateHomeSettings(
+                        homeSettings.copy(
+                            folderCellWidth = newFolderCellWidth,
+                            folderCellHeight = newFolderCellHeight,
+                        ),
+                    )
+
+                    showFolderCellDimensionDialog = false
+                }
+            },
         )
     }
 

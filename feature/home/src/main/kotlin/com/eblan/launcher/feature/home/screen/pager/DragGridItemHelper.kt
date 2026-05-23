@@ -51,8 +51,7 @@ internal fun handleAnimateScrollToPage(
     paddingValues: PaddingValues,
     screenWidth: Int,
     layoutDirection: LayoutDirection,
-    minFolderCellWidth: Int,
-    maxFolderCellWidth: Int,
+    folderCellWidth: Int,
     onUpdateDockPageDirection: (PageDirection?) -> Unit,
     onUpdateFolderPageDirection: (PageDirection?) -> Unit,
     onUpdateGridPageDirection: (PageDirection?) -> Unit,
@@ -99,8 +98,7 @@ internal fun handleAnimateScrollToPage(
                 folderPopupIntSize = folderPopupIntSize,
                 safeDrawingWidth = safeDrawingWidth,
                 leftPadding = leftPadding,
-                minFolderCellWidth = minFolderCellWidth,
-                maxFolderCellWidth = maxFolderCellWidth,
+                folderCellWidth = folderCellWidth,
                 onUpdateFolderPageDirection = onUpdateFolderPageDirection,
             )
         }
@@ -216,7 +214,7 @@ internal suspend fun handleDragGridItem(
         is GridItemSource.Existing,
         is GridItemSource.New,
         is GridItemSource.Pin,
-            -> {
+        -> {
             if (isOnDock) {
                 dragDockGridItem(
                     currentPage = dockGridCurrentPage,
@@ -341,16 +339,16 @@ private fun dragFolderGridItem(
     val endHeight = folderGridHeightPx + folderTitleHeightPx
 
     val maximumX = (
-            safeDrawingWidth -
-                    folderGridWidthPx +
-                    leftPadding
-            ).coerceAtLeast(leftPadding)
+        safeDrawingWidth -
+            folderGridWidthPx +
+            leftPadding
+        ).coerceAtLeast(leftPadding)
 
     val maximumY = (
-            safeDrawingHeight -
-                    endHeight +
-                    topPadding
-            ).coerceAtLeast(topPadding)
+        safeDrawingHeight -
+            endHeight +
+            topPadding
+        ).coerceAtLeast(topPadding)
 
     val endIntOffset = IntOffset(
         x = folderPopupIntOffset.x.coerceIn(
@@ -369,7 +367,7 @@ private fun dragFolderGridItem(
 
     val isInsideFolder =
         localDragX in 0 until folderGridWidthPx &&
-                localDragY in 0 until folderGridHeightPx
+            localDragY in 0 until folderGridHeightPx
 
     val movingGridItem = moveGridItemResult.movingGridItem
 
@@ -654,7 +652,7 @@ private fun getMoveGridItem(
     currentPage: Int,
 ): GridItem = when (gridItemSource) {
     is GridItemSource.Existing, is GridItemSource.Folder,
-        -> {
+    -> {
         when (val data = gridItem.data) {
             is GridItemData.ApplicationInfo -> {
                 gridItem.copy(
@@ -697,7 +695,7 @@ private fun getMoveGridItem(
 
             is GridItemData.Widget,
             is GridItemData.Folder,
-                -> {
+            -> {
                 gridItem.copy(
                     page = currentPage,
                     startColumn = gridX / cellWidth,
@@ -709,7 +707,7 @@ private fun getMoveGridItem(
     }
 
     is GridItemSource.New, is GridItemSource.Pin,
-        -> {
+    -> {
         getMoveNewGridItem(
             associate = associate,
             cellHeight = cellHeight,
@@ -830,28 +828,18 @@ private fun animateScrollToPageFolder(
     folderPopupIntSize: IntSize?,
     safeDrawingWidth: Int,
     leftPadding: Int,
-    minFolderCellWidth: Int,
-    maxFolderCellWidth: Int,
+    folderCellWidth: Int,
     onUpdateFolderPageDirection: (PageDirection?) -> Unit,
 ) {
     if (folderPopupIntOffset == null || folderPopupIntSize == null) return
 
     val data = folderGridItem?.data as GridItemData.Folder
 
-    val minCellWidthDp = minFolderCellWidth.dp
-    val maxCellWidthDp = maxFolderCellWidth.dp
+    val cellWidthDp = folderCellWidth.dp
 
-    val minCellWidthPx = with(density) { minCellWidthDp.roundToPx() }
+    val cellWidthPx = with(density) { cellWidthDp.roundToPx() }
 
-    val maxCellWidthPx = with(density) { maxCellWidthDp.roundToPx() }
-
-    val availableWidth = (safeDrawingWidth - leftPadding * 2).coerceAtLeast(0)
-
-    val rawCellWidth = if (data.columns > 0) availableWidth / data.columns else minCellWidthPx
-
-    val cellWidth = rawCellWidth.coerceIn(minCellWidthPx, maxCellWidthPx)
-
-    val folderGridWidthPx = cellWidth * data.columns
+    val folderGridWidthPx = cellWidthPx * data.columns
 
     val x = folderPopupIntOffset.x - leftPadding
 
