@@ -246,7 +246,7 @@ private fun Success(
         ) {
             SettingsColumn(
                 title = "Folder Cell Dimension",
-                subtitle = "Folder cell dimension",
+                subtitle = "${homeSettings.folderCellWidth}x${homeSettings.folderCellHeight}",
                 onClick = {
                     showFolderCellDimensionDialog = true
                 },
@@ -256,7 +256,7 @@ private fun Success(
 
             SettingsColumn(
                 title = "Folder Max Grid",
-                subtitle = "Folder max grid",
+                subtitle = "${homeSettings.maxFolderColumns}x${homeSettings.maxFolderRows}",
                 onClick = {
                     showFolderMaxGridDialog = true
                 },

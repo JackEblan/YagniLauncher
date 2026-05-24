@@ -29,8 +29,7 @@ fun CommonExtension.configureAndroid() {
 
 internal fun Project.configureCompose() {
     dependencies {
-        val bom = libs.androidx.compose.bom
-        add("implementation", platform(bom))
+        add("implementation", platform(libs.androidx.compose.bom))
         add("debugImplementation", libs.androidx.compose.ui.tooling)
         add("implementation", libs.androidx.compose.ui.tooling.preview)
     }
