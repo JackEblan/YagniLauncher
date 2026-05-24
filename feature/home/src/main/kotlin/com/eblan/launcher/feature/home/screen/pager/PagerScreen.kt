@@ -544,14 +544,12 @@ internal fun PagerScreen(
 
     DisposableEffect(key1 = activity) {
         val listener = Consumer<Intent> { intent ->
-            scope.launch {
-                pagerScreenState.handleNewIntent(
-                    dockGridHorizontalPagerState = dockGridHorizontalPagerState,
-                    gridHorizontalPagerState = gridHorizontalPagerState,
-                    intent = intent,
-                    windowToken = view.windowToken,
-                )
-            }
+            pagerScreenState.handleNewIntent(
+                dockGridHorizontalPagerState = dockGridHorizontalPagerState,
+                gridHorizontalPagerState = gridHorizontalPagerState,
+                intent = intent,
+                windowToken = view.windowToken,
+            )
         }
 
         activity.addOnNewIntentListener(listener)
@@ -593,7 +591,12 @@ internal fun PagerScreen(
         enabled = pagerScreenState.swipeY.value == screenHeight.toFloat() &&
             !pagerScreenState.showGridItemPopup && !pagerScreenState.showSettingsPopup &&
             !pagerScreenState.showFolderGridItemPopup,
-    ) { }
+    ) {
+        pagerScreenState.animateScrollToPages(
+            dockGridHorizontalPagerState = dockGridHorizontalPagerState,
+            gridHorizontalPagerState = gridHorizontalPagerState,
+        )
+    }
 
     SharedTransitionLayout(
         modifier = modifier

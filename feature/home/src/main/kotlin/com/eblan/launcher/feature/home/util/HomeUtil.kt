@@ -37,11 +37,11 @@ import com.eblan.launcher.framework.launcherapps.AndroidLauncherAppsWrapper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-internal suspend fun handleEblanAction(
+internal fun handleEblanAction(
     context: Context,
     eblanAction: EblanAction,
     launcherApps: AndroidLauncherAppsWrapper,
-    onOpenAppDrawer: suspend () -> Unit,
+    onOpenAppDrawer: () -> Unit,
 ) {
     when (eblanAction.eblanActionType) {
         EblanActionType.OpenApp -> {

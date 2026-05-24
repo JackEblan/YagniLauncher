@@ -355,16 +355,34 @@ internal class PagerScreenState(
         onUpdateIsVisibleOverlay: (Boolean) -> Unit,
         onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
     ) {
-        handlePinGridItem(
-            isApplicationScreenVisible = isApplicationScreenVisible,
-            pinGridItem = pinGridItem,
-            pinItemRequestWrapper = pinItemRequestWrapper,
-            screenHeight = screenHeight,
-            swipeY = swipeY,
-            onUpdateGridItemSource = onUpdateGridItemSource,
-            onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-            onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+        if (pinGridItem == null) return
+
+        val pinItemRequest = pinItemRequestWrapper.getPinItemRequest() ?: return
+
+        if (isApplicationScreenVisible) {
+            swipeY.animateTo(
+                targetValue = screenHeight.toFloat(),
+                animationSpec = tween(
+                    easing = FastOutSlowInEasing,
+                ),
+            )
+        }
+
+        onUpdateGridItemSource(
+            GridItemSource.Pin(pinItemRequest = pinItemRequest),
         )
+
+        onUpdateMoveGridItemResult(
+            MoveGridItemResult(
+                isSuccess = false,
+                movingGridItem = pinGridItem,
+                conflictingGridItem = null,
+            ),
+        )
+
+        onUpdateIsVisibleOverlay(true)
+
+        isDragging = true
     }
 
     suspend fun handleDragGridItemEffect(
@@ -540,27 +558,30 @@ internal class PagerScreenState(
         )
     }
 
-    suspend fun handleHasDoubleTap() {
-        handleHasDoubleTap(
-            androidLauncherAppsWrapper = androidLauncherAppsWrapper,
+    fun handleHasDoubleTap() {
+        if (!hasDoubleTap) return
+
+        handleEblanAction(
             context = context,
-            gestureSettings = gestureSettings,
-            hasDoubleTap = hasDoubleTap,
+            eblanAction = gestureSettings.doubleTap,
+            launcherApps = androidLauncherAppsWrapper,
             onOpenAppDrawer = {
-                swipeY.animateTo(
-                    targetValue = 0f,
-                    animationSpec = spring(
-                        dampingRatio = Spring.DampingRatioNoBouncy,
-                        stiffness = Spring.StiffnessLow,
-                    ),
-                )
+                scope.launch {
+                    swipeY.animateTo(
+                        targetValue = 0f,
+                        animationSpec = spring(
+                            dampingRatio = Spring.DampingRatioNoBouncy,
+                            stiffness = Spring.StiffnessLow,
+                        ),
+                    )
+                }
             },
         )
 
         hasDoubleTap = false
     }
 
-    suspend fun handleNewIntent(
+    fun handleNewIntent(
         dockGridHorizontalPagerState: PagerState,
         gridHorizontalPagerState: PagerState,
         intent: Intent,
@@ -568,41 +589,12 @@ internal class PagerScreenState(
     ) {
         handleActionMainIntent(
             dockGridHorizontalPagerState = dockGridHorizontalPagerState,
-            dockInfiniteScroll = homeSettings.dockInfiniteScroll,
-            dockInitialPage = homeSettings.dockInitialPage,
-            dockPageCount = homeSettings.dockPageCount,
-            eblanApplicationInfoGroup = eblanApplicationInfoGroup,
             gridHorizontalPagerState = gridHorizontalPagerState,
-            gridInfiniteScroll = homeSettings.infiniteScroll,
-            gridInitialPage = homeSettings.initialPage,
-            gridPageCount = homeSettings.pageCount,
             intent = intent,
-            screenHeight = screenHeight,
-            shortcutConfigScreenOffsetY = shortcutConfigScreenOffsetY.value,
-            swipeY = swipeY.value,
-            wallpaperManagerWrapper = androidWallpaperManagerWrapper,
-            wallpaperScroll = homeSettings.wallpaperScroll,
-            widgetScreenOffsetY = widgetScreenOffsetY.value,
             windowToken = windowToken,
-            onHome = {
-                isPressHome = true
-            },
         )
 
-        handleEblanActionIntent(
-            context = context,
-            intent = intent,
-            launcherApps = androidLauncherAppsWrapper,
-            onOpenAppDrawer = {
-                swipeY.animateTo(
-                    targetValue = 0f,
-                    animationSpec = spring(
-                        dampingRatio = Spring.DampingRatioNoBouncy,
-                        stiffness = Spring.StiffnessLow,
-                    ),
-                )
-            },
-        )
+        handleEblanActionIntent(intent = intent)
     }
 
     fun handleAppWidgetLauncherResult(
@@ -630,26 +622,24 @@ internal class PagerScreenState(
         swipeDownY: Float,
         swipeUpY: Float,
     ) {
-        scope.launch {
-            val swipeThreshold = 100f
+        val swipeThreshold = 100f
 
-            if (swipeUpY < screenHeight - swipeThreshold) {
-                handleEblanAction(
-                    context = context,
-                    eblanAction = gestureSettings.swipeUp,
-                    launcherApps = launcherApps,
-                    onOpenAppDrawer = {},
-                )
-            }
+        if (swipeUpY < screenHeight - swipeThreshold) {
+            handleEblanAction(
+                context = context,
+                eblanAction = gestureSettings.swipeUp,
+                launcherApps = launcherApps,
+                onOpenAppDrawer = {},
+            )
+        }
 
-            if (swipeDownY < screenHeight - swipeThreshold) {
-                handleEblanAction(
-                    context = context,
-                    eblanAction = gestureSettings.swipeDown,
-                    launcherApps = launcherApps,
-                    onOpenAppDrawer = {},
-                )
-            }
+        if (swipeDownY < screenHeight - swipeThreshold) {
+            handleEblanAction(
+                context = context,
+                eblanAction = gestureSettings.swipeDown,
+                launcherApps = launcherApps,
+                onOpenAppDrawer = {},
+            )
         }
     }
 
@@ -694,25 +684,11 @@ internal class PagerScreenState(
         }
     }
 
-    suspend fun handleActionMainIntent(
+    fun handleActionMainIntent(
         dockGridHorizontalPagerState: PagerState,
-        dockInfiniteScroll: Boolean,
-        dockInitialPage: Int,
-        dockPageCount: Int,
-        eblanApplicationInfoGroup: EblanApplicationInfoGroup?,
         gridHorizontalPagerState: PagerState,
-        gridInfiniteScroll: Boolean,
-        gridInitialPage: Int,
-        gridPageCount: Int,
         intent: Intent,
-        screenHeight: Int,
-        shortcutConfigScreenOffsetY: Float,
-        swipeY: Float,
-        wallpaperManagerWrapper: AndroidWallpaperManagerWrapper,
-        wallpaperScroll: Boolean,
-        widgetScreenOffsetY: Float,
         windowToken: IBinder,
-        onHome: () -> Unit,
     ) {
         if (intent.action != Intent.ACTION_MAIN && !intent.hasCategory(Intent.CATEGORY_HOME)) {
             return
@@ -722,12 +698,45 @@ internal class PagerScreenState(
             return
         }
 
-        onHome()
+        isPressHome = true
 
-        if (swipeY < screenHeight.toFloat() || widgetScreenOffsetY < screenHeight.toFloat() || shortcutConfigScreenOffsetY < screenHeight.toFloat() || eblanApplicationInfoGroup != null) {
+        if (swipeY.value < screenHeight.toFloat() ||
+            widgetScreenOffsetY.value < screenHeight.toFloat() ||
+            shortcutConfigScreenOffsetY.value < screenHeight.toFloat() ||
+            eblanApplicationInfoGroup != null
+        ) {
             return
         }
 
+        animateScrollToPages(
+            dockGridHorizontalPagerState = dockGridHorizontalPagerState,
+            gridHorizontalPagerState = gridHorizontalPagerState,
+        )
+
+        if (homeSettings.wallpaperScroll) {
+            val page = calculatePage(
+                index = gridHorizontalPagerState.currentPage,
+                infiniteScroll = homeSettings.infiniteScroll,
+                pageCount = homeSettings.pageCount,
+            )
+
+            androidWallpaperManagerWrapper.setWallpaperOffsetSteps(
+                xStep = 1f / (homeSettings.pageCount.toFloat() - 1),
+                yStep = 1f,
+            )
+
+            androidWallpaperManagerWrapper.setWallpaperOffsets(
+                windowToken = windowToken,
+                xOffset = page / (homeSettings.pageCount.toFloat() - 1),
+                yOffset = 0f,
+            )
+        }
+    }
+
+    fun animateScrollToPages(
+        dockGridHorizontalPagerState: PagerState,
+        gridHorizontalPagerState: PagerState,
+    ) {
         fun getInfiniteScrollInitialPage(
             currentPage: Int,
             initialPage: Int,
@@ -747,56 +756,36 @@ internal class PagerScreenState(
             return currentPage + diff
         }
 
-        gridHorizontalPagerState.animateScrollToPage(
-            if (gridInfiniteScroll) {
-                getInfiniteScrollInitialPage(
-                    currentPage = gridHorizontalPagerState.currentPage,
-                    initialPage = gridInitialPage,
-                    pageCount = gridPageCount,
-                )
-            } else {
-                gridInitialPage
-            },
-        )
-
-        dockGridHorizontalPagerState.animateScrollToPage(
-            if (dockInfiniteScroll) {
-                getInfiniteScrollInitialPage(
-                    currentPage = dockGridHorizontalPagerState.currentPage,
-                    initialPage = dockInitialPage,
-                    pageCount = dockPageCount,
-                )
-            } else {
-                dockInitialPage
-            },
-        )
-
-        if (wallpaperScroll) {
-            val page = calculatePage(
-                index = gridHorizontalPagerState.currentPage,
-                infiniteScroll = gridInfiniteScroll,
-                pageCount = gridPageCount,
+        scope.launch {
+            gridHorizontalPagerState.animateScrollToPage(
+                if (homeSettings.infiniteScroll) {
+                    getInfiniteScrollInitialPage(
+                        currentPage = gridHorizontalPagerState.currentPage,
+                        initialPage = homeSettings.initialPage,
+                        pageCount = homeSettings.pageCount,
+                    )
+                } else {
+                    homeSettings.initialPage
+                },
             )
+        }
 
-            wallpaperManagerWrapper.setWallpaperOffsetSteps(
-                xStep = 1f / (gridPageCount.toFloat() - 1),
-                yStep = 1f,
-            )
-
-            wallpaperManagerWrapper.setWallpaperOffsets(
-                windowToken = windowToken,
-                xOffset = page / (gridPageCount.toFloat() - 1),
-                yOffset = 0f,
+        scope.launch {
+            dockGridHorizontalPagerState.animateScrollToPage(
+                if (homeSettings.dockInfiniteScroll) {
+                    getInfiniteScrollInitialPage(
+                        currentPage = dockGridHorizontalPagerState.currentPage,
+                        initialPage = homeSettings.dockInitialPage,
+                        pageCount = homeSettings.dockPageCount,
+                    )
+                } else {
+                    homeSettings.dockInitialPage
+                },
             )
         }
     }
 
-    suspend fun handleEblanActionIntent(
-        context: Context,
-        intent: Intent,
-        launcherApps: AndroidLauncherAppsWrapper,
-        onOpenAppDrawer: suspend () -> Unit,
-    ) {
+    fun handleEblanActionIntent(intent: Intent) {
         if (intent.action != EblanAction.ACTION) return
 
         val eblanAction = intent.getStringExtra(EblanAction.NAME)?.let { eblanAction ->
@@ -806,66 +795,19 @@ internal class PagerScreenState(
         handleEblanAction(
             context = context,
             eblanAction = eblanAction,
-            launcherApps = launcherApps,
-            onOpenAppDrawer = onOpenAppDrawer,
-        )
-    }
-
-    suspend fun handleHasDoubleTap(
-        androidLauncherAppsWrapper: AndroidLauncherAppsWrapper,
-        context: Context,
-        gestureSettings: GestureSettings,
-        hasDoubleTap: Boolean,
-        onOpenAppDrawer: suspend () -> Unit,
-    ) {
-        if (!hasDoubleTap) return
-
-        handleEblanAction(
-            context = context,
-            eblanAction = gestureSettings.doubleTap,
             launcherApps = androidLauncherAppsWrapper,
-            onOpenAppDrawer = onOpenAppDrawer,
+            onOpenAppDrawer = {
+                scope.launch {
+                    swipeY.animateTo(
+                        targetValue = 0f,
+                        animationSpec = spring(
+                            dampingRatio = Spring.DampingRatioNoBouncy,
+                            stiffness = Spring.StiffnessLow,
+                        ),
+                    )
+                }
+            },
         )
-    }
-
-    suspend fun handlePinGridItem(
-        isApplicationScreenVisible: Boolean,
-        pinGridItem: GridItem?,
-        pinItemRequestWrapper: PinItemRequestWrapper,
-        screenHeight: Int,
-        swipeY: Animatable<Float, AnimationVector1D>,
-        onUpdateGridItemSource: (GridItemSource) -> Unit,
-        onUpdateIsVisibleOverlay: (Boolean) -> Unit,
-        onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
-    ) {
-        if (pinGridItem == null) return
-
-        val pinItemRequest = pinItemRequestWrapper.getPinItemRequest() ?: return
-
-        if (isApplicationScreenVisible) {
-            swipeY.animateTo(
-                targetValue = screenHeight.toFloat(),
-                animationSpec = tween(
-                    easing = FastOutSlowInEasing,
-                ),
-            )
-        }
-
-        onUpdateGridItemSource(
-            GridItemSource.Pin(pinItemRequest = pinItemRequest),
-        )
-
-        onUpdateMoveGridItemResult(
-            MoveGridItemResult(
-                isSuccess = false,
-                movingGridItem = pinGridItem,
-                conflictingGridItem = null,
-            ),
-        )
-
-        onUpdateIsVisibleOverlay(true)
-
-        isDragging = true
     }
 
     fun dragStart(offset: Offset) {
