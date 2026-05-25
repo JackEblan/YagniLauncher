@@ -671,6 +671,7 @@ private fun SharedTransitionScope.EblanApplicationInfos(
                         paddingValues = paddingValues,
                         privateEblanApplicationInfos = getEblanApplicationInfosByLabelAndTag.privateEblanApplicationInfos,
                         privateEblanUser = getEblanApplicationInfosByLabelAndTag.privateEblanUser,
+                        isVisibleOverlay = isVisibleOverlay,
                         onUpdateIsQuietModeEnabled = { newIsQuiteModeEnabled ->
                             isQuietModeEnabled = newIsQuiteModeEnabled
                         },

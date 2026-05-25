@@ -552,6 +552,7 @@ private fun SharedTransitionScope.EblanApplicationInfos(
                         eblanApplicationInfo = eblanApplicationInfo,
                         iconPackFilePaths = iconPackFilePaths,
                         paddingValues = paddingValues,
+                        isVisibleOverlay = isVisibleOverlay,
                         onUpdateOverlayBounds = onUpdateOverlayBounds,
                         onUpdatePopupMenu = onUpdatePrivatePopupMenu,
                         onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,

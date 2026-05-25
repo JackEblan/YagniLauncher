@@ -415,7 +415,7 @@ private fun SharedTransitionScope.InteractiveApplicationInfoGridItem(
 
     Column(
         modifier = modifier
-            .pointerInput(key1 = drag) {
+            .pointerInput(key1 = isVisibleOverlay) {
                 detectTapGestures(
                     onDoubleTap = if (!isVisibleOverlay) {
                         {
@@ -471,7 +471,10 @@ private fun SharedTransitionScope.InteractiveApplicationInfoGridItem(
                         null
                     },
                     onPress = {
-                        onPress(scale = scale)
+                        onPress(
+                            isVisibleOverlay = isVisibleOverlay,
+                            scale = scale,
+                        )
                     },
                 )
             }
@@ -697,7 +700,7 @@ private fun SharedTransitionScope.InteractiveWidgetGridItem(
             AsyncImage(
                 model = data.preview ?: data.icon,
                 contentDescription = null,
-                modifier = commonModifier.pointerInput(key1 = drag) {
+                modifier = commonModifier.pointerInput(key1 = isVisibleOverlay) {
                     detectTapGestures(
                         onLongPress = if (!isVisibleOverlay) {
                             {
@@ -814,7 +817,7 @@ private fun SharedTransitionScope.InteractiveShortcutInfoGridItem(
 
     Column(
         modifier = modifier
-            .pointerInput(key1 = drag) {
+            .pointerInput(key1 = isVisibleOverlay) {
                 detectTapGestures(
                     onDoubleTap = if (!isVisibleOverlay) {
                         {
@@ -873,7 +876,10 @@ private fun SharedTransitionScope.InteractiveShortcutInfoGridItem(
                         null
                     },
                     onPress = {
-                        onPress(scale = scale)
+                        onPress(
+                            isVisibleOverlay = isVisibleOverlay,
+                            scale = scale,
+                        )
                     },
                 )
             }
@@ -1072,7 +1078,7 @@ private fun SharedTransitionScope.InteractiveFolderGridItem(
 
     Column(
         modifier = modifier
-            .pointerInput(key1 = drag) {
+            .pointerInput(key1 = isVisibleOverlay) {
                 detectTapGestures(
                     onDoubleTap = if (!isVisibleOverlay) {
                         {
@@ -1128,7 +1134,10 @@ private fun SharedTransitionScope.InteractiveFolderGridItem(
                         null
                     },
                     onPress = {
-                        onPress(scale = scale)
+                        onPress(
+                            isVisibleOverlay = isVisibleOverlay,
+                            scale = scale,
+                        )
                     },
                 )
             }
@@ -1336,7 +1345,7 @@ private fun SharedTransitionScope.InteractiveShortcutConfigGridItem(
 
     Column(
         modifier = modifier
-            .pointerInput(key1 = drag) {
+            .pointerInput(key1 = isVisibleOverlay) {
                 detectTapGestures(
                     onDoubleTap = if (!isVisibleOverlay) {
                         {
@@ -1389,7 +1398,10 @@ private fun SharedTransitionScope.InteractiveShortcutConfigGridItem(
                         null
                     },
                     onPress = {
-                        onPress(scale = scale)
+                        onPress(
+                            isVisibleOverlay = isVisibleOverlay,
+                            scale = scale,
+                        )
                     },
                 )
             }

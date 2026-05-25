@@ -313,7 +313,7 @@ private fun SharedTransitionScope.InteractiveFolderApplicationInfoGridItem(
 
     Column(
         modifier = modifier
-            .pointerInput(key1 = drag) {
+            .pointerInput(key1 = isVisibleOverlay) {
                 detectTapGestures(
                     onDoubleTap = if (!isVisibleOverlay) {
                         {
@@ -369,7 +369,10 @@ private fun SharedTransitionScope.InteractiveFolderApplicationInfoGridItem(
                         null
                     },
                     onPress = {
-                        onPress(scale = scale)
+                        onPress(
+                            isVisibleOverlay = isVisibleOverlay,
+                            scale = scale,
+                        )
                     },
                 )
             }
@@ -533,7 +536,7 @@ private fun SharedTransitionScope.InteractiveFolderShortcutInfoGridItem(
 
     Column(
         modifier = modifier
-            .pointerInput(key1 = drag) {
+            .pointerInput(key1 = isVisibleOverlay) {
                 detectTapGestures(
                     onDoubleTap = if (!isVisibleOverlay) {
                         {
@@ -592,7 +595,10 @@ private fun SharedTransitionScope.InteractiveFolderShortcutInfoGridItem(
                         null
                     },
                     onPress = {
-                        onPress(scale = scale)
+                        onPress(
+                            isVisibleOverlay = isVisibleOverlay,
+                            scale = scale,
+                        )
                     },
                 )
             }
@@ -781,7 +787,7 @@ private fun SharedTransitionScope.InteractiveFolderShortcutConfigGridItem(
 
     Column(
         modifier = modifier
-            .pointerInput(key1 = drag) {
+            .pointerInput(key1 = isVisibleOverlay) {
                 detectTapGestures(
                     onDoubleTap = if (!isVisibleOverlay) {
                         {
@@ -834,7 +840,10 @@ private fun SharedTransitionScope.InteractiveFolderShortcutConfigGridItem(
                         null
                     },
                     onPress = {
-                        onPress(scale = scale)
+                        onPress(
+                            isVisibleOverlay = isVisibleOverlay,
+                            scale = scale,
+                        )
                     },
                 )
             }

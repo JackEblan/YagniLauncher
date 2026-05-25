@@ -171,15 +171,18 @@ internal suspend fun onLongPress(
     )
 }
 
-internal suspend fun PressGestureScope.onPress(scale: Animatable<Float, AnimationVector1D>) {
-    try {
-        awaitRelease()
-    } finally {
-        if (scale.isRunning) {
-            scale.stop()
+internal suspend fun PressGestureScope.onPress(
+    isVisibleOverlay: Boolean,
+    scale: Animatable<Float, AnimationVector1D>,
+) {
+    if (!isVisibleOverlay) return
 
-            scale.animateTo(1f)
-        }
+    awaitRelease()
+
+    if (scale.isRunning) {
+        scale.stop()
+
+        scale.animateTo(1f)
     }
 }
 

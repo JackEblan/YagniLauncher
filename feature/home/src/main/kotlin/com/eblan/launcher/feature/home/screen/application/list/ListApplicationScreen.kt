@@ -678,6 +678,7 @@ private fun SharedTransitionScope.EblanApplicationInfos(
                         paddingValues = paddingValues,
                         privateEblanApplicationInfos = getEblanApplicationInfosByLabelAndTag.privateEblanApplicationInfos,
                         privateEblanUser = getEblanApplicationInfosByLabelAndTag.privateEblanUser,
+                        isVisibleOverlay = isVisibleOverlay,
                         onUpdateIsQuietModeEnabled = { newIsQuiteModeEnabled ->
                             isQuietModeEnabled = newIsQuiteModeEnabled
                         },
@@ -821,42 +822,53 @@ private fun SharedTransitionScope.EblanApplicationInfoItem(
         modifier = modifier
             .pointerInput(key1 = drag) {
                 detectTapGestures(
-                    onTap = {
-                        scope.launch {
-                            handleOnTapEblanApplicationInfoItem(
-                                eblanApplicationInfo = eblanApplicationInfo,
-                                intOffset = intOffset,
-                                intSize = intSize,
-                                keyboardController = keyboardController,
-                                launcherApps = launcherApps,
-                                leftPadding = leftPadding,
-                                topPadding = topPadding,
-                                scale = scale,
-                            )
+                    onTap = if (!isVisibleOverlay) {
+                        {
+                            scope.launch {
+                                handleOnTapEblanApplicationInfoItem(
+                                    eblanApplicationInfo = eblanApplicationInfo,
+                                    intOffset = intOffset,
+                                    intSize = intSize,
+                                    keyboardController = keyboardController,
+                                    launcherApps = launcherApps,
+                                    leftPadding = leftPadding,
+                                    topPadding = topPadding,
+                                    scale = scale,
+                                )
+                            }
                         }
+                    } else {
+                        null
                     },
-                    onLongPress = {
-                        scope.launch {
-                            handleOnLongPressEblanApplicationInfoItem(
-                                applicationScreenId = applicationScreenId,
-                                eblanApplicationInfo = eblanApplicationInfo,
-                                graphicsLayer = graphicsLayer,
-                                intOffset = intOffset,
-                                intSize = intSize,
-                                keyboardController = keyboardController,
-                                scale = scale,
-                                onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
-                                onUpdateImageBitmap = onUpdateImageBitmap,
-                                onUpdateIsLongPress = { isLongPress = it },
-                                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                                onUpdateOverlayBounds = onUpdateOverlayBounds,
-                                onUpdatePopupMenu = onUpdatePopupMenu,
-                                onUpdateSharedElementKey = onUpdateSharedElementKey,
-                            )
+                    onLongPress = if (!isVisibleOverlay) {
+                        {
+                            scope.launch {
+                                handleOnLongPressEblanApplicationInfoItem(
+                                    applicationScreenId = applicationScreenId,
+                                    eblanApplicationInfo = eblanApplicationInfo,
+                                    graphicsLayer = graphicsLayer,
+                                    intOffset = intOffset,
+                                    intSize = intSize,
+                                    keyboardController = keyboardController,
+                                    scale = scale,
+                                    onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
+                                    onUpdateImageBitmap = onUpdateImageBitmap,
+                                    onUpdateIsLongPress = { isLongPress = it },
+                                    onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                                    onUpdateOverlayBounds = onUpdateOverlayBounds,
+                                    onUpdatePopupMenu = onUpdatePopupMenu,
+                                    onUpdateSharedElementKey = onUpdateSharedElementKey,
+                                )
+                            }
                         }
+                    } else {
+                        null
                     },
                     onPress = {
-                        onPress(scale = scale)
+                        onPress(
+                            isVisibleOverlay = isVisibleOverlay,
+                            scale = scale,
+                        )
                     },
                 )
             }
