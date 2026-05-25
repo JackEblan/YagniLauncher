@@ -158,6 +158,11 @@ internal suspend fun handleDragGridItem(
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onUpdateIsMoveFolderGridItemOutsideFolder: (Boolean) -> Unit,
 ) {
+    println(drag)
+    println(gridItemSource)
+    println(isDragging)
+    println(isVisibleOverlay)
+    println(moveGridItemResult)
     if (drag != Drag.Dragging ||
         isGridScrollInProgress ||
         isDockScrollInProgress ||

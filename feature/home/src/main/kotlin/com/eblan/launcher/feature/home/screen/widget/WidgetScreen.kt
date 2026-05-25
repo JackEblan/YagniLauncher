@@ -458,8 +458,6 @@ private fun EblanAppWidgetProviderInfoItem(
                 detectTapGestures(
                     onLongPress = {
                         scope.launch {
-                            onUpdateImageBitmap(graphicsLayer.toImageBitmap())
-
                             val gridItem = getWidgetGridItem(
                                 componentName = eblanAppWidgetProviderInfo.componentName,
                                 configure = eblanAppWidgetProviderInfo.configure,
@@ -491,6 +489,8 @@ private fun EblanAppWidgetProviderInfoItem(
                                     conflictingGridItem = null,
                                 ),
                             )
+
+                            onUpdateImageBitmap(graphicsLayer.toImageBitmap())
 
                             onUpdateOverlayBounds(
                                 intOffset,

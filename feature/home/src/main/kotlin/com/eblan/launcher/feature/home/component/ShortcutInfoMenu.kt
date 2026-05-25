@@ -41,7 +41,7 @@ import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.layout.positionOnScreen
+import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
@@ -273,7 +273,7 @@ private fun ShortcutInfoMenuItem(
                         )
                     }
                     .onGloballyPositioned { layoutCoordinates ->
-                        intOffset = layoutCoordinates.positionOnScreen().round()
+                        intOffset = layoutCoordinates.positionInRoot().round()
 
                         intSize = layoutCoordinates.size
                     }

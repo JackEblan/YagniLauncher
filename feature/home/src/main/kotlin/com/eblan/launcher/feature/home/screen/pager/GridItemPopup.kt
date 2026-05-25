@@ -91,6 +91,7 @@ internal fun GridItemPopup(
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
     requireNotNull(popupIntOffset)
+
     requireNotNull(popupIntSize)
 
     val transitionState = remember {
