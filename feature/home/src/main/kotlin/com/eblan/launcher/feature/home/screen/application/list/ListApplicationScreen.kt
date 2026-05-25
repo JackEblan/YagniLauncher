@@ -21,6 +21,7 @@ import android.graphics.Rect
 import android.os.Build
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
@@ -66,6 +67,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.layer.drawLayer
@@ -120,6 +122,7 @@ import com.eblan.launcher.feature.home.screen.application.handleOnLongPressEblan
 import com.eblan.launcher.feature.home.screen.application.handleOnTapEblanApplicationInfoItem
 import com.eblan.launcher.feature.home.screen.application.vertical.DragAndDropEblanApplicationInfos
 import com.eblan.launcher.feature.home.util.getSystemTextColor
+import com.eblan.launcher.feature.home.util.onPress
 import com.eblan.launcher.ui.local.LocalLauncherApps
 import com.eblan.launcher.ui.local.LocalPackageManager
 import com.eblan.launcher.ui.local.LocalUserManager
@@ -326,7 +329,6 @@ internal fun SharedTransitionScope.ListApplicationScreen(
             eblanApplicationInfo = selectedEblanApplicationInfo,
             gridItemSettings = appDrawerSettings.gridItemSettings,
             hasShortcutHostPermission = hasShortcutHostPermission,
-            paddingValues = paddingValues,
             popupIntOffset = popupIntOffset,
             popupIntSize = popupIntSize,
             onDismissRequest = {
@@ -375,7 +377,6 @@ internal fun SharedTransitionScope.ListApplicationScreen(
             eblanShortcutInfosGroup = eblanShortcutInfosGroup,
             eblanApplicationInfo = selectedEblanApplicationInfo,
             hasShortcutHostPermission = hasShortcutHostPermission,
-            paddingValues = paddingValues,
             popupIntOffset = popupIntOffset,
             popupIntSize = popupIntSize,
             onDismissRequest = {
@@ -675,6 +676,7 @@ private fun SharedTransitionScope.EblanApplicationInfos(
                         paddingValues = paddingValues,
                         privateEblanApplicationInfos = getEblanApplicationInfosByLabelAndTag.privateEblanApplicationInfos,
                         privateEblanUser = getEblanApplicationInfosByLabelAndTag.privateEblanUser,
+                        isVisibleOverlay = isVisibleOverlay,
                         onUpdateIsQuietModeEnabled = { newIsQuiteModeEnabled ->
                             isQuietModeEnabled = newIsQuiteModeEnabled
                         },
@@ -792,6 +794,8 @@ private fun SharedTransitionScope.EblanApplicationInfoItem(
 
     val alpha = if (isLongPress) 0f else 1f
 
+    val scale = remember { Animatable(1f) }
+
     LaunchedEffect(key1 = drag) {
         handleDragEblanApplicationInfoItem(
             appDrawerSettings = appDrawerSettings,
@@ -799,6 +803,7 @@ private fun SharedTransitionScope.EblanApplicationInfoItem(
             eblanApplicationInfo = eblanApplicationInfo,
             isLongPress = isLongPress,
             isVisibleOverlay = isVisibleOverlay,
+            scale = scale,
             onDismiss = onDismiss,
             onUpdateGridItemSource = onUpdateGridItemSource,
             onUpdateIsDragging = onUpdateIsDragging,
@@ -813,39 +818,55 @@ private fun SharedTransitionScope.EblanApplicationInfoItem(
 
     Row(
         modifier = modifier
-            .pointerInput(key1 = drag) {
+            .pointerInput(key1 = isVisibleOverlay) {
                 detectTapGestures(
-                    onTap = {
-                        scope.launch {
-                            handleOnTapEblanApplicationInfoItem(
-                                eblanApplicationInfo = eblanApplicationInfo,
-                                intOffset = intOffset,
-                                intSize = intSize,
-                                keyboardController = keyboardController,
-                                launcherApps = launcherApps,
-                                leftPadding = leftPadding,
-                                topPadding = topPadding,
-                            )
+                    onTap = if (!isVisibleOverlay) {
+                        {
+                            scope.launch {
+                                handleOnTapEblanApplicationInfoItem(
+                                    eblanApplicationInfo = eblanApplicationInfo,
+                                    intOffset = intOffset,
+                                    intSize = intSize,
+                                    keyboardController = keyboardController,
+                                    launcherApps = launcherApps,
+                                    leftPadding = leftPadding,
+                                    topPadding = topPadding,
+                                    scale = scale,
+                                )
+                            }
                         }
+                    } else {
+                        null
                     },
-                    onLongPress = {
-                        scope.launch {
-                            handleOnLongPressEblanApplicationInfoItem(
-                                applicationScreenId = applicationScreenId,
-                                eblanApplicationInfo = eblanApplicationInfo,
-                                graphicsLayer = graphicsLayer,
-                                intOffset = intOffset,
-                                intSize = intSize,
-                                keyboardController = keyboardController,
-                                onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
-                                onUpdateImageBitmap = onUpdateImageBitmap,
-                                onUpdateIsLongPress = { isLongPress = it },
-                                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                                onUpdateOverlayBounds = onUpdateOverlayBounds,
-                                onUpdatePopupMenu = onUpdatePopupMenu,
-                                onUpdateSharedElementKey = onUpdateSharedElementKey,
-                            )
+                    onLongPress = if (!isVisibleOverlay) {
+                        {
+                            scope.launch {
+                                handleOnLongPressEblanApplicationInfoItem(
+                                    applicationScreenId = applicationScreenId,
+                                    eblanApplicationInfo = eblanApplicationInfo,
+                                    graphicsLayer = graphicsLayer,
+                                    intOffset = intOffset,
+                                    intSize = intSize,
+                                    keyboardController = keyboardController,
+                                    scale = scale,
+                                    onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
+                                    onUpdateImageBitmap = onUpdateImageBitmap,
+                                    onUpdateIsLongPress = { isLongPress = it },
+                                    onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                                    onUpdateOverlayBounds = onUpdateOverlayBounds,
+                                    onUpdatePopupMenu = onUpdatePopupMenu,
+                                    onUpdateSharedElementKey = onUpdateSharedElementKey,
+                                )
+                            }
                         }
+                    } else {
+                        null
+                    },
+                    onPress = {
+                        onPress(
+                            isVisibleOverlay = isVisibleOverlay,
+                            scale = scale,
+                        )
                     },
                 )
             }
@@ -865,6 +886,7 @@ private fun SharedTransitionScope.EblanApplicationInfoItem(
             contentDescription = null,
             modifier = Modifier
                 .size(appDrawerSettings.gridItemSettings.iconSize.dp)
+                .scale(scale.value)
                 .alpha(alpha)
                 .drawWithContent {
                     graphicsLayer.record {

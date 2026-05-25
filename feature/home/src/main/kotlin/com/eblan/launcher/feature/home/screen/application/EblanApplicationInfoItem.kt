@@ -20,6 +20,8 @@ package com.eblan.launcher.feature.home.screen.application
 import android.graphics.Rect
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Column
@@ -42,6 +44,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.layer.GraphicsLayer
@@ -80,6 +83,7 @@ import com.eblan.launcher.feature.home.model.SharedElementKey
 import com.eblan.launcher.feature.home.util.getHorizontalAlignment
 import com.eblan.launcher.feature.home.util.getSystemTextColor
 import com.eblan.launcher.feature.home.util.getVerticalArrangement
+import com.eblan.launcher.feature.home.util.onPress
 import com.eblan.launcher.framework.launcherapps.AndroidLauncherAppsWrapper
 import com.eblan.launcher.ui.local.LocalLauncherApps
 import kotlinx.coroutines.launch
@@ -162,6 +166,8 @@ internal fun SharedTransitionScope.EblanApplicationInfoItem(
 
     val alpha = if (isLongPress) 0f else 1f
 
+    val scale = remember { Animatable(1f) }
+
     LaunchedEffect(key1 = drag) {
         handleDragEblanApplicationInfoItem(
             appDrawerSettings = appDrawerSettings,
@@ -169,6 +175,7 @@ internal fun SharedTransitionScope.EblanApplicationInfoItem(
             eblanApplicationInfo = eblanApplicationInfo,
             isLongPress = isLongPress,
             isVisibleOverlay = isVisibleOverlay,
+            scale = scale,
             onDismiss = onDismiss,
             onUpdateGridItemSource = onUpdateGridItemSource,
             onUpdateIsDragging = onUpdateIsDragging,
@@ -183,39 +190,55 @@ internal fun SharedTransitionScope.EblanApplicationInfoItem(
 
     Column(
         modifier = modifier
-            .pointerInput(key1 = drag) {
+            .pointerInput(key1 = isVisibleOverlay) {
                 detectTapGestures(
-                    onTap = {
-                        scope.launch {
-                            handleOnTapEblanApplicationInfoItem(
-                                eblanApplicationInfo = eblanApplicationInfo,
-                                intOffset = intOffset,
-                                intSize = intSize,
-                                keyboardController = keyboardController,
-                                launcherApps = launcherApps,
-                                leftPadding = leftPadding,
-                                topPadding = topPadding,
-                            )
+                    onTap = if (!isVisibleOverlay) {
+                        {
+                            scope.launch {
+                                handleOnTapEblanApplicationInfoItem(
+                                    eblanApplicationInfo = eblanApplicationInfo,
+                                    intOffset = intOffset,
+                                    intSize = intSize,
+                                    keyboardController = keyboardController,
+                                    launcherApps = launcherApps,
+                                    leftPadding = leftPadding,
+                                    topPadding = topPadding,
+                                    scale = scale,
+                                )
+                            }
                         }
+                    } else {
+                        null
                     },
-                    onLongPress = {
-                        scope.launch {
-                            handleOnLongPressEblanApplicationInfoItem(
-                                applicationScreenId = applicationScreenId,
-                                eblanApplicationInfo = eblanApplicationInfo,
-                                graphicsLayer = graphicsLayer,
-                                intOffset = intOffset,
-                                intSize = intSize,
-                                keyboardController = keyboardController,
-                                onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
-                                onUpdateImageBitmap = onUpdateImageBitmap,
-                                onUpdateIsLongPress = { isLongPress = it },
-                                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                                onUpdateOverlayBounds = onUpdateOverlayBounds,
-                                onUpdatePopupMenu = onUpdatePopupMenu,
-                                onUpdateSharedElementKey = onUpdateSharedElementKey,
-                            )
+                    onLongPress = if (!isVisibleOverlay) {
+                        {
+                            scope.launch {
+                                handleOnLongPressEblanApplicationInfoItem(
+                                    applicationScreenId = applicationScreenId,
+                                    eblanApplicationInfo = eblanApplicationInfo,
+                                    graphicsLayer = graphicsLayer,
+                                    intOffset = intOffset,
+                                    intSize = intSize,
+                                    keyboardController = keyboardController,
+                                    scale = scale,
+                                    onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
+                                    onUpdateImageBitmap = onUpdateImageBitmap,
+                                    onUpdateIsLongPress = { isLongPress = it },
+                                    onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                                    onUpdateOverlayBounds = onUpdateOverlayBounds,
+                                    onUpdatePopupMenu = onUpdatePopupMenu,
+                                    onUpdateSharedElementKey = onUpdateSharedElementKey,
+                                )
+                            }
                         }
+                    } else {
+                        null
+                    },
+                    onPress = {
+                        onPress(
+                            isVisibleOverlay = isVisibleOverlay,
+                            scale = scale,
+                        )
                     },
                 )
             }
@@ -239,7 +262,8 @@ internal fun SharedTransitionScope.EblanApplicationInfoItem(
                 .data(eblanApplicationInfo.customIcon ?: icon).addLastModifiedToFileCacheKey(true)
                 .build(),
             contentDescription = null,
-            modifier = Modifier.size(appDrawerSettings.gridItemSettings.iconSize.dp).alpha(alpha)
+            modifier = Modifier.size(appDrawerSettings.gridItemSettings.iconSize.dp)
+                .scale(scale.value).alpha(alpha)
                 .drawWithContent {
                     graphicsLayer.record {
                         this@drawWithContent.drawContent()
@@ -283,7 +307,7 @@ internal fun SharedTransitionScope.EblanApplicationInfoItem(
     }
 }
 
-internal fun handleOnTapEblanApplicationInfoItem(
+internal suspend fun handleOnTapEblanApplicationInfoItem(
     eblanApplicationInfo: EblanApplicationInfo,
     intOffset: IntOffset,
     intSize: IntSize,
@@ -291,10 +315,15 @@ internal fun handleOnTapEblanApplicationInfoItem(
     launcherApps: AndroidLauncherAppsWrapper,
     leftPadding: Int,
     topPadding: Int,
+    scale: Animatable<Float, AnimationVector1D>,
 ) {
     val left = intOffset.x + leftPadding
 
     val top = intOffset.y + topPadding
+
+    scale.animateTo(0.5f)
+
+    scale.animateTo(1f)
 
     launcherApps.startMainActivity(
         serialNumber = eblanApplicationInfo.serialNumber,
@@ -311,12 +340,13 @@ internal fun handleOnTapEblanApplicationInfoItem(
 }
 
 @OptIn(ExperimentalUuidApi::class)
-internal fun handleDragEblanApplicationInfoItem(
+internal suspend fun handleDragEblanApplicationInfoItem(
     appDrawerSettings: AppDrawerSettings,
     drag: Drag,
     eblanApplicationInfo: EblanApplicationInfo,
     isLongPress: Boolean,
     isVisibleOverlay: Boolean,
+    scale: Animatable<Float, AnimationVector1D>,
     onDismiss: () -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
@@ -381,7 +411,13 @@ internal fun handleDragEblanApplicationInfoItem(
         }
 
         Drag.Cancel, Drag.End -> {
-            if (isLongPress && isVisibleOverlay) {
+            if (scale.isRunning) {
+                scale.stop()
+
+                scale.animateTo(1f)
+            }
+
+            if (isLongPress || isVisibleOverlay) {
                 onUpdateIsVisibleOverlay(false)
 
                 onUpdateIsLongPress(false)
@@ -400,6 +436,7 @@ internal suspend fun handleOnLongPressEblanApplicationInfoItem(
     intOffset: IntOffset,
     intSize: IntSize,
     keyboardController: SoftwareKeyboardController?,
+    scale: Animatable<Float, AnimationVector1D>,
     onUpdateEblanApplicationInfo: (EblanApplicationInfo) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
     onUpdateIsLongPress: (Boolean) -> Unit,
@@ -408,6 +445,10 @@ internal suspend fun handleOnLongPressEblanApplicationInfoItem(
     onUpdatePopupMenu: (Boolean) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
 ) {
+    scale.animateTo(0.5f)
+
+    scale.animateTo(1f)
+
     onUpdateImageBitmap(graphicsLayer.toImageBitmap())
 
     onUpdateOverlayBounds(

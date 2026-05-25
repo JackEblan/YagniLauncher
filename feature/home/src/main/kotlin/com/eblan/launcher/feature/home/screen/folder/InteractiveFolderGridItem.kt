@@ -19,6 +19,7 @@ package com.eblan.launcher.feature.home.screen.folder
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
@@ -41,6 +42,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.layer.drawLayer
@@ -75,6 +77,7 @@ import com.eblan.launcher.feature.home.util.getVerticalArrangement
 import com.eblan.launcher.feature.home.util.handleDrag
 import com.eblan.launcher.feature.home.util.onDoubleTap
 import com.eblan.launcher.feature.home.util.onLongPress
+import com.eblan.launcher.feature.home.util.onPress
 import com.eblan.launcher.ui.local.LocalLauncherApps
 import com.eblan.launcher.ui.local.LocalSettings
 import kotlinx.coroutines.launch
@@ -295,11 +298,14 @@ private fun SharedTransitionScope.InteractiveFolderApplicationInfoGridItem(
 
     val alpha = if (hasInteraction) 0f else 1f
 
+    val scale = remember { Animatable(1f) }
+
     LaunchedEffect(key1 = drag) {
         handleDrag(
             drag = drag,
             isSelected = isSelected,
             isVisibleOverlay = isVisibleOverlay,
+            scale = scale,
             onUpdateIsDragging = onUpdateIsDragging,
             onDismissGridItemPopup = onDismissGridItemPopup,
         )
@@ -307,7 +313,7 @@ private fun SharedTransitionScope.InteractiveFolderApplicationInfoGridItem(
 
     Column(
         modifier = modifier
-            .pointerInput(key1 = drag) {
+            .pointerInput(key1 = isVisibleOverlay) {
                 detectTapGestures(
                     onDoubleTap = if (!isVisibleOverlay) {
                         {
@@ -324,22 +330,24 @@ private fun SharedTransitionScope.InteractiveFolderApplicationInfoGridItem(
                     },
                     onLongPress = if (!isVisibleOverlay) {
                         {
-                            onLongPress(
-                                scope = scope,
-                                graphicsLayer = graphicsLayer,
-                                intOffset = intOffset,
-                                intSize = intSize,
-                                gridItemSource = newGridItemSource,
-                                sharedElementKey = sharedElementKey,
-                                gridItem = gridItem,
-                                onUpdateGridItemSource = onUpdateGridItemSource,
-                                onUpdateImageBitmap = onUpdateImageBitmap,
-                                onUpdateOverlayBounds = onUpdateOverlayBounds,
-                                onUpdateSharedElementKey = onUpdateSharedElementKey,
-                                onShowGridItemPopup = onShowGridItemPopup,
-                                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                                onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
-                            )
+                            scope.launch {
+                                onLongPress(
+                                    graphicsLayer = graphicsLayer,
+                                    intOffset = intOffset,
+                                    intSize = intSize,
+                                    gridItemSource = newGridItemSource,
+                                    sharedElementKey = sharedElementKey,
+                                    gridItem = gridItem,
+                                    scale = scale,
+                                    onUpdateGridItemSource = onUpdateGridItemSource,
+                                    onUpdateImageBitmap = onUpdateImageBitmap,
+                                    onUpdateOverlayBounds = onUpdateOverlayBounds,
+                                    onUpdateSharedElementKey = onUpdateSharedElementKey,
+                                    onShowGridItemPopup = onShowGridItemPopup,
+                                    onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                                    onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                                )
+                            }
                         }
                     } else {
                         null
@@ -347,6 +355,10 @@ private fun SharedTransitionScope.InteractiveFolderApplicationInfoGridItem(
                     onTap = if (!isVisibleOverlay) {
                         {
                             scope.launch {
+                                scale.animateTo(0.5f)
+
+                                scale.animateTo(1f)
+
                                 onTapApplicationInfo(
                                     data.serialNumber,
                                     data.componentName,
@@ -355,6 +367,12 @@ private fun SharedTransitionScope.InteractiveFolderApplicationInfoGridItem(
                         }
                     } else {
                         null
+                    },
+                    onPress = {
+                        onPress(
+                            isVisibleOverlay = isVisibleOverlay,
+                            scale = scale,
+                        )
                     },
                 )
             }
@@ -375,6 +393,7 @@ private fun SharedTransitionScope.InteractiveFolderApplicationInfoGridItem(
         Box(
             modifier = Modifier
                 .size(gridItemSettings.iconSize.dp)
+                .scale(scale.value)
                 .alpha(alpha),
         ) {
             AsyncImage(
@@ -502,11 +521,14 @@ private fun SharedTransitionScope.InteractiveFolderShortcutInfoGridItem(
 
     val alpha = if (hasInteraction) 0f else 1f
 
+    val scale = remember { Animatable(1f) }
+
     LaunchedEffect(key1 = drag) {
         handleDrag(
             drag = drag,
             isSelected = isSelected,
             isVisibleOverlay = isVisibleOverlay,
+            scale = scale,
             onUpdateIsDragging = onUpdateIsDragging,
             onDismissGridItemPopup = onDismissGridItemPopup,
         )
@@ -514,7 +536,7 @@ private fun SharedTransitionScope.InteractiveFolderShortcutInfoGridItem(
 
     Column(
         modifier = modifier
-            .pointerInput(key1 = drag) {
+            .pointerInput(key1 = isVisibleOverlay) {
                 detectTapGestures(
                     onDoubleTap = if (!isVisibleOverlay) {
                         {
@@ -531,22 +553,24 @@ private fun SharedTransitionScope.InteractiveFolderShortcutInfoGridItem(
                     },
                     onLongPress = if (!isVisibleOverlay) {
                         {
-                            onLongPress(
-                                scope = scope,
-                                graphicsLayer = graphicsLayer,
-                                intOffset = intOffset,
-                                intSize = intSize,
-                                gridItemSource = newGridItemSource,
-                                sharedElementKey = sharedElementKey,
-                                gridItem = gridItem,
-                                onUpdateGridItemSource = onUpdateGridItemSource,
-                                onUpdateImageBitmap = onUpdateImageBitmap,
-                                onUpdateOverlayBounds = onUpdateOverlayBounds,
-                                onUpdateSharedElementKey = onUpdateSharedElementKey,
-                                onShowGridItemPopup = onShowGridItemPopup,
-                                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                                onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
-                            )
+                            scope.launch {
+                                onLongPress(
+                                    graphicsLayer = graphicsLayer,
+                                    intOffset = intOffset,
+                                    intSize = intSize,
+                                    gridItemSource = newGridItemSource,
+                                    sharedElementKey = sharedElementKey,
+                                    gridItem = gridItem,
+                                    scale = scale,
+                                    onUpdateGridItemSource = onUpdateGridItemSource,
+                                    onUpdateImageBitmap = onUpdateImageBitmap,
+                                    onUpdateOverlayBounds = onUpdateOverlayBounds,
+                                    onUpdateSharedElementKey = onUpdateSharedElementKey,
+                                    onShowGridItemPopup = onShowGridItemPopup,
+                                    onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                                    onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                                )
+                            }
                         }
                     } else {
                         null
@@ -555,6 +579,10 @@ private fun SharedTransitionScope.InteractiveFolderShortcutInfoGridItem(
                         {
                             if (hasShortcutHostPermission && data.isEnabled) {
                                 scope.launch {
+                                    scale.animateTo(0.5f)
+
+                                    scale.animateTo(1f)
+
                                     onTapShortcutInfo(
                                         data.serialNumber,
                                         data.packageName,
@@ -565,6 +593,12 @@ private fun SharedTransitionScope.InteractiveFolderShortcutInfoGridItem(
                         }
                     } else {
                         null
+                    },
+                    onPress = {
+                        onPress(
+                            isVisibleOverlay = isVisibleOverlay,
+                            scale = scale,
+                        )
                     },
                 )
             }
@@ -585,6 +619,7 @@ private fun SharedTransitionScope.InteractiveFolderShortcutInfoGridItem(
         Box(
             modifier = Modifier
                 .size(gridItemSettings.iconSize.dp)
+                .scale(scale.value)
                 .alpha(alpha),
         ) {
             AsyncImage(
@@ -737,11 +772,14 @@ private fun SharedTransitionScope.InteractiveFolderShortcutConfigGridItem(
 
     val alpha = if (hasInteraction) 0f else 1f
 
+    val scale = remember { Animatable(1f) }
+
     LaunchedEffect(key1 = drag) {
         handleDrag(
             drag = drag,
             isSelected = isSelected,
             isVisibleOverlay = isVisibleOverlay,
+            scale = scale,
             onUpdateIsDragging = onUpdateIsDragging,
             onDismissGridItemPopup = onDismissGridItemPopup,
         )
@@ -749,7 +787,7 @@ private fun SharedTransitionScope.InteractiveFolderShortcutConfigGridItem(
 
     Column(
         modifier = modifier
-            .pointerInput(key1 = drag) {
+            .pointerInput(key1 = isVisibleOverlay) {
                 detectTapGestures(
                     onDoubleTap = if (!isVisibleOverlay) {
                         {
@@ -766,32 +804,46 @@ private fun SharedTransitionScope.InteractiveFolderShortcutConfigGridItem(
                     },
                     onLongPress = if (!isVisibleOverlay) {
                         {
-                            onLongPress(
-                                scope = scope,
-                                graphicsLayer = graphicsLayer,
-                                intOffset = intOffset,
-                                intSize = intSize,
-                                gridItemSource = newGridItemSource,
-                                sharedElementKey = sharedElementKey,
-                                gridItem = gridItem,
-                                onUpdateGridItemSource = onUpdateGridItemSource,
-                                onUpdateImageBitmap = onUpdateImageBitmap,
-                                onUpdateOverlayBounds = onUpdateOverlayBounds,
-                                onUpdateSharedElementKey = onUpdateSharedElementKey,
-                                onShowGridItemPopup = onShowGridItemPopup,
-                                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                                onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
-                            )
+                            scope.launch {
+                                onLongPress(
+                                    graphicsLayer = graphicsLayer,
+                                    intOffset = intOffset,
+                                    intSize = intSize,
+                                    gridItemSource = newGridItemSource,
+                                    sharedElementKey = sharedElementKey,
+                                    gridItem = gridItem,
+                                    scale = scale,
+                                    onUpdateGridItemSource = onUpdateGridItemSource,
+                                    onUpdateImageBitmap = onUpdateImageBitmap,
+                                    onUpdateOverlayBounds = onUpdateOverlayBounds,
+                                    onUpdateSharedElementKey = onUpdateSharedElementKey,
+                                    onShowGridItemPopup = onShowGridItemPopup,
+                                    onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                                    onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                                )
+                            }
                         }
                     } else {
                         null
                     },
                     onTap = if (!isVisibleOverlay) {
                         {
-                            data.shortcutIntentUri?.let(onTapShortcutConfig)
+                            scope.launch {
+                                scale.animateTo(0.5f)
+
+                                scale.animateTo(1f)
+
+                                data.shortcutIntentUri?.let(onTapShortcutConfig)
+                            }
                         }
                     } else {
                         null
+                    },
+                    onPress = {
+                        onPress(
+                            isVisibleOverlay = isVisibleOverlay,
+                            scale = scale,
+                        )
                     },
                 )
             }
@@ -817,6 +869,7 @@ private fun SharedTransitionScope.InteractiveFolderShortcutConfigGridItem(
             contentDescription = null,
             modifier = Modifier
                 .size(gridItemSettings.iconSize.dp)
+                .scale(scale.value)
                 .alpha(alpha)
                 .drawWithContent {
                     graphicsLayer.record {

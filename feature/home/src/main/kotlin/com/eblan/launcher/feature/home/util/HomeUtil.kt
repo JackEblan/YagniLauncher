@@ -20,6 +20,9 @@ package com.eblan.launcher.feature.home.util
 import android.content.Context
 import android.content.Intent
 import android.graphics.Rect
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.AnimationVector1D
+import androidx.compose.foundation.gestures.PressGestureScope
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.compose.ui.unit.IntOffset
@@ -115,14 +118,14 @@ internal fun onDoubleTap(
     }
 }
 
-internal fun onLongPress(
-    scope: CoroutineScope,
+internal suspend fun onLongPress(
     graphicsLayer: GraphicsLayer,
     intOffset: IntOffset,
     intSize: IntSize,
     gridItemSource: GridItemSource,
     sharedElementKey: SharedElementKey,
     gridItem: GridItem,
+    scale: Animatable<Float, AnimationVector1D>,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
     onUpdateOverlayBounds: (
@@ -137,39 +140,57 @@ internal fun onLongPress(
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
-    scope.launch {
-        onUpdateGridItemSource(gridItemSource)
+    scale.animateTo(0.5f)
 
-        onUpdateMoveGridItemResult(
-            MoveGridItemResult(
-                isSuccess = true,
-                movingGridItem = gridItem,
-                conflictingGridItem = null,
-            ),
-        )
+    scale.animateTo(1f)
 
-        onUpdateImageBitmap(graphicsLayer.toImageBitmap())
+    onUpdateGridItemSource(gridItemSource)
 
-        onUpdateOverlayBounds(
-            intOffset,
-            intSize,
-        )
+    onUpdateMoveGridItemResult(
+        MoveGridItemResult(
+            isSuccess = true,
+            movingGridItem = gridItem,
+            conflictingGridItem = null,
+        ),
+    )
 
-        onUpdateSharedElementKey(sharedElementKey)
+    onUpdateImageBitmap(graphicsLayer.toImageBitmap())
 
-        onUpdateIsVisibleOverlay(true)
+    onUpdateOverlayBounds(
+        intOffset,
+        intSize,
+    )
 
-        onShowGridItemPopup(
-            intOffset,
-            intSize,
-        )
+    onUpdateSharedElementKey(sharedElementKey)
+
+    onUpdateIsVisibleOverlay(true)
+
+    onShowGridItemPopup(
+        intOffset,
+        intSize,
+    )
+}
+
+internal suspend fun PressGestureScope.onPress(
+    isVisibleOverlay: Boolean,
+    scale: Animatable<Float, AnimationVector1D>,
+) {
+    if (isVisibleOverlay) return
+
+    awaitRelease()
+
+    if (scale.isRunning) {
+        scale.stop()
+
+        scale.animateTo(1f)
     }
 }
 
-internal fun handleDrag(
+internal suspend fun handleDrag(
     drag: Drag,
     isSelected: Boolean,
     isVisibleOverlay: Boolean,
+    scale: Animatable<Float, AnimationVector1D>,
     onUpdateIsDragging: (Boolean) -> Unit,
     onDismissGridItemPopup: () -> Unit,
 ) {
@@ -177,6 +198,10 @@ internal fun handleDrag(
         onUpdateIsDragging(true)
 
         onDismissGridItemPopup()
+    } else if ((drag == Drag.End || drag == Drag.Cancel) && scale.isRunning) {
+        scale.stop()
+
+        scale.animateTo(1f)
     }
 }
 

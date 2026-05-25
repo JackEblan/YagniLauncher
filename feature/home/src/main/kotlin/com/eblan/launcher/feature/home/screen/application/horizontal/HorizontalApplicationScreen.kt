@@ -265,7 +265,6 @@ internal fun SharedTransitionScope.HorizontalApplicationScreen(
             eblanApplicationInfo = selectedEblanApplicationInfo,
             gridItemSettings = appDrawerSettings.gridItemSettings,
             hasShortcutHostPermission = hasShortcutHostPermission,
-            paddingValues = paddingValues,
             popupIntOffset = popupIntOffset,
             popupIntSize = popupIntSize,
             onDismissRequest = {
@@ -314,7 +313,6 @@ internal fun SharedTransitionScope.HorizontalApplicationScreen(
             eblanShortcutInfosGroup = eblanShortcutInfosGroup,
             eblanApplicationInfo = selectedEblanApplicationInfo,
             hasShortcutHostPermission = hasShortcutHostPermission,
-            paddingValues = paddingValues,
             popupIntOffset = popupIntOffset,
             popupIntSize = popupIntSize,
             onDismissRequest = {
@@ -552,6 +550,7 @@ private fun SharedTransitionScope.EblanApplicationInfos(
                         eblanApplicationInfo = eblanApplicationInfo,
                         iconPackFilePaths = iconPackFilePaths,
                         paddingValues = paddingValues,
+                        isVisibleOverlay = isVisibleOverlay,
                         onUpdateOverlayBounds = onUpdateOverlayBounds,
                         onUpdatePopupMenu = onUpdatePrivatePopupMenu,
                         onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,

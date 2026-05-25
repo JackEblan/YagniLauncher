@@ -304,7 +304,6 @@ internal fun SharedTransitionScope.VerticalApplicationScreen(
             eblanApplicationInfo = selectedEblanApplicationInfo,
             gridItemSettings = appDrawerSettings.gridItemSettings,
             hasShortcutHostPermission = hasShortcutHostPermission,
-            paddingValues = paddingValues,
             popupIntOffset = popupIntOffset,
             popupIntSize = popupIntSize,
             onDismissRequest = {
@@ -369,7 +368,6 @@ internal fun SharedTransitionScope.VerticalApplicationScreen(
             eblanShortcutInfosGroup = eblanShortcutInfosGroup,
             eblanApplicationInfo = selectedEblanApplicationInfo,
             hasShortcutHostPermission = hasShortcutHostPermission,
-            paddingValues = paddingValues,
             popupIntOffset = popupIntOffset,
             popupIntSize = popupIntSize,
             onDismissRequest = {
@@ -671,6 +669,7 @@ private fun SharedTransitionScope.EblanApplicationInfos(
                         paddingValues = paddingValues,
                         privateEblanApplicationInfos = getEblanApplicationInfosByLabelAndTag.privateEblanApplicationInfos,
                         privateEblanUser = getEblanApplicationInfosByLabelAndTag.privateEblanUser,
+                        isVisibleOverlay = isVisibleOverlay,
                         onUpdateIsQuietModeEnabled = { newIsQuiteModeEnabled ->
                             isQuietModeEnabled = newIsQuiteModeEnabled
                         },

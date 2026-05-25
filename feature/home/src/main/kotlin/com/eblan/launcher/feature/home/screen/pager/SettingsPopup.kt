@@ -18,6 +18,13 @@
 package com.eblan.launcher.feature.home.screen.pager
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -32,6 +39,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -59,8 +68,23 @@ internal fun SettingsPopup(
 ) {
     requireNotNull(popupSettingsIntOffset)
 
-    BackHandler {
-        onDismissRequest()
+    val transitionState = remember {
+        MutableTransitionState(false).apply {
+            targetState = true
+        }
+    }
+
+    LaunchedEffect(
+        key1 = transitionState.targetState,
+        key2 = transitionState.isIdle,
+    ) {
+        if (!transitionState.targetState && transitionState.isIdle) {
+            onDismissRequest()
+        }
+    }
+
+    BackHandler(enabled = transitionState.targetState) {
+        transitionState.targetState = false
     }
 
     Popup(
@@ -68,47 +92,55 @@ internal fun SettingsPopup(
             x = popupSettingsIntOffset.x,
             y = popupSettingsIntOffset.y,
         ),
-        onDismissRequest = onDismissRequest,
+        onDismissRequest = {
+            transitionState.targetState = false
+        },
     ) {
-        SettingsMenu(
-            hasSystemFeatureAppWidgets = hasSystemFeatureAppWidgets,
-            onEditDockPage = {
-                onEditPage(
-                    gridItems,
-                    Associate.Dock,
-                )
+        AnimatedVisibility(
+            visibleState = transitionState,
+            enter = fadeIn(tween()) + scaleIn(initialScale = 0.8f, animationSpec = tween()),
+            exit = fadeOut(tween()) + scaleOut(targetScale = 0.8f, animationSpec = tween()),
+        ) {
+            SettingsMenu(
+                hasSystemFeatureAppWidgets = hasSystemFeatureAppWidgets,
+                onEditDockPage = {
+                    onEditPage(
+                        gridItems,
+                        Associate.Dock,
+                    )
 
-                onDismissRequest()
-            },
-            onEditPage = {
-                onEditPage(
-                    gridItems,
-                    Associate.Grid,
-                )
+                    transitionState.targetState = false
+                },
+                onEditPage = {
+                    onEditPage(
+                        gridItems,
+                        Associate.Grid,
+                    )
 
-                onDismissRequest()
-            },
-            onSettings = {
-                onSettings()
+                    transitionState.targetState = false
+                },
+                onSettings = {
+                    onSettings()
 
-                onDismissRequest()
-            },
-            onShortcutConfigActivities = {
-                onShortcutConfigActivities()
+                    transitionState.targetState = false
+                },
+                onShortcutConfigActivities = {
+                    onShortcutConfigActivities()
 
-                onDismissRequest()
-            },
-            onWallpaper = {
-                onWallpaper()
+                    transitionState.targetState = false
+                },
+                onWallpaper = {
+                    onWallpaper()
 
-                onDismissRequest()
-            },
-            onWidgets = {
-                onWidgets()
+                    transitionState.targetState = false
+                },
+                onWidgets = {
+                    onWidgets()
 
-                onDismissRequest()
-            },
-        )
+                    transitionState.targetState = false
+                },
+            )
+        }
     }
 }
 
