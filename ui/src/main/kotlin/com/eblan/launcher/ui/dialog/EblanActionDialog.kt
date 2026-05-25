@@ -90,7 +90,7 @@ internal fun EblanActionDialog(
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                AccessibilityServicesCard()
+                AccessibilityServiceCard()
 
                 Spacer(modifier = Modifier.height(10.dp))
 
@@ -179,7 +179,7 @@ internal fun EblanActionDialog(
 }
 
 @Composable
-private fun AccessibilityServicesCard(modifier: Modifier = Modifier) {
+private fun AccessibilityServiceCard(modifier: Modifier = Modifier) {
     val context = LocalContext.current
 
     ElevatedCard(
@@ -204,7 +204,7 @@ private fun AccessibilityServicesCard(modifier: Modifier = Modifier) {
 
             Text(
                 modifier = Modifier,
-                text = "Enable the Accessibility Services permission to use additional actions",
+                text = "Enable the accessibility service permission to use additional actions",
                 style = MaterialTheme.typography.bodySmall,
             )
         }
