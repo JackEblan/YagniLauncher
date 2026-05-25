@@ -281,15 +281,12 @@ internal fun PrivateSpaceEblanApplicationInfoItem(
     val scale = remember { Animatable(1f) }
 
     LaunchedEffect(key1 = drag) {
-        if ((drag == Drag.Cancel || drag == Drag.End) && isLongPress) {
-            onUpdatePopupMenu(false)
-
-            scale.stop()
-
-            if (scale.value < 1f) {
-                scale.animateTo(1f)
-            }
-        }
+        handleDragPrivateSpaceEblanApplicationInfoItem(
+            drag = drag,
+            scale = scale,
+            isLongPress = isLongPress,
+            onUpdatePopupMenu = onUpdatePopupMenu,
+        )
     }
 
     Column(
@@ -363,6 +360,25 @@ internal fun PrivateSpaceEblanApplicationInfoItem(
             fontSize = appDrawerSettings.gridItemSettings.textSize.sp,
             overflow = TextOverflow.Ellipsis,
         )
+    }
+}
+
+internal suspend fun handleDragPrivateSpaceEblanApplicationInfoItem(
+    drag: Drag,
+    scale: Animatable<Float, AnimationVector1D>,
+    isLongPress: Boolean,
+    onUpdatePopupMenu: (Boolean) -> Unit,
+) {
+    if (drag == Drag.Cancel || drag == Drag.End) {
+        if (scale.isRunning) {
+            scale.stop()
+
+            scale.animateTo(1f)
+        }
+
+        if (isLongPress) {
+            onUpdatePopupMenu(false)
+        }
     }
 }
 

@@ -405,13 +405,13 @@ internal suspend fun handleDragEblanApplicationInfoItem(
         }
 
         Drag.Cancel, Drag.End -> {
-            if (isLongPress || isVisibleOverlay) {
+            if (scale.isRunning) {
                 scale.stop()
 
-                if (scale.value < 1f) {
-                    scale.animateTo(1f)
-                }
+                scale.animateTo(1f)
+            }
 
+            if (isLongPress || isVisibleOverlay) {
                 onUpdateIsVisibleOverlay(false)
 
                 onUpdateIsLongPress(false)

@@ -182,12 +182,10 @@ internal suspend fun handleDrag(
         onUpdateIsDragging(true)
 
         onDismissGridItemPopup()
-    } else if ((drag == Drag.End || drag == Drag.Cancel) && isSelected && isVisibleOverlay) {
+    } else if ((drag == Drag.End || drag == Drag.Cancel) && scale.isRunning) {
         scale.stop()
 
-        if (scale.value < 1f) {
-            scale.animateTo(1f)
-        }
+        scale.animateTo(1f)
     }
 }
 

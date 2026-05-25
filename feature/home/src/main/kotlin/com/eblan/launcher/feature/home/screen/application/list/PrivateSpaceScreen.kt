@@ -67,6 +67,7 @@ import com.eblan.launcher.domain.model.EblanUser
 import com.eblan.launcher.domain.model.ManagedProfileResult
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.screen.application.PrivateSpaceStickyHeader
+import com.eblan.launcher.feature.home.screen.application.handleDragPrivateSpaceEblanApplicationInfoItem
 import com.eblan.launcher.feature.home.screen.application.handleOnLongPressPrivateSpaceEblanApplicationInfoItem
 import com.eblan.launcher.feature.home.screen.application.handleOnTapEblanApplicationInfoItem
 import com.eblan.launcher.feature.home.util.getSystemTextColor
@@ -174,15 +175,12 @@ private fun PrivateSpaceEblanApplicationInfoItem(
     val scale = remember { Animatable(1f) }
 
     LaunchedEffect(key1 = drag) {
-        if ((drag == Drag.Cancel || drag == Drag.End) && isLongPress) {
-            onUpdatePopupMenu(false)
-
-            scale.stop()
-
-            if (scale.value < 1f) {
-                scale.animateTo(1f)
-            }
-        }
+        handleDragPrivateSpaceEblanApplicationInfoItem(
+            drag = drag,
+            scale = scale,
+            isLongPress = isLongPress,
+            onUpdatePopupMenu = onUpdatePopupMenu,
+        )
     }
 
     Row(
