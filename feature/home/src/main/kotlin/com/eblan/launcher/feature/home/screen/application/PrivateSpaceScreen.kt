@@ -280,18 +280,7 @@ internal fun PrivateSpaceEblanApplicationInfoItem(
         paddingValues.calculateTopPadding().roundToPx()
     }
 
-    var isLongPress by remember { mutableStateOf(false) }
-
     val scale = remember { Animatable(1f) }
-
-    LaunchedEffect(key1 = drag) {
-        handleDragPrivateSpaceEblanApplicationInfoItem(
-            drag = drag,
-            scale = scale,
-            isLongPress = isLongPress,
-            onUpdatePopupMenu = onUpdatePopupMenu,
-        )
-    }
 
     Column(
         modifier = modifier
@@ -327,9 +316,6 @@ internal fun PrivateSpaceEblanApplicationInfoItem(
                                     onUpdatePopupMenu = onUpdatePopupMenu,
                                     keyboardController = keyboardController,
                                     scale = scale,
-                                    onUpdateIsLongPress = { newIsLongPress ->
-                                        isLongPress = newIsLongPress
-                                    },
                                 )
                             }
                         }
@@ -381,25 +367,6 @@ internal fun PrivateSpaceEblanApplicationInfoItem(
     }
 }
 
-internal suspend fun handleDragPrivateSpaceEblanApplicationInfoItem(
-    drag: Drag,
-    scale: Animatable<Float, AnimationVector1D>,
-    isLongPress: Boolean,
-    onUpdatePopupMenu: (Boolean) -> Unit,
-) {
-    if (drag == Drag.Cancel || drag == Drag.End) {
-        if (scale.isRunning) {
-            scale.stop()
-
-            scale.animateTo(1f)
-        }
-
-        if (isLongPress) {
-            onUpdatePopupMenu(false)
-        }
-    }
-}
-
 internal suspend fun handleOnLongPressPrivateSpaceEblanApplicationInfoItem(
     onUpdateEblanApplicationInfo: (EblanApplicationInfo) -> Unit,
     eblanApplicationInfo: EblanApplicationInfo,
@@ -409,7 +376,6 @@ internal suspend fun handleOnLongPressPrivateSpaceEblanApplicationInfoItem(
     scale: Animatable<Float, AnimationVector1D>,
     onUpdatePopupMenu: (Boolean) -> Unit,
     keyboardController: SoftwareKeyboardController?,
-    onUpdateIsLongPress: (Boolean) -> Unit,
 ) {
     scale.animateTo(0.5f)
 
@@ -423,8 +389,6 @@ internal suspend fun handleOnLongPressPrivateSpaceEblanApplicationInfoItem(
     )
 
     onUpdatePopupMenu(true)
-
-    onUpdateIsLongPress(true)
 
     keyboardController?.hide()
 }

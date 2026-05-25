@@ -34,7 +34,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -67,7 +66,6 @@ import com.eblan.launcher.domain.model.EblanUser
 import com.eblan.launcher.domain.model.ManagedProfileResult
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.screen.application.PrivateSpaceStickyHeader
-import com.eblan.launcher.feature.home.screen.application.handleDragPrivateSpaceEblanApplicationInfoItem
 import com.eblan.launcher.feature.home.screen.application.handleOnLongPressPrivateSpaceEblanApplicationInfoItem
 import com.eblan.launcher.feature.home.screen.application.handleOnTapEblanApplicationInfoItem
 import com.eblan.launcher.feature.home.util.getSystemTextColor
@@ -174,18 +172,7 @@ private fun PrivateSpaceEblanApplicationInfoItem(
         paddingValues.calculateTopPadding().roundToPx()
     }
 
-    var isLongPress by remember { mutableStateOf(false) }
-
     val scale = remember { Animatable(1f) }
-
-    LaunchedEffect(key1 = drag) {
-        handleDragPrivateSpaceEblanApplicationInfoItem(
-            drag = drag,
-            scale = scale,
-            isLongPress = isLongPress,
-            onUpdatePopupMenu = onUpdatePopupMenu,
-        )
-    }
 
     Row(
         modifier = modifier
@@ -221,9 +208,6 @@ private fun PrivateSpaceEblanApplicationInfoItem(
                                     scale = scale,
                                     onUpdatePopupMenu = onUpdatePopupMenu,
                                     keyboardController = keyboardController,
-                                    onUpdateIsLongPress = { newIsLongPress ->
-                                        isLongPress = newIsLongPress
-                                    },
                                 )
                             }
                         }
