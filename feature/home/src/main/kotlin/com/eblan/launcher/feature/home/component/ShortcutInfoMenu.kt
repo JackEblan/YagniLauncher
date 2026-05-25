@@ -41,7 +41,6 @@ import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.layout.positionOnScreen
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
@@ -66,11 +65,11 @@ import kotlin.uuid.Uuid
 @Composable
 internal fun ShortcutInfoMenu(
     modifier: Modifier = Modifier,
-    drag: Drag,
     eblanShortcutInfosGroup: List<EblanShortcutInfo>,
     gridItemSettings: GridItemSettings,
     icon: String?,
-    onDraggingShortcutInfoGridItem: () -> Unit,
+    isVisibleOverlay: Boolean,
+    onUpdateIsDragging: (Boolean) -> Unit,
     onTapShortcutInfo: (
         serialNumber: Long,
         packageName: String,
@@ -85,6 +84,7 @@ internal fun ShortcutInfoMenu(
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
+    onDismiss: () -> Unit,
 ) {
     Column(
         modifier = modifier
@@ -96,11 +96,11 @@ internal fun ShortcutInfoMenu(
     ) {
         eblanShortcutInfosGroup.forEach { eblanShortcutInfo ->
             ShortcutInfoMenuItem(
-                drag = drag,
                 eblanShortcutInfo = eblanShortcutInfo,
                 gridItemSettings = gridItemSettings,
                 icon = icon,
-                onDraggingShortcutInfoGridItem = onDraggingShortcutInfoGridItem,
+                isVisibleOverlay = isVisibleOverlay,
+                onUpdateIsDragging = onUpdateIsDragging,
                 onTapShortcutInfo = onTapShortcutInfo,
                 onUpdateGridItemSource = onUpdateGridItemSource,
                 onUpdateImageBitmap = onUpdateImageBitmap,
@@ -108,6 +108,7 @@ internal fun ShortcutInfoMenu(
                 onUpdateSharedElementKey = onUpdateSharedElementKey,
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                 onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                onDismiss = onDismiss,
             )
         }
     }
@@ -146,11 +147,11 @@ internal fun PrivateShortcutInfoMenu(
 @Composable
 private fun ShortcutInfoMenuItem(
     modifier: Modifier = Modifier,
-    drag: Drag,
     eblanShortcutInfo: EblanShortcutInfo,
     gridItemSettings: GridItemSettings,
     icon: String?,
-    onDraggingShortcutInfoGridItem: () -> Unit,
+    isVisibleOverlay: Boolean,
+    onUpdateIsDragging: (Boolean) -> Unit,
     onTapShortcutInfo: (Long, String, String) -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
@@ -161,6 +162,7 @@ private fun ShortcutInfoMenuItem(
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
+    onDismiss: () -> Unit,
 ) {
     var intOffset by remember { mutableStateOf(IntOffset.Zero) }
 
@@ -171,12 +173,6 @@ private fun ShortcutInfoMenuItem(
     val scope = rememberCoroutineScope()
 
     var isLongPress by remember { mutableStateOf(false) }
-
-    LaunchedEffect(key1 = drag) {
-        if (drag == Drag.End || drag == Drag.Cancel) {
-            isLongPress = false
-        }
-    }
 
     ListItem(
         modifier = modifier
@@ -200,7 +196,7 @@ private fun ShortcutInfoMenuItem(
 
                         drawLayer(graphicsLayer)
                     }
-                    .pointerInput(key1 = drag) {
+                    .pointerInput(key1 = isVisibleOverlay) {
                         detectTapGestures(
                             onLongPress = {
                                 scope.launch {
@@ -269,9 +265,9 @@ private fun ShortcutInfoMenuItem(
 
                                     onUpdateIsVisibleOverlay(true)
 
-                                    onDraggingShortcutInfoGridItem()
+                                    onDismiss()
 
-                                    isLongPress = true
+                                    onUpdateIsDragging(true)
                                 }
                             },
                         )

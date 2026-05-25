@@ -64,7 +64,6 @@ import com.eblan.launcher.ui.local.LocalLauncherApps
 @Composable
 internal fun ApplicationInfoPopup(
     modifier: Modifier = Modifier,
-    drag: Drag,
     eblanAppWidgetProviderInfos: Map<String, List<EblanAppWidgetProviderInfo>>,
     eblanShortcutInfosGroup: Map<EblanShortcutInfoByGroup, List<EblanShortcutInfo>>,
     eblanApplicationInfo: EblanApplicationInfo?,
@@ -72,8 +71,9 @@ internal fun ApplicationInfoPopup(
     hasShortcutHostPermission: Boolean,
     popupIntOffset: IntOffset,
     popupIntSize: IntSize,
+    isVisibleOverlay: Boolean,
     onDismissRequest: () -> Unit,
-    onDraggingShortcutInfoGridItem: () -> Unit,
+    onUpdateIsDragging: (Boolean) -> Unit,
     onEditApplicationInfo: (
         serialNumber: Long,
         componentName: String,
@@ -139,7 +139,6 @@ internal fun ApplicationInfoPopup(
         ) {
             ApplicationInfoMenu(
                 modifier = modifier,
-                drag = drag,
                 eblanAppWidgetProviderInfosByPackageName = eblanAppWidgetProviderInfos[
                     eblanApplicationInfo.packageName,
                 ],
@@ -152,6 +151,7 @@ internal fun ApplicationInfoPopup(
                 gridItemSettings = gridItemSettings,
                 hasShortcutHostPermission = hasShortcutHostPermission,
                 icon = eblanApplicationInfo.icon,
+                isVisibleOverlay = isVisibleOverlay,
                 onApplicationInfo = {
                     launcherApps.startAppDetailsActivity(
                         serialNumber = eblanApplicationInfo.serialNumber,
@@ -166,7 +166,7 @@ internal fun ApplicationInfoPopup(
 
                     transitionState.targetState = false
                 },
-                onDraggingShortcutInfoGridItem = onDraggingShortcutInfoGridItem,
+                onUpdateIsDragging = onUpdateIsDragging,
                 onEdit = {
                     onEditApplicationInfo(
                         eblanApplicationInfo.serialNumber,
@@ -202,6 +202,9 @@ internal fun ApplicationInfoPopup(
                 },
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                 onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                onDismiss = {
+                    transitionState.targetState = false
+                },
             )
         }
     }
@@ -319,14 +322,14 @@ internal fun PrivateApplicationInfoPopup(
 @Composable
 private fun ApplicationInfoMenu(
     modifier: Modifier = Modifier,
-    drag: Drag,
     eblanAppWidgetProviderInfosByPackageName: List<EblanAppWidgetProviderInfo>?,
     eblanShortcutInfosGroup: List<EblanShortcutInfo>?,
     gridItemSettings: GridItemSettings,
     hasShortcutHostPermission: Boolean,
     icon: String?,
+    isVisibleOverlay: Boolean,
     onApplicationInfo: () -> Unit,
-    onDraggingShortcutInfoGridItem: () -> Unit,
+    onUpdateIsDragging: (Boolean) -> Unit,
     onEdit: () -> Unit,
     onTapShortcutInfo: (
         serialNumber: Long,
@@ -343,6 +346,7 @@ private fun ApplicationInfoMenu(
     onWidgets: () -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
+    onDismiss: () -> Unit,
 ) {
     Surface(
         modifier = modifier.padding(5.dp),
@@ -355,11 +359,11 @@ private fun ApplicationInfoMenu(
                 if (hasShortcutHostPermission && !eblanShortcutInfosGroup.isNullOrEmpty()) {
                     ShortcutInfoMenu(
                         modifier = modifier,
-                        drag = drag,
                         eblanShortcutInfosGroup = eblanShortcutInfosGroup,
                         gridItemSettings = gridItemSettings,
                         icon = icon,
-                        onDraggingShortcutInfoGridItem = onDraggingShortcutInfoGridItem,
+                        isVisibleOverlay = isVisibleOverlay,
+                        onUpdateIsDragging = onUpdateIsDragging,
                         onTapShortcutInfo = onTapShortcutInfo,
                         onUpdateGridItemSource = onUpdateGridItemSource,
                         onUpdateImageBitmap = onUpdateImageBitmap,
@@ -367,6 +371,7 @@ private fun ApplicationInfoMenu(
                         onUpdateSharedElementKey = onUpdateSharedElementKey,
                         onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                         onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                        onDismiss = onDismiss,
                     )
 
                     Spacer(modifier = Modifier.height(5.dp))

@@ -130,7 +130,6 @@ internal fun SharedTransitionScope.ApplicationScreen(
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onVerticalDrag: (Float) -> Unit,
     onWidgets: (EblanApplicationInfoGroup) -> Unit,
-    onDraggingShortcutInfoGridItem: () -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
@@ -191,7 +190,6 @@ internal fun SharedTransitionScope.ApplicationScreen(
                     onUpdateSharedElementKey = onUpdateSharedElementKey,
                     onVerticalDrag = onVerticalDrag,
                     onWidgets = onWidgets,
-                    onDraggingShortcutInfoGridItem = onDraggingShortcutInfoGridItem,
                     onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                     onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                 )
@@ -225,7 +223,6 @@ internal fun SharedTransitionScope.ApplicationScreen(
                     onUpdateSharedElementKey = onUpdateSharedElementKey,
                     onVerticalDrag = onVerticalDrag,
                     onWidgets = onWidgets,
-                    onDraggingShortcutInfoGridItem = onDraggingShortcutInfoGridItem,
                     onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                     onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                 )
@@ -260,7 +257,6 @@ internal fun SharedTransitionScope.ApplicationScreen(
                     onUpdateSharedElementKey = onUpdateSharedElementKey,
                     onVerticalDrag = onVerticalDrag,
                     onWidgets = onWidgets,
-                    onDraggingShortcutInfoGridItem = onDraggingShortcutInfoGridItem,
                     onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                     onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                 )

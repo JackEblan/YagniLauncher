@@ -168,7 +168,6 @@ internal fun SharedTransitionScope.ListApplicationScreen(
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onVerticalDrag: (Float) -> Unit,
     onWidgets: (EblanApplicationInfoGroup) -> Unit,
-    onDraggingShortcutInfoGridItem: () -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
@@ -323,7 +322,6 @@ internal fun SharedTransitionScope.ListApplicationScreen(
 
     if (showPopupApplicationMenu && selectedEblanApplicationInfo != null) {
         ApplicationInfoPopup(
-            drag = drag,
             eblanAppWidgetProviderInfos = eblanAppWidgetProviderInfosGroup,
             eblanShortcutInfosGroup = eblanShortcutInfosGroup,
             eblanApplicationInfo = selectedEblanApplicationInfo,
@@ -331,15 +329,16 @@ internal fun SharedTransitionScope.ListApplicationScreen(
             hasShortcutHostPermission = hasShortcutHostPermission,
             popupIntOffset = popupIntOffset,
             popupIntSize = popupIntSize,
+            isVisibleOverlay = isVisibleOverlay,
             onDismissRequest = {
                 showPopupApplicationMenu = false
             },
-            onDraggingShortcutInfoGridItem = {
+            onUpdateIsDragging = { isDragging ->
                 showPopupApplicationMenu = false
 
                 onDismiss()
 
-                onDraggingShortcutInfoGridItem()
+                onUpdateIsDragging(isDragging)
             },
             onEditApplicationInfo = onEditApplicationInfo,
             onTapShortcutInfo = { serialNumber, packageName, shortcutId ->

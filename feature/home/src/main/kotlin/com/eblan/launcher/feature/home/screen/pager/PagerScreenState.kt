@@ -1048,10 +1048,6 @@ internal class PagerScreenState(
         }
     }
 
-    fun draggingShortcutInfoGridItem() {
-        isDragging = true
-    }
-
     fun resize(
         resizeGridItem: GridItem,
         onUpdateResizeGridItem: (GridItem) -> Unit,

@@ -58,14 +58,12 @@ import com.eblan.launcher.domain.model.GridItemSettings
 import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.feature.home.component.GridItemPopupPositionProvider
 import com.eblan.launcher.feature.home.component.ShortcutInfoMenu
-import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
 
 @Composable
 internal fun GridItemPopup(
     modifier: Modifier = Modifier,
-    drag: Drag,
     eblanAppWidgetProviderInfosGroup: Map<String, List<EblanAppWidgetProviderInfo>>,
     eblanShortcutInfosGroup: Map<EblanShortcutInfoByGroup, List<EblanShortcutInfo>>,
     gridItem: GridItem,
@@ -73,9 +71,10 @@ internal fun GridItemPopup(
     hasShortcutHostPermission: Boolean,
     popupIntOffset: IntOffset?,
     popupIntSize: IntSize?,
+    isVisibleOverlay: Boolean,
     onDeleteGridItem: (GridItem) -> Unit,
     onDismissRequest: () -> Unit,
-    onDraggingShortcutInfoGridItem: () -> Unit,
+    onUpdateIsDragging: (Boolean) -> Unit,
     onEdit: (String) -> Unit,
     onInfo: (Long, String) -> Unit,
     onResize: (GridItem) -> Unit,
@@ -135,12 +134,12 @@ internal fun GridItemPopup(
         ) {
             GridItemPopupContent(
                 modifier = modifier,
-                drag = drag,
                 eblanAppWidgetProviderInfosGroup = eblanAppWidgetProviderInfosGroup,
                 eblanShortcutInfosGroup = eblanShortcutInfosGroup,
                 gridItem = gridItem,
                 gridItemSettings = gridItemSettings,
                 hasShortcutHostPermission = hasShortcutHostPermission,
+                isVisibleOverlay = isVisibleOverlay,
                 onDeleteGridItem = {
                     onDeleteGridItem(it)
 
@@ -149,7 +148,7 @@ internal fun GridItemPopup(
                 onDismissRequest = {
                     transitionState.targetState = false
                 },
-                onDraggingShortcutInfoGridItem = onDraggingShortcutInfoGridItem,
+                onUpdateIsDragging = onUpdateIsDragging,
                 onEdit = {
                     onEdit(it)
 
@@ -193,7 +192,6 @@ internal fun GridItemPopup(
 @Composable
 internal fun FolderGridItemPopup(
     modifier: Modifier = Modifier,
-    drag: Drag,
     eblanAppWidgetProviderInfosGroup: Map<String, List<EblanAppWidgetProviderInfo>>,
     eblanShortcutInfosGroup: Map<EblanShortcutInfoByGroup, List<EblanShortcutInfo>>,
     gridItemSettings: GridItemSettings,
@@ -201,10 +199,11 @@ internal fun FolderGridItemPopup(
     popupIntOffset: IntOffset?,
     popupIntSize: IntSize?,
     moveFolderGridItem: GridItem,
+    isVisibleOverlay: Boolean,
     onDeleteGridItem: (GridItem) -> Unit,
     onDismissFolder: () -> Unit,
     onDismissRequest: () -> Unit,
-    onDraggingShortcutInfoGridItem: () -> Unit,
+    onUpdateIsDragging: (Boolean) -> Unit,
     onEdit: (String) -> Unit,
     onInfo: (Long, String) -> Unit,
     onTapShortcutInfo: (
@@ -267,12 +266,12 @@ internal fun FolderGridItemPopup(
         ) {
             FolderGridItemPopupContent(
                 modifier = modifier,
-                drag = drag,
                 eblanAppWidgetProviderInfosGroup = eblanAppWidgetProviderInfosGroup,
                 eblanShortcutInfosGroup = eblanShortcutInfosGroup,
                 gridItemSettings = gridItemSettings,
                 moveFolderGridItem = moveFolderGridItem,
                 hasShortcutHostPermission = hasShortcutHostPermission,
+                isVisibleOverlay = isVisibleOverlay,
                 onDeleteGridItem = {
                     onDeleteGridItem(it)
 
@@ -286,7 +285,7 @@ internal fun FolderGridItemPopup(
                 onDismissRequest = {
                     transitionState.targetState = false
                 },
-                onDraggingShortcutInfoGridItem = onDraggingShortcutInfoGridItem,
+                onUpdateIsDragging = onUpdateIsDragging,
                 onEdit = {
                     onEdit(it)
 
@@ -325,15 +324,15 @@ internal fun FolderGridItemPopup(
 @Composable
 private fun GridItemPopupContent(
     modifier: Modifier = Modifier,
-    drag: Drag,
     eblanAppWidgetProviderInfosGroup: Map<String, List<EblanAppWidgetProviderInfo>>,
     eblanShortcutInfosGroup: Map<EblanShortcutInfoByGroup, List<EblanShortcutInfo>>,
     gridItem: GridItem,
     gridItemSettings: GridItemSettings,
     hasShortcutHostPermission: Boolean,
+    isVisibleOverlay: Boolean,
     onDeleteGridItem: (GridItem) -> Unit,
     onDismissRequest: () -> Unit,
-    onDraggingShortcutInfoGridItem: () -> Unit,
+    onUpdateIsDragging: (Boolean) -> Unit,
     onEdit: (String) -> Unit,
     onInfo: (
         serialNumber: Long,
@@ -364,7 +363,6 @@ private fun GridItemPopupContent(
             when (val data = gridItem.data) {
                 is GridItemData.ApplicationInfo -> {
                     ApplicationInfoGridItemMenu(
-                        drag = drag,
                         eblanAppWidgetProviderInfosByPackageName = eblanAppWidgetProviderInfosGroup[data.packageName],
                         eblanShortcutInfosByPackageName = eblanShortcutInfosGroup[
                             EblanShortcutInfoByGroup(
@@ -375,13 +373,14 @@ private fun GridItemPopupContent(
                         gridItemSettings = gridItemSettings,
                         hasShortcutHostPermission = hasShortcutHostPermission,
                         icon = data.icon,
+                        isVisibleOverlay = isVisibleOverlay,
                         onDelete = {
                             onDeleteGridItem(gridItem)
 
                             onDismissRequest()
                         },
-                        onDraggingShortcutInfoGridItem = {
-                            onDraggingShortcutInfoGridItem()
+                        onUpdateIsDragging = { isDragging ->
+                            onUpdateIsDragging(isDragging)
 
                             onDismissRequest()
                         },
@@ -430,6 +429,7 @@ private fun GridItemPopupContent(
                         },
                         onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                         onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                        onDismiss = onDismissRequest,
                     )
                 }
 
@@ -478,16 +478,16 @@ private fun GridItemPopupContent(
 @Composable
 private fun FolderGridItemPopupContent(
     modifier: Modifier = Modifier,
-    drag: Drag,
     eblanAppWidgetProviderInfosGroup: Map<String, List<EblanAppWidgetProviderInfo>>,
     eblanShortcutInfosGroup: Map<EblanShortcutInfoByGroup, List<EblanShortcutInfo>>,
     gridItemSettings: GridItemSettings,
     moveFolderGridItem: GridItem,
     hasShortcutHostPermission: Boolean,
+    isVisibleOverlay: Boolean,
     onDeleteGridItem: (GridItem) -> Unit,
     onDismissFolder: () -> Unit,
     onDismissRequest: () -> Unit,
-    onDraggingShortcutInfoGridItem: () -> Unit,
+    onUpdateIsDragging: (Boolean) -> Unit,
     onEdit: (String) -> Unit,
     onInfo: (Long, String) -> Unit,
     onTapShortcutInfo: (
@@ -515,7 +515,6 @@ private fun FolderGridItemPopupContent(
                 is GridItemData.ApplicationInfo -> {
                     ApplicationInfoFolderGridItemPopupContent(
                         modifier = modifier,
-                        drag = drag,
                         eblanAppWidgetProviderInfosByPackageName = eblanAppWidgetProviderInfosGroup[data.packageName],
                         eblanShortcutInfosByPackageName = eblanShortcutInfosGroup[
                             EblanShortcutInfoByGroup(
@@ -526,8 +525,9 @@ private fun FolderGridItemPopupContent(
                         gridItemSettings = gridItemSettings,
                         hasShortcutHostPermission = hasShortcutHostPermission,
                         icon = data.icon,
-                        onDraggingShortcutInfoGridItem = {
-                            onDraggingShortcutInfoGridItem()
+                        isVisibleOverlay = isVisibleOverlay,
+                        onUpdateIsDragging = { isDragging ->
+                            onUpdateIsDragging(isDragging)
 
                             onDismissRequest()
 
@@ -580,6 +580,7 @@ private fun FolderGridItemPopupContent(
                             onDismissRequest()
                         },
                         onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                        onDismiss = onDismissRequest,
                     )
                 }
 
@@ -609,14 +610,14 @@ private fun FolderGridItemPopupContent(
 @Composable
 private fun ApplicationInfoFolderGridItemPopupContent(
     modifier: Modifier = Modifier,
-    drag: Drag,
     eblanAppWidgetProviderInfosByPackageName: List<EblanAppWidgetProviderInfo>?,
     eblanShortcutInfosByPackageName: List<EblanShortcutInfo>?,
     gridItemSettings: GridItemSettings,
     hasShortcutHostPermission: Boolean,
     icon: String?,
+    isVisibleOverlay: Boolean,
     onDelete: () -> Unit,
-    onDraggingShortcutInfoGridItem: () -> Unit,
+    onUpdateIsDragging: (Boolean) -> Unit,
     onEdit: () -> Unit,
     onTapShortcutInfo: (
         serialNumber: Long,
@@ -634,6 +635,7 @@ private fun ApplicationInfoFolderGridItemPopupContent(
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onInfo: () -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
+    onDismiss: () -> Unit,
 ) {
     Surface(
         modifier = modifier.width(IntrinsicSize.Max),
@@ -649,11 +651,11 @@ private fun ApplicationInfoFolderGridItemPopupContent(
                 ) {
                     ShortcutInfoMenu(
                         modifier = modifier,
-                        drag = drag,
                         eblanShortcutInfosGroup = eblanShortcutInfosByPackageName,
                         gridItemSettings = gridItemSettings,
                         icon = icon,
-                        onDraggingShortcutInfoGridItem = onDraggingShortcutInfoGridItem,
+                        isVisibleOverlay = isVisibleOverlay,
+                        onUpdateIsDragging = onUpdateIsDragging,
                         onTapShortcutInfo = onTapShortcutInfo,
                         onUpdateGridItemSource = onUpdateGridItemSource,
                         onUpdateImageBitmap = onUpdateImageBitmap,
@@ -661,6 +663,7 @@ private fun ApplicationInfoFolderGridItemPopupContent(
                         onUpdateSharedElementKey = onUpdateSharedElementKey,
                         onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                         onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                        onDismiss = onDismiss,
                     )
 
                     Spacer(modifier = Modifier.height(5.dp))
@@ -704,14 +707,14 @@ private fun ApplicationInfoFolderGridItemPopupContent(
 @Composable
 private fun ApplicationInfoGridItemMenu(
     modifier: Modifier = Modifier,
-    drag: Drag,
     eblanAppWidgetProviderInfosByPackageName: List<EblanAppWidgetProviderInfo>?,
     eblanShortcutInfosByPackageName: List<EblanShortcutInfo>?,
     gridItemSettings: GridItemSettings,
     hasShortcutHostPermission: Boolean,
     icon: String?,
+    isVisibleOverlay: Boolean,
     onDelete: () -> Unit,
-    onDraggingShortcutInfoGridItem: () -> Unit,
+    onUpdateIsDragging: (Boolean) -> Unit,
     onEdit: () -> Unit,
     onInfo: () -> Unit,
     onResize: () -> Unit,
@@ -730,6 +733,7 @@ private fun ApplicationInfoGridItemMenu(
     onWidgets: () -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
+    onDismiss: () -> Unit,
 ) {
     Column(
         modifier = modifier,
@@ -740,11 +744,11 @@ private fun ApplicationInfoGridItemMenu(
         ) {
             ShortcutInfoMenu(
                 modifier = modifier,
-                drag = drag,
                 eblanShortcutInfosGroup = eblanShortcutInfosByPackageName,
                 gridItemSettings = gridItemSettings,
                 icon = icon,
-                onDraggingShortcutInfoGridItem = onDraggingShortcutInfoGridItem,
+                isVisibleOverlay = isVisibleOverlay,
+                onUpdateIsDragging = onUpdateIsDragging,
                 onTapShortcutInfo = onTapShortcutInfo,
                 onUpdateGridItemSource = onUpdateGridItemSource,
                 onUpdateImageBitmap = onUpdateImageBitmap,
@@ -752,6 +756,7 @@ private fun ApplicationInfoGridItemMenu(
                 onUpdateSharedElementKey = onUpdateSharedElementKey,
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                 onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                onDismiss = onDismiss,
             )
 
             Spacer(modifier = Modifier.height(5.dp))
