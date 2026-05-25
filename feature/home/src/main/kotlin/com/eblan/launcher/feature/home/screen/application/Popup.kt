@@ -221,7 +221,6 @@ internal fun PrivateApplicationInfoPopup(
     eblanShortcutInfosGroup: Map<EblanShortcutInfoByGroup, List<EblanShortcutInfo>>,
     eblanApplicationInfo: EblanApplicationInfo?,
     hasShortcutHostPermission: Boolean,
-    paddingValues: PaddingValues,
     popupIntOffset: IntOffset,
     popupIntSize: IntSize,
     onDismissRequest: () -> Unit,
@@ -237,39 +236,49 @@ internal fun PrivateApplicationInfoPopup(
 ) {
     requireNotNull(eblanApplicationInfo)
 
-    val density = LocalDensity.current
-
-    val layoutDirection = LocalLayoutDirection.current
-
     val launcherApps = LocalLauncherApps.current
 
-    val leftPadding = with(density) {
-        paddingValues.calculateLeftPadding(layoutDirection).roundToPx()
+    val transitionState = remember {
+        MutableTransitionState(false).apply {
+            targetState = true
+        }
     }
 
-    val topPadding = with(density) {
-        paddingValues.calculateTopPadding().roundToPx()
+    LaunchedEffect(
+        key1 = transitionState.targetState,
+        key2 = transitionState.isIdle,
+    ) {
+        if (!transitionState.targetState && transitionState.isIdle) {
+            onDismissRequest()
+        }
     }
 
-    val x = popupIntOffset.x - leftPadding
+    BackHandler(enabled = transitionState.targetState) {
+        transitionState.targetState = false
+    }
 
-    val y = popupIntOffset.y - topPadding
-
-    Layout(
-        modifier = modifier
-            .pointerInput(Unit) {
-                detectTapGestures(
-                    onPress = {
-                        awaitRelease()
-
-                        onDismissRequest()
-                    },
-                )
-            }
-            .fillMaxSize()
-            .padding(paddingValues),
-        content = {
+    Popup(
+        popupPositionProvider = GridItemPopupPositionProvider(
+            popupIntOffset = popupIntOffset,
+            popupIntSize = popupIntSize,
+        ),
+        onDismissRequest = {
+            transitionState.targetState = false
+        },
+    ) {
+        AnimatedVisibility(
+            visibleState = transitionState,
+            enter = fadeIn(tween()) + scaleIn(
+                initialScale = 0.8f,
+                animationSpec = tween(),
+            ),
+            exit = fadeOut(tween()) + scaleOut(
+                targetScale = 0.8f,
+                animationSpec = tween(),
+            ),
+        ) {
             PrivateApplicationInfoMenu(
+                modifier = modifier,
                 drag = drag,
                 eblanShortcutInfosGroup = eblanShortcutInfosGroup[
                     EblanShortcutInfoByGroup(
@@ -283,22 +292,22 @@ internal fun PrivateApplicationInfoPopup(
                         serialNumber = eblanApplicationInfo.serialNumber,
                         componentName = eblanApplicationInfo.componentName,
                         sourceBounds = Rect(
-                            x,
-                            y,
-                            x + popupIntSize.width,
-                            y + popupIntSize.height,
+                            popupIntOffset.x,
+                            popupIntOffset.y,
+                            popupIntOffset.x + popupIntSize.width,
+                            popupIntOffset.y + popupIntSize.height,
                         ),
                     )
 
-                    onDismissRequest()
+                    transitionState.targetState = false
                 },
                 onEdit = {
-                    onDismissRequest()
-
                     onEditApplicationInfo(
                         eblanApplicationInfo.serialNumber,
                         eblanApplicationInfo.componentName,
                     )
+
+                    transitionState.targetState = false
                 },
                 onTapShortcutInfo = { serialNumber, packageName, shortcutId ->
                     onTapShortcutInfo(
@@ -307,30 +316,8 @@ internal fun PrivateApplicationInfoPopup(
                         shortcutId,
                     )
 
-                    onDismissRequest()
+                    transitionState.targetState = false
                 },
-            )
-        },
-    ) { measurables, constraints ->
-        val placeable = measurables.first().measure(
-            constraints.copy(
-                minWidth = 0,
-                minHeight = 0,
-            ),
-        )
-
-        val parentCenterX = x + popupIntSize.width / 2
-
-        val topY = y - placeable.height
-        val bottomY = y + popupIntSize.height
-
-        val childX = parentCenterX - placeable.width / 2
-        val childY = if (topY < 0) bottomY else topY
-
-        layout(constraints.maxWidth, constraints.maxHeight) {
-            placeable.place(
-                x = childX.coerceIn(0, constraints.maxWidth - placeable.width),
-                y = childY.coerceIn(0, constraints.maxHeight - placeable.height),
             )
         }
     }
