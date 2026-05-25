@@ -336,7 +336,6 @@ internal fun PrivateApplicationInfoPopup(
             ),
         ) {
             PrivateApplicationInfoMenu(
-                modifier = modifier,
                 drag = drag,
                 eblanShortcutInfosGroup = eblanShortcutInfosGroup[
                     EblanShortcutInfoByGroup(

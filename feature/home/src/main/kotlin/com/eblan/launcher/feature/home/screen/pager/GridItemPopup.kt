@@ -313,7 +313,6 @@ internal fun FolderGridItemPopup(
             ),
         ) {
             FolderGridItemPopupContent(
-                modifier = modifier,
                 eblanAppWidgetProviderInfosGroup = eblanAppWidgetProviderInfosGroup,
                 eblanShortcutInfosGroup = eblanShortcutInfosGroup,
                 gridItemSettings = gridItemSettings,
