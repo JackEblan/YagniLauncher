@@ -37,17 +37,16 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
             extensions.configure<ApplicationExtension> {
                 configureAndroid()
 
+                configureCompose(this)
+
                 defaultConfig {
                     targetSdk = 36
-                }
-
-                buildFeatures {
-                    compose = true
                 }
 
                 packaging {
                     jniLibs.keepDebugSymbols.add("**/*.so")
                 }
+
             }
 
             extensions.configure<KotlinAndroidProjectExtension> {
@@ -55,8 +54,6 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
                     jvmTarget = JvmTarget.JVM_11
                 }
             }
-
-            configureCompose()
         }
     }
 }

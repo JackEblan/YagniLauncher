@@ -27,7 +27,13 @@ fun CommonExtension.configureAndroid() {
     }
 }
 
-internal fun Project.configureCompose() {
+internal fun Project.configureCompose(commonExtension: CommonExtension) {
+    commonExtension.apply {
+        buildFeatures.apply {
+            compose = true
+        }
+    }
+
     dependencies {
         add("implementation", platform(libs.androidx.compose.bom))
         add("debugImplementation", libs.androidx.compose.ui.tooling)
