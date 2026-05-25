@@ -820,7 +820,7 @@ private fun SharedTransitionScope.EblanApplicationInfoItem(
 
     Row(
         modifier = modifier
-            .pointerInput(key1 = drag) {
+            .pointerInput(key1 = isVisibleOverlay) {
                 detectTapGestures(
                     onTap = if (!isVisibleOverlay) {
                         {

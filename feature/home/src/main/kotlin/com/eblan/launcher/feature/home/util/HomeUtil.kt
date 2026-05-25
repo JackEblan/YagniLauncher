@@ -175,7 +175,7 @@ internal suspend fun PressGestureScope.onPress(
     isVisibleOverlay: Boolean,
     scale: Animatable<Float, AnimationVector1D>,
 ) {
-    if (!isVisibleOverlay) return
+    if (isVisibleOverlay) return
 
     awaitRelease()
 
