@@ -18,6 +18,7 @@
 package com.eblan.launcher.feature.home.screen.application
 
 import android.graphics.Rect
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -109,6 +110,10 @@ internal fun ApplicationInfoPopup(
     val x = popupIntOffset.x - leftPadding
 
     val y = popupIntOffset.y - topPadding
+
+    BackHandler {
+        onDismissRequest()
+    }
 
     Layout(
         modifier = modifier

@@ -103,9 +103,14 @@ internal fun GridItemPopup(
     val topPadding = with(density) {
         paddingValues.calculateTopPadding().roundToPx()
     }
+
     val x = popupIntOffset.x - leftPadding
 
     val y = popupIntOffset.y - topPadding
+
+    BackHandler {
+        onDismissRequest()
+    }
 
     Layout(
         modifier = modifier
@@ -322,10 +327,6 @@ private fun GridItemPopupContent(
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
-    BackHandler {
-        onDismissRequest()
-    }
-
     Surface(
         modifier = modifier.padding(5.dp),
         shape = RoundedCornerShape(30.dp),
