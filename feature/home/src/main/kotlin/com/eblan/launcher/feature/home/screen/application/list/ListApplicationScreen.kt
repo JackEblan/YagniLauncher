@@ -21,6 +21,7 @@ import android.graphics.Rect
 import android.os.Build
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
@@ -66,6 +67,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.layer.drawLayer
@@ -792,6 +794,8 @@ private fun SharedTransitionScope.EblanApplicationInfoItem(
 
     val alpha = if (isLongPress) 0f else 1f
 
+    val scale = remember { Animatable(1f) }
+
     LaunchedEffect(key1 = drag) {
         handleDragEblanApplicationInfoItem(
             appDrawerSettings = appDrawerSettings,
@@ -799,6 +803,7 @@ private fun SharedTransitionScope.EblanApplicationInfoItem(
             eblanApplicationInfo = eblanApplicationInfo,
             isLongPress = isLongPress,
             isVisibleOverlay = isVisibleOverlay,
+            scale = scale,
             onDismiss = onDismiss,
             onUpdateGridItemSource = onUpdateGridItemSource,
             onUpdateIsDragging = onUpdateIsDragging,
@@ -825,6 +830,7 @@ private fun SharedTransitionScope.EblanApplicationInfoItem(
                                 launcherApps = launcherApps,
                                 leftPadding = leftPadding,
                                 topPadding = topPadding,
+                                scale = scale,
                             )
                         }
                     },
@@ -837,6 +843,7 @@ private fun SharedTransitionScope.EblanApplicationInfoItem(
                                 intOffset = intOffset,
                                 intSize = intSize,
                                 keyboardController = keyboardController,
+                                scale = scale,
                                 onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
                                 onUpdateImageBitmap = onUpdateImageBitmap,
                                 onUpdateIsLongPress = { isLongPress = it },
@@ -865,6 +872,7 @@ private fun SharedTransitionScope.EblanApplicationInfoItem(
             contentDescription = null,
             modifier = Modifier
                 .size(appDrawerSettings.gridItemSettings.iconSize.dp)
+                .scale(scale.value)
                 .alpha(alpha)
                 .drawWithContent {
                     graphicsLayer.record {

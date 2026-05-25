@@ -18,6 +18,7 @@
 package com.eblan.launcher.feature.home.screen.application.list
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -41,6 +42,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -169,9 +171,17 @@ private fun PrivateSpaceEblanApplicationInfoItem(
 
     var isLongPress by remember { mutableStateOf(false) }
 
+    val scale = remember { Animatable(1f) }
+
     LaunchedEffect(key1 = drag) {
-        if (drag == Drag.Cancel && isLongPress) {
+        if ((drag == Drag.Cancel || drag == Drag.End) && isLongPress) {
             onUpdatePopupMenu(false)
+
+            scale.stop()
+
+            if (scale.value < 1f) {
+                scale.animateTo(1f)
+            }
         }
     }
 
@@ -189,22 +199,26 @@ private fun PrivateSpaceEblanApplicationInfoItem(
                                 launcherApps = launcherApps,
                                 leftPadding = leftPadding,
                                 topPadding = topPadding,
+                                scale = scale,
                             )
                         }
                     },
                     onLongPress = {
-                        handleOnLongPressPrivateSpaceEblanApplicationInfoItem(
-                            onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
-                            eblanApplicationInfo = eblanApplicationInfo,
-                            onUpdateOverlayBounds = onUpdateOverlayBounds,
-                            intOffset = intOffset,
-                            intSize = intSize,
-                            onUpdatePopupMenu = onUpdatePopupMenu,
-                            keyboardController = keyboardController,
-                            onUpdateIsLongPress = { newIsLongPress ->
-                                isLongPress = newIsLongPress
-                            },
-                        )
+                        scope.launch {
+                            handleOnLongPressPrivateSpaceEblanApplicationInfoItem(
+                                onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
+                                eblanApplicationInfo = eblanApplicationInfo,
+                                onUpdateOverlayBounds = onUpdateOverlayBounds,
+                                intOffset = intOffset,
+                                intSize = intSize,
+                                scale = scale,
+                                onUpdatePopupMenu = onUpdatePopupMenu,
+                                keyboardController = keyboardController,
+                                onUpdateIsLongPress = { newIsLongPress ->
+                                    isLongPress = newIsLongPress
+                                },
+                            )
+                        }
                     },
                 )
             }
@@ -227,7 +241,8 @@ private fun PrivateSpaceEblanApplicationInfoItem(
 
                     intSize = layoutCoordinates.size
                 }
-                .size(appDrawerSettings.gridItemSettings.iconSize.dp),
+                .size(appDrawerSettings.gridItemSettings.iconSize.dp)
+                .scale(scale.value),
         )
 
         Spacer(modifier = Modifier.width(10.dp))
