@@ -84,6 +84,7 @@ import com.eblan.launcher.feature.home.util.getVerticalArrangement
 import com.eblan.launcher.feature.home.util.handleDrag
 import com.eblan.launcher.feature.home.util.onDoubleTap
 import com.eblan.launcher.feature.home.util.onLongPress
+import com.eblan.launcher.feature.home.util.onPress
 import com.eblan.launcher.ui.local.LocalAppWidgetHost
 import com.eblan.launcher.ui.local.LocalAppWidgetManager
 import com.eblan.launcher.ui.local.LocalLauncherApps
@@ -470,13 +471,7 @@ private fun SharedTransitionScope.InteractiveApplicationInfoGridItem(
                         null
                     },
                     onPress = {
-                        awaitRelease()
-
-                        scale.stop()
-
-                        if (scale.value < 1f) {
-                            scale.animateTo(1f)
-                        }
+                        onPress(scale = scale)
                     },
                 )
             }
@@ -878,13 +873,7 @@ private fun SharedTransitionScope.InteractiveShortcutInfoGridItem(
                         null
                     },
                     onPress = {
-                        awaitRelease()
-
-                        scale.stop()
-
-                        if (scale.value < 1f) {
-                            scale.animateTo(1f)
-                        }
+                        onPress(scale = scale)
                     },
                 )
             }
@@ -1139,13 +1128,7 @@ private fun SharedTransitionScope.InteractiveFolderGridItem(
                         null
                     },
                     onPress = {
-                        awaitRelease()
-
-                        scale.stop()
-
-                        if (scale.value < 1f) {
-                            scale.animateTo(1f)
-                        }
+                        onPress(scale = scale)
                     },
                 )
             }
@@ -1406,13 +1389,7 @@ private fun SharedTransitionScope.InteractiveShortcutConfigGridItem(
                         null
                     },
                     onPress = {
-                        awaitRelease()
-
-                        scale.stop()
-
-                        if (scale.value < 1f) {
-                            scale.animateTo(1f)
-                        }
+                        onPress(scale = scale)
                     },
                 )
             }

@@ -22,6 +22,7 @@ import android.content.Intent
 import android.graphics.Rect
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationVector1D
+import androidx.compose.foundation.gestures.PressGestureScope
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.compose.ui.unit.IntOffset
@@ -168,6 +169,18 @@ internal suspend fun onLongPress(
         intOffset,
         intSize,
     )
+}
+
+internal suspend fun PressGestureScope.onPress(scale: Animatable<Float, AnimationVector1D>) {
+    try {
+        awaitRelease()
+    } finally {
+        if (scale.isRunning) {
+            scale.stop()
+
+            scale.animateTo(1f)
+        }
+    }
 }
 
 internal suspend fun handleDrag(

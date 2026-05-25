@@ -77,6 +77,7 @@ import com.eblan.launcher.feature.home.util.getVerticalArrangement
 import com.eblan.launcher.feature.home.util.handleDrag
 import com.eblan.launcher.feature.home.util.onDoubleTap
 import com.eblan.launcher.feature.home.util.onLongPress
+import com.eblan.launcher.feature.home.util.onPress
 import com.eblan.launcher.ui.local.LocalLauncherApps
 import com.eblan.launcher.ui.local.LocalSettings
 import kotlinx.coroutines.launch
@@ -368,13 +369,7 @@ private fun SharedTransitionScope.InteractiveFolderApplicationInfoGridItem(
                         null
                     },
                     onPress = {
-                        awaitRelease()
-
-                        scale.stop()
-
-                        if (scale.value < 1f) {
-                            scale.animateTo(1f)
-                        }
+                        onPress(scale = scale)
                     },
                 )
             }
@@ -597,13 +592,7 @@ private fun SharedTransitionScope.InteractiveFolderShortcutInfoGridItem(
                         null
                     },
                     onPress = {
-                        awaitRelease()
-
-                        scale.stop()
-
-                        if (scale.value < 1f) {
-                            scale.animateTo(1f)
-                        }
+                        onPress(scale = scale)
                     },
                 )
             }
@@ -845,13 +834,7 @@ private fun SharedTransitionScope.InteractiveFolderShortcutConfigGridItem(
                         null
                     },
                     onPress = {
-                        awaitRelease()
-
-                        scale.stop()
-
-                        if (scale.value < 1f) {
-                            scale.animateTo(1f)
-                        }
+                        onPress(scale = scale)
                     },
                 )
             }

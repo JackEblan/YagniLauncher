@@ -71,6 +71,7 @@ import com.eblan.launcher.feature.home.screen.application.handleDragPrivateSpace
 import com.eblan.launcher.feature.home.screen.application.handleOnLongPressPrivateSpaceEblanApplicationInfoItem
 import com.eblan.launcher.feature.home.screen.application.handleOnTapEblanApplicationInfoItem
 import com.eblan.launcher.feature.home.util.getSystemTextColor
+import com.eblan.launcher.feature.home.util.onPress
 import com.eblan.launcher.ui.local.LocalLauncherApps
 import kotlinx.coroutines.launch
 import kotlin.uuid.ExperimentalUuidApi
@@ -217,6 +218,9 @@ private fun PrivateSpaceEblanApplicationInfoItem(
                                 },
                             )
                         }
+                    },
+                    onPress = {
+                        onPress(scale = scale)
                     },
                 )
             }

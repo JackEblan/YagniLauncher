@@ -83,6 +83,7 @@ import com.eblan.launcher.feature.home.model.SharedElementKey
 import com.eblan.launcher.feature.home.util.getHorizontalAlignment
 import com.eblan.launcher.feature.home.util.getSystemTextColor
 import com.eblan.launcher.feature.home.util.getVerticalArrangement
+import com.eblan.launcher.feature.home.util.onPress
 import com.eblan.launcher.framework.launcherapps.AndroidLauncherAppsWrapper
 import com.eblan.launcher.ui.local.LocalLauncherApps
 import kotlinx.coroutines.launch
@@ -226,13 +227,7 @@ internal fun SharedTransitionScope.EblanApplicationInfoItem(
                         }
                     },
                     onPress = {
-                        awaitRelease()
-
-                        scale.stop()
-
-                        if (scale.value < 1f) {
-                            scale.animateTo(1f)
-                        }
+                        onPress(scale = scale)
                     },
                 )
             }

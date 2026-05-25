@@ -80,6 +80,7 @@ import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.util.getHorizontalAlignment
 import com.eblan.launcher.feature.home.util.getSystemTextColor
 import com.eblan.launcher.feature.home.util.getVerticalArrangement
+import com.eblan.launcher.feature.home.util.onPress
 import com.eblan.launcher.ui.local.LocalLauncherApps
 import com.eblan.launcher.ui.local.LocalPackageManager
 import com.eblan.launcher.ui.local.LocalUserManager
@@ -323,6 +324,9 @@ internal fun PrivateSpaceEblanApplicationInfoItem(
                                 },
                             )
                         }
+                    },
+                    onPress = {
+                        onPress(scale = scale)
                     },
                 )
             }

@@ -122,6 +122,7 @@ import com.eblan.launcher.feature.home.screen.application.handleOnLongPressEblan
 import com.eblan.launcher.feature.home.screen.application.handleOnTapEblanApplicationInfoItem
 import com.eblan.launcher.feature.home.screen.application.vertical.DragAndDropEblanApplicationInfos
 import com.eblan.launcher.feature.home.util.getSystemTextColor
+import com.eblan.launcher.feature.home.util.onPress
 import com.eblan.launcher.ui.local.LocalLauncherApps
 import com.eblan.launcher.ui.local.LocalPackageManager
 import com.eblan.launcher.ui.local.LocalUserManager
@@ -853,6 +854,9 @@ private fun SharedTransitionScope.EblanApplicationInfoItem(
                                 onUpdateSharedElementKey = onUpdateSharedElementKey,
                             )
                         }
+                    },
+                    onPress = {
+                        onPress(scale = scale)
                     },
                 )
             }
