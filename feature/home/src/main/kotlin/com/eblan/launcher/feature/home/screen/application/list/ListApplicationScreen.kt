@@ -330,6 +330,7 @@ internal fun SharedTransitionScope.ListApplicationScreen(
             popupIntOffset = popupIntOffset,
             popupIntSize = popupIntSize,
             isVisibleOverlay = isVisibleOverlay,
+            paddingValues = paddingValues,
             onDismissRequest = {
                 showPopupApplicationMenu = false
             },
@@ -378,6 +379,7 @@ internal fun SharedTransitionScope.ListApplicationScreen(
             hasShortcutHostPermission = hasShortcutHostPermission,
             popupIntOffset = popupIntOffset,
             popupIntSize = popupIntSize,
+            paddingValues = paddingValues,
             onDismissRequest = {
                 showPrivatePopupApplicationMenu = false
             },
