@@ -30,9 +30,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import com.eblan.launcher.domain.model.EblanAction
 import com.eblan.launcher.domain.model.EblanActionType
@@ -153,4 +155,30 @@ internal fun Modifier.whiteBox(
     }
 } else {
     this
+}
+
+internal fun Modifier.popup(
+    width: Int,
+    height: Int,
+    x: Int,
+    y: Int,
+): Modifier = layout { measurable, constraints ->
+    val placeable = measurable.measure(
+        constraints.copy(minWidth = 0, minHeight = 0),
+    )
+
+    val parentCenterX = x + width / 2
+
+    val topY = y - placeable.height
+    val bottomY = y + height
+
+    val childX = parentCenterX - placeable.width / 2
+    val childY = if (topY < 0) bottomY else topY
+
+    layout(constraints.maxWidth, constraints.maxHeight) {
+        placeable.place(
+            x = childX.coerceIn(0, constraints.maxWidth - placeable.width),
+            y = childY.coerceIn(0, constraints.maxHeight - placeable.height),
+        )
+    }
 }

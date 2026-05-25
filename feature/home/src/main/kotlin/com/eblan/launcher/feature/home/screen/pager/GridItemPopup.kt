@@ -27,6 +27,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
@@ -48,6 +49,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.IntOffset
@@ -63,6 +65,7 @@ import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.GridItemSettings
 import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.feature.home.component.ShortcutInfoMenu
+import com.eblan.launcher.feature.home.component.popup
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
 
@@ -87,10 +90,7 @@ internal fun GridItemPopup(
     onTapShortcutInfo: (Long, String, String) -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
-    onUpdateOverlayBounds: (
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) -> Unit,
+    onUpdateOverlayBounds: (intOffset: IntOffset, intSize: IntSize) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onWidgets: (EblanApplicationInfoGroup) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
@@ -105,18 +105,18 @@ internal fun GridItemPopup(
     val layoutDirection = LocalLayoutDirection.current
 
     val transitionState = remember {
-        MutableTransitionState(false).apply {
-            targetState = true
-        }
+        MutableTransitionState(false).apply { targetState = true }
     }
 
-    val leftPadding = with(density) {
-        paddingValues.calculateLeftPadding(layoutDirection).roundToPx()
-    }
+    val leftPadding =
+        with(density) {
+            paddingValues.calculateLeftPadding(layoutDirection).roundToPx()
+        }
 
     val topPadding = with(density) {
         paddingValues.calculateTopPadding().roundToPx()
     }
+
     val x = popupIntOffset.x - leftPadding
 
     val y = popupIntOffset.y - topPadding
@@ -134,106 +134,76 @@ internal fun GridItemPopup(
         transitionState.targetState = false
     }
 
-    Layout(
+    Box(
         modifier = modifier
             .pointerInput(Unit) {
                 detectTapGestures(
                     onPress = {
                         awaitRelease()
 
-                        onDismissRequest()
+                        transitionState.targetState = false
                     },
                 )
             }
             .fillMaxSize()
             .padding(paddingValues),
-        content = {
-            AnimatedVisibility(
-                visibleState = transitionState,
-                enter = fadeIn(tween()) + scaleIn(
-                    initialScale = 0.8f,
-                    animationSpec = tween(),
-                ),
-                exit = fadeOut(tween()) + scaleOut(
-                    targetScale = 0.8f,
-                    animationSpec = tween(),
-                ),
-            ) {
-                GridItemPopupContent(
-                    modifier = modifier,
-                    eblanAppWidgetProviderInfosGroup = eblanAppWidgetProviderInfosGroup,
-                    eblanShortcutInfosGroup = eblanShortcutInfosGroup,
-                    gridItem = gridItem,
-                    gridItemSettings = gridItemSettings,
-                    hasShortcutHostPermission = hasShortcutHostPermission,
-                    isVisibleOverlay = isVisibleOverlay,
-                    onDeleteGridItem = {
-                        onDeleteGridItem(it)
-
-                        transitionState.targetState = false
-                    },
-                    onDismissRequest = {
-                        transitionState.targetState = false
-                    },
-                    onUpdateIsDragging = onUpdateIsDragging,
-                    onEdit = {
-                        onEdit(it)
-
-                        transitionState.targetState = false
-                    },
-                    onInfo = { userSerialNumber, packageName ->
-                        onInfo(userSerialNumber, packageName)
-
-                        transitionState.targetState = false
-                    },
-                    onResize = {
-                        onResize(it)
-
-                        transitionState.targetState = false
-                    },
-                    onTapShortcutInfo = { userSerialNumber, packageName, id ->
-                        onTapShortcutInfo(
-                            userSerialNumber,
-                            packageName,
-                            id,
-                        )
-
-                        transitionState.targetState = false
-                    },
-                    onUpdateGridItemSource = onUpdateGridItemSource,
-                    onUpdateImageBitmap = onUpdateImageBitmap,
-                    onUpdateOverlayBounds = onUpdateOverlayBounds,
-                    onUpdateSharedElementKey = onUpdateSharedElementKey,
-                    onWidgets = {
-                        onWidgets(it)
-
-                        transitionState.targetState = false
-                    },
-                    onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                    onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
-                )
-            }
-        },
-    ) { measurables, constraints ->
-        val placeable = measurables.first().measure(
-            constraints.copy(
-                minWidth = 0,
-                minHeight = 0,
+    ) {
+        AnimatedVisibility(
+            modifier = Modifier.popup(
+                width = popupIntSize.width,
+                height = popupIntSize.height,
+                x = x,
+                y = y,
             ),
-        )
+            visibleState = transitionState,
+            enter = fadeIn(tween()) + scaleIn(initialScale = 0.8f, animationSpec = tween()),
+            exit = fadeOut(tween()) + scaleOut(targetScale = 0.8f, animationSpec = tween()),
+        ) {
+            GridItemPopupContent(
+                eblanAppWidgetProviderInfosGroup = eblanAppWidgetProviderInfosGroup,
+                eblanShortcutInfosGroup = eblanShortcutInfosGroup,
+                gridItem = gridItem,
+                gridItemSettings = gridItemSettings,
+                hasShortcutHostPermission = hasShortcutHostPermission,
+                isVisibleOverlay = isVisibleOverlay,
+                onDeleteGridItem = {
+                    onDeleteGridItem(it)
 
-        val parentCenterX = x + popupIntSize.width / 2
+                    transitionState.targetState = false
+                },
+                onDismissRequest = { transitionState.targetState = false },
+                onUpdateIsDragging = onUpdateIsDragging,
+                onEdit = {
+                    onEdit(it)
 
-        val topY = y - placeable.height
-        val bottomY = y + popupIntSize.height
+                    transitionState.targetState = false
+                },
+                onInfo = { serialNumber, packageName ->
+                    onInfo(serialNumber, packageName)
 
-        val childX = parentCenterX - placeable.width / 2
-        val childY = if (topY < 0) bottomY else topY
+                    transitionState.targetState = false
+                },
+                onResize = {
+                    onResize(it)
 
-        layout(constraints.maxWidth, constraints.maxHeight) {
-            placeable.place(
-                x = childX.coerceIn(0, constraints.maxWidth - placeable.width),
-                y = childY.coerceIn(0, constraints.maxHeight - placeable.height),
+                    transitionState.targetState = false
+                },
+                onTapShortcutInfo = { serialNumber, packageName, shortcutId ->
+                    onTapShortcutInfo(serialNumber, packageName, shortcutId)
+
+                    transitionState.targetState = false
+                },
+                onUpdateGridItemSource = onUpdateGridItemSource,
+                onUpdateImageBitmap = onUpdateImageBitmap,
+                onUpdateOverlayBounds = onUpdateOverlayBounds,
+                onUpdateSharedElementKey = onUpdateSharedElementKey,
+                onWidgets = {
+                    onWidgets(it)
+
+                    transitionState.targetState = false
+                },
+                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
             )
         }
     }
@@ -311,106 +281,89 @@ internal fun FolderGridItemPopup(
         transitionState.targetState = false
     }
 
-    Layout(
+    Box(
         modifier = modifier
             .pointerInput(Unit) {
                 detectTapGestures(
                     onPress = {
                         awaitRelease()
 
-                        onDismissRequest()
+                        transitionState.targetState = false
                     },
                 )
             }
             .fillMaxSize()
             .padding(paddingValues),
-        content = {
-            AnimatedVisibility(
-                visibleState = transitionState,
-                enter = fadeIn(tween()) + scaleIn(
-                    initialScale = 0.8f,
-                    animationSpec = tween(),
-                ),
-                exit = fadeOut(tween()) + scaleOut(
-                    targetScale = 0.8f,
-                    animationSpec = tween(),
-                ),
-            ) {
-                FolderGridItemPopupContent(
-                    modifier = modifier,
-                    eblanAppWidgetProviderInfosGroup = eblanAppWidgetProviderInfosGroup,
-                    eblanShortcutInfosGroup = eblanShortcutInfosGroup,
-                    gridItemSettings = gridItemSettings,
-                    moveFolderGridItem = moveFolderGridItem,
-                    hasShortcutHostPermission = hasShortcutHostPermission,
-                    isVisibleOverlay = isVisibleOverlay,
-                    onDeleteGridItem = {
-                        onDeleteGridItem(it)
-
-                        transitionState.targetState = false
-                    },
-                    onDismissFolder = {
-                        onDismissFolder()
-
-                        transitionState.targetState = false
-                    },
-                    onDismissRequest = {
-                        transitionState.targetState = false
-                    },
-                    onUpdateIsDragging = onUpdateIsDragging,
-                    onEdit = {
-                        onEdit(it)
-
-                        transitionState.targetState = false
-                    },
-                    onInfo = { serialNumber, packageName ->
-                        onInfo(serialNumber, packageName)
-
-                        transitionState.targetState = false
-                    },
-                    onTapShortcutInfo = { serialNumber, packageName, shortcutId ->
-                        onTapShortcutInfo(
-                            serialNumber,
-                            packageName,
-                            shortcutId,
-                        )
-
-                        transitionState.targetState = false
-                    },
-                    onUpdateGridItemSource = onUpdateGridItemSource,
-                    onUpdateImageBitmap = onUpdateImageBitmap,
-                    onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                    onUpdateOverlayBounds = onUpdateOverlayBounds,
-                    onUpdateSharedElementKey = onUpdateSharedElementKey,
-                    onWidgets = {
-                        onWidgets(it)
-
-                        transitionState.targetState = false
-                    },
-                    onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
-                )
-            }
-        },
-    ) { measurables, constraints ->
-        val placeable = measurables.first().measure(
-            constraints.copy(
-                minWidth = 0,
-                minHeight = 0,
+    ) {
+        AnimatedVisibility(
+            modifier = Modifier.popup(
+                width = popupIntSize.width,
+                height = popupIntSize.height,
+                x = x,
+                y = y,
             ),
-        )
+            visibleState = transitionState,
+            enter = fadeIn(tween()) + scaleIn(
+                initialScale = 0.8f,
+                animationSpec = tween(),
+            ),
+            exit = fadeOut(tween()) + scaleOut(
+                targetScale = 0.8f,
+                animationSpec = tween(),
+            ),
+        ) {
+            FolderGridItemPopupContent(
+                modifier = modifier,
+                eblanAppWidgetProviderInfosGroup = eblanAppWidgetProviderInfosGroup,
+                eblanShortcutInfosGroup = eblanShortcutInfosGroup,
+                gridItemSettings = gridItemSettings,
+                moveFolderGridItem = moveFolderGridItem,
+                hasShortcutHostPermission = hasShortcutHostPermission,
+                isVisibleOverlay = isVisibleOverlay,
+                onDeleteGridItem = {
+                    onDeleteGridItem(it)
 
-        val parentCenterX = x + popupIntSize.width / 2
+                    transitionState.targetState = false
+                },
+                onDismissFolder = {
+                    onDismissFolder()
 
-        val topY = y - placeable.height
-        val bottomY = y + popupIntSize.height
+                    transitionState.targetState = false
+                },
+                onDismissRequest = {
+                    transitionState.targetState = false
+                },
+                onUpdateIsDragging = onUpdateIsDragging,
+                onEdit = {
+                    onEdit(it)
 
-        val childX = parentCenterX - placeable.width / 2
-        val childY = if (topY < 0) bottomY else topY
+                    transitionState.targetState = false
+                },
+                onInfo = { serialNumber, packageName ->
+                    onInfo(serialNumber, packageName)
 
-        layout(constraints.maxWidth, constraints.maxHeight) {
-            placeable.place(
-                x = childX.coerceIn(0, constraints.maxWidth - placeable.width),
-                y = childY.coerceIn(0, constraints.maxHeight - placeable.height),
+                    transitionState.targetState = false
+                },
+                onTapShortcutInfo = { serialNumber, packageName, shortcutId ->
+                    onTapShortcutInfo(
+                        serialNumber,
+                        packageName,
+                        shortcutId,
+                    )
+
+                    transitionState.targetState = false
+                },
+                onUpdateGridItemSource = onUpdateGridItemSource,
+                onUpdateImageBitmap = onUpdateImageBitmap,
+                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                onUpdateOverlayBounds = onUpdateOverlayBounds,
+                onUpdateSharedElementKey = onUpdateSharedElementKey,
+                onWidgets = {
+                    onWidgets(it)
+
+                    transitionState.targetState = false
+                },
+                onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
             )
         }
     }

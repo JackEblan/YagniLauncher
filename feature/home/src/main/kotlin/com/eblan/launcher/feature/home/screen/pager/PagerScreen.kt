@@ -932,6 +932,7 @@ internal fun PagerScreen(
                 popupIntOffset = pagerScreenState.popupIntOffset,
                 popupIntSize = pagerScreenState.popupIntSize,
                 isVisibleOverlay = isVisibleOverlay,
+                paddingValues = paddingValues,
                 onDeleteGridItem = onDeleteGridItem,
                 onDismissRequest = pagerScreenState::dismissGridItemPopup,
                 onUpdateIsDragging = pagerScreenState::updateIsDragging,
@@ -1052,6 +1053,7 @@ internal fun PagerScreen(
                 popupIntSize = pagerScreenState.popupIntSize,
                 moveFolderGridItem = moveGridItemResult.movingGridItem,
                 isVisibleOverlay = isVisibleOverlay,
+                paddingValues = paddingValues,
                 onDeleteGridItem = onDeleteGridItem,
                 onDismissFolder = {
                     pagerScreenState.dismissFolder(onUpdateFolderGridItemId = onUpdateFolderGridItemId)
