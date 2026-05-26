@@ -118,8 +118,11 @@ class AddPinShortcutToHomeScreenUseCase @Inject constructor(
             swipeDown = eblanAction,
         )
 
+        val gridItems = gridRepository.getGridItems().plus(getFolderGridItemsUseCase())
+            .filter { gridItem -> gridItem.associate == Associate.Grid }
+
         val newGridItem = findAvailableRegionByPage(
-            gridItems = gridRepository.getGridItems().plus(getFolderGridItemsUseCase()),
+            gridItems = gridItems,
             gridItem = gridItem,
             pageCount = pageCount,
             columns = columns,
