@@ -531,13 +531,12 @@ private fun dragDockGridItem(
         currentPage = currentPage,
     )
 
-    val isGridItemSpanWithinBounds = isGridItemSpanWithinBounds(
-        gridItem = moveGridItem,
-        columns = dockColumns,
-        rows = dockRows,
-    )
-
-    if (isGridItemSpanWithinBounds) {
+    if (isGridItemSpanWithinBounds(
+            gridItem = moveGridItem,
+            columns = dockColumns,
+            rows = dockRows,
+        )
+    ) {
         onMoveGridItem(
             moveGridItem,
             dragX,
@@ -658,12 +657,23 @@ private fun getMoveGridItem(
 ): GridItem = when (gridItemSource) {
     is GridItemSource.Existing, is GridItemSource.Folder,
     -> {
+        val (startColumn, startRow) = getStartPosition(
+            x = gridX,
+            y = gridY,
+            cellWidth = cellWidth,
+            cellHeight = cellHeight,
+            columns = columns,
+            rows = rows,
+            columnSpan = gridItem.columnSpan,
+            rowSpan = gridItem.rowSpan,
+        )
+
         when (val data = gridItem.data) {
             is GridItemData.ApplicationInfo -> {
                 gridItem.copy(
                     page = currentPage,
-                    startColumn = gridX / cellWidth,
-                    startRow = gridY / cellHeight,
+                    startColumn = startColumn,
+                    startRow = startRow,
                     data = data.copy(
                         index = -1,
                         folderId = null,
@@ -675,8 +685,8 @@ private fun getMoveGridItem(
             is GridItemData.ShortcutConfig -> {
                 gridItem.copy(
                     page = currentPage,
-                    startColumn = gridX / cellWidth,
-                    startRow = gridY / cellHeight,
+                    startColumn = startColumn,
+                    startRow = startRow,
                     data = data.copy(
                         index = -1,
                         folderId = null,
@@ -688,8 +698,8 @@ private fun getMoveGridItem(
             is GridItemData.ShortcutInfo -> {
                 gridItem.copy(
                     page = currentPage,
-                    startColumn = gridX / cellWidth,
-                    startRow = gridY / cellHeight,
+                    startColumn = startColumn,
+                    startRow = startRow,
                     data = data.copy(
                         index = -1,
                         folderId = null,
@@ -763,6 +773,17 @@ private fun getMoveNewGridItem(
             targetCellHeight = data.targetCellHeight,
         )
 
+        val (startColumn, startRow) = getStartPosition(
+            x = gridX,
+            y = gridY,
+            cellWidth = cellWidth,
+            cellHeight = cellHeight,
+            columns = columns,
+            rows = rows,
+            columnSpan = checkedColumnSpan,
+            rowSpan = checkedRowSpan,
+        )
+
         val newData = data.copy(
             minWidth = checkedMinWidth,
             minHeight = checkedMinHeight,
@@ -770,8 +791,8 @@ private fun getMoveNewGridItem(
 
         gridItem.copy(
             page = currentPage,
-            startColumn = gridX / cellWidth,
-            startRow = gridY / cellHeight,
+            startColumn = startColumn,
+            startRow = startRow,
             columnSpan = checkedColumnSpan.coerceIn(1, columns),
             rowSpan = checkedRowSpan.coerceIn(1, rows),
             data = newData,
@@ -780,10 +801,21 @@ private fun getMoveNewGridItem(
     }
 
     else -> {
+        val (startColumn, startRow) = getStartPosition(
+            x = gridX,
+            y = gridY,
+            cellWidth = cellWidth,
+            cellHeight = cellHeight,
+            columns = columns,
+            rows = rows,
+            columnSpan = gridItem.columnSpan,
+            rowSpan = gridItem.rowSpan,
+        )
+
         gridItem.copy(
             page = currentPage,
-            startColumn = gridX / cellWidth,
-            startRow = gridY / cellHeight,
+            startColumn = startColumn,
+            startRow = startRow,
             associate = associate,
         )
     }
@@ -863,4 +895,29 @@ private fun animateScrollToPageFolder(
     } else {
         onUpdateFolderPageDirection(null)
     }
+}
+
+private fun getStartPosition(
+    x: Int,
+    y: Int,
+    cellWidth: Int,
+    cellHeight: Int,
+    columns: Int,
+    rows: Int,
+    columnSpan: Int,
+    rowSpan: Int,
+): Pair<Int, Int> {
+    val safeColumnSpan = columnSpan.coerceIn(1, columns)
+    val safeRowSpan = rowSpan.coerceIn(1, rows)
+
+    val targetColumn = x / cellWidth
+    val targetRow = y / cellHeight
+
+    val maxStartColumn = (columns - safeColumnSpan).coerceAtLeast(0)
+    val maxStartRow = (rows - safeRowSpan).coerceAtLeast(0)
+
+    val startColumn = targetColumn.coerceIn(0, maxStartColumn)
+    val startRow = targetRow.coerceIn(0, maxStartRow)
+
+    return startColumn to startRow
 }
