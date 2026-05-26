@@ -34,7 +34,6 @@ import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntOffset
-import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import com.eblan.launcher.domain.model.EblanAction
 import com.eblan.launcher.domain.model.EblanActionType
@@ -176,7 +175,7 @@ internal fun Modifier.popup(
     val childY = if (topY < 0) bottomY else topY
 
     layout(constraints.maxWidth, constraints.maxHeight) {
-        placeable.place(
+        placeable.placeRelative(
             x = childX.coerceIn(0, constraints.maxWidth - placeable.width),
             y = childY.coerceIn(0, constraints.maxHeight - placeable.height),
         )
