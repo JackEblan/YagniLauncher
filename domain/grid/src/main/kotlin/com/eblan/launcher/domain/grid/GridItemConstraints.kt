@@ -80,6 +80,36 @@ fun getResolveDirectionByX(
     }
 }
 
+suspend fun getGridItemByCoordinates(
+    id: String,
+    gridItems: List<GridItem>,
+    columns: Int,
+    rows: Int,
+    x: Int,
+    y: Int,
+    gridWidth: Int,
+    gridHeight: Int,
+): GridItem? {
+    val cellWidth = gridWidth / columns
+
+    val cellHeight = gridHeight / rows
+
+    return gridItems.find { gridItem ->
+        currentCoroutineContext().ensureActive()
+
+        val startColumn = x / cellWidth
+
+        val startRow = y / cellHeight
+
+        val columnInSpan =
+            startColumn in gridItem.startColumn until (gridItem.startColumn + gridItem.columnSpan)
+
+        val rowInSpan = startRow in gridItem.startRow until (gridItem.startRow + gridItem.rowSpan)
+
+        gridItem.id != id && rowInSpan && columnInSpan
+    }
+}
+
 fun getRelativeResolveDirection(
     moving: GridItem,
     other: GridItem,

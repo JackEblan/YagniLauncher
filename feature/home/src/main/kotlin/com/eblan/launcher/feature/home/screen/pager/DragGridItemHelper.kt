@@ -698,8 +698,8 @@ private fun getMoveGridItem(
             is GridItemData.ShortcutInfo -> {
                 gridItem.copy(
                     page = currentPage,
-                    startColumn = gridX / cellWidth,
-                    startRow = gridY / cellHeight,
+                    startColumn = startColumn,
+                    startRow = startRow,
                     data = data.copy(
                         index = -1,
                         folderId = null,
@@ -907,11 +907,17 @@ private fun getStartPosition(
     columnSpan: Int,
     rowSpan: Int,
 ): Pair<Int, Int> {
+    val safeColumnSpan = columnSpan.coerceIn(1, columns)
+    val safeRowSpan = rowSpan.coerceIn(1, rows)
+
     val targetColumn = x / cellWidth
     val targetRow = y / cellHeight
 
-    val startColumn = targetColumn.coerceIn(0, columns - columnSpan)
-    val startRow = targetRow.coerceIn(0, rows - rowSpan)
+    val maxStartColumn = (columns - safeColumnSpan).coerceAtLeast(0)
+    val maxStartRow = (rows - safeRowSpan).coerceAtLeast(0)
+
+    val startColumn = targetColumn.coerceIn(0, maxStartColumn)
+    val startRow = targetRow.coerceIn(0, maxStartRow)
 
     return startColumn to startRow
 }

@@ -19,6 +19,7 @@ package com.eblan.launcher.domain.usecase.grid
 
 import com.eblan.launcher.domain.common.Dispatcher
 import com.eblan.launcher.domain.common.EblanDispatchers
+import com.eblan.launcher.domain.grid.getGridItemByCoordinates
 import com.eblan.launcher.domain.grid.getRelativeResolveDirection
 import com.eblan.launcher.domain.grid.getResolveDirectionByX
 import com.eblan.launcher.domain.grid.isGridItemSpanWithinBounds
@@ -74,17 +75,22 @@ class MoveGridItemUseCase @Inject constructor(
                 gridItems.add(movingGridItem)
             }
 
-            val gridItemByCoordinates = gridItems.find { gridItem ->
-                ensureActive()
+            val conflictingGridItemByCoordinates = getGridItemByCoordinates(
+                id = movingGridItem.id,
+                gridItems = gridItems,
+                columns = columns,
+                rows = rows,
+                x = x,
+                y = y,
+                gridWidth = gridWidth,
+                gridHeight = gridHeight,
+            )
 
-                gridItem.id != movingGridItem.id
-            }
-
-            if (gridItemByCoordinates != null) {
+            if (conflictingGridItemByCoordinates != null) {
                 return@withContext handleConflictsOfGridItemCoordinates(
                     gridItems = gridItems,
                     movingGridItem = movingGridItem,
-                    conflictingGridItem = gridItemByCoordinates,
+                    conflictingGridItem = conflictingGridItemByCoordinates,
                     x = x,
                     columns = columns,
                     rows = rows,
@@ -92,7 +98,7 @@ class MoveGridItemUseCase @Inject constructor(
                 )
             }
 
-            val gridItemBySpan = gridItems.find { gridItem ->
+            val conflictingGridItemBySpan = gridItems.find { gridItem ->
                 ensureActive()
 
                 gridItem.id != movingGridItem.id && rectanglesOverlap(
@@ -101,10 +107,10 @@ class MoveGridItemUseCase @Inject constructor(
                 )
             }
 
-            if (gridItemBySpan != null) {
+            if (conflictingGridItemBySpan != null) {
                 return@withContext handleConflictsOfGridItemSpan(
                     movingGridItem = movingGridItem,
-                    conflictingGridItem = gridItemBySpan,
+                    conflictingGridItem = conflictingGridItemBySpan,
                     gridItems = gridItems,
                     columns = columns,
                     rows = rows,
