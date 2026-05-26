@@ -105,7 +105,9 @@ internal fun AppWidgetScreen(
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
-    if (eblanApplicationInfoGroup == null) return
+    requireNotNull(eblanApplicationInfoGroup)
+
+    val lazyListState = rememberLazyListState()
 
     LaunchedEffect(key1 = isPressHome) {
         if (isPressHome && offsetY < screenHeight.toFloat()) {
@@ -137,7 +139,7 @@ internal fun AppWidgetScreen(
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(20.dp)),
         ) {
-            Success(
+            Column(
                 modifier = Modifier
                     .pointerInput(key1 = Unit) {
                         detectVerticalDragGestures(
@@ -153,93 +155,48 @@ internal fun AppWidgetScreen(
                         )
                     }
                     .fillMaxWidth()
-                    .padding(paddingValues),
-                columns = columns,
-                drag = drag,
-                eblanAppWidgetProviderInfos = eblanAppWidgetProviderInfosGroup[eblanApplicationInfoGroup.packageName].orEmpty(),
-                eblanApplicationInfoGroup = eblanApplicationInfoGroup,
-                gridItemSettings = gridItemSettings,
-                rows = rows,
-                screenHeight = screenHeight,
-                screenWidth = screenWidth,
-                onUpdateOverlayBounds = onUpdateOverlayBounds,
-                onUpdateImageBitmap = onUpdateImageBitmap,
-                onUpdateGridItemSource = onUpdateGridItemSource,
-                onUpdateSharedElementKey = onUpdateSharedElementKey,
-                onDismiss = onDismiss,
-                onDismissApplicationScreen = onDismissApplicationScreen,
-                onUpdateIsDragging = onUpdateIsDragging,
-                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
-            )
-        }
-    }
-}
-
-@OptIn(ExperimentalSharedTransitionApi::class)
-@Composable
-private fun Success(
-    modifier: Modifier = Modifier,
-    columns: Int,
-    drag: Drag,
-    eblanAppWidgetProviderInfos: List<EblanAppWidgetProviderInfo>,
-    eblanApplicationInfoGroup: EblanApplicationInfoGroup,
-    gridItemSettings: GridItemSettings,
-    rows: Int,
-    screenHeight: Int,
-    screenWidth: Int,
-    onUpdateOverlayBounds: (IntOffset, IntSize) -> Unit,
-    onUpdateImageBitmap: (ImageBitmap) -> Unit,
-    onUpdateGridItemSource: (GridItemSource) -> Unit,
-    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onDismiss: () -> Unit,
-    onDismissApplicationScreen: () -> Unit,
-    onUpdateIsDragging: (Boolean) -> Unit,
-    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
-    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
-) {
-    val lazyListState = rememberLazyListState()
-
-    Column(
-        modifier = modifier.animateContentSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        AsyncImage(
-            model = eblanApplicationInfoGroup.icon,
-            contentDescription = null,
-            modifier = Modifier.size(40.dp),
-        )
-
-        Spacer(modifier = Modifier.height(5.dp))
-
-        Text(text = eblanApplicationInfoGroup.label.toString())
-
-        Spacer(modifier = Modifier.height(5.dp))
-
-        LazyRow(
-            state = lazyListState,
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center,
-        ) {
-            items(eblanAppWidgetProviderInfos) { eblanAppWidgetProviderInfo ->
-                EblanAppWidgetProviderInfoItem(
-                    columns = columns,
-                    drag = drag,
-                    eblanAppWidgetProviderInfo = eblanAppWidgetProviderInfo,
-                    gridItemSettings = gridItemSettings,
-                    rows = rows,
-                    screenHeight = screenHeight,
-                    screenWidth = screenWidth,
-                    onUpdateOverlayBounds = onUpdateOverlayBounds,
-                    onUpdateImageBitmap = onUpdateImageBitmap,
-                    onUpdateGridItemSource = onUpdateGridItemSource,
-                    onUpdateSharedElementKey = onUpdateSharedElementKey,
-                    onDismiss = onDismiss,
-                    onDismissApplicationScreen = onDismissApplicationScreen,
-                    onUpdateIsDragging = onUpdateIsDragging,
-                    onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                    onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                    .padding(paddingValues)
+                    .animateContentSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                AsyncImage(
+                    model = eblanApplicationInfoGroup.icon,
+                    contentDescription = null,
+                    modifier = Modifier.size(40.dp),
                 )
+
+                Spacer(modifier = Modifier.height(5.dp))
+
+                Text(text = eblanApplicationInfoGroup.label.toString())
+
+                Spacer(modifier = Modifier.height(5.dp))
+
+                LazyRow(
+                    state = lazyListState,
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center,
+                ) {
+                    items(items = eblanAppWidgetProviderInfosGroup[eblanApplicationInfoGroup.packageName].orEmpty()) { eblanAppWidgetProviderInfo ->
+                        EblanAppWidgetProviderInfoItem(
+                            columns = columns,
+                            drag = drag,
+                            eblanAppWidgetProviderInfo = eblanAppWidgetProviderInfo,
+                            gridItemSettings = gridItemSettings,
+                            rows = rows,
+                            screenHeight = screenHeight,
+                            screenWidth = screenWidth,
+                            onUpdateOverlayBounds = onUpdateOverlayBounds,
+                            onUpdateImageBitmap = onUpdateImageBitmap,
+                            onUpdateGridItemSource = onUpdateGridItemSource,
+                            onUpdateSharedElementKey = onUpdateSharedElementKey,
+                            onDismiss = onDismiss,
+                            onDismissApplicationScreen = onDismissApplicationScreen,
+                            onUpdateIsDragging = onUpdateIsDragging,
+                            onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                            onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                        )
+                    }
+                }
             }
         }
     }

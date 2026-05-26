@@ -111,7 +111,7 @@ import kotlin.math.roundToInt
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
-@OptIn(ExperimentalSharedTransitionApi::class)
+@OptIn(ExperimentalSharedTransitionApi::class, ExperimentalMaterial3Api::class, FlowPreview::class)
 @Composable
 internal fun ShortcutConfigScreen(
     modifier: Modifier = Modifier,
@@ -136,65 +136,6 @@ internal fun ShortcutConfigScreen(
     onUpdateIsDragging: (Boolean) -> Unit,
     onVerticalDrag: (Float) -> Unit,
     onDragEnd: (Float) -> Unit,
-    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
-    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
-) {
-    BackHandler(enabled = offsetY < screenHeight.toFloat()) {
-        onDismiss()
-    }
-
-    Surface(
-        modifier = modifier
-            .offset {
-                IntOffset(x = 0, y = offsetY.roundToInt())
-            }
-            .fillMaxSize()
-            .clip(RoundedCornerShape(cornerSize))
-            .alpha(alpha),
-    ) {
-        Success(
-            modifier = modifier,
-            drag = drag,
-            eblanShortcutConfigs = eblanShortcutConfigs,
-            gridItemSettings = gridItemSettings,
-            isPressHome = isPressHome,
-            paddingValues = paddingValues,
-            onDismiss = onDismiss,
-            onDragEnd = onDragEnd,
-            onGetEblanShortcutConfigsByLabel = onGetEblanShortcutConfigsByLabel,
-            onUpdateOverlayBounds = onUpdateOverlayBounds,
-            onVerticalDrag = onVerticalDrag,
-            onUpdateImageBitmap = onUpdateImageBitmap,
-            onUpdateGridItemSource = onUpdateGridItemSource,
-            onUpdateSharedElementKey = onUpdateSharedElementKey,
-            onUpdateIsDragging = onUpdateIsDragging,
-            onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-            onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
-        )
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class, FlowPreview::class)
-@Composable
-private fun Success(
-    modifier: Modifier = Modifier,
-    drag: Drag,
-    eblanShortcutConfigs: Map<EblanUser, Map<EblanApplicationInfoGroup, List<EblanShortcutConfig>>>,
-    gridItemSettings: GridItemSettings,
-    isPressHome: Boolean,
-    paddingValues: PaddingValues,
-    onDismiss: () -> Unit,
-    onDragEnd: (Float) -> Unit,
-    onGetEblanShortcutConfigsByLabel: (String) -> Unit,
-    onUpdateOverlayBounds: (
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) -> Unit,
-    onVerticalDrag: (Float) -> Unit,
-    onUpdateImageBitmap: (ImageBitmap) -> Unit,
-    onUpdateGridItemSource: (GridItemSource) -> Unit,
-    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onUpdateIsDragging: (Boolean) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
@@ -234,52 +175,84 @@ private fun Success(
         }
     }
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(
-                top = paddingValues.calculateTopPadding(),
-                start = paddingValues.calculateLeftPadding(layoutDirection),
-                end = paddingValues.calculateEndPadding(layoutDirection),
-            ),
-    ) {
-        SearchBar(
-            state = searchBarState,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(10.dp),
-            inputField = {
-                SearchBarDefaults.InputField(
-                    textFieldState = textFieldState,
-                    searchBarState = searchBarState,
-                    leadingIcon = {
-                        Icon(
-                            imageVector = EblanLauncherIcons.Search,
-                            contentDescription = null,
-                        )
-                    },
-                    onSearch = { scope.launch { searchBarState.animateToCollapsed() } },
-                    placeholder = { Text(text = "Search Applications") },
-                )
-            },
-        )
+    BackHandler(enabled = offsetY < screenHeight.toFloat()) {
+        onDismiss()
+    }
 
-        if (eblanShortcutConfigs.keys.size > 1) {
-            EblanShortcutConfigTabRow(
-                currentPage = horizontalPagerState.currentPage,
-                eblanShortcutConfigs = eblanShortcutConfigs,
-                onAnimateScrollToPage = horizontalPagerState::animateScrollToPage,
+    Surface(
+        modifier = modifier
+            .offset {
+                IntOffset(x = 0, y = offsetY.roundToInt())
+            }
+            .fillMaxSize()
+            .clip(RoundedCornerShape(cornerSize))
+            .alpha(alpha),
+    ) {
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(
+                    top = paddingValues.calculateTopPadding(),
+                    start = paddingValues.calculateLeftPadding(layoutDirection),
+                    end = paddingValues.calculateEndPadding(layoutDirection),
+                ),
+        ) {
+            SearchBar(
+                state = searchBarState,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp),
+                inputField = {
+                    SearchBarDefaults.InputField(
+                        textFieldState = textFieldState,
+                        searchBarState = searchBarState,
+                        leadingIcon = {
+                            Icon(
+                                imageVector = EblanLauncherIcons.Search,
+                                contentDescription = null,
+                            )
+                        },
+                        onSearch = { scope.launch { searchBarState.animateToCollapsed() } },
+                        placeholder = { Text(text = "Search Applications") },
+                    )
+                },
             )
 
-            HorizontalPager(
-                modifier = Modifier.fillMaxSize(),
-                state = horizontalPagerState,
-            ) { index ->
+            if (eblanShortcutConfigs.keys.size > 1) {
+                EblanShortcutConfigTabRow(
+                    currentPage = horizontalPagerState.currentPage,
+                    eblanShortcutConfigs = eblanShortcutConfigs,
+                    onAnimateScrollToPage = horizontalPagerState::animateScrollToPage,
+                )
+
+                HorizontalPager(
+                    modifier = Modifier.fillMaxSize(),
+                    state = horizontalPagerState,
+                ) { index ->
+                    EblanShortcutConfigsPage(
+                        drag = drag,
+                        eblanShortcutConfigs = eblanShortcutConfigs,
+                        gridItemSettings = gridItemSettings,
+                        index = index,
+                        paddingValues = paddingValues,
+                        onDragEnd = onDragEnd,
+                        onUpdateOverlayBounds = onUpdateOverlayBounds,
+                        onVerticalDrag = onVerticalDrag,
+                        onUpdateImageBitmap = onUpdateImageBitmap,
+                        onUpdateGridItemSource = onUpdateGridItemSource,
+                        onUpdateSharedElementKey = onUpdateSharedElementKey,
+                        onDismiss = onDismiss,
+                        onUpdateIsDragging = onUpdateIsDragging,
+                        onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                        onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                    )
+                }
+            } else {
                 EblanShortcutConfigsPage(
                     drag = drag,
                     eblanShortcutConfigs = eblanShortcutConfigs,
                     gridItemSettings = gridItemSettings,
-                    index = index,
+                    index = 0,
                     paddingValues = paddingValues,
                     onDragEnd = onDragEnd,
                     onUpdateOverlayBounds = onUpdateOverlayBounds,
@@ -293,24 +266,6 @@ private fun Success(
                     onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                 )
             }
-        } else {
-            EblanShortcutConfigsPage(
-                drag = drag,
-                eblanShortcutConfigs = eblanShortcutConfigs,
-                gridItemSettings = gridItemSettings,
-                index = 0,
-                paddingValues = paddingValues,
-                onDragEnd = onDragEnd,
-                onUpdateOverlayBounds = onUpdateOverlayBounds,
-                onVerticalDrag = onVerticalDrag,
-                onUpdateImageBitmap = onUpdateImageBitmap,
-                onUpdateGridItemSource = onUpdateGridItemSource,
-                onUpdateSharedElementKey = onUpdateSharedElementKey,
-                onDismiss = onDismiss,
-                onUpdateIsDragging = onUpdateIsDragging,
-                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
-            )
         }
     }
 }

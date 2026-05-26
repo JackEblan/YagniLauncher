@@ -101,7 +101,7 @@ import kotlin.math.roundToInt
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
-@OptIn(ExperimentalSharedTransitionApi::class)
+@OptIn(ExperimentalSharedTransitionApi::class, ExperimentalMaterial3Api::class, FlowPreview::class)
 @Composable
 internal fun WidgetScreen(
     modifier: Modifier = Modifier,
@@ -129,70 +129,6 @@ internal fun WidgetScreen(
     onUpdateIsDragging: (Boolean) -> Unit,
     onVerticalDrag: (Float) -> Unit,
     onDragEnd: (Float) -> Unit,
-    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
-    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
-) {
-    Surface(
-        modifier = modifier
-            .offset {
-                IntOffset(x = 0, y = offsetY.roundToInt())
-            }
-            .fillMaxSize()
-            .clip(RoundedCornerShape(cornerSize))
-            .alpha(alpha),
-    ) {
-        Success(
-            columns = columns,
-            drag = drag,
-            eblanAppWidgetProviderInfos = eblanAppWidgetProviderInfos,
-            gridItemSettings = gridItemSettings,
-            isPressHome = isPressHome,
-            paddingValues = paddingValues,
-            rows = rows,
-            screenHeight = screenHeight,
-            screenWidth = screenWidth,
-            offsetY = offsetY,
-            onDismiss = onDismiss,
-            onDragEnd = onDragEnd,
-            onGetEblanAppWidgetProviderInfosByLabel = onGetEblanAppWidgetProviderInfosByLabel,
-            onUpdateOverlayBounds = onUpdateOverlayBounds,
-            onVerticalDrag = onVerticalDrag,
-            onUpdateImageBitmap = onUpdateImageBitmap,
-            onUpdateGridItemSource = onUpdateGridItemSource,
-            onUpdateSharedElementKey = onUpdateSharedElementKey,
-            onUpdateIsDragging = onUpdateIsDragging,
-            onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-            onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
-        )
-    }
-}
-
-@OptIn(ExperimentalSharedTransitionApi::class, ExperimentalMaterial3Api::class, FlowPreview::class)
-@Composable
-private fun Success(
-    modifier: Modifier = Modifier,
-    columns: Int,
-    drag: Drag,
-    eblanAppWidgetProviderInfos: Map<EblanApplicationInfoGroup, List<EblanAppWidgetProviderInfo>>,
-    gridItemSettings: GridItemSettings,
-    isPressHome: Boolean,
-    paddingValues: PaddingValues,
-    rows: Int,
-    screenHeight: Int,
-    screenWidth: Int,
-    offsetY: Float,
-    onDismiss: () -> Unit,
-    onDragEnd: (Float) -> Unit,
-    onGetEblanAppWidgetProviderInfosByLabel: (String) -> Unit,
-    onUpdateOverlayBounds: (
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) -> Unit,
-    onVerticalDrag: (Float) -> Unit,
-    onUpdateImageBitmap: (ImageBitmap) -> Unit,
-    onUpdateGridItemSource: (GridItemSource) -> Unit,
-    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onUpdateIsDragging: (Boolean) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
@@ -253,73 +189,83 @@ private fun Success(
         onDismiss()
     }
 
-    Column(
+    Surface(
         modifier = modifier
-            .run {
-                if (!canScroll) {
-                    nestedScroll(nestedScrollConnection)
-                } else {
-                    this
-                }
+            .offset {
+                IntOffset(x = 0, y = offsetY.roundToInt())
             }
             .fillMaxSize()
-            .padding(
-                top = paddingValues.calculateTopPadding(),
-                start = paddingValues.calculateStartPadding(layoutDirection),
-                end = paddingValues.calculateEndPadding(layoutDirection),
-            ),
+            .clip(RoundedCornerShape(cornerSize))
+            .alpha(alpha),
     ) {
-        SearchBar(
-            state = searchBarState,
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(10.dp),
-            inputField = {
-                SearchBarDefaults.InputField(
-                    textFieldState = textFieldState,
-                    searchBarState = searchBarState,
-                    leadingIcon = {
-                        Icon(
-                            imageVector = EblanLauncherIcons.Search,
-                            contentDescription = null,
-                        )
-                    },
-                    onSearch = { scope.launch { searchBarState.animateToCollapsed() } },
-                    placeholder = { Text(text = "Search Widgets") },
-                )
-            },
-        )
-
-        LazyColumn(
-            state = lazyListState,
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(bottom = paddingValues.calculateBottomPadding()),
-            overscrollEffect = if (canScroll) {
-                overscrollEffect
-            } else {
-                rememberOverscrollEffect()
-            },
+                .run {
+                    if (!canScroll) {
+                        nestedScroll(nestedScrollConnection)
+                    } else {
+                        this
+                    }
+                }
+                .fillMaxSize()
+                .padding(
+                    top = paddingValues.calculateTopPadding(),
+                    start = paddingValues.calculateStartPadding(layoutDirection),
+                    end = paddingValues.calculateEndPadding(layoutDirection),
+                ),
         ) {
-            items(eblanAppWidgetProviderInfos.keys.toList()) { eblanApplicationInfoGroup ->
-                key(eblanApplicationInfoGroup.packageName) {
-                    EblanApplicationInfoItem(
-                        columns = columns,
-                        drag = drag,
-                        eblanAppWidgetProviderInfos = eblanAppWidgetProviderInfos,
-                        eblanApplicationInfoGroup = eblanApplicationInfoGroup,
-                        gridItemSettings = gridItemSettings,
-                        rows = rows,
-                        screenHeight = screenHeight,
-                        screenWidth = screenWidth,
-                        onUpdateOverlayBounds = onUpdateOverlayBounds,
-                        onUpdateImageBitmap = onUpdateImageBitmap,
-                        onUpdateGridItemSource = onUpdateGridItemSource,
-                        onUpdateSharedElementKey = onUpdateSharedElementKey,
-                        onDismiss = onDismiss,
-                        onUpdateIsDragging = onUpdateIsDragging,
-                        onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                        onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+            SearchBar(
+                state = searchBarState,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp),
+                inputField = {
+                    SearchBarDefaults.InputField(
+                        textFieldState = textFieldState,
+                        searchBarState = searchBarState,
+                        leadingIcon = {
+                            Icon(
+                                imageVector = EblanLauncherIcons.Search,
+                                contentDescription = null,
+                            )
+                        },
+                        onSearch = { scope.launch { searchBarState.animateToCollapsed() } },
+                        placeholder = { Text(text = "Search Widgets") },
                     )
+                },
+            )
+
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                state = lazyListState,
+                contentPadding = PaddingValues(bottom = paddingValues.calculateBottomPadding()),
+                overscrollEffect = if (canScroll) {
+                    overscrollEffect
+                } else {
+                    rememberOverscrollEffect()
+                },
+            ) {
+                items(eblanAppWidgetProviderInfos.keys.toList()) { eblanApplicationInfoGroup ->
+                    key(eblanApplicationInfoGroup.packageName) {
+                        EblanApplicationInfoItem(
+                            columns = columns,
+                            drag = drag,
+                            eblanAppWidgetProviderInfos = eblanAppWidgetProviderInfos,
+                            eblanApplicationInfoGroup = eblanApplicationInfoGroup,
+                            gridItemSettings = gridItemSettings,
+                            rows = rows,
+                            screenHeight = screenHeight,
+                            screenWidth = screenWidth,
+                            onUpdateOverlayBounds = onUpdateOverlayBounds,
+                            onUpdateImageBitmap = onUpdateImageBitmap,
+                            onUpdateGridItemSource = onUpdateGridItemSource,
+                            onUpdateSharedElementKey = onUpdateSharedElementKey,
+                            onDismiss = onDismiss,
+                            onUpdateIsDragging = onUpdateIsDragging,
+                            onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                            onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                        )
+                    }
                 }
             }
         }
