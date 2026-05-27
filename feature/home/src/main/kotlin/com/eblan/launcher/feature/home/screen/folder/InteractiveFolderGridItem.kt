@@ -98,6 +98,8 @@ internal fun SharedTransitionScope.InteractiveFolderGridItemContent(
     sharedElementKey: SharedElementKey,
     moveGridItemResult: MoveGridItemResult?,
     progress: Float,
+    isDragging: Boolean,
+    isCloseFolderGridItemPopup: Boolean,
     onOpenAppDrawer: () -> Unit,
     onTapApplicationInfo: (
         serialNumber: Long,
@@ -152,6 +154,8 @@ internal fun SharedTransitionScope.InteractiveFolderGridItemContent(
                 sharedElementKey = sharedElementKey,
                 statusBarNotifications = statusBarNotifications,
                 padding = padding,
+                isDragging = isDragging,
+                isCloseFolderGridItemPopup = isCloseFolderGridItemPopup,
                 onUpdateIsCloseFolderGridItemPopup = onUpdateIsCloseFolderGridItemPopup,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
@@ -180,6 +184,8 @@ internal fun SharedTransitionScope.InteractiveFolderGridItemContent(
                 newGridItemSource = newGridItemSource,
                 sharedElementKey = sharedElementKey,
                 padding = padding,
+                isDragging = isDragging,
+                isCloseFolderGridItemPopup = isCloseFolderGridItemPopup,
                 onUpdateIsCloseFolderGridItemPopup = onUpdateIsCloseFolderGridItemPopup,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
@@ -207,6 +213,8 @@ internal fun SharedTransitionScope.InteractiveFolderGridItemContent(
                 newGridItemSource = newGridItemSource,
                 sharedElementKey = sharedElementKey,
                 padding = padding,
+                isDragging = isDragging,
+                isCloseFolderGridItemPopup = isCloseFolderGridItemPopup,
                 onUpdateIsCloseFolderGridItemPopup = onUpdateIsCloseFolderGridItemPopup,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
@@ -243,6 +251,8 @@ private fun SharedTransitionScope.InteractiveFolderApplicationInfoGridItem(
     sharedElementKey: SharedElementKey,
     statusBarNotifications: Map<String, Int>,
     padding: Dp,
+    isDragging: Boolean,
+    isCloseFolderGridItemPopup: Boolean,
     onUpdateIsCloseFolderGridItemPopup: (Boolean) -> Unit,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
@@ -300,12 +310,18 @@ private fun SharedTransitionScope.InteractiveFolderApplicationInfoGridItem(
 
     val scale = remember { Animatable(1f) }
 
-    LaunchedEffect(key1 = drag) {
+    LaunchedEffect(
+        drag,
+        hasInteraction,
+        isDragging,
+        isCloseFolderGridItemPopup,
+    ) {
         handleDrag(
             drag = drag,
-            isSelected = isSelected,
-            isVisibleOverlay = isVisibleOverlay,
+            hasInteraction = hasInteraction,
             scale = scale,
+            isDragging = isDragging,
+            isCloseGridItemPopup = isCloseFolderGridItemPopup,
             onUpdateIsDragging = onUpdateIsDragging,
             onUpdateIsCloseGridItemPopup = onUpdateIsCloseFolderGridItemPopup,
         )
@@ -471,6 +487,8 @@ private fun SharedTransitionScope.InteractiveFolderShortcutInfoGridItem(
     newGridItemSource: GridItemSource,
     sharedElementKey: SharedElementKey,
     padding: Dp,
+    isDragging: Boolean,
+    isCloseFolderGridItemPopup: Boolean,
     onUpdateIsCloseFolderGridItemPopup: (Boolean) -> Unit,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
@@ -523,12 +541,18 @@ private fun SharedTransitionScope.InteractiveFolderShortcutInfoGridItem(
 
     val scale = remember { Animatable(1f) }
 
-    LaunchedEffect(key1 = drag) {
+    LaunchedEffect(
+        drag,
+        hasInteraction,
+        isDragging,
+        isCloseFolderGridItemPopup,
+    ) {
         handleDrag(
             drag = drag,
-            isSelected = isSelected,
-            isVisibleOverlay = isVisibleOverlay,
+            hasInteraction = hasInteraction,
             scale = scale,
+            isDragging = isDragging,
+            isCloseGridItemPopup = isCloseFolderGridItemPopup,
             onUpdateIsDragging = onUpdateIsDragging,
             onUpdateIsCloseGridItemPopup = onUpdateIsCloseFolderGridItemPopup,
         )
@@ -694,6 +718,8 @@ private fun SharedTransitionScope.InteractiveFolderShortcutConfigGridItem(
     newGridItemSource: GridItemSource,
     sharedElementKey: SharedElementKey,
     padding: Dp,
+    isDragging: Boolean,
+    isCloseFolderGridItemPopup: Boolean,
     onUpdateIsCloseFolderGridItemPopup: (Boolean) -> Unit,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
@@ -774,12 +800,18 @@ private fun SharedTransitionScope.InteractiveFolderShortcutConfigGridItem(
 
     val scale = remember { Animatable(1f) }
 
-    LaunchedEffect(key1 = drag) {
+    LaunchedEffect(
+        drag,
+        hasInteraction,
+        isDragging,
+        isCloseFolderGridItemPopup,
+    ) {
         handleDrag(
             drag = drag,
-            isSelected = isSelected,
-            isVisibleOverlay = isVisibleOverlay,
+            hasInteraction = hasInteraction,
             scale = scale,
+            isDragging = isDragging,
+            isCloseGridItemPopup = isCloseFolderGridItemPopup,
             onUpdateIsDragging = onUpdateIsDragging,
             onUpdateIsCloseGridItemPopup = onUpdateIsCloseFolderGridItemPopup,
         )

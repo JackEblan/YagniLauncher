@@ -188,13 +188,18 @@ internal suspend fun PressGestureScope.onPress(
 
 internal suspend fun handleDrag(
     drag: Drag,
-    isSelected: Boolean,
-    isVisibleOverlay: Boolean,
+    hasInteraction: Boolean,
+    isDragging: Boolean,
+    isCloseGridItemPopup: Boolean,
     scale: Animatable<Float, AnimationVector1D>,
     onUpdateIsDragging: (Boolean) -> Unit,
     onUpdateIsCloseGridItemPopup: (Boolean) -> Unit,
 ) {
-    if (drag == Drag.Dragging && isSelected && isVisibleOverlay) {
+    if (drag == Drag.Dragging &&
+        hasInteraction &&
+        !isDragging &&
+        !isCloseGridItemPopup
+    ) {
         onUpdateIsDragging(true)
 
         onUpdateIsCloseGridItemPopup(true)

@@ -108,8 +108,9 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
     newGridItemSource: GridItemSource,
     sharedElementKey: SharedElementKey,
     moveGridItemResult: MoveGridItemResult?,
-    isDragging: Boolean,
     lockMovement: Boolean,
+    isDragging: Boolean,
+    isCloseGridItemPopup: Boolean,
     onOpenAppDrawer: () -> Unit,
     onTapApplicationInfo: (
         serialNumber: Long,
@@ -183,13 +184,14 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
                 iconPackFilePaths = iconPackFilePaths,
                 isScrollInProgress = isScrollInProgress,
                 isSelected = isSelected,
-                isShowWhiteBox = true,
                 isVisibleFolder = isVisibleFolder,
                 isVisibleOverlay = isVisibleOverlay,
                 newGridItemSource = newGridItemSource,
                 sharedElementKey = sharedElementKey,
                 statusBarNotifications = statusBarNotifications,
                 textColor = currentTextColor,
+                isDragging = isDragging,
+                isCloseGridItemPopup = isCloseGridItemPopup,
                 onUpdateIsCloseGridItemPopup = onUpdateIsCloseGridItemPopup,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
@@ -211,12 +213,13 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
                 drag = drag,
                 isScrollInProgress = isScrollInProgress,
                 isSelected = isSelected,
-                isShowWhiteBox = true,
                 isVisibleOverlay = isVisibleOverlay,
                 newGridItemSource = newGridItemSource,
                 sharedElementKey = sharedElementKey,
                 textColor = currentTextColor,
                 gridItem = gridItem,
+                isDragging = isDragging,
+                isCloseGridItemPopup = isCloseGridItemPopup,
                 onUpdateIsCloseGridItemPopup = onUpdateIsCloseGridItemPopup,
                 onShowGridItemPopup = onShowGridItemPopup,
                 onUpdateGridItemSource = onUpdateGridItemSource,
@@ -239,12 +242,13 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
                 hasShortcutHostPermission = hasShortcutHostPermission,
                 isScrollInProgress = isScrollInProgress,
                 isSelected = isSelected,
-                isShowWhiteBox = true,
                 isVisibleFolder = isVisibleFolder,
                 isVisibleOverlay = isVisibleOverlay,
                 newGridItemSource = newGridItemSource,
                 sharedElementKey = sharedElementKey,
                 textColor = currentTextColor,
+                isDragging = isDragging,
+                isCloseGridItemPopup = isCloseGridItemPopup,
                 onUpdateIsCloseGridItemPopup = onUpdateIsCloseGridItemPopup,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
@@ -269,15 +273,15 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
                 iconPackFilePaths = iconPackFilePaths,
                 isScrollInProgress = isScrollInProgress,
                 isSelected = isSelected,
-                isShowWhiteBox = true,
                 isVisibleFolder = isVisibleFolder,
                 isVisibleOverlay = isVisibleOverlay,
                 newGridItemSource = newGridItemSource,
                 sharedElementKey = sharedElementKey,
                 textColor = currentTextColor,
                 moveGridItemResult = moveGridItemResult,
-                isDragging = isDragging,
                 lockMovement = lockMovement,
+                isDragging = isDragging,
+                isCloseGridItemPopup = isCloseGridItemPopup,
                 onUpdateIsCloseGridItemPopup = onUpdateIsCloseGridItemPopup,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
@@ -303,12 +307,13 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
                 gridItemSettings = currentGridItemSettings,
                 isScrollInProgress = isScrollInProgress,
                 isSelected = isSelected,
-                isShowWhiteBox = true,
                 isVisibleFolder = isVisibleFolder,
                 isVisibleOverlay = isVisibleOverlay,
                 newGridItemSource = newGridItemSource,
                 sharedElementKey = sharedElementKey,
                 textColor = currentTextColor,
+                isDragging = isDragging,
+                isCloseGridItemPopup = isCloseGridItemPopup,
                 onUpdateIsCloseGridItemPopup = onUpdateIsCloseGridItemPopup,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
@@ -336,13 +341,14 @@ private fun SharedTransitionScope.InteractiveApplicationInfoGridItem(
     iconPackFilePaths: Map<String, String>,
     isScrollInProgress: Boolean,
     isSelected: Boolean,
-    isShowWhiteBox: Boolean,
     isVisibleFolder: Boolean,
     isVisibleOverlay: Boolean,
     newGridItemSource: GridItemSource,
     sharedElementKey: SharedElementKey,
     statusBarNotifications: Map<String, Int>,
     textColor: Color,
+    isDragging: Boolean,
+    isCloseGridItemPopup: Boolean,
     onUpdateIsCloseGridItemPopup: (Boolean) -> Unit,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
@@ -396,18 +402,24 @@ private fun SharedTransitionScope.InteractiveApplicationInfoGridItem(
 
     val hasInteraction = isSelected && isVisibleOverlay
 
-    val isVisibleWhiteBox = isShowWhiteBox && isSelected && drag == Drag.Dragging
+    val isVisibleWhiteBox = isSelected && drag == Drag.Dragging
 
     val alpha = if (hasInteraction) 0f else 1f
 
     val scale = remember { Animatable(1f) }
 
-    LaunchedEffect(key1 = drag) {
+    LaunchedEffect(
+        drag,
+        hasInteraction,
+        isDragging,
+        isCloseGridItemPopup,
+    ) {
         handleDrag(
             drag = drag,
-            isSelected = isSelected,
-            isVisibleOverlay = isVisibleOverlay,
+            hasInteraction = hasInteraction,
             scale = scale,
+            isDragging = isDragging,
+            isCloseGridItemPopup = isCloseGridItemPopup,
             onUpdateIsDragging = onUpdateIsDragging,
             onUpdateIsCloseGridItemPopup = onUpdateIsCloseGridItemPopup,
         )
@@ -571,12 +583,13 @@ private fun SharedTransitionScope.InteractiveWidgetGridItem(
     drag: Drag,
     isScrollInProgress: Boolean,
     isSelected: Boolean,
-    isShowWhiteBox: Boolean,
     isVisibleOverlay: Boolean,
     newGridItemSource: GridItemSource,
     sharedElementKey: SharedElementKey,
     textColor: Color,
     gridItem: GridItem,
+    isDragging: Boolean,
+    isCloseGridItemPopup: Boolean,
     onUpdateIsCloseGridItemPopup: (Boolean) -> Unit,
     onShowGridItemPopup: (
         intOffset: IntOffset,
@@ -609,18 +622,24 @@ private fun SharedTransitionScope.InteractiveWidgetGridItem(
 
     val hasInteraction = isSelected && isVisibleOverlay
 
-    val isVisibleWhiteBox = isShowWhiteBox && isSelected && drag == Drag.Dragging
+    val isVisibleWhiteBox = isSelected && drag == Drag.Dragging
 
     val alpha = if (hasInteraction) 0f else 1f
 
     val scale = remember { Animatable(1f) }
 
-    LaunchedEffect(key1 = drag) {
+    LaunchedEffect(
+        drag,
+        hasInteraction,
+        isDragging,
+        isCloseGridItemPopup,
+    ) {
         handleDrag(
             drag = drag,
-            isSelected = isSelected,
-            isVisibleOverlay = isVisibleOverlay,
+            hasInteraction = hasInteraction,
             scale = scale,
+            isDragging = isDragging,
+            isCloseGridItemPopup = isCloseGridItemPopup,
             onUpdateIsDragging = onUpdateIsDragging,
             onUpdateIsCloseGridItemPopup = onUpdateIsCloseGridItemPopup,
         )
@@ -744,12 +763,13 @@ private fun SharedTransitionScope.InteractiveShortcutInfoGridItem(
     hasShortcutHostPermission: Boolean,
     isScrollInProgress: Boolean,
     isSelected: Boolean,
-    isShowWhiteBox: Boolean,
     isVisibleFolder: Boolean,
     isVisibleOverlay: Boolean,
     newGridItemSource: GridItemSource,
     sharedElementKey: SharedElementKey,
     textColor: Color,
+    isDragging: Boolean,
+    isCloseGridItemPopup: Boolean,
     onUpdateIsCloseGridItemPopup: (Boolean) -> Unit,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
@@ -798,18 +818,24 @@ private fun SharedTransitionScope.InteractiveShortcutInfoGridItem(
 
     val hasInteraction = isSelected && isVisibleOverlay
 
-    val isVisibleWhiteBox = isShowWhiteBox && isSelected && drag == Drag.Dragging
+    val isVisibleWhiteBox = isSelected && drag == Drag.Dragging
 
     val alpha = if (hasInteraction) 0f else 1f
 
     val scale = remember { Animatable(1f) }
 
-    LaunchedEffect(key1 = drag) {
+    LaunchedEffect(
+        drag,
+        hasInteraction,
+        isDragging,
+        isCloseGridItemPopup,
+    ) {
         handleDrag(
             drag = drag,
-            isSelected = isSelected,
-            isVisibleOverlay = isVisibleOverlay,
+            hasInteraction = hasInteraction,
             scale = scale,
+            isDragging = isDragging,
+            isCloseGridItemPopup = isCloseGridItemPopup,
             onUpdateIsDragging = onUpdateIsDragging,
             onUpdateIsCloseGridItemPopup = onUpdateIsCloseGridItemPopup,
         )
@@ -978,15 +1004,15 @@ private fun SharedTransitionScope.InteractiveFolderGridItem(
     iconPackFilePaths: Map<String, String>,
     isScrollInProgress: Boolean,
     isSelected: Boolean,
-    isShowWhiteBox: Boolean,
     isVisibleFolder: Boolean,
     isVisibleOverlay: Boolean,
     newGridItemSource: GridItemSource,
     sharedElementKey: SharedElementKey,
     textColor: Color,
     moveGridItemResult: MoveGridItemResult?,
-    isDragging: Boolean,
     lockMovement: Boolean,
+    isDragging: Boolean,
+    isCloseGridItemPopup: Boolean,
     onUpdateIsCloseGridItemPopup: (Boolean) -> Unit,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
@@ -1038,18 +1064,24 @@ private fun SharedTransitionScope.InteractiveFolderGridItem(
 
     val hasInteraction = isSelected && isVisibleOverlay
 
-    val isVisibleWhiteBox = isShowWhiteBox && isSelected && drag == Drag.Dragging
+    val isVisibleWhiteBox = isSelected && drag == Drag.Dragging
 
     val alpha = if (hasInteraction) 0f else 1f
 
     val scale = remember { Animatable(1f) }
 
-    LaunchedEffect(key1 = drag) {
+    LaunchedEffect(
+        drag,
+        hasInteraction,
+        isDragging,
+        isCloseGridItemPopup,
+    ) {
         handleDrag(
             drag = drag,
-            isSelected = isSelected,
-            isVisibleOverlay = isVisibleOverlay,
+            hasInteraction = hasInteraction,
             scale = scale,
+            isDragging = isDragging,
+            isCloseGridItemPopup = isCloseGridItemPopup,
             onUpdateIsDragging = onUpdateIsDragging,
             onUpdateIsCloseGridItemPopup = onUpdateIsCloseGridItemPopup,
         )
@@ -1244,12 +1276,13 @@ private fun SharedTransitionScope.InteractiveShortcutConfigGridItem(
     gridItemSettings: GridItemSettings,
     isScrollInProgress: Boolean,
     isSelected: Boolean,
-    isShowWhiteBox: Boolean,
     isVisibleFolder: Boolean,
     isVisibleOverlay: Boolean,
     newGridItemSource: GridItemSource,
     sharedElementKey: SharedElementKey,
     textColor: Color,
+    isDragging: Boolean,
+    isCloseGridItemPopup: Boolean,
     onUpdateIsCloseGridItemPopup: (Boolean) -> Unit,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
@@ -1326,18 +1359,24 @@ private fun SharedTransitionScope.InteractiveShortcutConfigGridItem(
 
     val hasInteraction = isSelected && isVisibleOverlay
 
-    val isVisibleWhiteBox = isShowWhiteBox && isSelected && drag == Drag.Dragging
+    val isVisibleWhiteBox = isSelected && drag == Drag.Dragging
 
     val alpha = if (hasInteraction) 0f else 1f
 
     val scale = remember { Animatable(1f) }
 
-    LaunchedEffect(key1 = drag) {
+    LaunchedEffect(
+        drag,
+        hasInteraction,
+        isDragging,
+        isCloseGridItemPopup,
+    ) {
         handleDrag(
             drag = drag,
-            isSelected = isSelected,
-            isVisibleOverlay = isVisibleOverlay,
+            hasInteraction = hasInteraction,
             scale = scale,
+            isDragging = isDragging,
+            isCloseGridItemPopup = isCloseGridItemPopup,
             onUpdateIsDragging = onUpdateIsDragging,
             onUpdateIsCloseGridItemPopup = onUpdateIsCloseGridItemPopup,
         )

@@ -722,8 +722,9 @@ internal fun PagerScreen(
                             ),
                             isVisibleFolder = folderGridItem != null,
                             moveGridItemResult = moveGridItemResult,
-                            isDragging = pagerScreenState.isDragging,
                             lockMovement = lockMovement,
+                            isDragging = pagerScreenState.isDragging,
+                            isCloseGridItemPopup = pagerScreenState.isCloseGridItemPopup,
                             onOpenAppDrawer = pagerScreenState::openApplicationScreen,
                             onTapApplicationInfo = { serialNumber, componentName ->
                                 val sourceBoundsX = x + leftPadding
@@ -852,8 +853,9 @@ internal fun PagerScreen(
                             ),
                             isVisibleFolder = folderGridItem != null,
                             moveGridItemResult = moveGridItemResult,
-                            isDragging = pagerScreenState.isDragging,
                             lockMovement = lockMovement,
+                            isDragging = pagerScreenState.isDragging,
+                            isCloseGridItemPopup = pagerScreenState.isCloseGridItemPopup,
                             onOpenAppDrawer = pagerScreenState::openApplicationScreen,
                             onTapApplicationInfo = { serialNumber, componentName ->
                                 val left = x + leftPadding
@@ -1018,6 +1020,8 @@ internal fun PagerScreen(
                 hasShortcutHostPermission = hasShortcutHostPermission,
                 moveGridItemResult = moveGridItemResult,
                 homeSettings = homeSettings,
+                isDragging = pagerScreenState.isDragging,
+                isCloseFolderGridItemPopup = pagerScreenState.isCloseFolderGridItemPopup,
                 onDismissRequest = {
                     pagerScreenState.dismissFolder(onUpdateFolderGridItemId = onUpdateFolderGridItemId)
                 },

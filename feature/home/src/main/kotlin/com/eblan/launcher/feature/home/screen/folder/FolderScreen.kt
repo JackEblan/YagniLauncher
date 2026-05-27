@@ -93,6 +93,8 @@ internal fun SharedTransitionScope.FolderScreen(
     hasShortcutHostPermission: Boolean,
     moveGridItemResult: MoveGridItemResult?,
     homeSettings: HomeSettings,
+    isDragging: Boolean,
+    isCloseFolderGridItemPopup: Boolean,
     onDismissRequest: () -> Unit,
     onMoveFolderGridItemOutsideFolder: () -> Unit,
     onOpenAppDrawer: () -> Unit,
@@ -324,6 +326,8 @@ internal fun SharedTransitionScope.FolderScreen(
                                 ),
                                 moveGridItemResult = moveGridItemResult,
                                 progress = progress.value,
+                                isDragging = isDragging,
+                                isCloseFolderGridItemPopup = isCloseFolderGridItemPopup,
                                 onOpenAppDrawer = onOpenAppDrawer,
                                 onTapApplicationInfo = { serialNumber, componentName ->
                                     val sourceBoundsX = x + leftPadding
