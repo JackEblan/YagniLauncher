@@ -108,7 +108,7 @@ internal fun SharedTransitionScope.FolderScreen(
         intOffset: IntOffset,
         intSize: IntSize,
     ) -> Unit,
-    onDismissGridItemPopup: () -> Unit,
+    onUpdateIsCloseFolderGridItemPopup: (Boolean) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateIsClosingFolder: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
@@ -369,7 +369,7 @@ internal fun SharedTransitionScope.FolderScreen(
                                 onUpdateOverlayBounds = onUpdateOverlayBounds,
                                 onUpdateSharedElementKey = onUpdateSharedElementKey,
                                 onShowGridItemPopup = onShowGridItemPopup,
-                                onDismissGridItemPopup = onDismissGridItemPopup,
+                                onUpdateIsCloseFolderGridItemPopup = onUpdateIsCloseFolderGridItemPopup,
                                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                                 onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                             )

@@ -93,6 +93,7 @@ import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
 import com.eblan.launcher.feature.home.screen.application.ApplicationScreen
+import com.eblan.launcher.feature.home.screen.folder.FolderGridItemPopup
 import com.eblan.launcher.feature.home.screen.folder.FolderScreen
 import com.eblan.launcher.feature.home.screen.resize.ResizeScreen
 import com.eblan.launcher.feature.home.screen.shortcutconfig.ShortcutConfigScreen
@@ -776,7 +777,7 @@ internal fun PagerScreen(
                             onUpdateOverlayBounds = pagerScreenState::updateOverlayBounds,
                             onUpdateSharedElementKey = pagerScreenState::updateSharedElementKey,
                             onShowGridItemPopup = pagerScreenState::showGridItemPopup,
-                            onDismissGridItemPopup = pagerScreenState::dismissGridItemPopup,
+                            onUpdateIsCloseGridItemPopup = pagerScreenState::updateIsCloseGridItemPopup,
                             onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                             onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                             onShowFolderWhenDragging = onShowFolderWhenDragging,
@@ -906,7 +907,7 @@ internal fun PagerScreen(
                             onUpdateOverlayBounds = pagerScreenState::updateOverlayBounds,
                             onUpdateSharedElementKey = pagerScreenState::updateSharedElementKey,
                             onShowGridItemPopup = pagerScreenState::showGridItemPopup,
-                            onDismissGridItemPopup = pagerScreenState::dismissGridItemPopup,
+                            onUpdateIsCloseGridItemPopup = pagerScreenState::updateIsCloseGridItemPopup,
                             onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                             onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                             onShowFolderWhenDragging = onShowFolderWhenDragging,
@@ -933,6 +934,7 @@ internal fun PagerScreen(
                 popupIntSize = pagerScreenState.popupIntSize,
                 isVisibleOverlay = isVisibleOverlay,
                 paddingValues = paddingValues,
+                isCloseGridItemPopup = pagerScreenState.isCloseGridItemPopup,
                 onDeleteGridItem = onDeleteGridItem,
                 onDismissRequest = pagerScreenState::dismissGridItemPopup,
                 onUpdateIsDragging = pagerScreenState::updateIsDragging,
@@ -972,7 +974,9 @@ internal fun PagerScreen(
             )
         }
 
-        if (pagerScreenState.showSettingsPopup && pagerScreenState.settingsPopupIntOffset != null) {
+        if (pagerScreenState.showSettingsPopup &&
+            pagerScreenState.settingsPopupIntOffset != null
+        ) {
             SettingsPopup(
                 gridItems = gridItems,
                 hasSystemFeatureAppWidgets = hasSystemFeatureAppWidgets,
@@ -1030,7 +1034,7 @@ internal fun PagerScreen(
                 onUpdateOverlayBounds = pagerScreenState::updateOverlayBounds,
                 onUpdateSharedElementKey = pagerScreenState::updateSharedElementKey,
                 onShowGridItemPopup = pagerScreenState::showFolderGridItemPopup,
-                onDismissGridItemPopup = pagerScreenState::dismissFolderGridItemPopup,
+                onUpdateIsCloseFolderGridItemPopup = pagerScreenState::updateIsCloseFolderGridItemPopup,
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                 onUpdateIsClosingFolder = pagerScreenState::updateIsCloseFolder,
                 onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
@@ -1054,6 +1058,7 @@ internal fun PagerScreen(
                 moveFolderGridItem = moveGridItemResult.movingGridItem,
                 isVisibleOverlay = isVisibleOverlay,
                 paddingValues = paddingValues,
+                isCloseFolderGridItemPopup = pagerScreenState.isCloseFolderGridItemPopup,
                 onDeleteGridItem = onDeleteGridItem,
                 onDismissFolder = {
                     pagerScreenState.dismissFolder(onUpdateFolderGridItemId = onUpdateFolderGridItemId)

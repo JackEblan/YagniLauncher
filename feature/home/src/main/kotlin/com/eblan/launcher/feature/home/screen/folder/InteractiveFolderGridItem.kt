@@ -121,7 +121,7 @@ internal fun SharedTransitionScope.InteractiveFolderGridItemContent(
         intOffset: IntOffset,
         intSize: IntSize,
     ) -> Unit,
-    onDismissGridItemPopup: () -> Unit,
+    onUpdateIsCloseFolderGridItemPopup: (Boolean) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
@@ -152,7 +152,7 @@ internal fun SharedTransitionScope.InteractiveFolderGridItemContent(
                 sharedElementKey = sharedElementKey,
                 statusBarNotifications = statusBarNotifications,
                 padding = padding,
-                onDismissGridItemPopup = onDismissGridItemPopup,
+                onUpdateIsCloseFolderGridItemPopup = onUpdateIsCloseFolderGridItemPopup,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
                 onTapApplicationInfo = onTapApplicationInfo,
@@ -180,7 +180,7 @@ internal fun SharedTransitionScope.InteractiveFolderGridItemContent(
                 newGridItemSource = newGridItemSource,
                 sharedElementKey = sharedElementKey,
                 padding = padding,
-                onDismissGridItemPopup = onDismissGridItemPopup,
+                onUpdateIsCloseFolderGridItemPopup = onUpdateIsCloseFolderGridItemPopup,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
                 onTapShortcutInfo = onTapShortcutInfo,
@@ -207,7 +207,7 @@ internal fun SharedTransitionScope.InteractiveFolderGridItemContent(
                 newGridItemSource = newGridItemSource,
                 sharedElementKey = sharedElementKey,
                 padding = padding,
-                onDismissGridItemPopup = onDismissGridItemPopup,
+                onUpdateIsCloseFolderGridItemPopup = onUpdateIsCloseFolderGridItemPopup,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
                 onTapShortcutConfig = onTapShortcutConfig,
@@ -243,7 +243,7 @@ private fun SharedTransitionScope.InteractiveFolderApplicationInfoGridItem(
     sharedElementKey: SharedElementKey,
     statusBarNotifications: Map<String, Int>,
     padding: Dp,
-    onDismissGridItemPopup: () -> Unit,
+    onUpdateIsCloseFolderGridItemPopup: (Boolean) -> Unit,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
         intOffset: IntOffset,
@@ -307,7 +307,7 @@ private fun SharedTransitionScope.InteractiveFolderApplicationInfoGridItem(
             isVisibleOverlay = isVisibleOverlay,
             scale = scale,
             onUpdateIsDragging = onUpdateIsDragging,
-            onDismissGridItemPopup = onDismissGridItemPopup,
+            onUpdateIsCloseGridItemPopup = onUpdateIsCloseFolderGridItemPopup,
         )
     }
 
@@ -471,7 +471,7 @@ private fun SharedTransitionScope.InteractiveFolderShortcutInfoGridItem(
     newGridItemSource: GridItemSource,
     sharedElementKey: SharedElementKey,
     padding: Dp,
-    onDismissGridItemPopup: () -> Unit,
+    onUpdateIsCloseFolderGridItemPopup: (Boolean) -> Unit,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
         intOffset: IntOffset,
@@ -530,7 +530,7 @@ private fun SharedTransitionScope.InteractiveFolderShortcutInfoGridItem(
             isVisibleOverlay = isVisibleOverlay,
             scale = scale,
             onUpdateIsDragging = onUpdateIsDragging,
-            onDismissGridItemPopup = onDismissGridItemPopup,
+            onUpdateIsCloseGridItemPopup = onUpdateIsCloseFolderGridItemPopup,
         )
     }
 
@@ -694,7 +694,7 @@ private fun SharedTransitionScope.InteractiveFolderShortcutConfigGridItem(
     newGridItemSource: GridItemSource,
     sharedElementKey: SharedElementKey,
     padding: Dp,
-    onDismissGridItemPopup: () -> Unit,
+    onUpdateIsCloseFolderGridItemPopup: (Boolean) -> Unit,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
         intOffset: IntOffset,
@@ -781,7 +781,7 @@ private fun SharedTransitionScope.InteractiveFolderShortcutConfigGridItem(
             isVisibleOverlay = isVisibleOverlay,
             scale = scale,
             onUpdateIsDragging = onUpdateIsDragging,
-            onDismissGridItemPopup = onDismissGridItemPopup,
+            onUpdateIsCloseGridItemPopup = onUpdateIsCloseFolderGridItemPopup,
         )
     }
 

@@ -192,12 +192,12 @@ internal suspend fun handleDrag(
     isVisibleOverlay: Boolean,
     scale: Animatable<Float, AnimationVector1D>,
     onUpdateIsDragging: (Boolean) -> Unit,
-    onDismissGridItemPopup: () -> Unit,
+    onUpdateIsCloseGridItemPopup: (Boolean) -> Unit,
 ) {
     if (drag == Drag.Dragging && isSelected && isVisibleOverlay) {
         onUpdateIsDragging(true)
 
-        onDismissGridItemPopup()
+        onUpdateIsCloseGridItemPopup(true)
     } else if ((drag == Drag.End || drag == Drag.Cancel) && scale.isRunning) {
         scale.stop()
 

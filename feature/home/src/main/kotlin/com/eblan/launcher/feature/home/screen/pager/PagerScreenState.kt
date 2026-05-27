@@ -341,6 +341,12 @@ internal class PagerScreenState(
     var isMoveFolderGridItemOutsideFolder by mutableStateOf(false)
         private set
 
+    var isCloseGridItemPopup by mutableStateOf(false)
+        private set
+
+    var isCloseFolderGridItemPopup by mutableStateOf(false)
+        private set
+
     private val touchSlop = with(density) {
         50.dp.toPx()
     }
@@ -951,6 +957,8 @@ internal class PagerScreenState(
         popupIntSize = null
 
         showGridItemPopup = false
+
+        isCloseGridItemPopup = false
     }
 
     fun showFolderGridItemPopup(
@@ -970,6 +978,8 @@ internal class PagerScreenState(
         popupIntSize = null
 
         showFolderGridItemPopup = false
+
+        isCloseFolderGridItemPopup = false
     }
 
     fun updateIsDragging(value: Boolean) {
@@ -1378,6 +1388,14 @@ internal class PagerScreenState(
 
     fun updateIsCloseFolder(value: Boolean) {
         isCloseFolder = value
+    }
+
+    fun updateIsCloseGridItemPopup(value: Boolean) {
+        isCloseGridItemPopup = value
+    }
+
+    fun updateIsCloseFolderGridItemPopup(value: Boolean) {
+        isCloseFolderGridItemPopup = value
     }
 
     fun handleOnDragEndApplicationScreen(remaining: Float) {
