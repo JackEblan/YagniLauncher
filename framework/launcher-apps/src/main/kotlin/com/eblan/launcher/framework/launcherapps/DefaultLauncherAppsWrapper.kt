@@ -522,7 +522,14 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
     private suspend fun LauncherActivityInfo.toLauncherAppsActivityInfo(): LauncherAppsActivityInfo {
         val serialNumber = userManagerWrapper.getSerialNumberForUser(userHandle = user)
 
-        val activityIcon = getBadgedIcon(0).let { drawable ->
+        val badgedIcon = try {
+            getBadgedIcon(0)
+                ?.takeIf { it.intrinsicWidth > 0 && it.intrinsicHeight > 0 }
+        } catch (_: IllegalArgumentException) {
+            null
+        }
+
+        val activityIcon = badgedIcon?.let { drawable ->
             val directory = fileManager.getFilesDirectory(FileManager.ICONS_DIR)
 
             val file = File(
@@ -560,7 +567,14 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
     private suspend fun ShortcutInfo.toLauncherAppsShortcutInfo(): LauncherAppsShortcutInfo {
         val serialNumber = userManagerWrapper.getSerialNumberForUser(userHandle = userHandle)
 
-        val icon = launcherApps.getShortcutBadgedIconDrawable(this, 0)?.let { drawable ->
+        val shortcutBadgedIconDrawable = try {
+            launcherApps.getShortcutBadgedIconDrawable(this, 0)
+                ?.takeIf { it.intrinsicWidth > 0 && it.intrinsicHeight > 0 }
+        } catch (_: IllegalArgumentException) {
+            null
+        }
+
+        val icon = shortcutBadgedIconDrawable?.let { drawable ->
             val directory = fileManager.getFilesDirectory(FileManager.SHORTCUTS_DIR)
 
             val file = File(
