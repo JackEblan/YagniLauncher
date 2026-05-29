@@ -96,6 +96,7 @@ fun RowTextFieldsDialog(
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
                     content = textFields,
                 )
 

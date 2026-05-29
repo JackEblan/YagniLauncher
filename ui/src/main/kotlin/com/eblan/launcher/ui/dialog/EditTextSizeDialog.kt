@@ -51,7 +51,7 @@ internal fun EditTextSizeDialog(
             TextButton(
                 onClick = onDismissRequest,
             ) {
-                Text("Cancel")
+                Text(text = "Cancel")
             }
 
             TextButton(
@@ -65,7 +65,7 @@ internal fun EditTextSizeDialog(
                     }
                 },
             ) {
-                Text("Update")
+                Text(text = "Update")
             }
         },
         textField = {
@@ -76,12 +76,12 @@ internal fun EditTextSizeDialog(
                 },
                 modifier = Modifier.fillMaxWidth(),
                 label = {
-                    Text("Text Size")
+                    Text(text = "Text Size")
                 },
                 isError = isError,
                 supportingText = {
                     if (isError) {
-                        Text("Text Size is not valid")
+                        Text(text = "Text Size is not valid")
                     }
                 },
                 keyboardOptions = KeyboardOptions(

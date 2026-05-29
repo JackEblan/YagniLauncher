@@ -51,7 +51,7 @@ internal fun EditCornerRadiusDialog(
             TextButton(
                 onClick = onDismissRequest,
             ) {
-                Text("Cancel")
+                Text(text = "Cancel")
             }
 
             TextButton(
@@ -65,7 +65,7 @@ internal fun EditCornerRadiusDialog(
                     }
                 },
             ) {
-                Text("Update")
+                Text(text = "Update")
             }
         },
         textField = {
@@ -76,12 +76,12 @@ internal fun EditCornerRadiusDialog(
                 },
                 modifier = Modifier.fillMaxWidth(),
                 label = {
-                    Text("Corner Radius")
+                    Text(text = "Corner Radius")
                 },
                 isError = isError,
                 supportingText = {
                     if (isError) {
-                        Text("Corner Radius is not valid")
+                        Text(text = "Corner Radius is not valid")
                     }
                 },
                 keyboardOptions = KeyboardOptions(

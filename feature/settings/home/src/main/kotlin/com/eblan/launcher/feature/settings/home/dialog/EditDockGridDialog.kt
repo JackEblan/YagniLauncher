@@ -59,7 +59,7 @@ internal fun EditDockGridDialog(
             TextButton(
                 onClick = onDismissRequest,
             ) {
-                Text("Cancel")
+                Text(text = "Cancel")
             }
 
             TextButton(
@@ -90,7 +90,7 @@ internal fun EditDockGridDialog(
                     }
                 },
             ) {
-                Text("Update")
+                Text(text = "Update")
             }
         },
         textFields = {
@@ -98,7 +98,12 @@ internal fun EditDockGridDialog(
                 value = dockColumns,
                 onValueChange = { dockColumns = it },
                 modifier = Modifier.weight(1f),
-                label = { Text("Columns") },
+                label = { Text(text = "Columns") },
+                supportingText = {
+                    if (firstError) {
+                        Text(text = "$dockColumns is not valid")
+                    }
+                },
                 isError = firstError,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number,
@@ -109,7 +114,12 @@ internal fun EditDockGridDialog(
                 value = dockRows,
                 onValueChange = { dockRows = it },
                 modifier = Modifier.weight(1f),
-                label = { Text("Rows") },
+                label = { Text(text = "Rows") },
+                supportingText = {
+                    if (secondError) {
+                        Text(text = "$dockRows is not valid")
+                    }
+                },
                 isError = secondError,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number,

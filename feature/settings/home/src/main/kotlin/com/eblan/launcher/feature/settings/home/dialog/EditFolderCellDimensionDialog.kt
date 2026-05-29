@@ -59,7 +59,7 @@ internal fun EditFolderCellDimensionDialog(
             TextButton(
                 onClick = onDismissRequest,
             ) {
-                Text("Cancel")
+                Text(text = "Cancel")
             }
 
             TextButton(
@@ -90,7 +90,7 @@ internal fun EditFolderCellDimensionDialog(
                     }
                 },
             ) {
-                Text("Update")
+                Text(text = "Update")
             }
         },
         textFields = {
@@ -98,7 +98,12 @@ internal fun EditFolderCellDimensionDialog(
                 value = cellWidth,
                 onValueChange = { cellWidth = it },
                 modifier = Modifier.weight(1f),
-                label = { Text("Cell Width") },
+                label = { Text(text = "Cell Width") },
+                supportingText = {
+                    if (firstError) {
+                        Text(text = "$cellWidth is not valid")
+                    }
+                },
                 isError = firstError,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number,
@@ -109,7 +114,12 @@ internal fun EditFolderCellDimensionDialog(
                 value = cellHeight,
                 onValueChange = { cellHeight = it },
                 modifier = Modifier.weight(1f),
-                label = { Text("Cell Height") },
+                label = { Text(text = "Cell Height") },
+                supportingText = {
+                    if (secondError) {
+                        Text(text = "$cellHeight is not valid")
+                    }
+                },
                 isError = secondError,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number,

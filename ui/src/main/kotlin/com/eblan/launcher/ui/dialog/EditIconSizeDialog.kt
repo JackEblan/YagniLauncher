@@ -51,7 +51,7 @@ internal fun EditIconSizeDialog(
             TextButton(
                 onClick = onDismissRequest,
             ) {
-                Text("Cancel")
+                Text(text = "Cancel")
             }
 
             TextButton(
@@ -65,7 +65,7 @@ internal fun EditIconSizeDialog(
                     }
                 },
             ) {
-                Text("Update")
+                Text(text = "Update")
             }
         },
         textField = {
@@ -76,12 +76,12 @@ internal fun EditIconSizeDialog(
                 },
                 modifier = Modifier.fillMaxWidth(),
                 label = {
-                    Text("Icon Size")
+                    Text(text = "Icon Size")
                 },
                 isError = isError,
                 supportingText = {
                     if (isError) {
-                        Text("Icon Size is not valid")
+                        Text(text = "Icon Size is not valid")
                     }
                 },
                 keyboardOptions = KeyboardOptions(

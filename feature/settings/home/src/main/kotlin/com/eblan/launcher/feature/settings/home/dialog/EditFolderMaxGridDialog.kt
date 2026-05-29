@@ -59,7 +59,7 @@ internal fun EditFolderMaxGridDialog(
             TextButton(
                 onClick = onDismissRequest,
             ) {
-                Text("Cancel")
+                Text(text = "Cancel")
             }
 
             TextButton(
@@ -90,7 +90,7 @@ internal fun EditFolderMaxGridDialog(
                     }
                 },
             ) {
-                Text("Update")
+                Text(text = "Update")
             }
         },
         textFields = {
@@ -98,7 +98,12 @@ internal fun EditFolderMaxGridDialog(
                 value = maxFolderColumns,
                 onValueChange = { maxFolderColumns = it },
                 modifier = Modifier.weight(1f),
-                label = { Text("Columns") },
+                label = { Text(text = "Max Columns") },
+                supportingText = {
+                    if (firstError) {
+                        Text(text = "$maxFolderColumns is not valid")
+                    }
+                },
                 isError = firstError,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number,
@@ -109,7 +114,12 @@ internal fun EditFolderMaxGridDialog(
                 value = maxFolderRows,
                 onValueChange = { maxFolderRows = it },
                 modifier = Modifier.weight(1f),
-                label = { Text("Rows") },
+                label = { Text(text = "Max Rows") },
+                supportingText = {
+                    if (secondError) {
+                        Text(text = "$maxFolderRows is not valid")
+                    }
+                },
                 isError = secondError,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number,

@@ -102,7 +102,7 @@ internal fun EditHorizontalGridDialog(
                     }
                 },
             ) {
-                Text("Update")
+                Text(text = "Update")
             }
         },
         textFields = {
@@ -110,7 +110,12 @@ internal fun EditHorizontalGridDialog(
                 value = columns,
                 onValueChange = { columns = it },
                 modifier = Modifier.weight(1f),
-                label = { Text("Columns") },
+                label = { Text(text = "Columns") },
+                supportingText = {
+                    if (firstError) {
+                        Text(text = "$columns is not valid")
+                    }
+                },
                 isError = firstError,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number,
@@ -121,7 +126,12 @@ internal fun EditHorizontalGridDialog(
                 value = rows,
                 onValueChange = { rows = it },
                 modifier = Modifier.weight(1f),
-                label = { Text("Rows") },
+                label = { Text(text = "Rows") },
+                supportingText = {
+                    if (secondError) {
+                        Text(text = "$rows is not valid")
+                    }
+                },
                 isError = secondError,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number,

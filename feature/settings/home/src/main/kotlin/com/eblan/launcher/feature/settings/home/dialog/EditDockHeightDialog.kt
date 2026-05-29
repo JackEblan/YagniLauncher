@@ -52,7 +52,7 @@ internal fun EditDockHeightDialog(
             TextButton(
                 onClick = onDismissRequest,
             ) {
-                Text("Cancel")
+                Text(text = "Cancel")
             }
 
             TextButton(
@@ -69,7 +69,7 @@ internal fun EditDockHeightDialog(
                     }
                 },
             ) {
-                Text("Update")
+                Text(text = "Update")
             }
         },
         textField = {
@@ -80,12 +80,12 @@ internal fun EditDockHeightDialog(
                 },
                 modifier = Modifier.fillMaxWidth(),
                 label = {
-                    Text("Dock Height")
+                    Text(text = "Dock Height")
                 },
                 isError = isError,
                 supportingText = {
                     if (isError) {
-                        Text("Dock Height is not valid")
+                        Text(text = "Dock Height is not valid")
                     }
                 },
                 keyboardOptions = KeyboardOptions(

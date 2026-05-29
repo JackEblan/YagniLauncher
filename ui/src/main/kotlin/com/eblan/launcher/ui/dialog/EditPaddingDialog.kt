@@ -51,7 +51,7 @@ internal fun EditPaddingDialog(
             TextButton(
                 onClick = onDismissRequest,
             ) {
-                Text("Cancel")
+                Text(text = "Cancel")
             }
 
             TextButton(
@@ -65,7 +65,7 @@ internal fun EditPaddingDialog(
                     }
                 },
             ) {
-                Text("Update")
+                Text(text = "Update")
             }
         },
         textField = {
@@ -76,12 +76,12 @@ internal fun EditPaddingDialog(
                 },
                 modifier = Modifier.fillMaxWidth(),
                 label = {
-                    Text("Padding")
+                    Text(text = "Padding")
                 },
                 isError = isError,
                 supportingText = {
                     if (isError) {
-                        Text("Padding is not valid")
+                        Text(text = "Padding is not valid")
                     }
                 },
                 keyboardOptions = KeyboardOptions(

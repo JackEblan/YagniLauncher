@@ -57,7 +57,7 @@ internal fun EditVerticalGridDialog(
             TextButton(
                 onClick = onDismissRequest,
             ) {
-                Text("Cancel")
+                Text(text = "Cancel")
             }
 
             TextButton(
@@ -88,7 +88,7 @@ internal fun EditVerticalGridDialog(
                     }
                 },
             ) {
-                Text("Update")
+                Text(text = "Update")
             }
         },
         textFields = {
@@ -96,7 +96,12 @@ internal fun EditVerticalGridDialog(
                 value = columns,
                 onValueChange = { columns = it },
                 modifier = Modifier.weight(1f),
-                label = { Text("Columns") },
+                label = { Text(text = "Columns") },
+                supportingText = {
+                    if (firstError) {
+                        Text(text = "$columns is not valid")
+                    }
+                },
                 isError = firstError,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number,
@@ -107,7 +112,12 @@ internal fun EditVerticalGridDialog(
                 value = rowsHeight,
                 onValueChange = { rowsHeight = it },
                 modifier = Modifier.weight(1f),
-                label = { Text("Rows Height") },
+                label = { Text(text = "Rows Height") },
+                supportingText = {
+                    if (secondError) {
+                        Text(text = "$rowsHeight is not valid")
+                    }
+                },
                 isError = secondError,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number,
