@@ -54,6 +54,8 @@ internal fun AddTagDialog(
 ) {
     var value by remember { mutableStateOf("") }
 
+    var isError by remember { mutableStateOf(false) }
+
     TextFieldDialog(
         modifier = modifier,
         title = "Add Tag",
@@ -62,7 +64,7 @@ internal fun AddTagDialog(
             TextButton(
                 onClick = onDismissRequest,
             ) {
-                Text("Cancel")
+                Text(text = "Cancel")
             }
 
             TextButton(
@@ -75,10 +77,12 @@ internal fun AddTagDialog(
                         )
 
                         onDismissRequest()
+                    } else {
+                        isError = true
                     }
                 },
             ) {
-                Text("Add")
+                Text(text = "Add")
             }
         },
         textField = {
@@ -86,16 +90,19 @@ internal fun AddTagDialog(
                 value = value,
                 onValueChange = {
                     value = it
+                    isError = false
                 },
                 modifier = Modifier.fillMaxWidth(),
                 label = {
-                    Text("Add Tag")
+                    Text(text = "Add Tag")
                 },
-                isError = value.isBlank(),
-                supportingText = {
-                    if (value.isBlank()) {
-                        Text("Tag is not valid")
+                isError = isError,
+                supportingText = if (isError) {
+                    {
+                        Text(text = "Tag is not valid")
                     }
+                } else {
+                    null
                 },
             )
         },

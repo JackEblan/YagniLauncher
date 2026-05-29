@@ -62,7 +62,7 @@ internal fun EditEblanApplicationInfoCustomLabelDialog(
         onDismissRequest = onDismissRequest,
         actions = {
             TextButton(onClick = onDismissRequest) {
-                Text("Cancel")
+                Text(text = "Cancel")
             }
 
             TextButton(
@@ -77,7 +77,7 @@ internal fun EditEblanApplicationInfoCustomLabelDialog(
                     }
                 },
             ) {
-                Text("Update")
+                Text(text = "Update")
             }
         },
         textField = {
@@ -117,10 +117,14 @@ internal fun EditEblanApplicationInfoCustomLabelDialog(
                         isError = false
                     },
                     modifier = Modifier.fillMaxWidth(),
-                    label = { Text("Custom Label") },
+                    label = { Text(text = "Custom Label") },
                     isError = isError,
-                    supportingText = {
-                        if (isError) Text("Custom Label is not valid")
+                    supportingText = if (isError) {
+                        {
+                            Text(text = "Custom Label is not valid")
+                        }
+                    } else {
+                        null
                     },
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Text,

@@ -51,7 +51,7 @@ internal fun EditFolderLabelDialog(
             TextButton(
                 onClick = onDismissRequest,
             ) {
-                Text("Cancel")
+                Text(text = "Cancel")
             }
 
             TextButton(
@@ -67,7 +67,7 @@ internal fun EditFolderLabelDialog(
                     }
                 },
             ) {
-                Text("Update")
+                Text(text = "Update")
             }
         },
         textField = {
@@ -78,13 +78,15 @@ internal fun EditFolderLabelDialog(
                 },
                 modifier = Modifier.fillMaxWidth(),
                 label = {
-                    Text("Label")
+                    Text(text = "Label")
                 },
                 isError = isError,
-                supportingText = {
-                    if (isError) {
+                supportingText = if (isError) {
+                    {
                         Text("Label is not valid")
                     }
+                } else {
+                    null
                 },
             )
         },
