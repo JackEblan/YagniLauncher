@@ -56,7 +56,10 @@ internal fun EditGridDialog(
         textFields = {
             TextField(
                 value = columns,
-                onValueChange = { columns = it },
+                onValueChange = {
+                    columns = it
+                    firstError = false
+                },
                 modifier = Modifier.weight(1f),
                 label = { Text(text = "Columns") },
                 supportingText = if (firstError) {
@@ -74,7 +77,10 @@ internal fun EditGridDialog(
 
             TextField(
                 value = rows,
-                onValueChange = { rows = it },
+                onValueChange = {
+                    rows = it
+                    secondError = false
+                },
                 modifier = Modifier.weight(1f),
                 label = { Text(text = "Rows") },
                 supportingText = if (secondError) {

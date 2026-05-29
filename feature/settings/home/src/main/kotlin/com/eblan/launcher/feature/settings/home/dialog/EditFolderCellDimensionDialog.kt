@@ -56,7 +56,10 @@ internal fun EditFolderCellDimensionDialog(
         textFields = {
             TextField(
                 value = cellWidth,
-                onValueChange = { cellWidth = it },
+                onValueChange = {
+                    cellWidth = it
+                    firstError = false
+                },
                 modifier = Modifier.weight(1f),
                 label = { Text(text = "Cell Width") },
                 supportingText = if (firstError) {
@@ -74,7 +77,10 @@ internal fun EditFolderCellDimensionDialog(
 
             TextField(
                 value = cellHeight,
-                onValueChange = { cellHeight = it },
+                onValueChange = {
+                    cellHeight = it
+                    secondError = false
+                },
                 modifier = Modifier.weight(1f),
                 label = { Text(text = "Cell Height") },
                 supportingText = if (secondError) {

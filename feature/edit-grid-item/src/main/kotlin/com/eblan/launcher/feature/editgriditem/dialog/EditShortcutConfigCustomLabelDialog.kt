@@ -76,6 +76,7 @@ internal fun EditShortcutConfigCustomLabelDialog(
                 value = value,
                 onValueChange = {
                     value = it
+                    isError = false
                 },
                 modifier = Modifier.fillMaxWidth(),
                 label = {

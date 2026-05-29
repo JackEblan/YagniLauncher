@@ -56,7 +56,10 @@ internal fun EditVerticalGridDialog(
         textFields = {
             TextField(
                 value = columns,
-                onValueChange = { columns = it },
+                onValueChange = {
+                    columns = it
+                    firstError = false
+                },
                 modifier = Modifier.weight(1f),
                 label = { Text(text = "Columns") },
                 supportingText = if (firstError) {
@@ -74,7 +77,10 @@ internal fun EditVerticalGridDialog(
 
             TextField(
                 value = rowsHeight,
-                onValueChange = { rowsHeight = it },
+                onValueChange = {
+                    rowsHeight = it
+                    secondError = false
+                },
                 modifier = Modifier.weight(1f),
                 label = { Text(text = "Rows Height") },
                 supportingText = if (secondError) {

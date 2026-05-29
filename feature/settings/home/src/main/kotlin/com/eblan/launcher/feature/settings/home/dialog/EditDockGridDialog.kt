@@ -56,7 +56,10 @@ internal fun EditDockGridDialog(
         textFields = {
             TextField(
                 value = dockColumns,
-                onValueChange = { dockColumns = it },
+                onValueChange = {
+                    dockColumns = it
+                    firstError = false
+                },
                 modifier = Modifier.weight(1f),
                 label = { Text(text = "Columns") },
                 supportingText = if (firstError) {
@@ -74,7 +77,10 @@ internal fun EditDockGridDialog(
 
             TextField(
                 value = dockRows,
-                onValueChange = { dockRows = it },
+                onValueChange = {
+                    dockRows = it
+                    secondError = false
+                },
                 modifier = Modifier.weight(1f),
                 label = { Text(text = "Rows") },
                 supportingText = if (secondError) {

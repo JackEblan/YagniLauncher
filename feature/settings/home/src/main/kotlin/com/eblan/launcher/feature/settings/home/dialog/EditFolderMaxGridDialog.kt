@@ -56,7 +56,10 @@ internal fun EditFolderMaxGridDialog(
         textFields = {
             TextField(
                 value = maxFolderColumns,
-                onValueChange = { maxFolderColumns = it },
+                onValueChange = {
+                    maxFolderColumns = it
+                    firstError = false
+                },
                 modifier = Modifier.weight(1f),
                 label = { Text(text = "Max Columns") },
                 supportingText = if (firstError) {
@@ -74,7 +77,10 @@ internal fun EditFolderMaxGridDialog(
 
             TextField(
                 value = maxFolderRows,
-                onValueChange = { maxFolderRows = it },
+                onValueChange = {
+                    maxFolderRows = it
+                    secondError = false
+                },
                 modifier = Modifier.weight(1f),
                 label = { Text(text = "Max Rows") },
                 supportingText = if (secondError) {
