@@ -44,6 +44,70 @@ import com.eblan.launcher.designsystem.component.EblanDialogContainer
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.EblanApplicationInfoTag
 import com.eblan.launcher.domain.model.EblanApplicationInfoTagUi
+import com.eblan.launcher.ui.dialog.TextFieldDialog
+
+@Composable
+internal fun AddTagDialog(
+    modifier: Modifier = Modifier,
+    onDismissRequest: () -> Unit,
+    onAddEblanApplicationInfoTag: (EblanApplicationInfoTag) -> Unit,
+) {
+    var value by remember { mutableStateOf("") }
+
+    var isError by remember { mutableStateOf(false) }
+
+    TextFieldDialog(
+        modifier = modifier,
+        title = "Add Tag",
+        onDismissRequest = onDismissRequest,
+        textField = {
+            TextField(
+                value = value,
+                onValueChange = {
+                    value = it
+                    isError = false
+                },
+                modifier = Modifier.fillMaxWidth(),
+                label = {
+                    Text(text = "Add Tag")
+                },
+                isError = isError,
+                supportingText = if (isError) {
+                    {
+                        Text(text = "Tag is not valid")
+                    }
+                } else {
+                    null
+                },
+            )
+        },
+        bottomActions = {
+            TextButton(
+                onClick = onDismissRequest,
+            ) {
+                Text(text = "Cancel")
+            }
+
+            TextButton(
+                onClick = {
+                    if (value.isNotBlank()) {
+                        onAddEblanApplicationInfoTag(
+                            EblanApplicationInfoTag(
+                                name = value,
+                            ),
+                        )
+
+                        onDismissRequest()
+                    } else {
+                        isError = true
+                    }
+                },
+            ) {
+                Text(text = "Add")
+            }
+        },
+    )
+}
 
 @Composable
 internal fun UpdateTagDialog(

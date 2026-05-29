@@ -38,7 +38,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -46,11 +45,12 @@ import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.AppDrawerSettings
 import com.eblan.launcher.domain.model.AppDrawerType
 import com.eblan.launcher.domain.model.EblanApplicationInfo
+import com.eblan.launcher.feature.settings.appdrawer.dialog.EditHorizontalGridDialog
+import com.eblan.launcher.feature.settings.appdrawer.dialog.EditVerticalGridDialog
 import com.eblan.launcher.feature.settings.appdrawer.dialog.HiddenEblanApplicationInfosDialog
 import com.eblan.launcher.feature.settings.appdrawer.model.AppDrawerSettingsUiState
 import com.eblan.launcher.ui.dialog.RadioOptionsDialog
 import com.eblan.launcher.ui.dialog.TextColorDialog
-import com.eblan.launcher.ui.dialog.TwoTextFieldsDialog
 import com.eblan.launcher.ui.settings.GridItemSettings
 import com.eblan.launcher.ui.settings.SettingsColumn
 import com.eblan.launcher.ui.settings.SettingsSwitch
@@ -245,126 +245,22 @@ private fun Success(
     }
 
     if (showVerticalGridDialog) {
-        var appDrawerColumns by remember { mutableStateOf("${appDrawerSettings.appDrawerColumns}") }
-
-        var appDrawerRowsHeight by remember { mutableStateOf("${appDrawerSettings.appDrawerRowsHeight}") }
-
-        var firstTextFieldIsError by remember { mutableStateOf(false) }
-
-        var secondTextFieldIsError by remember { mutableStateOf(false) }
-
-        TwoTextFieldsDialog(
-            title = "Vertical Grid",
-            firstTextFieldTitle = "Columns",
-            secondTextFieldTitle = "Rows Height",
-            firstTextFieldValue = appDrawerColumns,
-            secondTextFieldValue = appDrawerRowsHeight,
-            firstTextFieldIsError = firstTextFieldIsError,
-            secondTextFieldIsError = secondTextFieldIsError,
-            keyboardType = KeyboardType.Number,
-            onFirstValueChange = {
-                appDrawerColumns = it
-            },
-            onSecondValueChange = {
-                appDrawerRowsHeight = it
-            },
+        EditVerticalGridDialog(
+            appDrawerSettings = appDrawerSettings,
             onDismissRequest = {
                 showVerticalGridDialog = false
             },
-            onUpdateClick = {
-                val newAppDrawerColumns = try {
-                    appDrawerColumns.toInt()
-                } catch (_: NumberFormatException) {
-                    firstTextFieldIsError = true
-                    0
-                }
-
-                val newAppDrawerRowsHeight = try {
-                    appDrawerRowsHeight.toInt()
-                } catch (_: NumberFormatException) {
-                    secondTextFieldIsError = true
-                    0
-                }
-
-                if (newAppDrawerColumns > 0 && newAppDrawerRowsHeight > 0) {
-                    onUpdateAppDrawerSettings(
-                        appDrawerSettings.copy(
-                            appDrawerColumns = newAppDrawerColumns,
-                            appDrawerRowsHeight = newAppDrawerRowsHeight,
-                        ),
-                    )
-
-                    showVerticalGridDialog = false
-                }
-            },
+            onUpdateAppDrawerSettings = onUpdateAppDrawerSettings,
         )
     }
 
     if (showHorizontalGridDialog) {
-        var horizontalAppDrawerColumns by remember { mutableStateOf("${appDrawerSettings.horizontalAppDrawerColumns}") }
-
-        var horizontalAppDrawerRows by remember { mutableStateOf("${appDrawerSettings.horizontalAppDrawerRows}") }
-
-        var firstTextFieldIsError by remember { mutableStateOf(false) }
-
-        var secondTextFieldIsError by remember { mutableStateOf(false) }
-
-        TwoTextFieldsDialog(
-            title = "Horizontal Grid",
-            firstTextFieldTitle = "Columns",
-            secondTextFieldTitle = "Rows",
-            firstTextFieldValue = horizontalAppDrawerColumns,
-            secondTextFieldValue = horizontalAppDrawerRows,
-            firstTextFieldIsError = firstTextFieldIsError,
-            secondTextFieldIsError = secondTextFieldIsError,
-            keyboardType = KeyboardType.Number,
-            onFirstValueChange = {
-                horizontalAppDrawerColumns = it
-            },
-            onSecondValueChange = {
-                horizontalAppDrawerRows = it
-            },
+        EditHorizontalGridDialog(
+            appDrawerSettings = appDrawerSettings,
             onDismissRequest = {
                 showHorizontalGridDialog = false
             },
-            onUpdateClick = {
-                val newHorizontalAppDrawerColumns = try {
-                    if (horizontalAppDrawerColumns.toInt() > 2) {
-                        firstTextFieldIsError = false
-                        horizontalAppDrawerColumns.toInt()
-                    } else {
-                        firstTextFieldIsError = true
-                        0
-                    }
-                } catch (_: NumberFormatException) {
-                    firstTextFieldIsError = true
-                    0
-                }
-
-                val newHorizontalAppDrawerRows = try {
-                    if (horizontalAppDrawerRows.toInt() > 2) {
-                        secondTextFieldIsError = false
-                        horizontalAppDrawerRows.toInt()
-                    } else {
-                        secondTextFieldIsError = true
-                        0
-                    }
-                } catch (_: NumberFormatException) {
-                    secondTextFieldIsError = true
-                    0
-                }
-
-                if (newHorizontalAppDrawerColumns > 0 && newHorizontalAppDrawerRows > 0) {
-                    onUpdateAppDrawerSettings(
-                        appDrawerSettings.copy(
-                            horizontalAppDrawerColumns = newHorizontalAppDrawerColumns,
-                            horizontalAppDrawerRows = newHorizontalAppDrawerRows,
-                        ),
-                    )
-
-                    showHorizontalGridDialog = false
-                }
-            },
+            onUpdateAppDrawerSettings = onUpdateAppDrawerSettings,
         )
     }
 

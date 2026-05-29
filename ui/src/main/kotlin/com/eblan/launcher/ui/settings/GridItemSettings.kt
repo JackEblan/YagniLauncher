@@ -39,15 +39,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.eblan.launcher.domain.model.GridItemSettings
 import com.eblan.launcher.domain.model.HorizontalAlignment
 import com.eblan.launcher.domain.model.TextColor
 import com.eblan.launcher.domain.model.VerticalArrangement
 import com.eblan.launcher.ui.dialog.ColorPickerDialog
+import com.eblan.launcher.ui.dialog.EditCornerRadiusDialog
+import com.eblan.launcher.ui.dialog.EditIconSizeDialog
+import com.eblan.launcher.ui.dialog.EditPaddingDialog
+import com.eblan.launcher.ui.dialog.EditTextSizeDialog
 import com.eblan.launcher.ui.dialog.RadioOptionsDialog
-import com.eblan.launcher.ui.dialog.SingleTextFieldDialog
 import com.eblan.launcher.ui.dialog.TextColorDialog
 
 @Composable
@@ -192,34 +194,19 @@ fun GridItemSettings(
     }
 
     if (showIconSizeDialog) {
-        var value by remember { mutableStateOf("${gridItemSettings.iconSize}") }
-
-        var isError by remember { mutableStateOf(false) }
-
-        SingleTextFieldDialog(
-            title = "Icon Size",
-            textFieldTitle = "Icon Size",
-            value = value,
-            isError = isError,
-            keyboardType = KeyboardType.Number,
-            onValueChange = {
-                value = it
-            },
+        EditIconSizeDialog(
+            iconSize = gridItemSettings.iconSize,
             onDismissRequest = {
                 showIconSizeDialog = false
             },
-            onUpdateClick = {
-                try {
-                    onUpdateGridItemSettings(
-                        gridItemSettings.copy(
-                            iconSize = value.toInt().coerceAtLeast(1),
-                        ),
-                    )
+            onUpdateIconSize = { iconSize ->
+                onUpdateGridItemSettings(
+                    gridItemSettings.copy(
+                        iconSize = iconSize,
+                    ),
+                )
 
-                    showIconSizeDialog = false
-                } catch (_: NumberFormatException) {
-                    isError = true
-                }
+                showIconSizeDialog = false
             },
         )
     }
@@ -246,34 +233,19 @@ fun GridItemSettings(
     }
 
     if (showTextSizeDialog) {
-        var value by remember { mutableStateOf("${gridItemSettings.textSize}") }
-
-        var isError by remember { mutableStateOf(false) }
-
-        SingleTextFieldDialog(
-            title = "Text Size",
-            textFieldTitle = "Text Size",
-            value = value,
-            isError = isError,
-            keyboardType = KeyboardType.Number,
-            onValueChange = {
-                value = it
-            },
+        EditTextSizeDialog(
+            textSize = gridItemSettings.textSize,
             onDismissRequest = {
                 showTextSizeDialog = false
             },
-            onUpdateClick = {
-                try {
-                    onUpdateGridItemSettings(
-                        gridItemSettings.copy(
-                            textSize = value.toInt().coerceAtLeast(1),
-                        ),
-                    )
+            onUpdateTextSize = { textSize ->
+                onUpdateGridItemSettings(
+                    gridItemSettings.copy(
+                        textSize = textSize,
+                    ),
+                )
 
-                    showTextSizeDialog = false
-                } catch (_: NumberFormatException) {
-                    isError = true
-                }
+                showTextSizeDialog = false
             },
         )
     }
@@ -294,59 +266,37 @@ fun GridItemSettings(
     }
 
     if (showPaddingDialog) {
-        var value by remember { mutableStateOf("${gridItemSettings.padding}") }
-
-        var isError by remember { mutableStateOf(false) }
-
-        SingleTextFieldDialog(
-            title = "Padding",
-            textFieldTitle = "Padding",
-            value = value,
-            isError = isError,
-            keyboardType = KeyboardType.Number,
-            onValueChange = {
-                value = it
-            },
+        EditPaddingDialog(
+            padding = gridItemSettings.padding,
             onDismissRequest = {
                 showPaddingDialog = false
             },
-            onUpdateClick = {
-                try {
-                    onUpdateGridItemSettings(gridItemSettings.copy(padding = value.toInt()))
+            onUpdatePadding = { padding ->
+                onUpdateGridItemSettings(
+                    gridItemSettings.copy(
+                        padding = padding,
+                    ),
+                )
 
-                    showPaddingDialog = false
-                } catch (_: NumberFormatException) {
-                    isError = true
-                }
+                showPaddingDialog = false
             },
         )
     }
 
     if (showCornerRadiusDialog) {
-        var value by remember { mutableStateOf("${gridItemSettings.cornerRadius}") }
-
-        var isError by remember { mutableStateOf(false) }
-
-        SingleTextFieldDialog(
-            title = "Corner Radius",
-            textFieldTitle = "Corner Radius",
-            value = value,
-            isError = isError,
-            keyboardType = KeyboardType.Number,
-            onValueChange = {
-                value = it
-            },
+        EditCornerRadiusDialog(
+            cornerRadius = gridItemSettings.cornerRadius,
             onDismissRequest = {
                 showCornerRadiusDialog = false
             },
-            onUpdateClick = {
-                try {
-                    onUpdateGridItemSettings(gridItemSettings.copy(cornerRadius = value.toInt()))
+            onUpdateCornerRadius = { cornerRadius ->
+                onUpdateGridItemSettings(
+                    gridItemSettings.copy(
+                        cornerRadius = cornerRadius,
+                    ),
+                )
 
-                    showCornerRadiusDialog = false
-                } catch (_: NumberFormatException) {
-                    isError = true
-                }
+                showCornerRadiusDialog = false
             },
         )
     }

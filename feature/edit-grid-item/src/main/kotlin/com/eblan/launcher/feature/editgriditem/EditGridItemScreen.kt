@@ -39,7 +39,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -51,11 +50,13 @@ import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.IconPackInfoComponent
 import com.eblan.launcher.domain.model.PackageManagerIconPackInfo
+import com.eblan.launcher.feature.editgriditem.dialog.EditApplicationInfoCustomLabelDialog
+import com.eblan.launcher.feature.editgriditem.dialog.EditFolderLabelDialog
+import com.eblan.launcher.feature.editgriditem.dialog.EditShortcutConfigCustomLabelDialog
+import com.eblan.launcher.feature.editgriditem.dialog.EditShortcutInfoCustomShortLabelDialog
 import com.eblan.launcher.feature.editgriditem.model.EditGridItemUiState
 import com.eblan.launcher.ui.dialog.IconPackInfoFilesDialog
-import com.eblan.launcher.ui.dialog.SingleTextFieldDialog
 import com.eblan.launcher.ui.edit.CustomIcon
-import com.eblan.launcher.ui.edit.CustomLabelDialog
 import com.eblan.launcher.ui.settings.EblanActionSettings
 import com.eblan.launcher.ui.settings.GridItemSettings
 import com.eblan.launcher.ui.settings.SettingsColumn
@@ -358,40 +359,13 @@ private fun EditApplicationInfo(
     }
 
     if (showCustomLabelDialog) {
-        var value by remember { mutableStateOf(data.customLabel ?: "") }
-
-        var isError by remember { mutableStateOf(false) }
-
-        CustomLabelDialog(
-            title = "Custom Label",
-            textFieldTitle = "Custom Label",
-            value = value,
-            isError = isError,
-            keyboardType = KeyboardType.Text,
-            onValueChange = {
-                value = it
-            },
+        EditApplicationInfoCustomLabelDialog(
+            gridItem = gridItem,
+            data = data,
             onDismissRequest = {
                 showCustomLabelDialog = false
             },
-            onUpdateClick = {
-                if (value.isNotBlank()) {
-                    val newData = data.copy(customLabel = value)
-
-                    onUpdateGridItem(gridItem.copy(data = newData))
-
-                    showCustomLabelDialog = false
-                } else {
-                    isError = true
-                }
-            },
-            onResetClick = {
-                val newData = data.copy(customLabel = null)
-
-                onUpdateGridItem(gridItem.copy(data = newData))
-
-                showCustomLabelDialog = false
-            },
+            onUpdateGridItem = onUpdateGridItem,
         )
     }
 }
@@ -472,33 +446,13 @@ private fun EditFolder(
     }
 
     if (showEditLabelDialog) {
-        var value by remember { mutableStateOf(data.label) }
-
-        var isError by remember { mutableStateOf(false) }
-
-        SingleTextFieldDialog(
-            title = "Label",
-            textFieldTitle = "Label",
-            value = value,
-            isError = isError,
-            keyboardType = KeyboardType.Text,
-            onValueChange = {
-                value = it
-            },
+        EditFolderLabelDialog(
+            gridItem = gridItem,
+            data = data,
             onDismissRequest = {
                 showEditLabelDialog = false
             },
-            onUpdateClick = {
-                if (value.isNotBlank()) {
-                    val newData = data.copy(label = value)
-
-                    onUpdateGridItem(gridItem.copy(data = newData))
-
-                    showEditLabelDialog = false
-                } else {
-                    isError = true
-                }
-            },
+            onUpdateGridItem = onUpdateGridItem,
         )
     }
 }
@@ -579,40 +533,13 @@ private fun EditShortcutInfo(
     }
 
     if (showCustomShortLabelDialog) {
-        var value by remember { mutableStateOf(data.customShortLabel ?: "") }
-
-        var isError by remember { mutableStateOf(false) }
-
-        CustomLabelDialog(
-            title = "Custom Short Label",
-            textFieldTitle = "Custom Short Label",
-            value = value,
-            isError = isError,
-            keyboardType = KeyboardType.Text,
-            onValueChange = {
-                value = it
-            },
+        EditShortcutInfoCustomShortLabelDialog(
+            data = data,
+            gridItem = gridItem,
             onDismissRequest = {
                 showCustomShortLabelDialog = false
             },
-            onUpdateClick = {
-                if (value.isNotBlank()) {
-                    val newData = data.copy(customShortLabel = value)
-
-                    onUpdateGridItem(gridItem.copy(data = newData))
-
-                    showCustomShortLabelDialog = false
-                } else {
-                    isError = true
-                }
-            },
-            onResetClick = {
-                val newData = data.copy(customShortLabel = null)
-
-                onUpdateGridItem(gridItem.copy(data = newData))
-
-                showCustomShortLabelDialog = false
-            },
+            onUpdateGridItem = onUpdateGridItem,
         )
     }
 }
@@ -693,40 +620,13 @@ private fun EditShortcutConfig(
     }
 
     if (showCustomLabelDialog) {
-        var value by remember { mutableStateOf(data.customLabel ?: "") }
-
-        var isError by remember { mutableStateOf(false) }
-
-        CustomLabelDialog(
-            title = "Custom Label",
-            textFieldTitle = "Custom Label",
-            value = value,
-            isError = isError,
-            keyboardType = KeyboardType.Text,
-            onValueChange = {
-                value = it
-            },
+        EditShortcutConfigCustomLabelDialog(
+            data = data,
+            gridItem = gridItem,
             onDismissRequest = {
                 showCustomLabelDialog = false
             },
-            onUpdateClick = {
-                if (value.isNotBlank()) {
-                    val newData = data.copy(customLabel = value)
-
-                    onUpdateGridItem(gridItem.copy(data = newData))
-
-                    showCustomLabelDialog = false
-                } else {
-                    isError = true
-                }
-            },
-            onResetClick = {
-                val newData = data.copy(customLabel = null)
-
-                onUpdateGridItem(gridItem.copy(data = newData))
-
-                showCustomLabelDialog = false
-            },
+            onUpdateGridItem = onUpdateGridItem,
         )
     }
 }
