@@ -47,29 +47,6 @@ internal fun EditFolderLabelDialog(
         modifier = modifier,
         title = "Label",
         onDismissRequest = onDismissRequest,
-        actions = {
-            TextButton(
-                onClick = onDismissRequest,
-            ) {
-                Text(text = "Cancel")
-            }
-
-            TextButton(
-                onClick = {
-                    if (value.isNotBlank()) {
-                        val newData = data.copy(label = value)
-
-                        onUpdateGridItem(gridItem.copy(data = newData))
-
-                        onDismissRequest()
-                    } else {
-                        isError = true
-                    }
-                },
-            ) {
-                Text(text = "Update")
-            }
-        },
         textField = {
             TextField(
                 value = value,
@@ -89,6 +66,27 @@ internal fun EditFolderLabelDialog(
                     null
                 },
             )
+        },
+        bottomActions = {
+            TextButton(
+                onClick = onDismissRequest,
+            ) {
+                Text(text = "Cancel")
+            }
+
+            TextButton(
+                onClick = {
+                    if (value.isNotBlank()) {
+                        onUpdateGridItem(gridItem.copy(data = data.copy(label = value)))
+
+                        onDismissRequest()
+                    } else {
+                        isError = true
+                    }
+                },
+            ) {
+                Text(text = "Update")
+            }
         },
     )
 }

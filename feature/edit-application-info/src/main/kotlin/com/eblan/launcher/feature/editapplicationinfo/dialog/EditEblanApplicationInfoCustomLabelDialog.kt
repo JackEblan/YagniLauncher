@@ -17,16 +17,9 @@
  */
 package com.eblan.launcher.feature.editapplicationinfo.dialog
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -35,10 +28,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.unit.dp
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.EblanApplicationInfo
 import com.eblan.launcher.ui.dialog.TextFieldDialog
@@ -60,7 +50,45 @@ internal fun EditEblanApplicationInfoCustomLabelDialog(
         modifier = modifier,
         title = "Custom Label",
         onDismissRequest = onDismissRequest,
-        actions = {
+        topActions = {
+            IconButton(
+                enabled = value.isNotBlank(),
+                onClick = {
+                    onUpdateEblanApplicationInfo(
+                        eblanApplicationInfo.copy(customLabel = null),
+                    )
+
+                    onDismissRequest()
+                },
+            ) {
+                Icon(
+                    imageVector = EblanLauncherIcons.Delete,
+                    contentDescription = null,
+                )
+            }
+        },
+        textField = {
+            TextField(
+                value = value,
+                onValueChange = {
+                    value = it
+                    isError = false
+                },
+                modifier = Modifier.fillMaxWidth(),
+                label = {
+                    Text(text = "Custom Label")
+                },
+                isError = isError,
+                supportingText = if (isError) {
+                    {
+                        Text("Custom label is not valid")
+                    }
+                } else {
+                    null
+                },
+            )
+        },
+        bottomActions = {
             TextButton(onClick = onDismissRequest) {
                 Text(text = "Cancel")
             }
@@ -71,6 +99,7 @@ internal fun EditEblanApplicationInfoCustomLabelDialog(
                         onUpdateEblanApplicationInfo(
                             eblanApplicationInfo.copy(customLabel = value),
                         )
+
                         onDismissRequest()
                     } else {
                         isError = true
@@ -78,59 +107,6 @@ internal fun EditEblanApplicationInfoCustomLabelDialog(
                 },
             ) {
                 Text(text = "Update")
-            }
-        },
-        textField = {
-            Column {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text(
-                        text = "Custom Label",
-                        style = MaterialTheme.typography.titleLarge,
-                    )
-
-                    IconButton(
-                        enabled = value.isNotBlank(),
-                        onClick = {
-                            onUpdateEblanApplicationInfo(
-                                eblanApplicationInfo.copy(customLabel = null),
-                            )
-                            onDismissRequest()
-                        },
-                    ) {
-                        Icon(
-                            imageVector = EblanLauncherIcons.Delete,
-                            contentDescription = null,
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(10.dp))
-
-                TextField(
-                    value = value,
-                    onValueChange = {
-                        value = it
-                        isError = false
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    label = { Text(text = "Custom Label") },
-                    isError = isError,
-                    supportingText = if (isError) {
-                        {
-                            Text(text = "Custom Label is not valid")
-                        }
-                    } else {
-                        null
-                    },
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Text,
-                    ),
-                    singleLine = true,
-                )
             }
         },
     )

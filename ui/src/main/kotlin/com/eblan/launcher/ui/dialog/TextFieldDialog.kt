@@ -29,6 +29,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.eblan.launcher.designsystem.component.EblanDialogContainer
@@ -38,8 +39,9 @@ fun TextFieldDialog(
     modifier: Modifier = Modifier,
     title: String,
     onDismissRequest: () -> Unit,
-    actions: @Composable RowScope.() -> Unit,
+    topActions: (@Composable RowScope.() -> Unit)? = null,
     textField: @Composable ColumnScope.() -> Unit,
+    bottomActions: @Composable RowScope.() -> Unit,
 ) {
     EblanDialogContainer(
         modifier = modifier,
@@ -50,10 +52,20 @@ fun TextFieldDialog(
                     .fillMaxWidth()
                     .padding(10.dp),
             ) {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.titleLarge,
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text = title,
+                        style = MaterialTheme.typography.titleLarge,
+                    )
+
+                    if (topActions != null) {
+                        Row(content = topActions)
+                    }
+                }
 
                 Spacer(modifier = Modifier.height(10.dp))
 
@@ -64,7 +76,7 @@ fun TextFieldDialog(
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.End,
-                    content = actions,
+                    content = bottomActions,
                 )
             }
         },
@@ -76,8 +88,8 @@ fun RowTextFieldsDialog(
     modifier: Modifier = Modifier,
     title: String,
     onDismissRequest: () -> Unit,
-    actions: @Composable RowScope.() -> Unit,
     textFields: @Composable RowScope.() -> Unit,
+    bottomActions: @Composable RowScope.() -> Unit,
 ) {
     EblanDialogContainer(
         onDismissRequest = onDismissRequest,
@@ -105,7 +117,7 @@ fun RowTextFieldsDialog(
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.End,
-                    content = actions,
+                    content = bottomActions,
                 )
             }
         },

@@ -17,8 +17,6 @@
  */
 package com.eblan.launcher.feature.settings.appdrawer.dialog
 
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -55,7 +53,44 @@ internal fun EditHorizontalGridDialog(
         modifier = modifier,
         title = "Horizontal Grid",
         onDismissRequest = onDismissRequest,
-        actions = {
+        textFields = {
+            TextField(
+                value = columns,
+                onValueChange = { columns = it },
+                modifier = Modifier.weight(1f),
+                label = { Text(text = "Columns") },
+                supportingText = if (firstError) {
+                    {
+                        Text(text = "Columns is not valid")
+                    }
+                } else {
+                    null
+                },
+                isError = firstError,
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Number,
+                ),
+            )
+
+            TextField(
+                value = rows,
+                onValueChange = { rows = it },
+                modifier = Modifier.weight(1f),
+                label = { Text(text = "Rows") },
+                supportingText = if (secondError) {
+                    {
+                        Text(text = "Rows is not valid")
+                    }
+                } else {
+                    null
+                },
+                isError = secondError,
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Number,
+                ),
+            )
+        },
+        bottomActions = {
             TextButton(
                 onClick = onDismissRequest,
             ) {
@@ -104,43 +139,6 @@ internal fun EditHorizontalGridDialog(
             ) {
                 Text(text = "Update")
             }
-        },
-        textFields = {
-            TextField(
-                value = columns,
-                onValueChange = { columns = it },
-                modifier = Modifier.weight(1f),
-                label = { Text(text = "Columns") },
-                supportingText = if (firstError) {
-                    {
-                        Text(text = "Columns is not valid")
-                    }
-                } else {
-                    null
-                },
-                isError = firstError,
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Number,
-                ),
-            )
-
-            TextField(
-                value = rows,
-                onValueChange = { rows = it },
-                modifier = Modifier.weight(1f),
-                label = { Text(text = "Rows") },
-                supportingText = if (secondError) {
-                    {
-                        Text(text = "Rows is not valid")
-                    }
-                } else {
-                    null
-                },
-                isError = secondError,
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Number,
-                ),
-            )
         },
     )
 }

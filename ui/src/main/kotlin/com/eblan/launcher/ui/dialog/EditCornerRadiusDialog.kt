@@ -47,27 +47,6 @@ internal fun EditCornerRadiusDialog(
         modifier = modifier,
         title = "Corner Radius",
         onDismissRequest = onDismissRequest,
-        actions = {
-            TextButton(
-                onClick = onDismissRequest,
-            ) {
-                Text(text = "Cancel")
-            }
-
-            TextButton(
-                onClick = {
-                    try {
-                        onUpdateCornerRadius(
-                            value.toInt(),
-                        )
-                    } catch (_: NumberFormatException) {
-                        isError = true
-                    }
-                },
-            ) {
-                Text(text = "Update")
-            }
-        },
         textField = {
             TextField(
                 value = value,
@@ -90,6 +69,27 @@ internal fun EditCornerRadiusDialog(
                     keyboardType = KeyboardType.Number,
                 ),
             )
+        },
+        bottomActions = {
+            TextButton(
+                onClick = onDismissRequest,
+            ) {
+                Text(text = "Cancel")
+            }
+
+            TextButton(
+                onClick = {
+                    try {
+                        onUpdateCornerRadius(
+                            value.toInt(),
+                        )
+                    } catch (_: NumberFormatException) {
+                        isError = true
+                    }
+                },
+            ) {
+                Text(text = "Update")
+            }
         },
     )
 }

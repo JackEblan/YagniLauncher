@@ -17,8 +17,6 @@
  */
 package com.eblan.launcher.feature.settings.home.dialog
 
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -55,44 +53,6 @@ internal fun EditFolderCellDimensionDialog(
         modifier = modifier,
         title = "Folder Cell Dimension",
         onDismissRequest = onDismissRequest,
-        actions = {
-            TextButton(
-                onClick = onDismissRequest,
-            ) {
-                Text(text = "Cancel")
-            }
-
-            TextButton(
-                onClick = {
-                    val newWidth = try {
-                        cellWidth.toInt()
-                    } catch (_: NumberFormatException) {
-                        firstError = true
-                        0
-                    }
-
-                    val newHeight = try {
-                        cellHeight.toInt()
-                    } catch (_: NumberFormatException) {
-                        secondError = true
-                        0
-                    }
-
-                    if (newWidth > 0 && newHeight > 0) {
-                        onUpdateHomeSettings(
-                            homeSettings.copy(
-                                folderCellWidth = newWidth,
-                                folderCellHeight = newHeight,
-                            ),
-                        )
-
-                        onDismissRequest()
-                    }
-                },
-            ) {
-                Text(text = "Update")
-            }
-        },
         textFields = {
             TextField(
                 value = cellWidth,
@@ -129,6 +89,44 @@ internal fun EditFolderCellDimensionDialog(
                     keyboardType = KeyboardType.Number,
                 ),
             )
+        },
+        bottomActions = {
+            TextButton(
+                onClick = onDismissRequest,
+            ) {
+                Text(text = "Cancel")
+            }
+
+            TextButton(
+                onClick = {
+                    val newWidth = try {
+                        cellWidth.toInt()
+                    } catch (_: NumberFormatException) {
+                        firstError = true
+                        0
+                    }
+
+                    val newHeight = try {
+                        cellHeight.toInt()
+                    } catch (_: NumberFormatException) {
+                        secondError = true
+                        0
+                    }
+
+                    if (newWidth > 0 && newHeight > 0) {
+                        onUpdateHomeSettings(
+                            homeSettings.copy(
+                                folderCellWidth = newWidth,
+                                folderCellHeight = newHeight,
+                            ),
+                        )
+
+                        onDismissRequest()
+                    }
+                },
+            ) {
+                Text(text = "Update")
+            }
         },
     )
 }

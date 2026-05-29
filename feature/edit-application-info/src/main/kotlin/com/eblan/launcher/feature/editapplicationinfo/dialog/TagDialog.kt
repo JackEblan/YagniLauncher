@@ -60,7 +60,28 @@ internal fun AddTagDialog(
         modifier = modifier,
         title = "Add Tag",
         onDismissRequest = onDismissRequest,
-        actions = {
+        textField = {
+            TextField(
+                value = value,
+                onValueChange = {
+                    value = it
+                    isError = false
+                },
+                modifier = Modifier.fillMaxWidth(),
+                label = {
+                    Text(text = "Add Tag")
+                },
+                isError = isError,
+                supportingText = if (isError) {
+                    {
+                        Text(text = "Tag is not valid")
+                    }
+                } else {
+                    null
+                },
+            )
+        },
+        bottomActions = {
             TextButton(
                 onClick = onDismissRequest,
             ) {
@@ -84,27 +105,6 @@ internal fun AddTagDialog(
             ) {
                 Text(text = "Add")
             }
-        },
-        textField = {
-            TextField(
-                value = value,
-                onValueChange = {
-                    value = it
-                    isError = false
-                },
-                modifier = Modifier.fillMaxWidth(),
-                label = {
-                    Text(text = "Add Tag")
-                },
-                isError = isError,
-                supportingText = if (isError) {
-                    {
-                        Text(text = "Tag is not valid")
-                    }
-                } else {
-                    null
-                },
-            )
         },
     )
 }

@@ -17,8 +17,6 @@
  */
 package com.eblan.launcher.feature.settings.home.dialog
 
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -55,44 +53,6 @@ internal fun EditDockGridDialog(
         modifier = modifier,
         title = "Dock Grid",
         onDismissRequest = onDismissRequest,
-        actions = {
-            TextButton(
-                onClick = onDismissRequest,
-            ) {
-                Text(text = "Cancel")
-            }
-
-            TextButton(
-                onClick = {
-                    val newDockColumns = try {
-                        dockColumns.toInt()
-                    } catch (_: NumberFormatException) {
-                        firstError = true
-                        0
-                    }
-
-                    val newDockRows = try {
-                        dockRows.toInt()
-                    } catch (_: NumberFormatException) {
-                        secondError = true
-                        0
-                    }
-
-                    if (newDockColumns > 0 && newDockRows > 0) {
-                        onUpdateHomeSettings(
-                            homeSettings.copy(
-                                dockColumns = newDockColumns,
-                                dockRows = newDockRows,
-                            ),
-                        )
-
-                        onDismissRequest()
-                    }
-                },
-            ) {
-                Text(text = "Update")
-            }
-        },
         textFields = {
             TextField(
                 value = dockColumns,
@@ -129,6 +89,44 @@ internal fun EditDockGridDialog(
                     keyboardType = KeyboardType.Number,
                 ),
             )
+        },
+        bottomActions = {
+            TextButton(
+                onClick = onDismissRequest,
+            ) {
+                Text(text = "Cancel")
+            }
+
+            TextButton(
+                onClick = {
+                    val newDockColumns = try {
+                        dockColumns.toInt()
+                    } catch (_: NumberFormatException) {
+                        firstError = true
+                        0
+                    }
+
+                    val newDockRows = try {
+                        dockRows.toInt()
+                    } catch (_: NumberFormatException) {
+                        secondError = true
+                        0
+                    }
+
+                    if (newDockColumns > 0 && newDockRows > 0) {
+                        onUpdateHomeSettings(
+                            homeSettings.copy(
+                                dockColumns = newDockColumns,
+                                dockRows = newDockRows,
+                            ),
+                        )
+
+                        onDismissRequest()
+                    }
+                },
+            ) {
+                Text(text = "Update")
+            }
         },
     )
 }

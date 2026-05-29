@@ -17,8 +17,6 @@
  */
 package com.eblan.launcher.feature.settings.home.dialog
 
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -55,44 +53,6 @@ internal fun EditFolderMaxGridDialog(
         modifier = modifier,
         title = "Folder Max Grid",
         onDismissRequest = onDismissRequest,
-        actions = {
-            TextButton(
-                onClick = onDismissRequest,
-            ) {
-                Text(text = "Cancel")
-            }
-
-            TextButton(
-                onClick = {
-                    val newColumns = try {
-                        maxFolderColumns.toInt()
-                    } catch (_: NumberFormatException) {
-                        firstError = true
-                        0
-                    }
-
-                    val newRows = try {
-                        maxFolderRows.toInt()
-                    } catch (_: NumberFormatException) {
-                        secondError = true
-                        0
-                    }
-
-                    if (newColumns > 0 && newRows > 0) {
-                        onUpdateHomeSettings(
-                            homeSettings.copy(
-                                maxFolderColumns = newColumns,
-                                maxFolderRows = newRows,
-                            ),
-                        )
-
-                        onDismissRequest()
-                    }
-                },
-            ) {
-                Text(text = "Update")
-            }
-        },
         textFields = {
             TextField(
                 value = maxFolderColumns,
@@ -129,6 +89,44 @@ internal fun EditFolderMaxGridDialog(
                     keyboardType = KeyboardType.Number,
                 ),
             )
+        },
+        bottomActions = {
+            TextButton(
+                onClick = onDismissRequest,
+            ) {
+                Text(text = "Cancel")
+            }
+
+            TextButton(
+                onClick = {
+                    val newColumns = try {
+                        maxFolderColumns.toInt()
+                    } catch (_: NumberFormatException) {
+                        firstError = true
+                        0
+                    }
+
+                    val newRows = try {
+                        maxFolderRows.toInt()
+                    } catch (_: NumberFormatException) {
+                        secondError = true
+                        0
+                    }
+
+                    if (newColumns > 0 && newRows > 0) {
+                        onUpdateHomeSettings(
+                            homeSettings.copy(
+                                maxFolderColumns = newColumns,
+                                maxFolderRows = newRows,
+                            ),
+                        )
+
+                        onDismissRequest()
+                    }
+                },
+            ) {
+                Text(text = "Update")
+            }
         },
     )
 }

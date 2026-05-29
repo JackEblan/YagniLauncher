@@ -47,27 +47,6 @@ internal fun EditPaddingDialog(
         modifier = modifier,
         title = "Padding",
         onDismissRequest = onDismissRequest,
-        actions = {
-            TextButton(
-                onClick = onDismissRequest,
-            ) {
-                Text(text = "Cancel")
-            }
-
-            TextButton(
-                onClick = {
-                    try {
-                        onUpdatePadding(
-                            value.toInt(),
-                        )
-                    } catch (_: NumberFormatException) {
-                        isError = true
-                    }
-                },
-            ) {
-                Text(text = "Update")
-            }
-        },
         textField = {
             TextField(
                 value = value,
@@ -90,6 +69,27 @@ internal fun EditPaddingDialog(
                     keyboardType = KeyboardType.Number,
                 ),
             )
+        },
+        bottomActions = {
+            TextButton(
+                onClick = onDismissRequest,
+            ) {
+                Text(text = "Cancel")
+            }
+
+            TextButton(
+                onClick = {
+                    try {
+                        onUpdatePadding(
+                            value.toInt(),
+                        )
+                    } catch (_: NumberFormatException) {
+                        isError = true
+                    }
+                },
+            ) {
+                Text(text = "Update")
+            }
         },
     )
 }

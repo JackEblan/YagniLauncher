@@ -17,8 +17,6 @@
  */
 package com.eblan.launcher.feature.settings.home.dialog
 
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -55,44 +53,6 @@ internal fun EditGridDialog(
         modifier = modifier,
         title = "Grid",
         onDismissRequest = onDismissRequest,
-        actions = {
-            TextButton(
-                onClick = onDismissRequest,
-            ) {
-                Text(text = "Cancel")
-            }
-
-            TextButton(
-                onClick = {
-                    val newColumns = try {
-                        columns.toInt()
-                    } catch (_: NumberFormatException) {
-                        firstError = true
-                        0
-                    }
-
-                    val newRows = try {
-                        rows.toInt()
-                    } catch (_: NumberFormatException) {
-                        secondError = true
-                        0
-                    }
-
-                    if (newColumns > 0 && newRows > 0) {
-                        onUpdateHomeSettings(
-                            homeSettings.copy(
-                                columns = newColumns,
-                                rows = newRows,
-                            ),
-                        )
-
-                        onDismissRequest()
-                    }
-                },
-            ) {
-                Text(text = "Update")
-            }
-        },
         textFields = {
             TextField(
                 value = columns,
@@ -129,6 +89,44 @@ internal fun EditGridDialog(
                     keyboardType = KeyboardType.Number,
                 ),
             )
+        },
+        bottomActions = {
+            TextButton(
+                onClick = onDismissRequest,
+            ) {
+                Text(text = "Cancel")
+            }
+
+            TextButton(
+                onClick = {
+                    val newColumns = try {
+                        columns.toInt()
+                    } catch (_: NumberFormatException) {
+                        firstError = true
+                        0
+                    }
+
+                    val newRows = try {
+                        rows.toInt()
+                    } catch (_: NumberFormatException) {
+                        secondError = true
+                        0
+                    }
+
+                    if (newColumns > 0 && newRows > 0) {
+                        onUpdateHomeSettings(
+                            homeSettings.copy(
+                                columns = newColumns,
+                                rows = newRows,
+                            ),
+                        )
+
+                        onDismissRequest()
+                    }
+                },
+            ) {
+                Text(text = "Update")
+            }
         },
     )
 }

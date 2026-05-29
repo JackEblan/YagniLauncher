@@ -53,44 +53,6 @@ internal fun EditVerticalGridDialog(
         modifier = modifier,
         title = "Vertical Grid",
         onDismissRequest = onDismissRequest,
-        actions = {
-            TextButton(
-                onClick = onDismissRequest,
-            ) {
-                Text(text = "Cancel")
-            }
-
-            TextButton(
-                onClick = {
-                    val newColumns = try {
-                        columns.toInt()
-                    } catch (_: NumberFormatException) {
-                        firstError = true
-                        0
-                    }
-
-                    val newRowsHeight = try {
-                        rowsHeight.toInt()
-                    } catch (_: NumberFormatException) {
-                        secondError = true
-                        0
-                    }
-
-                    if (newColumns > 0 && newRowsHeight > 0) {
-                        onUpdateAppDrawerSettings(
-                            appDrawerSettings.copy(
-                                appDrawerColumns = newColumns,
-                                appDrawerRowsHeight = newRowsHeight,
-                            ),
-                        )
-
-                        onDismissRequest()
-                    }
-                },
-            ) {
-                Text(text = "Update")
-            }
-        },
         textFields = {
             TextField(
                 value = columns,
@@ -127,6 +89,44 @@ internal fun EditVerticalGridDialog(
                     keyboardType = KeyboardType.Number,
                 ),
             )
+        },
+        bottomActions = {
+            TextButton(
+                onClick = onDismissRequest,
+            ) {
+                Text(text = "Cancel")
+            }
+
+            TextButton(
+                onClick = {
+                    val newColumns = try {
+                        columns.toInt()
+                    } catch (_: NumberFormatException) {
+                        firstError = true
+                        0
+                    }
+
+                    val newRowsHeight = try {
+                        rowsHeight.toInt()
+                    } catch (_: NumberFormatException) {
+                        secondError = true
+                        0
+                    }
+
+                    if (newColumns > 0 && newRowsHeight > 0) {
+                        onUpdateAppDrawerSettings(
+                            appDrawerSettings.copy(
+                                appDrawerColumns = newColumns,
+                                appDrawerRowsHeight = newRowsHeight,
+                            ),
+                        )
+
+                        onDismissRequest()
+                    }
+                },
+            ) {
+                Text(text = "Update")
+            }
         },
     )
 }

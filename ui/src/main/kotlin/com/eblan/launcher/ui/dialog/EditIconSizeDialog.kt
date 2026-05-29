@@ -47,27 +47,6 @@ internal fun EditIconSizeDialog(
         modifier = modifier,
         title = "Icon Size",
         onDismissRequest = onDismissRequest,
-        actions = {
-            TextButton(
-                onClick = onDismissRequest,
-            ) {
-                Text(text = "Cancel")
-            }
-
-            TextButton(
-                onClick = {
-                    try {
-                        onUpdateIconSize(
-                            value.toInt().coerceAtLeast(1),
-                        )
-                    } catch (_: NumberFormatException) {
-                        isError = true
-                    }
-                },
-            ) {
-                Text(text = "Update")
-            }
-        },
         textField = {
             TextField(
                 value = value,
@@ -90,6 +69,27 @@ internal fun EditIconSizeDialog(
                     keyboardType = KeyboardType.Number,
                 ),
             )
+        },
+        bottomActions = {
+            TextButton(
+                onClick = onDismissRequest,
+            ) {
+                Text(text = "Cancel")
+            }
+
+            TextButton(
+                onClick = {
+                    try {
+                        onUpdateIconSize(
+                            value.toInt().coerceAtLeast(1),
+                        )
+                    } catch (_: NumberFormatException) {
+                        isError = true
+                    }
+                },
+            ) {
+                Text(text = "Update")
+            }
         },
     )
 }

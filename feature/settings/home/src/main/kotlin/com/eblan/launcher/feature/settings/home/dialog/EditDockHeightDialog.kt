@@ -48,30 +48,6 @@ internal fun EditDockHeightDialog(
         modifier = modifier,
         title = "Dock Height",
         onDismissRequest = onDismissRequest,
-        actions = {
-            TextButton(
-                onClick = onDismissRequest,
-            ) {
-                Text(text = "Cancel")
-            }
-
-            TextButton(
-                onClick = {
-                    val newDockHeight = try {
-                        value.toInt()
-                    } catch (_: NumberFormatException) {
-                        isError = true
-                        0
-                    }
-
-                    if (newDockHeight > 0) {
-                        onUpdateDockHeight(newDockHeight)
-                    }
-                },
-            ) {
-                Text(text = "Update")
-            }
-        },
         textField = {
             TextField(
                 value = value,
@@ -94,6 +70,30 @@ internal fun EditDockHeightDialog(
                     keyboardType = KeyboardType.Number,
                 ),
             )
+        },
+        bottomActions = {
+            TextButton(
+                onClick = onDismissRequest,
+            ) {
+                Text(text = "Cancel")
+            }
+
+            TextButton(
+                onClick = {
+                    val newDockHeight = try {
+                        value.toInt()
+                    } catch (_: NumberFormatException) {
+                        isError = true
+                        0
+                    }
+
+                    if (newDockHeight > 0) {
+                        onUpdateDockHeight(newDockHeight)
+                    }
+                },
+            ) {
+                Text(text = "Update")
+            }
         },
     )
 }
