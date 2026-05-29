@@ -99,10 +99,12 @@ internal fun EditFolderCellDimensionDialog(
                 onValueChange = { cellWidth = it },
                 modifier = Modifier.weight(1f),
                 label = { Text(text = "Cell Width") },
-                supportingText = {
-                    if (firstError) {
+                supportingText = if (firstError) {
+                    {
                         Text(text = "$cellWidth is not valid")
                     }
+                } else {
+                    null
                 },
                 isError = firstError,
                 keyboardOptions = KeyboardOptions(
@@ -115,10 +117,12 @@ internal fun EditFolderCellDimensionDialog(
                 onValueChange = { cellHeight = it },
                 modifier = Modifier.weight(1f),
                 label = { Text(text = "Cell Height") },
-                supportingText = {
-                    if (secondError) {
+                supportingText = if (secondError) {
+                    {
                         Text(text = "$cellHeight is not valid")
                     }
+                } else {
+                    null
                 },
                 isError = secondError,
                 keyboardOptions = KeyboardOptions(

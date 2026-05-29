@@ -99,10 +99,12 @@ internal fun EditDockGridDialog(
                 onValueChange = { dockColumns = it },
                 modifier = Modifier.weight(1f),
                 label = { Text(text = "Columns") },
-                supportingText = {
-                    if (firstError) {
+                supportingText = if (firstError) {
+                    {
                         Text(text = "$dockColumns is not valid")
                     }
+                } else {
+                    null
                 },
                 isError = firstError,
                 keyboardOptions = KeyboardOptions(
@@ -115,10 +117,12 @@ internal fun EditDockGridDialog(
                 onValueChange = { dockRows = it },
                 modifier = Modifier.weight(1f),
                 label = { Text(text = "Rows") },
-                supportingText = {
-                    if (secondError) {
+                supportingText = if (secondError) {
+                    {
                         Text(text = "$dockRows is not valid")
                     }
+                } else {
+                    null
                 },
                 isError = secondError,
                 keyboardOptions = KeyboardOptions(

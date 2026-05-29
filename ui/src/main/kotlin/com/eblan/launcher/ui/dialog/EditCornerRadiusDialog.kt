@@ -79,10 +79,12 @@ internal fun EditCornerRadiusDialog(
                     Text(text = "Corner Radius")
                 },
                 isError = isError,
-                supportingText = {
-                    if (isError) {
+                supportingText = if (isError) {
+                    {
                         Text(text = "Corner Radius is not valid")
                     }
+                } else {
+                    null
                 },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number,

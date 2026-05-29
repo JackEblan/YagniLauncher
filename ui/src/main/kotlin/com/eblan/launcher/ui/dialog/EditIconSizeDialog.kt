@@ -79,10 +79,12 @@ internal fun EditIconSizeDialog(
                     Text(text = "Icon Size")
                 },
                 isError = isError,
-                supportingText = {
-                    if (isError) {
+                supportingText = if (isError) {
+                    {
                         Text(text = "Icon Size is not valid")
                     }
+                } else {
+                    null
                 },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number,

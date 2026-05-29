@@ -79,10 +79,12 @@ internal fun EditTextSizeDialog(
                     Text(text = "Text Size")
                 },
                 isError = isError,
-                supportingText = {
-                    if (isError) {
+                supportingText = if (isError) {
+                    {
                         Text(text = "Text Size is not valid")
                     }
+                } else {
+                    null
                 },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number,

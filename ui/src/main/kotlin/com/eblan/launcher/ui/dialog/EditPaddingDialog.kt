@@ -79,10 +79,12 @@ internal fun EditPaddingDialog(
                     Text(text = "Padding")
                 },
                 isError = isError,
-                supportingText = {
-                    if (isError) {
+                supportingText = if (isError) {
+                    {
                         Text(text = "Padding is not valid")
                     }
+                } else {
+                    null
                 },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number,

@@ -83,10 +83,12 @@ internal fun EditDockHeightDialog(
                     Text(text = "Dock Height")
                 },
                 isError = isError,
-                supportingText = {
-                    if (isError) {
+                supportingText = if (isError) {
+                    {
                         Text(text = "Dock Height is not valid")
                     }
+                } else {
+                    null
                 },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number,

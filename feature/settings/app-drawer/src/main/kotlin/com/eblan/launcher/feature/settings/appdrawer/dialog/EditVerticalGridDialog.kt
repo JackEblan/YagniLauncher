@@ -97,10 +97,12 @@ internal fun EditVerticalGridDialog(
                 onValueChange = { columns = it },
                 modifier = Modifier.weight(1f),
                 label = { Text(text = "Columns") },
-                supportingText = {
-                    if (firstError) {
+                supportingText = if (firstError) {
+                    {
                         Text(text = "$columns is not valid")
                     }
+                } else {
+                    null
                 },
                 isError = firstError,
                 keyboardOptions = KeyboardOptions(
@@ -113,10 +115,12 @@ internal fun EditVerticalGridDialog(
                 onValueChange = { rowsHeight = it },
                 modifier = Modifier.weight(1f),
                 label = { Text(text = "Rows Height") },
-                supportingText = {
-                    if (secondError) {
+                supportingText = if (secondError) {
+                    {
                         Text(text = "$rowsHeight is not valid")
                     }
+                } else {
+                    null
                 },
                 isError = secondError,
                 keyboardOptions = KeyboardOptions(
