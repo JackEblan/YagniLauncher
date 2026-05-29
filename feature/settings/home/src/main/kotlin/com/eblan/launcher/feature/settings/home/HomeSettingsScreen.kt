@@ -39,15 +39,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.HomeSettings
+import com.eblan.launcher.feature.settings.home.dialog.EditDockGridDialog
+import com.eblan.launcher.feature.settings.home.dialog.EditDockHeightDialog
+import com.eblan.launcher.feature.settings.home.dialog.EditFolderCellDimensionDialog
+import com.eblan.launcher.feature.settings.home.dialog.EditFolderMaxGridDialog
+import com.eblan.launcher.feature.settings.home.dialog.EditGridDialog
 import com.eblan.launcher.feature.settings.home.model.HomeSettingsUiState
-import com.eblan.launcher.ui.dialog.SingleTextFieldDialog
-import com.eblan.launcher.ui.dialog.TwoTextFieldsDialog
 import com.eblan.launcher.ui.settings.GridItemSettings
 import com.eblan.launcher.ui.settings.SettingsColumn
 import com.eblan.launcher.ui.settings.SettingsSwitch
@@ -272,262 +274,60 @@ private fun Success(
     }
 
     if (showGridDialog) {
-        var columns by remember { mutableStateOf("${homeSettings.columns}") }
-
-        var rows by remember { mutableStateOf("${homeSettings.rows}") }
-
-        var firstTextFieldIsError by remember { mutableStateOf(false) }
-
-        var secondTextFieldIsError by remember { mutableStateOf(false) }
-
-        TwoTextFieldsDialog(
-            title = "Grid",
-            firstTextFieldTitle = "Columns",
-            secondTextFieldTitle = "Rows",
-            firstTextFieldValue = columns,
-            secondTextFieldValue = rows,
-            firstTextFieldIsError = firstTextFieldIsError,
-            secondTextFieldIsError = secondTextFieldIsError,
-            keyboardType = KeyboardType.Number,
-            onFirstValueChange = {
-                columns = it
-            },
-            onSecondValueChange = {
-                rows = it
-            },
+        EditGridDialog(
+            homeSettings = homeSettings,
             onDismissRequest = {
                 showGridDialog = false
             },
-            onUpdateClick = {
-                val newColumns = try {
-                    columns.toInt()
-                } catch (_: NumberFormatException) {
-                    firstTextFieldIsError = true
-                    0
-                }
-
-                val newRows = try {
-                    rows.toInt()
-                } catch (_: NumberFormatException) {
-                    secondTextFieldIsError = true
-                    0
-                }
-
-                if (newColumns > 0 && newRows > 0) {
-                    onUpdateHomeSettings(
-                        homeSettings.copy(
-                            columns = newColumns,
-                            rows = newRows,
-                        ),
-                    )
-
-                    showGridDialog = false
-                }
-            },
+            onUpdateHomeSettings = onUpdateHomeSettings,
         )
     }
 
     if (showDockGridDialog) {
-        var dockColumns by remember { mutableStateOf("${homeSettings.dockColumns}") }
-
-        var dockRows by remember { mutableStateOf("${homeSettings.dockRows}") }
-
-        var firstTextFieldIsError by remember { mutableStateOf(false) }
-
-        var secondTextFieldIsError by remember { mutableStateOf(false) }
-
-        TwoTextFieldsDialog(
-            title = "Dock Grid",
-            firstTextFieldTitle = "Columns",
-            secondTextFieldTitle = "Rows",
-            firstTextFieldValue = dockColumns,
-            secondTextFieldValue = dockRows,
-            firstTextFieldIsError = firstTextFieldIsError,
-            secondTextFieldIsError = secondTextFieldIsError,
-            keyboardType = KeyboardType.Number,
-            onFirstValueChange = {
-                dockColumns = it
-            },
-            onSecondValueChange = {
-                dockRows = it
-            },
+        EditDockGridDialog(
+            homeSettings = homeSettings,
             onDismissRequest = {
                 showDockGridDialog = false
             },
-            onUpdateClick = {
-                val newDockColumns = try {
-                    dockColumns.toInt()
-                } catch (_: NumberFormatException) {
-                    firstTextFieldIsError = true
-                    0
-                }
-
-                val newDockRows = try {
-                    dockRows.toInt()
-                } catch (_: NumberFormatException) {
-                    secondTextFieldIsError = true
-                    0
-                }
-
-                if (newDockColumns > 0 && newDockRows > 0) {
-                    onUpdateHomeSettings(
-                        homeSettings.copy(
-                            dockColumns = newDockColumns,
-                            dockRows = newDockRows,
-                        ),
-                    )
-
-                    showDockGridDialog = false
-                }
-            },
+            onUpdateHomeSettings = onUpdateHomeSettings,
         )
     }
 
     if (showDockHeightDialog) {
-        var value by remember { mutableStateOf("${homeSettings.dockHeight}") }
-
-        var isError by remember { mutableStateOf(false) }
-
-        SingleTextFieldDialog(
-            title = "Dock Height",
-            textFieldTitle = "Dock Height",
-            value = value,
-            isError = isError,
-            keyboardType = KeyboardType.Number,
-            onValueChange = {
-                value = it
-            },
+        EditDockHeightDialog(
+            dockHeight = homeSettings.dockHeight,
             onDismissRequest = {
                 showDockHeightDialog = false
             },
-            onUpdateClick = {
-                val dockHeight = try {
-                    value.toInt()
-                } catch (_: NumberFormatException) {
-                    isError = true
-                    0
-                }
+            onUpdateDockHeight = { dockHeight ->
+                onUpdateHomeSettings(
+                    homeSettings.copy(
+                        dockHeight = dockHeight,
+                    ),
+                )
 
-                if (dockHeight > 0) {
-                    onUpdateHomeSettings(
-                        homeSettings.copy(dockHeight = dockHeight),
-                    )
-
-                    showDockHeightDialog = false
-                }
+                showDockHeightDialog = false
             },
         )
     }
 
     if (showFolderCellDimensionDialog) {
-        var folderCellWidth by remember { mutableStateOf("${homeSettings.folderCellWidth}") }
-
-        var folderCellHeight by remember { mutableStateOf("${homeSettings.folderCellHeight}") }
-
-        var firstTextFieldIsError by remember { mutableStateOf(false) }
-
-        var secondTextFieldIsError by remember { mutableStateOf(false) }
-
-        TwoTextFieldsDialog(
-            title = "Folder Cell Dimension",
-            firstTextFieldTitle = "Cell Width",
-            secondTextFieldTitle = "Cell Height",
-            firstTextFieldValue = folderCellWidth,
-            secondTextFieldValue = folderCellHeight,
-            firstTextFieldIsError = firstTextFieldIsError,
-            secondTextFieldIsError = secondTextFieldIsError,
-            keyboardType = KeyboardType.Number,
-            onFirstValueChange = {
-                folderCellWidth = it
-            },
-            onSecondValueChange = {
-                folderCellHeight = it
-            },
+        EditFolderCellDimensionDialog(
+            homeSettings = homeSettings,
             onDismissRequest = {
                 showFolderCellDimensionDialog = false
             },
-            onUpdateClick = {
-                val newFolderCellWidth = try {
-                    folderCellWidth.toInt()
-                } catch (_: NumberFormatException) {
-                    firstTextFieldIsError = true
-                    0
-                }
-
-                val newFolderCellHeight = try {
-                    folderCellHeight.toInt()
-                } catch (_: NumberFormatException) {
-                    secondTextFieldIsError = true
-                    0
-                }
-
-                if (newFolderCellWidth > 0 && newFolderCellHeight > 0) {
-                    onUpdateHomeSettings(
-                        homeSettings.copy(
-                            folderCellWidth = newFolderCellWidth,
-                            folderCellHeight = newFolderCellHeight,
-                        ),
-                    )
-
-                    showFolderCellDimensionDialog = false
-                }
-            },
+            onUpdateHomeSettings = onUpdateHomeSettings,
         )
     }
 
     if (showFolderMaxGridDialog) {
-        var maxFolderColumns by remember { mutableStateOf("${homeSettings.maxFolderColumns}") }
-
-        var maxFolderRows by remember { mutableStateOf("${homeSettings.maxFolderRows}") }
-
-        var firstTextFieldIsError by remember { mutableStateOf(false) }
-
-        var secondTextFieldIsError by remember { mutableStateOf(false) }
-
-        TwoTextFieldsDialog(
-            title = "Folder Max Grid",
-            firstTextFieldTitle = "Columns",
-            secondTextFieldTitle = "Rows",
-            firstTextFieldValue = maxFolderColumns,
-            secondTextFieldValue = maxFolderRows,
-            firstTextFieldIsError = firstTextFieldIsError,
-            secondTextFieldIsError = secondTextFieldIsError,
-            keyboardType = KeyboardType.Number,
-            onFirstValueChange = {
-                maxFolderColumns = it
-            },
-            onSecondValueChange = {
-                maxFolderRows = it
-            },
+        EditFolderMaxGridDialog(
+            homeSettings = homeSettings,
             onDismissRequest = {
                 showFolderMaxGridDialog = false
             },
-            onUpdateClick = {
-                val newMaxFolderColumns = try {
-                    maxFolderColumns.toInt()
-                } catch (_: NumberFormatException) {
-                    firstTextFieldIsError = true
-                    0
-                }
-
-                val newMaxFolderRows = try {
-                    maxFolderRows.toInt()
-                } catch (_: NumberFormatException) {
-                    secondTextFieldIsError = true
-                    0
-                }
-
-                if (newMaxFolderColumns > 0 && newMaxFolderRows > 0) {
-                    onUpdateHomeSettings(
-                        homeSettings.copy(
-                            maxFolderColumns = newMaxFolderColumns,
-                            maxFolderRows = newMaxFolderRows,
-                        ),
-                    )
-
-                    showFolderMaxGridDialog = false
-                }
-            },
+            onUpdateHomeSettings = onUpdateHomeSettings,
         )
     }
 }

@@ -15,7 +15,7 @@
  *   limitations under the License.
  *
  */
-package com.eblan.launcher.feature.editapplicationinfo.dialog
+package com.eblan.launcher.feature.editgriditem.dialog
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -23,7 +23,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -40,48 +39,71 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import com.eblan.launcher.designsystem.component.EblanDialogContainer
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
-import com.eblan.launcher.domain.model.EblanApplicationInfoTag
-import com.eblan.launcher.domain.model.EblanApplicationInfoTagUi
+import com.eblan.launcher.domain.model.GridItem
+import com.eblan.launcher.domain.model.GridItemData
+import com.eblan.launcher.ui.dialog.TextFieldDialog
 
 @Composable
-internal fun UpdateTagDialog(
+internal fun EditShortcutConfigCustomLabelDialog(
     modifier: Modifier = Modifier,
-    eblanApplicationInfoTagUi: EblanApplicationInfoTagUi?,
-    onDeleteEblanApplicationInfoTag: (EblanApplicationInfoTag) -> Unit,
+    gridItem: GridItem,
+    data: GridItemData.ShortcutConfig,
     onDismissRequest: () -> Unit,
-    onUpdateEblanApplicationInfoTag: (EblanApplicationInfoTag) -> Unit,
+    onUpdateGridItem: (GridItem) -> Unit,
 ) {
-    if (eblanApplicationInfoTagUi == null) return
-
-    var value by remember { mutableStateOf(eblanApplicationInfoTagUi.name) }
+    var value by remember {
+        mutableStateOf(data.customLabel ?: "")
+    }
 
     var isError by remember { mutableStateOf(false) }
 
-    EblanDialogContainer(
-        content = {
-            Column(
-                modifier = modifier
-                    .fillMaxWidth()
-                    .padding(10.dp),
+    TextFieldDialog(
+        modifier = modifier,
+        title = "Custom Label",
+        onDismissRequest = onDismissRequest,
+        actions = {
+            TextButton(onClick = onDismissRequest) {
+                Text("Cancel")
+            }
+
+            TextButton(
+                onClick = {
+                    if (value.isNotBlank()) {
+                        onUpdateGridItem(
+                            gridItem.copy(
+                                data = data.copy(customLabel = value),
+                            ),
+                        )
+                        onDismissRequest()
+                    } else {
+                        isError = true
+                    }
+                },
             ) {
+                Text("Update")
+            }
+        },
+        textField = {
+            Column {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Text(text = "Update Tag", style = MaterialTheme.typography.titleLarge)
+                    Text(
+                        text = "Custom Label",
+                        style = MaterialTheme.typography.titleLarge,
+                    )
 
                     IconButton(
+                        enabled = value.isNotBlank(),
                         onClick = {
-                            onDeleteEblanApplicationInfoTag(
-                                EblanApplicationInfoTag(
-                                    id = eblanApplicationInfoTagUi.id,
-                                    name = eblanApplicationInfoTagUi.name,
+                            onUpdateGridItem(
+                                gridItem.copy(
+                                    data = data.copy(customLabel = null),
                                 ),
                             )
-
                             onDismissRequest()
                         },
                     ) {
@@ -98,53 +120,20 @@ internal fun UpdateTagDialog(
                     value = value,
                     onValueChange = {
                         value = it
+                        isError = false
                     },
                     modifier = Modifier.fillMaxWidth(),
-                    label = {
-                        Text(text = "Update Tag")
-                    },
-                    supportingText = {
-                        if (isError) {
-                            Text(text = "Tag is not valid")
-                        }
-                    },
+                    label = { Text("Custom Label") },
                     isError = isError,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                    supportingText = {
+                        if (isError) Text("Custom Label is not valid")
+                    },
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Text,
+                    ),
                     singleLine = true,
                 )
-
-                Spacer(modifier = Modifier.height(10.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End,
-                ) {
-                    TextButton(
-                        onClick = onDismissRequest,
-                    ) {
-                        Text(text = "Cancel")
-                    }
-                    TextButton(
-                        onClick = {
-                            if (value.isNotBlank()) {
-                                onUpdateEblanApplicationInfoTag(
-                                    EblanApplicationInfoTag(
-                                        id = eblanApplicationInfoTagUi.id,
-                                        name = value,
-                                    ),
-                                )
-
-                                onDismissRequest()
-                            } else {
-                                isError = true
-                            }
-                        },
-                    ) {
-                        Text(text = "Update")
-                    }
-                }
             }
         },
-        onDismissRequest = onDismissRequest,
     )
 }
