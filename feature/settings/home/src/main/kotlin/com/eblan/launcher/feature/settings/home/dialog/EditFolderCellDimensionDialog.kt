@@ -101,7 +101,7 @@ internal fun EditFolderCellDimensionDialog(
                 label = { Text(text = "Cell Width") },
                 supportingText = if (firstError) {
                     {
-                        Text(text = "$cellWidth is not valid")
+                        Text(text = "Cell width is not valid")
                     }
                 } else {
                     null
@@ -119,7 +119,7 @@ internal fun EditFolderCellDimensionDialog(
                 label = { Text(text = "Cell Height") },
                 supportingText = if (secondError) {
                     {
-                        Text(text = "$cellHeight is not valid")
+                        Text(text = "Cell height is not valid")
                     }
                 } else {
                     null

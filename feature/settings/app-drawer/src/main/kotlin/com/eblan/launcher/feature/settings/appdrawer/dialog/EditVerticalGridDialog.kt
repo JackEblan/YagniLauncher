@@ -99,7 +99,7 @@ internal fun EditVerticalGridDialog(
                 label = { Text(text = "Columns") },
                 supportingText = if (firstError) {
                     {
-                        Text(text = "$columns is not valid")
+                        Text(text = "Columns is not valid")
                     }
                 } else {
                     null
@@ -117,7 +117,7 @@ internal fun EditVerticalGridDialog(
                 label = { Text(text = "Rows Height") },
                 supportingText = if (secondError) {
                     {
-                        Text(text = "$rowsHeight is not valid")
+                        Text(text = "Rows height is not valid")
                     }
                 } else {
                     null

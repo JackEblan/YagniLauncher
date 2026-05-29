@@ -101,7 +101,7 @@ internal fun EditFolderMaxGridDialog(
                 label = { Text(text = "Max Columns") },
                 supportingText = if (firstError) {
                     {
-                        Text(text = "$maxFolderColumns is not valid")
+                        Text(text = "Max columns is not valid")
                     }
                 } else {
                     null
@@ -119,7 +119,7 @@ internal fun EditFolderMaxGridDialog(
                 label = { Text(text = "Max Rows") },
                 supportingText = if (secondError) {
                     {
-                        Text(text = "$maxFolderRows is not valid")
+                        Text(text = "Max rows is not valid")
                     }
                 } else {
                     null

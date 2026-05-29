@@ -113,7 +113,7 @@ internal fun EditHorizontalGridDialog(
                 label = { Text(text = "Columns") },
                 supportingText = if (firstError) {
                     {
-                        Text(text = "$columns is not valid")
+                        Text(text = "Columns is not valid")
                     }
                 } else {
                     null
@@ -131,7 +131,7 @@ internal fun EditHorizontalGridDialog(
                 label = { Text(text = "Rows") },
                 supportingText = if (secondError) {
                     {
-                        Text(text = "$rows is not valid")
+                        Text(text = "Rows is not valid")
                     }
                 } else {
                     null

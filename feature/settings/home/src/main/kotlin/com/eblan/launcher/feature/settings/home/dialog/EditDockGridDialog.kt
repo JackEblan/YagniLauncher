@@ -101,7 +101,7 @@ internal fun EditDockGridDialog(
                 label = { Text(text = "Columns") },
                 supportingText = if (firstError) {
                     {
-                        Text(text = "$dockColumns is not valid")
+                        Text(text = "Dock columns is not valid")
                     }
                 } else {
                     null
@@ -119,7 +119,7 @@ internal fun EditDockGridDialog(
                 label = { Text(text = "Rows") },
                 supportingText = if (secondError) {
                     {
-                        Text(text = "$dockRows is not valid")
+                        Text(text = "Dock rows is not valid")
                     }
                 } else {
                     null
