@@ -102,6 +102,7 @@ import com.eblan.launcher.feature.home.screen.widget.WidgetScreen
 import com.eblan.launcher.feature.home.util.PAGE_INDICATOR_HEIGHT
 import com.eblan.launcher.feature.home.util.calculatePage
 import com.eblan.launcher.feature.home.util.getSystemTextColor
+import com.eblan.launcher.feature.home.util.handlePageDirection
 import com.eblan.launcher.feature.home.util.handleWallpaperScrollEffect
 import com.eblan.launcher.ui.local.LocalAppWidgetHost
 import com.eblan.launcher.ui.local.LocalFileManager
@@ -387,18 +388,6 @@ internal fun PagerScreen(
         }
     }
 
-    val folderGridHorizontalPagerState = rememberPagerState(
-        pageCount = {
-            when (val data = folderGridItem?.data) {
-                is GridItemData.Folder -> {
-                    data.gridItemsByPage.size
-                }
-
-                else -> 0
-            }
-        },
-    )
-
     LaunchedEffect(key1 = pinGridItem) {
         pagerScreenState.handlePinGridItemEffect(
             pinGridItem = pinGridItem,
@@ -429,8 +418,6 @@ internal fun PagerScreen(
             dockGridCurrentPage = dockGridCurrentPage,
             density = density,
             dockHeight = dockHeight,
-            folderCurrentPage = folderGridHorizontalPagerState.currentPage,
-            folderGridItem = folderGridItem,
             isGridScrollInProgress = gridHorizontalPagerState.isScrollInProgress,
             isDockScrollInProgress = dockGridHorizontalPagerState.isScrollInProgress,
             lockMovement = lockMovement,
@@ -439,7 +426,6 @@ internal fun PagerScreen(
             isVisibleOverlay = isVisibleOverlay,
             moveGridItemResult = moveGridItemResult,
             layoutDirection = layoutDirection,
-            onMoveFolderGridItem = onMoveFolderGridItem,
             onMoveGridItem = onMoveGridItem,
         )
     }
@@ -533,13 +519,6 @@ internal fun PagerScreen(
         )
     }
 
-    LaunchedEffect(key1 = pagerScreenState.folderPageDirection) {
-        handlePageDirection(
-            pageDirection = pagerScreenState.folderPageDirection,
-            pagerState = folderGridHorizontalPagerState,
-        )
-    }
-
     LaunchedEffect(key1 = pagerScreenState.hasDoubleTap) {
         pagerScreenState.handleHasDoubleTap()
     }
@@ -580,19 +559,17 @@ internal fun PagerScreen(
     LaunchedEffect(
         key1 = gridHorizontalPagerState.isScrollInProgress,
         key2 = dockGridHorizontalPagerState.isScrollInProgress,
-        key3 = folderGridHorizontalPagerState.isScrollInProgress,
     ) {
         pagerScreenState.handleIsScrollInProgress(
             isGridScrollInProgress = gridHorizontalPagerState.isScrollInProgress,
             isDockScrollInProgress = dockGridHorizontalPagerState.isScrollInProgress,
-            isFolderScrollInProgress = folderGridHorizontalPagerState.isScrollInProgress,
         )
     }
 
     BackHandler(
         enabled = pagerScreenState.swipeY.value == screenHeight.toFloat() &&
-            !pagerScreenState.showGridItemPopup && !pagerScreenState.showSettingsPopup &&
-            !pagerScreenState.showFolderGridItemPopup,
+                !pagerScreenState.showGridItemPopup && !pagerScreenState.showSettingsPopup &&
+                !pagerScreenState.showFolderGridItemPopup,
     ) {
         pagerScreenState.animateScrollToPages(
             dockGridHorizontalPagerState = dockGridHorizontalPagerState,
@@ -706,7 +683,7 @@ internal fun PagerScreen(
 
                         val height = gridItem.rowSpan * cellHeight
 
-                        InteractiveGridItemContent(
+                        InteractiveGridItem(
                             drag = pagerScreenState.drag,
                             gridItem = gridItem,
                             gridItemSettings = homeSettings.gridItemSettings,
@@ -837,7 +814,7 @@ internal fun PagerScreen(
 
                         val height = gridItem.rowSpan * cellHeight
 
-                        InteractiveGridItemContent(
+                        InteractiveGridItem(
                             drag = pagerScreenState.drag,
                             gridItem = gridItem,
                             gridItemSettings = homeSettings.gridItemSettings,
@@ -1005,7 +982,6 @@ internal fun PagerScreen(
         ) {
             FolderScreen(
                 drag = pagerScreenState.drag,
-                folderGridHorizontalPagerState = folderGridHorizontalPagerState,
                 folderGridItem = folderGridItem,
                 folderPopupIntOffset = pagerScreenState.folderPopupIntOffset,
                 folderPopupIntSize = pagerScreenState.folderPopupIntSize,
@@ -1022,6 +998,13 @@ internal fun PagerScreen(
                 homeSettings = homeSettings,
                 isDragging = pagerScreenState.isDragging,
                 isCloseFolderGridItemPopup = pagerScreenState.isCloseFolderGridItemPopup,
+                dragIntOffset = pagerScreenState.dragIntOffset,
+                lockMovement = lockMovement,
+                folderCellWidth = homeSettings.folderCellWidth,
+                folderCellHeight = homeSettings.folderCellHeight,
+                screenHeight = screenWidth,
+                screenWidth = screenHeight,
+                pageDirection = pagerScreenState.folderPageDirection,
                 onDismissRequest = {
                     pagerScreenState.dismissFolder(onUpdateFolderGridItemId = onUpdateFolderGridItemId)
                 },
@@ -1040,11 +1023,12 @@ internal fun PagerScreen(
                 onShowGridItemPopup = pagerScreenState::showFolderGridItemPopup,
                 onUpdateIsCloseFolderGridItemPopup = pagerScreenState::updateIsCloseFolderGridItemPopup,
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                onUpdateIsClosingFolder = pagerScreenState::updateIsCloseFolder,
+                onUpdateIsCloseFolder = pagerScreenState::updateIsCloseFolder,
                 onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                 onTapNestedFolderGridItem = { _, _ ->
                     // Open nested folder and close the parent
                 },
+                onMoveFolderGridItem = onMoveFolderGridItem,
             )
         }
 

@@ -38,6 +38,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -57,6 +58,7 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.lerp
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.GridItemSettings
@@ -66,10 +68,12 @@ import com.eblan.launcher.feature.home.component.FolderGridLayout
 import com.eblan.launcher.feature.home.component.PageIndicator
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
+import com.eblan.launcher.feature.home.model.PageDirection
 import com.eblan.launcher.feature.home.model.SharedElementKey
 import com.eblan.launcher.feature.home.util.FOLDER_PREVIEW_COLUMNS
 import com.eblan.launcher.feature.home.util.FOLDER_PREVIEW_ROWS
 import com.eblan.launcher.feature.home.util.PAGE_INDICATOR_HEIGHT
+import com.eblan.launcher.feature.home.util.handlePageDirection
 import com.eblan.launcher.ui.local.LocalLauncherApps
 import kotlin.math.roundToInt
 
@@ -77,7 +81,6 @@ import kotlin.math.roundToInt
 internal fun SharedTransitionScope.FolderScreen(
     modifier: Modifier = Modifier,
     drag: Drag,
-    folderGridHorizontalPagerState: PagerState,
     folderGridItem: GridItem,
     folderPopupIntOffset: IntOffset?,
     folderPopupIntSize: IntSize?,
@@ -94,6 +97,13 @@ internal fun SharedTransitionScope.FolderScreen(
     homeSettings: HomeSettings,
     isDragging: Boolean,
     isCloseFolderGridItemPopup: Boolean,
+    dragIntOffset: IntOffset,
+    lockMovement: Boolean,
+    folderCellWidth: Int,
+    folderCellHeight: Int,
+    screenHeight: Int,
+    screenWidth: Int,
+    pageDirection: PageDirection?,
     onDismissRequest: () -> Unit,
     onMoveFolderGridItemOutsideFolder: () -> Unit,
     onOpenAppDrawer: () -> Unit,
@@ -111,11 +121,23 @@ internal fun SharedTransitionScope.FolderScreen(
     ) -> Unit,
     onUpdateIsCloseFolderGridItemPopup: (Boolean) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
-    onUpdateIsClosingFolder: (Boolean) -> Unit,
+    onUpdateIsCloseFolder: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
     onTapNestedFolderGridItem: (
         intOffset: IntOffset,
         intSize: IntSize,
+    ) -> Unit,
+    onMoveFolderGridItem: (
+        conflictingGridItem: GridItem,
+        movingFolderGridItem: GridItem,
+        data: GridItemData.Folder,
+        dragX: Int,
+        dragY: Int,
+        columns: Int,
+        rows: Int,
+        gridWidth: Int,
+        gridHeight: Int,
+        currentPage: Int,
     ) -> Unit,
 ) {
     requireNotNull(folderPopupIntOffset)
@@ -162,16 +184,16 @@ internal fun SharedTransitionScope.FolderScreen(
     val endHeight = folderGridHeightPx + folderTitleHeightPx
 
     val maximumX = (
-        safeDrawingWidth -
-            folderGridWidthPx +
-            leftPadding
-        ).coerceAtLeast(leftPadding)
+            safeDrawingWidth -
+                    folderGridWidthPx +
+                    leftPadding
+            ).coerceAtLeast(leftPadding)
 
     val maximumY = (
-        safeDrawingHeight -
-            endHeight +
-            topPadding
-        ).coerceAtLeast(topPadding)
+            safeDrawingHeight -
+                    endHeight +
+                    topPadding
+            ).coerceAtLeast(topPadding)
 
     val endIntOffset = IntOffset(
         x = folderPopupIntOffset.x.coerceIn(
@@ -202,25 +224,25 @@ internal fun SharedTransitionScope.FolderScreen(
         endCenterY,
     ) {
         derivedStateOf {
-            val currentWidth = androidx.compose.ui.util.lerp(
+            val currentWidth = lerp(
                 startWidth,
                 folderGridWidthPx.toFloat(),
                 progress.value,
             )
 
-            val currentHeight = androidx.compose.ui.util.lerp(
+            val currentHeight = lerp(
                 startHeight,
                 endHeight.toFloat(),
                 progress.value,
             )
 
-            val currentX = androidx.compose.ui.util.lerp(
+            val currentX = lerp(
                 startCenterX,
                 endCenterX,
                 progress.value,
             ) - currentWidth / 2f
 
-            val currentY = androidx.compose.ui.util.lerp(
+            val currentY = lerp(
                 startCenterY,
                 endCenterY,
                 progress.value,
@@ -235,12 +257,18 @@ internal fun SharedTransitionScope.FolderScreen(
         }
     }
 
+    val folderGridHorizontalPagerState = rememberPagerState(
+        pageCount = {
+            data.gridItemsByPage.size
+        },
+    )
+
     LaunchedEffect(key1 = Unit) {
         progress.animateTo(targetValue = 1f)
     }
 
     BackHandler(enabled = !isCloseFolder) {
-        onUpdateIsClosingFolder(true)
+        onUpdateIsCloseFolder(true)
     }
 
     LaunchedEffect(
@@ -267,6 +295,50 @@ internal fun SharedTransitionScope.FolderScreen(
         }
     }
 
+    LaunchedEffect(
+        dragIntOffset,
+        isVisibleOverlay,
+        isDragging,
+        moveGridItemResult,
+    ) {
+        handleDragFolderGridItem(
+            density = density,
+            drag = drag,
+            dragIntOffset = dragIntOffset,
+            currentPage = folderGridHorizontalPagerState.currentPage,
+            folderGridItem = folderGridItem,
+            folderPopupIntOffset = folderPopupIntOffset,
+            folderPopupIntSize = folderPopupIntSize,
+            isDragging = isDragging,
+            isVisibleOverlay = isVisibleOverlay,
+            isScrollInProgress = folderGridHorizontalPagerState.isScrollInProgress,
+            lockMovement = lockMovement,
+            paddingValues = paddingValues,
+            screenHeight = screenHeight,
+            screenWidth = screenWidth,
+            moveGridItemResult = moveGridItemResult,
+            layoutDirection = layoutDirection,
+            folderCellWidth = folderCellWidth,
+            folderCellHeight = folderCellHeight,
+            onMoveFolderGridItem = onMoveFolderGridItem,
+            onUpdateSharedElementKey = onUpdateSharedElementKey,
+            onUpdateIsCloseFolder = onUpdateIsCloseFolder,
+        )
+    }
+
+    LaunchedEffect(key1 = pageDirection) {
+        handlePageDirection(
+            pageDirection = pageDirection,
+            pagerState = folderGridHorizontalPagerState,
+        )
+    }
+
+    LaunchedEffect(key1 = folderGridHorizontalPagerState.isScrollInProgress) {
+        if (folderGridHorizontalPagerState.isScrollInProgress) {
+            onDismissRequest()
+        }
+    }
+
     Box(
         modifier = modifier
             .pointerInput(Unit) {
@@ -274,7 +346,7 @@ internal fun SharedTransitionScope.FolderScreen(
                     onPress = {
                         awaitRelease()
 
-                        onUpdateIsClosingFolder(true)
+                        onUpdateIsCloseFolder(true)
                     },
                 )
             }
@@ -317,7 +389,7 @@ internal fun SharedTransitionScope.FolderScreen(
 
                             val y = gridItem.startRow * minCellHeightPx
 
-                            InteractiveFolderGridItemContent(
+                            InteractiveFolderGridItem(
                                 drag = drag,
                                 gridItem = gridItem,
                                 gridItemSettings = gridItemSettings,

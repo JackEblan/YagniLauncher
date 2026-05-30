@@ -69,7 +69,6 @@ import com.eblan.launcher.domain.model.EblanApplicationInfoGroup
 import com.eblan.launcher.domain.model.ExperimentalSettings
 import com.eblan.launcher.domain.model.GestureSettings
 import com.eblan.launcher.domain.model.GridItem
-import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.HomeSettings
 import com.eblan.launcher.domain.model.ManagedProfileResult
 import com.eblan.launcher.domain.model.MoveGridItemResult
@@ -393,8 +392,6 @@ internal class PagerScreenState(
         dockGridCurrentPage: Int,
         density: Density,
         dockHeight: Dp,
-        folderCurrentPage: Int,
-        folderGridItem: GridItem?,
         isGridScrollInProgress: Boolean,
         isDockScrollInProgress: Boolean,
         lockMovement: Boolean,
@@ -403,18 +400,6 @@ internal class PagerScreenState(
         isVisibleOverlay: Boolean,
         moveGridItemResult: MoveGridItemResult?,
         layoutDirection: LayoutDirection,
-        onMoveFolderGridItem: (
-            conflictingGridItem: GridItem,
-            movingFolderGridItem: GridItem,
-            data: GridItemData.Folder,
-            dragX: Int,
-            dragY: Int,
-            columns: Int,
-            rows: Int,
-            gridWidth: Int,
-            gridHeight: Int,
-            currentPage: Int,
-        ) -> Unit,
         onMoveGridItem: (
             movingGridItem: GridItem,
             x: Int,
@@ -435,10 +420,6 @@ internal class PagerScreenState(
             dockRows = homeSettings.dockRows,
             drag = drag,
             dragIntOffset = dragIntOffset,
-            folderCurrentPage = folderCurrentPage,
-            folderGridItem = folderGridItem,
-            folderPopupIntOffset = folderPopupIntOffset,
-            folderPopupIntSize = folderPopupIntSize,
             gridItemSource = gridItemSource,
             isDragging = isDragging,
             isVisibleOverlay = isVisibleOverlay,
@@ -451,18 +432,12 @@ internal class PagerScreenState(
             screenWidth = screenWidth,
             moveGridItemResult = moveGridItemResult,
             layoutDirection = layoutDirection,
-            minFolderCellWidth = homeSettings.folderCellWidth,
-            minFolderCellHeight = homeSettings.folderCellHeight,
-            onMoveFolderGridItem = onMoveFolderGridItem,
             onMoveGridItem = onMoveGridItem,
             onUpdateAssociate = { newAssociate ->
                 associate = newAssociate
             },
             onUpdateSharedElementKey = { newSharedElementKey ->
                 sharedElementKey = newSharedElementKey
-            },
-            onUpdateIsCloseFolder = { newIsCloseFolder ->
-                isCloseFolder = newIsCloseFolder
             },
         )
     }
@@ -836,16 +811,11 @@ internal class PagerScreenState(
     fun handleIsScrollInProgress(
         isGridScrollInProgress: Boolean,
         isDockScrollInProgress: Boolean,
-        isFolderScrollInProgress: Boolean,
     ) {
         if (isGridScrollInProgress || isDockScrollInProgress) {
             dismissGridItemPopup()
 
             dismissSettingsPopup()
-        }
-
-        if (isFolderScrollInProgress) {
-            dismissFolderGridItemPopup()
         }
     }
 

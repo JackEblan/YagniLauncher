@@ -95,7 +95,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-internal fun SharedTransitionScope.InteractiveGridItemContent(
+internal fun SharedTransitionScope.InteractiveGridItem(
     modifier: Modifier = Modifier,
     drag: Drag,
     gridItem: GridItem,
@@ -404,7 +404,7 @@ private fun SharedTransitionScope.InteractiveApplicationInfoGridItem(
 
     val hasInteraction = isSelected && isVisibleOverlay
 
-    val isVisibleWhiteBox = isSelected && drag == Drag.Dragging
+    val isVisibleWhiteBox = hasInteraction && drag == Drag.Dragging
 
     val alpha = if (hasInteraction) 0f else 1f
 
@@ -624,7 +624,7 @@ private fun SharedTransitionScope.InteractiveWidgetGridItem(
 
     val hasInteraction = isSelected && isVisibleOverlay
 
-    val isVisibleWhiteBox = isSelected && drag == Drag.Dragging
+    val isVisibleWhiteBox = hasInteraction && drag == Drag.Dragging
 
     val alpha = if (hasInteraction) 0f else 1f
 
@@ -820,7 +820,7 @@ private fun SharedTransitionScope.InteractiveShortcutInfoGridItem(
 
     val hasInteraction = isSelected && isVisibleOverlay
 
-    val isVisibleWhiteBox = isSelected && drag == Drag.Dragging
+    val isVisibleWhiteBox = hasInteraction && drag == Drag.Dragging
 
     val alpha = if (hasInteraction) 0f else 1f
 
@@ -1066,7 +1066,7 @@ private fun SharedTransitionScope.InteractiveFolderGridItem(
 
     val hasInteraction = isSelected && isVisibleOverlay
 
-    val isVisibleWhiteBox = isSelected && drag == Drag.Dragging
+    val isVisibleWhiteBox = hasInteraction && drag == Drag.Dragging
 
     val alpha = if (hasInteraction) 0f else 1f
 
@@ -1362,7 +1362,7 @@ private fun SharedTransitionScope.InteractiveShortcutConfigGridItem(
 
     val hasInteraction = isSelected && isVisibleOverlay
 
-    val isVisibleWhiteBox = isSelected && drag == Drag.Dragging
+    val isVisibleWhiteBox = hasInteraction && drag == Drag.Dragging
 
     val alpha = if (hasInteraction) 0f else 1f
 

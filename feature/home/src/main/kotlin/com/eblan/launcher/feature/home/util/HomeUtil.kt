@@ -23,6 +23,7 @@ import android.graphics.Rect
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.foundation.gestures.PressGestureScope
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.compose.ui.unit.IntOffset
@@ -35,9 +36,11 @@ import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
+import com.eblan.launcher.feature.home.model.PageDirection
 import com.eblan.launcher.feature.home.model.SharedElementKey
 import com.eblan.launcher.framework.launcherapps.AndroidLauncherAppsWrapper
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 internal fun handleEblanAction(
@@ -207,6 +210,22 @@ internal suspend fun handleDrag(
         scale.stop()
 
         scale.animateTo(1f)
+    }
+}
+
+internal suspend fun handlePageDirection(pageDirection: PageDirection?, pagerState: PagerState) {
+    if (pageDirection == null) return
+
+    delay(500L)
+
+    when (pageDirection) {
+        PageDirection.Left -> {
+            pagerState.animateScrollToPage(page = pagerState.currentPage - 1)
+        }
+
+        PageDirection.Right -> {
+            pagerState.animateScrollToPage(page = pagerState.currentPage + 1)
+        }
     }
 }
 

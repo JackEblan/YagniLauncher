@@ -18,7 +18,6 @@
 package com.eblan.launcher.feature.home.screen.pager
 
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.pager.PagerState
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
@@ -115,10 +114,6 @@ internal suspend fun handleDragGridItem(
     dockRows: Int,
     drag: Drag,
     dragIntOffset: IntOffset,
-    folderCurrentPage: Int,
-    folderGridItem: GridItem?,
-    folderPopupIntOffset: IntOffset?,
-    folderPopupIntSize: IntSize?,
     gridItemSource: GridItemSource?,
     isDragging: Boolean,
     isVisibleOverlay: Boolean,
@@ -131,20 +126,6 @@ internal suspend fun handleDragGridItem(
     screenWidth: Int,
     moveGridItemResult: MoveGridItemResult?,
     layoutDirection: LayoutDirection,
-    minFolderCellWidth: Int,
-    minFolderCellHeight: Int,
-    onMoveFolderGridItem: (
-        conflictingGridItem: GridItem,
-        movingFolderGridItem: GridItem,
-        data: GridItemData.Folder,
-        dragX: Int,
-        dragY: Int,
-        columns: Int,
-        rows: Int,
-        gridWidth: Int,
-        gridHeight: Int,
-        currentPage: Int,
-    ) -> Unit,
     onMoveGridItem: (
         movingGridItem: GridItem,
         x: Int,
@@ -156,7 +137,6 @@ internal suspend fun handleDragGridItem(
     ) -> Unit,
     onUpdateAssociate: (Associate) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onUpdateIsCloseFolder: (Boolean) -> Unit,
 ) {
     if (drag != Drag.Dragging ||
         isGridScrollInProgress ||
@@ -214,7 +194,7 @@ internal suspend fun handleDragGridItem(
         is GridItemSource.Existing,
         is GridItemSource.New,
         is GridItemSource.Pin,
-        -> {
+            -> {
             if (isOnDock) {
                 dragDockGridItem(
                     currentPage = dockGridCurrentPage,
@@ -251,148 +231,7 @@ internal suspend fun handleDragGridItem(
             }
         }
 
-        is GridItemSource.Folder -> {
-            dragFolderGridItem(
-                density = density,
-                leftPadding = leftPadding,
-                topPadding = topPadding,
-                dragX = localDragX,
-                dragY = localDragY,
-                folderCurrentPage = folderCurrentPage,
-                folderGridItem = folderGridItem,
-                folderPopupIntOffset = folderPopupIntOffset,
-                folderPopupIntSize = folderPopupIntSize,
-                moveGridItemResult = moveGridItemResult,
-                safeDrawingHeight = safeDrawingHeight,
-                safeDrawingWidth = safeDrawingWidth,
-                minFolderCellWidth = minFolderCellWidth,
-                minFolderCellHeight = minFolderCellHeight,
-                onMoveFolderGridItem = onMoveFolderGridItem,
-                onUpdateSharedElementKey = onUpdateSharedElementKey,
-                onUpdateIsCloseFolder = onUpdateIsCloseFolder,
-            )
-        }
-    }
-}
-
-private fun dragFolderGridItem(
-    density: Density,
-    leftPadding: Int,
-    topPadding: Int,
-    dragX: Int,
-    dragY: Int,
-    folderCurrentPage: Int,
-    folderGridItem: GridItem?,
-    folderPopupIntOffset: IntOffset?,
-    folderPopupIntSize: IntSize?,
-    safeDrawingHeight: Int,
-    safeDrawingWidth: Int,
-    moveGridItemResult: MoveGridItemResult,
-    minFolderCellWidth: Int,
-    minFolderCellHeight: Int,
-    onMoveFolderGridItem: (
-        conflictingGridItem: GridItem,
-        movingFolderGridItem: GridItem,
-        data: GridItemData.Folder,
-        dragX: Int,
-        dragY: Int,
-        columns: Int,
-        rows: Int,
-        gridWidth: Int,
-        gridHeight: Int,
-        currentPage: Int,
-    ) -> Unit,
-    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onUpdateIsCloseFolder: (Boolean) -> Unit,
-) {
-    if (
-        folderGridItem == null ||
-        folderPopupIntOffset == null ||
-        folderPopupIntSize == null
-    ) {
-        return
-    }
-
-    val data = folderGridItem.data as GridItemData.Folder
-
-    val minCellWidthPx = with(density) {
-        minFolderCellWidth.dp.roundToPx()
-    }
-
-    val minCellHeightPx = with(density) {
-        minFolderCellHeight.dp.roundToPx()
-    }
-
-    val availableWidth = (safeDrawingWidth - leftPadding * 2).coerceAtLeast(0)
-    val availableHeight = (safeDrawingHeight - topPadding * 2).coerceAtLeast(0)
-
-    val folderTitleHeightPx = with(density) {
-        PAGE_INDICATOR_HEIGHT.roundToPx()
-    }
-
-    val folderGridWidthPx = (minCellWidthPx * data.columns).coerceAtMost(availableWidth)
-
-    val folderGridHeightPx = (minCellHeightPx * data.rows).coerceAtMost(
-        (availableHeight - folderTitleHeightPx).coerceAtLeast(0),
-    )
-
-    val endHeight = folderGridHeightPx + folderTitleHeightPx
-
-    val maximumX = (
-        safeDrawingWidth -
-            folderGridWidthPx +
-            leftPadding
-        ).coerceAtLeast(leftPadding)
-
-    val maximumY = (
-        safeDrawingHeight -
-            endHeight +
-            topPadding
-        ).coerceAtLeast(topPadding)
-
-    val endIntOffset = IntOffset(
-        x = folderPopupIntOffset.x.coerceIn(
-            leftPadding,
-            maximumX,
-        ),
-        y = folderPopupIntOffset.y.coerceIn(
-            topPadding,
-            maximumY,
-        ),
-    )
-
-    val localDragX = dragX - endIntOffset.x
-
-    val localDragY = dragY - endIntOffset.y
-
-    val isInsideFolder =
-        localDragX in 0 until folderGridWidthPx &&
-            localDragY in 0 until folderGridHeightPx
-
-    val movingGridItem = moveGridItemResult.movingGridItem
-
-    if (isInsideFolder) {
-        onUpdateSharedElementKey(
-            SharedElementKey(
-                id = movingGridItem.id,
-                parent = SharedElementKey.Parent.Folder,
-            ),
-        )
-
-        onMoveFolderGridItem(
-            folderGridItem,
-            movingGridItem,
-            data,
-            localDragX,
-            localDragY,
-            data.columns,
-            data.rows,
-            folderGridWidthPx,
-            folderGridHeightPx,
-            folderCurrentPage,
-        )
-    } else {
-        onUpdateIsCloseFolder(true)
+        else -> Unit
     }
 }
 
@@ -625,22 +464,6 @@ internal suspend fun handleConflictingGridItem(
     )
 }
 
-internal suspend fun handlePageDirection(pageDirection: PageDirection?, pagerState: PagerState) {
-    if (pageDirection == null) return
-
-    delay(500L)
-
-    when (pageDirection) {
-        PageDirection.Left -> {
-            pagerState.animateScrollToPage(page = pagerState.currentPage - 1)
-        }
-
-        PageDirection.Right -> {
-            pagerState.animateScrollToPage(page = pagerState.currentPage + 1)
-        }
-    }
-}
-
 private fun getMoveGridItemAndResetFolderId(
     associate: Associate,
     cellHeight: Int,
@@ -656,7 +479,7 @@ private fun getMoveGridItemAndResetFolderId(
     currentPage: Int,
 ): GridItem = when (gridItemSource) {
     is GridItemSource.Existing, is GridItemSource.Folder,
-    -> {
+        -> {
         val (startColumn, startRow) = getStartPosition(
             x = gridX,
             y = gridY,
@@ -733,7 +556,7 @@ private fun getMoveGridItemAndResetFolderId(
     }
 
     is GridItemSource.New, is GridItemSource.Pin,
-    -> {
+        -> {
         getMoveNewGridItem(
             associate = associate,
             cellHeight = cellHeight,
