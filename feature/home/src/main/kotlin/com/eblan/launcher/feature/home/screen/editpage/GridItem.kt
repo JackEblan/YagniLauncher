@@ -342,6 +342,7 @@ private fun FolderGridItem(
                         PreviewFolderGridItemContent(
                             gridItem = gridItem,
                             iconPackFilePaths = iconPackFilePaths,
+                            textColor = textColor,
                         )
                     },
                 )
@@ -475,6 +476,7 @@ private fun PreviewFolderGridItemContent(
     modifier: Modifier = Modifier,
     gridItem: GridItem,
     iconPackFilePaths: Map<String, String>,
+    textColor: Color,
 ) {
     val context = LocalContext.current
 
@@ -550,6 +552,7 @@ private fun PreviewFolderGridItemContent(
                     Icon(
                         imageVector = EblanLauncherIcons.Folder,
                         contentDescription = null,
+                        tint = textColor,
                     )
                 }
             }

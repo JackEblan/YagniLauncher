@@ -89,7 +89,11 @@ class MoveFolderGridItemUseCase @Inject constructor(
                     gridItem.copy(data = data.copy(index = index))
                 }
 
-                else -> error("Unsupported Folder GridItem")
+                is GridItemData.Folder -> {
+                    gridItem.copy(data = data.copy(index = index))
+                }
+
+                else -> error("Unsupported move Folder GridItem ")
             }
         }
 
