@@ -553,6 +553,7 @@ private fun PreviewFolderGridItemContent(
                         imageVector = EblanLauncherIcons.Folder,
                         contentDescription = null,
                         tint = textColor,
+                        modifier = commonModifier,
                     )
                 }
             }

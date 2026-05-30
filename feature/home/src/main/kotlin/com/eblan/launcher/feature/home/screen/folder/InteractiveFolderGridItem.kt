@@ -247,7 +247,7 @@ internal fun SharedTransitionScope.InteractiveFolderGridItemContent(
                 data = data,
                 drag = drag,
                 gridItem = gridItem,
-                gridItemSettings = gridItemSettings,
+                gridItemSettings = currentGridItemSettings,
                 iconPackFilePaths = iconPackFilePaths,
                 isScrollInProgress = isScrollInProgress,
                 isSelected = isSelected,
@@ -1328,6 +1328,7 @@ private fun SharedTransitionScope.PreviewNestedFolderGridItem(
                     Icon(
                         imageVector = EblanLauncherIcons.Folder,
                         contentDescription = null,
+                        modifier = commonModifier,
                     )
                 }
             }
