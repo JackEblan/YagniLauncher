@@ -1626,6 +1626,7 @@ private fun SharedTransitionScope.PreviewFolderGridItem(
                     )
                 } else {
                     Icon(
+                        modifier = commonModifier,
                         imageVector = EblanLauncherIcons.Folder,
                         contentDescription = null,
                         tint = textColor,
