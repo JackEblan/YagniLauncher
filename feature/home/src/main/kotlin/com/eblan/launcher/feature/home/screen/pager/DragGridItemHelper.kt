@@ -437,7 +437,7 @@ private fun dragGridItem(
 
     val cellHeight = gridHeightWithPadding / rows
 
-    val moveGridItem = getMoveGridItem(
+    val moveGridItem = getMoveGridItemAndResetFolderId(
         associate = Associate.Grid,
         cellHeight = cellHeight,
         cellWidth = cellWidth,
@@ -511,7 +511,7 @@ private fun dragDockGridItem(
 
     val dockY = dragY - (safeDrawingHeight - dockHeightPx)
 
-    val moveGridItem = getMoveGridItem(
+    val moveGridItem = getMoveGridItemAndResetFolderId(
         associate = Associate.Dock,
         cellHeight = cellHeight,
         cellWidth = cellWidth,
@@ -641,7 +641,7 @@ internal suspend fun handlePageDirection(pageDirection: PageDirection?, pagerSta
     }
 }
 
-private fun getMoveGridItem(
+private fun getMoveGridItemAndResetFolderId(
     associate: Associate,
     cellHeight: Int,
     cellWidth: Int,
@@ -708,9 +708,20 @@ private fun getMoveGridItem(
                 )
             }
 
-            is GridItemData.Widget,
-            is GridItemData.Folder,
-            -> {
+            is GridItemData.Folder -> {
+                gridItem.copy(
+                    page = currentPage,
+                    startColumn = gridX / cellWidth,
+                    startRow = gridY / cellHeight,
+                    data = data.copy(
+                        index = -1,
+                        folderId = null,
+                    ),
+                    associate = associate,
+                )
+            }
+
+            is GridItemData.Widget -> {
                 gridItem.copy(
                     page = currentPage,
                     startColumn = gridX / cellWidth,
