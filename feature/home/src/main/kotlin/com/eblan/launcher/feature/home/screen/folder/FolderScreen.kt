@@ -89,7 +89,6 @@ internal fun SharedTransitionScope.FolderScreen(
     statusBarNotifications: Map<String, Int>,
     isVisibleOverlay: Boolean,
     isCloseFolder: Boolean,
-    isMoveFolderGridItemOutsideFolder: Boolean,
     hasShortcutHostPermission: Boolean,
     moveGridItemResult: MoveGridItemResult?,
     homeSettings: HomeSettings,
@@ -244,23 +243,27 @@ internal fun SharedTransitionScope.FolderScreen(
         onUpdateIsClosingFolder(true)
     }
 
-    LaunchedEffect(key1 = isCloseFolder) {
+    LaunchedEffect(
+        isCloseFolder,
+        drag,
+        isDragging,
+        isVisibleOverlay,
+        moveGridItemResult,
+    ) {
         if (isCloseFolder) {
             folderGridHorizontalPagerState.animateScrollToPage(0)
 
             progress.animateTo(targetValue = 0f)
 
-            onDismissRequest()
-        }
-    }
-
-    LaunchedEffect(key1 = isMoveFolderGridItemOutsideFolder) {
-        if (isMoveFolderGridItemOutsideFolder) {
-            folderGridHorizontalPagerState.animateScrollToPage(0)
-
-            progress.animateTo(targetValue = 0f)
-
-            onMoveFolderGridItemOutsideFolder()
+            if (drag == Drag.Dragging &&
+                isDragging &&
+                isVisibleOverlay &&
+                moveGridItemResult != null
+            ) {
+                onMoveFolderGridItemOutsideFolder()
+            } else {
+                onDismissRequest()
+            }
         }
     }
 

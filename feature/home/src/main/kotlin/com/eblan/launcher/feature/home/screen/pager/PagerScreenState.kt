@@ -338,9 +338,6 @@ internal class PagerScreenState(
     var isCloseFolder by mutableStateOf(false)
         private set
 
-    var isMoveFolderGridItemOutsideFolder by mutableStateOf(false)
-        private set
-
     var isCloseGridItemPopup by mutableStateOf(false)
         private set
 
@@ -464,8 +461,8 @@ internal class PagerScreenState(
             onUpdateSharedElementKey = { newSharedElementKey ->
                 sharedElementKey = newSharedElementKey
             },
-            onUpdateIsMoveFolderGridItemOutsideFolder = { newIsMoveFolderGridItemOutsideFolder ->
-                isMoveFolderGridItemOutsideFolder = newIsMoveFolderGridItemOutsideFolder
+            onUpdateIsCloseFolder = { newIsCloseFolder ->
+                isCloseFolder = newIsCloseFolder
             },
         )
     }
@@ -897,7 +894,7 @@ internal class PagerScreenState(
 
         folderPopupIntSize = null
 
-        isMoveFolderGridItemOutsideFolder = false
+        isCloseFolder = false
 
         sharedElementKey = SharedElementKey(
             id = movingGridItem.id,

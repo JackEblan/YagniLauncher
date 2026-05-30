@@ -156,13 +156,8 @@ internal suspend fun handleDragGridItem(
     ) -> Unit,
     onUpdateAssociate: (Associate) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onUpdateIsMoveFolderGridItemOutsideFolder: (Boolean) -> Unit,
+    onUpdateIsCloseFolder: (Boolean) -> Unit,
 ) {
-    println(drag)
-    println(gridItemSource)
-    println(isDragging)
-    println(isVisibleOverlay)
-    println(moveGridItemResult)
     if (drag != Drag.Dragging ||
         isGridScrollInProgress ||
         isDockScrollInProgress ||
@@ -274,7 +269,7 @@ internal suspend fun handleDragGridItem(
                 minFolderCellHeight = minFolderCellHeight,
                 onMoveFolderGridItem = onMoveFolderGridItem,
                 onUpdateSharedElementKey = onUpdateSharedElementKey,
-                onUpdateIsMoveFolderGridItemOutsideFolder = onUpdateIsMoveFolderGridItemOutsideFolder,
+                onUpdateIsCloseFolder = onUpdateIsCloseFolder,
             )
         }
     }
@@ -308,7 +303,7 @@ private fun dragFolderGridItem(
         currentPage: Int,
     ) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onUpdateIsMoveFolderGridItemOutsideFolder: (Boolean) -> Unit,
+    onUpdateIsCloseFolder: (Boolean) -> Unit,
 ) {
     if (
         folderGridItem == null ||
@@ -397,7 +392,7 @@ private fun dragFolderGridItem(
             folderCurrentPage,
         )
     } else {
-        onUpdateIsMoveFolderGridItemOutsideFolder(true)
+        onUpdateIsCloseFolder(true)
     }
 }
 

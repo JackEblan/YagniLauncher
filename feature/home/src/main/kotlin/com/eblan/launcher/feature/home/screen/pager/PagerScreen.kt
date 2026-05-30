@@ -1016,7 +1016,6 @@ internal fun PagerScreen(
                 statusBarNotifications = pagerScreenState.statusBarNotifications,
                 isVisibleOverlay = isVisibleOverlay,
                 isCloseFolder = pagerScreenState.isCloseFolder,
-                isMoveFolderGridItemOutsideFolder = pagerScreenState.isMoveFolderGridItemOutsideFolder,
                 hasShortcutHostPermission = hasShortcutHostPermission,
                 moveGridItemResult = moveGridItemResult,
                 homeSettings = homeSettings,
