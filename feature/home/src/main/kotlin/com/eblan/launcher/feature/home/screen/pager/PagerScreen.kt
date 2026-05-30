@@ -494,6 +494,7 @@ internal fun PagerScreen(
     }
 
     LaunchedEffect(
+        folderGridItem,
         pagerScreenState.dragIntOffset,
         gridItemSource,
         pagerScreenState.isDragging,

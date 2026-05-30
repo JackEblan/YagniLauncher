@@ -597,6 +597,11 @@ internal suspend fun handleConflictingGridItem(
             folderId = conflictingData.id,
         )
 
+        is GridItemData.Folder -> data.copy(
+            index = conflictingData.maxIndex,
+            folderId = conflictingData.id,
+        )
+
         else -> error("Unsupported Folder GridItem ")
     }
 
@@ -865,7 +870,7 @@ private fun animateScrollToPageFolder(
 ) {
     if (folderPopupIntOffset == null || folderPopupIntSize == null) return
 
-    val data = folderGridItem?.data as GridItemData.Folder
+    val data = folderGridItem?.data as? GridItemData.Folder ?: return
 
     val cellWidthDp = folderCellWidth.dp
 
