@@ -237,17 +237,6 @@ private fun Success(
 
                 else -> Unit
             }
-
-            HorizontalDivider(modifier = Modifier.fillMaxWidth())
-
-            SettingsSwitch(
-                checked = gridItem.override,
-                title = "Override",
-                subtitle = "Override the Grid Item Settings",
-                onCheckedChange = {
-                    onUpdateGridItem(gridItem.copy(override = it))
-                },
-            )
         }
 
         VerticalSlideReveal(visible = gridItem.override) {
@@ -332,6 +321,17 @@ private fun EditApplicationInfo(
         subtitle = data.customLabel ?: "None",
         onClick = {
             showCustomLabelDialog = true
+        },
+    )
+
+    HorizontalDivider(modifier = Modifier.fillMaxWidth())
+
+    SettingsSwitch(
+        checked = gridItem.override,
+        title = "Override",
+        subtitle = "Override the Grid Item Settings",
+        onCheckedChange = {
+            onUpdateGridItem(gridItem.copy(override = it))
         },
     )
 
@@ -422,6 +422,17 @@ private fun EditFolder(
         },
     )
 
+    HorizontalDivider(modifier = Modifier.fillMaxWidth())
+
+    SettingsSwitch(
+        checked = gridItem.override,
+        title = "Override",
+        subtitle = "Override the Grid Item Settings",
+        onCheckedChange = {
+            onUpdateGridItem(gridItem.copy(override = it))
+        },
+    )
+
     if (showCustomIconDialog) {
         IconPackInfoFilesDialog(
             iconPackInfoComponents = iconPackInfoComponents,
@@ -509,6 +520,17 @@ private fun EditShortcutInfo(
         },
     )
 
+    HorizontalDivider(modifier = Modifier.fillMaxWidth())
+
+    SettingsSwitch(
+        checked = gridItem.override,
+        title = "Override",
+        subtitle = "Override the Grid Item Settings",
+        onCheckedChange = {
+            onUpdateGridItem(gridItem.copy(override = it))
+        },
+    )
+
     if (showCustomIconDialog) {
         IconPackInfoFilesDialog(
             iconPackInfoComponents = iconPackInfoComponents,
@@ -593,6 +615,17 @@ private fun EditShortcutConfig(
         subtitle = data.customLabel ?: "None",
         onClick = {
             showCustomLabelDialog = true
+        },
+    )
+
+    HorizontalDivider(modifier = Modifier.fillMaxWidth())
+
+    SettingsSwitch(
+        checked = gridItem.override,
+        title = "Override",
+        subtitle = "Override the Grid Item Settings",
+        onCheckedChange = {
+            onUpdateGridItem(gridItem.copy(override = it))
         },
     )
 

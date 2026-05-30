@@ -126,8 +126,6 @@ fun CustomIcon(
 
         VerticalSlideReveal(visible = expanded) {
             Column(modifier = Modifier.fillMaxWidth()) {
-                HorizontalDivider(modifier = Modifier.fillMaxWidth())
-
                 SettingsColumn(
                     title = "Gallery",
                     subtitle = "Pick icons from your gallery",
@@ -137,8 +135,6 @@ fun CustomIcon(
                 )
 
                 packageManagerIconPackInfos.forEach { packageManagerIconPackInfo ->
-                    HorizontalDivider(modifier = Modifier.fillMaxWidth())
-
                     IconPackItem(
                         icon = packageManagerIconPackInfo.icon,
                         label = packageManagerIconPackInfo.label,
@@ -153,11 +149,9 @@ fun CustomIcon(
                 }
 
                 if (customIcon != null) {
-                    HorizontalDivider(modifier = Modifier.fillMaxWidth())
-
                     SettingsColumn(
-                        title = "Reset to defaults",
-                        subtitle = "Delete custom icon",
+                        title = "Reset Custom Icon",
+                        subtitle = "Reset custom icon",
                         onClick = onResetCustomIcon,
                     )
                 }
