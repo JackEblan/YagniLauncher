@@ -24,8 +24,8 @@ import com.eblan.launcher.domain.model.FolderGridItemWrapper
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 
-internal fun FolderGridItemWrapperEntity.asFolderGridItemData(): FolderGridItemWrapper = FolderGridItemWrapper(
-    folderGridItem = folderGridItemEntity.asFolderGridItem(),
+internal fun FolderGridItemWrapperEntity.asFolderGridItemWrapper(): FolderGridItemWrapper = FolderGridItemWrapper(
+    folderGridItem = folderGridItemEntity.asModel(),
     applicationInfoGridItems = applicationInfoGridItemEntities.map { applicationInfoGridItemEntity ->
         applicationInfoGridItemEntity.asModel()
     },
@@ -35,10 +35,12 @@ internal fun FolderGridItemWrapperEntity.asFolderGridItemData(): FolderGridItemW
     shortcutConfigGridItems = shortcutConfigGridItemEntities.map { shortcutConfigGridItemEntity ->
         shortcutConfigGridItemEntity.asModel()
     },
+    folderGridItems = folderGridItemEntities.map { folderGridItemEntity ->
+        folderGridItemEntity.asModel()
+    }
 )
 
-@JvmName("FolderGridItemEntity")
-internal fun FolderGridItemEntity.asFolderGridItem(): FolderGridItem = FolderGridItem(
+internal fun FolderGridItemEntity.asModel(): FolderGridItem = FolderGridItem(
     id = id,
     page = page,
     startColumn = startColumn,
@@ -53,6 +55,8 @@ internal fun FolderGridItemEntity.asFolderGridItem(): FolderGridItem = FolderGri
     doubleTap = doubleTap,
     swipeUp = swipeUp,
     swipeDown = swipeDown,
+    index = index,
+    folderId = folderId,
 )
 
 internal fun FolderGridItem.asEntity(): FolderGridItemEntity = FolderGridItemEntity(
@@ -70,6 +74,8 @@ internal fun FolderGridItem.asEntity(): FolderGridItemEntity = FolderGridItemEnt
     doubleTap = doubleTap,
     swipeUp = swipeUp,
     swipeDown = swipeDown,
+    index = index,
+    folderId = folderId,
 )
 
 internal fun GridItem.asFolderGridItem(data: GridItemData.Folder): FolderGridItem = FolderGridItem(
@@ -87,4 +93,6 @@ internal fun GridItem.asFolderGridItem(data: GridItemData.Folder): FolderGridIte
     doubleTap = doubleTap,
     swipeUp = swipeUp,
     swipeDown = swipeDown,
+    index = data.index,
+    folderId = data.folderId,
 )

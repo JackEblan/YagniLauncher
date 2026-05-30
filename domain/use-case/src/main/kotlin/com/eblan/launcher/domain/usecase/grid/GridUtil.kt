@@ -18,10 +18,10 @@
 package com.eblan.launcher.domain.usecase.grid
 
 import com.eblan.launcher.domain.model.ApplicationInfoGridItem
+import com.eblan.launcher.domain.model.FolderGridItem
 import com.eblan.launcher.domain.model.FolderGridItemWrapper
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
-import com.eblan.launcher.domain.model.GridItemData.Folder
 import com.eblan.launcher.domain.model.ShortcutConfigGridItem
 import com.eblan.launcher.domain.model.ShortcutInfoGridItem
 import kotlinx.coroutines.currentCoroutineContext
@@ -36,21 +36,24 @@ internal suspend fun FolderGridItemWrapper.asGridItem(
 ): GridItem {
     val gridItems =
         (
-            applicationInfoGridItems.map { applicationInfoGridItem ->
-                applicationInfoGridItem.asGridItem()
-            } + shortcutInfoGridItems.map { shortcutInfoGridItem ->
-                shortcutInfoGridItem.asGridItem()
-            } + shortcutConfigGridItems.map { shortcutConfigGridItem ->
-                shortcutConfigGridItem.asGridItem()
+                applicationInfoGridItems.map { applicationInfoGridItem ->
+                    applicationInfoGridItem.asGridItem()
+                } + shortcutInfoGridItems.map { shortcutInfoGridItem ->
+                    shortcutInfoGridItem.asGridItem()
+                } + shortcutConfigGridItems.map { shortcutConfigGridItem ->
+                    shortcutConfigGridItem.asGridItem()
+                } + folderGridItems.map { folderGridItem ->
+                    folderGridItem.asGridItem()
+                }
+                ).sortedBy { gridItem ->
+                when (val data = gridItem.data) {
+                    is GridItemData.ApplicationInfo -> data.index
+                    is GridItemData.ShortcutInfo -> data.index
+                    is GridItemData.ShortcutConfig -> data.index
+                    is GridItemData.Folder -> data.index
+                    else -> error("Unsupported folder grid item")
+                }
             }
-            ).sortedBy { gridItem ->
-            when (val data = gridItem.data) {
-                is GridItemData.ApplicationInfo -> data.index
-                is GridItemData.ShortcutInfo -> data.index
-                is GridItemData.ShortcutConfig -> data.index
-                else -> error("Unsupported Folder GridItem")
-            }
-        }
 
     val gridItemsByPage = gridItems.getGridItemsByPage(
         maxFolderColumns = maxFolderColumns,
@@ -70,11 +73,12 @@ internal suspend fun FolderGridItemWrapper.asGridItem(
             is GridItemData.ApplicationInfo -> data.index + 1
             is GridItemData.ShortcutConfig -> data.index + 1
             is GridItemData.ShortcutInfo -> data.index + 1
-            else -> error("Unsupported Folder GridItem")
+            is GridItemData.Folder -> data.index + 1
+            else -> error("Unsupported folder grid item")
         }
     } ?: 0
 
-    val data = Folder(
+    val data = GridItemData.Folder(
         id = folderGridItem.id,
         label = folderGridItem.label,
         gridItems = gridItems,
@@ -83,6 +87,8 @@ internal suspend fun FolderGridItemWrapper.asGridItem(
         columns = columns,
         rows = rows,
         maxIndex = maxIndex,
+        index = folderGridItem.index,
+        folderId = folderGridItem.folderId,
     )
 
     return GridItem(
@@ -201,6 +207,33 @@ private fun ShortcutConfigGridItem.asGridItem(): GridItem = GridItem(
         shortcutIntentUri = shortcutIntentUri,
         customIcon = customIcon,
         customLabel = customLabel,
+        index = index,
+        folderId = folderId,
+    ),
+    associate = associate,
+    override = override,
+    gridItemSettings = gridItemSettings,
+    doubleTap = doubleTap,
+    swipeUp = swipeUp,
+    swipeDown = swipeDown,
+)
+
+private fun FolderGridItem.asGridItem(): GridItem = GridItem(
+    id = id,
+    page = page,
+    startColumn = startColumn,
+    startRow = startRow,
+    columnSpan = columnSpan,
+    rowSpan = rowSpan,
+    data = GridItemData.Folder(
+        id = id,
+        label = label,
+        gridItems = emptyList(),
+        gridItemsByPage = emptyMap(),
+        icon = icon,
+        columns = 0,
+        rows = 0,
+        maxIndex = 0,
         index = index,
         folderId = folderId,
     ),
