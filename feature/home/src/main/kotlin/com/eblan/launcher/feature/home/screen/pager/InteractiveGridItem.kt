@@ -66,6 +66,7 @@ import coil3.request.ImageRequest.Builder
 import coil3.request.addLastModifiedToFileCacheKey
 import coil3.size.Size
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
+import com.eblan.launcher.domain.model.FolderGridItemId
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.GridItemSettings
@@ -144,7 +145,7 @@ internal fun SharedTransitionScope.InteractiveGridItem(
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
     onShowFolderWhenDragging: (
-        conflictingGridItem: GridItem,
+        folderGridItemId: FolderGridItemId,
         movingGridItem: GridItem,
     ) -> Unit,
     onUpdateFolderPopupBounds: (
@@ -1036,7 +1037,7 @@ private fun SharedTransitionScope.InteractiveFolderGridItem(
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
     onShowFolderWhenDragging: (
-        conflictingGridItem: GridItem,
+        folderGridItemId: FolderGridItemId,
         movingGridItem: GridItem,
     ) -> Unit,
     onUpdateFolderPopupBounds: (

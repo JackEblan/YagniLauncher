@@ -132,7 +132,8 @@ internal fun SharedTransitionScope.InteractiveFolderGridItem(
     onUpdateIsCloseFolderGridItemPopup: (Boolean) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
-    onOpenNestedFolder: (
+    onTapNestedFolderGridItem: (
+        id: String,
         intOffset: IntOffset,
         intSize: IntSize,
     ) -> Unit,
@@ -258,7 +259,7 @@ internal fun SharedTransitionScope.InteractiveFolderGridItem(
                 onUpdateIsCloseFolderGridItemPopup = onUpdateIsCloseFolderGridItemPopup,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
-                onTap = onOpenNestedFolder,
+                onTap = onTapNestedFolderGridItem,
                 onUpdateGridItemSource = onUpdateGridItemSource,
                 onUpdateImageBitmap = onUpdateImageBitmap,
                 onUpdateIsDragging = onUpdateIsDragging,
@@ -1004,6 +1005,7 @@ private fun SharedTransitionScope.InteractiveNestedFolderGridItem(
         intSize: IntSize,
     ) -> Unit,
     onTap: (
+        id: String,
         intOffset: IntOffset,
         intSize: IntSize,
     ) -> Unit,
@@ -1110,6 +1112,7 @@ private fun SharedTransitionScope.InteractiveNestedFolderGridItem(
                                 scale.animateTo(1f)
 
                                 onTap(
+                                    gridItem.id,
                                     intOffset,
                                     intSize,
                                 )

@@ -36,11 +36,22 @@ internal class DefaultFolderGridItemRepository @Inject constructor(private val f
             }
         }
 
+    override val folderGridItemWrappersWithFolderIdFlow =
+        folderGridItemDao.getFolderGridItemWrapperEntitiesFlow().map { entities ->
+            entities.map { entity ->
+                entity.asFolderGridItemWrapper()
+            }
+        }
+
     override suspend fun getFolderGridItemWrapper(id: String): FolderGridItemWrapper? = folderGridItemDao.getFolderGridItemWrapperEntity(id = id)?.asFolderGridItemWrapper()
 
     override suspend fun getFolderGridItemWrappers(): List<FolderGridItemWrapper> = folderGridItemDao.getFolderGridItemWrapperEntities().filter { entity ->
         entity.folderGridItemEntity.folderId == null
     }.map { entity ->
+        entity.asFolderGridItemWrapper()
+    }
+
+    override suspend fun getFolderGridItemWrappersWithFolderId(): List<FolderGridItemWrapper> = folderGridItemDao.getFolderGridItemWrapperEntities().map { entity ->
         entity.asFolderGridItemWrapper()
     }
 

@@ -51,6 +51,7 @@ import com.eblan.launcher.domain.model.EblanShortcutInfo
 import com.eblan.launcher.domain.model.EblanShortcutInfoByGroup
 import com.eblan.launcher.domain.model.EblanUser
 import com.eblan.launcher.domain.model.EditPageData
+import com.eblan.launcher.domain.model.FolderGridItemId
 import com.eblan.launcher.domain.model.GetEblanApplicationInfosByLabelAndTag
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
@@ -58,6 +59,7 @@ import com.eblan.launcher.domain.model.HomeData
 import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.domain.model.PageItem
 import com.eblan.launcher.domain.model.PinItemRequestType
+import com.eblan.launcher.domain.model.PopupFolderGridItem
 import com.eblan.launcher.feature.home.dialog.TextDialog
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.HomeUiState
@@ -105,7 +107,7 @@ internal fun HomeRoute(
 
     val eblanApplicationInfoTags by viewModel.eblanApplicationInfoTags.collectAsStateWithLifecycle()
 
-    val folderGridItem by viewModel.folderGridItem.collectAsStateWithLifecycle()
+    val popupFolderGridItems by viewModel.popupFolderGridItems.collectAsStateWithLifecycle()
 
     val resizeGridItem by viewModel.resizeGridItem.collectAsStateWithLifecycle()
 
@@ -122,7 +124,7 @@ internal fun HomeRoute(
         eblanShortcutConfigs = eblanShortcutConfigs,
         eblanShortcutInfosGroup = eblanShortcutInfosGroup,
         editPageData = editPageData,
-        folderGridItem = folderGridItem,
+        popupFolderGridItems = popupFolderGridItems,
         getEblanApplicationInfosByLabelAndTag = getEblanApplicationInfos,
         homeUiState = homeUiState,
         iconPackFilePaths = iconPackFilePaths,
@@ -159,6 +161,7 @@ internal fun HomeRoute(
         onUpdateAppDrawerSettings = viewModel::updateAppDrawerSettings,
         onUpdateEblanApplicationInfos = viewModel::updateEblanApplicationInfos,
         onUpdateFolderGridItemId = viewModel::updateFolderGridItemId,
+        onDeleteFolderGridItemId = viewModel::deleteFolderGridItemId,
         onShowFolderWhenDragging = viewModel::showFolderWhenDragging,
         onUpdateScreen = viewModel::updateScreen,
         onUpdateShortcutConfigIntoShortcutInfoGridItem = viewModel::updateShortcutConfigIntoShortcutInfoGridItem,
@@ -180,7 +183,7 @@ internal fun HomeScreen(
     eblanShortcutConfigs: Map<EblanUser, Map<EblanApplicationInfoGroup, List<EblanShortcutConfig>>>,
     eblanShortcutInfosGroup: Map<EblanShortcutInfoByGroup, List<EblanShortcutInfo>>,
     editPageData: EditPageData?,
-    folderGridItem: GridItem?,
+    popupFolderGridItems: List<PopupFolderGridItem>,
     getEblanApplicationInfosByLabelAndTag: GetEblanApplicationInfosByLabelAndTag,
     homeUiState: HomeUiState,
     iconPackFilePaths: Map<String, String>,
@@ -250,9 +253,10 @@ internal fun HomeScreen(
     onStopSyncData: () -> Unit,
     onUpdateAppDrawerSettings: (AppDrawerSettings) -> Unit,
     onUpdateEblanApplicationInfos: (List<EblanApplicationInfo>) -> Unit,
-    onUpdateFolderGridItemId: (String?) -> Unit,
+    onUpdateFolderGridItemId: (FolderGridItemId) -> Unit,
+    onDeleteFolderGridItemId: (FolderGridItemId) -> Unit,
     onShowFolderWhenDragging: (
-        conflictingGridItem: GridItem,
+        folderGridItemId: FolderGridItemId,
         movingGridItem: GridItem,
     ) -> Unit,
     onUpdateScreen: (Screen) -> Unit,
@@ -285,7 +289,7 @@ internal fun HomeScreen(
                 eblanShortcutConfigs = eblanShortcutConfigs,
                 eblanShortcutInfosGroup = eblanShortcutInfosGroup,
                 editPageData = editPageData,
-                folderGridItem = folderGridItem,
+                popupFolderGridItems = popupFolderGridItems,
                 getEblanApplicationInfosByLabelAndTag = getEblanApplicationInfosByLabelAndTag,
                 homeData = homeUiState.homeData,
                 iconPackFilePaths = iconPackFilePaths,
@@ -325,6 +329,7 @@ internal fun HomeScreen(
                 onUpdateAppDrawerSettings = onUpdateAppDrawerSettings,
                 onUpdateEblanApplicationInfos = onUpdateEblanApplicationInfos,
                 onUpdateFolderGridItemId = onUpdateFolderGridItemId,
+                onDeleteFolderGridItemId = onDeleteFolderGridItemId,
                 onShowFolderWhenDragging = onShowFolderWhenDragging,
                 onUpdateScreen = onUpdateScreen,
                 onUpdateShortcutConfigIntoShortcutInfoGridItem = onUpdateShortcutConfigIntoShortcutInfoGridItem,
@@ -348,7 +353,7 @@ private fun Success(
     eblanShortcutConfigs: Map<EblanUser, Map<EblanApplicationInfoGroup, List<EblanShortcutConfig>>>,
     eblanShortcutInfosGroup: Map<EblanShortcutInfoByGroup, List<EblanShortcutInfo>>,
     editPageData: EditPageData?,
-    folderGridItem: GridItem?,
+    popupFolderGridItems: List<PopupFolderGridItem>,
     getEblanApplicationInfosByLabelAndTag: GetEblanApplicationInfosByLabelAndTag,
     homeData: HomeData,
     iconPackFilePaths: Map<String, String>,
@@ -421,9 +426,10 @@ private fun Success(
     onStopSyncData: () -> Unit,
     onUpdateAppDrawerSettings: (AppDrawerSettings) -> Unit,
     onUpdateEblanApplicationInfos: (List<EblanApplicationInfo>) -> Unit,
-    onUpdateFolderGridItemId: (String?) -> Unit,
+    onUpdateFolderGridItemId: (FolderGridItemId) -> Unit,
+    onDeleteFolderGridItemId: (FolderGridItemId) -> Unit,
     onShowFolderWhenDragging: (
-        conflictingGridItem: GridItem,
+        folderGridItemId: FolderGridItemId,
         movingGridItem: GridItem,
     ) -> Unit,
     onUpdateScreen: (Screen) -> Unit,
@@ -460,7 +466,7 @@ private fun Success(
                     eblanShortcutConfigs = eblanShortcutConfigs,
                     eblanShortcutInfosGroup = eblanShortcutInfosGroup,
                     experimentalSettings = homeData.userData.experimentalSettings,
-                    folderGridItem = folderGridItem,
+                    popupFolderGridItems = popupFolderGridItems,
                     gestureSettings = homeData.userData.gestureSettings,
                     getEblanApplicationInfosByLabelAndTag = getEblanApplicationInfosByLabelAndTag,
                     gridItems = homeData.gridItems,
@@ -506,6 +512,7 @@ private fun Success(
                     onUpdateAppDrawerSettings = onUpdateAppDrawerSettings,
                     onUpdateEblanApplicationInfos = onUpdateEblanApplicationInfos,
                     onUpdateFolderGridItemId = onUpdateFolderGridItemId,
+                    onDeleteFolderGridItemId = onDeleteFolderGridItemId,
                     onShowFolderWhenDragging = onShowFolderWhenDragging,
                     onUpdateShortcutConfigIntoShortcutInfoGridItem = onUpdateShortcutConfigIntoShortcutInfoGridItem,
                     onUpdateGridItemSource = onUpdateGridItemSource,
