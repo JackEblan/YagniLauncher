@@ -37,7 +37,7 @@ internal fun FolderGridItemWrapperEntity.asFolderGridItemWrapper(): FolderGridIt
     },
     folderGridItems = folderGridItemEntities.map { folderGridItemEntity ->
         folderGridItemEntity.asModel()
-    }
+    },
 )
 
 internal fun FolderGridItemEntity.asModel(): FolderGridItem = FolderGridItem(

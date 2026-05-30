@@ -28,13 +28,15 @@ import javax.inject.Inject
 
 internal class DefaultFolderGridItemRepository @Inject constructor(private val folderGridItemDao: FolderGridItemDao) : FolderGridItemRepository {
     override val folderGridItemWrappersFlow =
-        folderGridItemDao.getFolderGridItemWrappersFlow().map { entities ->
+        folderGridItemDao.getFolderGridItemWrapperEntitiesFlow().map { entities ->
             entities.map { entity ->
                 entity.asFolderGridItemWrapper()
             }
         }
 
-    override suspend fun getFolderGridItemWrappers(): List<FolderGridItemWrapper> = folderGridItemDao.getFolderGridItemWrappers().map { entity ->
+    override suspend fun getFolderGridItemWrapper(id: String): FolderGridItemWrapper? = folderGridItemDao.getFolderGridItemWrapperEntity(id = id)?.asFolderGridItemWrapper()
+
+    override suspend fun getFolderGridItemWrappers(): List<FolderGridItemWrapper> = folderGridItemDao.getFolderGridItemWrapperEntities().map { entity ->
         entity.asFolderGridItemWrapper()
     }
 

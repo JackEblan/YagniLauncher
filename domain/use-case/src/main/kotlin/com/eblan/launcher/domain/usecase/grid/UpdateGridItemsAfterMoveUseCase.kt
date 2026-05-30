@@ -74,7 +74,8 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
                 is GridItemData.ApplicationInfo -> folderData.index + 1
                 is GridItemData.ShortcutConfig -> folderData.index + 1
                 is GridItemData.ShortcutInfo -> folderData.index + 1
-                else -> error("Unsupported folder creation")
+                is GridItemData.Folder -> folderData.index + 1
+                else -> error("Unsupported addMovingGridItemIntoFolder")
             }
         } ?: 0
 
@@ -94,7 +95,12 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
                 folderId = data.id,
             )
 
-            else -> error("Unsupported folder creation")
+            is GridItemData.Folder -> folderData.copy(
+                index = index,
+                folderId = data.id,
+            )
+
+            else -> error("Unsupported addMovingGridItemIntoFolder")
         }
 
         gridRepository.updateGridItem(gridItem = movingGridItem.copy(data = newData))
@@ -129,7 +135,14 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
                 )
             }
 
-            else -> error("Unsupported folder creation")
+            is GridItemData.Folder -> {
+                data.copy(
+                    folderId = id,
+                    index = 0,
+                )
+            }
+
+            else -> error("Unsupported createNewFolder")
         }
 
         val movingData = when (val data = movingGridItem.data) {
@@ -154,16 +167,19 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
                 )
             }
 
-            else -> error("Unsupported folder creation")
+            is GridItemData.Folder -> {
+                data.copy(
+                    folderId = id,
+                    index = 1,
+                )
+            }
+
+            else -> error("Unsupported createNewFolder")
         }
 
-        val newConflictingGridItem = conflictingGridItem.copy(data = conflictingData)
-
-        val newMovingGridItem = movingGridItem.copy(data = movingData)
-
         val folderGridItems = listOf(
-            newConflictingGridItem,
-            newMovingGridItem,
+            conflictingGridItem.copy(data = conflictingData),
+            movingGridItem.copy(data = movingData),
         )
 
         gridRepository.upsertGridItem(
@@ -178,6 +194,8 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
                     columns = 1,
                     rows = 2,
                     maxIndex = 1,
+                    index = -1,
+                    folderId = null,
                 ),
             ),
         )

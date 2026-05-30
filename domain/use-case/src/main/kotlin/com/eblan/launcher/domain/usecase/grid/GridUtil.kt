@@ -24,6 +24,7 @@ import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.ShortcutConfigGridItem
 import com.eblan.launcher.domain.model.ShortcutInfoGridItem
+import com.eblan.launcher.domain.repository.FolderGridItemRepository
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
 import kotlin.math.ceil
@@ -31,29 +32,114 @@ import kotlin.math.min
 import kotlin.math.sqrt
 
 internal suspend fun FolderGridItemWrapper.asGridItem(
+    folderGridItemRepository: FolderGridItemRepository,
+    maxFolderColumns: Int,
+    maxFolderRows: Int,
+): GridItem {
+    val childFolderGridItems =
+        folderGridItems.map { childGridItem ->
+            folderGridItemRepository.getFolderGridItemWrapper(
+                id = childGridItem.id,
+            )?.asPreviewGridItem(
+                maxFolderColumns = maxFolderColumns,
+                maxFolderRows = maxFolderRows,
+            ) ?: childGridItem.asIconGridItem()
+        }
+
+    val gridItems =
+        (
+            applicationInfoGridItems.map { applicationInfoGridItem ->
+                applicationInfoGridItem.asGridItem()
+            } + shortcutInfoGridItems.map { shortcutInfoGridItem ->
+                shortcutInfoGridItem.asGridItem()
+            } + shortcutConfigGridItems.map { shortcutConfigGridItem ->
+                shortcutConfigGridItem.asGridItem()
+            } + childFolderGridItems
+            ).sortedBy { gridItem ->
+            when (val data = gridItem.data) {
+                is GridItemData.ApplicationInfo -> data.index
+                is GridItemData.ShortcutInfo -> data.index
+                is GridItemData.ShortcutConfig -> data.index
+                is GridItemData.Folder -> data.index
+                else -> error("Unsupported folder grid item")
+            }
+        }
+
+    val gridItemsByPage = gridItems.getGridItemsByPage(
+        maxFolderColumns = maxFolderColumns,
+        maxFolderRows = maxFolderRows,
+    )
+
+    val firstPageGridItems = gridItemsByPage.values.firstOrNull().orEmpty()
+
+    val (columns, rows) = getGridDimension(
+        count = firstPageGridItems.size,
+        maxFolderColumns = maxFolderColumns,
+        maxFolderRows = maxFolderRows,
+    )
+
+    val maxIndex = gridItems.maxOfOrNull { gridItem ->
+        when (val data = gridItem.data) {
+            is GridItemData.ApplicationInfo -> data.index + 1
+            is GridItemData.ShortcutInfo -> data.index + 1
+            is GridItemData.ShortcutConfig -> data.index + 1
+            is GridItemData.Folder -> data.index + 1
+            else -> error("Unsupported folder grid item")
+        }
+    } ?: 0
+
+    return GridItem(
+        id = folderGridItem.id,
+        page = folderGridItem.page,
+        startColumn = folderGridItem.startColumn,
+        startRow = folderGridItem.startRow,
+        columnSpan = folderGridItem.columnSpan,
+        rowSpan = folderGridItem.rowSpan,
+        data = GridItemData.Folder(
+            id = folderGridItem.id,
+            label = folderGridItem.label,
+            gridItems = gridItems,
+            gridItemsByPage = gridItemsByPage,
+            icon = folderGridItem.icon,
+            columns = columns,
+            rows = rows,
+            maxIndex = maxIndex,
+            index = folderGridItem.index,
+            folderId = folderGridItem.folderId,
+        ),
+        associate = folderGridItem.associate,
+        override = folderGridItem.override,
+        gridItemSettings = folderGridItem.gridItemSettings,
+        doubleTap = folderGridItem.doubleTap,
+        swipeUp = folderGridItem.swipeUp,
+        swipeDown = folderGridItem.swipeDown,
+    )
+}
+
+private suspend fun FolderGridItemWrapper.asPreviewGridItem(
     maxFolderColumns: Int,
     maxFolderRows: Int,
 ): GridItem {
     val gridItems =
         (
-                applicationInfoGridItems.map { applicationInfoGridItem ->
-                    applicationInfoGridItem.asGridItem()
-                } + shortcutInfoGridItems.map { shortcutInfoGridItem ->
-                    shortcutInfoGridItem.asGridItem()
-                } + shortcutConfigGridItems.map { shortcutConfigGridItem ->
-                    shortcutConfigGridItem.asGridItem()
-                } + folderGridItems.map { folderGridItem ->
-                    folderGridItem.asGridItem()
-                }
-                ).sortedBy { gridItem ->
-                when (val data = gridItem.data) {
-                    is GridItemData.ApplicationInfo -> data.index
-                    is GridItemData.ShortcutInfo -> data.index
-                    is GridItemData.ShortcutConfig -> data.index
-                    is GridItemData.Folder -> data.index
-                    else -> error("Unsupported folder grid item")
-                }
+            applicationInfoGridItems.map { applicationInfoGridItem ->
+                applicationInfoGridItem.asGridItem()
+            } + shortcutInfoGridItems.map { shortcutInfoGridItem ->
+                shortcutInfoGridItem.asGridItem()
+            } + shortcutConfigGridItems.map { shortcutConfigGridItem ->
+                shortcutConfigGridItem.asGridItem()
+            } + folderGridItems.map { folderGridItem ->
+                folderGridItem.asIconGridItem()
             }
+            ).sortedBy { gridItem ->
+            when (val data = gridItem.data) {
+                is GridItemData.ApplicationInfo -> data.index
+                is GridItemData.ShortcutInfo -> data.index
+                is GridItemData.ShortcutConfig -> data.index
+                is GridItemData.Folder -> data.index
+                else -> error("Unsupported folder grid item")
+            }
+        }
 
     val gridItemsByPage = gridItems.getGridItemsByPage(
         maxFolderColumns = maxFolderColumns,
@@ -218,7 +304,7 @@ private fun ShortcutConfigGridItem.asGridItem(): GridItem = GridItem(
     swipeDown = swipeDown,
 )
 
-private fun FolderGridItem.asGridItem(): GridItem = GridItem(
+private fun FolderGridItem.asIconGridItem(): GridItem = GridItem(
     id = id,
     page = page,
     startColumn = startColumn,

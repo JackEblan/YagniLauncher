@@ -37,6 +37,7 @@ class GetFolderGridItemsUseCase @Inject constructor(
 
         folderGridItemRepository.getFolderGridItemWrappers().map { folderGridItemWrapper ->
             folderGridItemWrapper.asGridItem(
+                folderGridItemRepository = folderGridItemRepository,
                 maxFolderColumns = homeSettings.maxFolderColumns,
                 maxFolderRows = homeSettings.maxFolderRows,
             )

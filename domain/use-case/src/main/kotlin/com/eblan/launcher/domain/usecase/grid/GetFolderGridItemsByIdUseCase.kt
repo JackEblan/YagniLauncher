@@ -43,6 +43,7 @@ class GetFolderGridItemsByIdUseCase @Inject constructor(
         folderGridItemWrappers.firstOrNull { folderGridItemWrapper ->
             folderGridItemWrapper.folderGridItem.id == id
         }?.asGridItem(
+            folderGridItemRepository = folderGridItemRepository,
             maxFolderColumns = userData.homeSettings.maxFolderColumns,
             maxFolderRows = userData.homeSettings.maxFolderRows,
         )

@@ -29,6 +29,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -64,6 +65,7 @@ import coil3.compose.AsyncImage
 import coil3.request.ImageRequest.Builder
 import coil3.request.addLastModifiedToFileCacheKey
 import coil3.size.Size
+import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.GridItemSettings
@@ -1246,6 +1248,7 @@ private fun SharedTransitionScope.InteractiveFolderGridItem(
                             isVisibleOverlay = isVisibleOverlay,
                             parent = sharedElementKey.parent,
                             moveGridItemResult = moveGridItemResult,
+                            textColor = textColor,
                         )
                     },
                 )
@@ -1522,6 +1525,7 @@ private fun SharedTransitionScope.PreviewFolderGridItem(
     isVisibleOverlay: Boolean,
     parent: SharedElementKey.Parent,
     moveGridItemResult: MoveGridItemResult?,
+    textColor: Color,
 ) {
     val context = LocalContext.current
 
@@ -1607,6 +1611,26 @@ private fun SharedTransitionScope.PreviewFolderGridItem(
                     contentDescription = null,
                     modifier = commonModifier,
                 )
+            }
+
+            is GridItemData.Folder -> {
+                if (data.icon != null) {
+                    AsyncImage(
+                        model = Builder(context)
+                            .data(data.icon)
+                            .addLastModifiedToFileCacheKey(true)
+                            .size(Size.ORIGINAL)
+                            .build(),
+                        contentDescription = null,
+                        modifier = commonModifier,
+                    )
+                } else {
+                    Icon(
+                        imageVector = EblanLauncherIcons.Folder,
+                        contentDescription = null,
+                        tint = textColor,
+                    )
+                }
             }
 
             else -> Unit
