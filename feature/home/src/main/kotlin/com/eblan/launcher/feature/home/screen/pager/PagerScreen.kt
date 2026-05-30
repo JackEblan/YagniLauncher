@@ -1041,7 +1041,7 @@ internal fun PagerScreen(
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                 onUpdateIsClosingFolder = pagerScreenState::updateIsCloseFolder,
                 onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
-                onOpenNestedFolder = { _, _ ->
+                onTapNestedFolderGridItem = { _, _ ->
                     // Open nested folder and close the parent
                 },
             )

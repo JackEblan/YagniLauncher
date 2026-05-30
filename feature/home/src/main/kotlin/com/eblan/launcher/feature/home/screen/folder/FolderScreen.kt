@@ -113,7 +113,7 @@ internal fun SharedTransitionScope.FolderScreen(
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateIsClosingFolder: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
-    onOpenNestedFolder: (
+    onTapNestedFolderGridItem: (
         intOffset: IntOffset,
         intSize: IntSize,
     ) -> Unit,
@@ -383,7 +383,7 @@ internal fun SharedTransitionScope.FolderScreen(
                                 onUpdateIsCloseFolderGridItemPopup = onUpdateIsCloseFolderGridItemPopup,
                                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                                 onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
-                                onOpenNestedFolder = onOpenNestedFolder,
+                                onOpenNestedFolder = onTapNestedFolderGridItem,
                             )
                         },
                     )
