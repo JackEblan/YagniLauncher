@@ -275,7 +275,7 @@ internal fun SharedTransitionScope.FolderScreen(
         progress.animateTo(targetValue = 1f)
     }
 
-    BackHandler(enabled = !folderPopup.folderPopupEntry.isCloseFolder) {
+    BackHandler(enabled = !folderPopup.folderPopupEntry.isCloseFolder && isLastFolderGridItem) {
         onUpsertFolderPopupEntry(folderPopup.folderPopupEntry.copy(isCloseFolder = true))
     }
 
@@ -342,6 +342,7 @@ internal fun SharedTransitionScope.FolderScreen(
             folderCellWidth = folderCellWidth,
             folderCellHeight = folderCellHeight,
             folderPopupEntry = folderPopup.folderPopupEntry,
+            isLastFolderGridItem = isLastFolderGridItem,
             onMoveFolderGridItem = onMoveFolderGridItem,
             onUpdateSharedElementKey = onUpdateSharedElementKey,
             onUpsertFolderPopupEntry = onUpsertFolderPopupEntry,
@@ -412,18 +413,20 @@ internal fun SharedTransitionScope.FolderScreen(
 
     Box(
         modifier = modifier
-            .pointerInput(Unit) {
-                detectTapGestures(
-                    onPress = {
-                        awaitRelease()
+            .pointerInput(key1 = isLastFolderGridItem) {
+                if (isLastFolderGridItem) {
+                    detectTapGestures(
+                        onPress = {
+                            awaitRelease()
 
-                        onUpsertFolderPopupEntry(
-                            folderPopup.folderPopupEntry.copy(
-                                isCloseFolder = true,
-                            ),
-                        )
-                    },
-                )
+                            onUpsertFolderPopupEntry(
+                                folderPopup.folderPopupEntry.copy(
+                                    isCloseFolder = true,
+                                ),
+                            )
+                        },
+                    )
+                }
             }
             .fillMaxSize(),
     ) {

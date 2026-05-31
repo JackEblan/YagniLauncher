@@ -174,6 +174,7 @@ internal suspend fun handleDragFolderGridItem(
     folderCellWidth: Int,
     folderCellHeight: Int,
     folderPopupEntry: FolderPopupEntry,
+    isLastFolderGridItem: Boolean,
     onMoveFolderGridItem: (
         conflictingGridItem: GridItem,
         movingFolderGridItem: GridItem,
@@ -195,7 +196,8 @@ internal suspend fun handleDragFolderGridItem(
         !isDragging ||
         lockMovement ||
         moveGridItemResult == null ||
-        folderGridItem == null
+        folderGridItem == null ||
+        !isLastFolderGridItem
     ) {
         return
     }
