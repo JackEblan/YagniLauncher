@@ -306,9 +306,9 @@ internal fun SharedTransitionScope.FolderScreen(
                 )
 
                 onMoveFolderGridItemOutsideFolder(gridItem)
-            } else {
-                onDeleteFolderPopupEntry(folderPopup.folderPopupEntry)
             }
+
+            onDeleteFolderPopupEntry(folderPopup.folderPopupEntry)
         }
     }
 
