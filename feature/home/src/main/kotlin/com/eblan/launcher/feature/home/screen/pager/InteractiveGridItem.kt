@@ -66,7 +66,7 @@ import coil3.request.ImageRequest.Builder
 import coil3.request.addLastModifiedToFileCacheKey
 import coil3.size.Size
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
-import com.eblan.launcher.domain.model.FolderGridItemId
+import com.eblan.launcher.domain.model.FolderPopupEntry
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.GridItemSettings
@@ -118,7 +118,7 @@ internal fun SharedTransitionScope.InteractiveGridItem(
         serialNumber: Long,
         componentName: String,
     ) -> Unit,
-    onUpdateFolderGridItemId: (FolderGridItemId) -> Unit,
+    onUpsertFolderPopupEntry: (FolderPopupEntry) -> Unit,
     onTapShortcutConfig: (String) -> Unit,
     onTapShortcutInfo: (
         serialNumber: Long,
@@ -141,7 +141,7 @@ internal fun SharedTransitionScope.InteractiveGridItem(
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
     onShowFolderWhenDragging: (
-        folderGridItemId: FolderGridItemId,
+        folderPopupEntry: FolderPopupEntry,
         movingGridItem: GridItem,
     ) -> Unit,
 ) {
@@ -280,7 +280,7 @@ internal fun SharedTransitionScope.InteractiveGridItem(
                 onUpdateIsCloseGridItemPopup = onUpdateIsCloseGridItemPopup,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
-                onUpdateFolderGridItemId = onUpdateFolderGridItemId,
+                onUpsertFolderPopupEntry = onUpsertFolderPopupEntry,
                 onUpdateGridItemSource = onUpdateGridItemSource,
                 onUpdateImageBitmap = onUpdateImageBitmap,
                 onUpdateIsDragging = onUpdateIsDragging,
@@ -1013,7 +1013,7 @@ private fun SharedTransitionScope.InteractiveFolderGridItem(
         intOffset: IntOffset,
         intSize: IntSize,
     ) -> Unit,
-    onUpdateFolderGridItemId: (FolderGridItemId) -> Unit,
+    onUpsertFolderPopupEntry: (FolderPopupEntry) -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
@@ -1025,7 +1025,7 @@ private fun SharedTransitionScope.InteractiveFolderGridItem(
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
     onShowFolderWhenDragging: (
-        folderGridItemId: FolderGridItemId,
+        folderPopupEntry: FolderPopupEntry,
         movingGridItem: GridItem,
     ) -> Unit,
 ) {
@@ -1146,13 +1146,14 @@ private fun SharedTransitionScope.InteractiveFolderGridItem(
 
                                 scale.animateTo(1f)
 
-                                onUpdateFolderGridItemId(
-                                    FolderGridItemId(
+                                onUpsertFolderPopupEntry(
+                                    FolderPopupEntry(
                                         id = gridItem.id,
                                         x = intOffset.x,
                                         y = intOffset.y,
                                         width = intSize.width,
                                         height = intSize.height,
+                                        isCloseFolder = false,
                                     ),
                                 )
                             }

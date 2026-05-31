@@ -27,7 +27,7 @@ import com.eblan.launcher.domain.model.AppDrawerSettings
 import com.eblan.launcher.domain.model.Associate
 import com.eblan.launcher.domain.model.EblanApplicationInfo
 import com.eblan.launcher.domain.model.EditPageData
-import com.eblan.launcher.domain.model.FolderGridItemId
+import com.eblan.launcher.domain.model.FolderPopupEntry
 import com.eblan.launcher.domain.model.GetEblanApplicationInfosByLabelAndTag
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
@@ -203,10 +203,10 @@ internal class HomeViewModel @Inject constructor(
 
     private var launcherAppsEventJob: Job? = null
 
-    private val _folderGridItemIds = MutableStateFlow<List<FolderGridItemId>>(emptyList())
+    private val _folderPopupEntries = MutableStateFlow<List<FolderPopupEntry>>(emptyList())
 
-    val popupFolderGridItems = getFolderGridItemsByIdUseCase(
-        folderGridItemIdsFlow = _folderGridItemIds,
+    val folderPopups = getFolderGridItemsByIdUseCase(
+        folderGridItemIdsFlow = _folderPopupEntries,
     ).stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
@@ -550,10 +550,12 @@ internal class HomeViewModel @Inject constructor(
         }
     }
 
-    fun updateFolderGridItemId(folderGridItemId: FolderGridItemId) {
+    fun upsertFolderPopupEntry(folderPopupEntry: FolderPopupEntry) {
         viewModelScope.launch {
-            _folderGridItemIds.update {
-                it + folderGridItemId
+            _folderPopupEntries.update { currentFolderPopups ->
+                currentFolderPopups
+                    .filterNot { it.id == folderPopupEntry.id }
+                    .plus(folderPopupEntry)
             }
         }
     }
@@ -612,8 +614,10 @@ internal class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             moveGridItemJob?.cancelAndJoin()
 
-            _folderGridItemIds.update {
-                emptyList()
+            _folderPopupEntries.update { folderGridItemIds ->
+                folderGridItemIds.map { folderGridItemId ->
+                    folderGridItemId.copy(isCloseFolder = true)
+                }
             }
 
             gridRepository.updateGridItem(gridItem = movingGridItem)
@@ -645,7 +649,7 @@ internal class HomeViewModel @Inject constructor(
     }
 
     fun showFolderWhenDragging(
-        folderGridItemId: FolderGridItemId,
+        folderPopupEntry: FolderPopupEntry,
         movingGridItem: GridItem,
     ) {
         viewModelScope.launch {
@@ -653,8 +657,8 @@ internal class HomeViewModel @Inject constructor(
 
             gridRepository.updateGridItem(gridItem = movingGridItem)
 
-            _folderGridItemIds.update {
-                it + folderGridItemId
+            _folderPopupEntries.update {
+                it + folderPopupEntry
             }
 
             _moveGridItemResult.update {
@@ -679,9 +683,9 @@ internal class HomeViewModel @Inject constructor(
         }
     }
 
-    fun deleteFolderGridItemId(folderGridItemId: FolderGridItemId) {
-        _folderGridItemIds.update {
-            it - folderGridItemId
+    fun deleteFolderPopupEntry(folderPopupEntry: FolderPopupEntry) {
+        _folderPopupEntries.update {
+            it - folderPopupEntry
         }
     }
 }

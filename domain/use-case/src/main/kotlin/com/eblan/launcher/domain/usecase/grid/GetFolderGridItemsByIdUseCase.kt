@@ -19,8 +19,8 @@ package com.eblan.launcher.domain.usecase.grid
 
 import com.eblan.launcher.domain.common.Dispatcher
 import com.eblan.launcher.domain.common.EblanDispatchers
-import com.eblan.launcher.domain.model.FolderGridItemId
-import com.eblan.launcher.domain.model.PopupFolderGridItem
+import com.eblan.launcher.domain.model.FolderPopup
+import com.eblan.launcher.domain.model.FolderPopupEntry
 import com.eblan.launcher.domain.repository.FolderGridItemRepository
 import com.eblan.launcher.domain.repository.UserDataRepository
 import kotlinx.coroutines.CoroutineDispatcher
@@ -35,8 +35,8 @@ class GetFolderGridItemsByIdUseCase @Inject constructor(
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) {
     operator fun invoke(
-        folderGridItemIdsFlow: Flow<List<FolderGridItemId>>,
-    ): Flow<List<PopupFolderGridItem>> = combine(
+        folderGridItemIdsFlow: Flow<List<FolderPopupEntry>>,
+    ): Flow<List<FolderPopup>> = combine(
         userDataRepository.userDataFlow,
         folderGridItemIdsFlow,
         folderGridItemRepository.folderGridItemWrappersWithFolderIdFlow,
@@ -45,8 +45,8 @@ class GetFolderGridItemsByIdUseCase @Inject constructor(
             folderGridItemWrappers.firstOrNull { folderGridItemWrapper ->
                 folderGridItemWrapper.folderGridItem.id == folderGridItemId.id
             }?.let { folderGridItemWrapper ->
-                PopupFolderGridItem(
-                    folderGridItemId = folderGridItemId,
+                FolderPopup(
+                    folderPopupEntry = folderGridItemId,
                     gridItem = folderGridItemWrapper.asGridItem(
                         folderGridItemRepository = folderGridItemRepository,
                         maxFolderColumns = userData.homeSettings.maxFolderColumns,

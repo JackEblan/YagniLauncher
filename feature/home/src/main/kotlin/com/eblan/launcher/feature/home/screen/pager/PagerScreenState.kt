@@ -305,9 +305,6 @@ internal class PagerScreenState(
 
     val appWidgetScreenOffsetY = Animatable(screenHeight.toFloat())
 
-    var isCloseFolder by mutableStateOf(false)
-        private set
-
     var isCloseGridItemPopup by mutableStateOf(false)
         private set
 
@@ -778,22 +775,6 @@ internal class PagerScreenState(
 
             dismissSettingsPopup()
         }
-    }
-
-    fun moveFolderGridItemOutsideFolder(
-        moveGridItemResult: MoveGridItemResult?,
-        onMoveFolderGridItemOutsideFolder: (GridItem) -> Unit,
-    ) {
-        val movingGridItem = moveGridItemResult?.movingGridItem ?: return
-
-        isCloseFolder = false
-
-        sharedElementKey = SharedElementKey(
-            id = movingGridItem.id,
-            parent = SharedElementKey.Parent.Grid,
-        )
-
-        onMoveFolderGridItemOutsideFolder(movingGridItem)
     }
 
     fun updateOverlayBounds(
@@ -1273,10 +1254,6 @@ internal class PagerScreenState(
                 }
             }
         }
-    }
-
-    fun updateIsCloseFolder(value: Boolean) {
-        isCloseFolder = value
     }
 
     fun updateIsCloseGridItemPopup(value: Boolean) {

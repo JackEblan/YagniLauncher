@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import com.eblan.launcher.domain.model.FolderPopupEntry
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.MoveGridItemResult
@@ -172,7 +173,7 @@ internal suspend fun handleDragFolderGridItem(
     layoutDirection: LayoutDirection,
     folderCellWidth: Int,
     folderCellHeight: Int,
-    isLast: Boolean,
+    folderPopupEntry: FolderPopupEntry,
     onMoveFolderGridItem: (
         conflictingGridItem: GridItem,
         movingFolderGridItem: GridItem,
@@ -186,7 +187,7 @@ internal suspend fun handleDragFolderGridItem(
         currentPage: Int,
     ) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onUpdateIsCloseFolder: (Boolean) -> Unit,
+    onUpsertFolderPopupEntry: (FolderPopupEntry) -> Unit,
 ) {
     if (drag != Drag.Dragging ||
         isScrollInProgress ||
@@ -194,7 +195,6 @@ internal suspend fun handleDragFolderGridItem(
         !isDragging ||
         lockMovement ||
         moveGridItemResult == null ||
-        !isLast ||
         folderGridItem == null
     ) {
         return
@@ -305,6 +305,6 @@ internal suspend fun handleDragFolderGridItem(
             currentPage,
         )
     } else {
-        onUpdateIsCloseFolder(true)
+        onUpsertFolderPopupEntry(folderPopupEntry.copy(isCloseFolder = true))
     }
 }

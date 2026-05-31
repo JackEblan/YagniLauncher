@@ -17,10 +17,11 @@
  */
 package com.eblan.launcher.domain.model
 
-data class FolderGridItemId(
+data class FolderPopupEntry(
     val id: String,
     val x: Int,
     val y: Int,
     val width: Int,
     val height: Int,
+    val isCloseFolder: Boolean,
 )

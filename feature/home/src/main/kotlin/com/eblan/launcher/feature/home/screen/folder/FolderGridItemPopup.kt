@@ -57,7 +57,7 @@ import com.eblan.launcher.domain.model.EblanAppWidgetProviderInfo
 import com.eblan.launcher.domain.model.EblanApplicationInfoGroup
 import com.eblan.launcher.domain.model.EblanShortcutInfo
 import com.eblan.launcher.domain.model.EblanShortcutInfoByGroup
-import com.eblan.launcher.domain.model.FolderGridItemId
+import com.eblan.launcher.domain.model.FolderPopupEntry
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.GridItemSettings
@@ -80,10 +80,10 @@ internal fun FolderGridItemPopup(
     isVisibleOverlay: Boolean,
     paddingValues: PaddingValues,
     isCloseFolderGridItemPopup: Boolean,
-    lastFolderGridItemId: FolderGridItemId,
+    lastFolderPopupEntry: FolderPopupEntry,
     onDeleteGridItem: (GridItem) -> Unit,
-    onDeleteFolderGridItemId: (FolderGridItemId) -> Unit,
-    onUpdateIsCloseFolder: (Boolean) -> Unit,
+    onUpsertFolderPopupEntry: (FolderPopupEntry) -> Unit,
+    onDeleteFolderPopupEntry: (FolderPopupEntry) -> Unit,
     onDismissRequest: () -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
     onEdit: (String) -> Unit,
@@ -192,9 +192,9 @@ internal fun FolderGridItemPopup(
                     transitionState.targetState = false
                 },
                 onDismissFolder = {
-                    onUpdateIsCloseFolder(false)
+                    onUpsertFolderPopupEntry(lastFolderPopupEntry.copy(isCloseFolder = true))
 
-                    onDeleteFolderGridItemId(lastFolderGridItemId)
+                    onDeleteFolderPopupEntry(lastFolderPopupEntry)
 
                     transitionState.targetState = false
                 },

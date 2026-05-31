@@ -32,7 +32,7 @@ import com.eblan.launcher.domain.grid.getWidgetGridItemSize
 import com.eblan.launcher.domain.grid.getWidgetGridItemSpan
 import com.eblan.launcher.domain.grid.isGridItemSpanWithinBounds
 import com.eblan.launcher.domain.model.Associate
-import com.eblan.launcher.domain.model.FolderGridItemId
+import com.eblan.launcher.domain.model.FolderPopupEntry
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.MoveGridItemResult
@@ -429,7 +429,7 @@ internal suspend fun handleConflictingGridItem(
     intSize: IntSize,
     gridItem: GridItem,
     onShowFolderWhenDragging: (
-        folderGridItemId: FolderGridItemId,
+        folderPopupEntry: FolderPopupEntry,
         movingGridItem: GridItem,
     ) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
@@ -486,12 +486,13 @@ internal suspend fun handleConflictingGridItem(
     )
 
     onShowFolderWhenDragging(
-        FolderGridItemId(
+        FolderPopupEntry(
             id = conflictingGridItem.id,
             x = intOffset.x,
             y = intOffset.y,
             width = intSize.width,
             height = intSize.height,
+            isCloseFolder = false,
         ),
         movingFolderGridItem,
     )

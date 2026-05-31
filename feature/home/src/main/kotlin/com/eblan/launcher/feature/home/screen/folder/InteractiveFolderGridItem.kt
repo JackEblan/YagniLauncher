@@ -67,7 +67,7 @@ import coil3.request.ImageRequest.Builder
 import coil3.request.addLastModifiedToFileCacheKey
 import coil3.size.Size
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
-import com.eblan.launcher.domain.model.FolderGridItemId
+import com.eblan.launcher.domain.model.FolderPopupEntry
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.GridItemSettings
@@ -129,7 +129,7 @@ internal fun SharedTransitionScope.InteractiveFolderGridItem(
     onUpdateIsCloseFolderGridItemPopup: (Boolean) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
-    onUpdateFolderGridItemId: (FolderGridItemId) -> Unit,
+    onUpsertFolderPopupEntry: (FolderPopupEntry) -> Unit,
 ) {
     val isSelected =
         moveGridItemResult != null && moveGridItemResult.movingGridItem.id == gridItem.id
@@ -244,7 +244,7 @@ internal fun SharedTransitionScope.InteractiveFolderGridItem(
                 onUpdateIsCloseFolderGridItemPopup = onUpdateIsCloseFolderGridItemPopup,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
-                onUpdateFolderGridItemId = onUpdateFolderGridItemId,
+                onUpsertFolderPopupEntry = onUpsertFolderPopupEntry,
                 onUpdateImageBitmap = onUpdateImageBitmap,
                 onUpdateIsDragging = onUpdateIsDragging,
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
@@ -974,7 +974,7 @@ private fun SharedTransitionScope.InteractiveNestedFolderGridItem(
         intOffset: IntOffset,
         intSize: IntSize,
     ) -> Unit,
-    onUpdateFolderGridItemId: (FolderGridItemId) -> Unit,
+    onUpsertFolderPopupEntry: (FolderPopupEntry) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
@@ -1074,13 +1074,14 @@ private fun SharedTransitionScope.InteractiveNestedFolderGridItem(
 
                                 scale.animateTo(1f)
 
-                                onUpdateFolderGridItemId(
-                                    FolderGridItemId(
-                                        gridItem.id,
-                                        intOffset.x,
-                                        intOffset.y,
-                                        intSize.width,
-                                        intSize.height,
+                                onUpsertFolderPopupEntry(
+                                    FolderPopupEntry(
+                                        id = gridItem.id,
+                                        x = intOffset.x,
+                                        y = intOffset.y,
+                                        width = intSize.width,
+                                        height = intSize.height,
+                                        isCloseFolder = false,
                                     ),
                                 )
                             }

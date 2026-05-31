@@ -17,8 +17,8 @@
  */
 package com.eblan.launcher.domain.model
 
-data class PopupFolderGridItem(
-    val folderGridItemId: FolderGridItemId,
+data class FolderPopup(
+    val folderPopupEntry: FolderPopupEntry,
     val gridItem: GridItem,
     val x: Int,
     val y: Int,
