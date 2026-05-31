@@ -35,27 +35,23 @@ class GetFolderGridItemsByIdUseCase @Inject constructor(
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) {
     operator fun invoke(
-        folderGridItemIdsFlow: Flow<List<FolderPopupEntry>>,
+        folderPopupEntriesFlow: Flow<List<FolderPopupEntry>>,
     ): Flow<List<FolderPopup>> = combine(
         userDataRepository.userDataFlow,
-        folderGridItemIdsFlow,
+        folderPopupEntriesFlow,
         folderGridItemRepository.folderGridItemWrappersWithFolderIdFlow,
-    ) { userData, folderGridItemIds, folderGridItemWrappers ->
-        folderGridItemIds.mapNotNull { folderGridItemId ->
+    ) { userData, folderPopupEntries, folderGridItemWrappers ->
+        folderPopupEntries.mapNotNull { folderPopupEntry ->
             folderGridItemWrappers.firstOrNull { folderGridItemWrapper ->
-                folderGridItemWrapper.folderGridItem.id == folderGridItemId.id
+                folderGridItemWrapper.folderGridItem.id == folderPopupEntry.id
             }?.let { folderGridItemWrapper ->
                 FolderPopup(
-                    folderPopupEntry = folderGridItemId,
+                    folderPopupEntry = folderPopupEntry,
                     gridItem = folderGridItemWrapper.asGridItem(
                         folderGridItemRepository = folderGridItemRepository,
                         maxFolderColumns = userData.homeSettings.maxFolderColumns,
                         maxFolderRows = userData.homeSettings.maxFolderRows,
                     ),
-                    x = folderGridItemId.x,
-                    y = folderGridItemId.y,
-                    width = folderGridItemId.width,
-                    height = folderGridItemId.height,
                 )
             }
         }

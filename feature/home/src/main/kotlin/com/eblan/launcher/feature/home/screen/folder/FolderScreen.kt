@@ -85,10 +85,6 @@ internal fun SharedTransitionScope.FolderScreen(
     modifier: Modifier = Modifier,
     drag: Drag,
     folderPopup: FolderPopup,
-    x: Int,
-    y: Int,
-    width: Int,
-    height: Int,
     gridItemSettings: GridItemSettings,
     iconPackFilePaths: Map<String, String>,
     paddingValues: PaddingValues,
@@ -142,9 +138,15 @@ internal fun SharedTransitionScope.FolderScreen(
     onDragEndAfterMoveFolder: () -> Unit,
     onUpsertFolderPopupEntry: (FolderPopupEntry) -> Unit,
 ) {
-    val folderPopupIntOffset = IntOffset(x = x, y = y)
+    val folderPopupIntOffset = IntOffset(
+        x = folderPopup.folderPopupEntry.x,
+        y = folderPopup.folderPopupEntry.y,
+    )
 
-    val folderPopupIntSize = IntSize(width = width, height = height)
+    val folderPopupIntSize = IntSize(
+        width = folderPopup.folderPopupEntry.width,
+        height = folderPopup.folderPopupEntry.height,
+    )
 
     val folderGridItem = folderPopup.gridItem
 
@@ -188,16 +190,16 @@ internal fun SharedTransitionScope.FolderScreen(
     val endHeight = folderGridHeightPx + folderTitleHeightPx
 
     val maximumX = (
-        safeDrawingWidth -
-            folderGridWidthPx +
-            leftPadding
-        ).coerceAtLeast(leftPadding)
+            safeDrawingWidth -
+                    folderGridWidthPx +
+                    leftPadding
+            ).coerceAtLeast(leftPadding)
 
     val maximumY = (
-        safeDrawingHeight -
-            endHeight +
-            topPadding
-        ).coerceAtLeast(topPadding)
+            safeDrawingHeight -
+                    endHeight +
+                    topPadding
+            ).coerceAtLeast(topPadding)
 
     val endIntOffset = IntOffset(
         x = folderPopupIntOffset.x.coerceIn(

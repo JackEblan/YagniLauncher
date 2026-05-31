@@ -206,7 +206,7 @@ internal class HomeViewModel @Inject constructor(
     private val _folderPopupEntries = MutableStateFlow<List<FolderPopupEntry>>(emptyList())
 
     val folderPopups = getFolderGridItemsByIdUseCase(
-        folderGridItemIdsFlow = _folderPopupEntries,
+        folderPopupEntriesFlow = _folderPopupEntries,
     ).stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
@@ -551,12 +551,10 @@ internal class HomeViewModel @Inject constructor(
     }
 
     fun upsertFolderPopupEntry(folderPopupEntry: FolderPopupEntry) {
-        viewModelScope.launch {
-            _folderPopupEntries.update { currentFolderPopups ->
-                currentFolderPopups
-                    .filterNot { it.id == folderPopupEntry.id }
-                    .plus(folderPopupEntry)
-            }
+        _folderPopupEntries.update { currentFolderPopupEntries ->
+            currentFolderPopupEntries
+                .filterNot { it.id == folderPopupEntry.id }
+                .plus(folderPopupEntry)
         }
     }
 

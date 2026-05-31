@@ -438,7 +438,6 @@ internal fun PagerScreen(
 
     LaunchedEffect(
         pagerScreenState.drag,
-        gridItemSource,
         isVisibleOverlay,
         gridItemSource,
         moveGridItemResult,
@@ -970,10 +969,6 @@ internal fun PagerScreen(
             FolderScreen(
                 drag = pagerScreenState.drag,
                 folderPopup = popupFolderGridItem,
-                x = popupFolderGridItem.x,
-                y = popupFolderGridItem.y,
-                width = popupFolderGridItem.width,
-                height = popupFolderGridItem.height,
                 gridItemSettings = homeSettings.gridItemSettings,
                 iconPackFilePaths = iconPackFilePaths,
                 paddingValues = paddingValues,
@@ -1038,10 +1033,10 @@ internal fun PagerScreen(
                 onEdit = onEditGridItem,
                 onInfo = { serialNumber, componentName ->
                     pagerScreenState.startAppDetailsActivity(
-                        left = lastPopupFolderGridItem.x,
-                        top = lastPopupFolderGridItem.y,
-                        width = lastPopupFolderGridItem.width,
-                        height = lastPopupFolderGridItem.height,
+                        left = lastPopupFolderGridItem.folderPopupEntry.x,
+                        top = lastPopupFolderGridItem.folderPopupEntry.y,
+                        width = lastPopupFolderGridItem.folderPopupEntry.width,
+                        height = lastPopupFolderGridItem.folderPopupEntry.height,
                         serialNumber = serialNumber,
                         componentName = componentName,
                     )
