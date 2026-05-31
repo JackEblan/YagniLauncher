@@ -118,10 +118,7 @@ internal fun SharedTransitionScope.InteractiveGridItem(
         serialNumber: Long,
         componentName: String,
     ) -> Unit,
-    onTapFolderGridItem: (
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) -> Unit,
+    onUpdateFolderGridItemId: (FolderGridItemId) -> Unit,
     onTapShortcutConfig: (String) -> Unit,
     onTapShortcutInfo: (
         serialNumber: Long,
@@ -146,10 +143,6 @@ internal fun SharedTransitionScope.InteractiveGridItem(
     onShowFolderWhenDragging: (
         folderGridItemId: FolderGridItemId,
         movingGridItem: GridItem,
-    ) -> Unit,
-    onUpdateFolderPopupBounds: (
-        intOffset: IntOffset,
-        intSize: IntSize,
     ) -> Unit,
 ) {
     val isSelected =
@@ -287,7 +280,7 @@ internal fun SharedTransitionScope.InteractiveGridItem(
                 onUpdateIsCloseGridItemPopup = onUpdateIsCloseGridItemPopup,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
-                onTap = onTapFolderGridItem,
+                onUpdateFolderGridItemId = onUpdateFolderGridItemId,
                 onUpdateGridItemSource = onUpdateGridItemSource,
                 onUpdateImageBitmap = onUpdateImageBitmap,
                 onUpdateIsDragging = onUpdateIsDragging,
@@ -296,7 +289,6 @@ internal fun SharedTransitionScope.InteractiveGridItem(
                 onUpdateSharedElementKey = onUpdateSharedElementKey,
                 onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                 onShowFolderWhenDragging = onShowFolderWhenDragging,
-                onUpdateFolderPopupBounds = onUpdateFolderPopupBounds,
             )
         }
 
@@ -1021,10 +1013,7 @@ private fun SharedTransitionScope.InteractiveFolderGridItem(
         intOffset: IntOffset,
         intSize: IntSize,
     ) -> Unit,
-    onTap: (
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) -> Unit,
+    onUpdateFolderGridItemId: (FolderGridItemId) -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
@@ -1038,10 +1027,6 @@ private fun SharedTransitionScope.InteractiveFolderGridItem(
     onShowFolderWhenDragging: (
         folderGridItemId: FolderGridItemId,
         movingGridItem: GridItem,
-    ) -> Unit,
-    onUpdateFolderPopupBounds: (
-        intOffset: IntOffset,
-        intSize: IntSize,
     ) -> Unit,
 ) {
     val launcherApps = LocalLauncherApps.current
@@ -1109,7 +1094,6 @@ private fun SharedTransitionScope.InteractiveFolderGridItem(
             intSize = intSize,
             gridItem = gridItem,
             onShowFolderWhenDragging = onShowFolderWhenDragging,
-            onUpdateFolderPopupBounds = onUpdateFolderPopupBounds,
             onUpdateSharedElementKey = onUpdateSharedElementKey,
         )
     }
@@ -1162,9 +1146,14 @@ private fun SharedTransitionScope.InteractiveFolderGridItem(
 
                                 scale.animateTo(1f)
 
-                                onTap(
-                                    intOffset,
-                                    intSize,
+                                onUpdateFolderGridItemId(
+                                    FolderGridItemId(
+                                        id = gridItem.id,
+                                        x = intOffset.x,
+                                        y = intOffset.y,
+                                        width = intSize.width,
+                                        height = intSize.height,
+                                    ),
                                 )
                             }
                         }

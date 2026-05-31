@@ -57,6 +57,7 @@ import com.eblan.launcher.domain.model.EblanAppWidgetProviderInfo
 import com.eblan.launcher.domain.model.EblanApplicationInfoGroup
 import com.eblan.launcher.domain.model.EblanShortcutInfo
 import com.eblan.launcher.domain.model.EblanShortcutInfoByGroup
+import com.eblan.launcher.domain.model.FolderGridItemId
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.GridItemSettings
@@ -75,12 +76,14 @@ internal fun FolderGridItemPopup(
     hasShortcutHostPermission: Boolean,
     popupIntOffset: IntOffset?,
     popupIntSize: IntSize?,
-    moveFolderGridItem: GridItem,
+    movingGridItem: GridItem,
     isVisibleOverlay: Boolean,
     paddingValues: PaddingValues,
     isCloseFolderGridItemPopup: Boolean,
+    lastFolderGridItemId: FolderGridItemId,
     onDeleteGridItem: (GridItem) -> Unit,
-    onDismissFolder: () -> Unit,
+    onDeleteFolderGridItemId: (FolderGridItemId) -> Unit,
+    onUpdateIsCloseFolder: (Boolean) -> Unit,
     onDismissRequest: () -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
     onEdit: (String) -> Unit,
@@ -180,7 +183,7 @@ internal fun FolderGridItemPopup(
                 eblanAppWidgetProviderInfosGroup = eblanAppWidgetProviderInfosGroup,
                 eblanShortcutInfosGroup = eblanShortcutInfosGroup,
                 gridItemSettings = gridItemSettings,
-                moveFolderGridItem = moveFolderGridItem,
+                movingFolderGridItem = movingGridItem,
                 hasShortcutHostPermission = hasShortcutHostPermission,
                 isVisibleOverlay = isVisibleOverlay,
                 onDeleteGridItem = {
@@ -189,7 +192,9 @@ internal fun FolderGridItemPopup(
                     transitionState.targetState = false
                 },
                 onDismissFolder = {
-                    onDismissFolder()
+                    onUpdateIsCloseFolder(true)
+
+                    onDeleteFolderGridItemId(lastFolderGridItemId)
 
                     transitionState.targetState = false
                 },
@@ -238,7 +243,7 @@ private fun FolderGridItemPopupContent(
     eblanAppWidgetProviderInfosGroup: Map<String, List<EblanAppWidgetProviderInfo>>,
     eblanShortcutInfosGroup: Map<EblanShortcutInfoByGroup, List<EblanShortcutInfo>>,
     gridItemSettings: GridItemSettings,
-    moveFolderGridItem: GridItem,
+    movingFolderGridItem: GridItem,
     hasShortcutHostPermission: Boolean,
     isVisibleOverlay: Boolean,
     onDeleteGridItem: (GridItem) -> Unit,
@@ -268,7 +273,7 @@ private fun FolderGridItemPopupContent(
         shape = RoundedCornerShape(30.dp),
         shadowElevation = 2.dp,
         content = {
-            when (val data = moveFolderGridItem.data) {
+            when (val data = movingFolderGridItem.data) {
                 is GridItemData.ApplicationInfo -> {
                     ApplicationInfoFolderGridItemPopupContent(
                         modifier = modifier,
@@ -291,12 +296,12 @@ private fun FolderGridItemPopupContent(
                             onDismissFolder()
                         },
                         onDelete = {
-                            onDeleteGridItem(moveFolderGridItem)
+                            onDeleteGridItem(movingFolderGridItem)
 
                             onDismissRequest()
                         },
                         onEdit = {
-                            onEdit(moveFolderGridItem.id)
+                            onEdit(movingFolderGridItem.id)
 
                             onDismissRequest()
                         },
@@ -347,12 +352,12 @@ private fun FolderGridItemPopupContent(
                 -> {
                     FolderGridItemMenu(
                         onDelete = {
-                            onDeleteGridItem(moveFolderGridItem)
+                            onDeleteGridItem(movingFolderGridItem)
 
                             onDismissRequest()
                         },
                         onEdit = {
-                            onEdit(moveFolderGridItem.id)
+                            onEdit(movingFolderGridItem.id)
 
                             onDismissRequest()
                         },
@@ -404,9 +409,7 @@ private fun ApplicationInfoFolderGridItemPopupContent(
                 modifier = modifier,
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                if (hasShortcutHostPermission &&
-                    !eblanShortcutInfosByPackageName.isNullOrEmpty()
-                ) {
+                if (hasShortcutHostPermission && !eblanShortcutInfosByPackageName.isNullOrEmpty()) {
                     ShortcutInfoMenu(
                         modifier = modifier,
                         eblanShortcutInfosGroup = eblanShortcutInfosByPackageName,

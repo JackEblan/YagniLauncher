@@ -432,10 +432,6 @@ internal suspend fun handleConflictingGridItem(
         folderGridItemId: FolderGridItemId,
         movingGridItem: GridItem,
     ) -> Unit,
-    onUpdateFolderPopupBounds: (
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
 ) {
     val conflictingGridItem = moveGridItemResult?.conflictingGridItem ?: return
@@ -481,11 +477,6 @@ internal suspend fun handleConflictingGridItem(
     }
 
     val movingFolderGridItem = movingGridItem.copy(data = movingData)
-
-    onUpdateFolderPopupBounds(
-        intOffset,
-        intSize,
-    )
 
     onUpdateSharedElementKey(
         SharedElementKey(

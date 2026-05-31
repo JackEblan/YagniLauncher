@@ -726,14 +726,7 @@ internal fun PagerScreen(
                                     ),
                                 )
                             },
-                            onTapFolderGridItem = { intOffset, intSize ->
-                                pagerScreenState.showFolder(
-                                    id = gridItem.id,
-                                    intOffset = intOffset,
-                                    intSize = intSize,
-                                    onUpdateFolderGridItemId = onUpdateFolderGridItemId,
-                                )
-                            },
+                            onUpdateFolderGridItemId = onUpdateFolderGridItemId,
                             onTapShortcutConfig = { uri ->
                                 context.startActivity(parseUri(uri, 0))
                             },
@@ -766,7 +759,6 @@ internal fun PagerScreen(
                             onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                             onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                             onShowFolderWhenDragging = onShowFolderWhenDragging,
-                            onUpdateFolderPopupBounds = pagerScreenState::updateFolderPopupBounds,
                         )
                     },
                 )
@@ -857,14 +849,7 @@ internal fun PagerScreen(
                                     ),
                                 )
                             },
-                            onTapFolderGridItem = { intOffset, intSize ->
-                                pagerScreenState.showFolder(
-                                    id = gridItem.id,
-                                    intOffset = intOffset,
-                                    intSize = intSize,
-                                    onUpdateFolderGridItemId = onUpdateFolderGridItemId,
-                                )
-                            },
+                            onUpdateFolderGridItemId = onUpdateFolderGridItemId,
                             onTapShortcutConfig = { uri ->
                                 context.startActivity(parseUri(uri, 0))
                             },
@@ -897,7 +882,6 @@ internal fun PagerScreen(
                             onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                             onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                             onShowFolderWhenDragging = onShowFolderWhenDragging,
-                            onUpdateFolderPopupBounds = pagerScreenState::updateFolderPopupBounds,
                         )
                     },
                 )
@@ -985,7 +969,7 @@ internal fun PagerScreen(
         popupFolderGridItems.forEach { popupFolderGridItem ->
             FolderScreen(
                 drag = pagerScreenState.drag,
-                folderGridItem = popupFolderGridItem.gridItem,
+                popupFolderGridItem = popupFolderGridItem,
                 x = popupFolderGridItem.x,
                 y = popupFolderGridItem.y,
                 width = popupFolderGridItem.width,
@@ -1009,13 +993,8 @@ internal fun PagerScreen(
                 folderCellHeight = homeSettings.folderCellHeight,
                 screenWidth = screenWidth,
                 screenHeight = screenHeight,
-                lastFolderGridItem = lastPopupFolderGridItem?.gridItem,
-                onDismissRequest = {
-                    pagerScreenState.dismissFolder(
-                        folderGridItemId = popupFolderGridItem.folderGridItemId,
-                        onDeleteFolderGridItemId = onDeleteFolderGridItemId,
-                    )
-                },
+                lastPopupFolderGridItem = lastPopupFolderGridItem,
+                onDeleteFolderGridItemId = onDeleteFolderGridItemId,
                 onMoveFolderGridItemOutsideFolder = {
                     pagerScreenState.moveFolderGridItemOutsideFolder(
                         moveGridItemResult = moveGridItemResult,
@@ -1032,14 +1011,7 @@ internal fun PagerScreen(
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                 onUpdateIsCloseFolder = pagerScreenState::updateIsCloseFolder,
                 onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
-                onTapNestedFolderGridItem = { id, intOffset, intSize ->
-                    pagerScreenState.showFolder(
-                        id = id,
-                        intOffset = intOffset,
-                        intSize = intSize,
-                        onUpdateFolderGridItemId = onUpdateFolderGridItemId,
-                    )
-                },
+                onUpdateFolderGridItemId = onUpdateFolderGridItemId,
                 onMoveFolderGridItem = onMoveFolderGridItem,
                 onDismissFolderGridItemPopup = pagerScreenState::dismissFolderGridItemPopup,
                 onDragCancelAfterMoveFolder = onDragCancelAfterMove,
@@ -1048,7 +1020,6 @@ internal fun PagerScreen(
         }
 
         if (lastPopupFolderGridItem != null &&
-            gridItemSource != null &&
             pagerScreenState.showFolderGridItemPopup &&
             pagerScreenState.popupIntOffset != null &&
             pagerScreenState.popupIntSize != null &&
@@ -1061,17 +1032,14 @@ internal fun PagerScreen(
                 hasShortcutHostPermission = hasShortcutHostPermission,
                 popupIntOffset = pagerScreenState.popupIntOffset,
                 popupIntSize = pagerScreenState.popupIntSize,
-                moveFolderGridItem = moveGridItemResult.movingGridItem,
+                movingGridItem = moveGridItemResult.movingGridItem,
                 isVisibleOverlay = isVisibleOverlay,
                 paddingValues = paddingValues,
                 isCloseFolderGridItemPopup = pagerScreenState.isCloseFolderGridItemPopup,
+                lastFolderGridItemId = lastPopupFolderGridItem.folderGridItemId,
                 onDeleteGridItem = onDeleteGridItem,
-                onDismissFolder = {
-                    pagerScreenState.dismissFolder(
-                        folderGridItemId = lastPopupFolderGridItem.folderGridItemId,
-                        onDeleteFolderGridItemId = onDeleteFolderGridItemId,
-                    )
-                },
+                onDeleteFolderGridItemId = onDeleteFolderGridItemId,
+                onUpdateIsCloseFolder = pagerScreenState::updateIsCloseFolder,
                 onDismissRequest = pagerScreenState::dismissFolderGridItemPopup,
                 onUpdateIsDragging = pagerScreenState::updateIsDragging,
                 onEdit = onEditGridItem,

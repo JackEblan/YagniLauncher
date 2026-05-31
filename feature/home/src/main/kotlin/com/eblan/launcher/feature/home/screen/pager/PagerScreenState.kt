@@ -67,7 +67,6 @@ import com.eblan.launcher.domain.model.EblanAction
 import com.eblan.launcher.domain.model.EblanActionType
 import com.eblan.launcher.domain.model.EblanApplicationInfoGroup
 import com.eblan.launcher.domain.model.ExperimentalSettings
-import com.eblan.launcher.domain.model.FolderGridItemId
 import com.eblan.launcher.domain.model.GestureSettings
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.HomeSettings
@@ -110,10 +109,6 @@ import kotlin.math.roundToInt
 internal class PagerScreenState(
     initialSwipeUpY: Float,
     initialSwipeDownY: Float,
-    initialFolderX: Int,
-    initialFolderY: Int,
-    initialFolderWidth: Int,
-    initialFolderHeight: Int,
     private val screenWidth: Int,
     private val screenHeight: Int,
     private val fileManager: FileManager,
@@ -137,14 +132,6 @@ internal class PagerScreenState(
     private var lastSwipeUpY by mutableFloatStateOf(initialSwipeUpY)
 
     private var lastSwipeDownY by mutableFloatStateOf(initialSwipeDownY)
-
-    private var lastFolderPopupX by mutableIntStateOf(initialFolderX)
-
-    private var lastFolderPopupY by mutableIntStateOf(initialFolderY)
-
-    private var lastFolderPopupWidth by mutableIntStateOf(initialFolderWidth)
-
-    private var lastFolderPopupHeight by mutableIntStateOf(initialFolderHeight)
 
     var hasDoubleTap by mutableStateOf(false)
         private set
@@ -793,44 +780,6 @@ internal class PagerScreenState(
         }
     }
 
-    fun showFolder(
-        id: String,
-        intOffset: IntOffset,
-        intSize: IntSize,
-        onUpdateFolderGridItemId: (FolderGridItemId) -> Unit,
-    ) {
-        lastFolderPopupX = intOffset.x
-        lastFolderPopupY = intOffset.y
-
-        lastFolderPopupWidth = intSize.width
-        lastFolderPopupHeight = intSize.height
-
-        onUpdateFolderGridItemId(
-            FolderGridItemId(
-                id = id,
-                x = lastFolderPopupX,
-                y = lastFolderPopupY,
-                width = lastFolderPopupWidth,
-                height = lastFolderPopupHeight,
-            ),
-        )
-    }
-
-    fun dismissFolder(
-        folderGridItemId: FolderGridItemId,
-        onDeleteFolderGridItemId: (FolderGridItemId) -> Unit,
-    ) {
-        lastFolderPopupX = 0
-        lastFolderPopupY = 0
-
-        lastFolderPopupWidth = 0
-        lastFolderPopupHeight = 0
-
-        isCloseFolder = false
-
-        onDeleteFolderGridItemId(folderGridItemId)
-    }
-
     fun moveFolderGridItemOutsideFolder(
         moveGridItemResult: MoveGridItemResult?,
         onMoveFolderGridItemOutsideFolder: (GridItem) -> Unit,
@@ -1375,17 +1324,6 @@ internal class PagerScreenState(
         }
     }
 
-    fun updateFolderPopupBounds(
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) {
-        lastFolderPopupX = intOffset.x
-        lastFolderPopupY = intOffset.y
-
-        lastFolderPopupWidth = intSize.width
-        lastFolderPopupHeight = intSize.height
-    }
-
     private fun handleApplyFling(
         offsetY: Animatable<Float, AnimationVector1D>,
         remaining: Float,
@@ -1441,20 +1379,12 @@ internal class PagerScreenState(
                 listOf(
                     it.lastSwipeUpY,
                     it.lastSwipeDownY,
-                    it.lastFolderPopupX,
-                    it.lastFolderPopupY,
-                    it.lastFolderPopupWidth,
-                    it.lastFolderPopupHeight,
                 )
             },
             restore = { saved ->
                 PagerScreenState(
-                    initialSwipeUpY = saved[0] as Float,
-                    initialSwipeDownY = saved[1] as Float,
-                    initialFolderX = saved[2] as Int,
-                    initialFolderY = saved[3] as Int,
-                    initialFolderWidth = saved[4] as Int,
-                    initialFolderHeight = saved[5] as Int,
+                    initialSwipeUpY = saved[0],
+                    initialSwipeDownY = saved[1],
                     screenWidth = screenWidth,
                     screenHeight = screenHeight,
                     fileManager = fileManager,
@@ -1540,10 +1470,6 @@ internal fun rememberPagerScreenState(
         PagerScreenState(
             initialSwipeUpY = screenHeight.toFloat(),
             initialSwipeDownY = screenHeight.toFloat(),
-            initialFolderX = 0,
-            initialFolderY = 0,
-            initialFolderWidth = 0,
-            initialFolderHeight = 0,
             screenWidth = screenWidth,
             screenHeight = screenHeight,
             fileManager = fileManager,

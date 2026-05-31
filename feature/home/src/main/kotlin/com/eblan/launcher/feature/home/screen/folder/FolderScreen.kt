@@ -61,11 +61,13 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
+import com.eblan.launcher.domain.model.FolderGridItemId
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.GridItemSettings
 import com.eblan.launcher.domain.model.HomeSettings
 import com.eblan.launcher.domain.model.MoveGridItemResult
+import com.eblan.launcher.domain.model.PopupFolderGridItem
 import com.eblan.launcher.feature.home.component.FolderGridLayout
 import com.eblan.launcher.feature.home.component.PageIndicator
 import com.eblan.launcher.feature.home.model.Drag
@@ -82,7 +84,7 @@ import kotlin.math.roundToInt
 internal fun SharedTransitionScope.FolderScreen(
     modifier: Modifier = Modifier,
     drag: Drag,
-    folderGridItem: GridItem,
+    popupFolderGridItem: PopupFolderGridItem,
     x: Int,
     y: Int,
     width: Int,
@@ -106,8 +108,8 @@ internal fun SharedTransitionScope.FolderScreen(
     folderCellHeight: Int,
     screenHeight: Int,
     screenWidth: Int,
-    lastFolderGridItem: GridItem?,
-    onDismissRequest: () -> Unit,
+    lastPopupFolderGridItem: PopupFolderGridItem?,
+    onDeleteFolderGridItemId: (FolderGridItemId) -> Unit,
     onMoveFolderGridItemOutsideFolder: () -> Unit,
     onOpenAppDrawer: () -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
@@ -125,11 +127,6 @@ internal fun SharedTransitionScope.FolderScreen(
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateIsCloseFolder: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
-    onTapNestedFolderGridItem: (
-        id: String,
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) -> Unit,
     onMoveFolderGridItem: (
         conflictingGridItem: GridItem,
         movingFolderGridItem: GridItem,
@@ -145,10 +142,13 @@ internal fun SharedTransitionScope.FolderScreen(
     onDismissFolderGridItemPopup: () -> Unit,
     onDragCancelAfterMoveFolder: () -> Unit,
     onDragEndAfterMoveFolder: () -> Unit,
+    onUpdateFolderGridItemId: (FolderGridItemId) -> Unit,
 ) {
     val folderPopupIntOffset = IntOffset(x = x, y = y)
 
     val folderPopupIntSize = IntSize(width = width, height = height)
+
+    val folderGridItem = popupFolderGridItem.gridItem
 
     val data = folderGridItem.data as GridItemData.Folder
 
@@ -271,13 +271,13 @@ internal fun SharedTransitionScope.FolderScreen(
 
     var pageDirection by remember { mutableStateOf<PageDirection?>(null) }
 
-    val isLast = lastFolderGridItem == folderGridItem
+    val isLastFolderGridItem = lastPopupFolderGridItem?.gridItem == folderGridItem
 
     LaunchedEffect(key1 = Unit) {
         progress.animateTo(targetValue = 1f)
     }
 
-    BackHandler(enabled = !isCloseFolder && isLast) {
+    BackHandler(enabled = !isCloseFolder && isLastFolderGridItem) {
         onUpdateIsCloseFolder(true)
     }
 
@@ -287,9 +287,9 @@ internal fun SharedTransitionScope.FolderScreen(
         isDragging,
         isVisibleOverlay,
         moveGridItemResult,
-        isLast,
+        isLastFolderGridItem,
     ) {
-        if (isCloseFolder && isLast) {
+        if (isCloseFolder && isLastFolderGridItem) {
             folderGridHorizontalPagerState.animateScrollToPage(0)
 
             progress.animateTo(targetValue = 0f)
@@ -301,7 +301,9 @@ internal fun SharedTransitionScope.FolderScreen(
             ) {
                 onMoveFolderGridItemOutsideFolder()
             } else {
-                onDismissRequest()
+                onUpdateIsCloseFolder(true)
+
+                onDeleteFolderGridItemId(popupFolderGridItem.folderGridItemId)
             }
         }
     }
@@ -314,7 +316,7 @@ internal fun SharedTransitionScope.FolderScreen(
         isVisibleOverlay,
         lockMovement,
         moveGridItemResult,
-        isLast,
+        isLastFolderGridItem,
     ) {
         handleDragFolderGridItem(
             density = density,
@@ -337,7 +339,7 @@ internal fun SharedTransitionScope.FolderScreen(
             onMoveFolderGridItem = onMoveFolderGridItem,
             onUpdateSharedElementKey = onUpdateSharedElementKey,
             onUpdateIsCloseFolder = onUpdateIsCloseFolder,
-            isLast = isLast,
+            isLast = isLastFolderGridItem,
         )
     }
 
@@ -345,14 +347,14 @@ internal fun SharedTransitionScope.FolderScreen(
         drag,
         isDragging,
         isVisibleOverlay,
-        isLast,
+        isLastFolderGridItem,
     ) {
         handleDropFolderGridItem(
             drag = drag,
             isDragging = isDragging,
             lockMovement = lockMovement,
             isVisibleOverlay = isVisibleOverlay,
-            isLast = isLast,
+            isLast = isLastFolderGridItem,
             onDragCancelAfterMoveFolder = onDragCancelAfterMoveFolder,
             onDragEndAfterMoveFolder = onDragEndAfterMoveFolder,
             onUpdateIsDragging = onUpdateIsDragging,
@@ -380,7 +382,7 @@ internal fun SharedTransitionScope.FolderScreen(
         dragIntOffset,
         folderGridItem,
         isDragging,
-        isLast,
+        isLastFolderGridItem,
     ) {
         handleAnimateScrollToPage(
             density = density,
@@ -396,7 +398,7 @@ internal fun SharedTransitionScope.FolderScreen(
             screenWidth = screenWidth,
             layoutDirection = layoutDirection,
             folderCellWidth = folderCellWidth,
-            isLast = isLast,
+            isLast = isLastFolderGridItem,
             onUpdateFolderPageDirection = {
                 pageDirection = it
             },
@@ -517,7 +519,7 @@ internal fun SharedTransitionScope.FolderScreen(
                                 onUpdateIsCloseFolderGridItemPopup = onUpdateIsCloseFolderGridItemPopup,
                                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                                 onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
-                                onTapNestedFolderGridItem = onTapNestedFolderGridItem,
+                                onUpdateFolderGridItemId = onUpdateFolderGridItemId,
                             )
                         },
                     )
