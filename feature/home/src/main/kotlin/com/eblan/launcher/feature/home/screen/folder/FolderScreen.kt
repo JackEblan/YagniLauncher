@@ -190,16 +190,16 @@ internal fun SharedTransitionScope.FolderScreen(
     val endHeight = folderGridHeightPx + folderTitleHeightPx
 
     val maximumX = (
-            safeDrawingWidth -
-                    folderGridWidthPx +
-                    leftPadding
-            ).coerceAtLeast(leftPadding)
+        safeDrawingWidth -
+            folderGridWidthPx +
+            leftPadding
+        ).coerceAtLeast(leftPadding)
 
     val maximumY = (
-            safeDrawingHeight -
-                    endHeight +
-                    topPadding
-            ).coerceAtLeast(topPadding)
+        safeDrawingHeight -
+            endHeight +
+            topPadding
+        ).coerceAtLeast(topPadding)
 
     val endIntOffset = IntOffset(
         x = folderPopupIntOffset.x.coerceIn(
