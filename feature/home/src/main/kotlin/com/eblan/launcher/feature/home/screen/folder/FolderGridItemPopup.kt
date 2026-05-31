@@ -343,6 +343,7 @@ private fun FolderGridItemPopupContent(
 
                 is GridItemData.ShortcutInfo,
                 is GridItemData.ShortcutConfig,
+                is GridItemData.Folder,
                 -> {
                     FolderGridItemMenu(
                         onDelete = {

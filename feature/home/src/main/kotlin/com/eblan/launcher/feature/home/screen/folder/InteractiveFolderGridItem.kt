@@ -253,7 +253,6 @@ internal fun SharedTransitionScope.InteractiveFolderGridItem(
                 isVisibleOverlay = isVisibleOverlay,
                 newGridItemSource = newGridItemSource,
                 sharedElementKey = sharedElementKey,
-                moveGridItemResult = moveGridItemResult,
                 isDragging = isDragging,
                 isCloseFolderGridItemPopup = isCloseFolderGridItemPopup,
                 onUpdateIsCloseFolderGridItemPopup = onUpdateIsCloseFolderGridItemPopup,
@@ -995,7 +994,6 @@ private fun SharedTransitionScope.InteractiveNestedFolderGridItem(
     isVisibleOverlay: Boolean,
     newGridItemSource: GridItemSource,
     sharedElementKey: SharedElementKey,
-    moveGridItemResult: MoveGridItemResult?,
     isDragging: Boolean,
     isCloseFolderGridItemPopup: Boolean,
     onUpdateIsCloseFolderGridItemPopup: (Boolean) -> Unit,
@@ -1194,10 +1192,6 @@ private fun SharedTransitionScope.InteractiveNestedFolderGridItem(
                             alpha = alpha,
                             gridItem = gridItem,
                             iconPackFilePaths = iconPackFilePaths,
-                            isScrollInProgress = isScrollInProgress,
-                            isVisibleOverlay = isVisibleOverlay,
-                            parent = sharedElementKey.parent,
-                            moveGridItemResult = moveGridItemResult,
                         )
                     },
                 )
@@ -1218,42 +1212,18 @@ private fun SharedTransitionScope.InteractiveNestedFolderGridItem(
 }
 
 @Composable
-private fun SharedTransitionScope.PreviewNestedFolderGridItem(
+private fun PreviewNestedFolderGridItem(
     modifier: Modifier = Modifier,
     alpha: Float,
     gridItem: GridItem,
     iconPackFilePaths: Map<String, String>,
-    isScrollInProgress: Boolean,
-    isVisibleOverlay: Boolean,
-    parent: SharedElementKey.Parent,
-    moveGridItemResult: MoveGridItemResult?,
 ) {
     val context = LocalContext.current
 
     key(gridItem.id) {
-        val isSelected =
-            moveGridItemResult != null && moveGridItemResult.movingGridItem.id == gridItem.id
-
-        val hasInteraction = isSelected && isVisibleOverlay
-
         val commonModifier = modifier
             .padding(1.dp)
             .alpha(alpha)
-            .run {
-                if (!hasInteraction) {
-                    sharedElementWithCallerManagedVisibility(
-                        rememberSharedContentState(
-                            key = SharedElementKey(
-                                id = gridItem.id,
-                                parent = parent,
-                            ),
-                        ),
-                        visible = !isScrollInProgress,
-                    )
-                } else {
-                    this
-                }
-            }
 
         when (val data = gridItem.data) {
             is GridItemData.ApplicationInfo -> {

@@ -66,7 +66,6 @@ import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.GridItemSettings
 import com.eblan.launcher.domain.model.HomeSettings
 import com.eblan.launcher.domain.model.MoveGridItemResult
-import com.eblan.launcher.domain.model.PopupFolderGridItem
 import com.eblan.launcher.feature.home.component.FolderGridLayout
 import com.eblan.launcher.feature.home.component.PageIndicator
 import com.eblan.launcher.feature.home.model.Drag
@@ -108,7 +107,7 @@ internal fun SharedTransitionScope.FolderScreen(
     folderCellHeight: Int,
     screenHeight: Int,
     screenWidth: Int,
-    popupFolderGridItems: List<PopupFolderGridItem>,
+    lastFolderGridItem: GridItem?,
     onDismissRequest: () -> Unit,
     onMoveFolderGridItemOutsideFolder: () -> Unit,
     onOpenAppDrawer: () -> Unit,
@@ -272,7 +271,7 @@ internal fun SharedTransitionScope.FolderScreen(
 
     var pageDirection by remember { mutableStateOf<PageDirection?>(null) }
 
-    val isLast = popupFolderGridItems.last() == folderGridItem
+    val isLast = lastFolderGridItem == folderGridItem
 
     LaunchedEffect(key1 = Unit) {
         progress.animateTo(targetValue = 1f)

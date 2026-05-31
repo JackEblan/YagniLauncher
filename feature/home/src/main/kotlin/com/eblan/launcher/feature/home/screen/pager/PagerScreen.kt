@@ -391,6 +391,8 @@ internal fun PagerScreen(
         }
     }
 
+    val lastPopupFolderGridItem = popupFolderGridItems.lastOrNull()
+
     LaunchedEffect(key1 = pinGridItem) {
         pagerScreenState.handlePinGridItemEffect(
             pinGridItem = pinGridItem,
@@ -604,7 +606,7 @@ internal fun PagerScreen(
             .fillMaxSize(),
     ) {
         Column(
-            modifier = modifier
+            modifier = Modifier
                 .pointerInput(key1 = pagerScreenState.drag) {
                     detectVerticalDragGestures(
                         onVerticalDrag = { _, dragAmount ->
@@ -1003,9 +1005,9 @@ internal fun PagerScreen(
                 lockMovement = lockMovement,
                 folderCellWidth = homeSettings.folderCellWidth,
                 folderCellHeight = homeSettings.folderCellHeight,
-                screenHeight = screenWidth,
-                screenWidth = screenHeight,
-                popupFolderGridItems = popupFolderGridItems,
+                screenWidth = screenWidth,
+                screenHeight = screenHeight,
+                lastFolderGridItem = lastPopupFolderGridItem?.gridItem,
                 onDismissRequest = {
                     pagerScreenState.dismissFolder(
                         folderGridItemId = popupFolderGridItem.folderGridItemId,
@@ -1040,63 +1042,63 @@ internal fun PagerScreen(
                 onMoveFolderGridItem = onMoveFolderGridItem,
                 onDismissFolderGridItemPopup = pagerScreenState::dismissFolderGridItemPopup,
             )
+        }
 
-            if (gridItemSource != null &&
-                pagerScreenState.showFolderGridItemPopup &&
-                pagerScreenState.popupIntOffset != null &&
-                pagerScreenState.popupIntSize != null &&
-                moveGridItemResult != null
-            ) {
-                FolderGridItemPopup(
-                    modifier = modifier,
-                    eblanAppWidgetProviderInfosGroup = eblanAppWidgetProviderInfosGroup,
-                    eblanShortcutInfosGroup = eblanShortcutInfosGroup,
-                    gridItemSettings = homeSettings.gridItemSettings,
-                    hasShortcutHostPermission = hasShortcutHostPermission,
-                    popupIntOffset = pagerScreenState.popupIntOffset,
-                    popupIntSize = pagerScreenState.popupIntSize,
-                    moveFolderGridItem = moveGridItemResult.movingGridItem,
-                    isVisibleOverlay = isVisibleOverlay,
-                    paddingValues = paddingValues,
-                    isCloseFolderGridItemPopup = pagerScreenState.isCloseFolderGridItemPopup,
-                    onDeleteGridItem = onDeleteGridItem,
-                    onDismissFolder = {
-                        pagerScreenState.dismissFolder(
-                            folderGridItemId = popupFolderGridItem.folderGridItemId,
-                            onDeleteFolderGridItemId = onDeleteFolderGridItemId,
-                        )
-                    },
-                    onDismissRequest = pagerScreenState::dismissFolderGridItemPopup,
-                    onUpdateIsDragging = pagerScreenState::updateIsDragging,
-                    onEdit = onEditGridItem,
-                    onInfo = { serialNumber, componentName ->
-                        pagerScreenState.startAppDetailsActivity(
-                            left = popupFolderGridItem.x,
-                            top = popupFolderGridItem.y,
-                            width = popupFolderGridItem.width,
-                            height = popupFolderGridItem.height,
-                            serialNumber = serialNumber,
-                            componentName = componentName,
-                        )
-                    },
-                    onTapShortcutInfo = { serialNumber, packageName, shortcutId ->
-                        pagerScreenState.startPopupShortcut(
-                            leftPadding = leftPadding,
-                            topPadding = topPadding,
-                            serialNumber = serialNumber,
-                            packageName = packageName,
-                            shortcutId = shortcutId,
-                        )
-                    },
-                    onUpdateGridItemSource = onUpdateGridItemSource,
-                    onUpdateImageBitmap = pagerScreenState::updateOverlayImageBitmap,
-                    onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                    onUpdateOverlayBounds = pagerScreenState::updateOverlayBounds,
-                    onUpdateSharedElementKey = pagerScreenState::updateSharedElementKey,
-                    onWidgets = pagerScreenState::openAppWidgetScreen,
-                    onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
-                )
-            }
+        if (lastPopupFolderGridItem != null &&
+            gridItemSource != null &&
+            pagerScreenState.showFolderGridItemPopup &&
+            pagerScreenState.popupIntOffset != null &&
+            pagerScreenState.popupIntSize != null &&
+            moveGridItemResult != null
+        ) {
+            FolderGridItemPopup(
+                eblanAppWidgetProviderInfosGroup = eblanAppWidgetProviderInfosGroup,
+                eblanShortcutInfosGroup = eblanShortcutInfosGroup,
+                gridItemSettings = homeSettings.gridItemSettings,
+                hasShortcutHostPermission = hasShortcutHostPermission,
+                popupIntOffset = pagerScreenState.popupIntOffset,
+                popupIntSize = pagerScreenState.popupIntSize,
+                moveFolderGridItem = moveGridItemResult.movingGridItem,
+                isVisibleOverlay = isVisibleOverlay,
+                paddingValues = paddingValues,
+                isCloseFolderGridItemPopup = pagerScreenState.isCloseFolderGridItemPopup,
+                onDeleteGridItem = onDeleteGridItem,
+                onDismissFolder = {
+                    pagerScreenState.dismissFolder(
+                        folderGridItemId = lastPopupFolderGridItem.folderGridItemId,
+                        onDeleteFolderGridItemId = onDeleteFolderGridItemId,
+                    )
+                },
+                onDismissRequest = pagerScreenState::dismissFolderGridItemPopup,
+                onUpdateIsDragging = pagerScreenState::updateIsDragging,
+                onEdit = onEditGridItem,
+                onInfo = { serialNumber, componentName ->
+                    pagerScreenState.startAppDetailsActivity(
+                        left = lastPopupFolderGridItem.x,
+                        top = lastPopupFolderGridItem.y,
+                        width = lastPopupFolderGridItem.width,
+                        height = lastPopupFolderGridItem.height,
+                        serialNumber = serialNumber,
+                        componentName = componentName,
+                    )
+                },
+                onTapShortcutInfo = { serialNumber, packageName, shortcutId ->
+                    pagerScreenState.startPopupShortcut(
+                        leftPadding = leftPadding,
+                        topPadding = topPadding,
+                        serialNumber = serialNumber,
+                        packageName = packageName,
+                        shortcutId = shortcutId,
+                    )
+                },
+                onUpdateGridItemSource = onUpdateGridItemSource,
+                onUpdateImageBitmap = pagerScreenState::updateOverlayImageBitmap,
+                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                onUpdateOverlayBounds = pagerScreenState::updateOverlayBounds,
+                onUpdateSharedElementKey = pagerScreenState::updateSharedElementKey,
+                onWidgets = pagerScreenState::openAppWidgetScreen,
+                onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+            )
         }
 
         if (gestureSettings.swipeUp.eblanActionType == EblanActionType.OpenAppDrawer ||
