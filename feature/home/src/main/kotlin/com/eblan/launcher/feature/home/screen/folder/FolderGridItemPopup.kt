@@ -192,7 +192,7 @@ internal fun FolderGridItemPopup(
                     transitionState.targetState = false
                 },
                 onDismissFolder = {
-                    onUpdateIsCloseFolder(true)
+                    onUpdateIsCloseFolder(false)
 
                     onDeleteFolderGridItemId(lastFolderGridItemId)
 
