@@ -17,7 +17,11 @@
  */
 package com.eblan.launcher.feature.home.screen.folder
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
@@ -31,6 +35,55 @@ import com.eblan.launcher.feature.home.model.PageDirection
 import com.eblan.launcher.feature.home.model.SharedElementKey
 import com.eblan.launcher.feature.home.util.PAGE_INDICATOR_HEIGHT
 import kotlinx.coroutines.delay
+
+internal suspend fun onLongPressFolderGridItem(
+    graphicsLayer: GraphicsLayer,
+    intOffset: IntOffset,
+    intSize: IntSize,
+    sharedElementKey: SharedElementKey,
+    gridItem: GridItem,
+    scale: Animatable<Float, AnimationVector1D>,
+    onUpdateImageBitmap: (ImageBitmap) -> Unit,
+    onUpdateOverlayBounds: (
+        intOffset: IntOffset,
+        intSize: IntSize,
+    ) -> Unit,
+    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
+    onShowGridItemPopup: (
+        intOffset: IntOffset,
+        intSize: IntSize,
+    ) -> Unit,
+    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
+) {
+    scale.animateTo(0.5f)
+
+    scale.animateTo(1f)
+
+    onUpdateMoveGridItemResult(
+        MoveGridItemResult(
+            isSuccess = true,
+            movingGridItem = gridItem,
+            conflictingGridItem = null,
+        ),
+    )
+
+    onUpdateImageBitmap(graphicsLayer.toImageBitmap())
+
+    onUpdateOverlayBounds(
+        intOffset,
+        intSize,
+    )
+
+    onUpdateSharedElementKey(sharedElementKey)
+
+    onUpdateIsVisibleOverlay(true)
+
+    onShowGridItemPopup(
+        intOffset,
+        intSize,
+    )
+}
 
 internal fun handleAnimateScrollToPage(
     density: Density,
@@ -108,7 +161,6 @@ internal suspend fun handleDragFolderGridItem(
     currentPage: Int,
     folderGridItem: GridItem?,
     folderPopupIntOffset: IntOffset,
-    folderPopupIntSize: IntSize,
     isDragging: Boolean,
     isVisibleOverlay: Boolean,
     isScrollInProgress: Boolean,
@@ -142,7 +194,8 @@ internal suspend fun handleDragFolderGridItem(
         !isDragging ||
         lockMovement ||
         moveGridItemResult == null ||
-        !isLast
+        !isLast ||
+        folderGridItem == null
     ) {
         return
     }
@@ -177,84 +230,24 @@ internal suspend fun handleDragFolderGridItem(
 
     val localDragY = dragIntOffset.y - topPadding
 
-    dragFolderGridItem(
-        density = density,
-        leftPadding = leftPadding,
-        topPadding = topPadding,
-        dragX = localDragX,
-        dragY = localDragY,
-        folderCurrentPage = currentPage,
-        folderGridItem = folderGridItem,
-        folderPopupIntOffset = folderPopupIntOffset,
-        folderPopupIntSize = folderPopupIntSize,
-        moveGridItemResult = moveGridItemResult,
-        safeDrawingHeight = safeDrawingHeight,
-        safeDrawingWidth = safeDrawingWidth,
-        minFolderCellWidth = folderCellWidth,
-        minFolderCellHeight = folderCellHeight,
-        onMoveFolderGridItem = onMoveFolderGridItem,
-        onUpdateSharedElementKey = onUpdateSharedElementKey,
-        onUpdateIsCloseFolder = onUpdateIsCloseFolder,
-    )
-}
-
-private fun dragFolderGridItem(
-    density: Density,
-    leftPadding: Int,
-    topPadding: Int,
-    dragX: Int,
-    dragY: Int,
-    folderCurrentPage: Int,
-    folderGridItem: GridItem?,
-    folderPopupIntOffset: IntOffset?,
-    folderPopupIntSize: IntSize?,
-    safeDrawingHeight: Int,
-    safeDrawingWidth: Int,
-    moveGridItemResult: MoveGridItemResult,
-    minFolderCellWidth: Int,
-    minFolderCellHeight: Int,
-    onMoveFolderGridItem: (
-        conflictingGridItem: GridItem,
-        movingFolderGridItem: GridItem,
-        data: GridItemData.Folder,
-        dragX: Int,
-        dragY: Int,
-        columns: Int,
-        rows: Int,
-        gridWidth: Int,
-        gridHeight: Int,
-        currentPage: Int,
-    ) -> Unit,
-    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onUpdateIsCloseFolder: (Boolean) -> Unit,
-) {
-    if (
-        folderGridItem == null ||
-        folderPopupIntOffset == null ||
-        folderPopupIntSize == null
-    ) {
-        return
-    }
-
     val data = folderGridItem.data as GridItemData.Folder
 
-    val minCellWidthPx = with(density) {
-        minFolderCellWidth.dp.roundToPx()
+    val minCellWidthPx = with(receiver = density) {
+        folderCellWidth.dp.roundToPx()
     }
 
-    val minCellHeightPx = with(density) {
-        minFolderCellHeight.dp.roundToPx()
+    val minCellHeightPx = with(receiver = density) {
+        folderCellHeight.dp.roundToPx()
     }
 
     val availableWidth = (safeDrawingWidth - leftPadding * 2).coerceAtLeast(0)
     val availableHeight = (safeDrawingHeight - topPadding * 2).coerceAtLeast(0)
 
-    val folderTitleHeightPx = with(density) {
+    val folderTitleHeightPx = with(receiver = density) {
         PAGE_INDICATOR_HEIGHT.roundToPx()
     }
 
     val folderGridWidthPx = (minCellWidthPx * data.columns).coerceAtMost(availableWidth)
-
     val folderGridHeightPx = (minCellHeightPx * data.rows).coerceAtMost(
         (availableHeight - folderTitleHeightPx).coerceAtLeast(0),
     )
@@ -265,36 +258,33 @@ private fun dragFolderGridItem(
         safeDrawingWidth -
             folderGridWidthPx +
             leftPadding
-        ).coerceAtLeast(leftPadding)
+        ).coerceAtLeast(minimumValue = leftPadding)
 
     val maximumY = (
         safeDrawingHeight -
             endHeight +
             topPadding
-        ).coerceAtLeast(topPadding)
+        ).coerceAtLeast(minimumValue = topPadding)
 
     val endIntOffset = IntOffset(
         x = folderPopupIntOffset.x.coerceIn(
-            leftPadding,
-            maximumX,
+            minimumValue = leftPadding,
+            maximumValue = maximumX,
         ),
         y = folderPopupIntOffset.y.coerceIn(
-            topPadding,
-            maximumY,
+            minimumValue = topPadding,
+            maximumValue = maximumY,
         ),
     )
 
-    val localDragX = dragX - endIntOffset.x
-
-    val localDragY = dragY - endIntOffset.y
-
-    val isInsideFolder =
-        localDragX in 0 until folderGridWidthPx &&
-            localDragY in 0 until folderGridHeightPx
-
     val movingGridItem = moveGridItemResult.movingGridItem
 
-    if (isInsideFolder) {
+    val dragX = localDragX - endIntOffset.x
+    val dragY = localDragY - endIntOffset.y
+
+    if (dragX in 0 until folderGridWidthPx &&
+        dragY in 0 until folderGridHeightPx
+    ) {
         onUpdateSharedElementKey(
             SharedElementKey(
                 id = movingGridItem.id,
@@ -306,13 +296,13 @@ private fun dragFolderGridItem(
             folderGridItem,
             movingGridItem,
             data,
-            localDragX,
-            localDragY,
+            dragX,
+            dragY,
             data.columns,
             data.rows,
             folderGridWidthPx,
             folderGridHeightPx,
-            folderCurrentPage,
+            currentPage,
         )
     } else {
         onUpdateIsCloseFolder(true)

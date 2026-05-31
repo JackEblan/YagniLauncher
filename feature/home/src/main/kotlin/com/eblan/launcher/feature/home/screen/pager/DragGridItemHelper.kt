@@ -17,7 +17,11 @@
  */
 package com.eblan.launcher.feature.home.screen.pager
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
@@ -38,6 +42,59 @@ import com.eblan.launcher.feature.home.model.PageDirection
 import com.eblan.launcher.feature.home.model.SharedElementKey
 import com.eblan.launcher.feature.home.util.PAGE_INDICATOR_HEIGHT
 import kotlinx.coroutines.delay
+
+internal suspend fun onLongPress(
+    graphicsLayer: GraphicsLayer,
+    intOffset: IntOffset,
+    intSize: IntSize,
+    gridItemSource: GridItemSource,
+    sharedElementKey: SharedElementKey,
+    gridItem: GridItem,
+    scale: Animatable<Float, AnimationVector1D>,
+    onUpdateGridItemSource: (GridItemSource) -> Unit,
+    onUpdateImageBitmap: (ImageBitmap) -> Unit,
+    onUpdateOverlayBounds: (
+        intOffset: IntOffset,
+        intSize: IntSize,
+    ) -> Unit,
+    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
+    onShowGridItemPopup: (
+        intOffset: IntOffset,
+        intSize: IntSize,
+    ) -> Unit,
+    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
+) {
+    scale.animateTo(0.5f)
+
+    scale.animateTo(1f)
+
+    onUpdateGridItemSource(gridItemSource)
+
+    onUpdateMoveGridItemResult(
+        MoveGridItemResult(
+            isSuccess = true,
+            movingGridItem = gridItem,
+            conflictingGridItem = null,
+        ),
+    )
+
+    onUpdateImageBitmap(graphicsLayer.toImageBitmap())
+
+    onUpdateOverlayBounds(
+        intOffset,
+        intSize,
+    )
+
+    onUpdateSharedElementKey(sharedElementKey)
+
+    onUpdateIsVisibleOverlay(true)
+
+    onShowGridItemPopup(
+        intOffset,
+        intSize,
+    )
+}
 
 internal fun handleAnimateScrollToPage(
     associate: Associate?,
@@ -82,8 +139,6 @@ internal fun handleAnimateScrollToPage(
                 onUpdateGridPageDirection = onUpdateGridPageDirection,
             )
         }
-
-        else -> Unit
     }
 }
 
@@ -213,8 +268,6 @@ internal suspend fun handleDragGridItem(
                 )
             }
         }
-
-        else -> Unit
     }
 }
 
@@ -467,7 +520,7 @@ private fun getMoveGridItemAndResetFolderId(
     rows: Int,
     currentPage: Int,
 ): GridItem = when (gridItemSource) {
-    is GridItemSource.Existing, is GridItemSource.Folder,
+    is GridItemSource.Existing,
     -> {
         val (startColumn, startRow) = getStartPosition(
             x = gridX,

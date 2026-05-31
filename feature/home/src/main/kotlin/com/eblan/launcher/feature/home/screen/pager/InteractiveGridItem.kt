@@ -86,7 +86,6 @@ import com.eblan.launcher.feature.home.util.getSystemTextColor
 import com.eblan.launcher.feature.home.util.getVerticalArrangement
 import com.eblan.launcher.feature.home.util.handleDrag
 import com.eblan.launcher.feature.home.util.onDoubleTap
-import com.eblan.launcher.feature.home.util.onLongPress
 import com.eblan.launcher.feature.home.util.onPress
 import com.eblan.launcher.ui.local.LocalAppWidgetHost
 import com.eblan.launcher.ui.local.LocalAppWidgetManager
@@ -1092,9 +1091,13 @@ private fun SharedTransitionScope.InteractiveFolderGridItem(
 
     LaunchedEffect(
         drag,
-        moveGridItemResult,
-        isVisibleOverlay,
         isDragging,
+        isVisibleOverlay,
+        moveGridItemResult,
+        lockMovement,
+        intOffset,
+        intSize,
+        gridItem,
     ) {
         handleConflictingGridItem(
             drag = drag,

@@ -27,6 +27,4 @@ internal sealed interface GridItemSource {
     data class Pin(
         val pinItemRequest: PinItemRequest,
     ) : GridItemSource
-
-    data object Folder : GridItemSource
 }

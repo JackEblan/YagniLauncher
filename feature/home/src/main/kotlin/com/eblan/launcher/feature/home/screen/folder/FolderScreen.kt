@@ -69,7 +69,6 @@ import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.feature.home.component.FolderGridLayout
 import com.eblan.launcher.feature.home.component.PageIndicator
 import com.eblan.launcher.feature.home.model.Drag
-import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.PageDirection
 import com.eblan.launcher.feature.home.model.SharedElementKey
 import com.eblan.launcher.feature.home.util.FOLDER_PREVIEW_COLUMNS
@@ -111,7 +110,6 @@ internal fun SharedTransitionScope.FolderScreen(
     onDismissRequest: () -> Unit,
     onMoveFolderGridItemOutsideFolder: () -> Unit,
     onOpenAppDrawer: () -> Unit,
-    onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
     onUpdateOverlayBounds: (
@@ -145,6 +143,8 @@ internal fun SharedTransitionScope.FolderScreen(
         currentPage: Int,
     ) -> Unit,
     onDismissFolderGridItemPopup: () -> Unit,
+    onDragCancelAfterMoveFolder: () -> Unit,
+    onDragEndAfterMoveFolder: () -> Unit,
 ) {
     val folderPopupIntOffset = IntOffset(x = x, y = y)
 
@@ -307,9 +307,12 @@ internal fun SharedTransitionScope.FolderScreen(
     }
 
     LaunchedEffect(
+        drag,
         dragIntOffset,
-        isVisibleOverlay,
+        folderGridItem,
         isDragging,
+        isVisibleOverlay,
+        lockMovement,
         moveGridItemResult,
         isLast,
     ) {
@@ -320,7 +323,6 @@ internal fun SharedTransitionScope.FolderScreen(
             currentPage = folderGridHorizontalPagerState.currentPage,
             folderGridItem = folderGridItem,
             folderPopupIntOffset = folderPopupIntOffset,
-            folderPopupIntSize = folderPopupIntSize,
             isDragging = isDragging,
             isVisibleOverlay = isVisibleOverlay,
             isScrollInProgress = folderGridHorizontalPagerState.isScrollInProgress,
@@ -336,6 +338,25 @@ internal fun SharedTransitionScope.FolderScreen(
             onUpdateSharedElementKey = onUpdateSharedElementKey,
             onUpdateIsCloseFolder = onUpdateIsCloseFolder,
             isLast = isLast,
+        )
+    }
+
+    LaunchedEffect(
+        drag,
+        isDragging,
+        isVisibleOverlay,
+        isLast,
+    ) {
+        handleDropFolderGridItem(
+            drag = drag,
+            isDragging = isDragging,
+            lockMovement = lockMovement,
+            isVisibleOverlay = isVisibleOverlay,
+            isLast = isLast,
+            onDragCancelAfterMoveFolder = onDragCancelAfterMoveFolder,
+            onDragEndAfterMoveFolder = onDragEndAfterMoveFolder,
+            onUpdateIsDragging = onUpdateIsDragging,
+            onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
         )
     }
 
@@ -441,7 +462,6 @@ internal fun SharedTransitionScope.FolderScreen(
                                 isScrollInProgress = folderGridHorizontalPagerState.isScrollInProgress,
                                 statusBarNotifications = statusBarNotifications,
                                 isVisibleOverlay = isVisibleOverlay,
-                                newGridItemSource = GridItemSource.Folder,
                                 sharedElementKey = SharedElementKey(
                                     id = gridItem.id,
                                     parent = SharedElementKey.Parent.Folder,
@@ -489,7 +509,6 @@ internal fun SharedTransitionScope.FolderScreen(
                                         )
                                     }
                                 },
-                                onUpdateGridItemSource = onUpdateGridItemSource,
                                 onUpdateImageBitmap = onUpdateImageBitmap,
                                 onUpdateIsDragging = onUpdateIsDragging,
                                 onUpdateOverlayBounds = onUpdateOverlayBounds,

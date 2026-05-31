@@ -62,7 +62,6 @@ internal suspend fun handleDropGridItem(
     onResetGridAfterDeleteGridItem: (GridItem) -> Unit,
     onDragCancelAfterMove: () -> Unit,
     onDragEndAfterMove: (MoveGridItemResult) -> Unit,
-    onDragEndAfterMoveFolder: () -> Unit,
     onLaunchShortcutConfigIntent: (Intent) -> Unit,
     onLaunchShortcutConfigIntentSenderRequest: (IntentSenderRequest) -> Unit,
     onLaunchWidgetIntent: (Intent) -> Unit,
@@ -199,22 +198,6 @@ internal suspend fun handleDropGridItem(
 
                     else -> error("Expected ShortcutInfo or Widget")
                 }
-            }
-        }
-
-        is GridItemSource.Folder -> {
-            if (isLongPress) {
-                onUpdateIsVisibleOverlay(false)
-
-                return
-            }
-
-            if (lockMovement) return cancelWithToast()
-
-            if (isVisibleOverlay) {
-                onDragEndAfterMoveFolder()
-
-                onUpdateIsDragging(false)
             }
         }
     }

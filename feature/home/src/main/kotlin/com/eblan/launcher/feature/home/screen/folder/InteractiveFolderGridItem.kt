@@ -74,7 +74,6 @@ import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.feature.home.component.PreviewFolderGridLayout
 import com.eblan.launcher.feature.home.component.swipeGestures
 import com.eblan.launcher.feature.home.model.Drag
-import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
 import com.eblan.launcher.feature.home.util.FOLDER_PREVIEW_COLUMNS
 import com.eblan.launcher.feature.home.util.FOLDER_PREVIEW_ROWS
@@ -82,7 +81,6 @@ import com.eblan.launcher.feature.home.util.getHorizontalAlignment
 import com.eblan.launcher.feature.home.util.getVerticalArrangement
 import com.eblan.launcher.feature.home.util.handleDrag
 import com.eblan.launcher.feature.home.util.onDoubleTap
-import com.eblan.launcher.feature.home.util.onLongPress
 import com.eblan.launcher.feature.home.util.onPress
 import com.eblan.launcher.ui.local.LocalLauncherApps
 import com.eblan.launcher.ui.local.LocalSettings
@@ -100,7 +98,6 @@ internal fun SharedTransitionScope.InteractiveFolderGridItem(
     isScrollInProgress: Boolean,
     statusBarNotifications: Map<String, Int>,
     isVisibleOverlay: Boolean,
-    newGridItemSource: GridItemSource,
     sharedElementKey: SharedElementKey,
     moveGridItemResult: MoveGridItemResult?,
     progress: Float,
@@ -117,7 +114,6 @@ internal fun SharedTransitionScope.InteractiveFolderGridItem(
         packageName: String,
         shortcutId: String,
     ) -> Unit,
-    onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
     onUpdateOverlayBounds: (
@@ -161,7 +157,6 @@ internal fun SharedTransitionScope.InteractiveFolderGridItem(
                 isScrollInProgress = isScrollInProgress,
                 isSelected = isSelected,
                 isVisibleOverlay = isVisibleOverlay,
-                newGridItemSource = newGridItemSource,
                 sharedElementKey = sharedElementKey,
                 statusBarNotifications = statusBarNotifications,
                 padding = padding,
@@ -171,7 +166,6 @@ internal fun SharedTransitionScope.InteractiveFolderGridItem(
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
                 onTapApplicationInfo = onTapApplicationInfo,
-                onUpdateGridItemSource = onUpdateGridItemSource,
                 onUpdateImageBitmap = onUpdateImageBitmap,
                 onUpdateIsDragging = onUpdateIsDragging,
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
@@ -192,7 +186,6 @@ internal fun SharedTransitionScope.InteractiveFolderGridItem(
                 isScrollInProgress = isScrollInProgress,
                 isSelected = isSelected,
                 isVisibleOverlay = isVisibleOverlay,
-                newGridItemSource = newGridItemSource,
                 sharedElementKey = sharedElementKey,
                 padding = padding,
                 isDragging = isDragging,
@@ -201,7 +194,6 @@ internal fun SharedTransitionScope.InteractiveFolderGridItem(
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
                 onTapShortcutInfo = onTapShortcutInfo,
-                onUpdateGridItemSource = onUpdateGridItemSource,
                 onUpdateImageBitmap = onUpdateImageBitmap,
                 onUpdateIsDragging = onUpdateIsDragging,
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
@@ -221,7 +213,6 @@ internal fun SharedTransitionScope.InteractiveFolderGridItem(
                 isScrollInProgress = isScrollInProgress,
                 isSelected = isSelected,
                 isVisibleOverlay = isVisibleOverlay,
-                newGridItemSource = newGridItemSource,
                 sharedElementKey = sharedElementKey,
                 padding = padding,
                 isDragging = isDragging,
@@ -230,7 +221,6 @@ internal fun SharedTransitionScope.InteractiveFolderGridItem(
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
                 onTapShortcutConfig = onTapShortcutConfig,
-                onUpdateGridItemSource = onUpdateGridItemSource,
                 onUpdateImageBitmap = onUpdateImageBitmap,
                 onUpdateIsDragging = onUpdateIsDragging,
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
@@ -251,7 +241,6 @@ internal fun SharedTransitionScope.InteractiveFolderGridItem(
                 isScrollInProgress = isScrollInProgress,
                 isSelected = isSelected,
                 isVisibleOverlay = isVisibleOverlay,
-                newGridItemSource = newGridItemSource,
                 sharedElementKey = sharedElementKey,
                 isDragging = isDragging,
                 isCloseFolderGridItemPopup = isCloseFolderGridItemPopup,
@@ -259,7 +248,6 @@ internal fun SharedTransitionScope.InteractiveFolderGridItem(
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
                 onTap = onTapNestedFolderGridItem,
-                onUpdateGridItemSource = onUpdateGridItemSource,
                 onUpdateImageBitmap = onUpdateImageBitmap,
                 onUpdateIsDragging = onUpdateIsDragging,
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
@@ -285,7 +273,6 @@ private fun SharedTransitionScope.InteractiveFolderApplicationInfoGridItem(
     isScrollInProgress: Boolean,
     isSelected: Boolean,
     isVisibleOverlay: Boolean,
-    newGridItemSource: GridItemSource,
     sharedElementKey: SharedElementKey,
     statusBarNotifications: Map<String, Int>,
     padding: Dp,
@@ -301,7 +288,6 @@ private fun SharedTransitionScope.InteractiveFolderApplicationInfoGridItem(
         serialNumber: Long,
         componentName: String,
     ) -> Unit,
-    onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
@@ -385,15 +371,13 @@ private fun SharedTransitionScope.InteractiveFolderApplicationInfoGridItem(
                     onLongPress = if (!isVisibleOverlay) {
                         {
                             scope.launch {
-                                onLongPress(
+                                onLongPressFolderGridItem(
                                     graphicsLayer = graphicsLayer,
                                     intOffset = intOffset,
                                     intSize = intSize,
-                                    gridItemSource = newGridItemSource,
                                     sharedElementKey = sharedElementKey,
                                     gridItem = gridItem,
                                     scale = scale,
-                                    onUpdateGridItemSource = onUpdateGridItemSource,
                                     onUpdateImageBitmap = onUpdateImageBitmap,
                                     onUpdateOverlayBounds = onUpdateOverlayBounds,
                                     onUpdateSharedElementKey = onUpdateSharedElementKey,
@@ -522,7 +506,6 @@ private fun SharedTransitionScope.InteractiveFolderShortcutInfoGridItem(
     isScrollInProgress: Boolean,
     isSelected: Boolean,
     isVisibleOverlay: Boolean,
-    newGridItemSource: GridItemSource,
     sharedElementKey: SharedElementKey,
     padding: Dp,
     isDragging: Boolean,
@@ -538,7 +521,6 @@ private fun SharedTransitionScope.InteractiveFolderShortcutInfoGridItem(
         packageName: String,
         shortcutId: String,
     ) -> Unit,
-    onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
@@ -616,15 +598,13 @@ private fun SharedTransitionScope.InteractiveFolderShortcutInfoGridItem(
                     onLongPress = if (!isVisibleOverlay) {
                         {
                             scope.launch {
-                                onLongPress(
+                                onLongPressFolderGridItem(
                                     graphicsLayer = graphicsLayer,
                                     intOffset = intOffset,
                                     intSize = intSize,
-                                    gridItemSource = newGridItemSource,
                                     sharedElementKey = sharedElementKey,
                                     gridItem = gridItem,
                                     scale = scale,
-                                    onUpdateGridItemSource = onUpdateGridItemSource,
                                     onUpdateImageBitmap = onUpdateImageBitmap,
                                     onUpdateOverlayBounds = onUpdateOverlayBounds,
                                     onUpdateSharedElementKey = onUpdateSharedElementKey,
@@ -753,7 +733,6 @@ private fun SharedTransitionScope.InteractiveFolderShortcutConfigGridItem(
     isScrollInProgress: Boolean,
     isSelected: Boolean,
     isVisibleOverlay: Boolean,
-    newGridItemSource: GridItemSource,
     sharedElementKey: SharedElementKey,
     padding: Dp,
     isDragging: Boolean,
@@ -765,7 +744,6 @@ private fun SharedTransitionScope.InteractiveFolderShortcutConfigGridItem(
         intSize: IntSize,
     ) -> Unit,
     onTapShortcutConfig: (String) -> Unit,
-    onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
@@ -875,15 +853,13 @@ private fun SharedTransitionScope.InteractiveFolderShortcutConfigGridItem(
                     onLongPress = if (!isVisibleOverlay) {
                         {
                             scope.launch {
-                                onLongPress(
+                                onLongPressFolderGridItem(
                                     graphicsLayer = graphicsLayer,
                                     intOffset = intOffset,
                                     intSize = intSize,
-                                    gridItemSource = newGridItemSource,
                                     sharedElementKey = sharedElementKey,
                                     gridItem = gridItem,
                                     scale = scale,
-                                    onUpdateGridItemSource = onUpdateGridItemSource,
                                     onUpdateImageBitmap = onUpdateImageBitmap,
                                     onUpdateOverlayBounds = onUpdateOverlayBounds,
                                     onUpdateSharedElementKey = onUpdateSharedElementKey,
@@ -992,7 +968,6 @@ private fun SharedTransitionScope.InteractiveNestedFolderGridItem(
     isScrollInProgress: Boolean,
     isSelected: Boolean,
     isVisibleOverlay: Boolean,
-    newGridItemSource: GridItemSource,
     sharedElementKey: SharedElementKey,
     isDragging: Boolean,
     isCloseFolderGridItemPopup: Boolean,
@@ -1007,7 +982,6 @@ private fun SharedTransitionScope.InteractiveNestedFolderGridItem(
         intOffset: IntOffset,
         intSize: IntSize,
     ) -> Unit,
-    onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
@@ -1081,15 +1055,13 @@ private fun SharedTransitionScope.InteractiveNestedFolderGridItem(
                     onLongPress = if (!isVisibleOverlay) {
                         {
                             scope.launch {
-                                onLongPress(
+                                onLongPressFolderGridItem(
                                     graphicsLayer = graphicsLayer,
                                     intOffset = intOffset,
                                     intSize = intSize,
-                                    gridItemSource = newGridItemSource,
                                     sharedElementKey = sharedElementKey,
                                     gridItem = gridItem,
                                     scale = scale,
-                                    onUpdateGridItemSource = onUpdateGridItemSource,
                                     onUpdateImageBitmap = onUpdateImageBitmap,
                                     onUpdateOverlayBounds = onUpdateOverlayBounds,
                                     onUpdateSharedElementKey = onUpdateSharedElementKey,

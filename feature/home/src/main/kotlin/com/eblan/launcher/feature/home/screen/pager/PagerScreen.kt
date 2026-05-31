@@ -417,6 +417,7 @@ internal fun PagerScreen(
         isVisibleOverlay,
         pagerScreenState.isDragging,
         moveGridItemResult,
+        lockMovement,
     ) {
         pagerScreenState.handleDragGridItemEffect(
             gridCurrentPage = gridCurrentPage,
@@ -438,6 +439,9 @@ internal fun PagerScreen(
     LaunchedEffect(
         pagerScreenState.drag,
         gridItemSource,
+        isVisibleOverlay,
+        gridItemSource,
+        moveGridItemResult,
     ) {
         pagerScreenState.handleDropGridItemEffect(
             moveGridItemResult = moveGridItemResult,
@@ -450,7 +454,6 @@ internal fun PagerScreen(
             onResetGridAfterDeleteGridItem = onResetGridAfterDeleteGridItem,
             onDragCancelAfterMove = onDragCancelAfterMove,
             onDragEndAfterMove = onDragEndAfterMove,
-            onDragEndAfterMoveFolder = onDragEndAfterMoveFolder,
         )
     }
 
@@ -485,7 +488,6 @@ internal fun PagerScreen(
     }
 
     LaunchedEffect(
-        popupFolderGridItems,
         pagerScreenState.dragIntOffset,
         gridItemSource,
         pagerScreenState.isDragging,
@@ -1021,7 +1023,6 @@ internal fun PagerScreen(
                     )
                 },
                 onOpenAppDrawer = pagerScreenState::openApplicationScreen,
-                onUpdateGridItemSource = onUpdateGridItemSource,
                 onUpdateImageBitmap = pagerScreenState::updateOverlayImageBitmap,
                 onUpdateIsDragging = pagerScreenState::updateIsDragging,
                 onUpdateOverlayBounds = pagerScreenState::updateOverlayBounds,
@@ -1041,6 +1042,8 @@ internal fun PagerScreen(
                 },
                 onMoveFolderGridItem = onMoveFolderGridItem,
                 onDismissFolderGridItemPopup = pagerScreenState::dismissFolderGridItemPopup,
+                onDragCancelAfterMoveFolder = onDragCancelAfterMove,
+                onDragEndAfterMoveFolder = onDragEndAfterMoveFolder,
             )
         }
 

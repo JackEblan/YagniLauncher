@@ -24,20 +24,12 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.foundation.gestures.PressGestureScope
 import androidx.compose.foundation.pager.PagerState
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.layer.GraphicsLayer
-import androidx.compose.ui.unit.IntOffset
-import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import com.eblan.launcher.domain.model.EblanAction
 import com.eblan.launcher.domain.model.EblanActionType
 import com.eblan.launcher.domain.model.GlobalAction
-import com.eblan.launcher.domain.model.GridItem
-import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.feature.home.model.Drag
-import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.PageDirection
-import com.eblan.launcher.feature.home.model.SharedElementKey
 import com.eblan.launcher.framework.launcherapps.AndroidLauncherAppsWrapper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
@@ -119,59 +111,6 @@ internal fun onDoubleTap(
             onOpenAppDrawer = onOpenAppDrawer,
         )
     }
-}
-
-internal suspend fun onLongPress(
-    graphicsLayer: GraphicsLayer,
-    intOffset: IntOffset,
-    intSize: IntSize,
-    gridItemSource: GridItemSource,
-    sharedElementKey: SharedElementKey,
-    gridItem: GridItem,
-    scale: Animatable<Float, AnimationVector1D>,
-    onUpdateGridItemSource: (GridItemSource) -> Unit,
-    onUpdateImageBitmap: (ImageBitmap) -> Unit,
-    onUpdateOverlayBounds: (
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) -> Unit,
-    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onShowGridItemPopup: (
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) -> Unit,
-    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
-    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
-) {
-    scale.animateTo(0.5f)
-
-    scale.animateTo(1f)
-
-    onUpdateGridItemSource(gridItemSource)
-
-    onUpdateMoveGridItemResult(
-        MoveGridItemResult(
-            isSuccess = true,
-            movingGridItem = gridItem,
-            conflictingGridItem = null,
-        ),
-    )
-
-    onUpdateImageBitmap(graphicsLayer.toImageBitmap())
-
-    onUpdateOverlayBounds(
-        intOffset,
-        intSize,
-    )
-
-    onUpdateSharedElementKey(sharedElementKey)
-
-    onUpdateIsVisibleOverlay(true)
-
-    onShowGridItemPopup(
-        intOffset,
-        intSize,
-    )
 }
 
 internal suspend fun PressGestureScope.onPress(
