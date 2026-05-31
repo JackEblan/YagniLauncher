@@ -15,16 +15,13 @@
  *   limitations under the License.
  *
  */
-package com.eblan.launcher.feature.home.model
+package com.eblan.launcher.domain.model
 
-import android.content.pm.LauncherApps.PinItemRequest
-
-internal sealed interface GridItemSource {
-    data object Existing : GridItemSource
-
-    data object New : GridItemSource
-
-    data class Pin(
-        val pinItemRequest: PinItemRequest,
-    ) : GridItemSource
-}
+data class FolderPopupEntry(
+    val id: String,
+    val x: Int,
+    val y: Int,
+    val width: Int,
+    val height: Int,
+    val isCloseFolder: Boolean,
+)

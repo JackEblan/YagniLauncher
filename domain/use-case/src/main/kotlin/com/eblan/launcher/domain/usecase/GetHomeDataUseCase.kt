@@ -56,6 +56,7 @@ class GetHomeDataUseCase @Inject constructor(
             ) { userData, folderGridItemWrappers ->
                 folderGridItemWrappers.map { folderGridItemWrapper ->
                     folderGridItemWrapper.asGridItem(
+                        folderGridItemRepository = folderGridItemRepository,
                         maxFolderColumns = userData.homeSettings.maxFolderColumns,
                         maxFolderRows = userData.homeSettings.maxFolderRows,
                     )

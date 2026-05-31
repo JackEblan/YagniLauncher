@@ -29,6 +29,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -64,6 +65,8 @@ import coil3.compose.AsyncImage
 import coil3.request.ImageRequest.Builder
 import coil3.request.addLastModifiedToFileCacheKey
 import coil3.size.Size
+import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
+import com.eblan.launcher.domain.model.FolderPopupEntry
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.GridItemSettings
@@ -83,7 +86,6 @@ import com.eblan.launcher.feature.home.util.getSystemTextColor
 import com.eblan.launcher.feature.home.util.getVerticalArrangement
 import com.eblan.launcher.feature.home.util.handleDrag
 import com.eblan.launcher.feature.home.util.onDoubleTap
-import com.eblan.launcher.feature.home.util.onLongPress
 import com.eblan.launcher.feature.home.util.onPress
 import com.eblan.launcher.ui.local.LocalAppWidgetHost
 import com.eblan.launcher.ui.local.LocalAppWidgetManager
@@ -93,7 +95,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-internal fun SharedTransitionScope.InteractiveGridItemContent(
+internal fun SharedTransitionScope.InteractiveGridItem(
     modifier: Modifier = Modifier,
     drag: Drag,
     gridItem: GridItem,
@@ -116,10 +118,7 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
         serialNumber: Long,
         componentName: String,
     ) -> Unit,
-    onTapFolderGridItem: (
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) -> Unit,
+    onUpsertFolderPopupEntry: (FolderPopupEntry) -> Unit,
     onTapShortcutConfig: (String) -> Unit,
     onTapShortcutInfo: (
         serialNumber: Long,
@@ -142,12 +141,8 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
     onShowFolderWhenDragging: (
-        conflictingGridItem: GridItem,
+        folderPopupEntry: FolderPopupEntry,
         movingGridItem: GridItem,
-    ) -> Unit,
-    onUpdateFolderPopupBounds: (
-        intOffset: IntOffset,
-        intSize: IntSize,
     ) -> Unit,
 ) {
     val isSelected =
@@ -285,7 +280,7 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
                 onUpdateIsCloseGridItemPopup = onUpdateIsCloseGridItemPopup,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
-                onTap = onTapFolderGridItem,
+                onUpsertFolderPopupEntry = onUpsertFolderPopupEntry,
                 onUpdateGridItemSource = onUpdateGridItemSource,
                 onUpdateImageBitmap = onUpdateImageBitmap,
                 onUpdateIsDragging = onUpdateIsDragging,
@@ -294,7 +289,6 @@ internal fun SharedTransitionScope.InteractiveGridItemContent(
                 onUpdateSharedElementKey = onUpdateSharedElementKey,
                 onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                 onShowFolderWhenDragging = onShowFolderWhenDragging,
-                onUpdateFolderPopupBounds = onUpdateFolderPopupBounds,
             )
         }
 
@@ -402,7 +396,7 @@ private fun SharedTransitionScope.InteractiveApplicationInfoGridItem(
 
     val hasInteraction = isSelected && isVisibleOverlay
 
-    val isVisibleWhiteBox = isSelected && drag == Drag.Dragging
+    val isVisibleWhiteBox = hasInteraction && drag == Drag.Dragging
 
     val alpha = if (hasInteraction) 0f else 1f
 
@@ -622,7 +616,7 @@ private fun SharedTransitionScope.InteractiveWidgetGridItem(
 
     val hasInteraction = isSelected && isVisibleOverlay
 
-    val isVisibleWhiteBox = isSelected && drag == Drag.Dragging
+    val isVisibleWhiteBox = hasInteraction && drag == Drag.Dragging
 
     val alpha = if (hasInteraction) 0f else 1f
 
@@ -818,7 +812,7 @@ private fun SharedTransitionScope.InteractiveShortcutInfoGridItem(
 
     val hasInteraction = isSelected && isVisibleOverlay
 
-    val isVisibleWhiteBox = isSelected && drag == Drag.Dragging
+    val isVisibleWhiteBox = hasInteraction && drag == Drag.Dragging
 
     val alpha = if (hasInteraction) 0f else 1f
 
@@ -1019,10 +1013,7 @@ private fun SharedTransitionScope.InteractiveFolderGridItem(
         intOffset: IntOffset,
         intSize: IntSize,
     ) -> Unit,
-    onTap: (
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) -> Unit,
+    onUpsertFolderPopupEntry: (FolderPopupEntry) -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
@@ -1034,12 +1025,8 @@ private fun SharedTransitionScope.InteractiveFolderGridItem(
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
     onShowFolderWhenDragging: (
-        conflictingGridItem: GridItem,
+        folderPopupEntry: FolderPopupEntry,
         movingGridItem: GridItem,
-    ) -> Unit,
-    onUpdateFolderPopupBounds: (
-        intOffset: IntOffset,
-        intSize: IntSize,
     ) -> Unit,
 ) {
     val launcherApps = LocalLauncherApps.current
@@ -1064,7 +1051,7 @@ private fun SharedTransitionScope.InteractiveFolderGridItem(
 
     val hasInteraction = isSelected && isVisibleOverlay
 
-    val isVisibleWhiteBox = isSelected && drag == Drag.Dragging
+    val isVisibleWhiteBox = hasInteraction && drag == Drag.Dragging
 
     val alpha = if (hasInteraction) 0f else 1f
 
@@ -1089,9 +1076,13 @@ private fun SharedTransitionScope.InteractiveFolderGridItem(
 
     LaunchedEffect(
         drag,
-        moveGridItemResult,
-        isVisibleOverlay,
         isDragging,
+        isVisibleOverlay,
+        moveGridItemResult,
+        lockMovement,
+        intOffset,
+        intSize,
+        gridItem,
     ) {
         handleConflictingGridItem(
             drag = drag,
@@ -1103,7 +1094,6 @@ private fun SharedTransitionScope.InteractiveFolderGridItem(
             intSize = intSize,
             gridItem = gridItem,
             onShowFolderWhenDragging = onShowFolderWhenDragging,
-            onUpdateFolderPopupBounds = onUpdateFolderPopupBounds,
             onUpdateSharedElementKey = onUpdateSharedElementKey,
         )
     }
@@ -1156,9 +1146,15 @@ private fun SharedTransitionScope.InteractiveFolderGridItem(
 
                                 scale.animateTo(1f)
 
-                                onTap(
-                                    intOffset,
-                                    intSize,
+                                onUpsertFolderPopupEntry(
+                                    FolderPopupEntry(
+                                        id = gridItem.id,
+                                        x = intOffset.x,
+                                        y = intOffset.y,
+                                        width = intSize.width,
+                                        height = intSize.height,
+                                        isCloseFolder = false,
+                                    ),
                                 )
                             }
                         }
@@ -1246,6 +1242,7 @@ private fun SharedTransitionScope.InteractiveFolderGridItem(
                             isVisibleOverlay = isVisibleOverlay,
                             parent = sharedElementKey.parent,
                             moveGridItemResult = moveGridItemResult,
+                            textColor = textColor,
                         )
                     },
                 )
@@ -1359,7 +1356,7 @@ private fun SharedTransitionScope.InteractiveShortcutConfigGridItem(
 
     val hasInteraction = isSelected && isVisibleOverlay
 
-    val isVisibleWhiteBox = isSelected && drag == Drag.Dragging
+    val isVisibleWhiteBox = hasInteraction && drag == Drag.Dragging
 
     val alpha = if (hasInteraction) 0f else 1f
 
@@ -1522,6 +1519,7 @@ private fun SharedTransitionScope.PreviewFolderGridItem(
     isVisibleOverlay: Boolean,
     parent: SharedElementKey.Parent,
     moveGridItemResult: MoveGridItemResult?,
+    textColor: Color,
 ) {
     val context = LocalContext.current
 
@@ -1607,6 +1605,27 @@ private fun SharedTransitionScope.PreviewFolderGridItem(
                     contentDescription = null,
                     modifier = commonModifier,
                 )
+            }
+
+            is GridItemData.Folder -> {
+                if (data.icon != null) {
+                    AsyncImage(
+                        model = Builder(context)
+                            .data(data.icon)
+                            .addLastModifiedToFileCacheKey(true)
+                            .size(Size.ORIGINAL)
+                            .build(),
+                        contentDescription = null,
+                        modifier = commonModifier,
+                    )
+                } else {
+                    Icon(
+                        modifier = commonModifier,
+                        imageVector = EblanLauncherIcons.Folder,
+                        contentDescription = null,
+                        tint = textColor,
+                    )
+                }
             }
 
             else -> Unit

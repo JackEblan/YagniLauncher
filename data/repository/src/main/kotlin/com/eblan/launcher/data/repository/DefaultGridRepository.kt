@@ -578,7 +578,7 @@ internal class DefaultGridRepository @Inject constructor(
                         gridItem.asFolderGridItem(data = data),
                     )
 
-                    insertFolderGridItems(gridItems = data.gridItems)
+                    upsertFolderGridItems(gridItems = data.gridItems)
                 }
 
                 is GridItemData.Widget -> {

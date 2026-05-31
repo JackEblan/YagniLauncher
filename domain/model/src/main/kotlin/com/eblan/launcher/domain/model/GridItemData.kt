@@ -75,6 +75,8 @@ sealed interface GridItemData {
         val columns: Int,
         val rows: Int,
         val maxIndex: Int,
+        val index: Int,
+        val folderId: String?,
     ) : GridItemData
 
     data class ShortcutConfig(

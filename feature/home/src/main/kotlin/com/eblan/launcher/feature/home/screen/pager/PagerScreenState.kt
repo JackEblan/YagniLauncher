@@ -69,7 +69,6 @@ import com.eblan.launcher.domain.model.EblanApplicationInfoGroup
 import com.eblan.launcher.domain.model.ExperimentalSettings
 import com.eblan.launcher.domain.model.GestureSettings
 import com.eblan.launcher.domain.model.GridItem
-import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.HomeSettings
 import com.eblan.launcher.domain.model.ManagedProfileResult
 import com.eblan.launcher.domain.model.MoveGridItemResult
@@ -110,10 +109,6 @@ import kotlin.math.roundToInt
 internal class PagerScreenState(
     initialSwipeUpY: Float,
     initialSwipeDownY: Float,
-    initialFolderX: Int,
-    initialFolderY: Int,
-    initialFolderWidth: Int,
-    initialFolderHeight: Int,
     private val screenWidth: Int,
     private val screenHeight: Int,
     private val fileManager: FileManager,
@@ -137,14 +132,6 @@ internal class PagerScreenState(
     private var lastSwipeUpY by mutableFloatStateOf(initialSwipeUpY)
 
     private var lastSwipeDownY by mutableFloatStateOf(initialSwipeDownY)
-
-    private var lastFolderPopupX by mutableIntStateOf(initialFolderX)
-
-    private var lastFolderPopupY by mutableIntStateOf(initialFolderY)
-
-    private var lastFolderPopupWidth by mutableIntStateOf(initialFolderWidth)
-
-    private var lastFolderPopupHeight by mutableIntStateOf(initialFolderHeight)
 
     var hasDoubleTap by mutableStateOf(false)
         private set
@@ -189,9 +176,6 @@ internal class PagerScreenState(
         private set
 
     var dockPageDirection by mutableStateOf<PageDirection?>(null)
-        private set
-
-    var folderPageDirection by mutableStateOf<PageDirection?>(null)
         private set
 
     var dragIntOffset by mutableStateOf(IntOffset.Zero)
@@ -295,20 +279,6 @@ internal class PagerScreenState(
         ((swipeY.value - threshold) / threshold).coerceIn(0f, 1f)
     }
 
-    var folderPopupIntOffset by mutableStateOf<IntOffset?>(
-        IntOffset(
-            x = lastFolderPopupX,
-            y = lastFolderPopupY,
-        ),
-    )
-
-    var folderPopupIntSize by mutableStateOf<IntSize?>(
-        IntSize(
-            width = lastFolderPopupWidth,
-            height = lastFolderPopupHeight,
-        ),
-    )
-
     val widgetScreenOffsetY = Animatable(screenHeight.toFloat())
 
     val widgetScreenAlpha by derivedStateOf {
@@ -334,12 +304,6 @@ internal class PagerScreenState(
     }
 
     val appWidgetScreenOffsetY = Animatable(screenHeight.toFloat())
-
-    var isCloseFolder by mutableStateOf(false)
-        private set
-
-    var isMoveFolderGridItemOutsideFolder by mutableStateOf(false)
-        private set
 
     var isCloseGridItemPopup by mutableStateOf(false)
         private set
@@ -396,8 +360,6 @@ internal class PagerScreenState(
         dockGridCurrentPage: Int,
         density: Density,
         dockHeight: Dp,
-        folderCurrentPage: Int,
-        folderGridItem: GridItem?,
         isGridScrollInProgress: Boolean,
         isDockScrollInProgress: Boolean,
         lockMovement: Boolean,
@@ -406,18 +368,6 @@ internal class PagerScreenState(
         isVisibleOverlay: Boolean,
         moveGridItemResult: MoveGridItemResult?,
         layoutDirection: LayoutDirection,
-        onMoveFolderGridItem: (
-            conflictingGridItem: GridItem,
-            movingFolderGridItem: GridItem,
-            data: GridItemData.Folder,
-            dragX: Int,
-            dragY: Int,
-            columns: Int,
-            rows: Int,
-            gridWidth: Int,
-            gridHeight: Int,
-            currentPage: Int,
-        ) -> Unit,
         onMoveGridItem: (
             movingGridItem: GridItem,
             x: Int,
@@ -438,10 +388,6 @@ internal class PagerScreenState(
             dockRows = homeSettings.dockRows,
             drag = drag,
             dragIntOffset = dragIntOffset,
-            folderCurrentPage = folderCurrentPage,
-            folderGridItem = folderGridItem,
-            folderPopupIntOffset = folderPopupIntOffset,
-            folderPopupIntSize = folderPopupIntSize,
             gridItemSource = gridItemSource,
             isDragging = isDragging,
             isVisibleOverlay = isVisibleOverlay,
@@ -454,18 +400,12 @@ internal class PagerScreenState(
             screenWidth = screenWidth,
             moveGridItemResult = moveGridItemResult,
             layoutDirection = layoutDirection,
-            minFolderCellWidth = homeSettings.folderCellWidth,
-            minFolderCellHeight = homeSettings.folderCellHeight,
-            onMoveFolderGridItem = onMoveFolderGridItem,
             onMoveGridItem = onMoveGridItem,
-            onUpdateAssociate = { newAssociate ->
-                associate = newAssociate
+            onUpdateAssociate = {
+                associate = it
             },
-            onUpdateSharedElementKey = { newSharedElementKey ->
-                sharedElementKey = newSharedElementKey
-            },
-            onUpdateIsMoveFolderGridItemOutsideFolder = { newIsMoveFolderGridItemOutsideFolder ->
-                isMoveFolderGridItemOutsideFolder = newIsMoveFolderGridItemOutsideFolder
+            onUpdateSharedElementKey = {
+                sharedElementKey = it
             },
         )
     }
@@ -481,7 +421,6 @@ internal class PagerScreenState(
         onResetGridAfterDeleteGridItem: (GridItem) -> Unit,
         onDragCancelAfterMove: () -> Unit,
         onDragEndAfterMove: (MoveGridItemResult) -> Unit,
-        onDragEndAfterMoveFolder: () -> Unit,
     ) {
         handleDropGridItem(
             androidAppWidgetHostWrapper = androidAppWidgetHostWrapper,
@@ -498,18 +437,17 @@ internal class PagerScreenState(
             onResetGridAfterDeleteGridItem = onResetGridAfterDeleteGridItem,
             onDragCancelAfterMove = onDragCancelAfterMove,
             onDragEndAfterMove = onDragEndAfterMove,
-            onDragEndAfterMoveFolder = onDragEndAfterMoveFolder,
             onLaunchShortcutConfigIntent = onLaunchShortcutConfigIntent,
             onLaunchShortcutConfigIntentSenderRequest = onLaunchShortcutConfigIntentSenderRequest,
             onLaunchWidgetIntent = onLaunchWidgetIntent,
-            onUpdateAppWidgetId = { appWidgetId ->
-                lastAppWidgetId = appWidgetId
+            onUpdateAppWidgetId = {
+                lastAppWidgetId = it
             },
-            onUpdateIsDragging = { newIsDragging ->
-                isDragging = newIsDragging
+            onUpdateIsDragging = {
+                isDragging = it
             },
-            onUpdateWidgetGridItem = { gridItem ->
-                updatedWidgetGridItem = gridItem
+            onUpdateWidgetGridItem = {
+                updatedWidgetGridItem = it
             },
             onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
         )
@@ -534,7 +472,6 @@ internal class PagerScreenState(
 
     fun handleAnimateScrollToPageEffect(
         density: Density,
-        folderGridItem: GridItem?,
         paddingValues: PaddingValues,
         gridItemSource: GridItemSource?,
         layoutDirection: LayoutDirection,
@@ -543,23 +480,16 @@ internal class PagerScreenState(
             associate = associate,
             density = density,
             dragIntOffset = dragIntOffset,
-            folderGridItem = folderGridItem,
-            folderPopupIntOffset = folderPopupIntOffset,
-            folderPopupIntSize = folderPopupIntSize,
             gridItemSource = gridItemSource,
             isDragging = isDragging,
             paddingValues = paddingValues,
             screenWidth = screenWidth,
             layoutDirection = layoutDirection,
-            folderCellWidth = homeSettings.folderCellWidth,
-            onUpdateDockPageDirection = { pageDirection ->
-                dockPageDirection = pageDirection
+            onUpdateDockPageDirection = {
+                dockPageDirection = it
             },
-            onUpdateFolderPageDirection = { pageDirection ->
-                folderPageDirection = pageDirection
-            },
-            onUpdateGridPageDirection = { pageDirection ->
-                gridPageDirection = pageDirection
+            onUpdateGridPageDirection = {
+                gridPageDirection = it
             },
         )
     }
@@ -614,8 +544,8 @@ internal class PagerScreenState(
             onDeleteAppWidgetId = {
                 deleteAppWidgetId = true
             },
-            onUpdateWidgetGridItem = { gridItem ->
-                updatedWidgetGridItem = gridItem
+            onUpdateWidgetGridItem = {
+                updatedWidgetGridItem = it
             },
         )
     }
@@ -839,72 +769,12 @@ internal class PagerScreenState(
     fun handleIsScrollInProgress(
         isGridScrollInProgress: Boolean,
         isDockScrollInProgress: Boolean,
-        isFolderScrollInProgress: Boolean,
     ) {
         if (isGridScrollInProgress || isDockScrollInProgress) {
             dismissGridItemPopup()
 
             dismissSettingsPopup()
         }
-
-        if (isFolderScrollInProgress) {
-            dismissFolderGridItemPopup()
-        }
-    }
-
-    fun showFolder(
-        id: String?,
-        intOffset: IntOffset,
-        intSize: IntSize,
-        onUpdateFolderGridItemId: (String?) -> Unit,
-    ) {
-        lastFolderPopupX = intOffset.x
-        lastFolderPopupY = intOffset.y
-
-        lastFolderPopupWidth = intSize.width
-        lastFolderPopupHeight = intSize.height
-
-        folderPopupIntOffset = intOffset
-
-        folderPopupIntSize = intSize
-
-        onUpdateFolderGridItemId(id)
-    }
-
-    fun dismissFolder(onUpdateFolderGridItemId: (String?) -> Unit) {
-        lastFolderPopupX = 0
-        lastFolderPopupY = 0
-
-        lastFolderPopupWidth = 0
-        lastFolderPopupHeight = 0
-
-        folderPopupIntOffset = null
-
-        folderPopupIntSize = null
-
-        isCloseFolder = false
-
-        onUpdateFolderGridItemId(null)
-    }
-
-    fun moveFolderGridItemOutsideFolder(
-        moveGridItemResult: MoveGridItemResult?,
-        onMoveFolderGridItemOutsideFolder: (GridItem) -> Unit,
-    ) {
-        val movingGridItem = moveGridItemResult?.movingGridItem ?: return
-
-        folderPopupIntOffset = null
-
-        folderPopupIntSize = null
-
-        isMoveFolderGridItemOutsideFolder = false
-
-        sharedElementKey = SharedElementKey(
-            id = movingGridItem.id,
-            parent = SharedElementKey.Parent.Grid,
-        )
-
-        onMoveFolderGridItemOutsideFolder(movingGridItem)
     }
 
     fun updateOverlayBounds(
@@ -1386,10 +1256,6 @@ internal class PagerScreenState(
         }
     }
 
-    fun updateIsCloseFolder(value: Boolean) {
-        isCloseFolder = value
-    }
-
     fun updateIsCloseGridItemPopup(value: Boolean) {
         isCloseGridItemPopup = value
     }
@@ -1433,21 +1299,6 @@ internal class PagerScreenState(
                 )
             }
         }
-    }
-
-    fun updateFolderPopupBounds(
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) {
-        lastFolderPopupX = intOffset.x
-        lastFolderPopupY = intOffset.y
-
-        lastFolderPopupWidth = intSize.width
-        lastFolderPopupHeight = intSize.height
-
-        folderPopupIntOffset = intOffset
-
-        folderPopupIntSize = intSize
     }
 
     private fun handleApplyFling(
@@ -1505,20 +1356,12 @@ internal class PagerScreenState(
                 listOf(
                     it.lastSwipeUpY,
                     it.lastSwipeDownY,
-                    it.lastFolderPopupX,
-                    it.lastFolderPopupY,
-                    it.lastFolderPopupWidth,
-                    it.lastFolderPopupHeight,
                 )
             },
             restore = { saved ->
                 PagerScreenState(
-                    initialSwipeUpY = saved[0] as Float,
-                    initialSwipeDownY = saved[1] as Float,
-                    initialFolderX = saved[2] as Int,
-                    initialFolderY = saved[3] as Int,
-                    initialFolderWidth = saved[4] as Int,
-                    initialFolderHeight = saved[5] as Int,
+                    initialSwipeUpY = saved[0],
+                    initialSwipeDownY = saved[1],
                     screenWidth = screenWidth,
                     screenHeight = screenHeight,
                     fileManager = fileManager,
@@ -1604,10 +1447,6 @@ internal fun rememberPagerScreenState(
         PagerScreenState(
             initialSwipeUpY = screenHeight.toFloat(),
             initialSwipeDownY = screenHeight.toFloat(),
-            initialFolderX = 0,
-            initialFolderY = 0,
-            initialFolderWidth = 0,
-            initialFolderHeight = 0,
             screenWidth = screenWidth,
             screenHeight = screenHeight,
             fileManager = fileManager,

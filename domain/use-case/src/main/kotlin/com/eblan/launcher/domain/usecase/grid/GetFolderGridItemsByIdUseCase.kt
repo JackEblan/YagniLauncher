@@ -19,7 +19,8 @@ package com.eblan.launcher.domain.usecase.grid
 
 import com.eblan.launcher.domain.common.Dispatcher
 import com.eblan.launcher.domain.common.EblanDispatchers
-import com.eblan.launcher.domain.model.GridItem
+import com.eblan.launcher.domain.model.FolderPopup
+import com.eblan.launcher.domain.model.FolderPopupEntry
 import com.eblan.launcher.domain.repository.FolderGridItemRepository
 import com.eblan.launcher.domain.repository.UserDataRepository
 import kotlinx.coroutines.CoroutineDispatcher
@@ -34,17 +35,25 @@ class GetFolderGridItemsByIdUseCase @Inject constructor(
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) {
     operator fun invoke(
-        idFlow: Flow<String?>,
-    ): Flow<GridItem?> = combine(
+        folderPopupEntriesFlow: Flow<List<FolderPopupEntry>>,
+    ): Flow<List<FolderPopup>> = combine(
         userDataRepository.userDataFlow,
-        idFlow,
-        folderGridItemRepository.folderGridItemWrappersFlow,
-    ) { userData, id, folderGridItemWrappers ->
-        folderGridItemWrappers.firstOrNull { folderGridItemWrapper ->
-            folderGridItemWrapper.folderGridItem.id == id
-        }?.asGridItem(
-            maxFolderColumns = userData.homeSettings.maxFolderColumns,
-            maxFolderRows = userData.homeSettings.maxFolderRows,
-        )
+        folderPopupEntriesFlow,
+        folderGridItemRepository.folderGridItemWrappersWithFolderIdFlow,
+    ) { userData, folderPopupEntries, folderGridItemWrappers ->
+        folderPopupEntries.mapNotNull { folderPopupEntry ->
+            folderGridItemWrappers.firstOrNull { folderGridItemWrapper ->
+                folderGridItemWrapper.folderGridItem.id == folderPopupEntry.id
+            }?.let { folderGridItemWrapper ->
+                FolderPopup(
+                    folderPopupEntry = folderPopupEntry,
+                    gridItem = folderGridItemWrapper.asGridItem(
+                        folderGridItemRepository = folderGridItemRepository,
+                        maxFolderColumns = userData.homeSettings.maxFolderColumns,
+                        maxFolderRows = userData.homeSettings.maxFolderRows,
+                    ),
+                )
+            }
+        }
     }.flowOn(defaultDispatcher)
 }

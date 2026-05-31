@@ -41,4 +41,6 @@ data class FolderGridItemEntity(
     @Embedded(prefix = "doubleTap_") val doubleTap: EblanAction,
     @Embedded(prefix = "swipeUp_") val swipeUp: EblanAction,
     @Embedded(prefix = "swipeDown_") val swipeDown: EblanAction,
+    val index: Int,
+    val folderId: String?,
 )

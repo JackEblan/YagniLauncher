@@ -18,25 +18,41 @@
 package com.eblan.launcher.data.repository
 
 import com.eblan.launcher.data.repository.mapper.asEntity
-import com.eblan.launcher.data.repository.mapper.asFolderGridItemData
+import com.eblan.launcher.data.repository.mapper.asFolderGridItemWrapper
 import com.eblan.launcher.data.room.dao.FolderGridItemDao
 import com.eblan.launcher.domain.model.FolderGridItem
 import com.eblan.launcher.domain.model.FolderGridItemWrapper
 import com.eblan.launcher.domain.repository.FolderGridItemRepository
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
-import kotlin.collections.map
 
 internal class DefaultFolderGridItemRepository @Inject constructor(private val folderGridItemDao: FolderGridItemDao) : FolderGridItemRepository {
     override val folderGridItemWrappersFlow =
-        folderGridItemDao.getFolderGridItemWrappersFlow().map { entities ->
-            entities.map { entity ->
-                entity.asFolderGridItemData()
+        folderGridItemDao.getFolderGridItemWrapperEntitiesFlow().map { entities ->
+            entities.filter { entity ->
+                entity.folderGridItemEntity.folderId == null
+            }.map { entity ->
+                entity.asFolderGridItemWrapper()
             }
         }
 
-    override suspend fun getFolderGridItemWrappers(): List<FolderGridItemWrapper> = folderGridItemDao.getFolderGridItemWrappers().map { entity ->
-        entity.asFolderGridItemData()
+    override val folderGridItemWrappersWithFolderIdFlow =
+        folderGridItemDao.getFolderGridItemWrapperEntitiesFlow().map { entities ->
+            entities.map { entity ->
+                entity.asFolderGridItemWrapper()
+            }
+        }
+
+    override suspend fun getFolderGridItemWrapper(id: String): FolderGridItemWrapper? = folderGridItemDao.getFolderGridItemWrapperEntity(id = id)?.asFolderGridItemWrapper()
+
+    override suspend fun getFolderGridItemWrappers(): List<FolderGridItemWrapper> = folderGridItemDao.getFolderGridItemWrapperEntities().filter { entity ->
+        entity.folderGridItemEntity.folderId == null
+    }.map { entity ->
+        entity.asFolderGridItemWrapper()
+    }
+
+    override suspend fun getFolderGridItemWrappersWithFolderId(): List<FolderGridItemWrapper> = folderGridItemDao.getFolderGridItemWrapperEntities().map { entity ->
+        entity.asFolderGridItemWrapper()
     }
 
     override suspend fun upsertFolderGridItems(folderGridItems: List<FolderGridItem>) {

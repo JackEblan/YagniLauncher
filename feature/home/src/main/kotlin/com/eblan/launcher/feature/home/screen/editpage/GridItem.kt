@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest.Builder
 import coil3.request.addLastModifiedToFileCacheKey
+import coil3.size.Size
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
@@ -341,6 +342,7 @@ private fun FolderGridItem(
                         PreviewFolderGridItemContent(
                             gridItem = gridItem,
                             iconPackFilePaths = iconPackFilePaths,
+                            textColor = textColor,
                         )
                     },
                 )
@@ -474,7 +476,10 @@ private fun PreviewFolderGridItemContent(
     modifier: Modifier = Modifier,
     gridItem: GridItem,
     iconPackFilePaths: Map<String, String>,
+    textColor: Color,
 ) {
+    val context = LocalContext.current
+
     key(gridItem.id) {
         val commonModifier = modifier
             .padding(1.dp)
@@ -486,7 +491,7 @@ private fun PreviewFolderGridItemContent(
                         ?: data.icon
 
                 AsyncImage(
-                    model = Builder(LocalContext.current)
+                    model = Builder(context)
                         .data(data.customIcon ?: icon)
                         .addLastModifiedToFileCacheKey(true).build(),
                     contentDescription = null,
@@ -514,7 +519,7 @@ private fun PreviewFolderGridItemContent(
                 }
 
                 AsyncImage(
-                    model = Builder(LocalContext.current)
+                    model = Builder(context)
                         .data(icon)
                         .addLastModifiedToFileCacheKey(true).build(),
                     contentDescription = null,
@@ -524,12 +529,33 @@ private fun PreviewFolderGridItemContent(
 
             is GridItemData.ShortcutInfo -> {
                 AsyncImage(
-                    model = Builder(LocalContext.current)
+                    model = Builder(context)
                         .data(data.customIcon ?: data.icon)
                         .addLastModifiedToFileCacheKey(true).build(),
                     contentDescription = null,
                     modifier = commonModifier,
                 )
+            }
+
+            is GridItemData.Folder -> {
+                if (data.icon != null) {
+                    AsyncImage(
+                        model = Builder(context)
+                            .data(data.icon)
+                            .addLastModifiedToFileCacheKey(true)
+                            .size(Size.ORIGINAL)
+                            .build(),
+                        contentDescription = null,
+                        modifier = commonModifier,
+                    )
+                } else {
+                    Icon(
+                        imageVector = EblanLauncherIcons.Folder,
+                        contentDescription = null,
+                        tint = textColor,
+                        modifier = commonModifier,
+                    )
+                }
             }
 
             else -> Unit

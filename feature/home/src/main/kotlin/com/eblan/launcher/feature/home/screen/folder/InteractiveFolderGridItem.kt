@@ -29,11 +29,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -64,19 +66,22 @@ import coil3.compose.AsyncImage
 import coil3.request.ImageRequest.Builder
 import coil3.request.addLastModifiedToFileCacheKey
 import coil3.size.Size
+import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
+import com.eblan.launcher.domain.model.FolderPopupEntry
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.GridItemSettings
 import com.eblan.launcher.domain.model.MoveGridItemResult
+import com.eblan.launcher.feature.home.component.PreviewFolderGridLayout
 import com.eblan.launcher.feature.home.component.swipeGestures
 import com.eblan.launcher.feature.home.model.Drag
-import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
+import com.eblan.launcher.feature.home.util.FOLDER_PREVIEW_COLUMNS
+import com.eblan.launcher.feature.home.util.FOLDER_PREVIEW_ROWS
 import com.eblan.launcher.feature.home.util.getHorizontalAlignment
 import com.eblan.launcher.feature.home.util.getVerticalArrangement
 import com.eblan.launcher.feature.home.util.handleDrag
 import com.eblan.launcher.feature.home.util.onDoubleTap
-import com.eblan.launcher.feature.home.util.onLongPress
 import com.eblan.launcher.feature.home.util.onPress
 import com.eblan.launcher.ui.local.LocalLauncherApps
 import com.eblan.launcher.ui.local.LocalSettings
@@ -84,7 +89,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-internal fun SharedTransitionScope.InteractiveFolderGridItemContent(
+internal fun SharedTransitionScope.InteractiveFolderGridItem(
     modifier: Modifier = Modifier,
     drag: Drag,
     gridItem: GridItem,
@@ -94,7 +99,6 @@ internal fun SharedTransitionScope.InteractiveFolderGridItemContent(
     isScrollInProgress: Boolean,
     statusBarNotifications: Map<String, Int>,
     isVisibleOverlay: Boolean,
-    newGridItemSource: GridItemSource,
     sharedElementKey: SharedElementKey,
     moveGridItemResult: MoveGridItemResult?,
     progress: Float,
@@ -111,7 +115,6 @@ internal fun SharedTransitionScope.InteractiveFolderGridItemContent(
         packageName: String,
         shortcutId: String,
     ) -> Unit,
-    onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
     onUpdateOverlayBounds: (
@@ -126,6 +129,7 @@ internal fun SharedTransitionScope.InteractiveFolderGridItemContent(
     onUpdateIsCloseFolderGridItemPopup: (Boolean) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
+    onUpsertFolderPopupEntry: (FolderPopupEntry) -> Unit,
 ) {
     val isSelected =
         moveGridItemResult != null && moveGridItemResult.movingGridItem.id == gridItem.id
@@ -150,7 +154,6 @@ internal fun SharedTransitionScope.InteractiveFolderGridItemContent(
                 isScrollInProgress = isScrollInProgress,
                 isSelected = isSelected,
                 isVisibleOverlay = isVisibleOverlay,
-                newGridItemSource = newGridItemSource,
                 sharedElementKey = sharedElementKey,
                 statusBarNotifications = statusBarNotifications,
                 padding = padding,
@@ -160,7 +163,6 @@ internal fun SharedTransitionScope.InteractiveFolderGridItemContent(
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
                 onTapApplicationInfo = onTapApplicationInfo,
-                onUpdateGridItemSource = onUpdateGridItemSource,
                 onUpdateImageBitmap = onUpdateImageBitmap,
                 onUpdateIsDragging = onUpdateIsDragging,
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
@@ -181,7 +183,6 @@ internal fun SharedTransitionScope.InteractiveFolderGridItemContent(
                 isScrollInProgress = isScrollInProgress,
                 isSelected = isSelected,
                 isVisibleOverlay = isVisibleOverlay,
-                newGridItemSource = newGridItemSource,
                 sharedElementKey = sharedElementKey,
                 padding = padding,
                 isDragging = isDragging,
@@ -190,7 +191,6 @@ internal fun SharedTransitionScope.InteractiveFolderGridItemContent(
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
                 onTapShortcutInfo = onTapShortcutInfo,
-                onUpdateGridItemSource = onUpdateGridItemSource,
                 onUpdateImageBitmap = onUpdateImageBitmap,
                 onUpdateIsDragging = onUpdateIsDragging,
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
@@ -210,7 +210,6 @@ internal fun SharedTransitionScope.InteractiveFolderGridItemContent(
                 isScrollInProgress = isScrollInProgress,
                 isSelected = isSelected,
                 isVisibleOverlay = isVisibleOverlay,
-                newGridItemSource = newGridItemSource,
                 sharedElementKey = sharedElementKey,
                 padding = padding,
                 isDragging = isDragging,
@@ -219,7 +218,6 @@ internal fun SharedTransitionScope.InteractiveFolderGridItemContent(
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
                 onTapShortcutConfig = onTapShortcutConfig,
-                onUpdateGridItemSource = onUpdateGridItemSource,
                 onUpdateImageBitmap = onUpdateImageBitmap,
                 onUpdateIsDragging = onUpdateIsDragging,
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
@@ -229,9 +227,34 @@ internal fun SharedTransitionScope.InteractiveFolderGridItemContent(
             )
         }
 
-        is GridItemData.Widget,
-        is GridItemData.Folder,
-        -> error("Unsupported Folder Grid Item")
+        is GridItemData.Folder -> {
+            InteractiveNestedFolderGridItem(
+                modifier = modifier,
+                data = data,
+                drag = drag,
+                gridItem = gridItem,
+                gridItemSettings = currentGridItemSettings,
+                iconPackFilePaths = iconPackFilePaths,
+                isScrollInProgress = isScrollInProgress,
+                isSelected = isSelected,
+                isVisibleOverlay = isVisibleOverlay,
+                sharedElementKey = sharedElementKey,
+                isDragging = isDragging,
+                isCloseFolderGridItemPopup = isCloseFolderGridItemPopup,
+                onUpdateIsCloseFolderGridItemPopup = onUpdateIsCloseFolderGridItemPopup,
+                onOpenAppDrawer = onOpenAppDrawer,
+                onShowGridItemPopup = onShowGridItemPopup,
+                onUpsertFolderPopupEntry = onUpsertFolderPopupEntry,
+                onUpdateImageBitmap = onUpdateImageBitmap,
+                onUpdateIsDragging = onUpdateIsDragging,
+                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                onUpdateOverlayBounds = onUpdateOverlayBounds,
+                onUpdateSharedElementKey = onUpdateSharedElementKey,
+                onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+            )
+        }
+
+        else -> error("Unsupported Folder Grid Item")
     }
 }
 
@@ -247,7 +270,6 @@ private fun SharedTransitionScope.InteractiveFolderApplicationInfoGridItem(
     isScrollInProgress: Boolean,
     isSelected: Boolean,
     isVisibleOverlay: Boolean,
-    newGridItemSource: GridItemSource,
     sharedElementKey: SharedElementKey,
     statusBarNotifications: Map<String, Int>,
     padding: Dp,
@@ -263,7 +285,6 @@ private fun SharedTransitionScope.InteractiveFolderApplicationInfoGridItem(
         serialNumber: Long,
         componentName: String,
     ) -> Unit,
-    onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
@@ -347,15 +368,13 @@ private fun SharedTransitionScope.InteractiveFolderApplicationInfoGridItem(
                     onLongPress = if (!isVisibleOverlay) {
                         {
                             scope.launch {
-                                onLongPress(
+                                onLongPressFolderGridItem(
                                     graphicsLayer = graphicsLayer,
                                     intOffset = intOffset,
                                     intSize = intSize,
-                                    gridItemSource = newGridItemSource,
                                     sharedElementKey = sharedElementKey,
                                     gridItem = gridItem,
                                     scale = scale,
-                                    onUpdateGridItemSource = onUpdateGridItemSource,
                                     onUpdateImageBitmap = onUpdateImageBitmap,
                                     onUpdateOverlayBounds = onUpdateOverlayBounds,
                                     onUpdateSharedElementKey = onUpdateSharedElementKey,
@@ -484,7 +503,6 @@ private fun SharedTransitionScope.InteractiveFolderShortcutInfoGridItem(
     isScrollInProgress: Boolean,
     isSelected: Boolean,
     isVisibleOverlay: Boolean,
-    newGridItemSource: GridItemSource,
     sharedElementKey: SharedElementKey,
     padding: Dp,
     isDragging: Boolean,
@@ -500,7 +518,6 @@ private fun SharedTransitionScope.InteractiveFolderShortcutInfoGridItem(
         packageName: String,
         shortcutId: String,
     ) -> Unit,
-    onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
@@ -578,15 +595,13 @@ private fun SharedTransitionScope.InteractiveFolderShortcutInfoGridItem(
                     onLongPress = if (!isVisibleOverlay) {
                         {
                             scope.launch {
-                                onLongPress(
+                                onLongPressFolderGridItem(
                                     graphicsLayer = graphicsLayer,
                                     intOffset = intOffset,
                                     intSize = intSize,
-                                    gridItemSource = newGridItemSource,
                                     sharedElementKey = sharedElementKey,
                                     gridItem = gridItem,
                                     scale = scale,
-                                    onUpdateGridItemSource = onUpdateGridItemSource,
                                     onUpdateImageBitmap = onUpdateImageBitmap,
                                     onUpdateOverlayBounds = onUpdateOverlayBounds,
                                     onUpdateSharedElementKey = onUpdateSharedElementKey,
@@ -715,7 +730,6 @@ private fun SharedTransitionScope.InteractiveFolderShortcutConfigGridItem(
     isScrollInProgress: Boolean,
     isSelected: Boolean,
     isVisibleOverlay: Boolean,
-    newGridItemSource: GridItemSource,
     sharedElementKey: SharedElementKey,
     padding: Dp,
     isDragging: Boolean,
@@ -727,7 +741,6 @@ private fun SharedTransitionScope.InteractiveFolderShortcutConfigGridItem(
         intSize: IntSize,
     ) -> Unit,
     onTapShortcutConfig: (String) -> Unit,
-    onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
@@ -837,15 +850,13 @@ private fun SharedTransitionScope.InteractiveFolderShortcutConfigGridItem(
                     onLongPress = if (!isVisibleOverlay) {
                         {
                             scope.launch {
-                                onLongPress(
+                                onLongPressFolderGridItem(
                                     graphicsLayer = graphicsLayer,
                                     intOffset = intOffset,
                                     intSize = intSize,
-                                    gridItemSource = newGridItemSource,
                                     sharedElementKey = sharedElementKey,
                                     gridItem = gridItem,
                                     scale = scale,
-                                    onUpdateGridItemSource = onUpdateGridItemSource,
                                     onUpdateImageBitmap = onUpdateImageBitmap,
                                     onUpdateOverlayBounds = onUpdateOverlayBounds,
                                     onUpdateSharedElementKey = onUpdateSharedElementKey,
@@ -938,6 +949,332 @@ private fun SharedTransitionScope.InteractiveFolderShortcutConfigGridItem(
                 fontSize = gridItemSettings.textSize.sp,
                 overflow = TextOverflow.Ellipsis,
             )
+        }
+    }
+}
+
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Composable
+private fun SharedTransitionScope.InteractiveNestedFolderGridItem(
+    modifier: Modifier = Modifier,
+    data: GridItemData.Folder,
+    drag: Drag,
+    gridItem: GridItem,
+    gridItemSettings: GridItemSettings,
+    iconPackFilePaths: Map<String, String>,
+    isScrollInProgress: Boolean,
+    isSelected: Boolean,
+    isVisibleOverlay: Boolean,
+    sharedElementKey: SharedElementKey,
+    isDragging: Boolean,
+    isCloseFolderGridItemPopup: Boolean,
+    onUpdateIsCloseFolderGridItemPopup: (Boolean) -> Unit,
+    onOpenAppDrawer: () -> Unit,
+    onShowGridItemPopup: (
+        intOffset: IntOffset,
+        intSize: IntSize,
+    ) -> Unit,
+    onUpsertFolderPopupEntry: (FolderPopupEntry) -> Unit,
+    onUpdateImageBitmap: (ImageBitmap) -> Unit,
+    onUpdateIsDragging: (Boolean) -> Unit,
+    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+    onUpdateOverlayBounds: (
+        intOffset: IntOffset,
+        intSize: IntSize,
+    ) -> Unit,
+    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
+    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
+) {
+    val launcherApps = LocalLauncherApps.current
+
+    val context = LocalContext.current
+
+    var intOffset by remember { mutableStateOf(IntOffset.Zero) }
+
+    var intSize by remember { mutableStateOf(IntSize.Zero) }
+
+    val graphicsLayer = rememberGraphicsLayer()
+
+    val scope = rememberCoroutineScope()
+
+    val horizontalAlignment =
+        getHorizontalAlignment(horizontalAlignment = gridItemSettings.horizontalAlignment)
+
+    val verticalArrangement =
+        getVerticalArrangement(verticalArrangement = gridItemSettings.verticalArrangement)
+
+    val maxLines = if (gridItemSettings.singleLineLabel) 1 else Int.MAX_VALUE
+
+    val hasInteraction = isSelected && isVisibleOverlay
+
+    val alpha = if (hasInteraction) 0f else 1f
+
+    val scale = remember { Animatable(1f) }
+
+    LaunchedEffect(
+        drag,
+        hasInteraction,
+        isDragging,
+        isCloseFolderGridItemPopup,
+    ) {
+        handleDrag(
+            drag = drag,
+            hasInteraction = hasInteraction,
+            scale = scale,
+            isDragging = isDragging,
+            isCloseGridItemPopup = isCloseFolderGridItemPopup,
+            onUpdateIsDragging = onUpdateIsDragging,
+            onUpdateIsCloseGridItemPopup = onUpdateIsCloseFolderGridItemPopup,
+        )
+    }
+
+    Column(
+        modifier = modifier
+            .pointerInput(key1 = isVisibleOverlay) {
+                detectTapGestures(
+                    onDoubleTap = if (!isVisibleOverlay) {
+                        {
+                            onDoubleTap(
+                                context = context,
+                                doubleTap = gridItem.doubleTap,
+                                launcherApps = launcherApps,
+                                scope = scope,
+                                onOpenAppDrawer = onOpenAppDrawer,
+                            )
+                        }
+                    } else {
+                        null
+                    },
+                    onLongPress = if (!isVisibleOverlay) {
+                        {
+                            scope.launch {
+                                onLongPressFolderGridItem(
+                                    graphicsLayer = graphicsLayer,
+                                    intOffset = intOffset,
+                                    intSize = intSize,
+                                    sharedElementKey = sharedElementKey,
+                                    gridItem = gridItem,
+                                    scale = scale,
+                                    onUpdateImageBitmap = onUpdateImageBitmap,
+                                    onUpdateOverlayBounds = onUpdateOverlayBounds,
+                                    onUpdateSharedElementKey = onUpdateSharedElementKey,
+                                    onShowGridItemPopup = onShowGridItemPopup,
+                                    onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                                    onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                                )
+                            }
+                        }
+                    } else {
+                        null
+                    },
+                    onTap = if (!isVisibleOverlay) {
+                        {
+                            scope.launch {
+                                scale.animateTo(0.5f)
+
+                                scale.animateTo(1f)
+
+                                onUpsertFolderPopupEntry(
+                                    FolderPopupEntry(
+                                        id = gridItem.id,
+                                        x = intOffset.x,
+                                        y = intOffset.y,
+                                        width = intSize.width,
+                                        height = intSize.height,
+                                        isCloseFolder = false,
+                                    ),
+                                )
+                            }
+                        }
+                    } else {
+                        null
+                    },
+                    onPress = {
+                        onPress(
+                            isVisibleOverlay = isVisibleOverlay,
+                            scale = scale,
+                        )
+                    },
+                )
+            }
+            .swipeGestures(
+                swipeDown = gridItem.swipeDown,
+                swipeUp = gridItem.swipeUp,
+                onOpenAppDrawer = onOpenAppDrawer,
+            )
+            .fillMaxSize()
+            .padding(gridItemSettings.padding.dp)
+            .background(
+                color = Color(gridItemSettings.customBackgroundColor),
+                shape = RoundedCornerShape(size = gridItemSettings.cornerRadius.dp),
+            ),
+        horizontalAlignment = horizontalAlignment,
+        verticalArrangement = verticalArrangement,
+    ) {
+        val commonModifier = Modifier
+            .size(gridItemSettings.iconSize.dp)
+            .scale(scale.value)
+            .alpha(alpha)
+            .drawWithContent {
+                graphicsLayer.record {
+                    this@drawWithContent.drawContent()
+                }
+
+                drawLayer(graphicsLayer)
+            }
+            .onGloballyPositioned { layoutCoordinates ->
+                intOffset = layoutCoordinates.positionInRoot().round()
+
+                intSize = layoutCoordinates.size
+            }
+            .run {
+                if (!hasInteraction) {
+                    sharedElementWithCallerManagedVisibility(
+                        rememberSharedContentState(
+                            key = sharedElementKey,
+                        ),
+                        visible = !isScrollInProgress,
+                    )
+                } else {
+                    this
+                }
+            }
+
+        if (data.icon != null) {
+            AsyncImage(
+                model = data.icon,
+                contentDescription = null,
+                modifier = commonModifier,
+            )
+        } else {
+            Box(
+                modifier = commonModifier.background(
+                    color = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f),
+                    shape = RoundedCornerShape(5.dp),
+                ),
+            ) {
+                PreviewFolderGridLayout(
+                    modifier = Modifier.matchParentSize(),
+                    gridItems = data.gridItemsByPage.values.firstOrNull()
+                        ?.take(FOLDER_PREVIEW_COLUMNS * FOLDER_PREVIEW_ROWS),
+                    content = { gridItem ->
+                        PreviewNestedFolderGridItem(
+                            alpha = alpha,
+                            gridItem = gridItem,
+                            iconPackFilePaths = iconPackFilePaths,
+                        )
+                    },
+                )
+            }
+        }
+
+        if (gridItemSettings.showLabel) {
+            Text(
+                modifier = Modifier.alpha(alpha),
+                text = data.label,
+                textAlign = TextAlign.Center,
+                maxLines = maxLines,
+                fontSize = gridItemSettings.textSize.sp,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
+    }
+}
+
+@Composable
+private fun PreviewNestedFolderGridItem(
+    modifier: Modifier = Modifier,
+    alpha: Float,
+    gridItem: GridItem,
+    iconPackFilePaths: Map<String, String>,
+) {
+    val context = LocalContext.current
+
+    key(gridItem.id) {
+        val commonModifier = modifier
+            .padding(1.dp)
+            .alpha(alpha)
+
+        when (val data = gridItem.data) {
+            is GridItemData.ApplicationInfo -> {
+                val icon =
+                    iconPackFilePaths[data.componentName]
+                        ?: data.icon
+
+                AsyncImage(
+                    model = Builder(context)
+                        .data(data.customIcon ?: icon)
+                        .addLastModifiedToFileCacheKey(true)
+                        .size(Size.ORIGINAL)
+                        .build(),
+                    contentDescription = null,
+                    modifier = commonModifier,
+                )
+            }
+
+            is GridItemData.ShortcutConfig -> {
+                val icon = when {
+                    data.customIcon != null -> {
+                        data.customIcon
+                    }
+
+                    data.shortcutIntentIcon != null -> {
+                        data.shortcutIntentIcon
+                    }
+
+                    data.activityIcon != null -> {
+                        data.activityIcon
+                    }
+
+                    else -> {
+                        data.applicationIcon
+                    }
+                }
+
+                AsyncImage(
+                    model = Builder(context)
+                        .data(icon)
+                        .addLastModifiedToFileCacheKey(true)
+                        .size(Size.ORIGINAL)
+                        .build(),
+                    contentDescription = null,
+                    modifier = commonModifier,
+                )
+            }
+
+            is GridItemData.ShortcutInfo -> {
+                AsyncImage(
+                    model = Builder(context)
+                        .data(data.customIcon ?: data.icon)
+                        .addLastModifiedToFileCacheKey(true)
+                        .size(Size.ORIGINAL)
+                        .build(),
+                    contentDescription = null,
+                    modifier = commonModifier,
+                )
+            }
+
+            is GridItemData.Folder -> {
+                if (data.icon != null) {
+                    AsyncImage(
+                        model = Builder(context)
+                            .data(data.icon)
+                            .addLastModifiedToFileCacheKey(true)
+                            .size(Size.ORIGINAL)
+                            .build(),
+                        contentDescription = null,
+                        modifier = commonModifier,
+                    )
+                } else {
+                    Icon(
+                        imageVector = EblanLauncherIcons.Folder,
+                        contentDescription = null,
+                        modifier = commonModifier,
+                    )
+                }
+            }
+
+            else -> Unit
         }
     }
 }
