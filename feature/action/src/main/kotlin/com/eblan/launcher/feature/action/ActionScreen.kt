@@ -48,7 +48,6 @@ import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.EblanAction
 import com.eblan.launcher.domain.model.EblanActionType
 import com.eblan.launcher.domain.model.EblanApplicationInfo
-import com.eblan.launcher.domain.model.EblanUser
 import com.eblan.launcher.feature.action.model.ActionUiState
 import com.eblan.launcher.ui.dialog.SelectApplicationDialog
 import com.eblan.launcher.ui.settings.getEblanActionTypeSubtitle
@@ -126,7 +125,7 @@ internal fun ActionScreen(
 @Composable
 private fun Success(
     modifier: Modifier = Modifier,
-    eblanApplicationInfos: Map<EblanUser, List<EblanApplicationInfo>>,
+    eblanApplicationInfos: List<EblanApplicationInfo>,
     onUpdateEblanAction: suspend (
         resId: Int,
         eblanAction: EblanAction,

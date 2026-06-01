@@ -84,7 +84,7 @@ internal class EditGridItemViewModel @Inject constructor(
     val eblanApplicationInfos = getEblanApplicationInfosByUserUseCase().stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = emptyMap(),
+        initialValue = emptyList(),
     )
 
     private val _iconPackInfoComponents = MutableStateFlow(emptyList<IconPackInfoComponent>())

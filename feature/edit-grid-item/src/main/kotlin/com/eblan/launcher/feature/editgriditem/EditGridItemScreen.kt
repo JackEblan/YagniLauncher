@@ -95,7 +95,7 @@ internal fun EditGridItemRoute(
 @Composable
 internal fun EditGridItemScreen(
     modifier: Modifier = Modifier,
-    eblanApplicationInfos: Map<EblanUser, List<EblanApplicationInfo>>,
+    eblanApplicationInfos: List<EblanApplicationInfo>,
     editGridItemUiState: EditGridItemUiState,
     iconPackInfoComponents: List<IconPackInfoComponent>,
     packageManagerIconPackInfos: List<PackageManagerIconPackInfo>,
@@ -158,7 +158,7 @@ internal fun EditGridItemScreen(
 @Composable
 private fun Success(
     modifier: Modifier = Modifier,
-    eblanApplicationInfos: Map<EblanUser, List<EblanApplicationInfo>>,
+    eblanApplicationInfos: List<EblanApplicationInfo>,
     gridItem: GridItem,
     iconPackInfoComponents: List<IconPackInfoComponent>,
     packageManagerIconPackInfos: List<PackageManagerIconPackInfo>,

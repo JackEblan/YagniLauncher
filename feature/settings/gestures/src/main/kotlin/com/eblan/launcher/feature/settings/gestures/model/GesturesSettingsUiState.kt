@@ -18,7 +18,6 @@
 package com.eblan.launcher.feature.settings.gestures.model
 
 import com.eblan.launcher.domain.model.EblanApplicationInfo
-import com.eblan.launcher.domain.model.EblanUser
 import com.eblan.launcher.domain.model.GestureSettings
 
 internal sealed interface GesturesSettingsUiState {
@@ -26,6 +25,6 @@ internal sealed interface GesturesSettingsUiState {
 
     data class Success(
         val gestureSettings: GestureSettings,
-        val eblanApplicationInfos: Map<EblanUser, List<EblanApplicationInfo>>,
+        val eblanApplicationInfos: List<EblanApplicationInfo>,
     ) : GesturesSettingsUiState
 }

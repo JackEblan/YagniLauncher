@@ -51,7 +51,6 @@ import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.EblanAction
 import com.eblan.launcher.domain.model.EblanActionType
 import com.eblan.launcher.domain.model.EblanApplicationInfo
-import com.eblan.launcher.domain.model.EblanUser
 import com.eblan.launcher.ui.local.LocalAccessibilityManager
 import com.eblan.launcher.ui.settings.getEblanActionTypeSubtitle
 
@@ -61,7 +60,7 @@ internal fun EblanActionDialog(
     modifier: Modifier = Modifier,
     title: String,
     eblanAction: EblanAction,
-    eblanApplicationInfos: Map<EblanUser, List<EblanApplicationInfo>>,
+    eblanApplicationInfos: List<EblanApplicationInfo>,
     onSelectEblanAction: (EblanAction) -> Unit,
     onDismissRequest: () -> Unit,
 ) {

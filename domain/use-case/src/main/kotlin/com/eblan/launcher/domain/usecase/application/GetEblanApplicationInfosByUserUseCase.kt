@@ -19,9 +19,7 @@ package com.eblan.launcher.domain.usecase.application
 
 import com.eblan.launcher.domain.common.Dispatcher
 import com.eblan.launcher.domain.common.EblanDispatchers
-import com.eblan.launcher.domain.framework.LauncherAppsWrapper
 import com.eblan.launcher.domain.model.EblanApplicationInfo
-import com.eblan.launcher.domain.model.EblanUser
 import com.eblan.launcher.domain.repository.EblanApplicationInfoRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
@@ -31,21 +29,18 @@ import javax.inject.Inject
 
 class GetEblanApplicationInfosByUserUseCase @Inject constructor(
     private val eblanApplicationInfoRepository: EblanApplicationInfoRepository,
-    private val launcherAppsWrapper: LauncherAppsWrapper,
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) {
-    operator fun invoke(): Flow<Map<EblanUser, List<EblanApplicationInfo>>> = eblanApplicationInfoRepository.eblanApplicationInfosFlow
+    operator fun invoke(): Flow<List<EblanApplicationInfo>> = eblanApplicationInfoRepository.eblanApplicationInfosFlow
         .map { eblanApplicationInfos ->
             eblanApplicationInfos.filter { eblanApplicationInfo ->
                 !eblanApplicationInfo.isHidden
             }.sortedWith(
                 compareBy(
-                    { it.serialNumber },
                     { it.label.lowercase() },
+                    { it.serialNumber },
                 ),
-            ).groupBy { eblanApplicationInfo ->
-                launcherAppsWrapper.getUser(serialNumber = eblanApplicationInfo.serialNumber)
-            }
+            )
         }
         .flowOn(defaultDispatcher)
 }

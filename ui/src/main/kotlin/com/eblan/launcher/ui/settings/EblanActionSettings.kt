@@ -31,7 +31,6 @@ import androidx.compose.ui.unit.dp
 import com.eblan.launcher.domain.model.EblanAction
 import com.eblan.launcher.domain.model.EblanActionType
 import com.eblan.launcher.domain.model.EblanApplicationInfo
-import com.eblan.launcher.domain.model.EblanUser
 import com.eblan.launcher.ui.dialog.EblanActionDialog
 
 @Composable
@@ -40,7 +39,7 @@ fun EblanActionSettings(
     doubleTap: EblanAction,
     swipeUp: EblanAction,
     swipeDown: EblanAction,
-    eblanApplicationInfos: Map<EblanUser, List<EblanApplicationInfo>>,
+    eblanApplicationInfos: List<EblanApplicationInfo>,
     onUpdateDoubleTap: (EblanAction) -> Unit,
     onUpdateSwipeUp: (EblanAction) -> Unit,
     onUpdateSwipeDown: (EblanAction) -> Unit,
