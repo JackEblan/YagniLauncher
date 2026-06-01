@@ -29,36 +29,27 @@ import javax.inject.Inject
 internal class DefaultFolderGridItemRepository @Inject constructor(private val folderGridItemDao: FolderGridItemDao) : FolderGridItemRepository {
     override val folderGridItemWrappersFlow =
         folderGridItemDao.getFolderGridItemWrapperEntitiesFlow().map { entities ->
-            entities.filter { entity ->
-                entity.folderGridItemEntity.folderId == null
-            }.map { entity ->
-                entity.asFolderGridItemWrapper()
-            }
+            entities.filter { it.folderGridItemEntity.folderId == null }
+                .map { it.asFolderGridItemWrapper() }
         }
 
     override val folderGridItemWrappersWithFolderIdFlow =
         folderGridItemDao.getFolderGridItemWrapperEntitiesFlow().map { entities ->
-            entities.map { entity ->
-                entity.asFolderGridItemWrapper()
-            }
+            entities.map { it.asFolderGridItemWrapper() }
         }
 
     override suspend fun getFolderGridItemWrapper(id: String): FolderGridItemWrapper? = folderGridItemDao.getFolderGridItemWrapperEntity(id = id)?.asFolderGridItemWrapper()
 
-    override suspend fun getFolderGridItemWrappers(): List<FolderGridItemWrapper> = folderGridItemDao.getFolderGridItemWrapperEntities().filter { entity ->
-        entity.folderGridItemEntity.folderId == null
-    }.map { entity ->
-        entity.asFolderGridItemWrapper()
-    }
+    override suspend fun getFolderGridItemWrappers(): List<FolderGridItemWrapper> = folderGridItemDao.getFolderGridItemWrapperEntities().filter {
+        it.folderGridItemEntity.folderId == null
+    }.map { it.asFolderGridItemWrapper() }
 
-    override suspend fun getFolderGridItemWrappersWithFolderId(): List<FolderGridItemWrapper> = folderGridItemDao.getFolderGridItemWrapperEntities().map { entity ->
-        entity.asFolderGridItemWrapper()
+    override suspend fun getFolderGridItemWrappersWithFolderId(): List<FolderGridItemWrapper> = folderGridItemDao.getFolderGridItemWrapperEntities().map {
+        it.asFolderGridItemWrapper()
     }
 
     override suspend fun upsertFolderGridItems(folderGridItems: List<FolderGridItem>) {
-        val entities = folderGridItems.map { folderGridItem ->
-            folderGridItem.asEntity()
-        }
+        val entities = folderGridItems.map { it.asEntity() }
 
         folderGridItemDao.upsertFolderGridItemEntities(entities = entities)
     }
@@ -72,9 +63,7 @@ internal class DefaultFolderGridItemRepository @Inject constructor(private val f
     }
 
     override suspend fun deleteFolderGridItems(folderGridItems: List<FolderGridItem>) {
-        val entities = folderGridItems.map { folderGridItem ->
-            folderGridItem.asEntity()
-        }
+        val entities = folderGridItems.map { it.asEntity() }
 
         folderGridItemDao.deleteFolderGridItemEntities(entities = entities)
     }
@@ -84,17 +73,13 @@ internal class DefaultFolderGridItemRepository @Inject constructor(private val f
     }
 
     override suspend fun updateFolderGridItems(folderGridItems: List<FolderGridItem>) {
-        val entities = folderGridItems.map { folderGridItem ->
-            folderGridItem.asEntity()
-        }
+        val entities = folderGridItems.map { it.asEntity() }
 
         folderGridItemDao.updateFolderGridItemEntities(entities = entities)
     }
 
     override suspend fun insertFolderGridItems(folderGridItems: List<FolderGridItem>) {
-        val entities = folderGridItems.map { folderGridItem ->
-            folderGridItem.asEntity()
-        }
+        val entities = folderGridItems.map { it.asEntity() }
 
         folderGridItemDao.insertFolderGridItemEntities(entities = entities)
     }

@@ -27,7 +27,6 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface EblanShortcutInfoDao {
-
     @Query("SELECT * FROM EblanShortcutInfoEntity")
     fun getEblanShortcutInfoEntitiesFlow(): Flow<List<EblanShortcutInfoEntity>>
 

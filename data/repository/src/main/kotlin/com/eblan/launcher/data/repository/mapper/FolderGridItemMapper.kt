@@ -26,17 +26,17 @@ import com.eblan.launcher.domain.model.GridItemData
 
 internal fun FolderGridItemWrapperEntity.asFolderGridItemWrapper(): FolderGridItemWrapper = FolderGridItemWrapper(
     folderGridItem = folderGridItemEntity.asModel(),
-    applicationInfoGridItems = applicationInfoGridItemEntities.map { applicationInfoGridItemEntity ->
-        applicationInfoGridItemEntity.asModel()
+    applicationInfoGridItems = applicationInfoGridItemEntities.map {
+        it.asModel()
     },
-    shortcutInfoGridItems = shortcutInfoGridItemEntities.map { shortcutInfoGridItemEntity ->
-        shortcutInfoGridItemEntity.asModel()
+    shortcutInfoGridItems = shortcutInfoGridItemEntities.map {
+        it.asModel()
     },
-    shortcutConfigGridItems = shortcutConfigGridItemEntities.map { shortcutConfigGridItemEntity ->
-        shortcutConfigGridItemEntity.asModel()
+    shortcutConfigGridItems = shortcutConfigGridItemEntities.map {
+        it.asModel()
     },
-    folderGridItems = folderGridItemEntities.map { folderGridItemEntity ->
-        folderGridItemEntity.asModel()
+    folderGridItems = folderGridItemEntities.map {
+        it.asModel()
     },
 )
 

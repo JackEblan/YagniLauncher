@@ -17,25 +17,21 @@
  */
 package com.eblan.launcher.data.room.entity
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
+import androidx.room.Embedded
+import androidx.room.Relation
 
-@Entity(primaryKeys = ["componentName", "serialNumber"])
-data class EblanApplicationInfoEntity(
-    val componentName: String,
-    val serialNumber: Long,
-    val packageName: String,
-    val icon: String?,
-    val label: String,
-    val customIcon: String?,
-    val customLabel: String?,
-    @ColumnInfo(defaultValue = "0")
-    val isHidden: Boolean,
-    @ColumnInfo(defaultValue = "0")
-    val lastUpdateTime: Long,
-    @ColumnInfo(defaultValue = "-1")
-    val index: Int,
-    @ColumnInfo(defaultValue = "0")
-    val flags: Int,
-    val folderId: String?,
+data class FolderEblanApplicationInfoWrapperEntity(
+    @Embedded val folderEblanApplicationInfoEntity: FolderEblanApplicationInfoEntity,
+
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "folderId",
+    )
+    val eblanApplicationInfoEntities: List<EblanApplicationInfoEntity>,
+
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "folderId",
+    )
+    val folderEblanApplicationInfoEntities: List<FolderEblanApplicationInfoEntity>,
 )

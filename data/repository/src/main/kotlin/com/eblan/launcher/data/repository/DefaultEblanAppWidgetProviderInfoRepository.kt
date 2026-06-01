@@ -34,14 +34,10 @@ class DefaultEblanAppWidgetProviderInfoRepository @Inject constructor(private va
         }
 
     override suspend fun getEblanAppWidgetProviderInfos(): List<EblanAppWidgetProviderInfo> = eblanAppWidgetProviderInfoDao.getEblanAppWidgetProviderInfoEntityList()
-        .map { eblanAppWidgetProviderInfoEntity ->
-            eblanAppWidgetProviderInfoEntity.asModel()
-        }
+        .map { it.asModel() }
 
     override suspend fun upsertEblanAppWidgetProviderInfos(eblanAppWidgetProviderInfos: List<EblanAppWidgetProviderInfo>) {
-        val entities = eblanAppWidgetProviderInfos.map { eblanAppWidgetProviderInfo ->
-            eblanAppWidgetProviderInfo.asEntity()
-        }
+        val entities = eblanAppWidgetProviderInfos.map { it.asEntity() }
 
         eblanAppWidgetProviderInfoDao.upsertEblanAppWidgetProviderInfoEntities(entities = entities)
     }
@@ -54,9 +50,7 @@ class DefaultEblanAppWidgetProviderInfoRepository @Inject constructor(private va
 
     override suspend fun getEblanAppWidgetProviderInfosByPackageName(packageName: String): List<EblanAppWidgetProviderInfo> = eblanAppWidgetProviderInfoDao.getEblanAppWidgetProviderInfoEntitiesByPackageName(
         packageName = packageName,
-    ).map { entity ->
-        entity.asModel()
-    }
+    ).map { it.asModel() }
 
     override suspend fun deleteEblanAppWidgetProviderInfoByPackageName(packageName: String) {
         eblanAppWidgetProviderInfoDao.deleteEblanAppWidgetProviderInfoEntityByPackageName(

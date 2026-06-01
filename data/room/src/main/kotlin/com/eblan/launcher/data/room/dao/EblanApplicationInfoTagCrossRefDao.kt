@@ -25,7 +25,6 @@ import com.eblan.launcher.data.room.entity.EblanApplicationInfoTagCrossRefEntity
 
 @Dao
 interface EblanApplicationInfoTagCrossRefDao {
-
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertEblanApplicationInfoTagCrossRefEntity(entity: EblanApplicationInfoTagCrossRefEntity)
 
