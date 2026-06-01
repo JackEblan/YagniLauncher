@@ -33,8 +33,8 @@ class GetEblanApplicationInfosByUserUseCase @Inject constructor(
 ) {
     operator fun invoke(): Flow<List<EblanApplicationInfo>> = eblanApplicationInfoRepository.eblanApplicationInfosFlow
         .map { eblanApplicationInfos ->
-            eblanApplicationInfos.filter { eblanApplicationInfo ->
-                !eblanApplicationInfo.isHidden
+            eblanApplicationInfos.filter {
+                !it.isHidden
             }.sortedWith(
                 compareBy(
                     { it.label.lowercase() },

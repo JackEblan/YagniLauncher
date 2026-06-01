@@ -42,8 +42,8 @@ class UpdatePageItemsUseCase @Inject constructor(
         withContext(defaultDispatcher) {
             val homeSettings = userDataRepository.userDataFlow.first().homeSettings
 
-            pageItemsToDelete.forEach { pageItem ->
-                gridRepository.deleteGridItems(gridItems = pageItem.gridItems)
+            pageItemsToDelete.forEach {
+                gridRepository.deleteGridItems(gridItems = it.gridItems)
             }
 
             val gridItems = pageItems.flatMapIndexed { index, pageItem ->

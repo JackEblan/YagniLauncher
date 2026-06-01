@@ -54,14 +54,14 @@ class GetIconPackFilePathsUseCase @Inject constructor(
             )
 
             buildMap {
-                eblaApplicationInfos.forEach { eblanApplicationInfo ->
+                eblaApplicationInfos.forEach {
                     val iconPackFile = File(
                         iconPackDirectory,
-                        iconKeyGenerator.getHashedName(name = eblanApplicationInfo.componentName),
+                        iconKeyGenerator.getHashedName(name = it.componentName),
                     )
 
                     if (iconPackFile.exists()) {
-                        put(eblanApplicationInfo.componentName, iconPackFile.absolutePath)
+                        put(it.componentName, iconPackFile.absolutePath)
                     }
                 }
             }

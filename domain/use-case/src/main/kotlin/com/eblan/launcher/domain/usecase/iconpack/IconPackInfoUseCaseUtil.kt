@@ -43,12 +43,12 @@ internal suspend fun updateIconPackInfos(
     val appFilter = iconPackManager.getIconPackInfoComponents(packageName = iconPackInfoPackageName)
 
     val installedComponentHashCodes = buildSet {
-        fastLauncherAppsActivityInfos.forEach { fastLauncherAppsActivityInfo ->
+        fastLauncherAppsActivityInfos.forEach {
             currentCoroutineContext().ensureActive()
 
             val file = File(
                 iconPackInfoDirectory,
-                iconKeyGenerator.getHashedName(name = fastLauncherAppsActivityInfo.componentName),
+                iconKeyGenerator.getHashedName(name = it.componentName),
             )
 
             cacheIconPackFile(
@@ -56,10 +56,10 @@ internal suspend fun updateIconPackInfos(
                 appFilter = appFilter,
                 iconPackInfoPackageName = iconPackInfoPackageName,
                 file = file,
-                componentName = fastLauncherAppsActivityInfo.componentName,
+                componentName = it.componentName,
             )
 
-            add(iconKeyGenerator.getHashedName(name = fastLauncherAppsActivityInfo.componentName))
+            add(iconKeyGenerator.getHashedName(name = it.componentName))
         }
     }
 
@@ -83,10 +83,10 @@ internal suspend fun cacheIconPackFile(
     file: File,
     componentName: String,
 ) {
-    appFilter.find { iconPackInfoComponent ->
+    appFilter.find {
         currentCoroutineContext().ensureActive()
 
-        componentName == iconPackInfoComponent.componentName.removePrefix("ComponentInfo{")
+        componentName == it.componentName.removePrefix("ComponentInfo{")
             .removeSuffix("}")
     }?.let { iconPackInfoComponent ->
         iconPackManager.createIconPackInfoPath(

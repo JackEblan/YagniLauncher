@@ -60,8 +60,8 @@ class GetEblanApplicationInfosByLabelAndTagUseCase @Inject constructor(
         }
 
         val eblanApplicationInfosByLabel =
-            currentEblanApplicationInfos.filter { eblanApplicationInfo ->
-                !eblanApplicationInfo.isHidden && eblanApplicationInfo.label.contains(
+            currentEblanApplicationInfos.filter {
+                !it.isHidden && it.label.contains(
                     label,
                     ignoreCase = true,
                 )
@@ -100,7 +100,7 @@ class GetEblanApplicationInfosByLabelAndTagUseCase @Inject constructor(
         }
 
         return GetEblanApplicationInfosByLabelAndTag(
-            eblanApplicationInfos = groupedEblanApplicationInfos.filterKeys { eblanUser -> eblanUser != privateEblanUserPageKey },
+            eblanApplicationInfos = groupedEblanApplicationInfos.filterKeys { it != privateEblanUserPageKey },
             privateEblanUser = privateEblanUserPageKey?.eblanUser,
             privateEblanApplicationInfos = groupedEblanApplicationInfos[privateEblanUserPageKey].orEmpty(),
         )
@@ -113,15 +113,15 @@ class GetEblanApplicationInfosByLabelAndTagUseCase @Inject constructor(
     ): GetEblanApplicationInfosByLabelAndTag {
         val pageSize = horizontalAppDrawerColumns * horizontalAppDrawerRows
 
-        val groupedEblanApplicationInfos = eblanApplicationInfosByLabel.groupBy { app ->
-            launcherAppsWrapper.getUser(serialNumber = app.serialNumber)
+        val groupedEblanApplicationInfos = eblanApplicationInfosByLabel.groupBy {
+            launcherAppsWrapper.getUser(serialNumber = it.serialNumber)
         }.toSortedMap(nullsLast(compareBy { it.serialNumber }))
             .flatMap { (eblanUser, eblanApplicationInfos) ->
-                eblanApplicationInfos.chunked(pageSize).mapIndexed { index, pageApps ->
+                eblanApplicationInfos.chunked(pageSize).mapIndexed { index, eblanApplicationInfos ->
                     EblanUserPageKey(
                         eblanUser = eblanUser,
                         page = index,
-                    ) to pageApps
+                    ) to eblanApplicationInfos
                 }
             }.toMap()
 
@@ -140,15 +140,15 @@ class GetEblanApplicationInfosByLabelAndTagUseCase @Inject constructor(
 
         val indexedEblanApplicationInfos = eblanApplicationInfos.filter { it.index >= 0 }
 
-        indexedEblanApplicationInfos.forEach { eblanApplicationInfo ->
-            val fromIndex = eblanApplicationInfos.indexOf(eblanApplicationInfo)
+        indexedEblanApplicationInfos.forEach {
+            val fromIndex = eblanApplicationInfos.indexOf(it)
 
             if (fromIndex > -1) {
                 eblanApplicationInfos.removeAt(fromIndex)
 
-                val toIndex = eblanApplicationInfo.index.coerceAtMost(eblanApplicationInfos.size)
+                val toIndex = it.index.coerceAtMost(eblanApplicationInfos.size)
 
-                eblanApplicationInfos.add(toIndex, eblanApplicationInfo)
+                eblanApplicationInfos.add(toIndex, it)
             }
         }
     }

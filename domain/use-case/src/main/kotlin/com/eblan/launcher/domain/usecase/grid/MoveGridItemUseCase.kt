@@ -51,22 +51,22 @@ class MoveGridItemUseCase @Inject constructor(
     ): MoveGridItemResult {
         return withContext(defaultDispatcher) {
             val gridItems =
-                gridRepository.getGridItems().plus(getFolderGridItemsUseCase()).filter { gridItem ->
+                gridRepository.getGridItems().plus(getFolderGridItemsUseCase()).filter {
                     ensureActive()
 
                     isGridItemSpanWithinBounds(
-                        gridItem = gridItem,
+                        gridItem = it,
                         columns = columns,
                         rows = rows,
-                    ) && gridItem.page == movingGridItem.page &&
-                        gridItem.associate == movingGridItem.associate
+                    ) && it.page == movingGridItem.page &&
+                        it.associate == movingGridItem.associate
                 }.toMutableList()
 
             val index =
-                gridItems.indexOfFirst { gridItem ->
+                gridItems.indexOfFirst {
                     ensureActive()
 
-                    gridItem.id == movingGridItem.id
+                    it.id == movingGridItem.id
                 }
 
             if (index != -1) {
@@ -98,12 +98,12 @@ class MoveGridItemUseCase @Inject constructor(
                 )
             }
 
-            val conflictingGridItemBySpan = gridItems.find { gridItem ->
+            val conflictingGridItemBySpan = gridItems.find {
                 ensureActive()
 
-                gridItem.id != movingGridItem.id && rectanglesOverlap(
+                it.id != movingGridItem.id && rectanglesOverlap(
                     moving = movingGridItem,
-                    other = gridItem,
+                    other = it,
                 )
             }
 

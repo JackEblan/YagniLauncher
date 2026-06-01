@@ -67,14 +67,14 @@ class AddPinShortcutToHomeScreenUseCase @Inject constructor(
 
         val eblanApplicationInfoIcon =
             packageManagerWrapper.getComponentName(packageName = packageName)
-                ?.let { componentName ->
+                ?.let {
                     val directory = fileManager.getFilesDirectory(FileManager.ICONS_DIR)
 
                     val file = File(
                         directory,
                         iconKeyGenerator.getActivityIconKey(
                             serialNumber = serialNumber,
-                            componentName = componentName,
+                            componentName = it,
                         ),
                     )
 
@@ -119,7 +119,7 @@ class AddPinShortcutToHomeScreenUseCase @Inject constructor(
         )
 
         val gridItems = gridRepository.getGridItems().plus(getFolderGridItemsUseCase())
-            .filter { gridItem -> gridItem.associate == Associate.Grid }
+            .filter { it.associate == Associate.Grid }
 
         val newGridItem = findAvailableRegionByPage(
             gridItems = gridItems,

@@ -36,19 +36,19 @@ class GetEblanAppWidgetProviderInfosByLabelUseCase @Inject constructor(
         eblanAppWidgetProviderInfoRepository.eblanAppWidgetProviderInfosFlow,
         labelFlow,
     ) { eblanAppWidgetProviderInfos, label ->
-        eblanAppWidgetProviderInfos.filter { eblanAppWidgetProviderInfo ->
-            eblanAppWidgetProviderInfo.applicationLabel.contains(
+        eblanAppWidgetProviderInfos.filter {
+            it.applicationLabel.contains(
                 other = label,
                 ignoreCase = true,
             )
-        }.sortedBy { eblanAppWidgetProviderInfo ->
-            eblanAppWidgetProviderInfo.applicationLabel.lowercase()
-        }.groupBy { eblanAppWidgetProviderInfo ->
+        }.sortedBy {
+            it.applicationLabel.lowercase()
+        }.groupBy {
             EblanApplicationInfoGroup(
-                serialNumber = eblanAppWidgetProviderInfo.serialNumber,
-                packageName = eblanAppWidgetProviderInfo.packageName,
-                icon = eblanAppWidgetProviderInfo.applicationIcon,
-                label = eblanAppWidgetProviderInfo.applicationLabel,
+                serialNumber = it.serialNumber,
+                packageName = it.packageName,
+                icon = it.applicationIcon,
+                label = it.applicationLabel,
             )
         }
     }.flowOn(defaultDispatcher)

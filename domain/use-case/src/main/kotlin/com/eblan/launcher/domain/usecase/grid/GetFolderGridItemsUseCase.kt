@@ -35,8 +35,8 @@ class GetFolderGridItemsUseCase @Inject constructor(
     suspend operator fun invoke(): List<GridItem> = withContext(defaultDispatcher) {
         val homeSettings = userDataRepository.userDataFlow.first().homeSettings
 
-        folderGridItemRepository.getFolderGridItemWrappers().map { folderGridItemWrapper ->
-            folderGridItemWrapper.asGridItem(
+        folderGridItemRepository.getFolderGridItemWrappers().map {
+            it.asGridItem(
                 folderGridItemRepository = folderGridItemRepository,
                 maxFolderColumns = homeSettings.maxFolderColumns,
                 maxFolderRows = homeSettings.maxFolderRows,

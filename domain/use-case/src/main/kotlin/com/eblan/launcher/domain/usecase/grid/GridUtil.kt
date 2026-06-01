@@ -37,26 +37,26 @@ internal suspend fun FolderGridItemWrapper.asGridItem(
     maxFolderRows: Int,
 ): GridItem {
     val childFolderGridItems =
-        folderGridItems.map { childGridItem ->
+        folderGridItems.map {
             folderGridItemRepository.getFolderGridItemWrapper(
-                id = childGridItem.id,
+                id = it.id,
             )?.asPreviewGridItem(
                 maxFolderColumns = maxFolderColumns,
                 maxFolderRows = maxFolderRows,
-            ) ?: childGridItem.asIconGridItem()
+            ) ?: it.asIconGridItem()
         }
 
     val gridItems =
         (
-            applicationInfoGridItems.map { applicationInfoGridItem ->
-                applicationInfoGridItem.asGridItem()
-            } + shortcutInfoGridItems.map { shortcutInfoGridItem ->
-                shortcutInfoGridItem.asGridItem()
-            } + shortcutConfigGridItems.map { shortcutConfigGridItem ->
-                shortcutConfigGridItem.asGridItem()
+            applicationInfoGridItems.map {
+                it.asGridItem()
+            } + shortcutInfoGridItems.map {
+                it.asGridItem()
+            } + shortcutConfigGridItems.map {
+                it.asGridItem()
             } + childFolderGridItems
-            ).sortedBy { gridItem ->
-            when (val data = gridItem.data) {
+            ).sortedBy {
+            when (val data = it.data) {
                 is GridItemData.ApplicationInfo -> data.index
                 is GridItemData.ShortcutInfo -> data.index
                 is GridItemData.ShortcutConfig -> data.index
@@ -78,8 +78,8 @@ internal suspend fun FolderGridItemWrapper.asGridItem(
         maxFolderRows = maxFolderRows,
     )
 
-    val maxIndex = gridItems.maxOfOrNull { gridItem ->
-        when (val data = gridItem.data) {
+    val maxIndex = gridItems.maxOfOrNull {
+        when (val data = it.data) {
             is GridItemData.ApplicationInfo -> data.index + 1
             is GridItemData.ShortcutInfo -> data.index + 1
             is GridItemData.ShortcutConfig -> data.index + 1
@@ -122,17 +122,17 @@ private suspend fun FolderGridItemWrapper.asPreviewGridItem(
 ): GridItem {
     val gridItems =
         (
-            applicationInfoGridItems.map { applicationInfoGridItem ->
-                applicationInfoGridItem.asGridItem()
-            } + shortcutInfoGridItems.map { shortcutInfoGridItem ->
-                shortcutInfoGridItem.asGridItem()
-            } + shortcutConfigGridItems.map { shortcutConfigGridItem ->
-                shortcutConfigGridItem.asGridItem()
-            } + folderGridItems.map { folderGridItem ->
-                folderGridItem.asIconGridItem()
+            applicationInfoGridItems.map {
+                it.asGridItem()
+            } + shortcutInfoGridItems.map {
+                it.asGridItem()
+            } + shortcutConfigGridItems.map {
+                it.asGridItem()
+            } + folderGridItems.map {
+                it.asIconGridItem()
             }
-            ).sortedBy { gridItem ->
-            when (val data = gridItem.data) {
+            ).sortedBy {
+            when (val data = it.data) {
                 is GridItemData.ApplicationInfo -> data.index
                 is GridItemData.ShortcutInfo -> data.index
                 is GridItemData.ShortcutConfig -> data.index
@@ -154,8 +154,8 @@ private suspend fun FolderGridItemWrapper.asPreviewGridItem(
         maxFolderRows = maxFolderRows,
     )
 
-    val maxIndex = gridItems.maxOfOrNull { folderGridItem ->
-        when (val data = folderGridItem.data) {
+    val maxIndex = gridItems.maxOfOrNull {
+        when (val data = it.data) {
             is GridItemData.ApplicationInfo -> data.index + 1
             is GridItemData.ShortcutConfig -> data.index + 1
             is GridItemData.ShortcutInfo -> data.index + 1
@@ -198,10 +198,10 @@ private suspend fun List<GridItem>.getGridItemsByPage(
     maxFolderColumns: Int,
     maxFolderRows: Int,
 ): Map<Int, List<GridItem>> = chunked(maxFolderColumns * maxFolderRows)
-    .mapIndexed { pageIndex, pageItems ->
+    .mapIndexed { index, gridItems ->
         currentCoroutineContext().ensureActive()
 
-        pageIndex to pageItems
+        index to gridItems
     }
     .toMap()
 

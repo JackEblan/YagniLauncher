@@ -225,8 +225,8 @@ private fun Success(
 
                 onUpdateIconPackInfoPackageName(packageName)
             },
-            onUpdateUri = { uri ->
-                onUpdateEblanApplicationInfo(eblanApplicationInfo.copy(customIcon = uri))
+            onUpdateUri = {
+                onUpdateEblanApplicationInfo(eblanApplicationInfo.copy(customIcon = it))
             },
             onResetCustomIcon = {
                 onResetEblanApplicationInfoCustomIcon(eblanApplicationInfo)
@@ -311,10 +311,10 @@ private fun Tags(
                 eblanApplicationInfoTagUi = eblanApplicationInfoTagUi,
                 onAddEblanApplicationInfoCrossRef = onAddEblanApplicationInfoCrossRef,
                 onDeleteEblanApplicationInfoCrossRef = onDeleteEblanApplicationInfoCrossRef,
-                onShowUpdateTagDialog = { newEblanApplicationInfoTagUi ->
+                onShowUpdateTagDialog = {
                     showUpdateTagDialog = true
 
-                    selectedEblanApplicationInfoTagUi = newEblanApplicationInfoTagUi
+                    selectedEblanApplicationInfoTagUi = it
                 },
             )
         }

@@ -40,26 +40,26 @@ class ResizeGridItemUseCase @Inject constructor(
         rows: Int,
     ): GridItem = withContext(defaultDispatcher) {
         val gridItems =
-            gridRepository.getGridItems().plus(getFolderGridItemsUseCase()).filter { gridItem ->
+            gridRepository.getGridItems().plus(getFolderGridItemsUseCase()).filter {
                 isGridItemSpanWithinBounds(
-                    gridItem = gridItem,
+                    gridItem = it,
                     columns = columns,
                     rows = rows,
-                ) && gridItem.page == resizingGridItem.page &&
-                    gridItem.associate == resizingGridItem.associate
+                ) && it.page == resizingGridItem.page &&
+                    it.associate == resizingGridItem.associate
             }.toMutableList()
 
         val index =
-            gridItems.indexOfFirst { gridItem -> gridItem.id == resizingGridItem.id }
+            gridItems.indexOfFirst { it.id == resizingGridItem.id }
 
         val oldGridItem = gridItems[index]
 
         gridItems[index] = resizingGridItem
 
-        val gridItemBySpan = gridItems.find { gridItem ->
-            gridItem.id != resizingGridItem.id && rectanglesOverlap(
+        val gridItemBySpan = gridItems.find {
+            it.id != resizingGridItem.id && rectanglesOverlap(
                 moving = resizingGridItem,
-                other = gridItem,
+                other = it,
             )
         }
 

@@ -55,18 +55,18 @@ class CachePageItemsUseCase @Inject constructor(
             Associate.Dock -> userData.homeSettings.dockPageCount
         }
 
-        val gridItemsByPage = gridItems.filter { gridItem ->
+        val gridItemsByPage = gridItems.filter {
             isGridItemSpanWithinBounds(
-                gridItem = gridItem,
+                gridItem = it,
                 columns = columns,
                 rows = rows,
-            ) && gridItem.associate == associate
-        }.groupBy { gridItem -> gridItem.page }
+            ) && it.associate == associate
+        }.groupBy { it.page }
 
-        val pageItems = (0 until pageCount).map { page ->
+        val pageItems = (0 until pageCount).map {
             PageItem(
-                id = page,
-                gridItems = gridItemsByPage[page] ?: emptyList(),
+                id = it,
+                gridItems = gridItemsByPage[it] ?: emptyList(),
             )
         }
 

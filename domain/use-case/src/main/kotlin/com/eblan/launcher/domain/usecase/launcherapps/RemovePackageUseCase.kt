@@ -138,10 +138,10 @@ class RemovePackageUseCase @Inject constructor(
 
             val hasNoIconReference = icon != null &&
                 eblanApplicationInfoRepository.getEblanApplicationInfos()
-                    .none { eblanApplicationInfo ->
+                    .none {
                         currentCoroutineContext().ensureActive()
 
-                        eblanApplicationInfo.icon == icon
+                        it.icon == icon
                     }
 
             if (hasNoIconReference) {
@@ -164,8 +164,8 @@ class RemovePackageUseCase @Inject constructor(
         ).forEach { applicationInfoGridItem ->
             currentCoroutineContext().ensureActive()
 
-            applicationInfoGridItem.customIcon?.let { customIcon ->
-                val customIconFile = File(customIcon)
+            applicationInfoGridItem.customIcon?.let {
+                val customIconFile = File(it)
 
                 if (customIconFile.exists()) {
                     customIconFile.delete()
@@ -181,10 +181,10 @@ class RemovePackageUseCase @Inject constructor(
         if (componentName == null) return
 
         val hasNoIconPackInfoReference = eblanApplicationInfoRepository.getEblanApplicationInfos()
-            .none { eblanApplicationInfo ->
+            .none {
                 currentCoroutineContext().ensureActive()
 
-                eblanApplicationInfo.componentName == componentName
+                it.componentName == componentName
             }
 
         if (hasNoIconPackInfoReference) {
@@ -210,16 +210,16 @@ class RemovePackageUseCase @Inject constructor(
         ).forEach { eblanAppWidgetProviderInfo ->
             currentCoroutineContext().ensureActive()
 
-            eblanAppWidgetProviderInfo.applicationIcon?.let { icon ->
-                val iconFile = File(icon)
+            eblanAppWidgetProviderInfo.applicationIcon?.let {
+                val iconFile = File(it)
 
                 if (iconFile.exists()) {
                     iconFile.delete()
                 }
             }
 
-            eblanAppWidgetProviderInfo.preview?.let { preview ->
-                val previewFile = File(preview)
+            eblanAppWidgetProviderInfo.preview?.let {
+                val previewFile = File(it)
 
                 if (previewFile.exists()) {
                     previewFile.delete()
@@ -241,10 +241,10 @@ class RemovePackageUseCase @Inject constructor(
             val icon = eblanShortcutInfoByPackageName.icon
 
             val hasNoIconReference = icon != null &&
-                eblanShortcutInfoRepository.getEblanShortcutInfos().none { eblanShortcutInfo ->
+                eblanShortcutInfoRepository.getEblanShortcutInfos().none {
                     currentCoroutineContext().ensureActive()
 
-                    eblanShortcutInfo.icon == icon
+                    it.icon == icon
                 }
 
             if (hasNoIconReference) {
@@ -262,8 +262,8 @@ class RemovePackageUseCase @Inject constructor(
         ).forEach { shortcutInfoGridItem ->
             currentCoroutineContext().ensureActive()
 
-            shortcutInfoGridItem.customIcon?.let { customIcon ->
-                val customIconFile = File(customIcon)
+            shortcutInfoGridItem.customIcon?.let {
+                val customIconFile = File(it)
 
                 if (customIconFile.exists()) {
                     customIconFile.delete()
@@ -286,10 +286,10 @@ class RemovePackageUseCase @Inject constructor(
 
             val hasNoIconReference = activityIcon != null &&
                 eblanShortcutConfigRepository.getEblanShortcutConfigs()
-                    .none { eblanShortcutConfig ->
+                    .none {
                         currentCoroutineContext().ensureActive()
 
-                        eblanShortcutConfig.activityIcon == activityIcon
+                        it.activityIcon == activityIcon
                     }
 
             if (hasNoIconReference) {
@@ -299,8 +299,8 @@ class RemovePackageUseCase @Inject constructor(
                     activityIconFile.delete()
                 }
 
-                eblanShortcutConfigByPackageName.applicationIcon?.let { applicationIcon ->
-                    val applicationIconFile = File(applicationIcon)
+                eblanShortcutConfigByPackageName.applicationIcon?.let {
+                    val applicationIconFile = File(it)
 
                     if (applicationIconFile.exists()) {
                         applicationIconFile.delete()
@@ -315,8 +315,8 @@ class RemovePackageUseCase @Inject constructor(
         ).forEach { shortcutConfigGridItem ->
             currentCoroutineContext().ensureActive()
 
-            shortcutConfigGridItem.shortcutIntentIcon?.let { shortcutIntentIcon ->
-                val shortcutIntentIconFile = File(shortcutIntentIcon)
+            shortcutConfigGridItem.shortcutIntentIcon?.let {
+                val shortcutIntentIconFile = File(it)
 
                 if (shortcutIntentIconFile.exists()) {
                     shortcutIntentIconFile.delete()

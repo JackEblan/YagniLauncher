@@ -71,21 +71,21 @@ class GetHomeDataUseCase @Inject constructor(
         ) { userData, gridItems, folderGridItems, colorHints ->
             val currentGridItems = gridItems + folderGridItems
 
-            val gridItemsByPage = currentGridItems.filter { gridItem ->
+            val gridItemsByPage = currentGridItems.filter {
                 isGridItemSpanWithinBounds(
-                    gridItem = gridItem,
+                    gridItem = it,
                     columns = userData.homeSettings.columns,
                     rows = userData.homeSettings.rows,
-                ) && gridItem.associate == Associate.Grid
-            }.groupBy { gridItem -> gridItem.page }
+                ) && it.associate == Associate.Grid
+            }.groupBy { it.page }
 
-            val dockGridItemsByPage = currentGridItems.filter { gridItem ->
+            val dockGridItemsByPage = currentGridItems.filter {
                 isGridItemSpanWithinBounds(
-                    gridItem = gridItem,
+                    gridItem = it,
                     columns = userData.homeSettings.dockColumns,
                     rows = userData.homeSettings.dockRows,
-                ) && gridItem.associate == Associate.Dock
-            }.groupBy { gridItem -> gridItem.page }
+                ) && it.associate == Associate.Dock
+            }.groupBy { it.page }
 
             val gridItemSettings = userData.homeSettings.gridItemSettings
 
