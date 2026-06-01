@@ -147,10 +147,10 @@ class SyncDataUseCase @Inject constructor(
                     launcherAppsWrapper.getShortcutConfigActivityList(
                         serialNumber = launcherAppsActivityInfo.serialNumber,
                         packageName = launcherAppsActivityInfo.packageName,
-                    ).map { shortcutConfigActivityInfo ->
+                    ).map {
                         currentCoroutineContext().ensureActive()
 
-                        shortcutConfigActivityInfo.toEblanShortcutConfig(
+                        it.toEblanShortcutConfig(
                             fileManager = fileManager,
                             packageManagerWrapper = packageManagerWrapper,
                             iconKeyGenerator = iconKeyGenerator,

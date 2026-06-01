@@ -42,12 +42,12 @@ class GetFolderGridItemsByIdUseCase @Inject constructor(
         folderGridItemRepository.folderGridItemWrappersWithFolderIdFlow,
     ) { userData, folderPopupEntries, folderGridItemWrappers ->
         folderPopupEntries.mapNotNull { folderPopupEntry ->
-            folderGridItemWrappers.firstOrNull { folderGridItemWrapper ->
-                folderGridItemWrapper.folderGridItem.id == folderPopupEntry.id
-            }?.let { folderGridItemWrapper ->
+            folderGridItemWrappers.firstOrNull {
+                it.folderGridItem.id == folderPopupEntry.id
+            }?.let {
                 FolderPopup(
                     folderPopupEntry = folderPopupEntry,
-                    gridItem = folderGridItemWrapper.asGridItem(
+                    gridItem = it.asGridItem(
                         folderGridItemRepository = folderGridItemRepository,
                         maxFolderColumns = userData.homeSettings.maxFolderColumns,
                         maxFolderRows = userData.homeSettings.maxFolderRows,
