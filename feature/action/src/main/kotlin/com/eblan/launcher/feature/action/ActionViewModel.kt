@@ -19,7 +19,7 @@ package com.eblan.launcher.feature.action
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.eblan.launcher.domain.usecase.application.GetEblanApplicationInfosByUserUseCase
+import com.eblan.launcher.domain.usecase.application.GetEblanApplicationInfosUseCase
 import com.eblan.launcher.feature.action.model.ActionUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
@@ -28,9 +28,9 @@ import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 @HiltViewModel
-class ActionViewModel @Inject constructor(getEblanApplicationInfosByUserUseCase: GetEblanApplicationInfosByUserUseCase) : ViewModel() {
+class ActionViewModel @Inject constructor(getEblanApplicationInfosUseCase: GetEblanApplicationInfosUseCase) : ViewModel() {
     val actionUiState =
-        getEblanApplicationInfosByUserUseCase().map(ActionUiState::Success)
+        getEblanApplicationInfosUseCase().map(ActionUiState::Success)
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(5_000),
