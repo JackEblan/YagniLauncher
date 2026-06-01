@@ -435,6 +435,10 @@ class SyncDataUseCase @Inject constructor(
     ) {
         if (!experimentalSettings.firstLaunch) return
 
+        val eblanApplicationInfosBySystem = eblanApplicationInfos.filter {
+            packageManagerWrapper.isSystem(flags = it.flags)
+        }
+
         val applicationInfoGridItems = mutableListOf<ApplicationInfoGridItem>()
 
         @OptIn(ExperimentalUuidApi::class)
@@ -481,7 +485,7 @@ class SyncDataUseCase @Inject constructor(
             )
         }
 
-        eblanApplicationInfos.take(homeSettings.columns * homeSettings.rows)
+        eblanApplicationInfosBySystem.take(homeSettings.columns)
             .forEachIndexed { index, launcherAppsActivityInfo ->
                 insertApplicationInfoGridItem(
                     index = index,
@@ -491,8 +495,8 @@ class SyncDataUseCase @Inject constructor(
                 )
             }
 
-        eblanApplicationInfos.drop(homeSettings.columns * homeSettings.rows)
-            .take(homeSettings.dockColumns * homeSettings.dockRows)
+        eblanApplicationInfosBySystem.drop(homeSettings.columns)
+            .take(homeSettings.dockColumns)
             .forEachIndexed { index, launcherAppsActivityInfo ->
                 insertApplicationInfoGridItem(
                     index = index,
