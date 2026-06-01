@@ -23,6 +23,8 @@ import com.eblan.launcher.data.room.dao.EblanApplicationInfoDao
 import com.eblan.launcher.data.room.entity.EblanApplicationInfoTagEntity
 import com.eblan.launcher.domain.common.Dispatcher
 import com.eblan.launcher.domain.common.EblanDispatchers
+import com.eblan.launcher.domain.common.IconKeyGenerator
+import com.eblan.launcher.domain.framework.FileManager
 import com.eblan.launcher.domain.model.DeleteEblanApplicationInfo
 import com.eblan.launcher.domain.model.EblanApplicationInfo
 import com.eblan.launcher.domain.model.EblanApplicationInfoTag
@@ -30,6 +32,8 @@ import com.eblan.launcher.domain.model.SyncEblanApplicationInfo
 import com.eblan.launcher.domain.repository.EblanApplicationInfoRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -37,19 +41,34 @@ import javax.inject.Inject
 
 internal class DefaultEblanApplicationInfoRepository @Inject constructor(
     private val eblanApplicationInfoDao: EblanApplicationInfoDao,
+    private val fileManager: FileManager,
+    private val iconKeyGenerator: IconKeyGenerator,
+    private val userDataRepository: DefaultUserDataRepository,
     @param:Dispatcher(EblanDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) : EblanApplicationInfoRepository {
-    override val eblanApplicationInfosFlow =
-        eblanApplicationInfoDao.getEblanApplicationInfoEntitiesFlow().map { entities ->
-            entities.map {
-                it.asModel()
-            }
+    override val eblanApplicationInfosFlow = combine(
+        userDataRepository.userDataFlow,
+        eblanApplicationInfoDao.getEblanApplicationInfoEntitiesFlow(),
+    ) { userData, entities ->
+        entities.map {
+            it.asModel(
+                fileManager = fileManager,
+                iconKeyGenerator = iconKeyGenerator,
+                userData = userData,
+            )
         }
+    }
 
-    override suspend fun getEblanApplicationInfos(): List<EblanApplicationInfo> = eblanApplicationInfoDao.getEblanApplicationInfoEntity()
-        .map {
-            it.asModel()
-        }
+    override suspend fun getEblanApplicationInfos(): List<EblanApplicationInfo> = withContext(ioDispatcher) {
+        eblanApplicationInfoDao.getEblanApplicationInfoEntity()
+            .map {
+                it.asModel(
+                    fileManager = fileManager,
+                    iconKeyGenerator = iconKeyGenerator,
+                    userData = userDataRepository.userDataFlow.first(),
+                )
+            }
+    }
 
     override suspend fun upsertEblanApplicationInfo(eblanApplicationInfo: EblanApplicationInfo) {
         eblanApplicationInfoDao.upsertEblanApplicationInfoEntity(entity = eblanApplicationInfo.asEntity())
@@ -110,19 +129,31 @@ internal class DefaultEblanApplicationInfoRepository @Inject constructor(
     override suspend fun getEblanApplicationInfoByComponentName(
         serialNumber: Long,
         componentName: String,
-    ): EblanApplicationInfo? = eblanApplicationInfoDao.getEblanApplicationInfoEntityByComponentName(
-        serialNumber = serialNumber,
-        componentName = componentName,
-    )?.asModel()
+    ): EblanApplicationInfo? = withContext(ioDispatcher) {
+        eblanApplicationInfoDao.getEblanApplicationInfoEntityByComponentName(
+            serialNumber = serialNumber,
+            componentName = componentName,
+        )?.asModel(
+            fileManager = fileManager,
+            iconKeyGenerator = iconKeyGenerator,
+            userData = userDataRepository.userDataFlow.first(),
+        )
+    }
 
     override suspend fun getEblanApplicationInfosByPackageName(
         serialNumber: Long,
         packageName: String,
-    ): List<EblanApplicationInfo> = eblanApplicationInfoDao.getEblanApplicationInfoEntitiesByPackageName(
-        serialNumber = serialNumber,
-        packageName = packageName,
-    ).map {
-        it.asModel()
+    ): List<EblanApplicationInfo> = withContext(ioDispatcher) {
+        eblanApplicationInfoDao.getEblanApplicationInfoEntitiesByPackageName(
+            serialNumber = serialNumber,
+            packageName = packageName,
+        ).map {
+            it.asModel(
+                fileManager = fileManager,
+                iconKeyGenerator = iconKeyGenerator,
+                userData = userDataRepository.userDataFlow.first(),
+            )
+        }
     }
 
     override fun getEblanApplicationInfoTagsFlow(
@@ -137,14 +168,26 @@ internal class DefaultEblanApplicationInfoRepository @Inject constructor(
         }
     }
 
-    override fun getEblanApplicationInfosByTagId(id: Long): List<EblanApplicationInfo> = eblanApplicationInfoDao.getEblanApplicationInfoEntitiesByTagId(id = id).map {
-        it.asModel()
+    override suspend fun getEblanApplicationInfosByTagId(id: Long): List<EblanApplicationInfo> = withContext(ioDispatcher) {
+        eblanApplicationInfoDao.getEblanApplicationInfoEntitiesByTagId(id = id).map {
+            it.asModel(
+                fileManager = fileManager,
+                iconKeyGenerator = iconKeyGenerator,
+                userData = userDataRepository.userDataFlow.first(),
+            )
+        }
     }
 
-    override fun getEblanApplicationInfosWithoutTag(): List<EblanApplicationInfo> = eblanApplicationInfoDao.getEblanApplicationInfoEntitiesWithoutTags()
-        .map {
-            it.asModel()
-        }
+    override suspend fun getEblanApplicationInfosWithoutTag(): List<EblanApplicationInfo> = withContext(ioDispatcher) {
+        eblanApplicationInfoDao.getEblanApplicationInfoEntitiesWithoutTags()
+            .map {
+                it.asModel(
+                    fileManager = fileManager,
+                    iconKeyGenerator = iconKeyGenerator,
+                    userData = userDataRepository.userDataFlow.first(),
+                )
+            }
+    }
 
     private fun EblanApplicationInfoTagEntity.asModel(): EblanApplicationInfoTag = EblanApplicationInfoTag(
         id = id,

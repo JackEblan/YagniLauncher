@@ -19,15 +19,12 @@ package com.eblan.launcher.domain.usecase
 
 import com.eblan.launcher.domain.common.Dispatcher
 import com.eblan.launcher.domain.common.EblanDispatchers
-import com.eblan.launcher.domain.common.IconKeyGenerator
-import com.eblan.launcher.domain.framework.FileManager
 import com.eblan.launcher.domain.framework.LauncherAppsWrapper
 import com.eblan.launcher.domain.framework.PackageManagerWrapper
 import com.eblan.launcher.domain.framework.ResourcesWrapper
 import com.eblan.launcher.domain.framework.WallpaperManagerWrapper
 import com.eblan.launcher.domain.grid.isGridItemSpanWithinBounds
 import com.eblan.launcher.domain.model.Associate
-import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.HomeData
 import com.eblan.launcher.domain.model.TextColor
 import com.eblan.launcher.domain.model.Theme
@@ -39,7 +36,6 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
-import java.io.File
 import javax.inject.Inject
 
 class GetHomeDataUseCase @Inject constructor(
@@ -50,8 +46,6 @@ class GetHomeDataUseCase @Inject constructor(
     private val packageManagerWrapper: PackageManagerWrapper,
     private val gridRepository: GridRepository,
     private val folderGridItemRepository: FolderGridItemRepository,
-    private val fileManager: FileManager,
-    private val iconKeyGenerator: IconKeyGenerator,
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) {
     operator fun invoke(): Flow<HomeData> {
@@ -75,39 +69,7 @@ class GetHomeDataUseCase @Inject constructor(
             folderGridItemsFlow,
             wallpaperManagerWrapper.getColorsChanged(),
         ) { userData, gridItems, folderGridItems, colorHints ->
-            val iconPacksDirectory = fileManager.getFilesDirectory(
-                FileManager.ICON_PACKS_DIR,
-            )
-
-            val iconPackInfoPackageName = userData.generalSettings.iconPackInfoPackageName
-
-            val iconPackDirectory = File(
-                iconPacksDirectory,
-                iconPackInfoPackageName,
-            )
-
-            val currentGridItems = (gridItems + folderGridItems).map {
-                when (val data = it.data) {
-                    is GridItemData.ApplicationInfo -> {
-                        val iconPackInfoFilePath = File(
-                            iconPackDirectory,
-                            iconKeyGenerator.getHashedName(name = data.componentName),
-                        )
-
-                        it.copy(
-                            data = data.copy(
-                                iconPackInfoFilePath = if (iconPackInfoFilePath.exists()) {
-                                    iconPackInfoFilePath.absolutePath
-                                } else {
-                                    null
-                                },
-                            ),
-                        )
-                    }
-
-                    else -> it
-                }
-            }
+            val currentGridItems = gridItems + folderGridItems
 
             val gridItemsByPage = currentGridItems.filter {
                 isGridItemSpanWithinBounds(
