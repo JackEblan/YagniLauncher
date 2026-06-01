@@ -39,6 +39,7 @@ internal fun ApplicationInfoGridItemEntity.asGridItem(): GridItem = GridItem(
         customLabel = customLabel,
         index = index,
         folderId = folderId,
+        iconPackInfoFilePath = null,
     ),
     associate = associate,
     override = override,

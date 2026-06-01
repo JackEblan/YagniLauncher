@@ -19,6 +19,8 @@ package com.eblan.launcher.domain.usecase.application
 
 import com.eblan.launcher.domain.common.Dispatcher
 import com.eblan.launcher.domain.common.EblanDispatchers
+import com.eblan.launcher.domain.common.IconKeyGenerator
+import com.eblan.launcher.domain.framework.FileManager
 import com.eblan.launcher.domain.framework.LauncherAppsWrapper
 import com.eblan.launcher.domain.model.AppDrawerType
 import com.eblan.launcher.domain.model.EblanApplicationInfo
@@ -33,12 +35,15 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
+import java.io.File
 import javax.inject.Inject
 
 class GetEblanApplicationInfosByLabelAndTagUseCase @Inject constructor(
     private val eblanApplicationInfoRepository: EblanApplicationInfoRepository,
     private val launcherAppsWrapper: LauncherAppsWrapper,
     private val userDataRepository: UserDataRepository,
+    private val fileManager: FileManager,
+    private val iconKeyGenerator: IconKeyGenerator,
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) {
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -72,13 +77,28 @@ class GetEblanApplicationInfosByLabelAndTagUseCase @Inject constructor(
             eblanApplicationInfos = eblanApplicationInfosByLabel,
         )
 
+        val iconPacksDirectory = fileManager.getFilesDirectory(
+            FileManager.ICON_PACKS_DIR,
+        )
+
+        val iconPackInfoPackageName = userData.generalSettings.iconPackInfoPackageName
+
+        val iconPackDirectory = File(
+            iconPacksDirectory,
+            iconPackInfoPackageName,
+        )
+
         when (userData.appDrawerSettings.appDrawerType) {
             AppDrawerType.Vertical, AppDrawerType.List -> {
-                getVerticalOrListEblanApplicationInfosByLabel(eblanApplicationInfos = eblanApplicationInfosByLabel)
+                getVerticalOrListEblanApplicationInfosByLabel(
+                    iconPackDirectory = iconPackDirectory,
+                    eblanApplicationInfos = eblanApplicationInfosByLabel,
+                )
             }
 
             AppDrawerType.Horizontal -> {
                 getHorizontalEblanApplicationInfosByLabel(
+                    iconPackDirectory = iconPackDirectory,
                     horizontalAppDrawerColumns = userData.appDrawerSettings.horizontalAppDrawerColumns,
                     horizontalAppDrawerRows = userData.appDrawerSettings.horizontalAppDrawerRows,
                     eblanApplicationInfosByLabel = eblanApplicationInfosByLabel,
@@ -87,8 +107,24 @@ class GetEblanApplicationInfosByLabelAndTagUseCase @Inject constructor(
         }
     }.flowOn(defaultDispatcher)
 
-    private fun getVerticalOrListEblanApplicationInfosByLabel(eblanApplicationInfos: MutableList<EblanApplicationInfo>): GetEblanApplicationInfosByLabelAndTag {
-        val groupedEblanApplicationInfos = eblanApplicationInfos.groupBy {
+    private suspend fun getVerticalOrListEblanApplicationInfosByLabel(
+        iconPackDirectory: File,
+        eblanApplicationInfos: MutableList<EblanApplicationInfo>,
+    ): GetEblanApplicationInfosByLabelAndTag {
+        val groupedEblanApplicationInfos = eblanApplicationInfos.map {
+            val iconPackInfoFilePath = File(
+                iconPackDirectory,
+                iconKeyGenerator.getHashedName(name = it.componentName),
+            )
+
+            it.copy(
+                iconPackInfoFilePath = if (iconPackInfoFilePath.exists()) {
+                    iconPackInfoFilePath.absolutePath
+                } else {
+                    null
+                },
+            )
+        }.groupBy {
             EblanUserPageKey(
                 eblanUser = launcherAppsWrapper.getUser(serialNumber = it.serialNumber),
                 page = 0,
@@ -106,14 +142,22 @@ class GetEblanApplicationInfosByLabelAndTagUseCase @Inject constructor(
         )
     }
 
-    private fun getHorizontalEblanApplicationInfosByLabel(
+    private suspend fun getHorizontalEblanApplicationInfosByLabel(
+        iconPackDirectory: File,
         horizontalAppDrawerColumns: Int,
         horizontalAppDrawerRows: Int,
         eblanApplicationInfosByLabel: MutableList<EblanApplicationInfo>,
     ): GetEblanApplicationInfosByLabelAndTag {
         val pageSize = horizontalAppDrawerColumns * horizontalAppDrawerRows
 
-        val groupedEblanApplicationInfos = eblanApplicationInfosByLabel.groupBy {
+        val groupedEblanApplicationInfos = eblanApplicationInfosByLabel.map {
+            it.copy(
+                iconPackInfoFilePath = File(
+                    iconPackDirectory,
+                    iconKeyGenerator.getHashedName(name = it.componentName),
+                ).absolutePath,
+            )
+        }.groupBy {
             launcherAppsWrapper.getUser(serialNumber = it.serialNumber)
         }.toSortedMap(nullsLast(compareBy { it.serialNumber }))
             .flatMap { (eblanUser, eblanApplicationInfos) ->

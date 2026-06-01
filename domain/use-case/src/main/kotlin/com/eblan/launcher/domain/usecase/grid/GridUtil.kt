@@ -235,6 +235,8 @@ private fun ApplicationInfoGridItem.asGridItem(): GridItem = GridItem(
         customLabel = customLabel,
         index = index,
         folderId = folderId,
+        // TODO: Icon pack for the folder grid item
+        iconPackInfoFilePath = null,
     ),
     associate = associate,
     override = override,

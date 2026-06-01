@@ -46,4 +46,5 @@ fun EblanApplicationInfoEntity.asModel(): EblanApplicationInfo = EblanApplicatio
     lastUpdateTime = lastUpdateTime,
     index = index,
     flags = flags,
+    iconPackInfoFilePath = null,
 )

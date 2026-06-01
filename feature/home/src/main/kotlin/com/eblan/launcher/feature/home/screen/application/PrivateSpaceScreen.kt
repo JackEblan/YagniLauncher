@@ -76,7 +76,6 @@ import com.eblan.launcher.domain.model.AppDrawerSettings
 import com.eblan.launcher.domain.model.EblanApplicationInfo
 import com.eblan.launcher.domain.model.EblanUser
 import com.eblan.launcher.domain.model.ManagedProfileResult
-import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.util.getHorizontalAlignment
 import com.eblan.launcher.feature.home.util.getSystemTextColor
 import com.eblan.launcher.feature.home.util.getVerticalArrangement
@@ -89,8 +88,6 @@ import kotlin.uuid.ExperimentalUuidApi
 
 internal fun LazyGridScope.privateSpace(
     appDrawerSettings: AppDrawerSettings,
-    drag: Drag,
-    iconPackFilePaths: Map<String, String>,
     isQuietModeEnabled: Boolean,
     managedProfileResult: ManagedProfileResult?,
     paddingValues: PaddingValues,
@@ -120,9 +117,7 @@ internal fun LazyGridScope.privateSpace(
         items(privateEblanApplicationInfos) { eblanApplicationInfo ->
             PrivateSpaceEblanApplicationInfoItem(
                 appDrawerSettings = appDrawerSettings,
-                drag = drag,
                 eblanApplicationInfo = eblanApplicationInfo,
-                iconPackFilePaths = iconPackFilePaths,
                 paddingValues = paddingValues,
                 isVisibleOverlay = isVisibleOverlay,
                 onUpdateOverlayBounds = onUpdateOverlayBounds,
@@ -229,9 +224,7 @@ internal fun PrivateSpaceStickyHeader(
 internal fun PrivateSpaceEblanApplicationInfoItem(
     modifier: Modifier = Modifier,
     appDrawerSettings: AppDrawerSettings,
-    drag: Drag,
     eblanApplicationInfo: EblanApplicationInfo,
-    iconPackFilePaths: Map<String, String>,
     paddingValues: PaddingValues,
     isVisibleOverlay: Boolean,
     onUpdateOverlayBounds: (
@@ -264,7 +257,7 @@ internal fun PrivateSpaceEblanApplicationInfoItem(
 
     val maxLines = if (appDrawerSettings.gridItemSettings.singleLineLabel) 1 else Int.MAX_VALUE
 
-    val icon = iconPackFilePaths[eblanApplicationInfo.componentName] ?: eblanApplicationInfo.icon
+    val icon = eblanApplicationInfo.iconPackInfoFilePath ?: eblanApplicationInfo.icon
 
     val horizontalAlignment =
         getHorizontalAlignment(horizontalAlignment = appDrawerSettings.gridItemSettings.horizontalAlignment)

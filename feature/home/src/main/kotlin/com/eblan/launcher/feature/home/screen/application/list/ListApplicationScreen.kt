@@ -142,7 +142,6 @@ internal fun SharedTransitionScope.ListApplicationScreen(
     eblanShortcutInfosGroup: Map<EblanShortcutInfoByGroup, List<EblanShortcutInfo>>,
     getEblanApplicationInfosByLabelAndTag: GetEblanApplicationInfosByLabelAndTag,
     hasShortcutHostPermission: Boolean,
-    iconPackFilePaths: Map<String, String>,
     isPressHome: Boolean,
     managedProfileResult: ManagedProfileResult?,
     paddingValues: PaddingValues,
@@ -279,7 +278,6 @@ internal fun SharedTransitionScope.ListApplicationScreen(
                 drag = drag,
                 eblanApplicationInfoOrder = appDrawerSettings.eblanApplicationInfoOrder,
                 getEblanApplicationInfosByLabelAndTag = getEblanApplicationInfosByLabelAndTag,
-                iconPackFilePaths = iconPackFilePaths,
                 index = index,
                 isRearrangeEblanApplicationInfo = isRearrangeEblanApplicationInfo,
                 managedProfileResult = managedProfileResult,
@@ -415,7 +413,6 @@ private fun SharedTransitionScope.EblanApplicationInfosPage(
     drag: Drag,
     eblanApplicationInfoOrder: EblanApplicationInfoOrder,
     getEblanApplicationInfosByLabelAndTag: GetEblanApplicationInfosByLabelAndTag,
-    iconPackFilePaths: Map<String, String>,
     index: Int,
     isRearrangeEblanApplicationInfo: Boolean,
     managedProfileResult: ManagedProfileResult?,
@@ -495,7 +492,6 @@ private fun SharedTransitionScope.EblanApplicationInfosPage(
                 appDrawerSettings = appDrawerSettings,
                 eblanUserPageKey = eblanUserPageKey,
                 getEblanApplicationInfosByLabelAndTag = getEblanApplicationInfosByLabelAndTag,
-                iconPackFilePaths = iconPackFilePaths,
                 paddingValues = paddingValues,
                 onDismissDragAndDrop = onDismissDragAndDrop,
                 onUpdateEblanApplicationInfos = onUpdateEblanApplicationInfos,
@@ -506,7 +502,6 @@ private fun SharedTransitionScope.EblanApplicationInfosPage(
                 drag = drag,
                 eblanUserPageKey = eblanUserPageKey,
                 getEblanApplicationInfosByLabelAndTag = getEblanApplicationInfosByLabelAndTag,
-                iconPackFilePaths = iconPackFilePaths,
                 managedProfileResult = managedProfileResult,
                 paddingValues = paddingValues,
                 showPopupApplicationMenu = showPopupApplicationMenu,
@@ -564,7 +559,6 @@ private fun SharedTransitionScope.EblanApplicationInfos(
     drag: Drag,
     eblanUserPageKey: EblanUserPageKey,
     getEblanApplicationInfosByLabelAndTag: GetEblanApplicationInfosByLabelAndTag,
-    iconPackFilePaths: Map<String, String>,
     managedProfileResult: ManagedProfileResult?,
     paddingValues: PaddingValues,
     isVisibleOverlay: Boolean,
@@ -652,7 +646,6 @@ private fun SharedTransitionScope.EblanApplicationInfos(
                             appDrawerSettings = appDrawerSettings,
                             drag = drag,
                             eblanApplicationInfo = eblanApplicationInfo,
-                            iconPackFilePaths = iconPackFilePaths,
                             paddingValues = paddingValues,
                             isVisibleOverlay = isVisibleOverlay,
                             onDismiss = onDismiss,
@@ -670,8 +663,6 @@ private fun SharedTransitionScope.EblanApplicationInfos(
 
                     privateSpace(
                         appDrawerSettings = appDrawerSettings,
-                        drag = drag,
-                        iconPackFilePaths = iconPackFilePaths,
                         isQuietModeEnabled = isQuietModeEnabled,
                         managedProfileResult = managedProfileResult,
                         paddingValues = paddingValues,
@@ -696,7 +687,6 @@ private fun SharedTransitionScope.EblanApplicationInfos(
                             appDrawerSettings = appDrawerSettings,
                             drag = drag,
                             eblanApplicationInfo = eblanApplicationInfo,
-                            iconPackFilePaths = iconPackFilePaths,
                             paddingValues = paddingValues,
                             isVisibleOverlay = isVisibleOverlay,
                             onDismiss = onDismiss,
@@ -739,7 +729,6 @@ private fun SharedTransitionScope.EblanApplicationInfoItem(
     appDrawerSettings: AppDrawerSettings,
     drag: Drag,
     eblanApplicationInfo: EblanApplicationInfo,
-    iconPackFilePaths: Map<String, String>,
     paddingValues: PaddingValues,
     isVisibleOverlay: Boolean,
     onDismiss: () -> Unit,
@@ -779,7 +768,7 @@ private fun SharedTransitionScope.EblanApplicationInfoItem(
 
     val maxLines = if (appDrawerSettings.gridItemSettings.singleLineLabel) 1 else Int.MAX_VALUE
 
-    val icon = iconPackFilePaths[eblanApplicationInfo.componentName] ?: eblanApplicationInfo.icon
+    val icon = eblanApplicationInfo.iconPackInfoFilePath ?: eblanApplicationInfo.icon
 
     val leftPadding = with(density) {
         paddingValues.calculateLeftPadding(layoutDirection).roundToPx()

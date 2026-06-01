@@ -82,7 +82,6 @@ internal fun EditPageScreen(
     editPageData: EditPageData?,
     hasShortcutHostPermission: Boolean,
     homeSettings: HomeSettings,
-    iconPackFilePaths: Map<String, String>,
     paddingValues: PaddingValues,
     screenHeight: Int,
     textColor: TextColor,
@@ -221,7 +220,6 @@ internal fun EditPageScreen(
                                     gridItem = gridItem,
                                     gridItemSettings = homeSettings.gridItemSettings,
                                     hasShortcutHostPermission = hasShortcutHostPermission,
-                                    iconPackFilePaths = iconPackFilePaths,
                                     statusBarNotifications = emptyMap(),
                                     textColor = textColor,
                                 )

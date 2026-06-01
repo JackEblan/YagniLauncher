@@ -103,8 +103,6 @@ internal fun HomeRoute(
 
     val eblanAppWidgetProviderInfosGroup by viewModel.eblanAppWidgetProviderInfosGroup.collectAsStateWithLifecycle()
 
-    val iconPackFilePaths by viewModel.iconPackFilePaths.collectAsStateWithLifecycle()
-
     val eblanApplicationInfoTags by viewModel.eblanApplicationInfoTags.collectAsStateWithLifecycle()
 
     val folderPopups by viewModel.folderPopups.collectAsStateWithLifecycle()
@@ -127,7 +125,6 @@ internal fun HomeRoute(
         folderPopups = folderPopups,
         getEblanApplicationInfosByLabelAndTag = getEblanApplicationInfos,
         homeUiState = homeUiState,
-        iconPackFilePaths = iconPackFilePaths,
         movedGridItemResult = movedGridItemResult,
         pinGridItem = pinGridItem,
         screen = screen,
@@ -186,7 +183,6 @@ internal fun HomeScreen(
     folderPopups: List<FolderPopup>,
     getEblanApplicationInfosByLabelAndTag: GetEblanApplicationInfosByLabelAndTag,
     homeUiState: HomeUiState,
-    iconPackFilePaths: Map<String, String>,
     movedGridItemResult: MoveGridItemResult?,
     pinGridItem: GridItem?,
     screen: Screen,
@@ -292,7 +288,6 @@ internal fun HomeScreen(
                 folderPopups = folderPopups,
                 getEblanApplicationInfosByLabelAndTag = getEblanApplicationInfosByLabelAndTag,
                 homeData = homeUiState.homeData,
-                iconPackFilePaths = iconPackFilePaths,
                 movedGridItemResult = movedGridItemResult,
                 paddingValues = paddingValues,
                 pinGridItem = pinGridItem,
@@ -356,7 +351,6 @@ private fun Success(
     folderPopups: List<FolderPopup>,
     getEblanApplicationInfosByLabelAndTag: GetEblanApplicationInfosByLabelAndTag,
     homeData: HomeData,
-    iconPackFilePaths: Map<String, String>,
     movedGridItemResult: MoveGridItemResult?,
     paddingValues: PaddingValues,
     pinGridItem: GridItem?,
@@ -474,7 +468,6 @@ private fun Success(
                     hasShortcutHostPermission = homeData.hasShortcutHostPermission,
                     hasSystemFeatureAppWidgets = homeData.hasSystemFeatureAppWidgets,
                     homeSettings = homeData.userData.homeSettings,
-                    iconPackFilePaths = iconPackFilePaths,
                     lockMovement = homeData.userData.experimentalSettings.lockMovement,
                     moveGridItemResult = movedGridItemResult,
                     paddingValues = paddingValues,
@@ -531,7 +524,6 @@ private fun Success(
                     editPageData = editPageData,
                     hasShortcutHostPermission = homeData.hasShortcutHostPermission,
                     homeSettings = homeData.userData.homeSettings,
-                    iconPackFilePaths = iconPackFilePaths,
                     paddingValues = paddingValues,
                     screenHeight = screenHeight,
                     textColor = homeData.textColor,

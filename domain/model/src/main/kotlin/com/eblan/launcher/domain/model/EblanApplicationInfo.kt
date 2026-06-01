@@ -29,4 +29,5 @@ data class EblanApplicationInfo(
     val lastUpdateTime: Long,
     val index: Int,
     val flags: Int,
+    val iconPackInfoFilePath: String?,
 )
