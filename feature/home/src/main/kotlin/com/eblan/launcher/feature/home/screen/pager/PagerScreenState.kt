@@ -1422,6 +1422,8 @@ internal fun rememberPagerScreenState(
     val iconKeyGenerator = LocalIconKeyGenerator.current
 
     return rememberSaveable(
+        screenWidth,
+        screenHeight,
         saver = PagerScreenState.Saver(
             screenWidth = screenWidth,
             screenHeight = screenHeight,
