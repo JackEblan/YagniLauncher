@@ -28,19 +28,19 @@ import javax.inject.Inject
 internal class DefaultEblanShortcutConfigRepository @Inject constructor(private val eblanShortcutConfigDao: EblanShortcutConfigDao) : EblanShortcutConfigRepository {
     override val eblanShortcutConfigsFlow =
         eblanShortcutConfigDao.getEblanShortcutConfigEntitiesFlow().map { entities ->
-            entities.map { entity ->
-                entity.asModel()
+            entities.map {
+                it.asModel()
             }
         }
 
     override suspend fun getEblanShortcutConfigs(): List<EblanShortcutConfig> = eblanShortcutConfigDao.getEblanShortcutConfigEntities()
-        .map { eblanShortcutConfigEntity ->
-            eblanShortcutConfigEntity.asModel()
+        .map {
+            it.asModel()
         }
 
     override suspend fun upsertEblanShortcutConfigs(eblanShortcutConfigs: List<EblanShortcutConfig>) {
-        val entities = eblanShortcutConfigs.map { eblanShortcutConfig ->
-            eblanShortcutConfig.asEntity()
+        val entities = eblanShortcutConfigs.map {
+            it.asEntity()
         }
 
         eblanShortcutConfigDao.upsertEblanShortcutConfigEntities(entities = entities)
@@ -66,8 +66,8 @@ internal class DefaultEblanShortcutConfigRepository @Inject constructor(private 
     ): List<EblanShortcutConfig> = eblanShortcutConfigDao.getEblanShortcutConfigEntitiesByPackageName(
         serialNumber = serialNumber,
         packageName = packageName,
-    ).map { entity ->
-        entity.asModel()
+    ).map {
+        it.asModel()
     }
 
     private fun EblanShortcutConfig.asEntity(): EblanShortcutConfigEntity = EblanShortcutConfigEntity(

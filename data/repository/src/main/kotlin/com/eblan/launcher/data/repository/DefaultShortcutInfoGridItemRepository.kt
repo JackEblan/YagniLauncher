@@ -31,37 +31,37 @@ import javax.inject.Inject
 internal class DefaultShortcutInfoGridItemRepository @Inject constructor(private val shortcutInfoGridItemDao: ShortcutInfoGridItemDao) : ShortcutInfoGridItemRepository {
     override val gridItemsFlow =
         shortcutInfoGridItemDao.getShortcutInfoGridItemEntitiesFlow().map { entities ->
-            entities.filter { entity ->
-                entity.folderId == null
-            }.map { entity ->
-                entity.asGridItem()
+            entities.filter {
+                it.folderId == null
+            }.map {
+                it.asGridItem()
             }
         }
 
     override val gridItemsWithFolderIdFlow =
         shortcutInfoGridItemDao.getShortcutInfoGridItemEntitiesFlow().map { entities ->
-            entities.map { entity ->
-                entity.asGridItem()
+            entities.map {
+                it.asGridItem()
             }
         }
 
-    override suspend fun getGridItems(): List<GridItem> = shortcutInfoGridItemDao.getShortcutInfoGridItemEntities().filter { entity ->
-        entity.folderId == null
-    }.map { entity ->
-        entity.asGridItem()
+    override suspend fun getGridItems(): List<GridItem> = shortcutInfoGridItemDao.getShortcutInfoGridItemEntities().filter {
+        it.folderId == null
+    }.map {
+        it.asGridItem()
     }
 
-    override suspend fun getGridItemsWithFolderId(): List<GridItem> = shortcutInfoGridItemDao.getShortcutInfoGridItemEntities().map { entity ->
-        entity.asGridItem()
+    override suspend fun getGridItemsWithFolderId(): List<GridItem> = shortcutInfoGridItemDao.getShortcutInfoGridItemEntities().map {
+        it.asGridItem()
     }
 
-    override suspend fun getShortcutInfoGridItems(): List<ShortcutInfoGridItem> = shortcutInfoGridItemDao.getShortcutInfoGridItemEntities().map { entity ->
-        entity.asModel()
+    override suspend fun getShortcutInfoGridItems(): List<ShortcutInfoGridItem> = shortcutInfoGridItemDao.getShortcutInfoGridItemEntities().map {
+        it.asModel()
     }
 
     override suspend fun upsertShortcutInfoGridItems(shortcutInfoGridItems: List<ShortcutInfoGridItem>) {
-        val entities = shortcutInfoGridItems.map { shortcutInfoGridItem ->
-            shortcutInfoGridItem.asEntity()
+        val entities = shortcutInfoGridItems.map {
+            it.asEntity()
         }
 
         shortcutInfoGridItemDao.upsertShortcutInfoGridItemEntities(entities = entities)
@@ -74,8 +74,8 @@ internal class DefaultShortcutInfoGridItemRepository @Inject constructor(private
     }
 
     override suspend fun deleteShortcutInfoGridItems(shortcutInfoGridItems: List<ShortcutInfoGridItem>) {
-        val entities = shortcutInfoGridItems.map { shortcutInfoGridItem ->
-            shortcutInfoGridItem.asEntity()
+        val entities = shortcutInfoGridItems.map {
+            it.asEntity()
         }
 
         shortcutInfoGridItemDao.deleteShortcutInfoGridItemEntities(entities = entities)
@@ -91,8 +91,8 @@ internal class DefaultShortcutInfoGridItemRepository @Inject constructor(private
     ): List<ShortcutInfoGridItem> = shortcutInfoGridItemDao.getShortcutInfoGridItemEntitiesByPackageName(
         serialNumber = serialNumber,
         packageName = packageName,
-    ).map { entity ->
-        entity.asModel()
+    ).map {
+        it.asModel()
     }
 
     override suspend fun deleteShortcutInfoGridItem(
@@ -114,16 +114,16 @@ internal class DefaultShortcutInfoGridItemRepository @Inject constructor(private
     }
 
     override suspend fun updateShortcutInfoGridItems(shortcutInfoGridItems: List<ShortcutInfoGridItem>) {
-        val entities = shortcutInfoGridItems.map { shortcutInfoGridItem ->
-            shortcutInfoGridItem.asEntity()
+        val entities = shortcutInfoGridItems.map {
+            it.asEntity()
         }
 
         shortcutInfoGridItemDao.updateShortcutInfoGridItemEntities(entities = entities)
     }
 
     override suspend fun insertShortcutInfoGridItems(shortcutInfoGridItems: List<ShortcutInfoGridItem>) {
-        val entities = shortcutInfoGridItems.map { shortcutInfoGridItem ->
-            shortcutInfoGridItem.asEntity()
+        val entities = shortcutInfoGridItems.map {
+            it.asEntity()
         }
 
         shortcutInfoGridItemDao.insertShortcutInfoGridItemEntities(entities = entities)

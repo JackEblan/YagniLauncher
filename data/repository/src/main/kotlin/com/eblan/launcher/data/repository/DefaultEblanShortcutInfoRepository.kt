@@ -28,19 +28,19 @@ import javax.inject.Inject
 class DefaultEblanShortcutInfoRepository @Inject constructor(private val eblanShortcutInfoDao: EblanShortcutInfoDao) : EblanShortcutInfoRepository {
     override val eblanShortcutInfosFlow =
         eblanShortcutInfoDao.getEblanShortcutInfoEntitiesFlow().map { entities ->
-            entities.map { entity ->
-                entity.asModel()
+            entities.map {
+                it.asModel()
             }
         }
 
     override suspend fun getEblanShortcutInfos(): List<EblanShortcutInfo> = eblanShortcutInfoDao.getEblanShortcutInfoEntities()
-        .map { eblanShortcutInfoEntity ->
-            eblanShortcutInfoEntity.asModel()
+        .map {
+            it.asModel()
         }
 
     override suspend fun upsertEblanShortcutInfos(eblanShortcutInfos: List<EblanShortcutInfo>) {
-        val entities = eblanShortcutInfos.map { eblanShortcutInfo ->
-            eblanShortcutInfo.asEntity()
+        val entities = eblanShortcutInfos.map {
+            it.asEntity()
         }
 
         eblanShortcutInfoDao.upsertEblanShortcutInfoEntities(entities = entities)
@@ -56,8 +56,8 @@ class DefaultEblanShortcutInfoRepository @Inject constructor(private val eblanSh
     ): List<EblanShortcutInfo> = eblanShortcutInfoDao.getEblanShortcutInfoEntities(
         serialNumber = serialNumber,
         packageName = packageName,
-    ).map { entity ->
-        entity.asModel()
+    ).map {
+        it.asModel()
     }
 
     override suspend fun deleteEblanShortcutInfos(

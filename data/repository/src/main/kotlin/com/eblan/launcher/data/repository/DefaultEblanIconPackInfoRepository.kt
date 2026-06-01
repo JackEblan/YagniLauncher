@@ -28,8 +28,8 @@ import javax.inject.Inject
 internal class DefaultEblanIconPackInfoRepository @Inject constructor(private val eblanIconPackInfoDao: EblanIconPackInfoDao) : EblanIconPackInfoRepository {
     override val eblanIconPackInfosFlow =
         eblanIconPackInfoDao.getEblanIconPackInfoEntitiesFlow().map { entities ->
-            entities.map { entity ->
-                entity.asModel()
+            entities.map {
+                it.asModel()
             }
         }
 

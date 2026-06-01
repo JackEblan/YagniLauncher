@@ -41,14 +41,14 @@ internal class DefaultEblanApplicationInfoRepository @Inject constructor(
 ) : EblanApplicationInfoRepository {
     override val eblanApplicationInfosFlow =
         eblanApplicationInfoDao.getEblanApplicationInfoEntitiesFlow().map { entities ->
-            entities.map { entity ->
-                entity.asModel()
+            entities.map {
+                it.asModel()
             }
         }
 
     override suspend fun getEblanApplicationInfos(): List<EblanApplicationInfo> = eblanApplicationInfoDao.getEblanApplicationInfoEntity()
-        .map { eblanApplicationInfoEntity ->
-            eblanApplicationInfoEntity.asModel()
+        .map {
+            it.asModel()
         }
 
     override suspend fun upsertEblanApplicationInfo(eblanApplicationInfo: EblanApplicationInfo) {
@@ -56,8 +56,8 @@ internal class DefaultEblanApplicationInfoRepository @Inject constructor(
     }
 
     override suspend fun updateEblanApplicationInfos(eblanApplicationInfos: List<EblanApplicationInfo>) {
-        val entities = eblanApplicationInfos.map { eblanApplicationInfo ->
-            eblanApplicationInfo.asEntity()
+        val entities = eblanApplicationInfos.map {
+            it.asEntity()
         }
 
         eblanApplicationInfoDao.updateEblanApplicationInfoEntities(entities = entities)
@@ -74,8 +74,8 @@ internal class DefaultEblanApplicationInfoRepository @Inject constructor(
     }
 
     override suspend fun deleteEblanApplicationInfos(eblanApplicationInfos: List<EblanApplicationInfo>) {
-        val entities = eblanApplicationInfos.map { eblanApplicationInfo ->
-            eblanApplicationInfo.asEntity()
+        val entities = eblanApplicationInfos.map {
+            it.asEntity()
         }
 
         eblanApplicationInfoDao.deleteEblanApplicationInfoEntities(entities = entities)
@@ -95,8 +95,8 @@ internal class DefaultEblanApplicationInfoRepository @Inject constructor(
 
     override suspend fun resetEblanApplicationInfoCustomIcon(eblanApplicationInfo: EblanApplicationInfo) {
         withContext(ioDispatcher) {
-            eblanApplicationInfo.customIcon?.let { customIcon ->
-                val customIconFile = File(customIcon)
+            eblanApplicationInfo.customIcon?.let {
+                val customIconFile = File(it)
 
                 if (customIconFile.exists()) {
                     customIconFile.delete()
@@ -121,8 +121,8 @@ internal class DefaultEblanApplicationInfoRepository @Inject constructor(
     ): List<EblanApplicationInfo> = eblanApplicationInfoDao.getEblanApplicationInfoEntitiesByPackageName(
         serialNumber = serialNumber,
         packageName = packageName,
-    ).map { entity ->
-        entity.asModel()
+    ).map {
+        it.asModel()
     }
 
     override fun getEblanApplicationInfoTagsFlow(
@@ -132,18 +132,18 @@ internal class DefaultEblanApplicationInfoRepository @Inject constructor(
         serialNumber = serialNumber,
         componentName = componentName,
     ).map { entities ->
-        entities.map { entity ->
-            entity.asModel()
+        entities.map {
+            it.asModel()
         }
     }
 
-    override fun getEblanApplicationInfosByTagId(id: Long): List<EblanApplicationInfo> = eblanApplicationInfoDao.getEblanApplicationInfoEntitiesByTagId(id = id).map { entity ->
-        entity.asModel()
+    override fun getEblanApplicationInfosByTagId(id: Long): List<EblanApplicationInfo> = eblanApplicationInfoDao.getEblanApplicationInfoEntitiesByTagId(id = id).map {
+        it.asModel()
     }
 
     override fun getEblanApplicationInfosWithoutTag(): List<EblanApplicationInfo> = eblanApplicationInfoDao.getEblanApplicationInfoEntitiesWithoutTags()
-        .map { entity ->
-            entity.asModel()
+        .map {
+            it.asModel()
         }
 
     private fun EblanApplicationInfoTagEntity.asModel(): EblanApplicationInfoTag = EblanApplicationInfoTag(

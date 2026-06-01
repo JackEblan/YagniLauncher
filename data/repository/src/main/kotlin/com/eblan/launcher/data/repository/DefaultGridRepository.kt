@@ -158,8 +158,8 @@ internal class DefaultGridRepository @Inject constructor(
         withContext(ioDispatcher) {
             val gridItem = when (val data = gridItem.data) {
                 is GridItemData.ApplicationInfo -> {
-                    data.customIcon?.let { customIcon ->
-                        val customIconFile = File(customIcon)
+                    data.customIcon?.let {
+                        val customIconFile = File(it)
 
                         if (customIconFile.exists()) {
                             customIconFile.delete()
@@ -184,8 +184,8 @@ internal class DefaultGridRepository @Inject constructor(
                 }
 
                 is GridItemData.ShortcutConfig -> {
-                    data.customIcon?.let { customIcon ->
-                        val customIconFile = File(customIcon)
+                    data.customIcon?.let {
+                        val customIconFile = File(it)
 
                         if (customIconFile.exists()) {
                             customIconFile.delete()
@@ -198,8 +198,8 @@ internal class DefaultGridRepository @Inject constructor(
                 }
 
                 is GridItemData.ShortcutInfo -> {
-                    data.customIcon?.let { customIcon ->
-                        val customIconFile = File(customIcon)
+                    data.customIcon?.let {
+                        val customIconFile = File(it)
 
                         if (customIconFile.exists()) {
                             customIconFile.delete()
@@ -212,8 +212,8 @@ internal class DefaultGridRepository @Inject constructor(
                 }
 
                 is GridItemData.Folder -> {
-                    data.icon?.let { icon ->
-                        val iconFile = File(icon)
+                    data.icon?.let {
+                        val iconFile = File(it)
 
                         if (iconFile.exists()) {
                             iconFile.delete()

@@ -32,22 +32,22 @@ import kotlin.collections.map
 internal class DefaultWidgetGridItemRepository @Inject constructor(private val widgetGridItemDao: WidgetGridItemDao) : WidgetGridItemRepository {
     override val gridItemsFlow =
         widgetGridItemDao.getWidgetGridItemEntitiesFlow().map { entities ->
-            entities.map { entity ->
-                entity.asGridItem()
+            entities.map {
+                it.asGridItem()
             }
         }
 
-    override suspend fun getGridItems(): List<GridItem> = widgetGridItemDao.getWidgetGridItemEntities().map { entity ->
-        entity.asGridItem()
+    override suspend fun getGridItems(): List<GridItem> = widgetGridItemDao.getWidgetGridItemEntities().map {
+        it.asGridItem()
     }
 
-    override suspend fun getWidgetGridItems(): List<WidgetGridItem> = widgetGridItemDao.getWidgetGridItemEntities().map { entity ->
-        entity.asModel()
+    override suspend fun getWidgetGridItems(): List<WidgetGridItem> = widgetGridItemDao.getWidgetGridItemEntities().map {
+        it.asModel()
     }
 
     override suspend fun upsertWidgetGridItems(widgetGridItems: List<WidgetGridItem>) {
-        val entities = widgetGridItems.map { widgetGridItem ->
-            widgetGridItem.asEntity()
+        val entities = widgetGridItems.map {
+            it.asEntity()
         }
 
         widgetGridItemDao.upsertWidgetGridItemEntities(entities = entities)
@@ -60,8 +60,8 @@ internal class DefaultWidgetGridItemRepository @Inject constructor(private val w
     }
 
     override suspend fun deleteWidgetGridItemsByPackageName(widgetGridItems: List<WidgetGridItem>) {
-        val entities = widgetGridItems.map { widgetGridItem ->
-            widgetGridItem.asEntity()
+        val entities = widgetGridItems.map {
+            it.asEntity()
         }
 
         widgetGridItemDao.deleteWidgetGridItemEntities(entities = entities)
@@ -90,16 +90,16 @@ internal class DefaultWidgetGridItemRepository @Inject constructor(private val w
     }
 
     override suspend fun updateWidgetGridItems(widgetGridItems: List<WidgetGridItem>) {
-        val entities = widgetGridItems.map { widgetGridItem ->
-            widgetGridItem.asEntity()
+        val entities = widgetGridItems.map {
+            it.asEntity()
         }
 
         widgetGridItemDao.updateWidgetGridItemEntities(entities = entities)
     }
 
     override suspend fun insertWidgetGridItems(widgetGridItems: List<WidgetGridItem>) {
-        val entities = widgetGridItems.map { widgetGridItem ->
-            widgetGridItem.asEntity()
+        val entities = widgetGridItems.map {
+            it.asEntity()
         }
 
         widgetGridItemDao.insertWidgetGridItemEntities(entities = entities)
