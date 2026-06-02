@@ -1,0 +1,2 @@
+- Nested folder
+- Bug fixes and stability improvements
