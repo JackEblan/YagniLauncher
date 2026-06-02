@@ -72,23 +72,29 @@ internal class DefaultApplicationInfoGridItemRepository @Inject constructor(
     }.flowOn(ioDispatcher)
 
     override suspend fun getGridItems(): List<GridItem> = withContext(ioDispatcher) {
+        val iconPackInfoPackageName =
+            userDataRepository.userDataFlow.first().generalSettings.iconPackInfoPackageName
+
         applicationInfoGridItemDao.getApplicationInfoGridItemEntities().filter {
             it.folderId == null
         }.map {
             it.asGridItem(
                 fileManager = fileManager,
                 iconKeyGenerator = iconKeyGenerator,
-                iconPackInfoPackageName = userDataRepository.userDataFlow.first().generalSettings.iconPackInfoPackageName,
+                iconPackInfoPackageName = iconPackInfoPackageName,
             )
         }
     }
 
     override suspend fun getGridItemsWithFolderId(): List<GridItem> = withContext(ioDispatcher) {
+        val iconPackInfoPackageName =
+            userDataRepository.userDataFlow.first().generalSettings.iconPackInfoPackageName
+
         applicationInfoGridItemDao.getApplicationInfoGridItemEntities().map {
             it.asGridItem(
                 fileManager = fileManager,
                 iconKeyGenerator = iconKeyGenerator,
-                iconPackInfoPackageName = userDataRepository.userDataFlow.first().generalSettings.iconPackInfoPackageName,
+                iconPackInfoPackageName = iconPackInfoPackageName,
             )
         }
     }
