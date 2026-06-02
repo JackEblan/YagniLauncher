@@ -68,7 +68,7 @@ class GetHomeDataUseCase @Inject constructor(
                         iconPackInfoPackageName = userData.generalSettings.iconPackInfoPackageName,
                     )
                 }
-            }
+            }.flowOn(defaultDispatcher)
 
         return combine(
             userDataRepository.userDataFlow,
