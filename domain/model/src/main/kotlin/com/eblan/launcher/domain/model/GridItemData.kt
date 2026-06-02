@@ -29,6 +29,7 @@ sealed interface GridItemData {
         val customLabel: String?,
         val index: Int,
         val folderId: String?,
+        val iconPackInfoFilePath: String?,
     ) : GridItemData
 
     data class Widget(

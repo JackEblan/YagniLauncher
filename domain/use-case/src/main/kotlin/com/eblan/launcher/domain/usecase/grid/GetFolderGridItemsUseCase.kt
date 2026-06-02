@@ -19,6 +19,8 @@ package com.eblan.launcher.domain.usecase.grid
 
 import com.eblan.launcher.domain.common.Dispatcher
 import com.eblan.launcher.domain.common.EblanDispatchers
+import com.eblan.launcher.domain.common.IconKeyGenerator
+import com.eblan.launcher.domain.framework.FileManager
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.repository.FolderGridItemRepository
 import com.eblan.launcher.domain.repository.UserDataRepository
@@ -30,16 +32,21 @@ import javax.inject.Inject
 class GetFolderGridItemsUseCase @Inject constructor(
     private val folderGridItemRepository: FolderGridItemRepository,
     private val userDataRepository: UserDataRepository,
-    @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
+    private val fileManager: FileManager,
+    private val iconKeyGenerator: IconKeyGenerator,
+    @param:Dispatcher(EblanDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) {
-    suspend operator fun invoke(): List<GridItem> = withContext(defaultDispatcher) {
-        val homeSettings = userDataRepository.userDataFlow.first().homeSettings
+    suspend operator fun invoke(): List<GridItem> = withContext(ioDispatcher) {
+        val userData = userDataRepository.userDataFlow.first()
 
         folderGridItemRepository.getFolderGridItemWrappers().map {
             it.asGridItem(
                 folderGridItemRepository = folderGridItemRepository,
-                maxFolderColumns = homeSettings.maxFolderColumns,
-                maxFolderRows = homeSettings.maxFolderRows,
+                maxFolderColumns = userData.homeSettings.maxFolderColumns,
+                maxFolderRows = userData.homeSettings.maxFolderRows,
+                fileManager = fileManager,
+                iconKeyGenerator = iconKeyGenerator,
+                iconPackInfoPackageName = userData.generalSettings.iconPackInfoPackageName,
             )
         }
     }

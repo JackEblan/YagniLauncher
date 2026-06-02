@@ -101,7 +101,6 @@ internal fun SharedTransitionScope.EblanApplicationInfoItem(
     appDrawerSettings: AppDrawerSettings,
     drag: Drag,
     eblanApplicationInfo: EblanApplicationInfo,
-    iconPackFilePaths: Map<String, String>,
     paddingValues: PaddingValues,
     isVisibleOverlay: Boolean,
     appDrawerType: AppDrawerType,
@@ -144,7 +143,7 @@ internal fun SharedTransitionScope.EblanApplicationInfoItem(
 
     val maxLines = if (appDrawerSettings.gridItemSettings.singleLineLabel) 1 else Int.MAX_VALUE
 
-    val icon = iconPackFilePaths[eblanApplicationInfo.componentName] ?: eblanApplicationInfo.icon
+    val icon = eblanApplicationInfo.iconPackInfoFilePath ?: eblanApplicationInfo.icon
 
     val horizontalAlignment =
         getHorizontalAlignment(horizontalAlignment = appDrawerSettings.gridItemSettings.horizontalAlignment)
@@ -373,6 +372,7 @@ internal suspend fun handleDragEblanApplicationInfoItem(
                 customLabel = eblanApplicationInfo.customLabel,
                 index = -1,
                 folderId = null,
+                iconPackInfoFilePath = eblanApplicationInfo.iconPackInfoFilePath,
             )
 
             val eblanAction = EblanAction(

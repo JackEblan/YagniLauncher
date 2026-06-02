@@ -85,7 +85,6 @@ internal fun DragAndDropEblanApplicationInfos(
     appDrawerSettings: AppDrawerSettings,
     eblanUserPageKey: EblanUserPageKey,
     getEblanApplicationInfosByLabelAndTag: GetEblanApplicationInfosByLabelAndTag,
-    iconPackFilePaths: Map<String, String>,
     paddingValues: PaddingValues,
     onDismissDragAndDrop: () -> Unit,
     onUpdateEblanApplicationInfos: (List<EblanApplicationInfo>) -> Unit,
@@ -150,7 +149,6 @@ internal fun DragAndDropEblanApplicationInfos(
                     EblanApplicationInfoItem(
                         eblanApplicationInfo = eblanApplicationInfo,
                         appDrawerSettings = appDrawerSettings,
-                        iconPackFilePaths = iconPackFilePaths,
                     )
                 }
             }
@@ -193,7 +191,6 @@ private fun EblanApplicationInfoItem(
     modifier: Modifier = Modifier,
     eblanApplicationInfo: EblanApplicationInfo,
     appDrawerSettings: AppDrawerSettings,
-    iconPackFilePaths: Map<String, String>,
 ) {
     val textColor = getSystemTextColor(
         systemCustomTextColor = appDrawerSettings.gridItemSettings.customTextColor,
@@ -204,7 +201,7 @@ private fun EblanApplicationInfoItem(
 
     val maxLines = if (appDrawerSettings.gridItemSettings.singleLineLabel) 1 else Int.MAX_VALUE
 
-    val icon = iconPackFilePaths[eblanApplicationInfo.componentName] ?: eblanApplicationInfo.icon
+    val icon = eblanApplicationInfo.iconPackInfoFilePath ?: eblanApplicationInfo.icon
 
     val horizontalAlignment =
         getHorizontalAlignment(horizontalAlignment = appDrawerSettings.gridItemSettings.horizontalAlignment)

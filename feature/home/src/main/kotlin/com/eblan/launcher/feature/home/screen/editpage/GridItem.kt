@@ -66,7 +66,6 @@ internal fun GridItemContent(
     gridItem: GridItem,
     gridItemSettings: GridItemSettings,
     hasShortcutHostPermission: Boolean,
-    iconPackFilePaths: Map<String, String>,
     statusBarNotifications: Map<String, Int>,
     textColor: TextColor,
 ) {
@@ -96,7 +95,6 @@ internal fun GridItemContent(
                 modifier = modifier,
                 data = data,
                 gridItemSettings = currentGridItemSettings,
-                iconPackFilePaths = iconPackFilePaths,
                 statusBarNotifications = statusBarNotifications,
                 textColor = currentTextColor,
             )
@@ -121,7 +119,6 @@ internal fun GridItemContent(
                 modifier = modifier,
                 data = data,
                 gridItemSettings = currentGridItemSettings,
-                iconPackFilePaths = iconPackFilePaths,
                 textColor = currentTextColor,
             )
         }
@@ -143,7 +140,6 @@ private fun ApplicationInfoGridItem(
     modifier: Modifier = Modifier,
     data: GridItemData.ApplicationInfo,
     gridItemSettings: GridItemSettings,
-    iconPackFilePaths: Map<String, String>,
     statusBarNotifications: Map<String, Int>,
     textColor: Color,
 ) {
@@ -157,7 +153,7 @@ private fun ApplicationInfoGridItem(
 
     val maxLines = if (gridItemSettings.singleLineLabel) 1 else Int.MAX_VALUE
 
-    val icon = iconPackFilePaths[data.componentName] ?: data.icon
+    val icon = data.iconPackInfoFilePath ?: data.icon
 
     val hasNotifications =
         statusBarNotifications[data.packageName] != null && (
@@ -297,7 +293,6 @@ private fun FolderGridItem(
     modifier: Modifier = Modifier,
     data: GridItemData.Folder,
     gridItemSettings: GridItemSettings,
-    iconPackFilePaths: Map<String, String>,
     textColor: Color,
 ) {
     val horizontalAlignment =
@@ -341,7 +336,6 @@ private fun FolderGridItem(
                     content = { gridItem ->
                         PreviewFolderGridItemContent(
                             gridItem = gridItem,
-                            iconPackFilePaths = iconPackFilePaths,
                             textColor = textColor,
                         )
                     },
@@ -475,7 +469,6 @@ private fun ShortcutConfigGridItem(
 private fun PreviewFolderGridItemContent(
     modifier: Modifier = Modifier,
     gridItem: GridItem,
-    iconPackFilePaths: Map<String, String>,
     textColor: Color,
 ) {
     val context = LocalContext.current
@@ -486,9 +479,7 @@ private fun PreviewFolderGridItemContent(
 
         when (val data = gridItem.data) {
             is GridItemData.ApplicationInfo -> {
-                val icon =
-                    iconPackFilePaths[data.componentName]
-                        ?: data.icon
+                val icon = data.iconPackInfoFilePath ?: data.icon
 
                 AsyncImage(
                     model = Builder(context)

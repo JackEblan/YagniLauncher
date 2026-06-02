@@ -101,7 +101,6 @@ internal fun SharedTransitionScope.InteractiveGridItem(
     gridItem: GridItem,
     gridItemSettings: GridItemSettings,
     hasShortcutHostPermission: Boolean,
-    iconPackFilePaths: Map<String, String>,
     isScrollInProgress: Boolean,
     statusBarNotifications: Map<String, Int>,
     textColor: TextColor,
@@ -176,7 +175,6 @@ internal fun SharedTransitionScope.InteractiveGridItem(
                 drag = drag,
                 gridItem = gridItem,
                 gridItemSettings = currentGridItemSettings,
-                iconPackFilePaths = iconPackFilePaths,
                 isScrollInProgress = isScrollInProgress,
                 isSelected = isSelected,
                 isVisibleFolder = isVisibleFolder,
@@ -265,7 +263,6 @@ internal fun SharedTransitionScope.InteractiveGridItem(
                 drag = drag,
                 gridItem = gridItem,
                 gridItemSettings = currentGridItemSettings,
-                iconPackFilePaths = iconPackFilePaths,
                 isScrollInProgress = isScrollInProgress,
                 isSelected = isSelected,
                 isVisibleFolder = isVisibleFolder,
@@ -332,7 +329,6 @@ private fun SharedTransitionScope.InteractiveApplicationInfoGridItem(
     drag: Drag,
     gridItem: GridItem,
     gridItemSettings: GridItemSettings,
-    iconPackFilePaths: Map<String, String>,
     isScrollInProgress: Boolean,
     isSelected: Boolean,
     isVisibleFolder: Boolean,
@@ -386,7 +382,7 @@ private fun SharedTransitionScope.InteractiveApplicationInfoGridItem(
 
     val maxLines = if (gridItemSettings.singleLineLabel) 1 else Int.MAX_VALUE
 
-    val icon = iconPackFilePaths[data.componentName] ?: data.icon
+    val icon = data.iconPackInfoFilePath ?: data.icon
 
     val hasNotifications =
         statusBarNotifications[data.packageName] != null && (
@@ -995,7 +991,6 @@ private fun SharedTransitionScope.InteractiveFolderGridItem(
     drag: Drag,
     gridItem: GridItem,
     gridItemSettings: GridItemSettings,
-    iconPackFilePaths: Map<String, String>,
     isScrollInProgress: Boolean,
     isSelected: Boolean,
     isVisibleFolder: Boolean,
@@ -1237,7 +1232,6 @@ private fun SharedTransitionScope.InteractiveFolderGridItem(
                         PreviewFolderGridItem(
                             alpha = alpha,
                             gridItem = gridItem,
-                            iconPackFilePaths = iconPackFilePaths,
                             isScrollInProgress = isScrollInProgress,
                             isVisibleOverlay = isVisibleOverlay,
                             parent = sharedElementKey.parent,
@@ -1514,7 +1508,6 @@ private fun SharedTransitionScope.PreviewFolderGridItem(
     modifier: Modifier = Modifier,
     alpha: Float,
     gridItem: GridItem,
-    iconPackFilePaths: Map<String, String>,
     isScrollInProgress: Boolean,
     isVisibleOverlay: Boolean,
     parent: SharedElementKey.Parent,
@@ -1550,9 +1543,7 @@ private fun SharedTransitionScope.PreviewFolderGridItem(
 
         when (val data = gridItem.data) {
             is GridItemData.ApplicationInfo -> {
-                val icon =
-                    iconPackFilePaths[data.componentName]
-                        ?: data.icon
+                val icon = data.iconPackInfoFilePath ?: data.icon
 
                 AsyncImage(
                     model = Builder(context)

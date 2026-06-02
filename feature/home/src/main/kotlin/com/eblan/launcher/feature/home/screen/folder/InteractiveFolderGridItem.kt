@@ -95,7 +95,6 @@ internal fun SharedTransitionScope.InteractiveFolderGridItem(
     gridItem: GridItem,
     gridItemSettings: GridItemSettings,
     hasShortcutHostPermission: Boolean,
-    iconPackFilePaths: Map<String, String>,
     isScrollInProgress: Boolean,
     statusBarNotifications: Map<String, Int>,
     isVisibleOverlay: Boolean,
@@ -150,7 +149,6 @@ internal fun SharedTransitionScope.InteractiveFolderGridItem(
                 drag = drag,
                 gridItem = gridItem,
                 gridItemSettings = currentGridItemSettings,
-                iconPackFilePaths = iconPackFilePaths,
                 isScrollInProgress = isScrollInProgress,
                 isSelected = isSelected,
                 isVisibleOverlay = isVisibleOverlay,
@@ -234,7 +232,6 @@ internal fun SharedTransitionScope.InteractiveFolderGridItem(
                 drag = drag,
                 gridItem = gridItem,
                 gridItemSettings = currentGridItemSettings,
-                iconPackFilePaths = iconPackFilePaths,
                 isScrollInProgress = isScrollInProgress,
                 isSelected = isSelected,
                 isVisibleOverlay = isVisibleOverlay,
@@ -266,7 +263,6 @@ private fun SharedTransitionScope.InteractiveFolderApplicationInfoGridItem(
     drag: Drag,
     gridItem: GridItem,
     gridItemSettings: GridItemSettings,
-    iconPackFilePaths: Map<String, String>,
     isScrollInProgress: Boolean,
     isSelected: Boolean,
     isVisibleOverlay: Boolean,
@@ -317,7 +313,7 @@ private fun SharedTransitionScope.InteractiveFolderApplicationInfoGridItem(
 
     val maxLines = if (gridItemSettings.singleLineLabel) 1 else Int.MAX_VALUE
 
-    val icon = iconPackFilePaths[data.componentName] ?: data.icon
+    val icon = data.iconPackInfoFilePath ?: data.icon
 
     val hasNotifications =
         statusBarNotifications[data.packageName] != null && (
@@ -961,7 +957,6 @@ private fun SharedTransitionScope.InteractiveNestedFolderGridItem(
     drag: Drag,
     gridItem: GridItem,
     gridItemSettings: GridItemSettings,
-    iconPackFilePaths: Map<String, String>,
     isScrollInProgress: Boolean,
     isSelected: Boolean,
     isVisibleOverlay: Boolean,
@@ -1161,7 +1156,6 @@ private fun SharedTransitionScope.InteractiveNestedFolderGridItem(
                         PreviewNestedFolderGridItem(
                             alpha = alpha,
                             gridItem = gridItem,
-                            iconPackFilePaths = iconPackFilePaths,
                         )
                     },
                 )
@@ -1186,7 +1180,6 @@ private fun PreviewNestedFolderGridItem(
     modifier: Modifier = Modifier,
     alpha: Float,
     gridItem: GridItem,
-    iconPackFilePaths: Map<String, String>,
 ) {
     val context = LocalContext.current
 
@@ -1197,9 +1190,7 @@ private fun PreviewNestedFolderGridItem(
 
         when (val data = gridItem.data) {
             is GridItemData.ApplicationInfo -> {
-                val icon =
-                    iconPackFilePaths[data.componentName]
-                        ?: data.icon
+                val icon = data.iconPackInfoFilePath ?: data.icon
 
                 AsyncImage(
                     model = Builder(context)

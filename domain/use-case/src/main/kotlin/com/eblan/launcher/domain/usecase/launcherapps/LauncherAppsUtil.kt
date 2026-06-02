@@ -569,6 +569,7 @@ internal suspend fun addNewApplicationToHomeScreen(
         customLabel = null,
         index = -1,
         folderId = null,
+        iconPackInfoFilePath = null,
     )
 
     val gridItem = GridItem(

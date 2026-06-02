@@ -18,35 +18,63 @@
 package com.eblan.launcher.data.repository.mapper
 
 import com.eblan.launcher.data.room.entity.ApplicationInfoGridItemEntity
+import com.eblan.launcher.domain.common.IconKeyGenerator
+import com.eblan.launcher.domain.framework.FileManager
 import com.eblan.launcher.domain.model.ApplicationInfoGridItem
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
+import java.io.File
 
-internal fun ApplicationInfoGridItemEntity.asGridItem(): GridItem = GridItem(
-    id = id,
-    page = page,
-    startColumn = startColumn,
-    startRow = startRow,
-    columnSpan = columnSpan,
-    rowSpan = rowSpan,
-    data = GridItemData.ApplicationInfo(
-        serialNumber = serialNumber,
-        componentName = componentName,
-        packageName = packageName,
-        icon = icon,
-        label = label,
-        customIcon = customIcon,
-        customLabel = customLabel,
-        index = index,
-        folderId = folderId,
-    ),
-    associate = associate,
-    override = override,
-    gridItemSettings = gridItemSettings,
-    doubleTap = doubleTap,
-    swipeUp = swipeUp,
-    swipeDown = swipeDown,
-)
+internal suspend fun ApplicationInfoGridItemEntity.asGridItem(
+    fileManager: FileManager,
+    iconKeyGenerator: IconKeyGenerator,
+    iconPackInfoPackageName: String,
+): GridItem {
+    val iconPacksDirectory = fileManager.getFilesDirectory(
+        FileManager.ICON_PACKS_DIR,
+    )
+
+    val iconPackDirectory = File(
+        iconPacksDirectory,
+        iconPackInfoPackageName,
+    )
+
+    val iconPackInfoFilePath = File(
+        iconPackDirectory,
+        iconKeyGenerator.getHashedName(name = componentName),
+    )
+
+    return GridItem(
+        id = id,
+        page = page,
+        startColumn = startColumn,
+        startRow = startRow,
+        columnSpan = columnSpan,
+        rowSpan = rowSpan,
+        data = GridItemData.ApplicationInfo(
+            serialNumber = serialNumber,
+            componentName = componentName,
+            packageName = packageName,
+            icon = icon,
+            label = label,
+            customIcon = customIcon,
+            customLabel = customLabel,
+            index = index,
+            folderId = folderId,
+            iconPackInfoFilePath = if (iconPackInfoFilePath.exists()) {
+                iconPackInfoFilePath.absolutePath
+            } else {
+                null
+            },
+        ),
+        associate = associate,
+        override = override,
+        gridItemSettings = gridItemSettings,
+        doubleTap = doubleTap,
+        swipeUp = swipeUp,
+        swipeDown = swipeDown,
+    )
+}
 
 internal fun ApplicationInfoGridItemEntity.asModel(): ApplicationInfoGridItem = ApplicationInfoGridItem(
     id = id,

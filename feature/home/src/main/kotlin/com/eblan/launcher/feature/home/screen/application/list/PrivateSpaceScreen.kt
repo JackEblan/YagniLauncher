@@ -64,7 +64,6 @@ import com.eblan.launcher.domain.model.AppDrawerSettings
 import com.eblan.launcher.domain.model.EblanApplicationInfo
 import com.eblan.launcher.domain.model.EblanUser
 import com.eblan.launcher.domain.model.ManagedProfileResult
-import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.screen.application.PrivateSpaceStickyHeader
 import com.eblan.launcher.feature.home.screen.application.handleOnLongPressPrivateSpaceEblanApplicationInfoItem
 import com.eblan.launcher.feature.home.screen.application.handleOnTapEblanApplicationInfoItem
@@ -76,8 +75,6 @@ import kotlin.uuid.ExperimentalUuidApi
 
 internal fun LazyListScope.privateSpace(
     appDrawerSettings: AppDrawerSettings,
-    drag: Drag,
-    iconPackFilePaths: Map<String, String>,
     isQuietModeEnabled: Boolean,
     managedProfileResult: ManagedProfileResult?,
     paddingValues: PaddingValues,
@@ -107,9 +104,7 @@ internal fun LazyListScope.privateSpace(
         items(privateEblanApplicationInfos) { eblanApplicationInfo ->
             PrivateSpaceEblanApplicationInfoItem(
                 appDrawerSettings = appDrawerSettings,
-                drag = drag,
                 eblanApplicationInfo = eblanApplicationInfo,
-                iconPackFilePaths = iconPackFilePaths,
                 paddingValues = paddingValues,
                 isVisibleOverlay = isVisibleOverlay,
                 onUpdateOverlayBounds = onUpdateOverlayBounds,
@@ -129,9 +124,7 @@ internal fun LazyListScope.privateSpace(
 private fun PrivateSpaceEblanApplicationInfoItem(
     modifier: Modifier = Modifier,
     appDrawerSettings: AppDrawerSettings,
-    drag: Drag,
     eblanApplicationInfo: EblanApplicationInfo,
-    iconPackFilePaths: Map<String, String>,
     paddingValues: PaddingValues,
     isVisibleOverlay: Boolean,
     onUpdateOverlayBounds: (
@@ -162,7 +155,7 @@ private fun PrivateSpaceEblanApplicationInfoItem(
 
     val maxLines = if (appDrawerSettings.gridItemSettings.singleLineLabel) 1 else Int.MAX_VALUE
 
-    val icon = iconPackFilePaths[eblanApplicationInfo.componentName] ?: eblanApplicationInfo.icon
+    val icon = eblanApplicationInfo.iconPackInfoFilePath ?: eblanApplicationInfo.icon
 
     val leftPadding = with(density) {
         paddingValues.calculateLeftPadding(layoutDirection).roundToPx()
