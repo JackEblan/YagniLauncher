@@ -53,7 +53,7 @@ internal class DefaultApplicationInfoGridItemRepository @Inject constructor(
             it.asGridItem(
                 fileManager = fileManager,
                 iconKeyGenerator = iconKeyGenerator,
-                userData = userData,
+                iconPackInfoPackageName = userData.generalSettings.iconPackInfoPackageName,
             )
         }
     }.flowOn(ioDispatcher)
@@ -66,7 +66,7 @@ internal class DefaultApplicationInfoGridItemRepository @Inject constructor(
             it.asGridItem(
                 fileManager = fileManager,
                 iconKeyGenerator = iconKeyGenerator,
-                userData = userData,
+                iconPackInfoPackageName = userData.generalSettings.iconPackInfoPackageName,
             )
         }
     }.flowOn(ioDispatcher)
@@ -78,7 +78,7 @@ internal class DefaultApplicationInfoGridItemRepository @Inject constructor(
             it.asGridItem(
                 fileManager = fileManager,
                 iconKeyGenerator = iconKeyGenerator,
-                userData = userDataRepository.userDataFlow.first(),
+                iconPackInfoPackageName = userDataRepository.userDataFlow.first().generalSettings.iconPackInfoPackageName,
             )
         }
     }
@@ -88,7 +88,7 @@ internal class DefaultApplicationInfoGridItemRepository @Inject constructor(
             it.asGridItem(
                 fileManager = fileManager,
                 iconKeyGenerator = iconKeyGenerator,
-                userData = userDataRepository.userDataFlow.first(),
+                iconPackInfoPackageName = userDataRepository.userDataFlow.first().generalSettings.iconPackInfoPackageName,
             )
         }
     }

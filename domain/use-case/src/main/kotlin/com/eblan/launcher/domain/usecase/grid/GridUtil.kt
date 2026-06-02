@@ -17,6 +17,8 @@
  */
 package com.eblan.launcher.domain.usecase.grid
 
+import com.eblan.launcher.domain.common.IconKeyGenerator
+import com.eblan.launcher.domain.framework.FileManager
 import com.eblan.launcher.domain.model.ApplicationInfoGridItem
 import com.eblan.launcher.domain.model.FolderGridItem
 import com.eblan.launcher.domain.model.FolderGridItemWrapper
@@ -24,9 +26,11 @@ import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.ShortcutConfigGridItem
 import com.eblan.launcher.domain.model.ShortcutInfoGridItem
+import com.eblan.launcher.domain.model.UserData
 import com.eblan.launcher.domain.repository.FolderGridItemRepository
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
+import java.io.File
 import kotlin.math.ceil
 import kotlin.math.min
 import kotlin.math.sqrt
@@ -35,6 +39,9 @@ internal suspend fun FolderGridItemWrapper.asGridItem(
     folderGridItemRepository: FolderGridItemRepository,
     maxFolderColumns: Int,
     maxFolderRows: Int,
+    fileManager: FileManager,
+    iconKeyGenerator: IconKeyGenerator,
+    iconPackInfoPackageName: String,
 ): GridItem {
     val childFolderGridItems =
         folderGridItems.map {
@@ -43,13 +50,20 @@ internal suspend fun FolderGridItemWrapper.asGridItem(
             )?.asPreviewGridItem(
                 maxFolderColumns = maxFolderColumns,
                 maxFolderRows = maxFolderRows,
+                fileManager = fileManager,
+                iconKeyGenerator = iconKeyGenerator,
+                iconPackInfoPackageName = iconPackInfoPackageName,
             ) ?: it.asIconGridItem()
         }
 
     val gridItems =
         (
             applicationInfoGridItems.map {
-                it.asGridItem()
+                it.asGridItem(
+                    fileManager = fileManager,
+                    iconKeyGenerator = iconKeyGenerator,
+                    iconPackInfoPackageName = iconPackInfoPackageName,
+                )
             } + shortcutInfoGridItems.map {
                 it.asGridItem()
             } + shortcutConfigGridItems.map {
@@ -119,11 +133,18 @@ internal suspend fun FolderGridItemWrapper.asGridItem(
 private suspend fun FolderGridItemWrapper.asPreviewGridItem(
     maxFolderColumns: Int,
     maxFolderRows: Int,
+    fileManager: FileManager,
+    iconKeyGenerator: IconKeyGenerator,
+    iconPackInfoPackageName: String,
 ): GridItem {
     val gridItems =
         (
             applicationInfoGridItems.map {
-                it.asGridItem()
+                it.asGridItem(
+                    fileManager = fileManager,
+                    iconKeyGenerator = iconKeyGenerator,
+                    iconPackInfoPackageName = iconPackInfoPackageName,
+                )
             } + shortcutInfoGridItems.map {
                 it.asGridItem()
             } + shortcutConfigGridItems.map {
@@ -218,33 +239,56 @@ private fun getGridDimension(
     return columns to rows
 }
 
-private fun ApplicationInfoGridItem.asGridItem(): GridItem = GridItem(
-    id = id,
-    page = page,
-    startColumn = startColumn,
-    startRow = startRow,
-    columnSpan = columnSpan,
-    rowSpan = rowSpan,
-    data = GridItemData.ApplicationInfo(
-        serialNumber = serialNumber,
-        componentName = componentName,
-        packageName = packageName,
-        icon = icon,
-        label = label,
-        customIcon = customIcon,
-        customLabel = customLabel,
-        index = index,
-        folderId = folderId,
-        // TODO: Icon pack for the folder grid item
-        iconPackInfoFilePath = null,
-    ),
-    associate = associate,
-    override = override,
-    gridItemSettings = gridItemSettings,
-    doubleTap = doubleTap,
-    swipeUp = swipeUp,
-    swipeDown = swipeDown,
-)
+private suspend fun ApplicationInfoGridItem.asGridItem(
+    fileManager: FileManager,
+    iconKeyGenerator: IconKeyGenerator,
+    iconPackInfoPackageName: String,
+): GridItem {
+    val iconPacksDirectory = fileManager.getFilesDirectory(
+        FileManager.ICON_PACKS_DIR,
+    )
+
+    val iconPackDirectory = File(
+        iconPacksDirectory,
+        iconPackInfoPackageName,
+    )
+
+    val iconPackInfoFilePath = File(
+        iconPackDirectory,
+        iconKeyGenerator.getHashedName(name = componentName),
+    )
+
+    return GridItem(
+        id = id,
+        page = page,
+        startColumn = startColumn,
+        startRow = startRow,
+        columnSpan = columnSpan,
+        rowSpan = rowSpan,
+        data = GridItemData.ApplicationInfo(
+            serialNumber = serialNumber,
+            componentName = componentName,
+            packageName = packageName,
+            icon = icon,
+            label = label,
+            customIcon = customIcon,
+            customLabel = customLabel,
+            index = index,
+            folderId = folderId,
+            iconPackInfoFilePath = if (iconPackInfoFilePath.exists()) {
+                iconPackInfoFilePath.absolutePath
+            } else {
+                null
+            },
+        ),
+        associate = associate,
+        override = override,
+        gridItemSettings = gridItemSettings,
+        doubleTap = doubleTap,
+        swipeUp = swipeUp,
+        swipeDown = swipeDown,
+    )
+}
 
 private fun ShortcutInfoGridItem.asGridItem(): GridItem = GridItem(
     id = id,

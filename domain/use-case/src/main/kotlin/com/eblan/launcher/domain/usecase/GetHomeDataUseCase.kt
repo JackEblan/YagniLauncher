@@ -19,6 +19,8 @@ package com.eblan.launcher.domain.usecase
 
 import com.eblan.launcher.domain.common.Dispatcher
 import com.eblan.launcher.domain.common.EblanDispatchers
+import com.eblan.launcher.domain.common.IconKeyGenerator
+import com.eblan.launcher.domain.framework.FileManager
 import com.eblan.launcher.domain.framework.LauncherAppsWrapper
 import com.eblan.launcher.domain.framework.PackageManagerWrapper
 import com.eblan.launcher.domain.framework.ResourcesWrapper
@@ -46,6 +48,8 @@ class GetHomeDataUseCase @Inject constructor(
     private val packageManagerWrapper: PackageManagerWrapper,
     private val gridRepository: GridRepository,
     private val folderGridItemRepository: FolderGridItemRepository,
+    private val fileManager: FileManager,
+    private val iconKeyGenerator: IconKeyGenerator,
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) {
     operator fun invoke(): Flow<HomeData> {
@@ -59,6 +63,9 @@ class GetHomeDataUseCase @Inject constructor(
                         folderGridItemRepository = folderGridItemRepository,
                         maxFolderColumns = userData.homeSettings.maxFolderColumns,
                         maxFolderRows = userData.homeSettings.maxFolderRows,
+                        fileManager = fileManager,
+                        iconKeyGenerator = iconKeyGenerator,
+                        iconPackInfoPackageName = userData.generalSettings.iconPackInfoPackageName,
                     )
                 }
             }

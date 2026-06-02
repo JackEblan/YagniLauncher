@@ -23,19 +23,16 @@ import com.eblan.launcher.domain.framework.FileManager
 import com.eblan.launcher.domain.model.ApplicationInfoGridItem
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
-import com.eblan.launcher.domain.model.UserData
 import java.io.File
 
 internal suspend fun ApplicationInfoGridItemEntity.asGridItem(
     fileManager: FileManager,
     iconKeyGenerator: IconKeyGenerator,
-    userData: UserData,
+    iconPackInfoPackageName: String,
 ): GridItem {
     val iconPacksDirectory = fileManager.getFilesDirectory(
         FileManager.ICON_PACKS_DIR,
     )
-
-    val iconPackInfoPackageName = userData.generalSettings.iconPackInfoPackageName
 
     val iconPackDirectory = File(
         iconPacksDirectory,
