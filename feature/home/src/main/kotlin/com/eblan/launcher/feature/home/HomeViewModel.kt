@@ -658,6 +658,10 @@ internal class HomeViewModel @Inject constructor(
                     conflictingGridItem = null,
                 )
             }
+
+            _gridItemSource.update {
+                null
+            }
         }
     }
 
