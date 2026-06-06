@@ -94,7 +94,6 @@ internal fun EditApplicationInfoRoute(
         onSearchIconPackInfoComponent = viewModel::searchIconPackInfoComponent,
         onUpdateEblanApplicationInfo = viewModel::updateEblanApplicationInfo,
         onUpdateEblanApplicationInfoTag = viewModel::updateEblanApplicationInfoTag,
-        onUpdateGridItemCustomIcon = viewModel::updateEblanApplicationInfoCustomIcon,
         onUpdateIconPackInfoPackageName = viewModel::updateIconPackInfoPackageName,
     )
 }
@@ -116,10 +115,6 @@ internal fun EditApplicationInfoScreen(
     onSearchIconPackInfoComponent: (String) -> Unit,
     onUpdateEblanApplicationInfo: (EblanApplicationInfo) -> Unit,
     onUpdateEblanApplicationInfoTag: (EblanApplicationInfoTag) -> Unit,
-    onUpdateGridItemCustomIcon: (
-        customIcon: String?,
-        eblanApplicationInfo: EblanApplicationInfo,
-    ) -> Unit,
     onUpdateIconPackInfoPackageName: (String) -> Unit,
     onResetEblanApplicationInfoCustomIcon: (EblanApplicationInfo) -> Unit,
 ) {
@@ -159,7 +154,6 @@ internal fun EditApplicationInfoScreen(
                     onSearchIconPackInfoComponent = onSearchIconPackInfoComponent,
                     onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
                     onUpdateEblanApplicationInfoTag = onUpdateEblanApplicationInfoTag,
-                    onUpdateGridItemCustomIcon = onUpdateGridItemCustomIcon,
                     onUpdateIconPackInfoPackageName = onUpdateIconPackInfoPackageName,
                     onResetEblanApplicationInfoCustomIcon = onResetEblanApplicationInfoCustomIcon,
                 )
@@ -183,10 +177,6 @@ private fun Success(
     onSearchIconPackInfoComponent: (String) -> Unit,
     onUpdateEblanApplicationInfo: (EblanApplicationInfo) -> Unit,
     onUpdateEblanApplicationInfoTag: (EblanApplicationInfoTag) -> Unit,
-    onUpdateGridItemCustomIcon: (
-        customIcon: String?,
-        eblanApplicationInfo: EblanApplicationInfo,
-    ) -> Unit,
     onUpdateIconPackInfoPackageName: (String) -> Unit,
     onResetEblanApplicationInfoCustomIcon: (EblanApplicationInfo) -> Unit,
 ) {
@@ -266,10 +256,7 @@ private fun Success(
                     showCustomIconDialog = false
                 },
                 onUpdateIcon = { icon ->
-                    onUpdateGridItemCustomIcon(
-                        icon,
-                        eblanApplicationInfo,
-                    )
+                    onUpdateEblanApplicationInfo(eblanApplicationInfo.copy(customIcon = icon))
                 },
                 onSearchIconPackInfoComponent = onSearchIconPackInfoComponent,
             )
