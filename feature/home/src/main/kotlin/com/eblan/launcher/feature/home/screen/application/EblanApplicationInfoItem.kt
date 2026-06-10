@@ -167,13 +167,15 @@ internal fun SharedTransitionScope.EblanApplicationInfoItem(
 
     val scale = remember { Animatable(1f) }
 
-    LaunchedEffect(key1 = drag) {
+    LaunchedEffect(
+        key1 = drag,
+        key2 = isLongPress,
+    ) {
         handleDragEblanApplicationInfoItem(
             appDrawerSettings = appDrawerSettings,
             drag = drag,
             eblanApplicationInfo = eblanApplicationInfo,
             isLongPress = isLongPress,
-            isVisibleOverlay = isVisibleOverlay,
             scale = scale,
             onDismiss = onDismiss,
             onUpdateGridItemSource = onUpdateGridItemSource,
@@ -344,7 +346,6 @@ internal suspend fun handleDragEblanApplicationInfoItem(
     drag: Drag,
     eblanApplicationInfo: EblanApplicationInfo,
     isLongPress: Boolean,
-    isVisibleOverlay: Boolean,
     scale: Animatable<Float, AnimationVector1D>,
     onDismiss: () -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
@@ -354,8 +355,10 @@ internal suspend fun handleDragEblanApplicationInfoItem(
     onUpdatePopupMenu: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
+    if (!isLongPress) return
+
     when (drag) {
-        Drag.Dragging if isLongPress -> {
+        Drag.Dragging -> {
             onUpdatePopupMenu(false)
 
             onDismiss()
@@ -417,11 +420,9 @@ internal suspend fun handleDragEblanApplicationInfoItem(
                 scale.animateTo(1f)
             }
 
-            if (isLongPress || isVisibleOverlay) {
-                onUpdateIsVisibleOverlay(false)
+            onUpdateIsLongPress(false)
 
-                onUpdateIsLongPress(false)
-            }
+            onUpdateIsVisibleOverlay(false)
         }
 
         else -> Unit

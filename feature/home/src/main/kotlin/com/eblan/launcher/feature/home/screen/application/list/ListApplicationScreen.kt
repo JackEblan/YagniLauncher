@@ -786,13 +786,15 @@ private fun SharedTransitionScope.EblanApplicationInfoItem(
 
     val scale = remember { Animatable(1f) }
 
-    LaunchedEffect(key1 = drag) {
+    LaunchedEffect(
+        key1 = drag,
+        key2 = isLongPress,
+    ) {
         handleDragEblanApplicationInfoItem(
             appDrawerSettings = appDrawerSettings,
             drag = drag,
             eblanApplicationInfo = eblanApplicationInfo,
             isLongPress = isLongPress,
-            isVisibleOverlay = isVisibleOverlay,
             scale = scale,
             onDismiss = onDismiss,
             onUpdateGridItemSource = onUpdateGridItemSource,
