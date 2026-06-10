@@ -47,22 +47,7 @@ internal class DefaultApplicationInfoGridItemRepository @Inject constructor(
         userDataRepository.userDataFlow,
         applicationInfoGridItemDao.getApplicationInfoGridItemEntitiesFlow(),
     ) { userData, entities ->
-        entities.filter {
-            it.folderId == null
-        }.map {
-            it.asGridItem(
-                fileManager = fileManager,
-                iconKeyGenerator = iconKeyGenerator,
-                iconPackInfoPackageName = userData.generalSettings.iconPackInfoPackageName,
-            )
-        }
-    }.flowOn(ioDispatcher)
-
-    override val gridItemsWithFolderIdFlow = combine(
-        userDataRepository.userDataFlow,
-        applicationInfoGridItemDao.getApplicationInfoGridItemEntitiesFlow(),
-    ) { userData, applicationInfoGridItems ->
-        applicationInfoGridItems.map {
+        entities.map {
             it.asGridItem(
                 fileManager = fileManager,
                 iconKeyGenerator = iconKeyGenerator,
@@ -72,21 +57,6 @@ internal class DefaultApplicationInfoGridItemRepository @Inject constructor(
     }.flowOn(ioDispatcher)
 
     override suspend fun getGridItems(): List<GridItem> = withContext(ioDispatcher) {
-        val iconPackInfoPackageName =
-            userDataRepository.userDataFlow.first().generalSettings.iconPackInfoPackageName
-
-        applicationInfoGridItemDao.getApplicationInfoGridItemEntities().filter {
-            it.folderId == null
-        }.map {
-            it.asGridItem(
-                fileManager = fileManager,
-                iconKeyGenerator = iconKeyGenerator,
-                iconPackInfoPackageName = iconPackInfoPackageName,
-            )
-        }
-    }
-
-    override suspend fun getGridItemsWithFolderId(): List<GridItem> = withContext(ioDispatcher) {
         val iconPackInfoPackageName =
             userDataRepository.userDataFlow.first().generalSettings.iconPackInfoPackageName
 

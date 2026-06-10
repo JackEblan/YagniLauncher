@@ -39,15 +39,16 @@ class GetFolderGridItemsUseCase @Inject constructor(
     suspend operator fun invoke(): List<GridItem> = withContext(ioDispatcher) {
         val userData = userDataRepository.userDataFlow.first()
 
-        folderGridItemRepository.getFolderGridItemWrappers().map {
-            it.asGridItem(
-                folderGridItemRepository = folderGridItemRepository,
-                maxFolderColumns = userData.homeSettings.maxFolderColumns,
-                maxFolderRows = userData.homeSettings.maxFolderRows,
-                fileManager = fileManager,
-                iconKeyGenerator = iconKeyGenerator,
-                iconPackInfoPackageName = userData.generalSettings.iconPackInfoPackageName,
-            )
-        }
+        folderGridItemRepository.getFolderGridItemWrappers()
+            .filterNot { it.folderGridItem.folderId != null }.map {
+                it.asGridItem(
+                    folderGridItemRepository = folderGridItemRepository,
+                    maxFolderColumns = userData.homeSettings.maxFolderColumns,
+                    maxFolderRows = userData.homeSettings.maxFolderRows,
+                    fileManager = fileManager,
+                    iconKeyGenerator = iconKeyGenerator,
+                    iconPackInfoPackageName = userData.generalSettings.iconPackInfoPackageName,
+                )
+            }
     }
 }

@@ -25,11 +25,7 @@ import kotlinx.coroutines.flow.Flow
 interface ApplicationInfoGridItemRepository {
     val gridItemsFlow: Flow<List<GridItem>>
 
-    val gridItemsWithFolderIdFlow: Flow<List<GridItem>>
-
     suspend fun getGridItems(): List<GridItem>
-
-    suspend fun getGridItemsWithFolderId(): List<GridItem>
 
     suspend fun getApplicationInfoGridItems(): List<ApplicationInfoGridItem>
 

@@ -44,7 +44,7 @@ internal suspend fun FolderGridItemWrapper.asGridItem(
 ): GridItem {
     val childFolderGridItems =
         folderGridItems.map {
-            folderGridItemRepository.getFolderGridItemWrapper(
+            folderGridItemRepository.getFolderGridItemWrapperById(
                 id = it.id,
             )?.asPreviewGridItem(
                 maxFolderColumns = maxFolderColumns,

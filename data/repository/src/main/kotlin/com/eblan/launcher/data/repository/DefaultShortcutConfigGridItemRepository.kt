@@ -32,27 +32,12 @@ internal class DefaultShortcutConfigGridItemRepository @Inject constructor(priva
     override val gridItemsFlow =
         shortcutConfigGridItemDao.getShortcutConfigGridItemEntitiesFlow()
             .map { entities ->
-                entities.filter {
-                    it.folderId == null
-                }.map {
+                entities.map {
                     it.asGridItem()
                 }
             }
 
-    override val gridItemsWithFolderIdFlow =
-        shortcutConfigGridItemDao.getShortcutConfigGridItemEntitiesFlow().map { entities ->
-            entities.map {
-                it.asGridItem()
-            }
-        }
-
-    override suspend fun getGridItems(): List<GridItem> = shortcutConfigGridItemDao.getShortcutConfigGridItemEntities().filter {
-        it.folderId == null
-    }.map {
-        it.asGridItem()
-    }
-
-    override suspend fun getGridItemsWithFolderId(): List<GridItem> = shortcutConfigGridItemDao.getShortcutConfigGridItemEntities().map {
+    override suspend fun getGridItems(): List<GridItem> = shortcutConfigGridItemDao.getShortcutConfigGridItemEntities().map {
         it.asGridItem()
     }
 

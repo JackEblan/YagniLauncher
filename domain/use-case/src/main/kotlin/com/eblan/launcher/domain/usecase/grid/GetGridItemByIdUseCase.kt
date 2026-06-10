@@ -31,7 +31,7 @@ class GetGridItemByIdUseCase @Inject constructor(
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke(id: String): GridItem? = withContext(defaultDispatcher) {
-        gridRepository.getGridItemsWithFolderId().plus(getFolderGridItemsUseCase())
+        gridRepository.getGridItems().plus(getFolderGridItemsUseCase())
             .find {
                 it.id == id
             }

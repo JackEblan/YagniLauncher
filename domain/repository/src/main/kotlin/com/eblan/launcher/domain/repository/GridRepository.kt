@@ -23,11 +23,7 @@ import kotlinx.coroutines.flow.Flow
 interface GridRepository {
     val gridItemsFlow: Flow<List<GridItem>>
 
-    val gridItemsWithFolderIdFlow: Flow<List<GridItem>>
-
     suspend fun getGridItems(): List<GridItem>
-
-    suspend fun getGridItemsWithFolderId(): List<GridItem>
 
     suspend fun insertGridItem(gridItem: GridItem)
 

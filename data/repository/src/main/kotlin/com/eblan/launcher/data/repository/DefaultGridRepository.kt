@@ -65,22 +65,10 @@ internal class DefaultGridRepository @Inject constructor(
         applicationInfoGridItems + widgetGridItems + shortcutInfoGridItems + shortcutConfigGridItems
     }
 
-    override val gridItemsWithFolderIdFlow: Flow<List<GridItem>> = combine(
-        applicationInfoGridItemRepository.gridItemsWithFolderIdFlow,
-        shortcutInfoGridItemRepository.gridItemsWithFolderIdFlow,
-        shortcutConfigGridItemRepository.gridItemsWithFolderIdFlow,
-    ) { applicationInfoGridItems, shortcutInfoGridItems, shortcutConfigGridItems ->
-        applicationInfoGridItems + shortcutInfoGridItems + shortcutConfigGridItems
-    }
-
     override suspend fun getGridItems(): List<GridItem> = applicationInfoGridItemRepository.getGridItems() +
         widgetGridItemRepository.getGridItems() +
         shortcutInfoGridItemRepository.getGridItems() +
         shortcutConfigGridItemRepository.getGridItems()
-
-    override suspend fun getGridItemsWithFolderId(): List<GridItem> = applicationInfoGridItemRepository.getGridItemsWithFolderId() +
-        shortcutInfoGridItemRepository.getGridItemsWithFolderId() +
-        shortcutConfigGridItemRepository.getGridItemsWithFolderId()
 
     override suspend fun insertGridItem(gridItem: GridItem) {
         when (val data = gridItem.data) {
