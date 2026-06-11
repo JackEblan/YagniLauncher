@@ -47,6 +47,7 @@ import com.eblan.launcher.domain.usecase.application.GetEblanShortcutConfigsByLa
 import com.eblan.launcher.domain.usecase.application.GetEblanShortcutInfosUseCase
 import com.eblan.launcher.domain.usecase.application.UpdateEblanApplicationInfosIndexesUseCase
 import com.eblan.launcher.domain.usecase.grid.GetFolderGridItemsByIdUseCase
+import com.eblan.launcher.domain.usecase.grid.GetFolderGridItemsUseCase
 import com.eblan.launcher.domain.usecase.grid.MoveFolderGridItemUseCase
 import com.eblan.launcher.domain.usecase.grid.MoveGridItemUseCase
 import com.eblan.launcher.domain.usecase.grid.ResizeGridItemUseCase
@@ -105,6 +106,7 @@ internal class HomeViewModel @Inject constructor(
     getFolderGridItemsByIdUseCase: GetFolderGridItemsByIdUseCase,
     private val moveFolderGridItemUseCase: MoveFolderGridItemUseCase,
     private val iconKeyGenerator: IconKeyGenerator,
+    private val getFolderGridItemsUseCase: GetFolderGridItemsUseCase,
 ) : ViewModel() {
     val homeUiState = getHomeDataUseCase().map(HomeUiState::Success).stateIn(
         scope = viewModelScope,
@@ -339,6 +341,12 @@ internal class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             moveGridItemJob?.cancelAndJoin()
 
+            updateGridItemsAfterMoveUseCase(moveGridItemResult = moveGridItemResult)
+
+            gridRepository.getGridItems()
+
+            getFolderGridItemsUseCase()
+
             _isVisibleOverlay.update {
                 false
             }
@@ -350,8 +358,6 @@ internal class HomeViewModel @Inject constructor(
             _gridItemSource.update {
                 null
             }
-
-            updateGridItemsAfterMoveUseCase(moveGridItemResult = moveGridItemResult)
         }
     }
 

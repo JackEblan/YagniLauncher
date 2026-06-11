@@ -104,6 +104,8 @@ internal fun SharedTransitionScope.EblanApplicationInfoItem(
     paddingValues: PaddingValues,
     isVisibleOverlay: Boolean,
     appDrawerType: AppDrawerType,
+    swipeY: Float,
+    screenHeight: Int,
     onDismiss: () -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
@@ -177,6 +179,8 @@ internal fun SharedTransitionScope.EblanApplicationInfoItem(
             eblanApplicationInfo = eblanApplicationInfo,
             isLongPress = isLongPress,
             scale = scale,
+            swipeY = swipeY,
+            screenHeight = screenHeight,
             onDismiss = onDismiss,
             onUpdateGridItemSource = onUpdateGridItemSource,
             onUpdateIsDragging = onUpdateIsDragging,
@@ -347,6 +351,8 @@ internal suspend fun handleDragEblanApplicationInfoItem(
     eblanApplicationInfo: EblanApplicationInfo,
     isLongPress: Boolean,
     scale: Animatable<Float, AnimationVector1D>,
+    swipeY: Float,
+    screenHeight: Int,
     onDismiss: () -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
@@ -422,7 +428,9 @@ internal suspend fun handleDragEblanApplicationInfoItem(
 
             onUpdateIsLongPress(false)
 
-            onUpdateIsVisibleOverlay(false)
+            if (swipeY < screenHeight) {
+                onUpdateIsVisibleOverlay(false)
+            }
         }
 
         else -> Unit

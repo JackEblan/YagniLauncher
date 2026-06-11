@@ -1230,7 +1230,6 @@ private fun SharedTransitionScope.InteractiveFolderGridItem(
                         ?.take(FOLDER_PREVIEW_COLUMNS * FOLDER_PREVIEW_ROWS),
                     content = { gridItem ->
                         PreviewFolderGridItem(
-                            alpha = alpha,
                             gridItem = gridItem,
                             isScrollInProgress = isScrollInProgress,
                             isVisibleOverlay = isVisibleOverlay,
@@ -1506,7 +1505,6 @@ private fun SharedTransitionScope.InteractiveShortcutConfigGridItem(
 @Composable
 private fun SharedTransitionScope.PreviewFolderGridItem(
     modifier: Modifier = Modifier,
-    alpha: Float,
     gridItem: GridItem,
     isScrollInProgress: Boolean,
     isVisibleOverlay: Boolean,
@@ -1521,6 +1519,8 @@ private fun SharedTransitionScope.PreviewFolderGridItem(
             moveGridItemResult != null && moveGridItemResult.movingGridItem.id == gridItem.id
 
         val hasInteraction = isSelected && isVisibleOverlay
+
+        val alpha = if (hasInteraction) 0f else 1f
 
         val commonModifier = modifier
             .padding(1.dp)
