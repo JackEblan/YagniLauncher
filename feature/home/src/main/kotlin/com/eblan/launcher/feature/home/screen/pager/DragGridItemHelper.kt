@@ -42,6 +42,7 @@ import com.eblan.launcher.feature.home.model.PageDirection
 import com.eblan.launcher.feature.home.model.SharedElementKey
 import com.eblan.launcher.feature.home.util.PAGE_INDICATOR_HEIGHT
 import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.milliseconds
 
 internal suspend fun onLongPress(
     graphicsLayer: GraphicsLayer,
@@ -188,7 +189,7 @@ internal suspend fun handleDragGridItem(
         return
     }
 
-    delay(50L)
+    delay(50L.milliseconds)
 
     val leftPadding = with(density) {
         paddingValues.calculateLeftPadding(layoutDirection).roundToPx()
@@ -448,7 +449,7 @@ internal suspend fun handleConflictingGridItem(
         return
     }
 
-    delay(1000L)
+    delay(1000L.milliseconds)
 
     val movingGridItem = moveGridItemResult.movingGridItem
 

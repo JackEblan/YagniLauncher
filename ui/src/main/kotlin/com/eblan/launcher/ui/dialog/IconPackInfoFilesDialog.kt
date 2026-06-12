@@ -64,6 +64,7 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import java.io.File
+import kotlin.time.Duration.Companion.milliseconds
 
 @OptIn(ExperimentalMaterial3Api::class, FlowPreview::class)
 @Composable
@@ -92,7 +93,7 @@ fun IconPackInfoFilesDialog(
     val textFieldState = rememberTextFieldState()
 
     LaunchedEffect(key1 = textFieldState) {
-        snapshotFlow { textFieldState.text }.debounce(500L).onEach { text ->
+        snapshotFlow { textFieldState.text }.debounce(500L.milliseconds).onEach { text ->
             onSearchIconPackInfoComponent(text.toString())
         }.collect()
     }

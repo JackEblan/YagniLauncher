@@ -34,6 +34,7 @@ import com.eblan.launcher.framework.launcherapps.AndroidLauncherAppsWrapper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.milliseconds
 
 internal fun handleEblanAction(
     context: Context,
@@ -155,7 +156,7 @@ internal suspend fun handleDrag(
 internal suspend fun handlePageDirection(pageDirection: PageDirection?, pagerState: PagerState) {
     if (pageDirection == null) return
 
-    delay(500L)
+    delay(500L.milliseconds)
 
     when (pageDirection) {
         PageDirection.Left -> {

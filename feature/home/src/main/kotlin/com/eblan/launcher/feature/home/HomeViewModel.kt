@@ -47,6 +47,7 @@ import com.eblan.launcher.domain.usecase.application.GetEblanShortcutConfigsByLa
 import com.eblan.launcher.domain.usecase.application.GetEblanShortcutInfosUseCase
 import com.eblan.launcher.domain.usecase.application.UpdateEblanApplicationInfosIndexesUseCase
 import com.eblan.launcher.domain.usecase.grid.GetFolderGridItemsByIdUseCase
+import com.eblan.launcher.domain.usecase.grid.GetFolderGridItemsUseCase
 import com.eblan.launcher.domain.usecase.grid.MoveFolderGridItemUseCase
 import com.eblan.launcher.domain.usecase.grid.MoveGridItemUseCase
 import com.eblan.launcher.domain.usecase.grid.ResizeGridItemUseCase
@@ -69,14 +70,13 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.drop
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.io.File
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.milliseconds
 
 @HiltViewModel
 internal class HomeViewModel @Inject constructor(
@@ -107,6 +107,7 @@ internal class HomeViewModel @Inject constructor(
     getFolderGridItemsByIdUseCase: GetFolderGridItemsByIdUseCase,
     private val moveFolderGridItemUseCase: MoveFolderGridItemUseCase,
     private val iconKeyGenerator: IconKeyGenerator,
+    private val getFolderGridItemsUseCase: GetFolderGridItemsUseCase,
 ) : ViewModel() {
     val homeUiState = getHomeDataUseCase().map(HomeUiState::Success).stateIn(
         scope = viewModelScope,
@@ -279,7 +280,7 @@ internal class HomeViewModel @Inject constructor(
                 )
             }
 
-            delay(defaultDelay)
+            delay(defaultDelay.milliseconds)
 
             _screen.update {
                 Screen.EditPage
@@ -305,7 +306,7 @@ internal class HomeViewModel @Inject constructor(
                 associate = associate,
             )
 
-            delay(defaultDelay)
+            delay(defaultDelay.milliseconds)
 
             _screen.update {
                 Screen.Pager
@@ -343,7 +344,9 @@ internal class HomeViewModel @Inject constructor(
 
             updateGridItemsAfterMoveUseCase(moveGridItemResult = moveGridItemResult)
 
-            homeUiState.drop(1).first { it is HomeUiState.Success }
+            gridRepository.getGridItems()
+
+            getFolderGridItemsUseCase()
 
             _isVisibleOverlay.update {
                 false

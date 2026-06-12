@@ -108,6 +108,7 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -154,8 +155,8 @@ internal fun ShortcutConfigScreen(
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(key1 = textFieldState) {
-        snapshotFlow { textFieldState.text }.debounce(500L).onEach { text ->
-            onGetEblanShortcutConfigsByLabel(text.toString())
+        snapshotFlow { textFieldState.text }.debounce(500L.milliseconds).onEach {
+            onGetEblanShortcutConfigsByLabel(it.toString())
         }.collect()
     }
 

@@ -89,6 +89,7 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
+import kotlin.time.Duration.Companion.milliseconds
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -414,8 +415,8 @@ internal fun ApplicationScreenEffect(
     onShowPopupApplicationMenu: (Boolean) -> Unit,
 ) {
     LaunchedEffect(key1 = textFieldState) {
-        snapshotFlow { textFieldState.text }.debounce(500L).onEach { text ->
-            onGetEblanApplicationInfosByLabel(text.toString())
+        snapshotFlow { textFieldState.text }.debounce(500L.milliseconds).onEach {
+            onGetEblanApplicationInfosByLabel(it.toString())
 
             onShowPopupApplicationMenu(false)
         }.collect()

@@ -49,6 +49,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.onEach
 import kotlin.math.abs
+import kotlin.time.Duration.Companion.milliseconds
 
 @OptIn(FlowPreview::class)
 @Composable
@@ -63,10 +64,9 @@ internal fun GridPagerIndicator(
 
     LaunchedEffect(key1 = gridHorizontalPagerState) {
         snapshotFlow { gridHorizontalPagerState.isScrollInProgress }
-            .debounce(100L)
-            .onEach { newIsScrollInProgress ->
-                isScrollInProgress = newIsScrollInProgress
-            }.collect()
+            .debounce(100L.milliseconds)
+            .onEach { isScrollInProgress = it }
+            .collect()
     }
 
     Box(

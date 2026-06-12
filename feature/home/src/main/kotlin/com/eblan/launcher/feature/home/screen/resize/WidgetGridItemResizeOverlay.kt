@@ -53,6 +53,7 @@ import com.eblan.launcher.ui.local.LocalAppWidgetManager
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
+import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 internal fun WidgetGridItemResizeOverlay(
@@ -232,7 +233,7 @@ internal fun WidgetGridItemResizeOverlay(
                 rows = rows,
             ) && !lockMovement
         ) {
-            delay(50L)
+            delay(50L.milliseconds)
 
             val options = Bundle().apply {
                 putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, data.minWidth)
