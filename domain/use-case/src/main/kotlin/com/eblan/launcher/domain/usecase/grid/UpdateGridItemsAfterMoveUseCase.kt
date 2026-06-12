@@ -31,6 +31,7 @@ import kotlin.uuid.Uuid
 
 class UpdateGridItemsAfterMoveUseCase @Inject constructor(
     private val gridRepository: GridRepository,
+    private val getFolderGridItemsUseCase: GetFolderGridItemsUseCase,
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke(moveGridItemResult: MoveGridItemResult) {
@@ -41,26 +42,30 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
 
             gridRepository.updateGridItem(gridItem = movingGridItem)
 
-            when (val data = conflictingGridItem?.data) {
-                is GridItemData.Folder -> {
-                    addMovingGridItemIntoFolder(
-                        data = data,
-                        movingGridItem = movingGridItem,
-                    )
+            if (conflictingGridItem != null) {
+                when (val data = conflictingGridItem.data) {
+                    is GridItemData.Folder -> {
+                        addMovingGridItemIntoFolder(
+                            data = data,
+                            movingGridItem = movingGridItem,
+                        )
+                    }
+
+                    is GridItemData.ApplicationInfo,
+                    is GridItemData.ShortcutConfig,
+                    is GridItemData.ShortcutInfo,
+                    is GridItemData.Widget,
+                    -> {
+                        createNewFolder(
+                            conflictingGridItem = conflictingGridItem,
+                            movingGridItem = movingGridItem,
+                        )
+                    }
                 }
 
-                is GridItemData.ApplicationInfo,
-                is GridItemData.ShortcutConfig,
-                is GridItemData.ShortcutInfo,
-                is GridItemData.Widget,
-                -> {
-                    createNewFolder(
-                        conflictingGridItem = conflictingGridItem,
-                        movingGridItem = movingGridItem,
-                    )
-                }
+                gridRepository.getGridItems()
 
-                null -> Unit
+                getFolderGridItemsUseCase()
             }
         }
     }
