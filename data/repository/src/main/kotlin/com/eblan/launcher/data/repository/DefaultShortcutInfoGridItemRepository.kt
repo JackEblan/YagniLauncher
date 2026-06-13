@@ -113,14 +113,6 @@ internal class DefaultShortcutInfoGridItemRepository @Inject constructor(private
         shortcutInfoGridItemDao.insertShortcutInfoGridItemEntity(entity = shortcutInfoGridItem.asEntity())
     }
 
-    override suspend fun updateShortcutInfoGridItems(shortcutInfoGridItems: List<ShortcutInfoGridItem>) {
-        val entities = shortcutInfoGridItems.map {
-            it.asEntity()
-        }
-
-        shortcutInfoGridItemDao.updateShortcutInfoGridItemEntities(entities = entities)
-    }
-
     override suspend fun insertShortcutInfoGridItems(shortcutInfoGridItems: List<ShortcutInfoGridItem>) {
         val entities = shortcutInfoGridItems.map {
             it.asEntity()

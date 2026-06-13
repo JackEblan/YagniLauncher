@@ -57,7 +57,5 @@ interface ApplicationInfoGridItemRepository {
 
     suspend fun insertApplicationInfoGridItem(applicationInfoGridItem: ApplicationInfoGridItem)
 
-    suspend fun updateApplicationInfoGridItems(applicationInfoGridItems: List<ApplicationInfoGridItem>)
-
     suspend fun upsertApplicationInfoGridItem(applicationInfoGridItem: ApplicationInfoGridItem)
 }
