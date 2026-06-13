@@ -17,13 +17,14 @@
  */
 package com.eblan.launcher.feature.home.screen.folder
 
+import androidx.compose.runtime.State
 import com.eblan.launcher.feature.home.model.Drag
 
 internal fun handleDropFolderGridItem(
     drag: Drag,
-    isDragging: Boolean,
-    lockMovement: Boolean,
-    isVisibleOverlay: Boolean,
+    isDragging: State<Boolean>,
+    lockMovement: State<Boolean>,
+    isVisibleOverlay: State<Boolean>,
     isLast: Boolean,
     onDragCancelAfterMoveFolder: () -> Unit,
     onDragEndAfterMoveFolder: () -> Unit,
@@ -38,13 +39,13 @@ internal fun handleDropFolderGridItem(
         return
     }
 
-    if (isVisibleOverlay && !isDragging) {
+    if (isVisibleOverlay.value && !isDragging.value) {
         onUpdateIsVisibleOverlay(false)
 
         return
     }
 
-    if (lockMovement) {
+    if (lockMovement.value) {
         onUpdateIsVisibleOverlay(false)
 
         onUpdateIsDragging(false)
@@ -54,7 +55,7 @@ internal fun handleDropFolderGridItem(
         return
     }
 
-    if (isVisibleOverlay) {
+    if (isVisibleOverlay.value) {
         onDragEndAfterMoveFolder()
 
         onUpdateIsDragging(false)

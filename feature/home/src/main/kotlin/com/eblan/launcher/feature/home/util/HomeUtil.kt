@@ -24,6 +24,7 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.foundation.gestures.PressGestureScope
 import androidx.compose.foundation.pager.PagerState
+import androidx.compose.runtime.State
 import androidx.compose.ui.unit.dp
 import com.eblan.launcher.domain.model.EblanAction
 import com.eblan.launcher.domain.model.EblanActionType
@@ -132,16 +133,16 @@ internal suspend fun PressGestureScope.onPress(
 internal suspend fun handleDrag(
     drag: Drag,
     hasInteraction: Boolean,
-    isDragging: Boolean,
-    isCloseGridItemPopup: Boolean,
+    isDragging: State<Boolean>,
+    isCloseGridItemPopup: State<Boolean>,
     scale: Animatable<Float, AnimationVector1D>,
     onUpdateIsDragging: (Boolean) -> Unit,
     onUpdateIsCloseGridItemPopup: (Boolean) -> Unit,
 ) {
     if (drag == Drag.Dragging &&
         hasInteraction &&
-        !isDragging &&
-        !isCloseGridItemPopup
+        !isDragging.value &&
+        !isCloseGridItemPopup.value
     ) {
         onUpdateIsDragging(true)
 
@@ -153,18 +154,22 @@ internal suspend fun handleDrag(
     }
 }
 
-internal suspend fun handlePageDirection(pageDirection: PageDirection?, pagerState: PagerState) {
+internal suspend fun handlePageDirection(
+    pageDirection: PageDirection?,
+    currentPage: Int,
+    onAnimateScrollToPage: suspend (Int) -> Unit,
+) {
     if (pageDirection == null) return
 
     delay(500L.milliseconds)
 
     when (pageDirection) {
         PageDirection.Left -> {
-            pagerState.animateScrollToPage(page = pagerState.currentPage - 1)
+            onAnimateScrollToPage(currentPage - 1)
         }
 
         PageDirection.Right -> {
-            pagerState.animateScrollToPage(page = pagerState.currentPage + 1)
+            onAnimateScrollToPage(currentPage + 1)
         }
     }
 }

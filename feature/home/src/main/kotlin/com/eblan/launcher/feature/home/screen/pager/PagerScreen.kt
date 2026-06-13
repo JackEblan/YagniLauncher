@@ -56,6 +56,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draganddrop.mimeTypes
@@ -393,6 +394,11 @@ internal fun PagerScreen(
 
     val lastPopupFolderGridItem = folderPopups.lastOrNull()
 
+    val currentGridItems = rememberUpdatedState(gridItems)
+    val currentGridItemSource = rememberUpdatedState(gridItemSource)
+    val currentIsVisibleOverlay = rememberUpdatedState(isVisibleOverlay)
+    val currentMoveGridItemResult = rememberUpdatedState(moveGridItemResult)
+
     LaunchedEffect(key1 = pinGridItem) {
         pagerScreenState.handlePinGridItemEffect(
             pinGridItem = pinGridItem,
@@ -411,16 +417,9 @@ internal fun PagerScreen(
         onStopSyncData = onStopSyncData,
     )
 
-    LaunchedEffect(
-        gridItems,
-        pagerScreenState.dragIntOffset,
-        gridItemSource,
-        isVisibleOverlay,
-        pagerScreenState.isDragging,
-        moveGridItemResult,
-    ) {
+    LaunchedEffect(key1 = pagerScreenState.dragIntOffset) {
         pagerScreenState.handleDragGridItemEffect(
-            gridItems = gridItems,
+            gridItems = currentGridItems,
             gridCurrentPage = gridCurrentPage,
             dockGridCurrentPage = dockGridCurrentPage,
             density = density,
@@ -429,27 +428,22 @@ internal fun PagerScreen(
             isDockScrollInProgress = dockGridHorizontalPagerState.isScrollInProgress,
             lockMovement = lockMovement,
             paddingValues = paddingValues,
-            gridItemSource = gridItemSource,
-            isVisibleOverlay = isVisibleOverlay,
-            moveGridItemResult = moveGridItemResult,
+            gridItemSource = currentGridItemSource,
+            isVisibleOverlay = currentIsVisibleOverlay,
+            moveGridItemResult = currentMoveGridItemResult,
             layoutDirection = layoutDirection,
             onMoveGridItem = onMoveGridItem,
         )
     }
 
-    LaunchedEffect(
-        pagerScreenState.drag,
-        isVisibleOverlay,
-        gridItemSource,
-        moveGridItemResult,
-    ) {
+    LaunchedEffect(key1 = pagerScreenState.drag) {
         pagerScreenState.handleDropGridItemEffect(
-            moveGridItemResult = moveGridItemResult,
+            moveGridItemResult = currentMoveGridItemResult,
             onLaunchShortcutConfigIntent = shortcutConfigLauncher::launch,
             onLaunchShortcutConfigIntentSenderRequest = shortcutConfigIntentSenderLauncher::launch,
             onLaunchWidgetIntent = appWidgetLauncher::launch,
-            gridItemSource = gridItemSource,
-            isVisibleOverlay = isVisibleOverlay,
+            gridItemSource = currentGridItemSource,
+            isVisibleOverlay = currentIsVisibleOverlay,
             onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
             onResetGridAfterDeleteGridItem = onResetGridAfterDeleteGridItem,
             onDragCancelAfterMove = onDragCancelAfterMove,
@@ -487,15 +481,11 @@ internal fun PagerScreen(
         )
     }
 
-    LaunchedEffect(
-        pagerScreenState.dragIntOffset,
-        gridItemSource,
-        pagerScreenState.isDragging,
-    ) {
+    LaunchedEffect(key1 = pagerScreenState.dragIntOffset) {
         pagerScreenState.handleAnimateScrollToPageEffect(
             density = density,
             paddingValues = paddingValues,
-            gridItemSource = gridItemSource,
+            gridItemSource = currentGridItemSource,
             layoutDirection = layoutDirection,
         )
     }
@@ -514,14 +504,16 @@ internal fun PagerScreen(
     LaunchedEffect(key1 = pagerScreenState.gridPageDirection) {
         handlePageDirection(
             pageDirection = pagerScreenState.gridPageDirection,
-            pagerState = gridHorizontalPagerState,
+            currentPage = gridHorizontalPagerState.currentPage,
+            onAnimateScrollToPage = gridHorizontalPagerState::animateScrollToPage,
         )
     }
 
     LaunchedEffect(key1 = pagerScreenState.dockPageDirection) {
         handlePageDirection(
             pageDirection = pagerScreenState.dockPageDirection,
-            pagerState = dockGridHorizontalPagerState,
+            currentPage = dockGridHorizontalPagerState.currentPage,
+            onAnimateScrollToPage = dockGridHorizontalPagerState::animateScrollToPage,
         )
     }
 

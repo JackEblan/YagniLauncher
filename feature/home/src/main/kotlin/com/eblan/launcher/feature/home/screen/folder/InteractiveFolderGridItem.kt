@@ -39,6 +39,7 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -327,18 +328,16 @@ private fun SharedTransitionScope.InteractiveFolderApplicationInfoGridItem(
 
     val scale = remember { Animatable(1f) }
 
-    LaunchedEffect(
-        drag,
-        hasInteraction,
-        isDragging,
-        isCloseFolderGridItemPopup,
-    ) {
+    val currentIsDragging = rememberUpdatedState(isDragging)
+    val currentIsCloseFolderGridItemPopup = rememberUpdatedState(isCloseFolderGridItemPopup)
+
+    LaunchedEffect(key1 = drag) {
         handleDrag(
             drag = drag,
             hasInteraction = hasInteraction,
             scale = scale,
-            isDragging = isDragging,
-            isCloseGridItemPopup = isCloseFolderGridItemPopup,
+            isDragging = currentIsDragging,
+            isCloseGridItemPopup = currentIsCloseFolderGridItemPopup,
             onUpdateIsDragging = onUpdateIsDragging,
             onUpdateIsCloseGridItemPopup = onUpdateIsCloseFolderGridItemPopup,
         )
@@ -554,18 +553,16 @@ private fun SharedTransitionScope.InteractiveFolderShortcutInfoGridItem(
 
     val scale = remember { Animatable(1f) }
 
-    LaunchedEffect(
-        drag,
-        hasInteraction,
-        isDragging,
-        isCloseFolderGridItemPopup,
-    ) {
+    val currentIsDragging = rememberUpdatedState(isDragging)
+    val currentIsCloseFolderGridItemPopup = rememberUpdatedState(isCloseFolderGridItemPopup)
+
+    LaunchedEffect(key1 = drag) {
         handleDrag(
             drag = drag,
             hasInteraction = hasInteraction,
             scale = scale,
-            isDragging = isDragging,
-            isCloseGridItemPopup = isCloseFolderGridItemPopup,
+            isDragging = currentIsDragging,
+            isCloseGridItemPopup = currentIsCloseFolderGridItemPopup,
             onUpdateIsDragging = onUpdateIsDragging,
             onUpdateIsCloseGridItemPopup = onUpdateIsCloseFolderGridItemPopup,
         )
@@ -809,18 +806,16 @@ private fun SharedTransitionScope.InteractiveFolderShortcutConfigGridItem(
 
     val scale = remember { Animatable(1f) }
 
-    LaunchedEffect(
-        drag,
-        hasInteraction,
-        isDragging,
-        isCloseFolderGridItemPopup,
-    ) {
+    val currentIsDragging = rememberUpdatedState(isDragging)
+    val currentIsCloseFolderGridItemPopup = rememberUpdatedState(isCloseFolderGridItemPopup)
+
+    LaunchedEffect(key1 = drag) {
         handleDrag(
             drag = drag,
             hasInteraction = hasInteraction,
             scale = scale,
-            isDragging = isDragging,
-            isCloseGridItemPopup = isCloseFolderGridItemPopup,
+            isDragging = currentIsDragging,
+            isCloseGridItemPopup = currentIsCloseFolderGridItemPopup,
             onUpdateIsDragging = onUpdateIsDragging,
             onUpdateIsCloseGridItemPopup = onUpdateIsCloseFolderGridItemPopup,
         )
@@ -1006,18 +1001,16 @@ private fun SharedTransitionScope.InteractiveNestedFolderGridItem(
 
     val scale = remember { Animatable(1f) }
 
-    LaunchedEffect(
-        drag,
-        hasInteraction,
-        isDragging,
-        isCloseFolderGridItemPopup,
-    ) {
+    val currentIsDragging = rememberUpdatedState(isDragging)
+    val currentIsCloseFolderGridItemPopup = rememberUpdatedState(isCloseFolderGridItemPopup)
+
+    LaunchedEffect(key1 = drag) {
         handleDrag(
             drag = drag,
             hasInteraction = hasInteraction,
             scale = scale,
-            isDragging = isDragging,
-            isCloseGridItemPopup = isCloseFolderGridItemPopup,
+            isDragging = currentIsDragging,
+            isCloseGridItemPopup = currentIsCloseFolderGridItemPopup,
             onUpdateIsDragging = onUpdateIsDragging,
             onUpdateIsCloseGridItemPopup = onUpdateIsCloseFolderGridItemPopup,
         )
