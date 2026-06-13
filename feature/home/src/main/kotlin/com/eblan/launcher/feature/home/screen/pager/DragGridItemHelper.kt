@@ -182,6 +182,8 @@ internal suspend fun handleDragGridItem(
     onUpdateAssociate: (Associate) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
 ) {
+    delay(50L.milliseconds)
+
     if (drag != Drag.Dragging ||
         isGridScrollInProgress ||
         isDockScrollInProgress ||
@@ -191,8 +193,6 @@ internal suspend fun handleDragGridItem(
     ) {
         return
     }
-
-    delay(50L.milliseconds)
 
     val leftPadding = with(density) {
         paddingValues.calculateLeftPadding(layoutDirection).roundToPx()

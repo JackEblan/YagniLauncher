@@ -192,6 +192,8 @@ internal suspend fun handleDragFolderGridItem(
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onUpsertFolderPopupEntry: (FolderPopupEntry) -> Unit,
 ) {
+    delay(50L.milliseconds)
+
     if (drag != Drag.Dragging ||
         isScrollInProgress ||
         !isVisibleOverlay.value ||
@@ -203,8 +205,6 @@ internal suspend fun handleDragFolderGridItem(
     ) {
         return
     }
-
-    delay(50L.milliseconds)
 
     val leftPadding = with(density) {
         paddingValues.calculateLeftPadding(layoutDirection).roundToPx()
