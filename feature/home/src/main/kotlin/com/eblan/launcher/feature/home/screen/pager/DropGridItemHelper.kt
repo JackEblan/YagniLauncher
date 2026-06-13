@@ -265,7 +265,7 @@ internal fun handleConfigureLauncherResultEffect(
 internal fun handleDeleteAppWidgetId(
     appWidgetId: Int,
     deleteAppWidgetId: Boolean,
-    moveGridItemResult: MoveGridItemResult?,
+    moveGridItemResult: State<MoveGridItemResult?>,
     onResetGridAfterDeleteGridItem: (GridItem) -> Unit,
     onResetAppWidgetId: () -> Unit,
 ) {
@@ -273,9 +273,9 @@ internal fun handleDeleteAppWidgetId(
         return
     }
 
-    requireNotNull(moveGridItemResult)
+    val currentMoveGridItemResult = requireNotNull(moveGridItemResult.value)
 
-    val movingGridItem = moveGridItemResult.movingGridItem
+    val movingGridItem = currentMoveGridItemResult.movingGridItem
 
     check(movingGridItem.data is GridItemData.Widget)
 

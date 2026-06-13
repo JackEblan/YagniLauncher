@@ -453,7 +453,7 @@ internal fun PagerScreen(
 
     LaunchedEffect(key1 = pagerScreenState.deleteAppWidgetId) {
         pagerScreenState.handleDeleteAppWidgetIdEffect(
-            moveGridItemResult = moveGridItemResult,
+            moveGridItemResult = currentMoveGridItemResult,
             onResetGridAfterDeleteGridItem = onResetGridAfterDeleteGridItem,
         )
     }
