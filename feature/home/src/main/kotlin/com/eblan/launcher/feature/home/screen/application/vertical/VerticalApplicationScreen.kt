@@ -35,7 +35,6 @@ import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
@@ -180,8 +179,6 @@ internal fun SharedTransitionScope.VerticalApplicationScreen(
 
     var selectedEblanApplicationInfo by remember { mutableStateOf<EblanApplicationInfo?>(null) }
 
-    val lazyGridState = rememberLazyGridState()
-
     val eblanUserPageKeys =
         remember(key1 = getEblanApplicationInfosByLabelAndTag.eblanApplicationInfos) {
             getEblanApplicationInfosByLabelAndTag.eblanApplicationInfos.keys.distinctBy { it.eblanUser.serialNumber }
@@ -247,6 +244,7 @@ internal fun SharedTransitionScope.VerticalApplicationScreen(
             modifier = Modifier.fillMaxSize(),
             state = horizontalPagerState,
             userScrollEnabled = !isVisibleOverlay,
+            beyondViewportPageCount = eblanUserPageKeys.size,
         ) { index ->
             EblanApplicationInfosPage(
                 appDrawerSettings = appDrawerSettings,
@@ -259,7 +257,6 @@ internal fun SharedTransitionScope.VerticalApplicationScreen(
                 paddingValues = paddingValues,
                 isVisibleOverlay = isVisibleOverlay,
                 showPopupApplicationMenu = showPopupApplicationMenu,
-                lazyGridState = lazyGridState,
                 swipeY = swipeY,
                 screenHeight = screenHeight,
                 onDismiss = onDismiss,
@@ -412,7 +409,6 @@ private fun SharedTransitionScope.EblanApplicationInfosPage(
     paddingValues: PaddingValues,
     showPopupApplicationMenu: Boolean,
     isVisibleOverlay: Boolean,
-    lazyGridState: LazyGridState,
     swipeY: Float,
     screenHeight: Int,
     onDismiss: () -> Unit,
@@ -501,7 +497,6 @@ private fun SharedTransitionScope.EblanApplicationInfosPage(
                 paddingValues = paddingValues,
                 showPopupApplicationMenu = showPopupApplicationMenu,
                 isVisibleOverlay = isVisibleOverlay,
-                lazyGridState = lazyGridState,
                 swipeY = swipeY,
                 screenHeight = screenHeight,
                 onDismiss = onDismiss,
@@ -560,7 +555,6 @@ private fun SharedTransitionScope.EblanApplicationInfos(
     paddingValues: PaddingValues,
     isVisibleOverlay: Boolean,
     showPopupApplicationMenu: Boolean,
-    lazyGridState: LazyGridState,
     swipeY: Float,
     screenHeight: Int,
     onDismiss: () -> Unit,
@@ -581,6 +575,8 @@ private fun SharedTransitionScope.EblanApplicationInfos(
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
+
+    val lazyGridState = rememberLazyGridState()
 
     val overscrollEffect = remember(key1 = scope) {
         OffsetOverscrollEffect(
