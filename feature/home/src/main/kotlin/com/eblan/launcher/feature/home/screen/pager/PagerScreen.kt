@@ -418,7 +418,6 @@ internal fun PagerScreen(
         isVisibleOverlay,
         pagerScreenState.isDragging,
         moveGridItemResult,
-        lockMovement,
     ) {
         pagerScreenState.handleDragGridItemEffect(
             gridItems = gridItems,
