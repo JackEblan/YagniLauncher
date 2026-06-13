@@ -24,6 +24,7 @@ import android.os.Build
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -49,6 +50,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -272,6 +274,15 @@ internal fun SharedTransitionScope.FolderScreen(
 
     val isLastFolderGridItem = lastFolderPopup?.gridItem == folderGridItem
 
+    val currentDrag by rememberUpdatedState(drag)
+    val currentIsDragging by rememberUpdatedState(isDragging)
+    val currentIsVisibleOverlay by rememberUpdatedState(isVisibleOverlay)
+    val currentMoveGridItemResult by rememberUpdatedState(moveGridItemResult)
+    val currentLockMovement by rememberUpdatedState(lockMovement)
+    val currentFolderPopupEntry by rememberUpdatedState(folderPopup.folderPopupEntry)
+    val currentFolderPopupIntOffset by rememberUpdatedState(folderPopupIntOffset)
+    val currentCurrentPage by rememberUpdatedState(folderGridHorizontalPagerState.currentPage)
+
     LaunchedEffect(key1 = Unit) {
         progress.animateTo(targetValue = 1f)
     }
@@ -280,61 +291,39 @@ internal fun SharedTransitionScope.FolderScreen(
         onUpsertFolderPopupEntry(folderPopup.folderPopupEntry.copy(isCloseFolder = true))
     }
 
-    LaunchedEffect(
-        folderPopup,
-        drag,
-        isDragging,
-        isVisibleOverlay,
-        moveGridItemResult,
-    ) {
-        if (folderPopup.folderPopupEntry.isCloseFolder) {
-            folderGridHorizontalPagerState.animateScrollToPage(0)
-
-            progress.animateTo(targetValue = 0f)
-
-            val gridItem = moveGridItemResult?.movingGridItem
-
-            if (drag == Drag.Dragging &&
-                isDragging &&
-                isVisibleOverlay &&
-                gridItem != null
-            ) {
-                onUpdateSharedElementKey(
-                    SharedElementKey(
-                        id = gridItem.id,
-                        parent = SharedElementKey.Parent.Grid,
-                    ),
-                )
-
-                onMoveFolderGridItemOutsideFolder(gridItem)
-            }
-
-            onDeleteFolderPopupEntry(folderPopup.folderPopupEntry)
-        }
+    LaunchedEffect(key1 = folderPopup) {
+        handleFolderPopup(
+            currentDrag = currentDrag,
+            currentIsDragging = currentIsDragging,
+            currentIsVisibleOverlay = currentIsVisibleOverlay,
+            currentMoveGridItemResult = currentMoveGridItemResult,
+            folderPopup = folderPopup,
+            progress = progress,
+            onAnimateToScrollToPage = folderGridHorizontalPagerState::animateScrollToPage,
+            onDeleteFolderPopupEntry = onDeleteFolderPopupEntry,
+            onMoveFolderGridItemOutsideFolder = onMoveFolderGridItemOutsideFolder,
+            onUpdateSharedElementKey = onUpdateSharedElementKey,
+        )
     }
 
     LaunchedEffect(
         drag,
         dragIntOffset,
         folderGridItem,
-        isDragging,
-        isVisibleOverlay,
-        lockMovement,
         moveGridItemResult,
         isLastFolderGridItem,
-        folderPopup,
     ) {
         handleDragFolderGridItem(
             density = density,
             drag = drag,
             dragIntOffset = dragIntOffset,
-            currentPage = folderGridHorizontalPagerState.currentPage,
+            currentPage = currentCurrentPage,
             folderGridItem = folderGridItem,
-            folderPopupIntOffset = folderPopupIntOffset,
-            isDragging = isDragging,
-            isVisibleOverlay = isVisibleOverlay,
+            folderPopupIntOffset = currentFolderPopupIntOffset,
+            isDragging = currentIsDragging,
+            isVisibleOverlay = currentIsVisibleOverlay,
             isScrollInProgress = folderGridHorizontalPagerState.isScrollInProgress,
-            lockMovement = lockMovement,
+            lockMovement = currentLockMovement,
             paddingValues = paddingValues,
             screenHeight = screenHeight,
             screenWidth = screenWidth,
@@ -342,7 +331,7 @@ internal fun SharedTransitionScope.FolderScreen(
             layoutDirection = layoutDirection,
             folderCellWidth = folderCellWidth,
             folderCellHeight = folderCellHeight,
-            folderPopupEntry = folderPopup.folderPopupEntry,
+            folderPopupEntry = currentFolderPopupEntry,
             isLastFolderGridItem = isLastFolderGridItem,
             onMoveFolderGridItem = onMoveFolderGridItem,
             onUpdateSharedElementKey = onUpdateSharedElementKey,
@@ -351,16 +340,14 @@ internal fun SharedTransitionScope.FolderScreen(
     }
 
     LaunchedEffect(
-        drag,
-        isDragging,
-        isVisibleOverlay,
-        isLastFolderGridItem,
+        key1 = drag,
+        key2 = isLastFolderGridItem,
     ) {
         handleDropFolderGridItem(
             drag = drag,
-            isDragging = isDragging,
-            lockMovement = lockMovement,
-            isVisibleOverlay = isVisibleOverlay,
+            isDragging = currentIsDragging,
+            lockMovement = currentLockMovement,
+            isVisibleOverlay = currentIsVisibleOverlay,
             isLast = isLastFolderGridItem,
             onDragCancelAfterMoveFolder = onDragCancelAfterMoveFolder,
             onDragEndAfterMoveFolder = onDragEndAfterMoveFolder,
@@ -372,7 +359,8 @@ internal fun SharedTransitionScope.FolderScreen(
     LaunchedEffect(key1 = pageDirection) {
         handlePageDirection(
             pageDirection = pageDirection,
-            pagerState = folderGridHorizontalPagerState,
+            currentPage = folderGridHorizontalPagerState.currentPage,
+            onAnimateScrollToPage = folderGridHorizontalPagerState::animateScrollToPage,
         )
     }
 
@@ -384,23 +372,21 @@ internal fun SharedTransitionScope.FolderScreen(
 
     LaunchedEffect(
         drag,
-        isVisibleOverlay,
-        moveGridItemResult,
         dragIntOffset,
+        moveGridItemResult,
         folderGridItem,
-        isDragging,
         isLastFolderGridItem,
     ) {
         handleAnimateScrollToPage(
             density = density,
             drag = drag,
-            isVisibleOverlay = isVisibleOverlay,
-            lockMovement = lockMovement,
+            isVisibleOverlay = currentIsVisibleOverlay,
+            lockMovement = currentLockMovement,
             moveGridItemResult = moveGridItemResult,
             dragIntOffset = dragIntOffset,
             folderGridItem = folderGridItem,
             folderPopupIntOffset = folderPopupIntOffset,
-            isDragging = isDragging,
+            isDragging = currentIsDragging,
             paddingValues = paddingValues,
             screenWidth = screenWidth,
             layoutDirection = layoutDirection,
@@ -581,5 +567,43 @@ internal fun FolderTitle(
                 )
             }
         }
+    }
+}
+
+private suspend fun handleFolderPopup(
+    currentDrag: Drag,
+    currentIsDragging: Boolean,
+    currentIsVisibleOverlay: Boolean,
+    currentMoveGridItemResult: MoveGridItemResult?,
+    folderPopup: FolderPopup,
+    progress: Animatable<Float, AnimationVector1D>,
+    onAnimateToScrollToPage: suspend (Int) -> Unit,
+    onDeleteFolderPopupEntry: (FolderPopupEntry) -> Unit,
+    onMoveFolderGridItemOutsideFolder: (GridItem) -> Unit,
+    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
+) {
+    if (folderPopup.folderPopupEntry.isCloseFolder) {
+        onAnimateToScrollToPage(0)
+
+        progress.animateTo(targetValue = 0f)
+
+        val gridItem = currentMoveGridItemResult?.movingGridItem
+
+        if (currentDrag == Drag.Dragging &&
+            currentIsDragging &&
+            currentIsVisibleOverlay &&
+            gridItem != null
+        ) {
+            onUpdateSharedElementKey(
+                SharedElementKey(
+                    id = gridItem.id,
+                    parent = SharedElementKey.Parent.Grid,
+                ),
+            )
+
+            onMoveFolderGridItemOutsideFolder(gridItem)
+        }
+
+        onDeleteFolderPopupEntry(folderPopup.folderPopupEntry)
     }
 }
