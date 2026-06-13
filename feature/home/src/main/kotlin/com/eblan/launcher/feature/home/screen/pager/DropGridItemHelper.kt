@@ -73,7 +73,8 @@ internal suspend fun handleDropGridItem(
     if (drag == Drag.None ||
         drag == Drag.Start ||
         drag == Drag.Dragging ||
-        gridItemSource == null
+        gridItemSource == null ||
+        moveGridItemResult == null
     ) {
         return
     }
@@ -95,7 +96,7 @@ internal suspend fun handleDropGridItem(
     val isLongPress = isVisibleOverlay && !isDragging
 
     val isMoveGridItemResultFailed =
-        drag == Drag.Cancel || moveGridItemResult == null || !moveGridItemResult.isSuccess
+        drag == Drag.Cancel || !moveGridItemResult.isSuccess
 
     when (gridItemSource) {
         is GridItemSource.Existing -> {
@@ -109,7 +110,7 @@ internal suspend fun handleDropGridItem(
 
             if (lockMovement) return cancelWithToast()
 
-            if (isVisibleOverlay && moveGridItemResult != null) {
+            if (isVisibleOverlay) {
                 onDragEndAfterMove(moveGridItemResult)
 
                 onUpdateIsDragging(false)
@@ -121,7 +122,7 @@ internal suspend fun handleDropGridItem(
 
             if (lockMovement) return cancelWithToast()
 
-            if (isVisibleOverlay && isDragging && moveGridItemResult != null) {
+            if (isVisibleOverlay && isDragging) {
                 val movingGridItem = moveGridItemResult.movingGridItem
 
                 when (val data = movingGridItem.data) {
@@ -170,7 +171,7 @@ internal suspend fun handleDropGridItem(
 
             if (lockMovement) return cancelWithToast()
 
-            if (isVisibleOverlay && isDragging && moveGridItemResult != null) {
+            if (isVisibleOverlay && isDragging) {
                 val movingGridItem = moveGridItemResult.movingGridItem
 
                 when (val data = movingGridItem.data) {

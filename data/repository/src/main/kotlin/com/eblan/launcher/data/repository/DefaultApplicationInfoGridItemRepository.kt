@@ -167,14 +167,6 @@ internal class DefaultApplicationInfoGridItemRepository @Inject constructor(
         applicationInfoGridItemDao.insertApplicationInfoGridItemEntity(entity = applicationInfoGridItem.asEntity())
     }
 
-    override suspend fun updateApplicationInfoGridItems(applicationInfoGridItems: List<ApplicationInfoGridItem>) {
-        val entities = applicationInfoGridItems.map {
-            it.asEntity()
-        }
-
-        applicationInfoGridItemDao.updateApplicationInfoGridItemEntities(entities = entities)
-    }
-
     override suspend fun upsertApplicationInfoGridItem(applicationInfoGridItem: ApplicationInfoGridItem) {
         applicationInfoGridItemDao.upsertApplicationInfoGridItemEntity(entity = applicationInfoGridItem.asEntity())
     }

@@ -1074,7 +1074,6 @@ private fun SharedTransitionScope.InteractiveFolderGridItem(
         isDragging,
         isVisibleOverlay,
         moveGridItemResult,
-        lockMovement,
         intOffset,
         intSize,
         gridItem,

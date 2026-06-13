@@ -43,7 +43,7 @@ class UpdatePageItemsUseCase @Inject constructor(
             val homeSettings = userDataRepository.userDataFlow.first().homeSettings
 
             pageItemsToDelete.forEach {
-                gridRepository.deleteGridItems(gridItems = it.gridItems)
+                gridRepository.deleteGridItemsRecursively(gridItems = it.gridItems)
             }
 
             val gridItems = pageItems.flatMapIndexed { index, pageItem ->

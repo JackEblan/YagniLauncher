@@ -181,6 +181,7 @@ internal fun PagerScreen(
     ) -> Unit,
     onMoveFolderGridItemOutsideFolder: (GridItem) -> Unit,
     onMoveGridItem: (
+        gridItems: List<GridItem>,
         movingGridItem: GridItem,
         x: Int,
         y: Int,
@@ -411,14 +412,15 @@ internal fun PagerScreen(
     )
 
     LaunchedEffect(
+        gridItems,
         pagerScreenState.dragIntOffset,
         gridItemSource,
         isVisibleOverlay,
         pagerScreenState.isDragging,
         moveGridItemResult,
-        lockMovement,
     ) {
         pagerScreenState.handleDragGridItemEffect(
+            gridItems = gridItems,
             gridCurrentPage = gridCurrentPage,
             dockGridCurrentPage = dockGridCurrentPage,
             density = density,
