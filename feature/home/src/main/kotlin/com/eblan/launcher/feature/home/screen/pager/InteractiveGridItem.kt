@@ -399,13 +399,10 @@ private fun SharedTransitionScope.InteractiveApplicationInfoGridItem(
 
     val scale = remember { Animatable(1f) }
 
-    val currentIsDragging by rememberUpdatedState(isDragging)
-    val currentIsCloseGridItemPopup by rememberUpdatedState(isCloseGridItemPopup)
+    val currentIsDragging = rememberUpdatedState(isDragging)
+    val currentIsCloseGridItemPopup = rememberUpdatedState(isCloseGridItemPopup)
 
-    LaunchedEffect(
-        key1 = drag,
-        key2 = hasInteraction,
-    ) {
+    LaunchedEffect(key1 = drag) {
         handleDrag(
             drag = drag,
             hasInteraction = hasInteraction,
@@ -620,13 +617,10 @@ private fun SharedTransitionScope.InteractiveWidgetGridItem(
 
     val scale = remember { Animatable(1f) }
 
-    val currentIsDragging by rememberUpdatedState(isDragging)
-    val currentIsCloseGridItemPopup by rememberUpdatedState(isCloseGridItemPopup)
+    val currentIsDragging = rememberUpdatedState(isDragging)
+    val currentIsCloseGridItemPopup = rememberUpdatedState(isCloseGridItemPopup)
 
-    LaunchedEffect(
-        key1 = drag,
-        key2 = hasInteraction,
-    ) {
+    LaunchedEffect(key1 = drag) {
         handleDrag(
             drag = drag,
             hasInteraction = hasInteraction,
@@ -817,13 +811,10 @@ private fun SharedTransitionScope.InteractiveShortcutInfoGridItem(
 
     val scale = remember { Animatable(1f) }
 
-    val currentIsDragging by rememberUpdatedState(isDragging)
-    val currentIsCloseGridItemPopup by rememberUpdatedState(isCloseGridItemPopup)
+    val currentIsDragging = rememberUpdatedState(isDragging)
+    val currentIsCloseGridItemPopup = rememberUpdatedState(isCloseGridItemPopup)
 
-    LaunchedEffect(
-        key1 = drag,
-        key2 = hasInteraction,
-    ) {
+    LaunchedEffect(key1 = drag) {
         handleDrag(
             drag = drag,
             hasInteraction = hasInteraction,
@@ -1056,17 +1047,14 @@ private fun SharedTransitionScope.InteractiveFolderGridItem(
 
     val scale = remember { Animatable(1f) }
 
-    val currentDrag by rememberUpdatedState(drag)
-    val currentIsDragging by rememberUpdatedState(isDragging)
-    val currentIsCloseGridItemPopup by rememberUpdatedState(isCloseGridItemPopup)
-    val currentIsVisibleOverlay by rememberUpdatedState(isVisibleOverlay)
-    val currentGridItem by rememberUpdatedState(gridItem)
-    val currentLockMovement by rememberUpdatedState(lockMovement)
+    val currentDrag = rememberUpdatedState(drag)
+    val currentIsDragging = rememberUpdatedState(isDragging)
+    val currentIsCloseGridItemPopup = rememberUpdatedState(isCloseGridItemPopup)
+    val currentIsVisibleOverlay = rememberUpdatedState(isVisibleOverlay)
+    val currentGridItem = rememberUpdatedState(gridItem)
+    val currentLockMovement = rememberUpdatedState(lockMovement)
 
-    LaunchedEffect(
-        key1 = drag,
-        key2 = hasInteraction,
-    ) {
+    LaunchedEffect(key1 = drag) {
         handleDrag(
             drag = drag,
             hasInteraction = hasInteraction,
@@ -1355,13 +1343,10 @@ private fun SharedTransitionScope.InteractiveShortcutConfigGridItem(
 
     val scale = remember { Animatable(1f) }
 
-    val currentIsDragging by rememberUpdatedState(isDragging)
-    val currentIsCloseGridItemPopup by rememberUpdatedState(isCloseGridItemPopup)
+    val currentIsDragging = rememberUpdatedState(isDragging)
+    val currentIsCloseGridItemPopup = rememberUpdatedState(isCloseGridItemPopup)
 
-    LaunchedEffect(
-        key1 = drag,
-        key2 = hasInteraction,
-    ) {
+    LaunchedEffect(key1 = drag) {
         handleDrag(
             drag = drag,
             hasInteraction = hasInteraction,

@@ -46,6 +46,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -274,14 +275,13 @@ internal fun SharedTransitionScope.FolderScreen(
 
     val isLastFolderGridItem = lastFolderPopup?.gridItem == folderGridItem
 
-    val currentDrag by rememberUpdatedState(drag)
-    val currentIsDragging by rememberUpdatedState(isDragging)
-    val currentIsVisibleOverlay by rememberUpdatedState(isVisibleOverlay)
-    val currentMoveGridItemResult by rememberUpdatedState(moveGridItemResult)
-    val currentLockMovement by rememberUpdatedState(lockMovement)
-    val currentFolderPopupEntry by rememberUpdatedState(folderPopup.folderPopupEntry)
-    val currentFolderPopupIntOffset by rememberUpdatedState(folderPopupIntOffset)
-    val currentCurrentPage by rememberUpdatedState(folderGridHorizontalPagerState.currentPage)
+    val currentDrag = rememberUpdatedState(drag)
+    val currentIsDragging = rememberUpdatedState(isDragging)
+    val currentIsVisibleOverlay = rememberUpdatedState(isVisibleOverlay)
+    val currentMoveGridItemResult = rememberUpdatedState(moveGridItemResult)
+    val currentLockMovement = rememberUpdatedState(lockMovement)
+    val currentFolderPopupEntry = rememberUpdatedState(folderPopup.folderPopupEntry)
+    val currentFolderPopupIntOffset = rememberUpdatedState(folderPopupIntOffset)
 
     LaunchedEffect(key1 = Unit) {
         progress.animateTo(targetValue = 1f)
@@ -293,10 +293,10 @@ internal fun SharedTransitionScope.FolderScreen(
 
     LaunchedEffect(key1 = folderPopup) {
         handleFolderPopup(
-            currentDrag = currentDrag,
-            currentIsDragging = currentIsDragging,
-            currentIsVisibleOverlay = currentIsVisibleOverlay,
-            currentMoveGridItemResult = currentMoveGridItemResult,
+            drag = currentDrag,
+            isDragging = currentIsDragging,
+            isVisibleOverlay = currentIsVisibleOverlay,
+            moveGridItemResult = currentMoveGridItemResult,
             folderPopup = folderPopup,
             progress = progress,
             onAnimateToScrollToPage = folderGridHorizontalPagerState::animateScrollToPage,
@@ -317,7 +317,7 @@ internal fun SharedTransitionScope.FolderScreen(
             density = density,
             drag = drag,
             dragIntOffset = dragIntOffset,
-            currentPage = currentCurrentPage,
+            currentPage = folderGridHorizontalPagerState.currentPage,
             folderGridItem = folderGridItem,
             folderPopupIntOffset = currentFolderPopupIntOffset,
             isDragging = currentIsDragging,
@@ -571,10 +571,10 @@ internal fun FolderTitle(
 }
 
 private suspend fun handleFolderPopup(
-    currentDrag: Drag,
-    currentIsDragging: Boolean,
-    currentIsVisibleOverlay: Boolean,
-    currentMoveGridItemResult: MoveGridItemResult?,
+    drag: State<Drag>,
+    isDragging: State<Boolean>,
+    isVisibleOverlay: State<Boolean>,
+    moveGridItemResult: State<MoveGridItemResult?>,
     folderPopup: FolderPopup,
     progress: Animatable<Float, AnimationVector1D>,
     onAnimateToScrollToPage: suspend (Int) -> Unit,
@@ -587,11 +587,11 @@ private suspend fun handleFolderPopup(
 
         progress.animateTo(targetValue = 0f)
 
-        val gridItem = currentMoveGridItemResult?.movingGridItem
+        val gridItem = moveGridItemResult.value?.movingGridItem
 
-        if (currentDrag == Drag.Dragging &&
-            currentIsDragging &&
-            currentIsVisibleOverlay &&
+        if (drag.value == Drag.Dragging &&
+            isDragging.value &&
+            isVisibleOverlay.value &&
             gridItem != null
         ) {
             onUpdateSharedElementKey(

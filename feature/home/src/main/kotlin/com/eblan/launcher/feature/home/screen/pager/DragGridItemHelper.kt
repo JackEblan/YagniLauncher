@@ -20,6 +20,7 @@ package com.eblan.launcher.feature.home.screen.pager
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.runtime.State
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.compose.ui.unit.Density
@@ -144,7 +145,7 @@ internal fun handleAnimateScrollToPage(
 }
 
 internal suspend fun handleDragGridItem(
-    gridItems: List<GridItem>,
+    gridItems: State<List<GridItem>>,
     columns: Int,
     gridCurrentPage: Int,
     dockGridCurrentPage: Int,
@@ -154,9 +155,9 @@ internal suspend fun handleDragGridItem(
     dockRows: Int,
     drag: Drag,
     dragIntOffset: IntOffset,
-    gridItemSource: GridItemSource?,
+    gridItemSource: State<GridItemSource?>,
     isDragging: Boolean,
-    isVisibleOverlay: Boolean,
+    isVisibleOverlay: State<Boolean>,
     isGridScrollInProgress: Boolean,
     isDockScrollInProgress: Boolean,
     lockMovement: Boolean,
@@ -164,7 +165,7 @@ internal suspend fun handleDragGridItem(
     rows: Int,
     screenHeight: Int,
     screenWidth: Int,
-    moveGridItemResult: MoveGridItemResult?,
+    moveGridItemResult: State<MoveGridItemResult?>,
     layoutDirection: LayoutDirection,
     onMoveGridItem: (
         gridItems: List<GridItem>,
@@ -182,11 +183,9 @@ internal suspend fun handleDragGridItem(
     if (drag != Drag.Dragging ||
         isGridScrollInProgress ||
         isDockScrollInProgress ||
-        gridItemSource == null ||
-        !isVisibleOverlay ||
+        !isVisibleOverlay.value ||
         !isDragging ||
-        lockMovement ||
-        moveGridItemResult == null
+        lockMovement
     ) {
         return
     }
@@ -231,7 +230,7 @@ internal suspend fun handleDragGridItem(
 
     val isOnDock = dockHeightPx > 0 && localDragY > safeDrawingHeight - dockHeightPx
 
-    when (gridItemSource) {
+    when (val currentGridItemSource = gridItemSource.value ?: return) {
         is GridItemSource.Existing,
         is GridItemSource.New,
         is GridItemSource.Pin,
@@ -245,7 +244,7 @@ internal suspend fun handleDragGridItem(
                     dockRows = dockRows,
                     dragX = localDragX,
                     dragY = localDragY,
-                    gridItemSource = gridItemSource,
+                    gridItemSource = currentGridItemSource,
                     safeDrawingHeight = safeDrawingHeight,
                     safeDrawingWidth = safeDrawingWidth,
                     moveGridItemResult = moveGridItemResult,
@@ -261,7 +260,7 @@ internal suspend fun handleDragGridItem(
                     dockHeightPx = dockHeightPx,
                     dragX = localDragX,
                     dragY = localDragY,
-                    gridItemSource = gridItemSource,
+                    gridItemSource = currentGridItemSource,
                     pageIndicatorHeightPx = pageIndicatorHeightPx,
                     rows = rows,
                     safeDrawingHeight = safeDrawingHeight,
@@ -277,7 +276,7 @@ internal suspend fun handleDragGridItem(
 }
 
 private fun dragGridItem(
-    gridItems: List<GridItem>,
+    gridItems: State<List<GridItem>>,
     columns: Int,
     currentPage: Int,
     dockHeightPx: Int,
@@ -288,7 +287,7 @@ private fun dragGridItem(
     rows: Int,
     safeDrawingHeight: Int,
     safeDrawingWidth: Int,
-    moveGridItemResult: MoveGridItemResult,
+    moveGridItemResult: State<MoveGridItemResult?>,
     onMoveGridItem: (
         gridItems: List<GridItem>,
         movingGridItem: GridItem,
@@ -302,7 +301,7 @@ private fun dragGridItem(
     onUpdateAssociate: (Associate) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
 ) {
-    val gridItem = moveGridItemResult.movingGridItem
+    val gridItem = moveGridItemResult.value?.movingGridItem ?: return
 
     onUpdateAssociate(Associate.Grid)
 
@@ -342,7 +341,7 @@ private fun dragGridItem(
 
     if (isGridItemSpanWithinBounds) {
         onMoveGridItem(
-            gridItems,
+            gridItems.value,
             moveGridItem,
             dragX,
             dragY,
@@ -355,7 +354,7 @@ private fun dragGridItem(
 }
 
 private fun dragDockGridItem(
-    gridItems: List<GridItem>,
+    gridItems: State<List<GridItem>>,
     currentPage: Int,
     dockColumns: Int,
     dockHeightPx: Int,
@@ -365,7 +364,7 @@ private fun dragDockGridItem(
     gridItemSource: GridItemSource,
     safeDrawingHeight: Int,
     safeDrawingWidth: Int,
-    moveGridItemResult: MoveGridItemResult,
+    moveGridItemResult: State<MoveGridItemResult?>,
     onMoveGridItem: (
         gridItems: List<GridItem>,
         movingGridItem: GridItem,
@@ -379,7 +378,7 @@ private fun dragDockGridItem(
     onUpdateAssociate: (Associate) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
 ) {
-    val gridItem = moveGridItemResult.movingGridItem
+    val gridItem = moveGridItemResult.value?.movingGridItem ?: return
 
     onUpdateAssociate(Associate.Dock)
 
@@ -418,7 +417,7 @@ private fun dragDockGridItem(
         )
     ) {
         onMoveGridItem(
-            gridItems,
+            gridItems.value,
             moveGridItem,
             dragX,
             dockY,
@@ -431,14 +430,14 @@ private fun dragDockGridItem(
 }
 
 internal suspend fun handleConflictingGridItem(
-    drag: Drag,
-    isDragging: Boolean,
-    isVisibleOverlay: Boolean,
+    drag: State<Drag>,
+    isDragging: State<Boolean>,
+    isVisibleOverlay: State<Boolean>,
     moveGridItemResult: MoveGridItemResult?,
-    lockMovement: Boolean,
+    lockMovement: State<Boolean>,
     intOffset: IntOffset,
     intSize: IntSize,
-    gridItem: GridItem,
+    gridItem: State<GridItem>,
     onShowFolderWhenDragging: (
         folderPopupEntry: FolderPopupEntry,
         movingGridItem: GridItem,
@@ -449,13 +448,7 @@ internal suspend fun handleConflictingGridItem(
 
     val conflictingData = conflictingGridItem.data as? GridItemData.Folder ?: return
 
-    if (drag != Drag.Dragging ||
-        !moveGridItemResult.isSuccess ||
-        !isVisibleOverlay ||
-        !isDragging ||
-        lockMovement ||
-        conflictingGridItem.id != gridItem.id
-    ) {
+    if (drag.value != Drag.Dragging || !moveGridItemResult.isSuccess || !isVisibleOverlay.value || !isDragging.value || lockMovement.value || conflictingGridItem.id != gridItem.value.id) {
         return
     }
 
