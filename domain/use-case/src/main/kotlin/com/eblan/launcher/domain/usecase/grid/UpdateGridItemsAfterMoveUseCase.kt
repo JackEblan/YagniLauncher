@@ -31,7 +31,6 @@ import kotlin.uuid.Uuid
 
 class UpdateGridItemsAfterMoveUseCase @Inject constructor(
     private val gridRepository: GridRepository,
-    private val getFolderGridItemsUseCase: GetFolderGridItemsUseCase,
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke(moveGridItemResult: MoveGridItemResult) {
@@ -62,10 +61,6 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
                         )
                     }
                 }
-
-                gridRepository.getGridItems()
-
-                getFolderGridItemsUseCase()
             }
         }
     }

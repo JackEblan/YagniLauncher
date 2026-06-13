@@ -453,7 +453,7 @@ internal fun PagerScreen(
 
     LaunchedEffect(key1 = pagerScreenState.deleteAppWidgetId) {
         pagerScreenState.handleDeleteAppWidgetIdEffect(
-            moveGridItemResult = currentMoveGridItemResult,
+            moveGridItemResult = moveGridItemResult,
             onResetGridAfterDeleteGridItem = onResetGridAfterDeleteGridItem,
         )
     }
@@ -462,8 +462,8 @@ internal fun PagerScreen(
         handleBoundWidgetEffect(
             activity = activity,
             androidAppWidgetHostWrapper = androidAppWidgetHostWrapper,
-            gridItemSource = currentGridItemSource,
-            moveGridItemResult = currentMoveGridItemResult,
+            gridItemSource = gridItemSource,
+            moveGridItemResult = moveGridItemResult,
             updatedWidgetGridItem = pagerScreenState.updatedWidgetGridItem,
             onDeleteGridItem = onResetGridAfterDeleteGridItem,
             onDragEndAfterMove = onDragEndAfterMove,
@@ -492,7 +492,7 @@ internal fun PagerScreen(
 
     LaunchedEffect(key1 = configureResultCode) {
         handleConfigureLauncherResultEffect(
-            moveGridItemResult = currentMoveGridItemResult,
+            moveGridItemResult = moveGridItemResult,
             resultCode = configureResultCode,
             updatedGridItem = pagerScreenState.updatedWidgetGridItem,
             onDeleteGridItem = onDeleteGridItem,

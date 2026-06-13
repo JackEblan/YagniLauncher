@@ -458,7 +458,7 @@ internal class PagerScreenState(
     }
 
     fun handleDeleteAppWidgetIdEffect(
-        moveGridItemResult: State<MoveGridItemResult?>,
+        moveGridItemResult: MoveGridItemResult?,
         onResetGridAfterDeleteGridItem: (GridItem) -> Unit,
     ) {
         handleDeleteAppWidgetId(

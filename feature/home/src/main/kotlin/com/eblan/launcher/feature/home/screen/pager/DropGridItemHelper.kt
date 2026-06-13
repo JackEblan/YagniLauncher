@@ -238,7 +238,7 @@ internal fun handleAppWidgetLauncherResult(
 }
 
 internal fun handleConfigureLauncherResultEffect(
-    moveGridItemResult: State<MoveGridItemResult?>,
+    moveGridItemResult: MoveGridItemResult?,
     resultCode: Int?,
     updatedGridItem: GridItem?,
     onDeleteGridItem: (GridItem) -> Unit,
@@ -247,14 +247,14 @@ internal fun handleConfigureLauncherResultEffect(
 ) {
     if (resultCode == null) return
 
-    val currentMoveGridItemResult = requireNotNull(moveGridItemResult.value)
+    requireNotNull(moveGridItemResult)
 
     requireNotNull(updatedGridItem)
 
     check(updatedGridItem.data is GridItemData.Widget)
 
     if (resultCode == Activity.RESULT_OK) {
-        onDragEndAfterMove(currentMoveGridItemResult.copy(movingGridItem = updatedGridItem))
+        onDragEndAfterMove(moveGridItemResult.copy(movingGridItem = updatedGridItem))
     } else {
         onDeleteGridItem(updatedGridItem)
     }
@@ -265,7 +265,7 @@ internal fun handleConfigureLauncherResultEffect(
 internal fun handleDeleteAppWidgetId(
     appWidgetId: Int,
     deleteAppWidgetId: Boolean,
-    moveGridItemResult: State<MoveGridItemResult?>,
+    moveGridItemResult: MoveGridItemResult?,
     onResetGridAfterDeleteGridItem: (GridItem) -> Unit,
     onResetAppWidgetId: () -> Unit,
 ) {
@@ -273,9 +273,7 @@ internal fun handleDeleteAppWidgetId(
         return
     }
 
-    val currentMoveGridItemResult = requireNotNull(moveGridItemResult.value)
-
-    val movingGridItem = currentMoveGridItemResult.movingGridItem
+    val movingGridItem = requireNotNull(moveGridItemResult?.movingGridItem)
 
     check(movingGridItem.data is GridItemData.Widget)
 
@@ -287,28 +285,28 @@ internal fun handleDeleteAppWidgetId(
 internal fun handleBoundWidgetEffect(
     activity: Activity?,
     androidAppWidgetHostWrapper: AndroidAppWidgetHostWrapper,
-    gridItemSource: State<GridItemSource?>,
-    moveGridItemResult: State<MoveGridItemResult?>,
+    gridItemSource: GridItemSource?,
+    moveGridItemResult: MoveGridItemResult?,
     updatedWidgetGridItem: GridItem?,
     onDeleteGridItem: (GridItem) -> Unit,
     onDragEndAfterMove: (MoveGridItemResult) -> Unit,
 ) {
     if (updatedWidgetGridItem == null) return
 
-    val currentGridItemSource = requireNotNull(gridItemSource.value)
+    requireNotNull(gridItemSource)
 
-    val currentMoveGridItemResult = requireNotNull(moveGridItemResult.value)
+    requireNotNull(moveGridItemResult)
 
     val data = updatedWidgetGridItem.data as GridItemData.Widget
 
-    when (currentGridItemSource) {
+    when (gridItemSource) {
         is GridItemSource.New -> {
             startAppWidgetConfigureActivityForResult(
                 activity = activity,
                 androidAppWidgetHostWrapper = androidAppWidgetHostWrapper,
                 appWidgetId = data.appWidgetId,
                 configure = data.configure,
-                moveGridItemResult = currentMoveGridItemResult,
+                moveGridItemResult = moveGridItemResult,
                 updatedWidgetGridItem = updatedWidgetGridItem,
                 onDeleteGridItem = onDeleteGridItem,
                 onDragEndAfterMove = onDragEndAfterMove,
@@ -318,8 +316,8 @@ internal fun handleBoundWidgetEffect(
         is GridItemSource.Pin -> {
             bindPinWidget(
                 appWidgetId = data.appWidgetId,
-                moveGridItemResult = currentMoveGridItemResult,
-                pinItemRequest = currentGridItemSource.pinItemRequest,
+                moveGridItemResult = moveGridItemResult,
+                pinItemRequest = gridItemSource.pinItemRequest,
                 updatedWidgetGridItem = updatedWidgetGridItem,
                 onDeleteGridItem = onDeleteGridItem,
                 onDragEndAfterMove = onDragEndAfterMove,
