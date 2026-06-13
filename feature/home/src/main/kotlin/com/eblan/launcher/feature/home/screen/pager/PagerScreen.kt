@@ -394,13 +394,10 @@ internal fun PagerScreen(
 
     val lastPopupFolderGridItem = folderPopups.lastOrNull()
 
-    val currentGridItems by rememberUpdatedState(gridItems)
-
-    val currentGridItemSource by rememberUpdatedState(gridItemSource)
-
-    val currentIsVisibleOverlay by rememberUpdatedState(isVisibleOverlay)
-
-    val currentMoveGridItemResult by rememberUpdatedState(moveGridItemResult)
+    val currentGridItems = rememberUpdatedState(gridItems)
+    val currentGridItemSource = rememberUpdatedState(gridItemSource)
+    val currentIsVisibleOverlay = rememberUpdatedState(isVisibleOverlay)
+    val currentMoveGridItemResult = rememberUpdatedState(moveGridItemResult)
 
     LaunchedEffect(key1 = pinGridItem) {
         pagerScreenState.handlePinGridItemEffect(

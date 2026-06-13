@@ -36,6 +36,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -356,7 +357,7 @@ internal class PagerScreenState(
     }
 
     suspend fun handleDragGridItemEffect(
-        gridItems: List<GridItem>,
+        gridItems: State<List<GridItem>>,
         gridCurrentPage: Int,
         dockGridCurrentPage: Int,
         density: Density,
@@ -365,9 +366,9 @@ internal class PagerScreenState(
         isDockScrollInProgress: Boolean,
         lockMovement: Boolean,
         paddingValues: PaddingValues,
-        gridItemSource: GridItemSource?,
-        isVisibleOverlay: Boolean,
-        moveGridItemResult: MoveGridItemResult?,
+        gridItemSource: State<GridItemSource?>,
+        isVisibleOverlay: State<Boolean>,
+        moveGridItemResult: State<MoveGridItemResult?>,
         layoutDirection: LayoutDirection,
         onMoveGridItem: (
             gridItems: List<GridItem>,
@@ -414,12 +415,12 @@ internal class PagerScreenState(
     }
 
     suspend fun handleDropGridItemEffect(
-        moveGridItemResult: MoveGridItemResult?,
+        moveGridItemResult: State<MoveGridItemResult?>,
         onLaunchShortcutConfigIntent: (Intent) -> Unit,
         onLaunchShortcutConfigIntentSenderRequest: (IntentSenderRequest) -> Unit,
         onLaunchWidgetIntent: (Intent) -> Unit,
-        gridItemSource: GridItemSource?,
-        isVisibleOverlay: Boolean,
+        gridItemSource: State<GridItemSource?>,
+        isVisibleOverlay: State<Boolean>,
         onUpdateIsVisibleOverlay: (Boolean) -> Unit,
         onResetGridAfterDeleteGridItem: (GridItem) -> Unit,
         onDragCancelAfterMove: () -> Unit,
@@ -476,7 +477,7 @@ internal class PagerScreenState(
     fun handleAnimateScrollToPageEffect(
         density: Density,
         paddingValues: PaddingValues,
-        gridItemSource: GridItemSource?,
+        gridItemSource: State<GridItemSource?>,
         layoutDirection: LayoutDirection,
     ) {
         handleAnimateScrollToPage(

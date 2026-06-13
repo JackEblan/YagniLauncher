@@ -102,7 +102,7 @@ internal fun handleAnimateScrollToPage(
     associate: Associate?,
     density: Density,
     dragIntOffset: IntOffset,
-    gridItemSource: GridItemSource?,
+    gridItemSource: State<GridItemSource?>,
     isDragging: Boolean,
     paddingValues: PaddingValues,
     screenWidth: Int,
@@ -110,7 +110,9 @@ internal fun handleAnimateScrollToPage(
     onUpdateDockPageDirection: (PageDirection?) -> Unit,
     onUpdateGridPageDirection: (PageDirection?) -> Unit,
 ) {
-    if (gridItemSource == null || !isDragging) return
+    val currentGridItemSource = gridItemSource.value ?: return
+
+    if (!isDragging) return
 
     val leftPadding = with(density) {
         paddingValues.calculateLeftPadding(layoutDirection).roundToPx()
@@ -130,7 +132,7 @@ internal fun handleAnimateScrollToPage(
 
     val dragX = dragIntOffset.x - leftPadding
 
-    when (gridItemSource) {
+    when (currentGridItemSource) {
         is GridItemSource.Existing, is GridItemSource.New, is GridItemSource.Pin -> {
             animateScrollToPage(
                 associate = associate,
