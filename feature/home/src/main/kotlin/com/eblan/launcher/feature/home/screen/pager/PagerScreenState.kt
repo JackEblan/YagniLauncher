@@ -312,6 +312,12 @@ internal class PagerScreenState(
     var isCloseFolderGridItemPopup by mutableStateOf(false)
         private set
 
+    var showWidgetScreen by mutableStateOf(false)
+        private set
+
+    var showShortcutConfigScreen by mutableStateOf(false)
+        private set
+
     private val touchSlop = with(density) {
         50.dp.toPx()
     }
@@ -964,6 +970,8 @@ internal class PagerScreenState(
 
     fun openWidgetScreen() {
         scope.launch {
+            showWidgetScreen = true
+
             widgetScreenOffsetY.animateTo(
                 targetValue = 0f,
                 animationSpec = tween(
@@ -981,6 +989,8 @@ internal class PagerScreenState(
                     easing = FastOutSlowInEasing,
                 ),
             )
+
+            showWidgetScreen = false
 
             if (isPressHome) {
                 isPressHome = false
@@ -1012,6 +1022,8 @@ internal class PagerScreenState(
 
     fun openShortcutConfigScreen() {
         scope.launch {
+            showShortcutConfigScreen = true
+
             shortcutConfigScreenOffsetY.animateTo(
                 targetValue = 0f,
                 animationSpec = tween(
@@ -1029,6 +1041,8 @@ internal class PagerScreenState(
                     easing = FastOutSlowInEasing,
                 ),
             )
+
+            showShortcutConfigScreen = false
 
             if (isPressHome) {
                 isPressHome = false
