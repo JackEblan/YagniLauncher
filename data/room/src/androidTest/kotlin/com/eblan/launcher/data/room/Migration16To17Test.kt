@@ -49,29 +49,49 @@ class Migration16To17Test {
             true,
             Migration16To17(),
         ).use { db ->
-            assertTrue(
-                db.query("PRAGMA index_list(`ApplicationInfoGridItemEntity`)").use {
-                    it.moveToFirst()
-                },
-            )
+            db.query(
+                """
+            SELECT name
+            FROM sqlite_master
+            WHERE type = 'index'
+            AND name = 'index_ApplicationInfoGridItemEntity_folderId'
+                """.trimIndent(),
+            ).use { cursor ->
+                assertTrue(cursor.moveToFirst())
+            }
 
-            assertTrue(
-                db.query("PRAGMA index_list(`ShortcutConfigGridItemEntity`)").use {
-                    it.moveToFirst()
-                },
-            )
+            db.query(
+                """
+            SELECT name
+            FROM sqlite_master
+            WHERE type = 'index'
+            AND name = 'index_ShortcutInfoGridItemEntity_folderId'
+                """.trimIndent(),
+            ).use { cursor ->
+                assertTrue(cursor.moveToFirst())
+            }
 
-            assertTrue(
-                db.query("PRAGMA index_list(`ShortcutInfoGridItemEntity`)").use {
-                    it.moveToFirst()
-                },
-            )
+            db.query(
+                """
+            SELECT name
+            FROM sqlite_master
+            WHERE type = 'index'
+            AND name = 'index_ShortcutConfigGridItemEntity_folderId'
+                """.trimIndent(),
+            ).use { cursor ->
+                assertTrue(cursor.moveToFirst())
+            }
 
-            assertTrue(
-                db.query("PRAGMA index_list(`FolderGridItemEntity`)").use {
-                    it.moveToFirst()
-                },
-            )
+            db.query(
+                """
+            SELECT name
+            FROM sqlite_master
+            WHERE type = 'index'
+            AND name = 'index_FolderGridItemEntity_folderId'
+                """.trimIndent(),
+            ).use { cursor ->
+                assertTrue(cursor.moveToFirst())
+            }
         }
     }
 }
