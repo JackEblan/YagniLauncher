@@ -177,24 +177,24 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
             else -> error("Unsupported createNewFolder")
         }
 
-        gridRepository.updateGridItem(gridItem = conflictingGridItem.copy(data = conflictingData))
-
-        gridRepository.updateGridItem(gridItem = movingGridItem.copy(data = movingData))
-
-        gridRepository.insertGridItem(
-            gridItem = conflictingGridItem.copy(
-                id = id,
-                data = GridItemData.Folder(
+        gridRepository.upsertGridItems(
+            gridItems = listOf(
+                conflictingGridItem.copy(data = conflictingData),
+                movingGridItem.copy(data = movingData),
+                conflictingGridItem.copy(
                     id = id,
-                    label = "New Folder",
-                    gridItems = emptyList(),
-                    gridItemsByPage = emptyMap(),
-                    icon = null,
-                    columns = 1,
-                    rows = 2,
-                    maxIndex = 1,
-                    index = -1,
-                    folderId = null,
+                    data = GridItemData.Folder(
+                        id = id,
+                        label = "New Folder",
+                        gridItems = emptyList(),
+                        gridItemsByPage = emptyMap(),
+                        icon = null,
+                        columns = 1,
+                        rows = 2,
+                        maxIndex = 1,
+                        index = -1,
+                        folderId = null,
+                    ),
                 ),
             ),
         )
