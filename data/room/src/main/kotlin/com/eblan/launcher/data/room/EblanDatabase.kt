@@ -63,7 +63,7 @@ import com.eblan.launcher.data.room.migration.AutoMigration9To10
         EblanApplicationInfoTagCrossRefEntity::class,
         EblanApplicationInfoTagEntity::class,
     ],
-    version = 16,
+    version = 17,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(

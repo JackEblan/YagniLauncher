@@ -344,7 +344,7 @@ internal class HomeViewModel @Inject constructor(
 
             updateGridItemsAfterMoveUseCase(moveGridItemResult = moveGridItemResult)
 
-            delay(defaultDelay.milliseconds)
+            delay(100L.milliseconds)
 
             _isVisibleOverlay.update {
                 false
