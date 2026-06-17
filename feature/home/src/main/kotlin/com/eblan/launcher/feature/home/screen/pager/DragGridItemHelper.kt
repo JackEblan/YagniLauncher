@@ -446,15 +446,21 @@ internal suspend fun handleConflictingGridItem(
     ) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
 ) {
+    delay(1000L.milliseconds)
+
     val conflictingGridItem = moveGridItemResult?.conflictingGridItem ?: return
 
     val conflictingData = conflictingGridItem.data as? GridItemData.Folder ?: return
 
-    if (drag.value != Drag.Dragging || !moveGridItemResult.isSuccess || !isVisibleOverlay.value || !isDragging.value || lockMovement.value || conflictingGridItem.id != gridItem.value.id) {
+    if (drag.value != Drag.Dragging ||
+        !moveGridItemResult.isSuccess ||
+        !isVisibleOverlay.value ||
+        !isDragging.value ||
+        lockMovement.value ||
+        conflictingGridItem.id != gridItem.value.id
+    ) {
         return
     }
-
-    delay(1000L.milliseconds)
 
     val movingGridItem = moveGridItemResult.movingGridItem
 
