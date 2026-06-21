@@ -120,8 +120,8 @@ internal fun EditGridDialog(
                         val newColumns = columns.toIntOrNull()
                         val newRows = rows.toIntOrNull()
 
-                        firstError = newColumns == null
-                        secondError = newRows == null
+                        firstError = newColumns == null || newColumns <= 0
+                        secondError = newRows == null || newRows <= 0
 
                         if (newColumns != null &&
                             newRows != null &&

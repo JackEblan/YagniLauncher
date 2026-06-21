@@ -117,21 +117,15 @@ internal fun EditDockGridDialog(
 
                 TextButton(
                     onClick = {
-                        val newDockColumns = try {
-                            dockColumns.toInt()
-                        } catch (_: NumberFormatException) {
-                            firstError = true
-                            0
-                        }
+                        val newDockColumns = dockColumns.toIntOrNull()
+                        val newDockRows = dockRows.toIntOrNull()
 
-                        val newDockRows = try {
-                            dockRows.toInt()
-                        } catch (_: NumberFormatException) {
-                            secondError = true
-                            0
-                        }
+                        firstError = newDockColumns == null || newDockColumns <= 0
+                        secondError = newDockRows == null || newDockRows <= 0
 
-                        if (newDockColumns > 0 && newDockRows > 0) {
+                        if (newDockColumns != null && newDockRows != null &&
+                            newDockColumns > 0 && newDockRows > 0
+                        ) {
                             onUpdateHomeSettings(
                                 homeSettings.copy(
                                     dockColumns = newDockColumns,

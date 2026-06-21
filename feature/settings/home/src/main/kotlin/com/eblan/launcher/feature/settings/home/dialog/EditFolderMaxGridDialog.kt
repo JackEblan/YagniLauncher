@@ -120,8 +120,8 @@ internal fun EditFolderMaxGridDialog(
                         val newColumns = maxFolderColumns.toIntOrNull()
                         val newRows = maxFolderRows.toIntOrNull()
 
-                        firstError = newColumns == null
-                        secondError = newRows == null
+                        firstError = newColumns == null || newColumns <= 0
+                        secondError = newRows == null || newRows <= 0
 
                         if (newColumns != null &&
                             newRows != null &&

@@ -123,33 +123,15 @@ internal fun EditHorizontalGridDialog(
 
                 TextButton(
                     onClick = {
-                        val newColumns = try {
-                            if (columns.toInt() > 2) {
-                                firstError = false
-                                columns.toInt()
-                            } else {
-                                firstError = true
-                                0
-                            }
-                        } catch (_: NumberFormatException) {
-                            firstError = true
-                            0
-                        }
+                        val newColumns = columns.toIntOrNull()
+                        val newRows = rows.toIntOrNull()
 
-                        val newRows = try {
-                            if (rows.toInt() > 2) {
-                                secondError = false
-                                rows.toInt()
-                            } else {
-                                secondError = true
-                                0
-                            }
-                        } catch (_: NumberFormatException) {
-                            secondError = true
-                            0
-                        }
+                        firstError = newColumns == null || newColumns <= 2
+                        secondError = newRows == null || newRows <= 2
 
-                        if (newColumns > 0 && newRows > 0) {
+                        if (newColumns != null && newRows != null &&
+                            newColumns > 2 && newRows > 2
+                        ) {
                             onUpdateAppDrawerSettings(
                                 appDrawerSettings.copy(
                                     horizontalAppDrawerColumns = newColumns,

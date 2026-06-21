@@ -120,8 +120,8 @@ internal fun EditFolderCellDimensionDialog(
                         val newWidth = cellWidth.toIntOrNull()
                         val newHeight = cellHeight.toIntOrNull()
 
-                        firstError = newWidth == null
-                        secondError = newHeight == null
+                        firstError = newWidth == null || newWidth <= 0
+                        secondError = newHeight == null || newHeight <= 0
 
                         if (newWidth != null &&
                             newHeight != null &&

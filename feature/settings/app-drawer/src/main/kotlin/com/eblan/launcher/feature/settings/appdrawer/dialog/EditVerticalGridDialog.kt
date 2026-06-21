@@ -126,8 +126,8 @@ internal fun EditVerticalGridDialog(
                         val newColumns = columns.toIntOrNull()
                         val newRowsHeight = rowsHeight.toIntOrNull()
 
-                        firstError = newColumns == null
-                        secondError = newRowsHeight == null
+                        firstError = newColumns == null || newColumns <= 0
+                        secondError = newRowsHeight == null || newRowsHeight <= 0
 
                         if (newColumns != null &&
                             newRowsHeight != null &&
