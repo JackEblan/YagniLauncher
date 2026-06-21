@@ -117,21 +117,17 @@ internal fun EditGridDialog(
 
                 TextButton(
                     onClick = {
-                        val newColumns = try {
-                            columns.toInt()
-                        } catch (_: NumberFormatException) {
-                            firstError = true
-                            0
-                        }
+                        val newColumns = columns.toIntOrNull()
+                        val newRows = rows.toIntOrNull()
 
-                        val newRows = try {
-                            rows.toInt()
-                        } catch (_: NumberFormatException) {
-                            secondError = true
-                            0
-                        }
+                        firstError = newColumns == null
+                        secondError = newRows == null
 
-                        if (newColumns > 0 && newRows > 0) {
+                        if (newColumns != null &&
+                            newRows != null &&
+                            newColumns > 0 &&
+                            newRows > 0
+                        ) {
                             onUpdateHomeSettings(
                                 homeSettings.copy(
                                     columns = newColumns,

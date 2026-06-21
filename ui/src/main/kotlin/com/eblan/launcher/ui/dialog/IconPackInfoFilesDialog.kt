@@ -74,6 +74,9 @@ fun IconPackInfoFilesDialog(
     onUpdateIcon: (String?) -> Unit,
     onSearchIconPackInfoComponent: (String) -> Unit,
 ) {
+    requireNotNull(iconPackInfoPackageName)
+
+    requireNotNull(iconPackInfoLabel)
     val scope = rememberCoroutineScope()
 
     val byteArray = LocalImageSerializer.current
@@ -98,7 +101,7 @@ fun IconPackInfoFilesDialog(
         modifier = modifier,
         top = {
             Text(
-                text = iconPackInfoLabel.toString(),
+                text = iconPackInfoLabel,
                 style = MaterialTheme.typography.titleLarge,
             )
         },
@@ -149,7 +152,7 @@ fun IconPackInfoFilesDialog(
 
                             LaunchedEffect(iconPackInfoComponent) {
                                 drawable = iconPackManager.loadDrawableFromIconPack(
-                                    packageName = iconPackInfoPackageName.toString(),
+                                    packageName = iconPackInfoPackageName,
                                     drawableName = iconPackInfoComponent.drawableName,
                                 )
                             }

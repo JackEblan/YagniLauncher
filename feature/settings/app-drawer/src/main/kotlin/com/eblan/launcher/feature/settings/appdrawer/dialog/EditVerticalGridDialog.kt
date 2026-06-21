@@ -123,21 +123,17 @@ internal fun EditVerticalGridDialog(
 
                 TextButton(
                     onClick = {
-                        val newColumns = try {
-                            columns.toInt()
-                        } catch (_: NumberFormatException) {
-                            firstError = true
-                            0
-                        }
+                        val newColumns = columns.toIntOrNull()
+                        val newRowsHeight = rowsHeight.toIntOrNull()
 
-                        val newRowsHeight = try {
-                            rowsHeight.toInt()
-                        } catch (_: NumberFormatException) {
-                            secondError = true
-                            0
-                        }
+                        firstError = newColumns == null
+                        secondError = newRowsHeight == null
 
-                        if (newColumns > 0 && newRowsHeight > 0) {
+                        if (newColumns != null &&
+                            newRowsHeight != null &&
+                            newColumns > 0 &&
+                            newRowsHeight > 0
+                        ) {
                             onUpdateAppDrawerSettings(
                                 appDrawerSettings.copy(
                                     appDrawerColumns = newColumns,

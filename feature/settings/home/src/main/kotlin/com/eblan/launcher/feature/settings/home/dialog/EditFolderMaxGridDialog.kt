@@ -117,21 +117,17 @@ internal fun EditFolderMaxGridDialog(
 
                 TextButton(
                     onClick = {
-                        val newColumns = try {
-                            maxFolderColumns.toInt()
-                        } catch (_: NumberFormatException) {
-                            firstError = true
-                            0
-                        }
+                        val newColumns = maxFolderColumns.toIntOrNull()
+                        val newRows = maxFolderRows.toIntOrNull()
 
-                        val newRows = try {
-                            maxFolderRows.toInt()
-                        } catch (_: NumberFormatException) {
-                            secondError = true
-                            0
-                        }
+                        firstError = newColumns == null
+                        secondError = newRows == null
 
-                        if (newColumns > 0 && newRows > 0) {
+                        if (newColumns != null &&
+                            newRows != null &&
+                            newColumns > 0 &&
+                            newRows > 0
+                        ) {
                             onUpdateHomeSettings(
                                 homeSettings.copy(
                                     maxFolderColumns = newColumns,

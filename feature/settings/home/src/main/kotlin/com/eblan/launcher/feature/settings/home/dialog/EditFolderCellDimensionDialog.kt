@@ -117,21 +117,17 @@ internal fun EditFolderCellDimensionDialog(
 
                 TextButton(
                     onClick = {
-                        val newWidth = try {
-                            cellWidth.toInt()
-                        } catch (_: NumberFormatException) {
-                            firstError = true
-                            0
-                        }
+                        val newWidth = cellWidth.toIntOrNull()
+                        val newHeight = cellHeight.toIntOrNull()
 
-                        val newHeight = try {
-                            cellHeight.toInt()
-                        } catch (_: NumberFormatException) {
-                            secondError = true
-                            0
-                        }
+                        firstError = newWidth == null
+                        secondError = newHeight == null
 
-                        if (newWidth > 0 && newHeight > 0) {
+                        if (newWidth != null &&
+                            newHeight != null &&
+                            newWidth > 0 &&
+                            newHeight > 0
+                        ) {
                             onUpdateHomeSettings(
                                 homeSettings.copy(
                                     folderCellWidth = newWidth,
