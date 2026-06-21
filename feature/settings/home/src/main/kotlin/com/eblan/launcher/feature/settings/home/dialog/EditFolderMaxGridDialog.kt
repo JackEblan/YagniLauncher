@@ -17,7 +17,11 @@
  */
 package com.eblan.launcher.feature.settings.home.dialog
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -28,8 +32,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
+import com.eblan.launcher.designsystem.component.EblanDialog
 import com.eblan.launcher.domain.model.HomeSettings
-import com.eblan.launcher.ui.dialog.RowTextFieldsDialog
 
 @Composable
 internal fun EditFolderMaxGridDialog(
@@ -38,101 +43,110 @@ internal fun EditFolderMaxGridDialog(
     onDismissRequest: () -> Unit,
     onUpdateHomeSettings: (HomeSettings) -> Unit,
 ) {
-    var maxFolderColumns by remember {
-        mutableStateOf("${homeSettings.maxFolderColumns}")
-    }
-
-    var maxFolderRows by remember {
-        mutableStateOf("${homeSettings.maxFolderRows}")
-    }
+    var maxFolderColumns by remember { mutableStateOf("${homeSettings.maxFolderColumns}") }
+    var maxFolderRows by remember { mutableStateOf("${homeSettings.maxFolderRows}") }
 
     var firstError by remember { mutableStateOf(false) }
     var secondError by remember { mutableStateOf(false) }
 
-    RowTextFieldsDialog(
+    EblanDialog(
         modifier = modifier,
-        title = "Folder Max Grid",
+        top = {
+            Text(
+                text = "Folder Max Grid",
+                style = MaterialTheme.typography.titleLarge,
+            )
+        },
+        middle = {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                TextField(
+                    value = maxFolderColumns,
+                    onValueChange = {
+                        maxFolderColumns = it
+                        firstError = false
+                    },
+                    modifier = Modifier.weight(1f),
+                    label = { Text(text = "Max Columns") },
+                    supportingText = if (firstError) {
+                        {
+                            Text(text = "Max columns is not valid")
+                        }
+                    } else {
+                        null
+                    },
+                    isError = firstError,
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Number,
+                    ),
+                )
+
+                TextField(
+                    value = maxFolderRows,
+                    onValueChange = {
+                        maxFolderRows = it
+                        secondError = false
+                    },
+                    modifier = Modifier.weight(1f),
+                    label = { Text(text = "Max Rows") },
+                    supportingText = if (secondError) {
+                        {
+                            Text(text = "Max rows is not valid")
+                        }
+                    } else {
+                        null
+                    },
+                    isError = secondError,
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Number,
+                    ),
+                )
+            }
+        },
+        bottom = {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End,
+            ) {
+                TextButton(
+                    onClick = onDismissRequest,
+                ) {
+                    Text(text = "Cancel")
+                }
+
+                TextButton(
+                    onClick = {
+                        val newColumns = try {
+                            maxFolderColumns.toInt()
+                        } catch (_: NumberFormatException) {
+                            firstError = true
+                            0
+                        }
+
+                        val newRows = try {
+                            maxFolderRows.toInt()
+                        } catch (_: NumberFormatException) {
+                            secondError = true
+                            0
+                        }
+
+                        if (newColumns > 0 && newRows > 0) {
+                            onUpdateHomeSettings(
+                                homeSettings.copy(
+                                    maxFolderColumns = newColumns,
+                                    maxFolderRows = newRows,
+                                ),
+                            )
+
+                            onDismissRequest()
+                        }
+                    },
+                ) {
+                    Text(text = "Update")
+                }
+            }
+        },
         onDismissRequest = onDismissRequest,
-        textFields = {
-            TextField(
-                value = maxFolderColumns,
-                onValueChange = {
-                    maxFolderColumns = it
-                    firstError = false
-                },
-                modifier = Modifier.weight(1f),
-                label = { Text(text = "Max Columns") },
-                supportingText = if (firstError) {
-                    {
-                        Text(text = "Max columns is not valid")
-                    }
-                } else {
-                    null
-                },
-                isError = firstError,
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Number,
-                ),
-            )
-
-            TextField(
-                value = maxFolderRows,
-                onValueChange = {
-                    maxFolderRows = it
-                    secondError = false
-                },
-                modifier = Modifier.weight(1f),
-                label = { Text(text = "Max Rows") },
-                supportingText = if (secondError) {
-                    {
-                        Text(text = "Max rows is not valid")
-                    }
-                } else {
-                    null
-                },
-                isError = secondError,
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Number,
-                ),
-            )
-        },
-        bottomActions = {
-            TextButton(
-                onClick = onDismissRequest,
-            ) {
-                Text(text = "Cancel")
-            }
-
-            TextButton(
-                onClick = {
-                    val newColumns = try {
-                        maxFolderColumns.toInt()
-                    } catch (_: NumberFormatException) {
-                        firstError = true
-                        0
-                    }
-
-                    val newRows = try {
-                        maxFolderRows.toInt()
-                    } catch (_: NumberFormatException) {
-                        secondError = true
-                        0
-                    }
-
-                    if (newColumns > 0 && newRows > 0) {
-                        onUpdateHomeSettings(
-                            homeSettings.copy(
-                                maxFolderColumns = newColumns,
-                                maxFolderRows = newRows,
-                            ),
-                        )
-
-                        onDismissRequest()
-                    }
-                },
-            ) {
-                Text(text = "Update")
-            }
-        },
     )
 }

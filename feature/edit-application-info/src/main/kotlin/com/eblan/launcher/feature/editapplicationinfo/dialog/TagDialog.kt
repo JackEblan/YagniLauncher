@@ -18,12 +18,8 @@
 package com.eblan.launcher.feature.editapplicationinfo.dialog
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -39,12 +35,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.unit.dp
-import com.eblan.launcher.designsystem.component.EblanDialogContainer
+import com.eblan.launcher.designsystem.component.EblanDialog
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.EblanApplicationInfoTag
 import com.eblan.launcher.domain.model.EblanApplicationInfoTagUi
-import com.eblan.launcher.ui.dialog.TextFieldDialog
 
 @Composable
 internal fun AddTagDialog(
@@ -56,11 +50,15 @@ internal fun AddTagDialog(
 
     var isError by remember { mutableStateOf(false) }
 
-    TextFieldDialog(
+    EblanDialog(
         modifier = modifier,
-        title = "Add Tag",
-        onDismissRequest = onDismissRequest,
-        textField = {
+        top = {
+            Text(
+                text = "Add Tag",
+                style = MaterialTheme.typography.titleLarge,
+            )
+        },
+        middle = {
             TextField(
                 value = value,
                 onValueChange = {
@@ -81,31 +79,37 @@ internal fun AddTagDialog(
                 },
             )
         },
-        bottomActions = {
-            TextButton(
-                onClick = onDismissRequest,
+        bottom = {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End,
             ) {
-                Text(text = "Cancel")
-            }
+                TextButton(
+                    onClick = onDismissRequest,
+                ) {
+                    Text(text = "Cancel")
+                }
 
-            TextButton(
-                onClick = {
-                    if (value.isNotBlank()) {
-                        onAddEblanApplicationInfoTag(
-                            EblanApplicationInfoTag(
-                                name = value,
-                            ),
-                        )
+                TextButton(
+                    onClick = {
+                        if (value.isNotBlank()) {
+                            onAddEblanApplicationInfoTag(
+                                EblanApplicationInfoTag(
+                                    name = value,
+                                ),
+                            )
 
-                        onDismissRequest()
-                    } else {
-                        isError = true
-                    }
-                },
-            ) {
-                Text(text = "Add")
+                            onDismissRequest()
+                        } else {
+                            isError = true
+                        }
+                    },
+                ) {
+                    Text(text = "Add")
+                }
             }
         },
+        onDismissRequest = onDismissRequest,
     )
 }
 
@@ -123,89 +127,82 @@ internal fun UpdateTagDialog(
 
     var isError by remember { mutableStateOf(false) }
 
-    EblanDialogContainer(
-        content = {
-            Column(
-                modifier = modifier
-                    .fillMaxWidth()
-                    .padding(10.dp),
+    EblanDialog(
+        modifier = modifier,
+        top = {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text(text = "Update Tag", style = MaterialTheme.typography.titleLarge)
+                Text(text = "Update Tag", style = MaterialTheme.typography.titleLarge)
 
-                    IconButton(
-                        onClick = {
-                            onDeleteEblanApplicationInfoTag(
+                IconButton(
+                    onClick = {
+                        onDeleteEblanApplicationInfoTag(
+                            EblanApplicationInfoTag(
+                                id = eblanApplicationInfoTagUi.id,
+                                name = eblanApplicationInfoTagUi.name,
+                            ),
+                        )
+
+                        onDismissRequest()
+                    },
+                ) {
+                    Icon(
+                        imageVector = EblanLauncherIcons.Delete,
+                        contentDescription = null,
+                    )
+                }
+            }
+        },
+        middle = {
+            TextField(
+                value = value,
+                onValueChange = {
+                    value = it
+                },
+                modifier = Modifier.fillMaxWidth(),
+                label = {
+                    Text(text = "Update Tag")
+                },
+                supportingText = {
+                    if (isError) {
+                        Text(text = "Tag is not valid")
+                    }
+                },
+                isError = isError,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                singleLine = true,
+            )
+        },
+        bottom = {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End,
+            ) {
+                TextButton(
+                    onClick = onDismissRequest,
+                ) {
+                    Text(text = "Cancel")
+                }
+                TextButton(
+                    onClick = {
+                        if (value.isNotBlank()) {
+                            onUpdateEblanApplicationInfoTag(
                                 EblanApplicationInfoTag(
                                     id = eblanApplicationInfoTagUi.id,
-                                    name = eblanApplicationInfoTagUi.name,
+                                    name = value,
                                 ),
                             )
 
                             onDismissRequest()
-                        },
-                    ) {
-                        Icon(
-                            imageVector = EblanLauncherIcons.Delete,
-                            contentDescription = null,
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(10.dp))
-
-                TextField(
-                    value = value,
-                    onValueChange = {
-                        value = it
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    label = {
-                        Text(text = "Update Tag")
-                    },
-                    supportingText = {
-                        if (isError) {
-                            Text(text = "Tag is not valid")
+                        } else {
+                            isError = true
                         }
                     },
-                    isError = isError,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-                    singleLine = true,
-                )
-
-                Spacer(modifier = Modifier.height(10.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End,
                 ) {
-                    TextButton(
-                        onClick = onDismissRequest,
-                    ) {
-                        Text(text = "Cancel")
-                    }
-                    TextButton(
-                        onClick = {
-                            if (value.isNotBlank()) {
-                                onUpdateEblanApplicationInfoTag(
-                                    EblanApplicationInfoTag(
-                                        id = eblanApplicationInfoTagUi.id,
-                                        name = value,
-                                    ),
-                                )
-
-                                onDismissRequest()
-                            } else {
-                                isError = true
-                            }
-                        },
-                    ) {
-                        Text(text = "Update")
-                    }
+                    Text(text = "Update")
                 }
             }
         },

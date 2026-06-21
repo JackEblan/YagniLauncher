@@ -28,7 +28,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -52,7 +51,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.eblan.launcher.designsystem.component.EblanDialogContainer
+import com.eblan.launcher.designsystem.component.EblanDialog
 
 @Composable
 fun ColorPickerDialog(
@@ -79,67 +78,60 @@ fun ColorPickerDialog(
 
     var alpha by remember { mutableFloatStateOf(Color(customColor).alpha) }
 
-    EblanDialogContainer(
-        content = {
-            Column(
-                modifier = modifier
+    EblanDialog(
+        modifier = modifier,
+        top = {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleLarge,
+            )
+        },
+        middle = {
+            ColorPicker(
+                modifier = Modifier
                     .verticalScroll(rememberScrollState())
                     .fillMaxWidth(),
+                hue = hue,
+                saturation = saturation,
+                value = value,
+                alpha = alpha,
+                onSaturationSelected = { newSaturation ->
+                    saturation = newSaturation
+                },
+                onValueSelected = { newValue ->
+                    value = newValue
+                },
+                onHueSelected = { newHue ->
+                    hue = newHue
+                },
+                onAlphaSelected = { newAlpha ->
+                    alpha = newAlpha
+                },
+            )
+        },
+        bottom = {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End,
             ) {
-                Text(
-                    modifier = Modifier.padding(10.dp),
-                    text = title,
-                    style = MaterialTheme.typography.titleLarge,
-                )
-
-                Spacer(modifier = Modifier.height(10.dp))
-
-                ColorPicker(
-                    modifier = Modifier.padding(10.dp),
-                    hue = hue,
-                    saturation = saturation,
-                    value = value,
-                    alpha = alpha,
-                    onSaturationSelected = { newSaturation ->
-                        saturation = newSaturation
-                    },
-                    onValueSelected = { newValue ->
-                        value = newValue
-                    },
-                    onHueSelected = { newHue ->
-                        hue = newHue
-                    },
-                    onAlphaSelected = { newAlpha ->
-                        alpha = newAlpha
-                    },
-                )
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(
-                            end = 10.dp,
-                            bottom = 10.dp,
-                        ),
-                    horizontalArrangement = Arrangement.End,
+                TextButton(
+                    onClick = onDismissRequest,
                 ) {
-                    TextButton(
-                        onClick = onDismissRequest,
-                    ) {
-                        Text("Cancel")
-                    }
+                    Text("Cancel")
+                }
 
-                    Spacer(modifier = Modifier.width(5.dp))
+                Spacer(modifier = Modifier.width(5.dp))
 
-                    TextButton(
-                        onClick = {
-                            onSelectColor(
-                                Color.hsv(hue, saturation, value).copy(alpha = alpha).toArgb(),
-                            )
-                        },
-                    ) {
-                        Text("Save")
-                    }
+                TextButton(
+                    onClick = {
+                        onSelectColor(
+                            Color.hsv(hue, saturation, value)
+                                .copy(alpha = alpha)
+                                .toArgb(),
+                        )
+                    },
+                ) {
+                    Text("Save")
                 }
             }
         },

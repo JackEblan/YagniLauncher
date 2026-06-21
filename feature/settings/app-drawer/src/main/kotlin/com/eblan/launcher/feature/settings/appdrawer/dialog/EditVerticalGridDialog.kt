@@ -17,7 +17,11 @@
  */
 package com.eblan.launcher.feature.settings.appdrawer.dialog
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -28,8 +32,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
+import com.eblan.launcher.designsystem.component.EblanDialog
 import com.eblan.launcher.domain.model.AppDrawerSettings
-import com.eblan.launcher.ui.dialog.RowTextFieldsDialog
 
 @Composable
 internal fun EditVerticalGridDialog(
@@ -49,90 +54,105 @@ internal fun EditVerticalGridDialog(
     var firstError by remember { mutableStateOf(false) }
     var secondError by remember { mutableStateOf(false) }
 
-    RowTextFieldsDialog(
+    EblanDialog(
         modifier = modifier,
-        title = "Vertical Grid",
+        top = {
+            Text(
+                text = "Vertical Grid",
+                style = MaterialTheme.typography.titleLarge,
+            )
+        },
+        middle = {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                TextField(
+                    value = columns,
+                    onValueChange = {
+                        columns = it
+                        firstError = false
+                    },
+                    modifier = Modifier.weight(1f),
+                    label = { Text(text = "Columns") },
+                    supportingText = if (firstError) {
+                        {
+                            Text(text = "Columns is not valid")
+                        }
+                    } else {
+                        null
+                    },
+                    isError = firstError,
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Number,
+                    ),
+                )
+
+                TextField(
+                    value = rowsHeight,
+                    onValueChange = {
+                        rowsHeight = it
+                        secondError = false
+                    },
+                    modifier = Modifier.weight(1f),
+                    label = { Text(text = "Rows Height") },
+                    supportingText = if (secondError) {
+                        {
+                            Text(text = "Rows height is not valid")
+                        }
+                    } else {
+                        null
+                    },
+                    isError = secondError,
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Number,
+                    ),
+                )
+            }
+        },
+        bottom = {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End,
+            ) {
+                TextButton(
+                    onClick = onDismissRequest,
+                ) {
+                    Text(text = "Cancel")
+                }
+
+                TextButton(
+                    onClick = {
+                        val newColumns = try {
+                            columns.toInt()
+                        } catch (_: NumberFormatException) {
+                            firstError = true
+                            0
+                        }
+
+                        val newRowsHeight = try {
+                            rowsHeight.toInt()
+                        } catch (_: NumberFormatException) {
+                            secondError = true
+                            0
+                        }
+
+                        if (newColumns > 0 && newRowsHeight > 0) {
+                            onUpdateAppDrawerSettings(
+                                appDrawerSettings.copy(
+                                    appDrawerColumns = newColumns,
+                                    appDrawerRowsHeight = newRowsHeight,
+                                ),
+                            )
+
+                            onDismissRequest()
+                        }
+                    },
+                ) {
+                    Text(text = "Update")
+                }
+            }
+        },
         onDismissRequest = onDismissRequest,
-        textFields = {
-            TextField(
-                value = columns,
-                onValueChange = {
-                    columns = it
-                    firstError = false
-                },
-                modifier = Modifier.weight(1f),
-                label = { Text(text = "Columns") },
-                supportingText = if (firstError) {
-                    {
-                        Text(text = "Columns is not valid")
-                    }
-                } else {
-                    null
-                },
-                isError = firstError,
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Number,
-                ),
-            )
-
-            TextField(
-                value = rowsHeight,
-                onValueChange = {
-                    rowsHeight = it
-                    secondError = false
-                },
-                modifier = Modifier.weight(1f),
-                label = { Text(text = "Rows Height") },
-                supportingText = if (secondError) {
-                    {
-                        Text(text = "Rows height is not valid")
-                    }
-                } else {
-                    null
-                },
-                isError = secondError,
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Number,
-                ),
-            )
-        },
-        bottomActions = {
-            TextButton(
-                onClick = onDismissRequest,
-            ) {
-                Text(text = "Cancel")
-            }
-
-            TextButton(
-                onClick = {
-                    val newColumns = try {
-                        columns.toInt()
-                    } catch (_: NumberFormatException) {
-                        firstError = true
-                        0
-                    }
-
-                    val newRowsHeight = try {
-                        rowsHeight.toInt()
-                    } catch (_: NumberFormatException) {
-                        secondError = true
-                        0
-                    }
-
-                    if (newColumns > 0 && newRowsHeight > 0) {
-                        onUpdateAppDrawerSettings(
-                            appDrawerSettings.copy(
-                                appDrawerColumns = newColumns,
-                                appDrawerRowsHeight = newRowsHeight,
-                            ),
-                        )
-
-                        onDismissRequest()
-                    }
-                },
-            ) {
-                Text(text = "Update")
-            }
-        },
     )
 }

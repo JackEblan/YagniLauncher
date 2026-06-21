@@ -17,8 +17,11 @@
  */
 package com.eblan.launcher.ui.dialog
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -29,6 +32,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
+import com.eblan.launcher.designsystem.component.EblanDialog
 
 @Composable
 internal fun EditTextSizeDialog(
@@ -37,17 +41,19 @@ internal fun EditTextSizeDialog(
     onDismissRequest: () -> Unit,
     onUpdateTextSize: (Int) -> Unit,
 ) {
-    var value by remember {
-        mutableStateOf("$textSize")
-    }
+    var value by remember { mutableStateOf("$textSize") }
 
     var isError by remember { mutableStateOf(false) }
 
-    TextFieldDialog(
+    EblanDialog(
         modifier = modifier,
-        title = "Text Size",
-        onDismissRequest = onDismissRequest,
-        textField = {
+        top = {
+            Text(
+                text = "Text Size",
+                style = MaterialTheme.typography.titleLarge,
+            )
+        },
+        middle = {
             TextField(
                 value = value,
                 onValueChange = {
@@ -71,26 +77,32 @@ internal fun EditTextSizeDialog(
                 ),
             )
         },
-        bottomActions = {
-            TextButton(
-                onClick = onDismissRequest,
+        bottom = {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End,
             ) {
-                Text(text = "Cancel")
-            }
+                TextButton(
+                    onClick = onDismissRequest,
+                ) {
+                    Text(text = "Cancel")
+                }
 
-            TextButton(
-                onClick = {
-                    try {
-                        onUpdateTextSize(
-                            value.toInt().coerceAtLeast(1),
-                        )
-                    } catch (_: NumberFormatException) {
-                        isError = true
-                    }
-                },
-            ) {
-                Text(text = "Update")
+                TextButton(
+                    onClick = {
+                        try {
+                            onUpdateTextSize(
+                                value.toInt().coerceAtLeast(1),
+                            )
+                        } catch (_: NumberFormatException) {
+                            isError = true
+                        }
+                    },
+                ) {
+                    Text(text = "Update")
+                }
             }
         },
+        onDismissRequest = onDismissRequest,
     )
 }

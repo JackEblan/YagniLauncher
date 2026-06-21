@@ -22,7 +22,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -33,7 +32,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.eblan.launcher.designsystem.component.EblanDialogContainer
+import com.eblan.launcher.designsystem.component.EblanDialog
 
 @Composable
 fun TextDialog(
@@ -43,47 +42,40 @@ fun TextDialog(
     onDismissRequest: () -> Unit,
     onClick: () -> Unit,
 ) {
-    EblanDialogContainer(
-        content = {
+    EblanDialog(
+        modifier = modifier,
+        top = {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleLarge,
+            )
+        },
+        middle = {
             Column(
-                modifier = modifier
-                    .verticalScroll(rememberScrollState())
-                    .fillMaxWidth(),
+                modifier = Modifier.verticalScroll(rememberScrollState()),
             ) {
                 Text(
-                    modifier = Modifier.padding(
-                        start = 15.dp,
-                        top = 10.dp,
-                    ),
-                    text = title,
-                    style = MaterialTheme.typography.titleLarge,
-                )
-
-                Text(
-                    modifier = Modifier.padding(15.dp),
                     text = text,
                 )
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(
-                            end = 10.dp,
-                            bottom = 10.dp,
-                        ),
-                    horizontalArrangement = Arrangement.End,
+            }
+        },
+        bottom = {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End,
+            ) {
+                TextButton(
+                    onClick = onDismissRequest,
                 ) {
-                    TextButton(onClick = onDismissRequest) {
-                        Text(text = "Later")
-                    }
+                    Text(text = "Later")
+                }
 
-                    Spacer(modifier = Modifier.width(8.dp))
+                Spacer(modifier = Modifier.width(8.dp))
 
-                    Button(
-                        onClick = onClick,
-                    ) {
-                        Text(text = "Okay")
-                    }
+                Button(
+                    onClick = onClick,
+                ) {
+                    Text(text = "Okay")
                 }
             }
         },

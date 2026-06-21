@@ -18,11 +18,10 @@
 package com.eblan.launcher.feature.settings.general.dialog
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -31,11 +30,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import com.eblan.launcher.designsystem.component.EblanDialogContainer
+import com.eblan.launcher.designsystem.component.EblanDialog
 import com.eblan.launcher.domain.model.PackageManagerIconPackInfo
 
 @Composable
@@ -48,28 +46,24 @@ internal fun ImportIconPackInfoDialog(
         label: String,
     ) -> Unit,
 ) {
-    EblanDialogContainer(
-        content = {
-            Column(
-                modifier = modifier.fillMaxWidth(),
-            ) {
-                Text(
-                    modifier = Modifier.padding(10.dp),
-                    text = "Import Icon Pack",
-                    style = MaterialTheme.typography.titleLarge,
-                )
+    EblanDialog(
+        modifier = modifier,
+        top = {
+            Text(
+                text = "Import Icon Pack",
+                style = MaterialTheme.typography.titleLarge,
+            )
+        },
+        middle = {
+            when {
+                packageManagerIconPackInfos.isEmpty() -> {
+                    Text(
+                        text = "No icon packs",
+                    )
+                }
 
-                when {
-                    packageManagerIconPackInfos.isEmpty() -> {
-                        Text(
-                            modifier = Modifier.padding(horizontal = 10.dp),
-                            text = "No icon packs",
-                        )
-                    }
-
-                    else -> {
-                        Spacer(modifier = Modifier.height(10.dp))
-
+                else -> {
+                    Column {
                         LazyColumn(
                             modifier = Modifier.weight(
                                 weight = 1f,
@@ -78,7 +72,9 @@ internal fun ImportIconPackInfoDialog(
                         ) {
                             items(packageManagerIconPackInfos) { packageManagerIconPackInfo ->
                                 ListItem(
-                                    headlineContent = { Text(text = packageManagerIconPackInfo.label) },
+                                    headlineContent = {
+                                        Text(text = packageManagerIconPackInfo.label)
+                                    },
                                     leadingContent = {
                                         AsyncImage(
                                             model = packageManagerIconPackInfo.icon,
@@ -93,18 +89,20 @@ internal fun ImportIconPackInfoDialog(
                                                 packageManagerIconPackInfo.label,
                                             )
                                         }
-                                        .fillMaxWidth()
-                                        .padding(10.dp),
+                                        .fillMaxWidth(),
                                 )
                             }
                         }
                     }
                 }
-
+            }
+        },
+        bottom = {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End,
+            ) {
                 TextButton(
-                    modifier = Modifier
-                        .align(Alignment.End)
-                        .padding(10.dp),
                     onClick = onDismissRequest,
                 ) {
                     Text(text = "Cancel")
