@@ -92,14 +92,11 @@ internal fun EditDockHeightDialog(
 
                 TextButton(
                     onClick = {
-                        val newDockHeight = try {
-                            value.toInt()
-                        } catch (_: NumberFormatException) {
-                            isError = true
-                            0
-                        }
+                        val newDockHeight = value.toIntOrNull()
 
-                        if (newDockHeight > 0) {
+                        isError = newDockHeight == null || newDockHeight <= 0
+
+                        if (newDockHeight != null && newDockHeight > 0) {
                             onUpdateDockHeight(newDockHeight)
                         }
                     },

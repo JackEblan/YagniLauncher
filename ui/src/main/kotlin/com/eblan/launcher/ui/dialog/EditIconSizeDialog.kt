@@ -92,11 +92,11 @@ internal fun EditIconSizeDialog(
 
                 TextButton(
                     onClick = {
-                        try {
-                            onUpdateIconSize(
-                                value.toInt().coerceAtLeast(1),
-                            )
-                        } catch (_: NumberFormatException) {
+                        val newIconSize = value.toIntOrNull()
+
+                        if (newIconSize != null && newIconSize >= 1) {
+                            onUpdateIconSize(newIconSize)
+                        } else {
                             isError = true
                         }
                     },

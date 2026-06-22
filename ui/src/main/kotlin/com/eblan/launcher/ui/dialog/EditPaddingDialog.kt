@@ -92,11 +92,11 @@ internal fun EditPaddingDialog(
 
                 TextButton(
                     onClick = {
-                        try {
-                            onUpdatePadding(
-                                value.toInt(),
-                            )
-                        } catch (_: NumberFormatException) {
+                        val newPadding = value.toIntOrNull()
+
+                        if (newPadding != null && newPadding >= 0) {
+                            onUpdatePadding(value.toInt())
+                        } else {
                             isError = true
                         }
                     },

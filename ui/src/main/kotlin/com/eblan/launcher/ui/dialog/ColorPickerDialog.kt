@@ -23,15 +23,14 @@ import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -88,24 +87,22 @@ fun ColorPickerDialog(
         },
         middle = {
             ColorPicker(
-                modifier = Modifier
-                    .verticalScroll(rememberScrollState())
-                    .fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 hue = hue,
                 saturation = saturation,
                 value = value,
                 alpha = alpha,
-                onSaturationSelected = { newSaturation ->
-                    saturation = newSaturation
+                onSaturationSelected = {
+                    saturation = it
                 },
-                onValueSelected = { newValue ->
-                    value = newValue
+                onValueSelected = {
+                    value = it
                 },
-                onHueSelected = { newHue ->
-                    hue = newHue
+                onHueSelected = {
+                    hue = it
                 },
-                onAlphaSelected = { newAlpha ->
-                    alpha = newAlpha
+                onAlphaSelected = {
+                    alpha = it
                 },
             )
         },
@@ -151,28 +148,42 @@ private fun ColorPicker(
     onHueSelected: (Float) -> Unit,
     onAlphaSelected: (Float) -> Unit,
 ) {
-    Column(modifier = modifier) {
-        SaturationValueCanvas(
-            hue = hue,
-            saturation = saturation,
-            value = value,
-            onSaturationSelected = onSaturationSelected,
-            onValueSelected = onValueSelected,
-        )
+    BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
+        val saturationValueHeight = (maxHeight * 0.55f).coerceAtMost(260.dp)
+        val barHeight = (maxHeight * 0.06f).coerceIn(12.dp, 24.dp)
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Column {
+            SaturationValueCanvas(
+                hue = hue,
+                saturation = saturation,
+                value = value,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(saturationValueHeight),
+                onSaturationSelected = onSaturationSelected,
+                onValueSelected = onValueSelected,
+            )
 
-        HueCanvas(
-            hue = hue,
-            onHueSelected = onHueSelected,
-        )
+            Spacer(Modifier.height(16.dp))
 
-        Spacer(modifier = Modifier.height(24.dp))
+            HueCanvas(
+                hue = hue,
+                onHueSelected = onHueSelected,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(barHeight),
+            )
 
-        AlphaCanvas(
-            alpha = alpha,
-            onAlphaSelected = onAlphaSelected,
-        )
+            Spacer(Modifier.height(16.dp))
+
+            AlphaCanvas(
+                alpha = alpha,
+                onAlphaSelected = onAlphaSelected,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(barHeight),
+            )
+        }
     }
 }
 

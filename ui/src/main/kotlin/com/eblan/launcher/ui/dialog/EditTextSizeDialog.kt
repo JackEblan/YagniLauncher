@@ -90,11 +90,11 @@ internal fun EditTextSizeDialog(
 
                 TextButton(
                     onClick = {
-                        try {
-                            onUpdateTextSize(
-                                value.toInt().coerceAtLeast(1),
-                            )
-                        } catch (_: NumberFormatException) {
+                        val newTextSize = value.toIntOrNull()
+
+                        if (newTextSize != null && newTextSize >= 1) {
+                            onUpdateTextSize(newTextSize)
+                        } else {
                             isError = true
                         }
                     },

@@ -92,11 +92,11 @@ internal fun EditCornerRadiusDialog(
 
                 TextButton(
                     onClick = {
-                        try {
-                            onUpdateCornerRadius(
-                                value.toInt(),
-                            )
-                        } catch (_: NumberFormatException) {
+                        val newCornerRadius = value.toIntOrNull()
+
+                        if (newCornerRadius != null && newCornerRadius >= 0) {
+                            onUpdateCornerRadius(newCornerRadius)
+                        } else {
                             isError = true
                         }
                     },
