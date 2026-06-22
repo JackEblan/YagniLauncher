@@ -41,70 +41,65 @@ internal fun EditCornerRadiusDialog(
     onDismissRequest: () -> Unit,
     onUpdateCornerRadius: (Int) -> Unit,
 ) {
-    var value by remember {
-        mutableStateOf("$cornerRadius")
-    }
+    var value by remember { mutableStateOf("$cornerRadius") }
 
     var isError by remember { mutableStateOf(false) }
 
     EblanDialog(
         modifier = modifier,
-        top = {
-            Text(
-                text = "Corner Radius",
-                style = MaterialTheme.typography.titleLarge,
-            )
-        },
-        middle = {
-            TextField(
-                value = value,
-                onValueChange = {
-                    value = it
-                    isError = false
-                },
-                modifier = Modifier.fillMaxWidth(),
-                label = {
-                    Text(text = "Corner Radius")
-                },
-                isError = isError,
-                supportingText = if (isError) {
-                    {
-                        Text(text = "Corner Radius is not valid")
-                    }
-                } else {
-                    null
-                },
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Number,
-                ),
-            )
-        },
-        bottom = {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End,
-            ) {
-                TextButton(
-                    onClick = onDismissRequest,
-                ) {
-                    Text(text = "Cancel")
-                }
-
-                TextButton(
-                    onClick = {
-                        val newCornerRadius = value.toIntOrNull()
-
-                        if (newCornerRadius != null && newCornerRadius >= 0) {
-                            onUpdateCornerRadius(newCornerRadius)
-                        } else {
-                            isError = true
-                        }
-                    },
-                ) {
-                    Text(text = "Update")
-                }
-            }
-        },
         onDismissRequest = onDismissRequest,
-    )
+    ) {
+        Text(
+            text = "Corner Radius",
+            style = MaterialTheme.typography.titleLarge,
+        )
+
+        TextField(
+            value = value,
+            onValueChange = {
+                value = it
+                isError = false
+            },
+            modifier = Modifier.fillMaxWidth(),
+            label = {
+                Text(text = "Corner Radius")
+            },
+            isError = isError,
+            supportingText = if (isError) {
+                {
+                    Text(text = "Corner Radius is not valid")
+                }
+            } else {
+                null
+            },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+            ),
+        )
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End,
+        ) {
+            TextButton(
+                onClick = onDismissRequest,
+            ) {
+                Text(text = "Cancel")
+            }
+
+            TextButton(
+                onClick = {
+                    val newCornerRadius = value.toIntOrNull()
+
+                    if (newCornerRadius != null && newCornerRadius >= 0) {
+                        onUpdateCornerRadius(newCornerRadius)
+                    } else {
+                        isError = true
+                    }
+                },
+            ) {
+                Text(text = "Update")
+            }
+        }
+    }
 }

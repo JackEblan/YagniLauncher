@@ -51,98 +51,95 @@ internal fun EditFolderMaxGridDialog(
 
     EblanDialog(
         modifier = modifier,
-        top = {
-            Text(
-                text = "Folder Max Grid",
-                style = MaterialTheme.typography.titleLarge,
-            )
-        },
-        middle = {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                TextField(
-                    value = maxFolderColumns,
-                    onValueChange = {
-                        maxFolderColumns = it
-                        firstError = false
-                    },
-                    modifier = Modifier.weight(1f),
-                    label = { Text(text = "Max Columns") },
-                    supportingText = if (firstError) {
-                        {
-                            Text(text = "Max columns is not valid")
-                        }
-                    } else {
-                        null
-                    },
-                    isError = firstError,
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number,
-                    ),
-                )
-
-                TextField(
-                    value = maxFolderRows,
-                    onValueChange = {
-                        maxFolderRows = it
-                        secondError = false
-                    },
-                    modifier = Modifier.weight(1f),
-                    label = { Text(text = "Max Rows") },
-                    supportingText = if (secondError) {
-                        {
-                            Text(text = "Max rows is not valid")
-                        }
-                    } else {
-                        null
-                    },
-                    isError = secondError,
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number,
-                    ),
-                )
-            }
-        },
-        bottom = {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End,
-            ) {
-                TextButton(
-                    onClick = onDismissRequest,
-                ) {
-                    Text(text = "Cancel")
-                }
-
-                TextButton(
-                    onClick = {
-                        val newColumns = maxFolderColumns.toIntOrNull()
-                        val newRows = maxFolderRows.toIntOrNull()
-
-                        firstError = newColumns == null || newColumns <= 0
-                        secondError = newRows == null || newRows <= 0
-
-                        if (newColumns != null &&
-                            newRows != null &&
-                            newColumns > 0 &&
-                            newRows > 0
-                        ) {
-                            onUpdateHomeSettings(
-                                homeSettings.copy(
-                                    maxFolderColumns = newColumns,
-                                    maxFolderRows = newRows,
-                                ),
-                            )
-
-                            onDismissRequest()
-                        }
-                    },
-                ) {
-                    Text(text = "Update")
-                }
-            }
-        },
         onDismissRequest = onDismissRequest,
-    )
+    ) {
+        Text(
+            text = "Folder Max Grid",
+            style = MaterialTheme.typography.titleLarge,
+        )
+
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            TextField(
+                value = maxFolderColumns,
+                onValueChange = {
+                    maxFolderColumns = it
+                    firstError = false
+                },
+                modifier = Modifier.weight(1f),
+                label = { Text(text = "Max Columns") },
+                supportingText = if (firstError) {
+                    {
+                        Text(text = "Max columns is not valid")
+                    }
+                } else {
+                    null
+                },
+                isError = firstError,
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Number,
+                ),
+            )
+
+            TextField(
+                value = maxFolderRows,
+                onValueChange = {
+                    maxFolderRows = it
+                    secondError = false
+                },
+                modifier = Modifier.weight(1f),
+                label = { Text(text = "Max Rows") },
+                supportingText = if (secondError) {
+                    {
+                        Text(text = "Max rows is not valid")
+                    }
+                } else {
+                    null
+                },
+                isError = secondError,
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Number,
+                ),
+            )
+        }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End,
+        ) {
+            TextButton(
+                onClick = onDismissRequest,
+            ) {
+                Text(text = "Cancel")
+            }
+
+            TextButton(
+                onClick = {
+                    val newColumns = maxFolderColumns.toIntOrNull()
+                    val newRows = maxFolderRows.toIntOrNull()
+
+                    firstError = newColumns == null || newColumns <= 0
+                    secondError = newRows == null || newRows <= 0
+
+                    if (newColumns != null &&
+                        newRows != null &&
+                        newColumns > 0 &&
+                        newRows > 0
+                    ) {
+                        onUpdateHomeSettings(
+                            homeSettings.copy(
+                                maxFolderColumns = newColumns,
+                                maxFolderRows = newRows,
+                            ),
+                        )
+
+                        onDismissRequest()
+                    }
+                },
+            ) {
+                Text(text = "Update")
+            }
+        }
+    }
 }

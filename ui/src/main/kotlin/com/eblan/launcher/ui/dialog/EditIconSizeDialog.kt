@@ -49,62 +49,59 @@ internal fun EditIconSizeDialog(
 
     EblanDialog(
         modifier = modifier,
-        top = {
-            Text(
-                text = "Icon Size",
-                style = MaterialTheme.typography.titleLarge,
-            )
-        },
-        middle = {
-            TextField(
-                value = value,
-                onValueChange = {
-                    value = it
-                    isError = false
-                },
-                modifier = Modifier.fillMaxWidth(),
-                label = {
-                    Text(text = "Icon Size")
-                },
-                isError = isError,
-                supportingText = if (isError) {
-                    {
-                        Text(text = "Icon Size is not valid")
-                    }
-                } else {
-                    null
-                },
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Number,
-                ),
-            )
-        },
-        bottom = {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End,
-            ) {
-                TextButton(
-                    onClick = onDismissRequest,
-                ) {
-                    Text(text = "Cancel")
-                }
-
-                TextButton(
-                    onClick = {
-                        val newIconSize = value.toIntOrNull()
-
-                        if (newIconSize != null && newIconSize >= 1) {
-                            onUpdateIconSize(newIconSize)
-                        } else {
-                            isError = true
-                        }
-                    },
-                ) {
-                    Text(text = "Update")
-                }
-            }
-        },
         onDismissRequest = onDismissRequest,
-    )
+    ) {
+        Text(
+            text = "Icon Size",
+            style = MaterialTheme.typography.titleLarge,
+        )
+
+        TextField(
+            value = value,
+            onValueChange = {
+                value = it
+                isError = false
+            },
+            modifier = Modifier.fillMaxWidth(),
+            label = {
+                Text(text = "Icon Size")
+            },
+            isError = isError,
+            supportingText = if (isError) {
+                {
+                    Text(text = "Icon Size is not valid")
+                }
+            } else {
+                null
+            },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+            ),
+        )
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End,
+        ) {
+            TextButton(
+                onClick = onDismissRequest,
+            ) {
+                Text(text = "Cancel")
+            }
+
+            TextButton(
+                onClick = {
+                    val newIconSize = value.toIntOrNull()
+
+                    if (newIconSize != null && newIconSize >= 1) {
+                        onUpdateIconSize(newIconSize)
+                    } else {
+                        isError = true
+                    }
+                },
+            ) {
+                Text(text = "Update")
+            }
+        }
+    }
 }

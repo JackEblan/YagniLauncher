@@ -54,85 +54,82 @@ internal fun EditShortcutConfigCustomLabelDialog(
 
     EblanDialog(
         modifier = modifier,
-        top = {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    text = "Custom Label",
-                    style = MaterialTheme.typography.titleLarge,
-                )
+        onDismissRequest = onDismissRequest,
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = "Custom Label",
+                style = MaterialTheme.typography.titleLarge,
+            )
 
-                IconButton(
-                    enabled = value.isNotBlank(),
-                    onClick = {
+            IconButton(
+                enabled = value.isNotBlank(),
+                onClick = {
+                    onUpdateGridItem(
+                        gridItem.copy(
+                            data = data.copy(customLabel = null),
+                        ),
+                    )
+
+                    onDismissRequest()
+                },
+            ) {
+                Icon(
+                    imageVector = EblanLauncherIcons.Delete,
+                    contentDescription = null,
+                )
+            }
+        }
+
+        TextField(
+            value = value,
+            onValueChange = {
+                value = it
+                isError = false
+            },
+            modifier = Modifier.fillMaxWidth(),
+            label = {
+                Text(text = "Custom Label")
+            },
+            isError = isError,
+            supportingText = if (isError) {
+                {
+                    Text("Custom label is not valid")
+                }
+            } else {
+                null
+            },
+        )
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End,
+        ) {
+            TextButton(onClick = onDismissRequest) {
+                Text(text = "Cancel")
+            }
+
+            TextButton(
+                onClick = {
+                    if (value.isNotBlank()) {
                         onUpdateGridItem(
                             gridItem.copy(
-                                data = data.copy(customLabel = null),
+                                data = data.copy(customLabel = value),
                             ),
                         )
 
                         onDismissRequest()
-                    },
-                ) {
-                    Icon(
-                        imageVector = EblanLauncherIcons.Delete,
-                        contentDescription = null,
-                    )
-                }
-            }
-        },
-        middle = {
-            TextField(
-                value = value,
-                onValueChange = {
-                    value = it
-                    isError = false
-                },
-                modifier = Modifier.fillMaxWidth(),
-                label = {
-                    Text(text = "Custom Label")
-                },
-                isError = isError,
-                supportingText = if (isError) {
-                    {
-                        Text("Custom label is not valid")
+                    } else {
+                        isError = true
                     }
-                } else {
-                    null
                 },
-            )
-        },
-        bottom = {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End,
             ) {
-                TextButton(onClick = onDismissRequest) {
-                    Text(text = "Cancel")
-                }
-
-                TextButton(
-                    onClick = {
-                        if (value.isNotBlank()) {
-                            onUpdateGridItem(
-                                gridItem.copy(
-                                    data = data.copy(customLabel = value),
-                                ),
-                            )
-
-                            onDismissRequest()
-                        } else {
-                            isError = true
-                        }
-                    },
-                ) {
-                    Text(text = "Update")
-                }
+                Text(text = "Update")
             }
-        },
-        onDismissRequest = onDismissRequest,
-    )
+        }
+    }
 }

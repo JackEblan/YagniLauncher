@@ -41,70 +41,65 @@ internal fun EditPaddingDialog(
     onDismissRequest: () -> Unit,
     onUpdatePadding: (Int) -> Unit,
 ) {
-    var value by remember {
-        mutableStateOf("$padding")
-    }
+    var value by remember { mutableStateOf("$padding") }
 
     var isError by remember { mutableStateOf(false) }
 
     EblanDialog(
         modifier = modifier,
-        top = {
-            Text(
-                text = "Padding",
-                style = MaterialTheme.typography.titleLarge,
-            )
-        },
-        middle = {
-            TextField(
-                value = value,
-                onValueChange = {
-                    value = it
-                    isError = false
-                },
-                modifier = Modifier.fillMaxWidth(),
-                label = {
-                    Text(text = "Padding")
-                },
-                isError = isError,
-                supportingText = if (isError) {
-                    {
-                        Text(text = "Padding is not valid")
-                    }
-                } else {
-                    null
-                },
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Number,
-                ),
-            )
-        },
-        bottom = {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End,
-            ) {
-                TextButton(
-                    onClick = onDismissRequest,
-                ) {
-                    Text(text = "Cancel")
-                }
-
-                TextButton(
-                    onClick = {
-                        val newPadding = value.toIntOrNull()
-
-                        if (newPadding != null && newPadding >= 0) {
-                            onUpdatePadding(value.toInt())
-                        } else {
-                            isError = true
-                        }
-                    },
-                ) {
-                    Text(text = "Update")
-                }
-            }
-        },
         onDismissRequest = onDismissRequest,
-    )
+    ) {
+        Text(
+            text = "Padding",
+            style = MaterialTheme.typography.titleLarge,
+        )
+
+        TextField(
+            value = value,
+            onValueChange = {
+                value = it
+                isError = false
+            },
+            modifier = Modifier.fillMaxWidth(),
+            label = {
+                Text(text = "Padding")
+            },
+            isError = isError,
+            supportingText = if (isError) {
+                {
+                    Text(text = "Padding is not valid")
+                }
+            } else {
+                null
+            },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+            ),
+        )
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End,
+        ) {
+            TextButton(
+                onClick = onDismissRequest,
+            ) {
+                Text(text = "Cancel")
+            }
+
+            TextButton(
+                onClick = {
+                    val newPadding = value.toIntOrNull()
+
+                    if (newPadding != null && newPadding >= 0) {
+                        onUpdatePadding(value.toInt())
+                    } else {
+                        isError = true
+                    }
+                },
+            ) {
+                Text(text = "Update")
+            }
+        }
+    }
 }

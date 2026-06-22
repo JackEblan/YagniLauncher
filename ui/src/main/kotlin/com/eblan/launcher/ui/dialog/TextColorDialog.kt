@@ -56,56 +56,55 @@ fun TextColorDialog(
 
     EblanDialog(
         modifier = modifier,
-        top = {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleLarge,
-            )
-        },
-        middle = {
-            Column(
-                modifier = Modifier
-                    .selectableGroup()
-                    .fillMaxWidth(),
-            ) {
-                TextColor.entries.forEach { textColor ->
-                    EblanRadioButton(
-                        selected = selectedTextColor == textColor,
-                        text = textColor.name,
-                        onClick = {
-                            if (textColor == TextColor.Custom) {
-                                showColorPickerDialog = true
-                            } else {
-                                selectedTextColor = textColor
-                            }
-                        },
-                    )
-                }
-            }
-        },
-        bottom = {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End,
-            ) {
-                TextButton(onClick = onDismissRequest) {
-                    Text(text = "Cancel")
-                }
-
-                TextButton(
-                    onClick = {
-                        onUpdateClick(
-                            selectedTextColor,
-                            selectedCustomTextColor,
-                        )
-                    },
-                ) {
-                    Text(text = "Update")
-                }
-            }
-        },
         onDismissRequest = onDismissRequest,
-    )
+    ) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleLarge,
+        )
+
+        Column(
+            modifier = Modifier
+                .selectableGroup()
+                .fillMaxWidth(),
+        ) {
+            TextColor.entries.forEach { textColor ->
+                EblanRadioButton(
+                    selected = selectedTextColor == textColor,
+                    text = textColor.name,
+                    onClick = {
+                        if (textColor == TextColor.Custom) {
+                            showColorPickerDialog = true
+                        } else {
+                            selectedTextColor = textColor
+                        }
+                    },
+                )
+            }
+        }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End,
+        ) {
+            TextButton(
+                onClick = onDismissRequest,
+            ) {
+                Text(text = "Cancel")
+            }
+
+            TextButton(
+                onClick = {
+                    onUpdateClick(
+                        selectedTextColor,
+                        selectedCustomTextColor,
+                    )
+                },
+            ) {
+                Text(text = "Update")
+            }
+        }
+    }
 
     if (showColorPickerDialog) {
         ColorPickerDialog(

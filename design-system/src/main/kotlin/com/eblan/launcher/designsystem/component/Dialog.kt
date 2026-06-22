@@ -32,29 +32,21 @@ import androidx.compose.ui.window.Dialog
 @Composable
 fun EblanDialog(
     modifier: Modifier = Modifier,
-    top: @Composable ColumnScope.() -> Unit,
-    middle: @Composable ColumnScope.() -> Unit,
-    bottom: @Composable ColumnScope.() -> Unit,
     onDismissRequest: () -> Unit,
+    content: @Composable ColumnScope.() -> Unit,
 ) {
     Dialog(onDismissRequest = onDismissRequest) {
         Surface(
             modifier = modifier,
             shape = RoundedCornerShape(size = 10.dp),
-            content = {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(10.dp),
-                    verticalArrangement = Arrangement.spacedBy(10.dp),
-                ) {
-                    top()
-
-                    middle()
-
-                    bottom()
-                }
-            },
-        )
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+                content = content,
+            )
+        }
     }
 }

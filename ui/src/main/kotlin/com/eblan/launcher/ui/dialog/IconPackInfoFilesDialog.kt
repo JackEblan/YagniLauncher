@@ -99,111 +99,108 @@ fun IconPackInfoFilesDialog(
 
     EblanDialog(
         modifier = modifier,
-        top = {
-            Text(
-                text = iconPackInfoLabel,
-                style = MaterialTheme.typography.titleLarge,
-            )
-        },
-        middle = {
-            SearchBar(
-                state = searchBarState,
-                modifier = Modifier.fillMaxWidth(),
-                inputField = {
-                    SearchBarDefaults.InputField(
-                        textFieldState = textFieldState,
-                        searchBarState = searchBarState,
-                        leadingIcon = {
-                            Icon(
-                                imageVector = EblanLauncherIcons.Search,
-                                contentDescription = null,
-                            )
-                        },
-                        onSearch = {
-                            scope.launch { searchBarState.animateToCollapsed() }
-                        },
-                        placeholder = {
-                            Text(text = "Search Applications")
-                        },
-                    )
-                },
-            )
+        onDismissRequest = onDismissRequest,
+    ) {
+        Text(
+            text = iconPackInfoLabel,
+            style = MaterialTheme.typography.titleLarge,
+        )
 
-            when {
-                iconPackInfoComponents.isEmpty() -> {
-                    CircularProgressIndicator(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(10.dp),
-                    )
-                }
+        SearchBar(
+            state = searchBarState,
+            modifier = Modifier.fillMaxWidth(),
+            inputField = {
+                SearchBarDefaults.InputField(
+                    textFieldState = textFieldState,
+                    searchBarState = searchBarState,
+                    leadingIcon = {
+                        Icon(
+                            imageVector = EblanLauncherIcons.Search,
+                            contentDescription = null,
+                        )
+                    },
+                    onSearch = {
+                        scope.launch { searchBarState.animateToCollapsed() }
+                    },
+                    placeholder = {
+                        Text(text = "Search Applications")
+                    },
+                )
+            },
+        )
 
-                else -> {
-                    LazyVerticalGrid(
-                        modifier = Modifier.weight(
-                            weight = 1f,
-                            fill = false,
-                        ),
-                        columns = GridCells.Fixed(5),
-                    ) {
-                        items(iconPackInfoComponents) { iconPackInfoComponent ->
+        when {
+            iconPackInfoComponents.isEmpty() -> {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(10.dp),
+                )
+            }
 
-                            var drawable by remember { mutableStateOf<Drawable?>(null) }
+            else -> {
+                LazyVerticalGrid(
+                    modifier = Modifier.weight(
+                        weight = 1f,
+                        fill = false,
+                    ),
+                    columns = GridCells.Fixed(5),
+                ) {
+                    items(iconPackInfoComponents) { iconPackInfoComponent ->
 
-                            LaunchedEffect(iconPackInfoComponent) {
-                                drawable = iconPackManager.loadDrawableFromIconPack(
-                                    packageName = iconPackInfoPackageName,
-                                    drawableName = iconPackInfoComponent.drawableName,
-                                )
-                            }
+                        var drawable by remember { mutableStateOf<Drawable?>(null) }
 
-                            AsyncImage(
-                                model = drawable,
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .clickable {
-                                        scope.launch {
-                                            val icon = drawable?.let { currentDrawable ->
-                                                val directory = fileManager.getFilesDirectory(
-                                                    FileManager.CUSTOM_ICONS_DIR,
-                                                )
-
-                                                val file = File(
-                                                    directory,
-                                                    iconKeyGenerator.getHashedName(name = iconName),
-                                                )
-
-                                                byteArray.createDrawablePath(
-                                                    drawable = currentDrawable,
-                                                    file = file,
-                                                )
-
-                                                file.absolutePath
-                                            }
-
-                                            if (icon != null) {
-                                                onUpdateIcon(icon)
-                                            }
-
-                                            onDismissRequest()
-                                        }
-                                    }
-                                    .size(40.dp)
-                                    .padding(2.dp),
+                        LaunchedEffect(iconPackInfoComponent) {
+                            drawable = iconPackManager.loadDrawableFromIconPack(
+                                packageName = iconPackInfoPackageName,
+                                drawableName = iconPackInfoComponent.drawableName,
                             )
                         }
+
+                        AsyncImage(
+                            model = drawable,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .clickable {
+                                    scope.launch {
+                                        val icon = drawable?.let { currentDrawable ->
+                                            val directory = fileManager.getFilesDirectory(
+                                                FileManager.CUSTOM_ICONS_DIR,
+                                            )
+
+                                            val file = File(
+                                                directory,
+                                                iconKeyGenerator.getHashedName(name = iconName),
+                                            )
+
+                                            byteArray.createDrawablePath(
+                                                drawable = currentDrawable,
+                                                file = file,
+                                            )
+
+                                            file.absolutePath
+                                        }
+
+                                        if (icon != null) {
+                                            onUpdateIcon(icon)
+                                        }
+
+                                        onDismissRequest()
+                                    }
+                                }
+                                .size(40.dp)
+                                .padding(2.dp),
+                        )
                     }
                 }
             }
-        },
-        bottom = {
-            TextButton(
-                modifier = Modifier.fillMaxWidth(),
-                onClick = onDismissRequest,
-            ) {
-                Text(text = "Cancel")
-            }
-        },
-        onDismissRequest = onDismissRequest,
-    )
+        }
+
+        TextButton(
+            modifier = Modifier.fillMaxWidth(),
+            onClick = onDismissRequest,
+        ) {
+            Text(text = "Cancel")
+        }
+    }
 }

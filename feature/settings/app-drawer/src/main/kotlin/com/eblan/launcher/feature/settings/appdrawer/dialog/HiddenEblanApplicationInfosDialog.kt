@@ -46,74 +46,71 @@ internal fun HiddenEblanApplicationInfosDialog(
 ) {
     EblanDialog(
         modifier = modifier,
-        top = {
-            Text(
-                text = "Hidden Applications",
-                style = MaterialTheme.typography.titleLarge,
-            )
-        },
-        middle = {
-            when {
-                eblanApplicationInfos.isEmpty() -> {
-                    Text(
-                        text = "No hidden Applications",
-                    )
-                }
+        onDismissRequest = onDismissRequest,
+    ) {
+        Text(
+            text = "Hidden Applications",
+            style = MaterialTheme.typography.titleLarge,
+        )
 
-                else -> {
-                    LazyColumn(
-                        modifier = Modifier.weight(
-                            weight = 1f,
-                            fill = false,
-                        ),
-                    ) {
-                        items(eblanApplicationInfos) { eblanApplicationInfo ->
-                            ListItem(
-                                headlineContent = {
-                                    Text(text = eblanApplicationInfo.label)
-                                },
-                                leadingContent = {
-                                    AsyncImage(
-                                        model = eblanApplicationInfo.icon,
-                                        contentDescription = null,
-                                        modifier = Modifier.size(40.dp),
-                                    )
-                                },
-                                trailingContent = {
-                                    IconButton(
-                                        onClick = {
-                                            onUpdateEblanApplicationInfo(
-                                                eblanApplicationInfo.copy(
-                                                    isHidden = false,
-                                                ),
-                                            )
-                                        },
-                                    ) {
-                                        Icon(
-                                            imageVector = EblanLauncherIcons.Delete,
-                                            contentDescription = null,
+        when {
+            eblanApplicationInfos.isEmpty() -> {
+                Text(
+                    text = "No hidden Applications",
+                )
+            }
+
+            else -> {
+                LazyColumn(
+                    modifier = Modifier.weight(
+                        weight = 1f,
+                        fill = false,
+                    ),
+                ) {
+                    items(eblanApplicationInfos) { eblanApplicationInfo ->
+                        ListItem(
+                            headlineContent = {
+                                Text(text = eblanApplicationInfo.label)
+                            },
+                            leadingContent = {
+                                AsyncImage(
+                                    model = eblanApplicationInfo.icon,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(40.dp),
+                                )
+                            },
+                            trailingContent = {
+                                IconButton(
+                                    onClick = {
+                                        onUpdateEblanApplicationInfo(
+                                            eblanApplicationInfo.copy(
+                                                isHidden = false,
+                                            ),
                                         )
-                                    }
-                                },
-                                modifier = Modifier.fillMaxWidth(),
-                            )
-                        }
+                                    },
+                                ) {
+                                    Icon(
+                                        imageVector = EblanLauncherIcons.Delete,
+                                        contentDescription = null,
+                                    )
+                                }
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                        )
                     }
                 }
             }
-        },
-        bottom = {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End,
+        }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End,
+        ) {
+            TextButton(
+                onClick = onDismissRequest,
             ) {
-                TextButton(
-                    onClick = onDismissRequest,
-                ) {
-                    Text(text = "Okay")
-                }
+                Text(text = "Okay")
             }
-        },
-        onDismissRequest = onDismissRequest,
-    )
+        }
+    }
 }

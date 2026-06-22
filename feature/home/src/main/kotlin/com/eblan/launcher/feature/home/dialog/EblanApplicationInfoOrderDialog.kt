@@ -52,64 +52,61 @@ internal fun EblanApplicationInfoOrderDialog(
 
     EblanDialog(
         modifier = modifier,
-        top = {
-            Text(
-                text = "Sort Applications",
-                style = MaterialTheme.typography.titleLarge,
-            )
-        },
-        middle = {
-            Column(
-                modifier = Modifier
-                    .selectableGroup()
-                    .fillMaxWidth(),
-            ) {
-                EblanApplicationInfoOrder.entries.forEach { eblanApplicationInfoOrder ->
-                    EblanRadioButton(
-                        selected = selectedEblanApplicationInfoOrder == eblanApplicationInfoOrder,
-                        text = eblanApplicationInfoOrder.name,
-                        onClick = {
-                            selectedEblanApplicationInfoOrder = eblanApplicationInfoOrder
-                        },
-                    )
-                }
-
-                if (selectedEblanApplicationInfoOrder == EblanApplicationInfoOrder.Index) {
-                    SettingsSwitch(
-                        checked = isRearrangeEblanApplicationInfo,
-                        title = "Rearrange Applications",
-                        subtitle = "Rearrange applications by index",
-                        onCheckedChange = {
-                            isRearrangeEblanApplicationInfo = it
-                        },
-                    )
-                }
-            }
-        },
-        bottom = {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End,
-            ) {
-                TextButton(
-                    onClick = onDismissRequest,
-                ) {
-                    Text(text = "Cancel")
-                }
-
-                TextButton(
-                    onClick = {
-                        onUpdateClick(
-                            selectedEblanApplicationInfoOrder,
-                            selectedEblanApplicationInfoOrder == EblanApplicationInfoOrder.Index &&
-                                isRearrangeEblanApplicationInfo,
-                        )
-                    },
-                ) {
-                    Text(text = "Update")
-                }
-            }
-        },
         onDismissRequest = onDismissRequest,
-    )
+    ) {
+        Text(
+            text = "Sort Applications",
+            style = MaterialTheme.typography.titleLarge,
+        )
+
+        Column(
+            modifier = Modifier
+                .selectableGroup()
+                .fillMaxWidth(),
+        ) {
+            EblanApplicationInfoOrder.entries.forEach { eblanApplicationInfoOrder ->
+                EblanRadioButton(
+                    selected = selectedEblanApplicationInfoOrder == eblanApplicationInfoOrder,
+                    text = eblanApplicationInfoOrder.name,
+                    onClick = {
+                        selectedEblanApplicationInfoOrder = eblanApplicationInfoOrder
+                    },
+                )
+            }
+
+            if (selectedEblanApplicationInfoOrder == EblanApplicationInfoOrder.Index) {
+                SettingsSwitch(
+                    checked = isRearrangeEblanApplicationInfo,
+                    title = "Rearrange Applications",
+                    subtitle = "Rearrange applications by index",
+                    onCheckedChange = {
+                        isRearrangeEblanApplicationInfo = it
+                    },
+                )
+            }
+        }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End,
+        ) {
+            TextButton(
+                onClick = onDismissRequest,
+            ) {
+                Text(text = "Cancel")
+            }
+
+            TextButton(
+                onClick = {
+                    onUpdateClick(
+                        selectedEblanApplicationInfoOrder,
+                        selectedEblanApplicationInfoOrder == EblanApplicationInfoOrder.Index &&
+                            isRearrangeEblanApplicationInfo,
+                    )
+                },
+            ) {
+                Text(text = "Update")
+            }
+        }
+    }
 }

@@ -48,59 +48,60 @@ internal fun EditFolderLabelDialog(
 
     EblanDialog(
         modifier = modifier,
-        top = {
-            Text(
-                text = "Label",
-                style = MaterialTheme.typography.titleLarge,
-            )
-        },
-        middle = {
-            TextField(
-                value = value,
-                onValueChange = {
-                    value = it
-                    isError = false
-                },
-                modifier = Modifier.fillMaxWidth(),
-                label = {
-                    Text(text = "Label")
-                },
-                isError = isError,
-                supportingText = if (isError) {
-                    {
-                        Text("Label is not valid")
-                    }
-                } else {
-                    null
-                },
-            )
-        },
-        bottom = {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End,
-            ) {
-                TextButton(
-                    onClick = onDismissRequest,
-                ) {
-                    Text(text = "Cancel")
-                }
-
-                TextButton(
-                    onClick = {
-                        if (value.isNotBlank()) {
-                            onUpdateGridItem(gridItem.copy(data = data.copy(label = value)))
-
-                            onDismissRequest()
-                        } else {
-                            isError = true
-                        }
-                    },
-                ) {
-                    Text(text = "Update")
-                }
-            }
-        },
         onDismissRequest = onDismissRequest,
-    )
+    ) {
+        Text(
+            text = "Label",
+            style = MaterialTheme.typography.titleLarge,
+        )
+
+        TextField(
+            value = value,
+            onValueChange = {
+                value = it
+                isError = false
+            },
+            modifier = Modifier.fillMaxWidth(),
+            label = {
+                Text(text = "Label")
+            },
+            isError = isError,
+            supportingText = if (isError) {
+                {
+                    Text("Label is not valid")
+                }
+            } else {
+                null
+            },
+        )
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End,
+        ) {
+            TextButton(
+                onClick = onDismissRequest,
+            ) {
+                Text(text = "Cancel")
+            }
+
+            TextButton(
+                onClick = {
+                    if (value.isNotBlank()) {
+                        onUpdateGridItem(
+                            gridItem.copy(
+                                data = data.copy(label = value),
+                            ),
+                        )
+
+                        onDismissRequest()
+                    } else {
+                        isError = true
+                    }
+                },
+            ) {
+                Text(text = "Update")
+            }
+        }
+    }
 }

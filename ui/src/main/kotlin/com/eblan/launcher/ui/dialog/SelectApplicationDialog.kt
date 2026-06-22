@@ -43,31 +43,28 @@ fun SelectApplicationDialog(
 ) {
     EblanDialog(
         modifier = modifier,
-        top = {
-            Text(
-                text = "Select Application",
-                style = MaterialTheme.typography.titleLarge,
-            )
-        },
-        middle = {
-            EblanApplicationInfosPage(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth(),
-                eblanApplicationInfos = eblanApplicationInfos,
-                onClick = onClick,
-            )
-        },
-        bottom = {
-            TextButton(
-                modifier = Modifier.fillMaxWidth(),
-                onClick = onDismissRequest,
-            ) {
-                Text(text = "Cancel")
-            }
-        },
         onDismissRequest = onDismissRequest,
-    )
+    ) {
+        Text(
+            text = "Select Application",
+            style = MaterialTheme.typography.titleLarge,
+        )
+
+        EblanApplicationInfosPage(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth(),
+            eblanApplicationInfos = eblanApplicationInfos,
+            onClick = onClick,
+        )
+
+        TextButton(
+            modifier = Modifier.fillMaxWidth(),
+            onClick = onDismissRequest,
+        ) {
+            Text(text = "Cancel")
+        }
+    }
 }
 
 @Composable

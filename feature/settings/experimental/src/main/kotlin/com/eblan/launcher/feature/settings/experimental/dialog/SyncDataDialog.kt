@@ -41,45 +41,42 @@ internal fun SyncDataDialog(
 ) {
     EblanDialog(
         modifier = modifier,
-        top = {
-            Text(
-                text = "Warning",
-                style = MaterialTheme.typography.titleLarge,
-            )
-        },
-        middle = {
-            Column(
-                modifier = Modifier.verticalScroll(rememberScrollState()),
-            ) {
-                Text(
-                    text = "Disabling background sync helps save a bit of memory and keeps things lighter, but it also means Yagni Launcher won’t automatically update your apps, widgets, or shortcuts.\n" +
-                        "Your app drawer might show outdated icons, missing widgets, or shortcuts that no longer work.",
-                )
-
-                ElevatedCard(
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    SettingsSwitch(
-                        checked = syncData,
-                        title = "Sync Data",
-                        subtitle = "Keep data up to date",
-                        onCheckedChange = onUpdateSyncData,
-                    )
-                }
-            }
-        },
-        bottom = {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End,
-            ) {
-                TextButton(
-                    onClick = onDismissRequest,
-                ) {
-                    Text(text = "Okay")
-                }
-            }
-        },
         onDismissRequest = onDismissRequest,
-    )
+    ) {
+        Text(
+            text = "Warning",
+            style = MaterialTheme.typography.titleLarge,
+        )
+
+        Column(
+            modifier = Modifier.verticalScroll(rememberScrollState()),
+        ) {
+            Text(
+                text = "Disabling background sync helps save a bit of memory and keeps things lighter, but it also means Yagni Launcher won’t automatically update your apps, widgets, or shortcuts.\n" +
+                    "Your app drawer might show outdated icons, missing widgets, or shortcuts that no longer work.",
+            )
+
+            ElevatedCard(
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                SettingsSwitch(
+                    checked = syncData,
+                    title = "Sync Data",
+                    subtitle = "Keep data up to date",
+                    onCheckedChange = onUpdateSyncData,
+                )
+            }
+        }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End,
+        ) {
+            TextButton(
+                onClick = onDismissRequest,
+            ) {
+                Text(text = "Okay")
+            }
+        }
+    }
 }

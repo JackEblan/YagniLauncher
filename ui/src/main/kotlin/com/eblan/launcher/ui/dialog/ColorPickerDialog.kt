@@ -79,61 +79,60 @@ fun ColorPickerDialog(
 
     EblanDialog(
         modifier = modifier,
-        top = {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleLarge,
-            )
-        },
-        middle = {
-            ColorPicker(
-                modifier = Modifier.fillMaxWidth(),
-                hue = hue,
-                saturation = saturation,
-                value = value,
-                alpha = alpha,
-                onSaturationSelected = {
-                    saturation = it
-                },
-                onValueSelected = {
-                    value = it
-                },
-                onHueSelected = {
-                    hue = it
-                },
-                onAlphaSelected = {
-                    alpha = it
-                },
-            )
-        },
-        bottom = {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End,
-            ) {
-                TextButton(
-                    onClick = onDismissRequest,
-                ) {
-                    Text("Cancel")
-                }
-
-                Spacer(modifier = Modifier.width(5.dp))
-
-                TextButton(
-                    onClick = {
-                        onSelectColor(
-                            Color.hsv(hue, saturation, value)
-                                .copy(alpha = alpha)
-                                .toArgb(),
-                        )
-                    },
-                ) {
-                    Text("Save")
-                }
-            }
-        },
         onDismissRequest = onDismissRequest,
-    )
+    ) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleLarge,
+        )
+
+        ColorPicker(
+            modifier = Modifier.fillMaxWidth(),
+            hue = hue,
+            saturation = saturation,
+            value = value,
+            alpha = alpha,
+            onSaturationSelected = {
+                saturation = it
+            },
+            onValueSelected = {
+                value = it
+            },
+            onHueSelected = {
+                hue = it
+            },
+            onAlphaSelected = {
+                alpha = it
+            },
+        )
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End,
+        ) {
+            TextButton(
+                onClick = onDismissRequest,
+            ) {
+                Text("Cancel")
+            }
+
+            Spacer(
+                modifier = Modifier.width(5.dp),
+            )
+
+            TextButton(
+                onClick = {
+                    onSelectColor(
+                        Color.hsv(hue, saturation, value)
+                            .copy(alpha = alpha)
+                            .toArgb(),
+                    )
+                },
+            ) {
+                Text("Save")
+            }
+        }
+    }
 }
 
 @Composable

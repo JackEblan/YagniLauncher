@@ -51,96 +51,93 @@ internal fun EditDockGridDialog(
 
     EblanDialog(
         modifier = modifier,
-        top = {
-            Text(
-                text = "Dock Grid",
-                style = MaterialTheme.typography.titleLarge,
-            )
-        },
-        middle = {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                TextField(
-                    value = dockColumns,
-                    onValueChange = {
-                        dockColumns = it
-                        firstError = false
-                    },
-                    modifier = Modifier.weight(1f),
-                    label = { Text(text = "Columns") },
-                    supportingText = if (firstError) {
-                        {
-                            Text(text = "Dock columns is not valid")
-                        }
-                    } else {
-                        null
-                    },
-                    isError = firstError,
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number,
-                    ),
-                )
-
-                TextField(
-                    value = dockRows,
-                    onValueChange = {
-                        dockRows = it
-                        secondError = false
-                    },
-                    modifier = Modifier.weight(1f),
-                    label = { Text(text = "Rows") },
-                    supportingText = if (secondError) {
-                        {
-                            Text(text = "Dock rows is not valid")
-                        }
-                    } else {
-                        null
-                    },
-                    isError = secondError,
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number,
-                    ),
-                )
-            }
-        },
-        bottom = {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End,
-            ) {
-                TextButton(
-                    onClick = onDismissRequest,
-                ) {
-                    Text(text = "Cancel")
-                }
-
-                TextButton(
-                    onClick = {
-                        val newDockColumns = dockColumns.toIntOrNull()
-                        val newDockRows = dockRows.toIntOrNull()
-
-                        firstError = newDockColumns == null || newDockColumns <= 0
-                        secondError = newDockRows == null || newDockRows <= 0
-
-                        if (newDockColumns != null && newDockRows != null &&
-                            newDockColumns > 0 && newDockRows > 0
-                        ) {
-                            onUpdateHomeSettings(
-                                homeSettings.copy(
-                                    dockColumns = newDockColumns,
-                                    dockRows = newDockRows,
-                                ),
-                            )
-
-                            onDismissRequest()
-                        }
-                    },
-                ) {
-                    Text(text = "Update")
-                }
-            }
-        },
         onDismissRequest = onDismissRequest,
-    )
+    ) {
+        Text(
+            text = "Dock Grid",
+            style = MaterialTheme.typography.titleLarge,
+        )
+
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            TextField(
+                value = dockColumns,
+                onValueChange = {
+                    dockColumns = it
+                    firstError = false
+                },
+                modifier = Modifier.weight(1f),
+                label = { Text(text = "Columns") },
+                supportingText = if (firstError) {
+                    {
+                        Text(text = "Dock columns is not valid")
+                    }
+                } else {
+                    null
+                },
+                isError = firstError,
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Number,
+                ),
+            )
+
+            TextField(
+                value = dockRows,
+                onValueChange = {
+                    dockRows = it
+                    secondError = false
+                },
+                modifier = Modifier.weight(1f),
+                label = { Text(text = "Rows") },
+                supportingText = if (secondError) {
+                    {
+                        Text(text = "Dock rows is not valid")
+                    }
+                } else {
+                    null
+                },
+                isError = secondError,
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Number,
+                ),
+            )
+        }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End,
+        ) {
+            TextButton(
+                onClick = onDismissRequest,
+            ) {
+                Text(text = "Cancel")
+            }
+
+            TextButton(
+                onClick = {
+                    val newDockColumns = dockColumns.toIntOrNull()
+                    val newDockRows = dockRows.toIntOrNull()
+
+                    firstError = newDockColumns == null || newDockColumns <= 0
+                    secondError = newDockRows == null || newDockRows <= 0
+
+                    if (newDockColumns != null && newDockRows != null &&
+                        newDockColumns > 0 && newDockRows > 0
+                    ) {
+                        onUpdateHomeSettings(
+                            homeSettings.copy(
+                                dockColumns = newDockColumns,
+                                dockRows = newDockRows,
+                            ),
+                        )
+
+                        onDismissRequest()
+                    }
+                },
+            ) {
+                Text(text = "Update")
+            }
+        }
+    }
 }

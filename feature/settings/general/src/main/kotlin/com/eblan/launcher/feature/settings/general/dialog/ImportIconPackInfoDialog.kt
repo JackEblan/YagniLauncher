@@ -48,67 +48,64 @@ internal fun ImportIconPackInfoDialog(
 ) {
     EblanDialog(
         modifier = modifier,
-        top = {
-            Text(
-                text = "Import Icon Pack",
-                style = MaterialTheme.typography.titleLarge,
-            )
-        },
-        middle = {
-            when {
-                packageManagerIconPackInfos.isEmpty() -> {
-                    Text(
-                        text = "No icon packs",
-                    )
-                }
+        onDismissRequest = onDismissRequest,
+    ) {
+        Text(
+            text = "Import Icon Pack",
+            style = MaterialTheme.typography.titleLarge,
+        )
 
-                else -> {
-                    Column {
-                        LazyColumn(
-                            modifier = Modifier.weight(
-                                weight = 1f,
-                                fill = false,
-                            ),
-                        ) {
-                            items(packageManagerIconPackInfos) { packageManagerIconPackInfo ->
-                                ListItem(
-                                    headlineContent = {
-                                        Text(text = packageManagerIconPackInfo.label)
-                                    },
-                                    leadingContent = {
-                                        AsyncImage(
-                                            model = packageManagerIconPackInfo.icon,
-                                            contentDescription = null,
-                                            modifier = Modifier.size(40.dp),
+        when {
+            packageManagerIconPackInfos.isEmpty() -> {
+                Text(
+                    text = "No icon packs",
+                )
+            }
+
+            else -> {
+                Column {
+                    LazyColumn(
+                        modifier = Modifier.weight(
+                            weight = 1f,
+                            fill = false,
+                        ),
+                    ) {
+                        items(packageManagerIconPackInfos) { packageManagerIconPackInfo ->
+                            ListItem(
+                                headlineContent = {
+                                    Text(text = packageManagerIconPackInfo.label)
+                                },
+                                leadingContent = {
+                                    AsyncImage(
+                                        model = packageManagerIconPackInfo.icon,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(40.dp),
+                                    )
+                                },
+                                modifier = Modifier
+                                    .clickable {
+                                        onUpdateIconPackInfo(
+                                            packageManagerIconPackInfo.packageName,
+                                            packageManagerIconPackInfo.label,
                                         )
-                                    },
-                                    modifier = Modifier
-                                        .clickable {
-                                            onUpdateIconPackInfo(
-                                                packageManagerIconPackInfo.packageName,
-                                                packageManagerIconPackInfo.label,
-                                            )
-                                        }
-                                        .fillMaxWidth(),
-                                )
-                            }
+                                    }
+                                    .fillMaxWidth(),
+                            )
                         }
                     }
                 }
             }
-        },
-        bottom = {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End,
+        }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End,
+        ) {
+            TextButton(
+                onClick = onDismissRequest,
             ) {
-                TextButton(
-                    onClick = onDismissRequest,
-                ) {
-                    Text(text = "Cancel")
-                }
+                Text(text = "Cancel")
             }
-        },
-        onDismissRequest = onDismissRequest,
-    )
+        }
+    }
 }

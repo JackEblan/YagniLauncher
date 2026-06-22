@@ -51,98 +51,95 @@ internal fun EditFolderCellDimensionDialog(
 
     EblanDialog(
         modifier = modifier,
-        top = {
-            Text(
-                text = "Folder Cell Dimension",
-                style = MaterialTheme.typography.titleLarge,
-            )
-        },
-        middle = {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                TextField(
-                    value = cellWidth,
-                    onValueChange = {
-                        cellWidth = it
-                        firstError = false
-                    },
-                    modifier = Modifier.weight(1f),
-                    label = { Text(text = "Cell Width") },
-                    supportingText = if (firstError) {
-                        {
-                            Text(text = "Cell width is not valid")
-                        }
-                    } else {
-                        null
-                    },
-                    isError = firstError,
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number,
-                    ),
-                )
-
-                TextField(
-                    value = cellHeight,
-                    onValueChange = {
-                        cellHeight = it
-                        secondError = false
-                    },
-                    modifier = Modifier.weight(1f),
-                    label = { Text(text = "Cell Height") },
-                    supportingText = if (secondError) {
-                        {
-                            Text(text = "Cell height is not valid")
-                        }
-                    } else {
-                        null
-                    },
-                    isError = secondError,
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number,
-                    ),
-                )
-            }
-        },
-        bottom = {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End,
-            ) {
-                TextButton(
-                    onClick = onDismissRequest,
-                ) {
-                    Text(text = "Cancel")
-                }
-
-                TextButton(
-                    onClick = {
-                        val newWidth = cellWidth.toIntOrNull()
-                        val newHeight = cellHeight.toIntOrNull()
-
-                        firstError = newWidth == null || newWidth <= 0
-                        secondError = newHeight == null || newHeight <= 0
-
-                        if (newWidth != null &&
-                            newHeight != null &&
-                            newWidth > 0 &&
-                            newHeight > 0
-                        ) {
-                            onUpdateHomeSettings(
-                                homeSettings.copy(
-                                    folderCellWidth = newWidth,
-                                    folderCellHeight = newHeight,
-                                ),
-                            )
-
-                            onDismissRequest()
-                        }
-                    },
-                ) {
-                    Text(text = "Update")
-                }
-            }
-        },
         onDismissRequest = onDismissRequest,
-    )
+    ) {
+        Text(
+            text = "Folder Cell Dimension",
+            style = MaterialTheme.typography.titleLarge,
+        )
+
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            TextField(
+                value = cellWidth,
+                onValueChange = {
+                    cellWidth = it
+                    firstError = false
+                },
+                modifier = Modifier.weight(1f),
+                label = { Text(text = "Cell Width") },
+                supportingText = if (firstError) {
+                    {
+                        Text(text = "Cell width is not valid")
+                    }
+                } else {
+                    null
+                },
+                isError = firstError,
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Number,
+                ),
+            )
+
+            TextField(
+                value = cellHeight,
+                onValueChange = {
+                    cellHeight = it
+                    secondError = false
+                },
+                modifier = Modifier.weight(1f),
+                label = { Text(text = "Cell Height") },
+                supportingText = if (secondError) {
+                    {
+                        Text(text = "Cell height is not valid")
+                    }
+                } else {
+                    null
+                },
+                isError = secondError,
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Number,
+                ),
+            )
+        }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End,
+        ) {
+            TextButton(
+                onClick = onDismissRequest,
+            ) {
+                Text(text = "Cancel")
+            }
+
+            TextButton(
+                onClick = {
+                    val newWidth = cellWidth.toIntOrNull()
+                    val newHeight = cellHeight.toIntOrNull()
+
+                    firstError = newWidth == null || newWidth <= 0
+                    secondError = newHeight == null || newHeight <= 0
+
+                    if (newWidth != null &&
+                        newHeight != null &&
+                        newWidth > 0 &&
+                        newHeight > 0
+                    ) {
+                        onUpdateHomeSettings(
+                            homeSettings.copy(
+                                folderCellWidth = newWidth,
+                                folderCellHeight = newHeight,
+                            ),
+                        )
+
+                        onDismissRequest()
+                    }
+                },
+            ) {
+                Text(text = "Update")
+            }
+        }
+    }
 }

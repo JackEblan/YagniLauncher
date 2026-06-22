@@ -51,98 +51,95 @@ internal fun EditGridDialog(
 
     EblanDialog(
         modifier = modifier,
-        top = {
-            Text(
-                text = "Grid",
-                style = MaterialTheme.typography.titleLarge,
-            )
-        },
-        middle = {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                TextField(
-                    value = columns,
-                    onValueChange = {
-                        columns = it
-                        firstError = false
-                    },
-                    modifier = Modifier.weight(1f),
-                    label = { Text(text = "Columns") },
-                    supportingText = if (firstError) {
-                        {
-                            Text(text = "Columns is not valid")
-                        }
-                    } else {
-                        null
-                    },
-                    isError = firstError,
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number,
-                    ),
-                )
-
-                TextField(
-                    value = rows,
-                    onValueChange = {
-                        rows = it
-                        secondError = false
-                    },
-                    modifier = Modifier.weight(1f),
-                    label = { Text(text = "Rows") },
-                    supportingText = if (secondError) {
-                        {
-                            Text(text = "Rows is not valid")
-                        }
-                    } else {
-                        null
-                    },
-                    isError = secondError,
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number,
-                    ),
-                )
-            }
-        },
-        bottom = {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End,
-            ) {
-                TextButton(
-                    onClick = onDismissRequest,
-                ) {
-                    Text(text = "Cancel")
-                }
-
-                TextButton(
-                    onClick = {
-                        val newColumns = columns.toIntOrNull()
-                        val newRows = rows.toIntOrNull()
-
-                        firstError = newColumns == null || newColumns <= 0
-                        secondError = newRows == null || newRows <= 0
-
-                        if (newColumns != null &&
-                            newRows != null &&
-                            newColumns > 0 &&
-                            newRows > 0
-                        ) {
-                            onUpdateHomeSettings(
-                                homeSettings.copy(
-                                    columns = newColumns,
-                                    rows = newRows,
-                                ),
-                            )
-
-                            onDismissRequest()
-                        }
-                    },
-                ) {
-                    Text(text = "Update")
-                }
-            }
-        },
         onDismissRequest = onDismissRequest,
-    )
+    ) {
+        Text(
+            text = "Grid",
+            style = MaterialTheme.typography.titleLarge,
+        )
+
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            TextField(
+                value = columns,
+                onValueChange = {
+                    columns = it
+                    firstError = false
+                },
+                modifier = Modifier.weight(1f),
+                label = { Text(text = "Columns") },
+                supportingText = if (firstError) {
+                    {
+                        Text(text = "Columns is not valid")
+                    }
+                } else {
+                    null
+                },
+                isError = firstError,
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Number,
+                ),
+            )
+
+            TextField(
+                value = rows,
+                onValueChange = {
+                    rows = it
+                    secondError = false
+                },
+                modifier = Modifier.weight(1f),
+                label = { Text(text = "Rows") },
+                supportingText = if (secondError) {
+                    {
+                        Text(text = "Rows is not valid")
+                    }
+                } else {
+                    null
+                },
+                isError = secondError,
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Number,
+                ),
+            )
+        }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End,
+        ) {
+            TextButton(
+                onClick = onDismissRequest,
+            ) {
+                Text(text = "Cancel")
+            }
+
+            TextButton(
+                onClick = {
+                    val newColumns = columns.toIntOrNull()
+                    val newRows = rows.toIntOrNull()
+
+                    firstError = newColumns == null || newColumns <= 0
+                    secondError = newRows == null || newRows <= 0
+
+                    if (newColumns != null &&
+                        newRows != null &&
+                        newColumns > 0 &&
+                        newRows > 0
+                    ) {
+                        onUpdateHomeSettings(
+                            homeSettings.copy(
+                                columns = newColumns,
+                                rows = newRows,
+                            ),
+                        )
+
+                        onDismissRequest()
+                    }
+                },
+            ) {
+                Text(text = "Update")
+            }
+        }
+    }
 }

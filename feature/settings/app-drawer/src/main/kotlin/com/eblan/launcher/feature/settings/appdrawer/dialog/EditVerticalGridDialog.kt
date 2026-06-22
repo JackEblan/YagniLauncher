@@ -56,99 +56,96 @@ internal fun EditVerticalGridDialog(
 
     EblanDialog(
         modifier = modifier,
-        top = {
-            Text(
-                text = "Vertical Grid",
-                style = MaterialTheme.typography.titleLarge,
-            )
-        },
-        middle = {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                TextField(
-                    value = columns,
-                    onValueChange = {
-                        columns = it
-                        firstError = false
-                    },
-                    modifier = Modifier.weight(1f),
-                    label = { Text(text = "Columns") },
-                    supportingText = if (firstError) {
-                        {
-                            Text(text = "Columns is not valid")
-                        }
-                    } else {
-                        null
-                    },
-                    isError = firstError,
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number,
-                    ),
-                )
-
-                TextField(
-                    value = rowsHeight,
-                    onValueChange = {
-                        rowsHeight = it
-                        secondError = false
-                    },
-                    modifier = Modifier.weight(1f),
-                    label = { Text(text = "Rows Height") },
-                    supportingText = if (secondError) {
-                        {
-                            Text(text = "Rows height is not valid")
-                        }
-                    } else {
-                        null
-                    },
-                    isError = secondError,
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number,
-                    ),
-                )
-            }
-        },
-        bottom = {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End,
-            ) {
-                TextButton(
-                    onClick = onDismissRequest,
-                ) {
-                    Text(text = "Cancel")
-                }
-
-                TextButton(
-                    onClick = {
-                        val newColumns = columns.toIntOrNull()
-                        val newRowsHeight = rowsHeight.toIntOrNull()
-
-                        firstError = newColumns == null || newColumns <= 0
-                        secondError = newRowsHeight == null || newRowsHeight <= 0
-
-                        if (newColumns != null &&
-                            newRowsHeight != null &&
-                            newColumns > 0 &&
-                            newRowsHeight > 0
-                        ) {
-                            onUpdateAppDrawerSettings(
-                                appDrawerSettings.copy(
-                                    appDrawerColumns = newColumns,
-                                    appDrawerRowsHeight = newRowsHeight,
-                                ),
-                            )
-
-                            onDismissRequest()
-                        }
-                    },
-                ) {
-                    Text(text = "Update")
-                }
-            }
-        },
         onDismissRequest = onDismissRequest,
-    )
+    ) {
+        Text(
+            text = "Vertical Grid",
+            style = MaterialTheme.typography.titleLarge,
+        )
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            TextField(
+                value = columns,
+                onValueChange = {
+                    columns = it
+                    firstError = false
+                },
+                modifier = Modifier.weight(1f),
+                label = { Text(text = "Columns") },
+                supportingText = if (firstError) {
+                    {
+                        Text(text = "Columns is not valid")
+                    }
+                } else {
+                    null
+                },
+                isError = firstError,
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Number,
+                ),
+            )
+
+            TextField(
+                value = rowsHeight,
+                onValueChange = {
+                    rowsHeight = it
+                    secondError = false
+                },
+                modifier = Modifier.weight(1f),
+                label = { Text(text = "Rows Height") },
+                supportingText = if (secondError) {
+                    {
+                        Text(text = "Rows height is not valid")
+                    }
+                } else {
+                    null
+                },
+                isError = secondError,
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Number,
+                ),
+            )
+        }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End,
+        ) {
+            TextButton(
+                onClick = onDismissRequest,
+            ) {
+                Text(text = "Cancel")
+            }
+
+            TextButton(
+                onClick = {
+                    val newColumns = columns.toIntOrNull()
+                    val newRowsHeight = rowsHeight.toIntOrNull()
+
+                    firstError = newColumns == null || newColumns <= 0
+                    secondError = newRowsHeight == null || newRowsHeight <= 0
+
+                    if (newColumns != null &&
+                        newRowsHeight != null &&
+                        newColumns > 0 &&
+                        newRowsHeight > 0
+                    ) {
+                        onUpdateAppDrawerSettings(
+                            appDrawerSettings.copy(
+                                appDrawerColumns = newColumns,
+                                appDrawerRowsHeight = newRowsHeight,
+                            ),
+                        )
+
+                        onDismissRequest()
+                    }
+                },
+            ) {
+                Text(text = "Update")
+            }
+        }
+    }
 }

@@ -48,45 +48,44 @@ fun <T> RadioOptionsDialog(
 
     EblanDialog(
         modifier = modifier,
-        top = {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleLarge,
-            )
-        },
-        middle = {
-            Column(
-                modifier = Modifier
-                    .selectableGroup()
-                    .fillMaxWidth(),
-            ) {
-                options.forEach { option ->
-                    EblanRadioButton(
-                        selected = selectedOption == option,
-                        text = label(option),
-                        onClick = { selectedOption = option },
-                    )
-                }
-            }
-        },
-        bottom = {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End,
-            ) {
-                TextButton(onClick = onDismissRequest) {
-                    Text(text = "Cancel")
-                }
-
-                TextButton(
-                    onClick = {
-                        onUpdateClick(selectedOption)
-                    },
-                ) {
-                    Text(text = "Update")
-                }
-            }
-        },
         onDismissRequest = onDismissRequest,
-    )
+    ) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleLarge,
+        )
+
+        Column(
+            modifier = Modifier
+                .selectableGroup()
+                .fillMaxWidth(),
+        ) {
+            options.forEach { option ->
+                EblanRadioButton(
+                    selected = selectedOption == option,
+                    text = label(option),
+                    onClick = { selectedOption = option },
+                )
+            }
+        }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End,
+        ) {
+            TextButton(
+                onClick = onDismissRequest,
+            ) {
+                Text(text = "Cancel")
+            }
+
+            TextButton(
+                onClick = {
+                    onUpdateClick(selectedOption)
+                },
+            ) {
+                Text(text = "Update")
+            }
+        }
+    }
 }
