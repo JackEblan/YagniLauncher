@@ -33,6 +33,7 @@ import com.eblan.launcher.domain.grid.getWidgetGridItemSize
 import com.eblan.launcher.domain.grid.getWidgetGridItemSpan
 import com.eblan.launcher.domain.grid.isGridItemSpanWithinBounds
 import com.eblan.launcher.domain.model.Associate
+import com.eblan.launcher.domain.model.FolderPopup
 import com.eblan.launcher.domain.model.FolderPopupEntry
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
@@ -44,6 +45,27 @@ import com.eblan.launcher.feature.home.model.SharedElementKey
 import com.eblan.launcher.feature.home.util.PAGE_INDICATOR_HEIGHT
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.milliseconds
+
+internal suspend fun handlePageDirection(
+    folderPopups: State<List<FolderPopup>>,
+    pageDirection: PageDirection?,
+    currentPage: Int,
+    onAnimateScrollToPage: suspend (Int) -> Unit,
+) {
+    delay(500L.milliseconds)
+
+    if (pageDirection == null || folderPopups.value.isNotEmpty()) return
+
+    when (pageDirection) {
+        PageDirection.Left -> {
+            onAnimateScrollToPage(currentPage - 1)
+        }
+
+        PageDirection.Right -> {
+            onAnimateScrollToPage(currentPage + 1)
+        }
+    }
+}
 
 internal suspend fun onLongPress(
     graphicsLayer: GraphicsLayer,

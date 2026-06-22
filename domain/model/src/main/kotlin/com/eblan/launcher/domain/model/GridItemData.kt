@@ -18,7 +18,6 @@
 package com.eblan.launcher.domain.model
 
 sealed interface GridItemData {
-
     data class ApplicationInfo(
         val serialNumber: Long,
         val componentName: String,

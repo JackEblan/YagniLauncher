@@ -23,19 +23,15 @@ import android.graphics.Rect
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.foundation.gestures.PressGestureScope
-import androidx.compose.foundation.pager.PagerState
 import androidx.compose.runtime.State
 import androidx.compose.ui.unit.dp
 import com.eblan.launcher.domain.model.EblanAction
 import com.eblan.launcher.domain.model.EblanActionType
 import com.eblan.launcher.domain.model.GlobalAction
 import com.eblan.launcher.feature.home.model.Drag
-import com.eblan.launcher.feature.home.model.PageDirection
 import com.eblan.launcher.framework.launcherapps.AndroidLauncherAppsWrapper
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlin.time.Duration.Companion.milliseconds
 
 internal fun handleEblanAction(
     context: Context,
@@ -151,26 +147,6 @@ internal suspend fun handleDrag(
         scale.stop()
 
         scale.animateTo(1f)
-    }
-}
-
-internal suspend fun handlePageDirection(
-    pageDirection: PageDirection?,
-    currentPage: Int,
-    onAnimateScrollToPage: suspend (Int) -> Unit,
-) {
-    if (pageDirection == null) return
-
-    delay(500L.milliseconds)
-
-    when (pageDirection) {
-        PageDirection.Left -> {
-            onAnimateScrollToPage(currentPage - 1)
-        }
-
-        PageDirection.Right -> {
-            onAnimateScrollToPage(currentPage + 1)
-        }
     }
 }
 

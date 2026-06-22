@@ -39,6 +39,26 @@ import com.eblan.launcher.feature.home.util.PAGE_INDICATOR_HEIGHT
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.milliseconds
 
+internal suspend fun handlePageDirection(
+    pageDirection: PageDirection?,
+    currentPage: Int,
+    onAnimateScrollToPage: suspend (Int) -> Unit,
+) {
+    if (pageDirection == null) return
+
+    delay(500L.milliseconds)
+
+    when (pageDirection) {
+        PageDirection.Left -> {
+            onAnimateScrollToPage(currentPage - 1)
+        }
+
+        PageDirection.Right -> {
+            onAnimateScrollToPage(currentPage + 1)
+        }
+    }
+}
+
 internal suspend fun onLongPressFolderGridItem(
     graphicsLayer: GraphicsLayer,
     intOffset: IntOffset,

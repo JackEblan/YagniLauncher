@@ -105,7 +105,6 @@ import com.eblan.launcher.feature.home.screen.widget.WidgetScreen
 import com.eblan.launcher.feature.home.util.PAGE_INDICATOR_HEIGHT
 import com.eblan.launcher.feature.home.util.calculatePage
 import com.eblan.launcher.feature.home.util.getSystemTextColor
-import com.eblan.launcher.feature.home.util.handlePageDirection
 import com.eblan.launcher.feature.home.util.handleWallpaperScrollEffect
 import com.eblan.launcher.ui.local.LocalAppWidgetHost
 import com.eblan.launcher.ui.local.LocalFileManager
@@ -398,6 +397,7 @@ internal fun PagerScreen(
     val currentGridItemSource = rememberUpdatedState(gridItemSource)
     val currentIsVisibleOverlay = rememberUpdatedState(isVisibleOverlay)
     val currentMoveGridItemResult = rememberUpdatedState(moveGridItemResult)
+    val currentFolderPopups = rememberUpdatedState(folderPopups)
 
     LaunchedEffect(key1 = pinGridItem) {
         pagerScreenState.handlePinGridItemEffect(
@@ -503,6 +503,7 @@ internal fun PagerScreen(
 
     LaunchedEffect(key1 = pagerScreenState.gridPageDirection) {
         handlePageDirection(
+            folderPopups = currentFolderPopups,
             pageDirection = pagerScreenState.gridPageDirection,
             currentPage = gridHorizontalPagerState.currentPage,
             onAnimateScrollToPage = gridHorizontalPagerState::animateScrollToPage,
@@ -511,6 +512,7 @@ internal fun PagerScreen(
 
     LaunchedEffect(key1 = pagerScreenState.dockPageDirection) {
         handlePageDirection(
+            folderPopups = currentFolderPopups,
             pageDirection = pagerScreenState.dockPageDirection,
             currentPage = dockGridHorizontalPagerState.currentPage,
             onAnimateScrollToPage = dockGridHorizontalPagerState::animateScrollToPage,

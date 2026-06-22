@@ -79,7 +79,6 @@ import com.eblan.launcher.feature.home.model.SharedElementKey
 import com.eblan.launcher.feature.home.util.FOLDER_PREVIEW_COLUMNS
 import com.eblan.launcher.feature.home.util.FOLDER_PREVIEW_ROWS
 import com.eblan.launcher.feature.home.util.PAGE_INDICATOR_HEIGHT
-import com.eblan.launcher.feature.home.util.handlePageDirection
 import com.eblan.launcher.ui.local.LocalLauncherApps
 import kotlin.math.roundToInt
 
