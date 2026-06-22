@@ -24,7 +24,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -45,7 +44,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.eblan.launcher.designsystem.component.EblanDialogContainer
+import com.eblan.launcher.designsystem.component.EblanDialog
 import com.eblan.launcher.designsystem.component.EblanRadioButton
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.EblanAction
@@ -74,32 +73,27 @@ internal fun EblanActionDialog(
         accessibilityManager.isAccessibilityServiceEnabled()
     }
 
-    EblanDialogContainer(
-        content = {
+    EblanDialog(
+        modifier = modifier,
+        top = {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleLarge,
+            )
+        },
+        middle = {
+            AccessibilityServiceCard()
+
             Column(
-                modifier = modifier
+                modifier = Modifier
                     .verticalScroll(rememberScrollState())
+                    .weight(1f, fill = false)
+                    .selectableGroup()
                     .fillMaxWidth(),
             ) {
-                Text(
-                    modifier = Modifier.padding(10.dp),
-                    text = title,
-                    style = MaterialTheme.typography.titleLarge,
-                )
-
-                Spacer(modifier = Modifier.height(10.dp))
-
-                AccessibilityServiceCard()
-
-                Spacer(modifier = Modifier.height(10.dp))
-
-                Column(
-                    modifier = Modifier
-                        .selectableGroup()
-                        .fillMaxWidth(),
-                ) {
-                    EblanActionType.entries.forEach { eblanActionType ->
-                        val enabled = when (eblanActionType) {
+                EblanActionType.entries.forEach { eblanActionType ->
+                    EblanRadioButton(
+                        enabled = when (eblanActionType) {
                             EblanActionType.OpenNotificationPanel,
                             EblanActionType.LockScreen,
                             EblanActionType.OpenQuickSettings,
@@ -107,51 +101,45 @@ internal fun EblanActionDialog(
                             -> isAccessibilityServiceEnabled
 
                             else -> true
-                        }
-
-                        EblanRadioButton(
-                            enabled = enabled,
-                            selected = selectedEblanAction.eblanActionType == eblanActionType,
-                            text = eblanActionType.getEblanActionTypeSubtitle(componentName = selectedEblanAction.componentName),
-                            onClick = {
-                                if (eblanActionType == EblanActionType.OpenApp) {
-                                    showSelectApplicationDialog = true
-                                } else {
-                                    selectedEblanAction = EblanAction(
-                                        eblanActionType = eblanActionType,
-                                        serialNumber = 0L,
-                                        componentName = "",
-                                    )
-                                }
-                            },
-                        )
-                    }
+                        },
+                        selected = selectedEblanAction.eblanActionType == eblanActionType,
+                        text = eblanActionType.getEblanActionTypeSubtitle(
+                            componentName = selectedEblanAction.componentName,
+                        ),
+                        onClick = {
+                            if (eblanActionType == EblanActionType.OpenApp) {
+                                showSelectApplicationDialog = true
+                            } else {
+                                selectedEblanAction = EblanAction(
+                                    eblanActionType = eblanActionType,
+                                    serialNumber = 0L,
+                                    componentName = "",
+                                )
+                            }
+                        },
+                    )
+                }
+            }
+        },
+        bottom = {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End,
+            ) {
+                TextButton(
+                    onClick = onDismissRequest,
+                ) {
+                    Text("Cancel")
                 }
 
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(
-                            end = 10.dp,
-                            bottom = 10.dp,
-                        ),
-                    horizontalArrangement = Arrangement.End,
+                Spacer(modifier = Modifier.width(5.dp))
+
+                TextButton(
+                    onClick = {
+                        onSelectEblanAction(selectedEblanAction)
+                    },
                 ) {
-                    TextButton(
-                        onClick = onDismissRequest,
-                    ) {
-                        Text("Cancel")
-                    }
-
-                    Spacer(modifier = Modifier.width(5.dp))
-
-                    TextButton(
-                        onClick = {
-                            onSelectEblanAction(selectedEblanAction)
-                        },
-                    ) {
-                        Text("Save")
-                    }
+                    Text("Save")
                 }
             }
         },

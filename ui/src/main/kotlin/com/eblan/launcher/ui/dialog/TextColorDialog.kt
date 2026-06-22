@@ -21,7 +21,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -33,8 +32,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import com.eblan.launcher.designsystem.component.EblanDialogContainer
+import com.eblan.launcher.designsystem.component.EblanDialog
 import com.eblan.launcher.designsystem.component.EblanRadioButton
 import com.eblan.launcher.domain.model.TextColor
 
@@ -56,19 +54,20 @@ fun TextColorDialog(
 
     var showColorPickerDialog by remember { mutableStateOf(false) }
 
-    EblanDialogContainer(
-        content = {
+    EblanDialog(
+        modifier = modifier,
+        top = {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleLarge,
+            )
+        },
+        middle = {
             Column(
-                modifier = modifier
+                modifier = Modifier
                     .selectableGroup()
                     .fillMaxWidth(),
             ) {
-                Text(
-                    modifier = Modifier.padding(10.dp),
-                    text = title,
-                    style = MaterialTheme.typography.titleLarge,
-                )
-
                 TextColor.entries.forEach { textColor ->
                     EblanRadioButton(
                         selected = selectedTextColor == textColor,
@@ -82,29 +81,26 @@ fun TextColorDialog(
                         },
                     )
                 }
+            }
+        },
+        bottom = {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End,
+            ) {
+                TextButton(onClick = onDismissRequest) {
+                    Text(text = "Cancel")
+                }
 
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(
-                            end = 10.dp,
-                            bottom = 10.dp,
-                        ),
-                    horizontalArrangement = Arrangement.End,
+                TextButton(
+                    onClick = {
+                        onUpdateClick(
+                            selectedTextColor,
+                            selectedCustomTextColor,
+                        )
+                    },
                 ) {
-                    TextButton(onClick = onDismissRequest) {
-                        Text(text = "Cancel")
-                    }
-                    TextButton(
-                        onClick = {
-                            onUpdateClick(
-                                selectedTextColor,
-                                selectedCustomTextColor,
-                            )
-                        },
-                    ) {
-                        Text(text = "Update")
-                    }
+                    Text(text = "Update")
                 }
             }
         },

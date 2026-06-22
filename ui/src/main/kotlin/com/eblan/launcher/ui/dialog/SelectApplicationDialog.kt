@@ -18,7 +18,6 @@
 package com.eblan.launcher.ui.dialog
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -29,11 +28,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import com.eblan.launcher.designsystem.component.EblanDialogContainer
+import com.eblan.launcher.designsystem.component.EblanDialog
 import com.eblan.launcher.domain.model.EblanApplicationInfo
 
 @Composable
@@ -43,34 +41,29 @@ fun SelectApplicationDialog(
     onDismissRequest: () -> Unit,
     onClick: (EblanApplicationInfo) -> Unit,
 ) {
-    EblanDialogContainer(
-        content = {
-            Column(modifier = modifier.fillMaxWidth()) {
-                Text(
-                    modifier = Modifier.padding(10.dp),
-                    text = "Select Application",
-                    style = MaterialTheme.typography.titleLarge,
-                )
-
-                EblanApplicationInfosPage(
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxWidth(),
-                    eblanApplicationInfos = eblanApplicationInfos,
-                    onClick = onClick,
-                )
-
-                TextButton(
-                    modifier = Modifier
-                        .align(Alignment.End)
-                        .padding(
-                            end = 10.dp,
-                            bottom = 10.dp,
-                        ),
-                    onClick = onDismissRequest,
-                ) {
-                    Text(text = "Cancel")
-                }
+    EblanDialog(
+        modifier = modifier,
+        top = {
+            Text(
+                text = "Select Application",
+                style = MaterialTheme.typography.titleLarge,
+            )
+        },
+        middle = {
+            EblanApplicationInfosPage(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth(),
+                eblanApplicationInfos = eblanApplicationInfos,
+                onClick = onClick,
+            )
+        },
+        bottom = {
+            TextButton(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = onDismissRequest,
+            ) {
+                Text(text = "Cancel")
             }
         },
         onDismissRequest = onDismissRequest,

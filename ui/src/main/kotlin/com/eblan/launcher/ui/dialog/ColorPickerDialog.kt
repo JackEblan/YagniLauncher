@@ -23,16 +23,14 @@ import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -52,7 +50,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.eblan.launcher.designsystem.component.EblanDialogContainer
+import com.eblan.launcher.designsystem.component.EblanDialog
 
 @Composable
 fun ColorPickerDialog(
@@ -79,67 +77,58 @@ fun ColorPickerDialog(
 
     var alpha by remember { mutableFloatStateOf(Color(customColor).alpha) }
 
-    EblanDialogContainer(
-        content = {
-            Column(
-                modifier = modifier
-                    .verticalScroll(rememberScrollState())
-                    .fillMaxWidth(),
+    EblanDialog(
+        modifier = modifier,
+        top = {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleLarge,
+            )
+        },
+        middle = {
+            ColorPicker(
+                modifier = Modifier.fillMaxWidth(),
+                hue = hue,
+                saturation = saturation,
+                value = value,
+                alpha = alpha,
+                onSaturationSelected = {
+                    saturation = it
+                },
+                onValueSelected = {
+                    value = it
+                },
+                onHueSelected = {
+                    hue = it
+                },
+                onAlphaSelected = {
+                    alpha = it
+                },
+            )
+        },
+        bottom = {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End,
             ) {
-                Text(
-                    modifier = Modifier.padding(10.dp),
-                    text = title,
-                    style = MaterialTheme.typography.titleLarge,
-                )
-
-                Spacer(modifier = Modifier.height(10.dp))
-
-                ColorPicker(
-                    modifier = Modifier.padding(10.dp),
-                    hue = hue,
-                    saturation = saturation,
-                    value = value,
-                    alpha = alpha,
-                    onSaturationSelected = { newSaturation ->
-                        saturation = newSaturation
-                    },
-                    onValueSelected = { newValue ->
-                        value = newValue
-                    },
-                    onHueSelected = { newHue ->
-                        hue = newHue
-                    },
-                    onAlphaSelected = { newAlpha ->
-                        alpha = newAlpha
-                    },
-                )
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(
-                            end = 10.dp,
-                            bottom = 10.dp,
-                        ),
-                    horizontalArrangement = Arrangement.End,
+                TextButton(
+                    onClick = onDismissRequest,
                 ) {
-                    TextButton(
-                        onClick = onDismissRequest,
-                    ) {
-                        Text("Cancel")
-                    }
+                    Text("Cancel")
+                }
 
-                    Spacer(modifier = Modifier.width(5.dp))
+                Spacer(modifier = Modifier.width(5.dp))
 
-                    TextButton(
-                        onClick = {
-                            onSelectColor(
-                                Color.hsv(hue, saturation, value).copy(alpha = alpha).toArgb(),
-                            )
-                        },
-                    ) {
-                        Text("Save")
-                    }
+                TextButton(
+                    onClick = {
+                        onSelectColor(
+                            Color.hsv(hue, saturation, value)
+                                .copy(alpha = alpha)
+                                .toArgb(),
+                        )
+                    },
+                ) {
+                    Text("Save")
                 }
             }
         },
@@ -159,28 +148,42 @@ private fun ColorPicker(
     onHueSelected: (Float) -> Unit,
     onAlphaSelected: (Float) -> Unit,
 ) {
-    Column(modifier = modifier) {
-        SaturationValueCanvas(
-            hue = hue,
-            saturation = saturation,
-            value = value,
-            onSaturationSelected = onSaturationSelected,
-            onValueSelected = onValueSelected,
-        )
+    BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
+        val saturationValueHeight = (maxHeight * 0.55f).coerceAtMost(260.dp)
+        val barHeight = (maxHeight * 0.06f).coerceIn(12.dp, 24.dp)
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Column {
+            SaturationValueCanvas(
+                hue = hue,
+                saturation = saturation,
+                value = value,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(saturationValueHeight),
+                onSaturationSelected = onSaturationSelected,
+                onValueSelected = onValueSelected,
+            )
 
-        HueCanvas(
-            hue = hue,
-            onHueSelected = onHueSelected,
-        )
+            Spacer(Modifier.height(16.dp))
 
-        Spacer(modifier = Modifier.height(24.dp))
+            HueCanvas(
+                hue = hue,
+                onHueSelected = onHueSelected,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(barHeight),
+            )
 
-        AlphaCanvas(
-            alpha = alpha,
-            onAlphaSelected = onAlphaSelected,
-        )
+            Spacer(Modifier.height(16.dp))
+
+            AlphaCanvas(
+                alpha = alpha,
+                onAlphaSelected = onAlphaSelected,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(barHeight),
+            )
+        }
     }
 }
 

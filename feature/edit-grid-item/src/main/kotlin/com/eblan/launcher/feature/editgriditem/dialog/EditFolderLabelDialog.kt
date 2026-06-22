@@ -17,7 +17,10 @@
  */
 package com.eblan.launcher.feature.editgriditem.dialog
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -27,9 +30,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import com.eblan.launcher.designsystem.component.EblanDialog
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
-import com.eblan.launcher.ui.dialog.TextFieldDialog
 
 @Composable
 internal fun EditFolderLabelDialog(
@@ -43,11 +46,15 @@ internal fun EditFolderLabelDialog(
 
     var isError by remember { mutableStateOf(false) }
 
-    TextFieldDialog(
+    EblanDialog(
         modifier = modifier,
-        title = "Label",
-        onDismissRequest = onDismissRequest,
-        textField = {
+        top = {
+            Text(
+                text = "Label",
+                style = MaterialTheme.typography.titleLarge,
+            )
+        },
+        middle = {
             TextField(
                 value = value,
                 onValueChange = {
@@ -68,26 +75,32 @@ internal fun EditFolderLabelDialog(
                 },
             )
         },
-        bottomActions = {
-            TextButton(
-                onClick = onDismissRequest,
+        bottom = {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End,
             ) {
-                Text(text = "Cancel")
-            }
+                TextButton(
+                    onClick = onDismissRequest,
+                ) {
+                    Text(text = "Cancel")
+                }
 
-            TextButton(
-                onClick = {
-                    if (value.isNotBlank()) {
-                        onUpdateGridItem(gridItem.copy(data = data.copy(label = value)))
+                TextButton(
+                    onClick = {
+                        if (value.isNotBlank()) {
+                            onUpdateGridItem(gridItem.copy(data = data.copy(label = value)))
 
-                        onDismissRequest()
-                    } else {
-                        isError = true
-                    }
-                },
-            ) {
-                Text(text = "Update")
+                            onDismissRequest()
+                        } else {
+                            isError = true
+                        }
+                    },
+                ) {
+                    Text(text = "Update")
+                }
             }
         },
+        onDismissRequest = onDismissRequest,
     )
 }

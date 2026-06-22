@@ -17,8 +17,11 @@
  */
 package com.eblan.launcher.ui.dialog
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -29,6 +32,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
+import com.eblan.launcher.designsystem.component.EblanDialog
 
 @Composable
 internal fun EditPaddingDialog(
@@ -43,11 +47,15 @@ internal fun EditPaddingDialog(
 
     var isError by remember { mutableStateOf(false) }
 
-    TextFieldDialog(
+    EblanDialog(
         modifier = modifier,
-        title = "Padding",
-        onDismissRequest = onDismissRequest,
-        textField = {
+        top = {
+            Text(
+                text = "Padding",
+                style = MaterialTheme.typography.titleLarge,
+            )
+        },
+        middle = {
             TextField(
                 value = value,
                 onValueChange = {
@@ -71,26 +79,32 @@ internal fun EditPaddingDialog(
                 ),
             )
         },
-        bottomActions = {
-            TextButton(
-                onClick = onDismissRequest,
+        bottom = {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End,
             ) {
-                Text(text = "Cancel")
-            }
+                TextButton(
+                    onClick = onDismissRequest,
+                ) {
+                    Text(text = "Cancel")
+                }
 
-            TextButton(
-                onClick = {
-                    try {
-                        onUpdatePadding(
-                            value.toInt(),
-                        )
-                    } catch (_: NumberFormatException) {
-                        isError = true
-                    }
-                },
-            ) {
-                Text(text = "Update")
+                TextButton(
+                    onClick = {
+                        val newPadding = value.toIntOrNull()
+
+                        if (newPadding != null && newPadding >= 0) {
+                            onUpdatePadding(value.toInt())
+                        } else {
+                            isError = true
+                        }
+                    },
+                ) {
+                    Text(text = "Update")
+                }
             }
         },
+        onDismissRequest = onDismissRequest,
     )
 }
