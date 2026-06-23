@@ -327,7 +327,7 @@ internal suspend fun handleOnTapEblanApplicationInfoItem(
 
     val top = intOffset.y + topPadding
 
-    scale.animateTo(0.5f)
+    scale.animateTo(0.8f)
 
     scale.animateTo(1f)
 

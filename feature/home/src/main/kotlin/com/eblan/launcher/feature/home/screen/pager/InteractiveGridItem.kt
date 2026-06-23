@@ -447,7 +447,7 @@ private fun InteractiveApplicationInfoGridItem(
                     onTap = if (!isVisibleOverlay) {
                         {
                             scope.launch {
-                                scale.animateTo(0.5f)
+                                scale.animateTo(0.8f)
 
                                 scale.animateTo(1f)
 
@@ -851,7 +851,7 @@ private fun InteractiveShortcutInfoGridItem(
                         {
                             if (hasShortcutHostPermission && data.isEnabled) {
                                 scope.launch {
-                                    scale.animateTo(0.5f)
+                                    scale.animateTo(0.8f)
 
                                     scale.animateTo(1f)
 
@@ -1104,7 +1104,7 @@ private fun InteractiveFolderGridItem(
                     onTap = if (!isVisibleOverlay) {
                         {
                             scope.launch {
-                                scale.animateTo(0.5f)
+                                scale.animateTo(0.8f)
 
                                 scale.animateTo(1f)
 
@@ -1189,7 +1189,7 @@ private fun InteractiveFolderGridItem(
         } else {
             Box(
                 modifier = commonModifier.background(
-                    color = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f),
+                    color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
                     shape = RoundedCornerShape(5.dp),
                 ),
             ) {
@@ -1378,7 +1378,7 @@ private fun InteractiveShortcutConfigGridItem(
                     onTap = if (!isVisibleOverlay) {
                         {
                             scope.launch {
-                                scale.animateTo(0.5f)
+                                scale.animateTo(0.8f)
 
                                 scale.animateTo(1f)
 
