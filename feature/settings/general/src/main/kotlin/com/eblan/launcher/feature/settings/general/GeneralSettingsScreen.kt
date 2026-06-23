@@ -165,7 +165,7 @@ private fun Success(
         ) {
             SettingsColumn(
                 title = stringResource(R.string.import_icon_pack),
-                subtitle = stringResource(R.string.import_icon_pack),
+                subtitle = stringResource(R.string.apply_icons_from_supported_icon_packs),
                 onClick = {
                     showImportIconPackDialog = true
                 },
@@ -197,7 +197,7 @@ private fun Success(
                 SettingsSwitch(
                     checked = generalSettings.dynamicTheme,
                     title = stringResource(R.string.dynamic_theme),
-                    subtitle = stringResource(R.string.dynamic_theme),
+                    subtitle = stringResource(R.string.adapt_colors_to_your_wallpaper_automatically),
                     onCheckedChange = { dynamicTheme ->
                         onUpdateGeneralSettings(generalSettings.copy(dynamicTheme = dynamicTheme))
                     },

@@ -200,7 +200,7 @@ private fun Success(
 
             SettingsColumn(
                 title = stringResource(R.string.hidden_applications),
-                subtitle = stringResource(R.string.hidden_applications),
+                subtitle = stringResource(R.string.hide_selected_apps_from_the_app_drawer),
                 onClick = {
                     showHiddenEblanApplicationInfosDialog = true
                 },
@@ -211,7 +211,7 @@ private fun Success(
             SettingsSwitch(
                 checked = appDrawerSettings.excludeTaggedApps,
                 title = stringResource(R.string.exclude_tagged_apps),
-                subtitle = stringResource(R.string.exclude_tagged_apps),
+                subtitle = stringResource(R.string.hide_apps_marked_with_selected_tags),
                 onCheckedChange = { excludeTaggedApps ->
                     onUpdateAppDrawerSettings(appDrawerSettings.copy(excludeTaggedApps = excludeTaggedApps))
                 },

@@ -35,4 +35,6 @@
     <string name="background_color">Background Color</string>
     <string name="custom_background_color">Custom Background Color</string>
     <string name="exclude_tagged_apps">Exclude Tagged Apps</string>
+    <string name="hide_selected_apps_from_the_app_drawer">Hide selected apps from the app drawer</string>
+    <string name="hide_apps_marked_with_selected_tags">Hide apps marked with selected tags</string>
 </resources>

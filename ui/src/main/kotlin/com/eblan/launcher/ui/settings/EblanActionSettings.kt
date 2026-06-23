@@ -29,6 +29,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.eblan.launcher.domain.model.EblanAction
 import com.eblan.launcher.domain.model.EblanActionType
@@ -61,7 +62,7 @@ fun EblanActionSettings(
             .padding(horizontal = 15.dp),
     ) {
         SettingsColumn(
-            title = "Double Tap",
+            title = stringResource(R.string.double_tap),
             subtitle = doubleTap.eblanActionType.getEblanActionTypeSubtitle(
                 context = context,
                 componentName = doubleTap.componentName,
@@ -74,7 +75,7 @@ fun EblanActionSettings(
         HorizontalDivider(modifier = Modifier.fillMaxWidth())
 
         SettingsColumn(
-            title = "Swipe Up",
+            title = stringResource(R.string.swipe_up),
             subtitle = swipeUp.eblanActionType.getEblanActionTypeSubtitle(
                 context = context,
                 componentName = swipeUp.componentName,
@@ -87,7 +88,7 @@ fun EblanActionSettings(
         HorizontalDivider(modifier = Modifier.fillMaxWidth())
 
         SettingsColumn(
-            title = "Swipe Down",
+            title = stringResource(R.string.swipe_down),
             subtitle = swipeDown.eblanActionType.getEblanActionTypeSubtitle(
                 context = context,
                 componentName = swipeDown.componentName,
@@ -100,7 +101,7 @@ fun EblanActionSettings(
 
     if (showDoubleTapDialog) {
         EblanActionDialog(
-            title = "Double Tap",
+            title = stringResource(R.string.double_tap),
             eblanAction = doubleTap,
             eblanApplicationInfos = eblanApplicationInfos,
             onSelectEblanAction = { newEblanAction ->
@@ -116,7 +117,7 @@ fun EblanActionSettings(
 
     if (showSwipeUpDialog) {
         EblanActionDialog(
-            title = "Swipe Up",
+            title = stringResource(R.string.swipe_up),
             eblanAction = swipeUp,
             eblanApplicationInfos = eblanApplicationInfos,
             onSelectEblanAction = { newEblanAction ->
@@ -132,7 +133,7 @@ fun EblanActionSettings(
 
     if (showSwipeDownDialog) {
         EblanActionDialog(
-            title = "Swipe Down",
+            title = stringResource(R.string.swipe_down),
             eblanAction = swipeDown,
             eblanApplicationInfos = eblanApplicationInfos,
             onSelectEblanAction = { newEblanAction ->

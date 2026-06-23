@@ -157,7 +157,7 @@ fun GridItemSettings(
             SettingsSwitch(
                 checked = gridItemSettings.showLabel,
                 title = stringResource(R.string.show_label),
-                subtitle = stringResource(R.string.show_label),
+                subtitle = stringResource(R.string.display_app_names_below_icons),
                 onCheckedChange = { showLabel ->
                     onUpdateGridItemSettings(gridItemSettings.copy(showLabel = showLabel))
                 },
@@ -168,7 +168,7 @@ fun GridItemSettings(
             SettingsSwitch(
                 checked = gridItemSettings.singleLineLabel,
                 title = stringResource(R.string.single_line_label),
-                subtitle = stringResource(R.string.single_line_label),
+                subtitle = stringResource(R.string.limit_app_names_to_one_line),
                 onCheckedChange = { singleLineLabel ->
                     onUpdateGridItemSettings(gridItemSettings.copy(singleLineLabel = singleLineLabel))
                 },

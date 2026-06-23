@@ -177,7 +177,7 @@ private fun Success(
             SettingsSwitch(
                 checked = homeSettings.lockScreenOrientation,
                 title = stringResource(R.string.lock_screen_orientation),
-                subtitle = stringResource(R.string.lock_screen_orientation),
+                subtitle = stringResource(R.string.prevent_rotation_when_device_orientation_changes),
                 onCheckedChange = { lockScreenOrientation ->
                     onUpdateHomeSettings(homeSettings.copy(lockScreenOrientation = lockScreenOrientation))
                 },
