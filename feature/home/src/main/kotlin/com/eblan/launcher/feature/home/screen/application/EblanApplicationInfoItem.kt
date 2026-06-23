@@ -249,10 +249,10 @@ internal fun EblanApplicationInfoItem(
                 )
             }
             .run {
-                when (appDrawerType) {
-                    AppDrawerType.Vertical -> height(appDrawerRowsHeight)
-                    AppDrawerType.Horizontal -> fillMaxSize()
-                    else -> this
+                if (appDrawerType == AppDrawerType.Vertical) {
+                    height(appDrawerRowsHeight)
+                } else {
+                    fillMaxSize()
                 }
             }
             .padding(appDrawerSettings.gridItemSettings.padding.dp)
