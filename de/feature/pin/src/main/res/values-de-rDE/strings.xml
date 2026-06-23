@@ -17,7 +17,7 @@
   ~
   -->
 <resources>
-    <string name="touch_and_hold_the_widget_to_move_it_around_the_home_screen">Touch and hold the widget to move it around the home screen</string>
-    <string name="cancel">Cancel</string>
-    <string name="add">Add</string>
+    <string name="touch_and_hold_the_widget_to_move_it_around_the_home_screen">Tippen und halten Sie das Widget, um es im Startbildschirm zu bewegen</string>
+    <string name="cancel">Abbrechen</string>
+    <string name="add">Neu</string>
 </resources>
