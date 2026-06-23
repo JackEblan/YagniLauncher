@@ -17,23 +17,23 @@
   ~
   -->
 <resources>
-    <string name="settings">Settings</string>
-    <string name="choose_yagni_launcher">Choose Yagni Launcher</string>
-    <string name="default_launcher">Default Launcher</string>
-    <string name="themes_icon_packs">Themes, icon packs</string>
-    <string name="general">General</string>
-    <string name="grid_icon_dock_and_more">Grid, icon, dock, and more</string>
-    <string name="home">Home</string>
-    <string name="columns_and_rows_count">Columns and rows count</string>
-    <string name="app_drawer">App Drawer</string>
-    <string name="swipe_gesture_actions">Swipe gesture actions</string>
-    <string name="gestures">Gestures</string>
-    <string name="advanced_options_for_power_users">Advanced options for power users</string>
-    <string name="experimental">Experimental</string>
-    <string name="thank_you_for_using_yagni_launcher_alpha">Thank you for using Yagni Launcher Alpha!</string>
-    <string name="about_development_description">    Development began in January 2025 with regular weekly updates. This is my most complex project to date, and I dedicate significant effort to its improvement.</string>
-    <string name="support_message">    If you find value in the application, your support would be greatly appreciated through a donation on Ko-fi or by starring the repository on GitHub.</string>
-    <string name="support_on_ko_fi">Support on Ko-Fi</string>
+    <string name="settings">Einstellungen</string>
+    <string name="choose_yagni_launcher">Yagni-Launcher auswählen</string>
+    <string name="default_launcher">Standard-Launcher</string>
+    <string name="themes_icon_packs">Designs, Icon-Pakete</string>
+    <string name="general">Allgemein</string>
+    <string name="grid_icon_dock_and_more">Raster, Icon, Dock und mehr</string>
+    <string name="home">Zuhause</string>
+    <string name="columns_and_rows_count">Spalten- und Zeilenzahl</string>
+    <string name="app_drawer">App-Übersicht</string>
+    <string name="swipe_gesture_actions">Wischgesten Aktionen</string>
+    <string name="gestures">Gesten</string>
+    <string name="advanced_options_for_power_users">Erweiterte Optionen für Power-Benutzer</string>
+    <string name="experimental">Experimentell</string>
+    <string name="thank_you_for_using_yagni_launcher_alpha">Vielen Dank für die Verwendung von Yagni Launcher Alpha!</string>
+    <string name="about_development_description">    Entwicklung begann im Januar 2025 mit regelmäßigen wöchentlichen Updates. Dies ist mein bisher komplexes Projekt und ich widme erhebliche Anstrengungen für seine Verbesserung.</string>
+    <string name="support_message">    Wenn Sie Wert in der Anwendung finden Ihre Unterstützung würde durch eine Spende auf Ko-fi oder durch das Projektarchiv auf GitHub sehr geschätzt.</string>
+    <string name="support_on_ko_fi">Unterstützung für Ko-Fi</string>
     <string name="star_on_github">Star on GitHub</string>
-    <string name="note_this_informational_card_will_be_removed_in_future_stable_releases">Note: This informational card will be removed in future stable releases</string>
+    <string name="note_this_informational_card_will_be_removed_in_future_stable_releases">Hinweis: Diese Informationskarte wird in zukünftigen stabilen Veröffentlichungen entfernt</string>
 </resources>
