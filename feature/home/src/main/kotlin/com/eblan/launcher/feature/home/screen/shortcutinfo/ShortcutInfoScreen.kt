@@ -15,7 +15,7 @@
  *   limitations under the License.
  *
  */
-package com.eblan.launcher.feature.home.component
+package com.eblan.launcher.feature.home.screen.shortcutinfo
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -63,7 +63,7 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 @Composable
-internal fun ShortcutInfoMenu(
+internal fun ShortcutInfoScreen(
     modifier: Modifier = Modifier,
     eblanShortcutInfosGroup: List<EblanShortcutInfo>,
     gridItemSettings: GridItemSettings,

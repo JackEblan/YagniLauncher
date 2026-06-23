@@ -59,12 +59,12 @@ import com.eblan.launcher.domain.model.EblanShortcutInfo
 import com.eblan.launcher.domain.model.EblanShortcutInfoByGroup
 import com.eblan.launcher.domain.model.GridItemSettings
 import com.eblan.launcher.domain.model.MoveGridItemResult
-import com.eblan.launcher.feature.home.component.PrivateShortcutInfoMenu
-import com.eblan.launcher.feature.home.component.ShortcutInfoMenu
 import com.eblan.launcher.feature.home.component.popup
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
+import com.eblan.launcher.feature.home.screen.shortcutinfo.PrivateShortcutInfoMenu
+import com.eblan.launcher.feature.home.screen.shortcutinfo.ShortcutInfoScreen
 import com.eblan.launcher.ui.local.LocalLauncherApps
 
 @Composable
@@ -417,7 +417,7 @@ private fun ApplicationInfoMenu(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 if (hasShortcutHostPermission && !eblanShortcutInfosGroup.isNullOrEmpty()) {
-                    ShortcutInfoMenu(
+                    ShortcutInfoScreen(
                         modifier = modifier,
                         eblanShortcutInfosGroup = eblanShortcutInfosGroup,
                         gridItemSettings = gridItemSettings,
