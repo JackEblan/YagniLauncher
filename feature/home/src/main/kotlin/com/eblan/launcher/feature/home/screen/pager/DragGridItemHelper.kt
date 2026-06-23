@@ -105,12 +105,12 @@ internal suspend fun onLongPress(
 
     onUpdateSharedElementKey(sharedElementKey)
 
-    onUpdateIsVisibleOverlay(true)
-
     onShowGridItemPopup(
         intOffset,
         intSize,
     )
+
+    onUpdateIsVisibleOverlay(true)
 }
 
 internal fun handleAnimateScrollToPage(

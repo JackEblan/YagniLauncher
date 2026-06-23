@@ -463,11 +463,11 @@ internal suspend fun handleOnLongPressEblanApplicationInfoItem(
 
     onUpdateEblanApplicationInfo(eblanApplicationInfo)
 
-    onUpdateIsVisibleOverlay(true)
-
     onUpdatePopupMenu(true)
 
     onUpdateIsLongPress(true)
 
     keyboardController?.hide()
+
+    onUpdateIsVisibleOverlay(true)
 }
