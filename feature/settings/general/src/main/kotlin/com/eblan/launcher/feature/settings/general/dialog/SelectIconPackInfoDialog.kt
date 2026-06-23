@@ -32,11 +32,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.eblan.launcher.designsystem.component.EblanDialog
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.EblanIconPackInfo
+import com.eblan.launcher.feature.settings.general.R
 
 @Composable
 internal fun SelectIconPackInfoDialog(
@@ -53,14 +55,14 @@ internal fun SelectIconPackInfoDialog(
         onDismissRequest = onDismissRequest,
     ) {
         Text(
-            text = "Select Icon Pack",
+            text = stringResource(R.string.select_icon_pack),
             style = MaterialTheme.typography.titleLarge,
         )
 
         when {
             eblanIconPackInfos.isEmpty() -> {
                 Text(
-                    text = "Please import an icon pack first",
+                    text = stringResource(R.string.please_import_an_icon_pack_first),
                 )
             }
 
@@ -118,13 +120,13 @@ internal fun SelectIconPackInfoDialog(
             TextButton(
                 onClick = onDismissRequest,
             ) {
-                Text(text = "Cancel")
+                Text(text = stringResource(R.string.cancel))
             }
 
             TextButton(
                 onClick = onReset,
             ) {
-                Text(text = "Reset")
+                Text(text = stringResource(R.string.reset))
             }
         }
     }

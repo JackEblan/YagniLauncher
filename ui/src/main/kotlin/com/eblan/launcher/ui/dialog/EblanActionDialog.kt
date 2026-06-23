@@ -43,6 +43,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.eblan.launcher.designsystem.component.EblanDialog
 import com.eblan.launcher.designsystem.component.EblanRadioButton
@@ -50,6 +51,7 @@ import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.EblanAction
 import com.eblan.launcher.domain.model.EblanActionType
 import com.eblan.launcher.domain.model.EblanApplicationInfo
+import com.eblan.launcher.ui.R
 import com.eblan.launcher.ui.local.LocalAccessibilityManager
 import com.eblan.launcher.ui.settings.getEblanActionTypeSubtitle
 
@@ -63,6 +65,8 @@ internal fun EblanActionDialog(
     onSelectEblanAction: (EblanAction) -> Unit,
     onDismissRequest: () -> Unit,
 ) {
+    val context = LocalContext.current
+
     val accessibilityManager = LocalAccessibilityManager.current
 
     var selectedEblanAction by remember { mutableStateOf(eblanAction) }
@@ -104,6 +108,7 @@ internal fun EblanActionDialog(
                     },
                     selected = selectedEblanAction.eblanActionType == eblanActionType,
                     text = eblanActionType.getEblanActionTypeSubtitle(
+                        context = context,
                         componentName = selectedEblanAction.componentName,
                     ),
                     onClick = {
@@ -128,7 +133,7 @@ internal fun EblanActionDialog(
             TextButton(
                 onClick = onDismissRequest,
             ) {
-                Text("Cancel")
+                Text(text = stringResource(R.string.cancel))
             }
 
             Spacer(
@@ -140,7 +145,7 @@ internal fun EblanActionDialog(
                     onSelectEblanAction(selectedEblanAction)
                 },
             ) {
-                Text("Save")
+                Text(text = stringResource(R.string.cancel))
             }
         }
     }
@@ -190,7 +195,7 @@ private fun AccessibilityServiceCard(modifier: Modifier = Modifier) {
 
             Text(
                 modifier = Modifier,
-                text = "Enable the accessibility service permission to use additional actions",
+                text = stringResource(R.string.enable_the_accessibility_service_permission_to_use_additional_actions),
                 style = MaterialTheme.typography.bodySmall,
             )
         }

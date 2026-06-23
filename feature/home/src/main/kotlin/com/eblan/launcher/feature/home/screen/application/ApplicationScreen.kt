@@ -56,6 +56,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
@@ -71,10 +72,12 @@ import com.eblan.launcher.domain.model.EblanApplicationInfoTag
 import com.eblan.launcher.domain.model.EblanShortcutInfo
 import com.eblan.launcher.domain.model.EblanShortcutInfoByGroup
 import com.eblan.launcher.domain.model.EblanUserPageKey
+import com.eblan.launcher.domain.model.EblanUserType
 import com.eblan.launcher.domain.model.GetEblanApplicationInfosByLabelAndTag
 import com.eblan.launcher.domain.model.ManagedProfileResult
 import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.domain.model.TextColor
+import com.eblan.launcher.feature.home.R
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
@@ -292,12 +295,12 @@ internal fun QuiteModeScreen(
             .padding(10.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text(text = "Work apps are paused", style = MaterialTheme.typography.titleLarge)
+        Text(text = stringResource(R.string.work_apps_are_paused), style = MaterialTheme.typography.titleLarge)
 
         Spacer(modifier = Modifier.height(10.dp))
 
         Text(
-            text = "You won't receive notifications from your work apps",
+            text = stringResource(R.string.you_won_t_receive_notifications_from_your_work_apps),
             textAlign = TextAlign.Center,
         )
 
@@ -314,7 +317,7 @@ internal fun QuiteModeScreen(
                     onUpdateRequestQuietModeEnabled(userManager.isQuietModeEnabled(userHandle = userHandle))
                 },
             ) {
-                Text(text = "Unpause")
+                Text(text = stringResource(R.string.unpause))
             }
         }
     }
@@ -394,7 +397,7 @@ internal fun EblanApplicationInfoTabRow(
                 },
                 text = {
                     Text(
-                        text = eblanUserPageKey.eblanUser.eblanUserType.name,
+                        text = eblanUserPageKey.eblanUser.eblanUserType.getEblanUserTypeTitle(),
                         maxLines = 1,
                     )
                 },
@@ -445,4 +448,12 @@ internal fun ApplicationScreenEffect(
     BackHandler(enabled = swipeY < screenHeight.toFloat()) {
         onDismiss()
     }
+}
+
+@Composable
+private fun EblanUserType.getEblanUserTypeTitle() = when (this) {
+    EblanUserType.Personal -> stringResource(R.string.personal)
+    EblanUserType.Clone -> stringResource(R.string.clone)
+    EblanUserType.Work -> stringResource(R.string.work)
+    EblanUserType.Private -> stringResource(R.string.private_space)
 }

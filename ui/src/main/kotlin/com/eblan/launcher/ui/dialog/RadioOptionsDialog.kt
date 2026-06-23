@@ -31,8 +31,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import com.eblan.launcher.designsystem.component.EblanDialog
 import com.eblan.launcher.designsystem.component.EblanRadioButton
+import com.eblan.launcher.ui.R
 
 @Composable
 fun <T> RadioOptionsDialog(
@@ -76,7 +78,7 @@ fun <T> RadioOptionsDialog(
             TextButton(
                 onClick = onDismissRequest,
             ) {
-                Text(text = "Cancel")
+                Text(text = stringResource(R.string.cancel))
             }
 
             TextButton(
@@ -84,7 +86,7 @@ fun <T> RadioOptionsDialog(
                     onUpdateClick(selectedOption)
                 },
             ) {
-                Text(text = "Update")
+                Text(text = stringResource(R.string.update))
             }
         }
     }

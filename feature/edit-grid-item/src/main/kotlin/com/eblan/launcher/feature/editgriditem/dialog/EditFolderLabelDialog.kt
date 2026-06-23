@@ -30,9 +30,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import com.eblan.launcher.designsystem.component.EblanDialog
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
+import com.eblan.launcher.feature.editgriditem.R
 
 @Composable
 internal fun EditFolderLabelDialog(
@@ -51,7 +53,7 @@ internal fun EditFolderLabelDialog(
         onDismissRequest = onDismissRequest,
     ) {
         Text(
-            text = "Label",
+            text = stringResource(R.string.label),
             style = MaterialTheme.typography.titleLarge,
         )
 
@@ -63,12 +65,12 @@ internal fun EditFolderLabelDialog(
             },
             modifier = Modifier.fillMaxWidth(),
             label = {
-                Text(text = "Label")
+                Text(text = stringResource(R.string.label))
             },
             isError = isError,
             supportingText = if (isError) {
                 {
-                    Text("Label is not valid")
+                    Text(text = stringResource(R.string.label_is_not_valid))
                 }
             } else {
                 null
@@ -82,7 +84,7 @@ internal fun EditFolderLabelDialog(
             TextButton(
                 onClick = onDismissRequest,
             ) {
-                Text(text = "Cancel")
+                Text(text = stringResource(R.string.cancel))
             }
 
             TextButton(
@@ -100,7 +102,7 @@ internal fun EditFolderLabelDialog(
                     }
                 },
             ) {
-                Text(text = "Update")
+                Text(text = stringResource(R.string.update))
             }
         }
     }

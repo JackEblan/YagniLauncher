@@ -39,6 +39,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -82,7 +83,7 @@ internal fun HomeSettingsScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(text = "Home")
+                    Text(text = stringResource(R.string.home))
                 },
                 navigationIcon = {
                     IconButton(onClick = onNavigateUp) {
@@ -142,7 +143,7 @@ private fun Success(
                 .padding(horizontal = 15.dp),
         ) {
             SettingsColumn(
-                title = "Grid",
+                title = stringResource(R.string.grid),
                 subtitle = "${homeSettings.columns}x${homeSettings.rows}",
                 onClick = {
                     showGridDialog = true
@@ -153,8 +154,8 @@ private fun Success(
 
             SettingsSwitch(
                 checked = homeSettings.infiniteScroll,
-                title = "Infinite Scrolling",
-                subtitle = "Seamless loop page scroll",
+                title = stringResource(R.string.infinite_scrolling),
+                subtitle = stringResource(R.string.seamless_loop_page_scroll),
                 onCheckedChange = { infiniteScroll ->
                     onUpdateHomeSettings(homeSettings.copy(infiniteScroll = infiniteScroll))
                 },
@@ -164,8 +165,8 @@ private fun Success(
 
             SettingsSwitch(
                 checked = homeSettings.wallpaperScroll,
-                title = "Wallpaper Scrolling",
-                subtitle = "Scroll wallpaper across pages",
+                title = stringResource(R.string.wallpaper_scrolling),
+                subtitle = stringResource(R.string.scroll_wallpaper_across_pages),
                 onCheckedChange = { wallpaperScroll ->
                     onUpdateHomeSettings(homeSettings.copy(wallpaperScroll = wallpaperScroll))
                 },
@@ -175,8 +176,8 @@ private fun Success(
 
             SettingsSwitch(
                 checked = homeSettings.lockScreenOrientation,
-                title = "Lock Screen Orientation",
-                subtitle = "Lock screen orientation",
+                title = stringResource(R.string.lock_screen_orientation),
+                subtitle = stringResource(R.string.prevent_rotation_when_device_orientation_changes),
                 onCheckedChange = { lockScreenOrientation ->
                     onUpdateHomeSettings(homeSettings.copy(lockScreenOrientation = lockScreenOrientation))
                 },
@@ -186,8 +187,8 @@ private fun Success(
 
             SettingsSwitch(
                 checked = homeSettings.addNewAppsToHomeScreen,
-                title = "Add New Apps",
-                subtitle = "Add new apps to home screen",
+                title = stringResource(R.string.add_new_apps),
+                subtitle = stringResource(R.string.add_new_apps_to_home_screen),
                 onCheckedChange = { addNewAppsToHomeScreen ->
                     onUpdateHomeSettings(homeSettings.copy(addNewAppsToHomeScreen = addNewAppsToHomeScreen))
                 },
@@ -196,7 +197,7 @@ private fun Success(
 
         Text(
             modifier = Modifier.padding(15.dp),
-            text = "Dock",
+            text = stringResource(R.string.dock),
             style = MaterialTheme.typography.bodySmall,
         )
 
@@ -206,7 +207,7 @@ private fun Success(
                 .padding(horizontal = 15.dp),
         ) {
             SettingsColumn(
-                title = "Dock Grid",
+                title = stringResource(R.string.dock_grid),
                 subtitle = "${homeSettings.dockColumns}x${homeSettings.dockRows}",
                 onClick = {
                     showDockGridDialog = true
@@ -216,7 +217,7 @@ private fun Success(
             HorizontalDivider(modifier = Modifier.fillMaxWidth())
 
             SettingsColumn(
-                title = "Dock Height",
+                title = stringResource(R.string.dock_height),
                 subtitle = "${homeSettings.dockHeight}",
                 onClick = {
                     showDockHeightDialog = true
@@ -227,8 +228,8 @@ private fun Success(
 
             SettingsSwitch(
                 checked = homeSettings.dockInfiniteScroll,
-                title = "Dock Infinite Scroll",
-                subtitle = "Seamless loop page scroll",
+                title = stringResource(R.string.dock_infinite_scroll),
+                subtitle = stringResource(R.string.seamless_loop_page_scroll),
                 onCheckedChange = { dockInfiniteScroll ->
                     onUpdateHomeSettings(homeSettings.copy(dockInfiniteScroll = dockInfiniteScroll))
                 },
@@ -237,7 +238,7 @@ private fun Success(
 
         Text(
             modifier = Modifier.padding(15.dp),
-            text = "Folder",
+            text = stringResource(R.string.folder),
             style = MaterialTheme.typography.bodySmall,
         )
 
@@ -247,7 +248,7 @@ private fun Success(
                 .padding(horizontal = 15.dp),
         ) {
             SettingsColumn(
-                title = "Folder Cell Dimension",
+                title = stringResource(R.string.folder_cell_dimension),
                 subtitle = "${homeSettings.folderCellWidth}x${homeSettings.folderCellHeight}",
                 onClick = {
                     showFolderCellDimensionDialog = true
@@ -257,7 +258,7 @@ private fun Success(
             HorizontalDivider(modifier = Modifier.fillMaxWidth())
 
             SettingsColumn(
-                title = "Folder Max Grid",
+                title = stringResource(R.string.folder_max_grid),
                 subtitle = "${homeSettings.maxFolderColumns}x${homeSettings.maxFolderRows}",
                 onClick = {
                     showFolderMaxGridDialog = true

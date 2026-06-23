@@ -31,10 +31,12 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.eblan.launcher.designsystem.component.EblanDialog
 import com.eblan.launcher.domain.model.PackageManagerIconPackInfo
+import com.eblan.launcher.feature.settings.general.R
 
 @Composable
 internal fun ImportIconPackInfoDialog(
@@ -51,14 +53,14 @@ internal fun ImportIconPackInfoDialog(
         onDismissRequest = onDismissRequest,
     ) {
         Text(
-            text = "Import Icon Pack",
+            text = stringResource(R.string.import_icon_pack),
             style = MaterialTheme.typography.titleLarge,
         )
 
         when {
             packageManagerIconPackInfos.isEmpty() -> {
                 Text(
-                    text = "No icon packs",
+                    text = stringResource(R.string.no_icon_packs),
                 )
             }
 
@@ -104,7 +106,7 @@ internal fun ImportIconPackInfoDialog(
             TextButton(
                 onClick = onDismissRequest,
             ) {
-                Text(text = "Cancel")
+                Text(text = stringResource(R.string.cancel))
             }
         }
     }

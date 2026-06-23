@@ -31,8 +31,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import com.eblan.launcher.designsystem.component.EblanDialog
+import com.eblan.launcher.ui.R
 
 @Composable
 internal fun EditCornerRadiusDialog(
@@ -50,7 +52,7 @@ internal fun EditCornerRadiusDialog(
         onDismissRequest = onDismissRequest,
     ) {
         Text(
-            text = "Corner Radius",
+            text = stringResource(R.string.corner_radius),
             style = MaterialTheme.typography.titleLarge,
         )
 
@@ -62,12 +64,12 @@ internal fun EditCornerRadiusDialog(
             },
             modifier = Modifier.fillMaxWidth(),
             label = {
-                Text(text = "Corner Radius")
+                Text(text = stringResource(R.string.corner_radius))
             },
             isError = isError,
             supportingText = if (isError) {
                 {
-                    Text(text = "Corner Radius is not valid")
+                    Text(text = stringResource(R.string.corner_radius_is_not_valid))
                 }
             } else {
                 null
@@ -84,7 +86,7 @@ internal fun EditCornerRadiusDialog(
             TextButton(
                 onClick = onDismissRequest,
             ) {
-                Text(text = "Cancel")
+                Text(text = stringResource(R.string.cancel))
             }
 
             TextButton(
@@ -98,7 +100,7 @@ internal fun EditCornerRadiusDialog(
                     }
                 },
             ) {
-                Text(text = "Update")
+                Text(text = stringResource(R.string.update))
             }
         }
     }

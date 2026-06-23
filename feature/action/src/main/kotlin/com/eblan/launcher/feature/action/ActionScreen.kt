@@ -40,6 +40,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -88,7 +90,7 @@ internal fun ActionScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(text = "Yagni Launcher Action")
+                    Text(text = stringResource(R.string.yagni_launcher_action))
                 },
                 navigationIcon = {
                     IconButton(onClick = onFinish) {
@@ -131,6 +133,8 @@ private fun Success(
         eblanAction: EblanAction,
     ) -> Unit,
 ) {
+    val context = LocalContext.current
+
     val scope = rememberCoroutineScope()
 
     var showSelectApplicationDialog by remember { mutableStateOf(false) }
@@ -162,7 +166,12 @@ private fun Success(
                     .fillMaxWidth()
                     .padding(10.dp),
                 headlineContent = {
-                    Text(text = eblanActionType.getEblanActionTypeSubtitle(componentName = ""))
+                    Text(
+                        text = eblanActionType.getEblanActionTypeSubtitle(
+                            context = context,
+                            componentName = "",
+                        ),
+                    )
                 },
                 leadingContent = {
                     Icon(

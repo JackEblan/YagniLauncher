@@ -31,11 +31,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.eblan.launcher.designsystem.component.EblanDialog
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.EblanApplicationInfo
+import com.eblan.launcher.feature.settings.appdrawer.R
 
 @Composable
 internal fun HiddenEblanApplicationInfosDialog(
@@ -49,14 +51,14 @@ internal fun HiddenEblanApplicationInfosDialog(
         onDismissRequest = onDismissRequest,
     ) {
         Text(
-            text = "Hidden Applications",
+            text = stringResource(R.string.hidden_applications),
             style = MaterialTheme.typography.titleLarge,
         )
 
         when {
             eblanApplicationInfos.isEmpty() -> {
                 Text(
-                    text = "No hidden Applications",
+                    text = stringResource(R.string.no_hidden_applications),
                 )
             }
 
@@ -109,7 +111,7 @@ internal fun HiddenEblanApplicationInfosDialog(
             TextButton(
                 onClick = onDismissRequest,
             ) {
-                Text(text = "Okay")
+                Text(text = stringResource(R.string.okay))
             }
         }
     }

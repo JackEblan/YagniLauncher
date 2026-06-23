@@ -38,6 +38,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -86,7 +87,7 @@ internal fun AppDrawerSettingsScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(text = "App Drawer")
+                    Text(text = stringResource(R.string.app_drawer))
                 },
                 navigationIcon = {
                     IconButton(onClick = onNavigateUp) {
@@ -150,7 +151,7 @@ private fun Success(
                 .padding(horizontal = 15.dp),
         ) {
             SettingsColumn(
-                title = "App Drawer Type",
+                title = stringResource(R.string.app_drawer_type),
                 subtitle = appDrawerSettings.appDrawerType.name,
                 onClick = {
                     showAppDrawerTypeDialog = true
@@ -162,7 +163,7 @@ private fun Success(
             when (appDrawerSettings.appDrawerType) {
                 AppDrawerType.Vertical -> {
                     SettingsColumn(
-                        title = "Grid",
+                        title = stringResource(R.string.grid),
                         subtitle = "${appDrawerSettings.appDrawerColumns}x${appDrawerSettings.appDrawerRowsHeight}",
                         onClick = {
                             showVerticalGridDialog = true
@@ -172,7 +173,7 @@ private fun Success(
 
                 AppDrawerType.Horizontal -> {
                     SettingsColumn(
-                        title = "Grid",
+                        title = stringResource(R.string.grid),
                         subtitle = "${appDrawerSettings.horizontalAppDrawerColumns}x${appDrawerSettings.horizontalAppDrawerRows}",
                         onClick = {
                             showHorizontalGridDialog = true
@@ -186,8 +187,8 @@ private fun Success(
             HorizontalDivider(modifier = Modifier.fillMaxWidth())
 
             TextColorSettingsRow(
-                textColorTitle = "Background Color",
-                customColorTitle = "Custom Background Color",
+                textColorTitle = stringResource(R.string.background_color),
+                customColorTitle = stringResource(R.string.custom_background_color),
                 textColor = appDrawerSettings.backgroundColor,
                 customColor = appDrawerSettings.customBackgroundColor,
                 onClick = {
@@ -198,8 +199,8 @@ private fun Success(
             HorizontalDivider(modifier = Modifier.fillMaxWidth())
 
             SettingsColumn(
-                title = "Hidden Applications",
-                subtitle = "Hidden Applications",
+                title = stringResource(R.string.hidden_applications),
+                subtitle = stringResource(R.string.hide_selected_apps_from_the_app_drawer),
                 onClick = {
                     showHiddenEblanApplicationInfosDialog = true
                 },
@@ -209,8 +210,8 @@ private fun Success(
 
             SettingsSwitch(
                 checked = appDrawerSettings.excludeTaggedApps,
-                title = "Exclude Tagged Apps",
-                subtitle = "Exclude tagged apps",
+                title = stringResource(R.string.exclude_tagged_apps),
+                subtitle = stringResource(R.string.hide_apps_marked_with_selected_tags),
                 onCheckedChange = { excludeTaggedApps ->
                     onUpdateAppDrawerSettings(appDrawerSettings.copy(excludeTaggedApps = excludeTaggedApps))
                 },
@@ -227,7 +228,7 @@ private fun Success(
 
     if (showAppDrawerTypeDialog) {
         RadioOptionsDialog(
-            title = "App Drawer Type",
+            title = stringResource(R.string.app_drawer_type),
             options = AppDrawerType.entries,
             selected = appDrawerSettings.appDrawerType,
             label = {
@@ -276,7 +277,7 @@ private fun Success(
 
     if (showTextColorDialog) {
         TextColorDialog(
-            title = "Background Color",
+            title = stringResource(R.string.background_color),
             textColor = appDrawerSettings.backgroundColor,
             customTextColor = appDrawerSettings.customBackgroundColor,
             onDismissRequest = {

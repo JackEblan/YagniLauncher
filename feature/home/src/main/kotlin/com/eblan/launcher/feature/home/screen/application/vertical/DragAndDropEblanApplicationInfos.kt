@@ -61,6 +61,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -73,6 +74,7 @@ import com.eblan.launcher.domain.model.AppDrawerSettings
 import com.eblan.launcher.domain.model.EblanApplicationInfo
 import com.eblan.launcher.domain.model.EblanUserPageKey
 import com.eblan.launcher.domain.model.GetEblanApplicationInfosByLabelAndTag
+import com.eblan.launcher.feature.home.R
 import com.eblan.launcher.feature.home.util.getHorizontalAlignment
 import com.eblan.launcher.feature.home.util.getSystemTextColor
 import com.eblan.launcher.feature.home.util.getVerticalArrangement
@@ -113,10 +115,12 @@ internal fun DragAndDropEblanApplicationInfos(
 
     var expanded by remember { mutableStateOf(false) }
 
+    val dragAnItemToRearrangeString = stringResource(R.string.drag_an_item_to_rearrange)
+
     LaunchedEffect(key1 = Unit) {
         Toast.makeText(
             context,
-            "Drag an item to rearrange",
+            dragAnItemToRearrangeString,
             Toast.LENGTH_LONG,
         ).show()
     }
@@ -283,7 +287,7 @@ private fun ExpandableFloatingActionButton(
                     onClick = onSave,
                 ) {
                     Text(
-                        text = "Save",
+                        text = stringResource(R.string.save),
                         style = MaterialTheme.typography.bodyMedium,
                     )
                 }
@@ -292,7 +296,7 @@ private fun ExpandableFloatingActionButton(
                     onClick = onCancel,
                 ) {
                     Text(
-                        text = "Cancel",
+                        text = stringResource(R.string.cancel),
                         style = MaterialTheme.typography.bodyMedium,
                     )
                 }

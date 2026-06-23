@@ -31,10 +31,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.eblan.launcher.designsystem.component.EblanDialog
 import com.eblan.launcher.domain.model.HomeSettings
+import com.eblan.launcher.feature.settings.home.R
 
 @Composable
 internal fun EditFolderMaxGridDialog(
@@ -54,7 +56,7 @@ internal fun EditFolderMaxGridDialog(
         onDismissRequest = onDismissRequest,
     ) {
         Text(
-            text = "Folder Max Grid",
+            text = stringResource(R.string.folder_max_grid),
             style = MaterialTheme.typography.titleLarge,
         )
 
@@ -68,10 +70,10 @@ internal fun EditFolderMaxGridDialog(
                     firstError = false
                 },
                 modifier = Modifier.weight(1f),
-                label = { Text(text = "Max Columns") },
+                label = { Text(text = stringResource(R.string.max_columns)) },
                 supportingText = if (firstError) {
                     {
-                        Text(text = "Max columns is not valid")
+                        Text(text = stringResource(R.string.max_columns_is_not_valid))
                     }
                 } else {
                     null
@@ -89,10 +91,10 @@ internal fun EditFolderMaxGridDialog(
                     secondError = false
                 },
                 modifier = Modifier.weight(1f),
-                label = { Text(text = "Max Rows") },
+                label = { Text(text = stringResource(R.string.max_rows)) },
                 supportingText = if (secondError) {
                     {
-                        Text(text = "Max rows is not valid")
+                        Text(text = stringResource(R.string.max_rows_is_not_valid))
                     }
                 } else {
                     null
@@ -111,7 +113,7 @@ internal fun EditFolderMaxGridDialog(
             TextButton(
                 onClick = onDismissRequest,
             ) {
-                Text(text = "Cancel")
+                Text(text = stringResource(R.string.cancel))
             }
 
             TextButton(
@@ -138,7 +140,7 @@ internal fun EditFolderMaxGridDialog(
                     }
                 },
             ) {
-                Text(text = "Update")
+                Text(text = stringResource(R.string.update))
             }
         }
     }

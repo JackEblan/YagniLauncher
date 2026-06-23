@@ -44,12 +44,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.Associate
 import com.eblan.launcher.domain.model.GridItem
+import com.eblan.launcher.feature.home.R
 
 @Composable
 internal fun SettingsPopup(
@@ -163,7 +165,7 @@ private fun SettingsMenu(
             Column {
                 PopupMenuRow(
                     imageVector = EblanLauncherIcons.Settings,
-                    title = "Settings",
+                    title = stringResource(R.string.settings),
                     onClick = onSettings,
                 )
 
@@ -171,7 +173,7 @@ private fun SettingsMenu(
 
                 PopupMenuRow(
                     imageVector = EblanLauncherIcons.Pages,
-                    title = "Edit Pages",
+                    title = stringResource(R.string.edit_pages),
                     onClick = onEditPage,
                 )
 
@@ -179,7 +181,7 @@ private fun SettingsMenu(
 
                 PopupMenuRow(
                     imageVector = EblanLauncherIcons.Pages,
-                    title = "Edit Dock Pages",
+                    title = stringResource(R.string.edit_dock_pages),
                     onClick = onEditDockPage,
                 )
 
@@ -188,7 +190,7 @@ private fun SettingsMenu(
 
                     PopupMenuRow(
                         imageVector = EblanLauncherIcons.Widgets,
-                        title = "Widgets",
+                        title = stringResource(R.string.widgets),
                         onClick = onWidgets,
                     )
                 }
@@ -197,7 +199,7 @@ private fun SettingsMenu(
 
                 PopupMenuRow(
                     imageVector = EblanLauncherIcons.Shortcut,
-                    title = "Shortcuts",
+                    title = stringResource(R.string.shortcuts),
                     onClick = onShortcutConfigActivities,
                 )
 
@@ -205,7 +207,7 @@ private fun SettingsMenu(
 
                 PopupMenuRow(
                     imageVector = EblanLauncherIcons.Image,
-                    title = "Wallpaper",
+                    title = stringResource(R.string.wallpaper),
                     onClick = onWallpaper,
                 )
             }

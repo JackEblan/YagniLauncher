@@ -31,8 +31,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.eblan.launcher.designsystem.component.EblanDialog
+import com.eblan.launcher.feature.home.R
 
 @Composable
 internal fun TextDialog(
@@ -66,7 +68,7 @@ internal fun TextDialog(
             TextButton(
                 onClick = onDismissRequest,
             ) {
-                Text(text = "Later")
+                Text(text = stringResource(R.string.later))
             }
 
             Spacer(modifier = Modifier.width(8.dp))
@@ -74,7 +76,7 @@ internal fun TextDialog(
             Button(
                 onClick = onClick,
             ) {
-                Text(text = "Okay")
+                Text(text = stringResource(R.string.okay))
             }
         }
     }

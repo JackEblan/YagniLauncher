@@ -46,6 +46,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -123,7 +124,12 @@ internal fun EditApplicationInfoScreen(
             topBar = {
                 TopAppBar(
                     title = {
-                        Text(text = "Edit ${editApplicationInfoUiState.eblanApplicationInfo.label}")
+                        Text(
+                            text = stringResource(
+                                R.string.edit,
+                                editApplicationInfoUiState.eblanApplicationInfo.label,
+                            ),
+                        )
                     },
                     navigationIcon = {
                         IconButton(onClick = onNavigateUp) {
@@ -226,8 +232,8 @@ private fun Success(
         HorizontalDivider(modifier = Modifier.fillMaxWidth())
 
         SettingsColumn(
-            title = "Custom Label",
-            subtitle = eblanApplicationInfo.customLabel ?: "None",
+            title = stringResource(R.string.custom_label),
+            subtitle = eblanApplicationInfo.customLabel ?: stringResource(R.string.none),
             onClick = {
                 showCustomLabelDialog = true
             },
@@ -237,8 +243,8 @@ private fun Success(
 
         SettingsSwitch(
             checked = eblanApplicationInfo.isHidden,
-            title = "Hide From Drawer",
-            subtitle = "View hidden apps in App Drawer settings",
+            title = stringResource(R.string.hide_from_drawer),
+            subtitle = stringResource(R.string.view_hidden_apps_in_app_drawer_settings),
             onCheckedChange = { isHidden ->
                 onUpdateEblanApplicationInfo(eblanApplicationInfo.copy(isHidden = isHidden))
             },
@@ -403,7 +409,7 @@ private fun AddTag(
             )
 
             Text(
-                text = "Add",
+                text = stringResource(R.string.add),
                 style = MaterialTheme.typography.bodyMedium,
             )
         }

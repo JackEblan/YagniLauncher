@@ -78,6 +78,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
@@ -97,6 +98,7 @@ import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.GridItemSettings
 import com.eblan.launcher.domain.model.MoveGridItemResult
+import com.eblan.launcher.feature.home.R
 import com.eblan.launcher.feature.home.component.OffsetNestedScrollConnection
 import com.eblan.launcher.feature.home.component.OffsetOverscrollEffect
 import com.eblan.launcher.feature.home.model.Drag
@@ -214,7 +216,7 @@ internal fun ShortcutConfigScreen(
                             )
                         },
                         onSearch = { scope.launch { searchBarState.animateToCollapsed() } },
-                        placeholder = { Text(text = "Search Applications") },
+                        placeholder = { Text(text = stringResource(R.string.search_applications)) },
                     )
                 },
             )

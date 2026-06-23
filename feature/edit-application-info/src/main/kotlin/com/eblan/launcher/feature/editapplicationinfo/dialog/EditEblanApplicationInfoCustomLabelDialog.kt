@@ -33,9 +33,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import com.eblan.launcher.designsystem.component.EblanDialog
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.EblanApplicationInfo
+import com.eblan.launcher.feature.editapplicationinfo.R
 
 @Composable
 internal fun EditEblanApplicationInfoCustomLabelDialog(
@@ -60,7 +62,7 @@ internal fun EditEblanApplicationInfoCustomLabelDialog(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                text = "Custom Label",
+                text = stringResource(R.string.custom_label),
                 style = MaterialTheme.typography.titleLarge,
             )
 
@@ -89,12 +91,12 @@ internal fun EditEblanApplicationInfoCustomLabelDialog(
             },
             modifier = Modifier.fillMaxWidth(),
             label = {
-                Text(text = "Custom Label")
+                Text(text = stringResource(R.string.custom_label))
             },
             isError = isError,
             supportingText = if (isError) {
                 {
-                    Text("Custom label is not valid")
+                    Text(text = stringResource(R.string.custom_label_is_not_valid))
                 }
             } else {
                 null
@@ -108,7 +110,7 @@ internal fun EditEblanApplicationInfoCustomLabelDialog(
             TextButton(
                 onClick = onDismissRequest,
             ) {
-                Text(text = "Cancel")
+                Text(text = stringResource(R.string.cancel))
             }
 
             TextButton(
@@ -124,7 +126,7 @@ internal fun EditEblanApplicationInfoCustomLabelDialog(
                     }
                 },
             ) {
-                Text(text = "Update")
+                Text(text = stringResource(R.string.update))
             }
         }
     }

@@ -42,11 +42,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.eblan.launcher.designsystem.component.VerticalSlideReveal
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.PackageManagerIconPackInfo
+import com.eblan.launcher.ui.R
 import com.eblan.launcher.ui.settings.SettingsColumn
 
 @Composable
@@ -100,11 +102,11 @@ fun CustomIcon(
             Spacer(modifier = Modifier.width(10.dp))
 
             Column(modifier = Modifier.weight(1f)) {
-                Text(text = "Custom Icon")
+                Text(text = stringResource(R.string.custom_icon))
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                Text(text = customIcon ?: "None")
+                Text(text = customIcon ?: stringResource(R.string.none))
             }
 
             IconButton(
@@ -126,8 +128,8 @@ fun CustomIcon(
         VerticalSlideReveal(visible = expanded) {
             Column(modifier = Modifier.fillMaxWidth()) {
                 SettingsColumn(
-                    title = "Gallery",
-                    subtitle = "Pick icons from your gallery",
+                    title = stringResource(R.string.gallery),
+                    subtitle = stringResource(R.string.pick_icons_from_your_gallery),
                     onClick = {
                         pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
                     },
@@ -149,8 +151,8 @@ fun CustomIcon(
 
                 if (customIcon != null) {
                     SettingsColumn(
-                        title = "Reset Custom Icon",
-                        subtitle = "Reset custom icon",
+                        title = stringResource(R.string.reset_custom_icon),
+                        subtitle = stringResource(R.string.reset_custom_icon),
                         onClick = onResetCustomIcon,
                     )
                 }

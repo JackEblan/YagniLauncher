@@ -49,6 +49,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
@@ -98,7 +99,7 @@ internal fun SettingsScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(text = "Settings")
+                    Text(text = stringResource(R.string.settings))
                 },
                 navigationIcon = {
                     IconButton(onClick = onFinish) {
@@ -127,8 +128,8 @@ internal fun SettingsScreen(
                 if (!packageManager.isDefaultLauncher()) {
                     SettingsRow(
                         imageVector = EblanLauncherIcons.Info,
-                        subtitle = "Choose Yagni Launcher",
-                        title = "Default Launcher",
+                        subtitle = stringResource(R.string.choose_yagni_launcher),
+                        title = stringResource(R.string.default_launcher),
                         onClick = {
                             context.startActivity(Intent(ACTION_HOME_SETTINGS))
                         },
@@ -139,8 +140,8 @@ internal fun SettingsScreen(
 
                 SettingsRow(
                     imageVector = EblanLauncherIcons.Settings,
-                    subtitle = "Themes, icon packs",
-                    title = "General",
+                    subtitle = stringResource(R.string.themes_icon_packs),
+                    title = stringResource(R.string.general),
                     onClick = onGeneral,
                 )
 
@@ -148,8 +149,8 @@ internal fun SettingsScreen(
 
                 SettingsRow(
                     imageVector = EblanLauncherIcons.Home,
-                    subtitle = "Grid, icon, dock, and more",
-                    title = "Home",
+                    subtitle = stringResource(R.string.grid_icon_dock_and_more),
+                    title = stringResource(R.string.home),
                     onClick = onHome,
                 )
 
@@ -157,8 +158,8 @@ internal fun SettingsScreen(
 
                 SettingsRow(
                     imageVector = EblanLauncherIcons.Apps,
-                    subtitle = "Columns and rows count",
-                    title = "App Drawer",
+                    subtitle = stringResource(R.string.columns_and_rows_count),
+                    title = stringResource(R.string.app_drawer),
                     onClick = onAppDrawer,
                 )
 
@@ -166,8 +167,8 @@ internal fun SettingsScreen(
 
                 SettingsRow(
                     imageVector = EblanLauncherIcons.Gesture,
-                    subtitle = "Swipe gesture actions",
-                    title = "Gestures",
+                    subtitle = stringResource(R.string.swipe_gesture_actions),
+                    title = stringResource(R.string.gestures),
                     onClick = onGestures,
                 )
 
@@ -175,8 +176,8 @@ internal fun SettingsScreen(
 
                 SettingsRow(
                     imageVector = EblanLauncherIcons.DeveloperMode,
-                    subtitle = "Advanced options for power users",
-                    title = "Experimental",
+                    subtitle = stringResource(R.string.advanced_options_for_power_users),
+                    title = stringResource(R.string.experimental),
                     onClick = onExperimental,
                 )
             }
@@ -243,21 +244,19 @@ private fun AlphaWarningCard(modifier: Modifier = Modifier) {
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text(
-                text = "Thank you for using Yagni Launcher Alpha!",
+                text = stringResource(R.string.thank_you_for_using_yagni_launcher_alpha),
                 style = MaterialTheme.typography.titleMedium,
                 textAlign = TextAlign.Center,
             )
 
             Text(
-                text = "Development began in January 2025 with regular weekly updates. " +
-                    "This is my most complex project to date, and I dedicate significant effort to its improvement.",
+                text = stringResource(R.string.about_development_description),
                 style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center,
             )
 
             Text(
-                text = "If you find value in the application, your support would be greatly appreciated " +
-                    "through a donation on Ko-Fi or by starring the repository on GitHub.",
+                text = stringResource(R.string.support_message),
                 style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center,
             )
@@ -272,7 +271,7 @@ private fun AlphaWarningCard(modifier: Modifier = Modifier) {
                     modifier = Modifier.weight(1f),
                 ) {
                     Text(
-                        text = "Support on Ko-Fi",
+                        text = stringResource(R.string.support_on_ko_fi),
                         textAlign = TextAlign.Center,
                     )
                 }
@@ -282,14 +281,14 @@ private fun AlphaWarningCard(modifier: Modifier = Modifier) {
                     modifier = Modifier.weight(1f),
                 ) {
                     Text(
-                        text = "Star on GitHub",
+                        text = stringResource(R.string.star_on_github),
                         textAlign = TextAlign.Center,
                     )
                 }
             }
 
             Text(
-                text = "Note: This informational card will be removed in future stable releases",
+                text = stringResource(R.string.note_this_informational_card_will_be_removed_in_future_stable_releases),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,

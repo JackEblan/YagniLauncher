@@ -32,9 +32,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import com.eblan.launcher.designsystem.component.EblanDialog
 import com.eblan.launcher.designsystem.component.EblanRadioButton
 import com.eblan.launcher.domain.model.TextColor
+import com.eblan.launcher.ui.R
 
 @Composable
 fun TextColorDialog(
@@ -71,7 +73,7 @@ fun TextColorDialog(
             TextColor.entries.forEach { textColor ->
                 EblanRadioButton(
                     selected = selectedTextColor == textColor,
-                    text = textColor.name,
+                    text = textColor.getTextColorTitle(),
                     onClick = {
                         if (textColor == TextColor.Custom) {
                             showColorPickerDialog = true
@@ -90,7 +92,7 @@ fun TextColorDialog(
             TextButton(
                 onClick = onDismissRequest,
             ) {
-                Text(text = "Cancel")
+                Text(text = stringResource(R.string.cancel))
             }
 
             TextButton(
@@ -101,7 +103,7 @@ fun TextColorDialog(
                     )
                 },
             ) {
-                Text(text = "Update")
+                Text(text = stringResource(R.string.update))
             }
         }
     }
@@ -122,4 +124,12 @@ fun TextColorDialog(
             },
         )
     }
+}
+
+@Composable
+private fun TextColor.getTextColorTitle() = when (this) {
+    TextColor.System -> stringResource(R.string.system)
+    TextColor.Light -> stringResource(R.string.light)
+    TextColor.Dark -> stringResource(R.string.dark)
+    TextColor.Custom -> stringResource(R.string.custom)
 }

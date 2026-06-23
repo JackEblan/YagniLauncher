@@ -31,8 +31,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import com.eblan.launcher.designsystem.component.EblanDialog
+import com.eblan.launcher.ui.R
 
 @Composable
 internal fun EditPaddingDialog(
@@ -50,7 +52,7 @@ internal fun EditPaddingDialog(
         onDismissRequest = onDismissRequest,
     ) {
         Text(
-            text = "Padding",
+            text = stringResource(R.string.padding),
             style = MaterialTheme.typography.titleLarge,
         )
 
@@ -62,12 +64,12 @@ internal fun EditPaddingDialog(
             },
             modifier = Modifier.fillMaxWidth(),
             label = {
-                Text(text = "Padding")
+                Text(text = stringResource(R.string.padding))
             },
             isError = isError,
             supportingText = if (isError) {
                 {
-                    Text(text = "Padding is not valid")
+                    Text(text = stringResource(R.string.padding_is_not_valid))
                 }
             } else {
                 null
@@ -84,7 +86,7 @@ internal fun EditPaddingDialog(
             TextButton(
                 onClick = onDismissRequest,
             ) {
-                Text(text = "Cancel")
+                Text(text = stringResource(R.string.cancel))
             }
 
             TextButton(
@@ -98,7 +100,7 @@ internal fun EditPaddingDialog(
                     }
                 },
             ) {
-                Text(text = "Update")
+                Text(text = stringResource(R.string.update))
             }
         }
     }

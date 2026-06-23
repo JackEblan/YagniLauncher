@@ -63,6 +63,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.util.Consumer
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
@@ -71,6 +72,7 @@ import com.eblan.launcher.domain.model.EditPageData
 import com.eblan.launcher.domain.model.HomeSettings
 import com.eblan.launcher.domain.model.PageItem
 import com.eblan.launcher.domain.model.TextColor
+import com.eblan.launcher.feature.home.R
 import com.eblan.launcher.feature.home.component.GridLayout
 import com.eblan.launcher.feature.home.model.Screen
 import kotlinx.coroutines.launch
@@ -342,7 +344,7 @@ private fun ExpandableFloatingActionButton(
             ) {
                 ElevatedButton(onClick = onAdd) {
                     Text(
-                        text = "Add",
+                        text = stringResource(R.string.add),
                         style = MaterialTheme.typography.bodyMedium,
                     )
                 }
@@ -351,7 +353,7 @@ private fun ExpandableFloatingActionButton(
                     onClick = onSave,
                 ) {
                     Text(
-                        text = "Save",
+                        text = stringResource(R.string.save),
                         style = MaterialTheme.typography.bodyMedium,
                     )
                 }
@@ -360,7 +362,7 @@ private fun ExpandableFloatingActionButton(
                     onClick = onCancel,
                 ) {
                     Text(
-                        text = "Cancel",
+                        text = stringResource(R.string.cancel),
                         style = MaterialTheme.typography.bodyMedium,
                     )
                 }
