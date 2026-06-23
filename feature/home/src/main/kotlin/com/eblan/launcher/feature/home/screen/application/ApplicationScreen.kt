@@ -93,8 +93,9 @@ import kotlin.time.Duration.Companion.milliseconds
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-internal fun SharedTransitionScope.ApplicationScreen(
+internal fun ApplicationScreen(
     modifier: Modifier = Modifier,
+    sharedTransitionScope: SharedTransitionScope,
     alpha: Float,
     appDrawerSettings: AppDrawerSettings,
     cornerSize: Dp,
@@ -162,6 +163,7 @@ internal fun SharedTransitionScope.ApplicationScreen(
         when (appDrawerSettings.appDrawerType) {
             AppDrawerType.Vertical -> {
                 VerticalApplicationScreen(
+                    sharedTransitionScope = sharedTransitionScope,
                     appDrawerSettings = appDrawerSettings,
                     drag = drag,
                     eblanAppWidgetProviderInfosGroup = eblanAppWidgetProviderInfosGroup,
@@ -196,6 +198,7 @@ internal fun SharedTransitionScope.ApplicationScreen(
 
             AppDrawerType.Horizontal -> {
                 HorizontalApplicationScreen(
+                    sharedTransitionScope = sharedTransitionScope,
                     appDrawerSettings = appDrawerSettings,
                     drag = drag,
                     eblanAppWidgetProviderInfosGroup = eblanAppWidgetProviderInfosGroup,
@@ -228,6 +231,7 @@ internal fun SharedTransitionScope.ApplicationScreen(
 
             AppDrawerType.List -> {
                 ListApplicationScreen(
+                    sharedTransitionScope = sharedTransitionScope,
                     appDrawerSettings = appDrawerSettings,
                     drag = drag,
                     eblanAppWidgetProviderInfosGroup = eblanAppWidgetProviderInfosGroup,

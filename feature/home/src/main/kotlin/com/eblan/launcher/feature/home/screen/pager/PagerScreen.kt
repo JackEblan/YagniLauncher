@@ -684,6 +684,7 @@ internal fun PagerScreen(
                         val height = gridItem.rowSpan * cellHeight
 
                         InteractiveGridItem(
+                            sharedTransitionScope = this@SharedTransitionLayout,
                             drag = pagerScreenState.drag,
                             gridItem = gridItem,
                             gridItemSettings = homeSettings.gridItemSettings,
@@ -806,6 +807,7 @@ internal fun PagerScreen(
                         val height = gridItem.rowSpan * cellHeight
 
                         InteractiveGridItem(
+                            sharedTransitionScope = this@SharedTransitionLayout,
                             drag = pagerScreenState.drag,
                             gridItem = gridItem,
                             gridItemSettings = homeSettings.gridItemSettings,
@@ -960,6 +962,7 @@ internal fun PagerScreen(
 
         folderPopups.forEach { popupFolderGridItem ->
             FolderScreen(
+                sharedTransitionScope = this@SharedTransitionLayout,
                 drag = pagerScreenState.drag,
                 folderPopup = popupFolderGridItem,
                 gridItemSettings = homeSettings.gridItemSettings,
@@ -1056,6 +1059,7 @@ internal fun PagerScreen(
             gestureSettings.swipeDown.eblanActionType == EblanActionType.OpenAppDrawer
         ) {
             ApplicationScreen(
+                sharedTransitionScope = this@SharedTransitionLayout,
                 alpha = pagerScreenState.applicationScreenAlpha,
                 appDrawerSettings = appDrawerSettings,
                 cornerSize = pagerScreenState.applicationScreenCornerSize,

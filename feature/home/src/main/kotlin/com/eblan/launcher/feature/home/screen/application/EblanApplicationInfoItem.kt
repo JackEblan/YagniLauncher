@@ -96,8 +96,9 @@ import kotlin.uuid.Uuid
     ExperimentalLayoutApi::class,
 )
 @Composable
-internal fun SharedTransitionScope.EblanApplicationInfoItem(
+internal fun EblanApplicationInfoItem(
     modifier: Modifier = Modifier,
+    sharedTransitionScope: SharedTransitionScope,
     appDrawerSettings: AppDrawerSettings,
     drag: Drag,
     eblanApplicationInfo: EblanApplicationInfo,
@@ -280,16 +281,18 @@ internal fun SharedTransitionScope.EblanApplicationInfoItem(
 
                     intSize = layoutCoordinates.size
                 }.run {
-                    if (!isLongPress) {
-                        sharedElementWithCallerManagedVisibility(
-                            rememberSharedContentState(
-                                key = SharedElementKey(
-                                    id = applicationScreenId,
-                                    parent = SharedElementKey.Parent.SwipeY,
+                    if (!isLongPress && !isVisibleOverlay) {
+                        with(sharedTransitionScope) {
+                            sharedElementWithCallerManagedVisibility(
+                                rememberSharedContentState(
+                                    key = SharedElementKey(
+                                        id = applicationScreenId,
+                                        parent = SharedElementKey.Parent.SwipeY,
+                                    ),
                                 ),
-                            ),
-                            visible = !isVisibleOverlay,
-                        )
+                                visible = true,
+                            )
+                        }
                     } else {
                         this
                     }

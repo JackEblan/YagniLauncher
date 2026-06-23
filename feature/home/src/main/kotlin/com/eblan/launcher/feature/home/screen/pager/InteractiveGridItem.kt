@@ -96,8 +96,9 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-internal fun SharedTransitionScope.InteractiveGridItem(
+internal fun InteractiveGridItem(
     modifier: Modifier = Modifier,
+    sharedTransitionScope: SharedTransitionScope,
     drag: Drag,
     gridItem: GridItem,
     gridItemSettings: GridItemSettings,
@@ -172,6 +173,7 @@ internal fun SharedTransitionScope.InteractiveGridItem(
         is GridItemData.ApplicationInfo -> {
             InteractiveApplicationInfoGridItem(
                 modifier = modifier,
+                sharedTransitionScope = sharedTransitionScope,
                 data = data,
                 drag = drag,
                 gridItem = gridItem,
@@ -203,6 +205,7 @@ internal fun SharedTransitionScope.InteractiveGridItem(
         is GridItemData.Widget -> {
             InteractiveWidgetGridItem(
                 modifier = modifier,
+                sharedTransitionScope = sharedTransitionScope,
                 data = data,
                 drag = drag,
                 isScrollInProgress = isScrollInProgress,
@@ -229,6 +232,7 @@ internal fun SharedTransitionScope.InteractiveGridItem(
         is GridItemData.ShortcutInfo -> {
             InteractiveShortcutInfoGridItem(
                 modifier = modifier,
+                sharedTransitionScope = sharedTransitionScope,
                 data = data,
                 drag = drag,
                 gridItem = gridItem,
@@ -260,6 +264,7 @@ internal fun SharedTransitionScope.InteractiveGridItem(
         is GridItemData.Folder -> {
             InteractiveFolderGridItem(
                 modifier = modifier,
+                sharedTransitionScope = sharedTransitionScope,
                 data = data,
                 drag = drag,
                 gridItem = gridItem,
@@ -293,6 +298,7 @@ internal fun SharedTransitionScope.InteractiveGridItem(
         is GridItemData.ShortcutConfig -> {
             InteractiveShortcutConfigGridItem(
                 modifier = modifier,
+                sharedTransitionScope = sharedTransitionScope,
                 data = data,
                 drag = drag,
                 gridItem = gridItem,
@@ -324,8 +330,9 @@ internal fun SharedTransitionScope.InteractiveGridItem(
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-private fun SharedTransitionScope.InteractiveApplicationInfoGridItem(
+private fun InteractiveApplicationInfoGridItem(
     modifier: Modifier = Modifier,
+    sharedTransitionScope: SharedTransitionScope,
     data: GridItemData.ApplicationInfo,
     drag: Drag,
     gridItem: GridItem,
@@ -524,13 +531,15 @@ private fun SharedTransitionScope.InteractiveApplicationInfoGridItem(
                         intSize = layoutCoordinates.size
                     }
                     .run {
-                        if (!hasInteraction) {
-                            sharedElementWithCallerManagedVisibility(
-                                rememberSharedContentState(
-                                    key = sharedElementKey,
-                                ),
-                                visible = !isScrollInProgress,
-                            )
+                        if (!isScrollInProgress && !hasInteraction) {
+                            with(sharedTransitionScope) {
+                                sharedElementWithCallerManagedVisibility(
+                                    rememberSharedContentState(
+                                        key = sharedElementKey,
+                                    ),
+                                    visible = true,
+                                )
+                            }
                         } else {
                             this
                         }
@@ -566,8 +575,9 @@ private fun SharedTransitionScope.InteractiveApplicationInfoGridItem(
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-private fun SharedTransitionScope.InteractiveWidgetGridItem(
+private fun InteractiveWidgetGridItem(
     modifier: Modifier = Modifier,
+    sharedTransitionScope: SharedTransitionScope,
     data: GridItemData.Widget,
     drag: Drag,
     isScrollInProgress: Boolean,
@@ -654,13 +664,15 @@ private fun SharedTransitionScope.InteractiveWidgetGridItem(
                 intSize = layoutCoordinates.size
             }
             .run {
-                if (!hasInteraction) {
-                    sharedElementWithCallerManagedVisibility(
-                        rememberSharedContentState(
-                            key = sharedElementKey,
-                        ),
-                        visible = !isScrollInProgress,
-                    )
+                if (!isScrollInProgress && !hasInteraction) {
+                    with(sharedTransitionScope) {
+                        sharedElementWithCallerManagedVisibility(
+                            rememberSharedContentState(
+                                key = sharedElementKey,
+                            ),
+                            visible = true,
+                        )
+                    }
                 } else {
                     this
                 }
@@ -741,8 +753,9 @@ private fun SharedTransitionScope.InteractiveWidgetGridItem(
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-private fun SharedTransitionScope.InteractiveShortcutInfoGridItem(
+private fun InteractiveShortcutInfoGridItem(
     modifier: Modifier = Modifier,
+    sharedTransitionScope: SharedTransitionScope,
     data: GridItemData.ShortcutInfo,
     drag: Drag,
     gridItem: GridItem,
@@ -939,13 +952,15 @@ private fun SharedTransitionScope.InteractiveShortcutInfoGridItem(
                         intSize = layoutCoordinates.size
                     }
                     .run {
-                        if (!hasInteraction) {
-                            sharedElementWithCallerManagedVisibility(
-                                rememberSharedContentState(
-                                    key = sharedElementKey,
-                                ),
-                                visible = !isScrollInProgress,
-                            )
+                        if (!isScrollInProgress && !hasInteraction) {
+                            with(sharedTransitionScope) {
+                                sharedElementWithCallerManagedVisibility(
+                                    rememberSharedContentState(
+                                        key = sharedElementKey,
+                                    ),
+                                    visible = true,
+                                )
+                            }
                         } else {
                             this
                         }
@@ -980,8 +995,9 @@ private fun SharedTransitionScope.InteractiveShortcutInfoGridItem(
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-private fun SharedTransitionScope.InteractiveFolderGridItem(
+private fun InteractiveFolderGridItem(
     modifier: Modifier = Modifier,
+    sharedTransitionScope: SharedTransitionScope,
     data: GridItemData.Folder,
     drag: Drag,
     gridItem: GridItem,
@@ -1187,13 +1203,15 @@ private fun SharedTransitionScope.InteractiveFolderGridItem(
                 intSize = layoutCoordinates.size
             }
             .run {
-                if (!hasInteraction) {
-                    sharedElementWithCallerManagedVisibility(
-                        rememberSharedContentState(
-                            key = sharedElementKey,
-                        ),
-                        visible = !isScrollInProgress,
-                    )
+                if (!isScrollInProgress && !hasInteraction) {
+                    with(sharedTransitionScope) {
+                        sharedElementWithCallerManagedVisibility(
+                            rememberSharedContentState(
+                                key = sharedElementKey,
+                            ),
+                            visible = true,
+                        )
+                    }
                 } else {
                     this
                 }
@@ -1218,6 +1236,7 @@ private fun SharedTransitionScope.InteractiveFolderGridItem(
                         ?.take(FOLDER_PREVIEW_COLUMNS * FOLDER_PREVIEW_ROWS),
                     content = { gridItem ->
                         PreviewFolderGridItem(
+                            sharedTransitionScope = sharedTransitionScope,
                             gridItem = gridItem,
                             isScrollInProgress = isScrollInProgress,
                             isVisibleOverlay = isVisibleOverlay,
@@ -1246,8 +1265,9 @@ private fun SharedTransitionScope.InteractiveFolderGridItem(
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-private fun SharedTransitionScope.InteractiveShortcutConfigGridItem(
+private fun InteractiveShortcutConfigGridItem(
     modifier: Modifier = Modifier,
+    sharedTransitionScope: SharedTransitionScope,
     data: GridItemData.ShortcutConfig,
     drag: Drag,
     gridItem: GridItem,
@@ -1460,18 +1480,16 @@ private fun SharedTransitionScope.InteractiveShortcutConfigGridItem(
 
                     intSize = layoutCoordinates.size
                 }
-                .run {
-                    if (!hasInteraction) {
-                        sharedElementWithCallerManagedVisibility(
+                .then(
+                    with(sharedTransitionScope) {
+                        Modifier.sharedElementWithCallerManagedVisibility(
                             rememberSharedContentState(
                                 key = sharedElementKey,
                             ),
-                            visible = !isScrollInProgress,
+                            visible = !isScrollInProgress && !hasInteraction,
                         )
-                    } else {
-                        this
-                    }
-                },
+                    },
+                ),
         )
 
         if (gridItemSettings.showLabel) {
@@ -1489,8 +1507,9 @@ private fun SharedTransitionScope.InteractiveShortcutConfigGridItem(
 }
 
 @Composable
-private fun SharedTransitionScope.PreviewFolderGridItem(
+private fun PreviewFolderGridItem(
     modifier: Modifier = Modifier,
+    sharedTransitionScope: SharedTransitionScope,
     gridItem: GridItem,
     isScrollInProgress: Boolean,
     isVisibleOverlay: Boolean,
@@ -1512,16 +1531,18 @@ private fun SharedTransitionScope.PreviewFolderGridItem(
             .padding(1.dp)
             .alpha(alpha)
             .run {
-                if (!hasInteraction) {
-                    sharedElementWithCallerManagedVisibility(
-                        rememberSharedContentState(
-                            key = SharedElementKey(
-                                id = gridItem.id,
-                                parent = parent,
+                if (!isScrollInProgress && !hasInteraction) {
+                    with(sharedTransitionScope) {
+                        sharedElementWithCallerManagedVisibility(
+                            rememberSharedContentState(
+                                key = SharedElementKey(
+                                    id = gridItem.id,
+                                    parent = parent,
+                                ),
                             ),
-                        ),
-                        visible = !isScrollInProgress,
-                    )
+                            visible = true,
+                        )
+                    }
                 } else {
                     this
                 }

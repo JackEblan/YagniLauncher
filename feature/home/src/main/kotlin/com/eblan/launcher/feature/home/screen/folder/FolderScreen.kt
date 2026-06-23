@@ -83,8 +83,9 @@ import com.eblan.launcher.ui.local.LocalLauncherApps
 import kotlin.math.roundToInt
 
 @Composable
-internal fun SharedTransitionScope.FolderScreen(
+internal fun FolderScreen(
     modifier: Modifier = Modifier,
+    sharedTransitionScope: SharedTransitionScope,
     drag: Drag,
     folderPopup: FolderPopup,
     gridItemSettings: GridItemSettings,
@@ -454,6 +455,7 @@ internal fun SharedTransitionScope.FolderScreen(
                             val y = gridItem.startRow * minCellHeightPx
 
                             InteractiveFolderGridItem(
+                                sharedTransitionScope = sharedTransitionScope,
                                 drag = drag,
                                 gridItem = gridItem,
                                 gridItemSettings = gridItemSettings,
