@@ -17,7 +17,7 @@
   ~
   -->
 <resources>
-    <string name="accessibility_service_label">Yagni Launcher</string>
-    <string name="accessibility_service_description">Yagni Launcher gesture actions</string>
-    <string name="notification_listener_service">Yagni Notification Listener Service</string>
+    <string name="accessibility_service_label">Yagni-Launcher</string>
+    <string name="accessibility_service_description">Yagni Launcher Gesten Aktionen</string>
+    <string name="notification_listener_service">Yagni-Benachrichtigungsdienst</string>
 </resources>
