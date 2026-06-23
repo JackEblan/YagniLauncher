@@ -73,7 +73,7 @@ fun TextColorDialog(
             TextColor.entries.forEach { textColor ->
                 EblanRadioButton(
                     selected = selectedTextColor == textColor,
-                    text = textColor.name,
+                    text = textColor.getTextColorTitle(),
                     onClick = {
                         if (textColor == TextColor.Custom) {
                             showColorPickerDialog = true
@@ -124,4 +124,12 @@ fun TextColorDialog(
             },
         )
     }
+}
+
+@Composable
+private fun TextColor.getTextColorTitle() = when (this) {
+    TextColor.System -> stringResource(R.string.system)
+    TextColor.Light -> stringResource(R.string.light)
+    TextColor.Dark -> stringResource(R.string.dark)
+    TextColor.Custom -> stringResource(R.string.custom)
 }

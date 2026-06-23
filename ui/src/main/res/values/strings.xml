@@ -61,4 +61,8 @@
     <string name="swipe_down">Swipe Down</string>
     <string name="display_app_names_below_icons">Display app names below icons</string>
     <string name="limit_app_names_to_one_line">Limit app names to one line</string>
+    <string name="system">System</string>
+    <string name="light">Light</string>
+    <string name="dark">Dark</string>
+    <string name="custom">Custom</string>
 </resources>

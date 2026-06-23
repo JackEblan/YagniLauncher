@@ -17,6 +17,7 @@
  */
 package com.eblan.launcher.feature.settings.general
 
+import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.provider.Settings
@@ -228,7 +229,7 @@ private fun Success(
             options = Theme.entries,
             selected = generalSettings.theme,
             label = {
-                it.name
+                it.getThemeTitle(context = context)
             },
             onDismissRequest = {
                 showDarkThemeConfigDialog = false
@@ -284,4 +285,10 @@ private fun Success(
             },
         )
     }
+}
+
+private fun Theme.getThemeTitle(context: Context) = when (this) {
+    Theme.System -> context.getString(R.string.system)
+    Theme.Light -> context.getString(R.string.light)
+    Theme.Dark -> context.getString(R.string.dark)
 }
