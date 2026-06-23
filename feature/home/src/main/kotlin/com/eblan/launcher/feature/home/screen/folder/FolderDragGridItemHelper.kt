@@ -17,8 +17,6 @@
  */
 package com.eblan.launcher.feature.home.screen.folder
 
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.State
 import androidx.compose.ui.graphics.ImageBitmap
@@ -65,7 +63,6 @@ internal suspend fun onLongPressFolderGridItem(
     intSize: IntSize,
     sharedElementKey: SharedElementKey,
     gridItem: GridItem,
-    scale: Animatable<Float, AnimationVector1D>,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
@@ -79,10 +76,6 @@ internal suspend fun onLongPressFolderGridItem(
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
-    scale.animateTo(0.5f)
-
-    scale.animateTo(1f)
-
     onUpdateMoveGridItemResult(
         MoveGridItemResult(
             isSuccess = true,
@@ -100,12 +93,12 @@ internal suspend fun onLongPressFolderGridItem(
 
     onUpdateSharedElementKey(sharedElementKey)
 
-    onUpdateIsVisibleOverlay(true)
-
     onShowGridItemPopup(
         intOffset,
         intSize,
     )
+
+    onUpdateIsVisibleOverlay(true)
 }
 
 internal fun handleAnimateScrollToPage(

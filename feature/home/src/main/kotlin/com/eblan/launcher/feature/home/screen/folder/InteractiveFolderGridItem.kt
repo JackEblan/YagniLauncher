@@ -39,7 +39,6 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -81,7 +80,6 @@ import com.eblan.launcher.feature.home.util.FOLDER_PREVIEW_COLUMNS
 import com.eblan.launcher.feature.home.util.FOLDER_PREVIEW_ROWS
 import com.eblan.launcher.feature.home.util.getHorizontalAlignment
 import com.eblan.launcher.feature.home.util.getVerticalArrangement
-import com.eblan.launcher.feature.home.util.handleDrag
 import com.eblan.launcher.feature.home.util.onDoubleTap
 import com.eblan.launcher.feature.home.util.onPress
 import com.eblan.launcher.ui.local.LocalLauncherApps
@@ -90,8 +88,9 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-internal fun SharedTransitionScope.InteractiveFolderGridItem(
+internal fun InteractiveFolderGridItem(
     modifier: Modifier = Modifier,
+    sharedTransitionScope: SharedTransitionScope,
     drag: Drag,
     gridItem: GridItem,
     gridItemSettings: GridItemSettings,
@@ -102,8 +101,6 @@ internal fun SharedTransitionScope.InteractiveFolderGridItem(
     sharedElementKey: SharedElementKey,
     moveGridItemResult: MoveGridItemResult?,
     progress: Float,
-    isDragging: Boolean,
-    isCloseFolderGridItemPopup: Boolean,
     onOpenAppDrawer: () -> Unit,
     onTapApplicationInfo: (
         serialNumber: Long,
@@ -146,6 +143,7 @@ internal fun SharedTransitionScope.InteractiveFolderGridItem(
         is GridItemData.ApplicationInfo -> {
             InteractiveFolderApplicationInfoGridItem(
                 modifier = modifier,
+                sharedTransitionScope = sharedTransitionScope,
                 data = data,
                 drag = drag,
                 gridItem = gridItem,
@@ -156,8 +154,6 @@ internal fun SharedTransitionScope.InteractiveFolderGridItem(
                 sharedElementKey = sharedElementKey,
                 statusBarNotifications = statusBarNotifications,
                 padding = padding,
-                isDragging = isDragging,
-                isCloseFolderGridItemPopup = isCloseFolderGridItemPopup,
                 onUpdateIsCloseFolderGridItemPopup = onUpdateIsCloseFolderGridItemPopup,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
@@ -174,6 +170,7 @@ internal fun SharedTransitionScope.InteractiveFolderGridItem(
         is GridItemData.ShortcutInfo -> {
             InteractiveFolderShortcutInfoGridItem(
                 modifier = modifier,
+                sharedTransitionScope = sharedTransitionScope,
                 data = data,
                 drag = drag,
                 gridItem = gridItem,
@@ -184,8 +181,6 @@ internal fun SharedTransitionScope.InteractiveFolderGridItem(
                 isVisibleOverlay = isVisibleOverlay,
                 sharedElementKey = sharedElementKey,
                 padding = padding,
-                isDragging = isDragging,
-                isCloseFolderGridItemPopup = isCloseFolderGridItemPopup,
                 onUpdateIsCloseFolderGridItemPopup = onUpdateIsCloseFolderGridItemPopup,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
@@ -202,6 +197,7 @@ internal fun SharedTransitionScope.InteractiveFolderGridItem(
         is GridItemData.ShortcutConfig -> {
             InteractiveFolderShortcutConfigGridItem(
                 modifier = modifier,
+                sharedTransitionScope = sharedTransitionScope,
                 data = data,
                 drag = drag,
                 gridItem = gridItem,
@@ -211,8 +207,6 @@ internal fun SharedTransitionScope.InteractiveFolderGridItem(
                 isVisibleOverlay = isVisibleOverlay,
                 sharedElementKey = sharedElementKey,
                 padding = padding,
-                isDragging = isDragging,
-                isCloseFolderGridItemPopup = isCloseFolderGridItemPopup,
                 onUpdateIsCloseFolderGridItemPopup = onUpdateIsCloseFolderGridItemPopup,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
@@ -229,6 +223,7 @@ internal fun SharedTransitionScope.InteractiveFolderGridItem(
         is GridItemData.Folder -> {
             InteractiveNestedFolderGridItem(
                 modifier = modifier,
+                sharedTransitionScope = sharedTransitionScope,
                 data = data,
                 drag = drag,
                 gridItem = gridItem,
@@ -237,8 +232,6 @@ internal fun SharedTransitionScope.InteractiveFolderGridItem(
                 isSelected = isSelected,
                 isVisibleOverlay = isVisibleOverlay,
                 sharedElementKey = sharedElementKey,
-                isDragging = isDragging,
-                isCloseFolderGridItemPopup = isCloseFolderGridItemPopup,
                 onUpdateIsCloseFolderGridItemPopup = onUpdateIsCloseFolderGridItemPopup,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
@@ -258,8 +251,9 @@ internal fun SharedTransitionScope.InteractiveFolderGridItem(
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-private fun SharedTransitionScope.InteractiveFolderApplicationInfoGridItem(
+private fun InteractiveFolderApplicationInfoGridItem(
     modifier: Modifier = Modifier,
+    sharedTransitionScope: SharedTransitionScope,
     data: GridItemData.ApplicationInfo,
     drag: Drag,
     gridItem: GridItem,
@@ -270,8 +264,6 @@ private fun SharedTransitionScope.InteractiveFolderApplicationInfoGridItem(
     sharedElementKey: SharedElementKey,
     statusBarNotifications: Map<String, Int>,
     padding: Dp,
-    isDragging: Boolean,
-    isCloseFolderGridItemPopup: Boolean,
     onUpdateIsCloseFolderGridItemPopup: (Boolean) -> Unit,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
@@ -328,19 +320,15 @@ private fun SharedTransitionScope.InteractiveFolderApplicationInfoGridItem(
 
     val scale = remember { Animatable(1f) }
 
-    val currentIsDragging = rememberUpdatedState(isDragging)
-    val currentIsCloseFolderGridItemPopup = rememberUpdatedState(isCloseFolderGridItemPopup)
+    LaunchedEffect(
+        key1 = drag,
+        key2 = hasInteraction,
+    ) {
+        if (drag == Drag.Dragging && hasInteraction) {
+            onUpdateIsDragging(true)
 
-    LaunchedEffect(key1 = drag) {
-        handleDrag(
-            drag = drag,
-            hasInteraction = hasInteraction,
-            scale = scale,
-            isDragging = currentIsDragging,
-            isCloseGridItemPopup = currentIsCloseFolderGridItemPopup,
-            onUpdateIsDragging = onUpdateIsDragging,
-            onUpdateIsCloseGridItemPopup = onUpdateIsCloseFolderGridItemPopup,
-        )
+            onUpdateIsCloseFolderGridItemPopup(true)
+        }
     }
 
     Column(
@@ -369,7 +357,6 @@ private fun SharedTransitionScope.InteractiveFolderApplicationInfoGridItem(
                                     intSize = intSize,
                                     sharedElementKey = sharedElementKey,
                                     gridItem = gridItem,
-                                    scale = scale,
                                     onUpdateImageBitmap = onUpdateImageBitmap,
                                     onUpdateOverlayBounds = onUpdateOverlayBounds,
                                     onUpdateSharedElementKey = onUpdateSharedElementKey,
@@ -385,7 +372,7 @@ private fun SharedTransitionScope.InteractiveFolderApplicationInfoGridItem(
                     onTap = if (!isVisibleOverlay) {
                         {
                             scope.launch {
-                                scale.animateTo(0.5f)
+                                scale.animateTo(0.8f)
 
                                 scale.animateTo(1f)
 
@@ -447,13 +434,15 @@ private fun SharedTransitionScope.InteractiveFolderApplicationInfoGridItem(
                         intSize = layoutCoordinates.size
                     }
                     .run {
-                        if (!hasInteraction) {
-                            sharedElementWithCallerManagedVisibility(
-                                rememberSharedContentState(
-                                    key = sharedElementKey,
-                                ),
-                                visible = !isScrollInProgress,
-                            )
+                        if (!isScrollInProgress && !hasInteraction) {
+                            with(sharedTransitionScope) {
+                                sharedElementWithCallerManagedVisibility(
+                                    rememberSharedContentState(
+                                        key = sharedElementKey,
+                                    ),
+                                    visible = true,
+                                )
+                            }
                         } else {
                             this
                         }
@@ -488,8 +477,9 @@ private fun SharedTransitionScope.InteractiveFolderApplicationInfoGridItem(
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-private fun SharedTransitionScope.InteractiveFolderShortcutInfoGridItem(
+private fun InteractiveFolderShortcutInfoGridItem(
     modifier: Modifier = Modifier,
+    sharedTransitionScope: SharedTransitionScope,
     data: GridItemData.ShortcutInfo,
     drag: Drag,
     gridItem: GridItem,
@@ -500,8 +490,6 @@ private fun SharedTransitionScope.InteractiveFolderShortcutInfoGridItem(
     isVisibleOverlay: Boolean,
     sharedElementKey: SharedElementKey,
     padding: Dp,
-    isDragging: Boolean,
-    isCloseFolderGridItemPopup: Boolean,
     onUpdateIsCloseFolderGridItemPopup: (Boolean) -> Unit,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
@@ -553,19 +541,15 @@ private fun SharedTransitionScope.InteractiveFolderShortcutInfoGridItem(
 
     val scale = remember { Animatable(1f) }
 
-    val currentIsDragging = rememberUpdatedState(isDragging)
-    val currentIsCloseFolderGridItemPopup = rememberUpdatedState(isCloseFolderGridItemPopup)
+    LaunchedEffect(
+        key1 = drag,
+        key2 = hasInteraction,
+    ) {
+        if (drag == Drag.Dragging && hasInteraction) {
+            onUpdateIsDragging(true)
 
-    LaunchedEffect(key1 = drag) {
-        handleDrag(
-            drag = drag,
-            hasInteraction = hasInteraction,
-            scale = scale,
-            isDragging = currentIsDragging,
-            isCloseGridItemPopup = currentIsCloseFolderGridItemPopup,
-            onUpdateIsDragging = onUpdateIsDragging,
-            onUpdateIsCloseGridItemPopup = onUpdateIsCloseFolderGridItemPopup,
-        )
+            onUpdateIsCloseFolderGridItemPopup(true)
+        }
     }
 
     Column(
@@ -594,7 +578,6 @@ private fun SharedTransitionScope.InteractiveFolderShortcutInfoGridItem(
                                     intSize = intSize,
                                     sharedElementKey = sharedElementKey,
                                     gridItem = gridItem,
-                                    scale = scale,
                                     onUpdateImageBitmap = onUpdateImageBitmap,
                                     onUpdateOverlayBounds = onUpdateOverlayBounds,
                                     onUpdateSharedElementKey = onUpdateSharedElementKey,
@@ -611,7 +594,7 @@ private fun SharedTransitionScope.InteractiveFolderShortcutInfoGridItem(
                         {
                             if (hasShortcutHostPermission && data.isEnabled) {
                                 scope.launch {
-                                    scale.animateTo(0.5f)
+                                    scale.animateTo(0.8f)
 
                                     scale.animateTo(1f)
 
@@ -674,13 +657,15 @@ private fun SharedTransitionScope.InteractiveFolderShortcutInfoGridItem(
                         intSize = layoutCoordinates.size
                     }
                     .run {
-                        if (!hasInteraction) {
-                            sharedElementWithCallerManagedVisibility(
-                                rememberSharedContentState(
-                                    key = sharedElementKey,
-                                ),
-                                visible = !isScrollInProgress,
-                            )
+                        if (!isScrollInProgress && !hasInteraction) {
+                            with(sharedTransitionScope) {
+                                sharedElementWithCallerManagedVisibility(
+                                    rememberSharedContentState(
+                                        key = sharedElementKey,
+                                    ),
+                                    visible = true,
+                                )
+                            }
                         } else {
                             this
                         }
@@ -714,8 +699,9 @@ private fun SharedTransitionScope.InteractiveFolderShortcutInfoGridItem(
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-private fun SharedTransitionScope.InteractiveFolderShortcutConfigGridItem(
+private fun InteractiveFolderShortcutConfigGridItem(
     modifier: Modifier = Modifier,
+    sharedTransitionScope: SharedTransitionScope,
     data: GridItemData.ShortcutConfig,
     drag: Drag,
     gridItem: GridItem,
@@ -725,8 +711,6 @@ private fun SharedTransitionScope.InteractiveFolderShortcutConfigGridItem(
     isVisibleOverlay: Boolean,
     sharedElementKey: SharedElementKey,
     padding: Dp,
-    isDragging: Boolean,
-    isCloseFolderGridItemPopup: Boolean,
     onUpdateIsCloseFolderGridItemPopup: (Boolean) -> Unit,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
@@ -806,19 +790,15 @@ private fun SharedTransitionScope.InteractiveFolderShortcutConfigGridItem(
 
     val scale = remember { Animatable(1f) }
 
-    val currentIsDragging = rememberUpdatedState(isDragging)
-    val currentIsCloseFolderGridItemPopup = rememberUpdatedState(isCloseFolderGridItemPopup)
+    LaunchedEffect(
+        key1 = drag,
+        key2 = hasInteraction,
+    ) {
+        if (drag == Drag.Dragging && hasInteraction) {
+            onUpdateIsDragging(true)
 
-    LaunchedEffect(key1 = drag) {
-        handleDrag(
-            drag = drag,
-            hasInteraction = hasInteraction,
-            scale = scale,
-            isDragging = currentIsDragging,
-            isCloseGridItemPopup = currentIsCloseFolderGridItemPopup,
-            onUpdateIsDragging = onUpdateIsDragging,
-            onUpdateIsCloseGridItemPopup = onUpdateIsCloseFolderGridItemPopup,
-        )
+            onUpdateIsCloseFolderGridItemPopup(true)
+        }
     }
 
     Column(
@@ -847,7 +827,6 @@ private fun SharedTransitionScope.InteractiveFolderShortcutConfigGridItem(
                                     intSize = intSize,
                                     sharedElementKey = sharedElementKey,
                                     gridItem = gridItem,
-                                    scale = scale,
                                     onUpdateImageBitmap = onUpdateImageBitmap,
                                     onUpdateOverlayBounds = onUpdateOverlayBounds,
                                     onUpdateSharedElementKey = onUpdateSharedElementKey,
@@ -863,7 +842,7 @@ private fun SharedTransitionScope.InteractiveFolderShortcutConfigGridItem(
                     onTap = if (!isVisibleOverlay) {
                         {
                             scope.launch {
-                                scale.animateTo(0.5f)
+                                scale.animateTo(0.8f)
 
                                 scale.animateTo(1f)
 
@@ -918,13 +897,15 @@ private fun SharedTransitionScope.InteractiveFolderShortcutConfigGridItem(
                     intSize = layoutCoordinates.size
                 }
                 .run {
-                    if (!hasInteraction) {
-                        sharedElementWithCallerManagedVisibility(
-                            rememberSharedContentState(
-                                key = sharedElementKey,
-                            ),
-                            visible = !isScrollInProgress,
-                        )
+                    if (!isScrollInProgress && !hasInteraction) {
+                        with(sharedTransitionScope) {
+                            sharedElementWithCallerManagedVisibility(
+                                rememberSharedContentState(
+                                    key = sharedElementKey,
+                                ),
+                                visible = true,
+                            )
+                        }
                     } else {
                         this
                     }
@@ -946,8 +927,9 @@ private fun SharedTransitionScope.InteractiveFolderShortcutConfigGridItem(
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-private fun SharedTransitionScope.InteractiveNestedFolderGridItem(
+private fun InteractiveNestedFolderGridItem(
     modifier: Modifier = Modifier,
+    sharedTransitionScope: SharedTransitionScope,
     data: GridItemData.Folder,
     drag: Drag,
     gridItem: GridItem,
@@ -956,8 +938,6 @@ private fun SharedTransitionScope.InteractiveNestedFolderGridItem(
     isSelected: Boolean,
     isVisibleOverlay: Boolean,
     sharedElementKey: SharedElementKey,
-    isDragging: Boolean,
-    isCloseFolderGridItemPopup: Boolean,
     onUpdateIsCloseFolderGridItemPopup: (Boolean) -> Unit,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
@@ -1001,19 +981,15 @@ private fun SharedTransitionScope.InteractiveNestedFolderGridItem(
 
     val scale = remember { Animatable(1f) }
 
-    val currentIsDragging = rememberUpdatedState(isDragging)
-    val currentIsCloseFolderGridItemPopup = rememberUpdatedState(isCloseFolderGridItemPopup)
+    LaunchedEffect(
+        key1 = drag,
+        key2 = hasInteraction,
+    ) {
+        if (drag == Drag.Dragging && hasInteraction) {
+            onUpdateIsDragging(true)
 
-    LaunchedEffect(key1 = drag) {
-        handleDrag(
-            drag = drag,
-            hasInteraction = hasInteraction,
-            scale = scale,
-            isDragging = currentIsDragging,
-            isCloseGridItemPopup = currentIsCloseFolderGridItemPopup,
-            onUpdateIsDragging = onUpdateIsDragging,
-            onUpdateIsCloseGridItemPopup = onUpdateIsCloseFolderGridItemPopup,
-        )
+            onUpdateIsCloseFolderGridItemPopup(true)
+        }
     }
 
     Column(
@@ -1042,7 +1018,6 @@ private fun SharedTransitionScope.InteractiveNestedFolderGridItem(
                                     intSize = intSize,
                                     sharedElementKey = sharedElementKey,
                                     gridItem = gridItem,
-                                    scale = scale,
                                     onUpdateImageBitmap = onUpdateImageBitmap,
                                     onUpdateOverlayBounds = onUpdateOverlayBounds,
                                     onUpdateSharedElementKey = onUpdateSharedElementKey,
@@ -1058,7 +1033,7 @@ private fun SharedTransitionScope.InteractiveNestedFolderGridItem(
                     onTap = if (!isVisibleOverlay) {
                         {
                             scope.launch {
-                                scale.animateTo(0.5f)
+                                scale.animateTo(0.8f)
 
                                 scale.animateTo(1f)
 
@@ -1116,13 +1091,15 @@ private fun SharedTransitionScope.InteractiveNestedFolderGridItem(
                 intSize = layoutCoordinates.size
             }
             .run {
-                if (!hasInteraction) {
-                    sharedElementWithCallerManagedVisibility(
-                        rememberSharedContentState(
-                            key = sharedElementKey,
-                        ),
-                        visible = !isScrollInProgress,
-                    )
+                if (!isScrollInProgress && !hasInteraction) {
+                    with(sharedTransitionScope) {
+                        sharedElementWithCallerManagedVisibility(
+                            rememberSharedContentState(
+                                key = sharedElementKey,
+                            ),
+                            visible = true,
+                        )
+                    }
                 } else {
                     this
                 }
@@ -1137,7 +1114,7 @@ private fun SharedTransitionScope.InteractiveNestedFolderGridItem(
         } else {
             Box(
                 modifier = commonModifier.background(
-                    color = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f),
+                    color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
                     shape = RoundedCornerShape(5.dp),
                 ),
             ) {

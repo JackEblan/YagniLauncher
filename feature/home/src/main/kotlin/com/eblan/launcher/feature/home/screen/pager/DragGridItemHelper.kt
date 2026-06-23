@@ -17,8 +17,6 @@
  */
 package com.eblan.launcher.feature.home.screen.pager
 
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.State
 import androidx.compose.ui.graphics.ImageBitmap
@@ -74,7 +72,6 @@ internal suspend fun onLongPress(
     gridItemSource: GridItemSource,
     sharedElementKey: SharedElementKey,
     gridItem: GridItem,
-    scale: Animatable<Float, AnimationVector1D>,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
     onUpdateOverlayBounds: (
@@ -89,10 +86,6 @@ internal suspend fun onLongPress(
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
-    scale.animateTo(0.5f)
-
-    scale.animateTo(1f)
-
     onUpdateGridItemSource(gridItemSource)
 
     onUpdateMoveGridItemResult(
@@ -112,12 +105,12 @@ internal suspend fun onLongPress(
 
     onUpdateSharedElementKey(sharedElementKey)
 
-    onUpdateIsVisibleOverlay(true)
-
     onShowGridItemPopup(
         intOffset,
         intSize,
     )
+
+    onUpdateIsVisibleOverlay(true)
 }
 
 internal fun handleAnimateScrollToPage(

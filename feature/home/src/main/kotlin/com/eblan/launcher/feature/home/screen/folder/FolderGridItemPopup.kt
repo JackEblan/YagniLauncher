@@ -62,10 +62,10 @@ import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.GridItemSettings
 import com.eblan.launcher.domain.model.MoveGridItemResult
-import com.eblan.launcher.feature.home.component.ShortcutInfoMenu
 import com.eblan.launcher.feature.home.component.popup
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
+import com.eblan.launcher.feature.home.screen.shortcutinfo.ShortcutInfoScreen
 
 @Composable
 internal fun FolderGridItemPopup(
@@ -410,7 +410,7 @@ private fun ApplicationInfoFolderGridItemPopupContent(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 if (hasShortcutHostPermission && !eblanShortcutInfosByPackageName.isNullOrEmpty()) {
-                    ShortcutInfoMenu(
+                    ShortcutInfoScreen(
                         modifier = modifier,
                         eblanShortcutInfosGroup = eblanShortcutInfosByPackageName,
                         gridItemSettings = gridItemSettings,

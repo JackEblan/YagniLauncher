@@ -133,8 +133,9 @@ import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class, FlowPreview::class)
 @Composable
-internal fun SharedTransitionScope.ListApplicationScreen(
+internal fun ListApplicationScreen(
     modifier: Modifier = Modifier,
+    sharedTransitionScope: SharedTransitionScope,
     appDrawerSettings: AppDrawerSettings,
     drag: Drag,
     eblanAppWidgetProviderInfosGroup: Map<String, List<EblanAppWidgetProviderInfo>>,
@@ -274,6 +275,7 @@ internal fun SharedTransitionScope.ListApplicationScreen(
             userScrollEnabled = !isVisibleOverlay,
         ) { index ->
             EblanApplicationInfosPage(
+                sharedTransitionScope = sharedTransitionScope,
                 appDrawerSettings = appDrawerSettings,
                 drag = drag,
                 eblanApplicationInfoOrder = appDrawerSettings.eblanApplicationInfoOrder,
@@ -409,8 +411,9 @@ internal fun SharedTransitionScope.ListApplicationScreen(
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalSharedTransitionApi::class)
 @Composable
-private fun SharedTransitionScope.EblanApplicationInfosPage(
+private fun EblanApplicationInfosPage(
     modifier: Modifier = Modifier,
+    sharedTransitionScope: SharedTransitionScope,
     appDrawerSettings: AppDrawerSettings,
     drag: Drag,
     eblanApplicationInfoOrder: EblanApplicationInfoOrder,
@@ -502,6 +505,7 @@ private fun SharedTransitionScope.EblanApplicationInfosPage(
             )
         } else {
             EblanApplicationInfos(
+                sharedTransitionScope = sharedTransitionScope,
                 appDrawerSettings = appDrawerSettings,
                 drag = drag,
                 eblanUserPageKey = eblanUserPageKey,
@@ -559,8 +563,9 @@ private fun SharedTransitionScope.EblanApplicationInfosPage(
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalSharedTransitionApi::class)
 @Composable
-private fun SharedTransitionScope.EblanApplicationInfos(
+private fun EblanApplicationInfos(
     modifier: Modifier = Modifier,
+    sharedTransitionScope: SharedTransitionScope,
     appDrawerSettings: AppDrawerSettings,
     drag: Drag,
     eblanUserPageKey: EblanUserPageKey,
@@ -651,6 +656,7 @@ private fun SharedTransitionScope.EblanApplicationInfos(
                         key = { eblanApplicationInfo -> eblanApplicationInfo.serialNumber to eblanApplicationInfo.componentName },
                     ) { eblanApplicationInfo ->
                         EblanApplicationInfoItem(
+                            sharedTransitionScope = sharedTransitionScope,
                             appDrawerSettings = appDrawerSettings,
                             drag = drag,
                             eblanApplicationInfo = eblanApplicationInfo,
@@ -694,6 +700,7 @@ private fun SharedTransitionScope.EblanApplicationInfos(
                         key = { eblanApplicationInfo -> eblanApplicationInfo.serialNumber to eblanApplicationInfo.componentName },
                     ) { eblanApplicationInfo ->
                         EblanApplicationInfoItem(
+                            sharedTransitionScope = sharedTransitionScope,
                             appDrawerSettings = appDrawerSettings,
                             drag = drag,
                             eblanApplicationInfo = eblanApplicationInfo,
@@ -736,8 +743,9 @@ private fun SharedTransitionScope.EblanApplicationInfos(
     ExperimentalLayoutApi::class,
 )
 @Composable
-private fun SharedTransitionScope.EblanApplicationInfoItem(
+private fun EblanApplicationInfoItem(
     modifier: Modifier = Modifier,
+    sharedTransitionScope: SharedTransitionScope,
     appDrawerSettings: AppDrawerSettings,
     drag: Drag,
     eblanApplicationInfo: EblanApplicationInfo,
@@ -809,7 +817,6 @@ private fun SharedTransitionScope.EblanApplicationInfoItem(
             drag = drag,
             eblanApplicationInfo = eblanApplicationInfo,
             isLongPress = isLongPress,
-            scale = scale,
             swipeY = swipeY,
             screenHeight = screenHeight,
             onDismiss = onDismiss,
@@ -856,7 +863,6 @@ private fun SharedTransitionScope.EblanApplicationInfoItem(
                                     intOffset = intOffset,
                                     intSize = intSize,
                                     keyboardController = keyboardController,
-                                    scale = scale,
                                     onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
                                     onUpdateImageBitmap = onUpdateImageBitmap,
                                     onUpdateIsLongPress = { isLongPress = it },
@@ -909,16 +915,18 @@ private fun SharedTransitionScope.EblanApplicationInfoItem(
                     intSize = layoutCoordinates.size
                 }
                 .run {
-                    if (!isLongPress) {
-                        sharedElementWithCallerManagedVisibility(
-                            rememberSharedContentState(
-                                key = SharedElementKey(
-                                    id = applicationScreenId,
-                                    parent = SharedElementKey.Parent.SwipeY,
+                    if (!isLongPress && !isVisibleOverlay) {
+                        with(sharedTransitionScope) {
+                            sharedElementWithCallerManagedVisibility(
+                                rememberSharedContentState(
+                                    key = SharedElementKey(
+                                        id = applicationScreenId,
+                                        parent = SharedElementKey.Parent.SwipeY,
+                                    ),
                                 ),
-                            ),
-                            visible = !isVisibleOverlay,
-                        )
+                                visible = true,
+                            )
+                        }
                     } else {
                         this
                     }

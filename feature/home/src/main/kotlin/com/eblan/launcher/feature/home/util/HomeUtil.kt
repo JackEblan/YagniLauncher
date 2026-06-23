@@ -23,12 +23,10 @@ import android.graphics.Rect
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.foundation.gestures.PressGestureScope
-import androidx.compose.runtime.State
 import androidx.compose.ui.unit.dp
 import com.eblan.launcher.domain.model.EblanAction
 import com.eblan.launcher.domain.model.EblanActionType
 import com.eblan.launcher.domain.model.GlobalAction
-import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.framework.launcherapps.AndroidLauncherAppsWrapper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -120,30 +118,6 @@ internal suspend fun PressGestureScope.onPress(
     awaitRelease()
 
     if (scale.isRunning) {
-        scale.stop()
-
-        scale.animateTo(1f)
-    }
-}
-
-internal suspend fun handleDrag(
-    drag: Drag,
-    hasInteraction: Boolean,
-    isDragging: State<Boolean>,
-    isCloseGridItemPopup: State<Boolean>,
-    scale: Animatable<Float, AnimationVector1D>,
-    onUpdateIsDragging: (Boolean) -> Unit,
-    onUpdateIsCloseGridItemPopup: (Boolean) -> Unit,
-) {
-    if (drag == Drag.Dragging &&
-        hasInteraction &&
-        !isDragging.value &&
-        !isCloseGridItemPopup.value
-    ) {
-        onUpdateIsDragging(true)
-
-        onUpdateIsCloseGridItemPopup(true)
-    } else if ((drag == Drag.End || drag == Drag.Cancel) && scale.isRunning) {
         scale.stop()
 
         scale.animateTo(1f)

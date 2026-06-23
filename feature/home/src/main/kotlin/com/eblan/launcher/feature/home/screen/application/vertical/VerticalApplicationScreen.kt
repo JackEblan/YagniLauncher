@@ -101,8 +101,9 @@ import kotlinx.coroutines.FlowPreview
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class, FlowPreview::class)
 @Composable
-internal fun SharedTransitionScope.VerticalApplicationScreen(
+internal fun VerticalApplicationScreen(
     modifier: Modifier = Modifier,
+    sharedTransitionScope: SharedTransitionScope,
     appDrawerSettings: AppDrawerSettings,
     drag: Drag,
     eblanAppWidgetProviderInfosGroup: Map<String, List<EblanAppWidgetProviderInfo>>,
@@ -247,6 +248,7 @@ internal fun SharedTransitionScope.VerticalApplicationScreen(
             beyondViewportPageCount = eblanUserPageKeys.size,
         ) { index ->
             EblanApplicationInfosPage(
+                sharedTransitionScope = sharedTransitionScope,
                 appDrawerSettings = appDrawerSettings,
                 drag = drag,
                 eblanApplicationInfoOrder = appDrawerSettings.eblanApplicationInfoOrder,
@@ -397,8 +399,9 @@ internal fun SharedTransitionScope.VerticalApplicationScreen(
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalSharedTransitionApi::class)
 @Composable
-private fun SharedTransitionScope.EblanApplicationInfosPage(
+private fun EblanApplicationInfosPage(
     modifier: Modifier = Modifier,
+    sharedTransitionScope: SharedTransitionScope,
     appDrawerSettings: AppDrawerSettings,
     drag: Drag,
     eblanApplicationInfoOrder: EblanApplicationInfoOrder,
@@ -489,6 +492,7 @@ private fun SharedTransitionScope.EblanApplicationInfosPage(
             )
         } else {
             EblanApplicationInfos(
+                sharedTransitionScope = sharedTransitionScope,
                 appDrawerSettings = appDrawerSettings,
                 drag = drag,
                 eblanUserPageKey = eblanUserPageKey,
@@ -545,8 +549,9 @@ private fun SharedTransitionScope.EblanApplicationInfosPage(
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalSharedTransitionApi::class)
 @Composable
-private fun SharedTransitionScope.EblanApplicationInfos(
+private fun EblanApplicationInfos(
     modifier: Modifier = Modifier,
+    sharedTransitionScope: SharedTransitionScope,
     appDrawerSettings: AppDrawerSettings,
     drag: Drag,
     eblanUserPageKey: EblanUserPageKey,
@@ -639,6 +644,7 @@ private fun SharedTransitionScope.EblanApplicationInfos(
                         key = { eblanApplicationInfo -> eblanApplicationInfo.serialNumber to eblanApplicationInfo.componentName },
                     ) { eblanApplicationInfo ->
                         EblanApplicationInfoItem(
+                            sharedTransitionScope = sharedTransitionScope,
                             appDrawerSettings = appDrawerSettings,
                             drag = drag,
                             eblanApplicationInfo = eblanApplicationInfo,
@@ -683,6 +689,7 @@ private fun SharedTransitionScope.EblanApplicationInfos(
                         key = { eblanApplicationInfo -> eblanApplicationInfo.serialNumber to eblanApplicationInfo.componentName },
                     ) { eblanApplicationInfo ->
                         EblanApplicationInfoItem(
+                            sharedTransitionScope = sharedTransitionScope,
                             appDrawerSettings = appDrawerSettings,
                             drag = drag,
                             eblanApplicationInfo = eblanApplicationInfo,

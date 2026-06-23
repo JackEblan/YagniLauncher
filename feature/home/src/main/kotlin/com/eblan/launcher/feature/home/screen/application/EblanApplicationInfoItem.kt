@@ -96,8 +96,9 @@ import kotlin.uuid.Uuid
     ExperimentalLayoutApi::class,
 )
 @Composable
-internal fun SharedTransitionScope.EblanApplicationInfoItem(
+internal fun EblanApplicationInfoItem(
     modifier: Modifier = Modifier,
+    sharedTransitionScope: SharedTransitionScope,
     appDrawerSettings: AppDrawerSettings,
     drag: Drag,
     eblanApplicationInfo: EblanApplicationInfo,
@@ -178,7 +179,6 @@ internal fun SharedTransitionScope.EblanApplicationInfoItem(
             drag = drag,
             eblanApplicationInfo = eblanApplicationInfo,
             isLongPress = isLongPress,
-            scale = scale,
             swipeY = swipeY,
             screenHeight = screenHeight,
             onDismiss = onDismiss,
@@ -225,7 +225,6 @@ internal fun SharedTransitionScope.EblanApplicationInfoItem(
                                     intOffset = intOffset,
                                     intSize = intSize,
                                     keyboardController = keyboardController,
-                                    scale = scale,
                                     onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
                                     onUpdateImageBitmap = onUpdateImageBitmap,
                                     onUpdateIsLongPress = { isLongPress = it },
@@ -248,10 +247,10 @@ internal fun SharedTransitionScope.EblanApplicationInfoItem(
                 )
             }
             .run {
-                when (appDrawerType) {
-                    AppDrawerType.Vertical -> height(appDrawerRowsHeight)
-                    AppDrawerType.Horizontal -> fillMaxSize()
-                    else -> this
+                if (appDrawerType == AppDrawerType.Vertical) {
+                    height(appDrawerRowsHeight)
+                } else {
+                    fillMaxSize()
                 }
             }
             .padding(appDrawerSettings.gridItemSettings.padding.dp)
@@ -280,16 +279,18 @@ internal fun SharedTransitionScope.EblanApplicationInfoItem(
 
                     intSize = layoutCoordinates.size
                 }.run {
-                    if (!isLongPress) {
-                        sharedElementWithCallerManagedVisibility(
-                            rememberSharedContentState(
-                                key = SharedElementKey(
-                                    id = applicationScreenId,
-                                    parent = SharedElementKey.Parent.SwipeY,
+                    if (!isLongPress && !isVisibleOverlay) {
+                        with(sharedTransitionScope) {
+                            sharedElementWithCallerManagedVisibility(
+                                rememberSharedContentState(
+                                    key = SharedElementKey(
+                                        id = applicationScreenId,
+                                        parent = SharedElementKey.Parent.SwipeY,
+                                    ),
                                 ),
-                            ),
-                            visible = !isVisibleOverlay,
-                        )
+                                visible = true,
+                            )
+                        }
                     } else {
                         this
                     }
@@ -326,7 +327,7 @@ internal suspend fun handleOnTapEblanApplicationInfoItem(
 
     val top = intOffset.y + topPadding
 
-    scale.animateTo(0.5f)
+    scale.animateTo(0.8f)
 
     scale.animateTo(1f)
 
@@ -345,12 +346,11 @@ internal suspend fun handleOnTapEblanApplicationInfoItem(
 }
 
 @OptIn(ExperimentalUuidApi::class)
-internal suspend fun handleDragEblanApplicationInfoItem(
+internal fun handleDragEblanApplicationInfoItem(
     appDrawerSettings: AppDrawerSettings,
     drag: Drag,
     eblanApplicationInfo: EblanApplicationInfo,
     isLongPress: Boolean,
-    scale: Animatable<Float, AnimationVector1D>,
     swipeY: Float,
     screenHeight: Int,
     onDismiss: () -> Unit,
@@ -420,12 +420,6 @@ internal suspend fun handleDragEblanApplicationInfoItem(
         }
 
         Drag.Cancel, Drag.End -> {
-            if (scale.isRunning) {
-                scale.stop()
-
-                scale.animateTo(1f)
-            }
-
             onUpdateIsLongPress(false)
 
             if (swipeY < screenHeight) {
@@ -445,7 +439,6 @@ internal suspend fun handleOnLongPressEblanApplicationInfoItem(
     intOffset: IntOffset,
     intSize: IntSize,
     keyboardController: SoftwareKeyboardController?,
-    scale: Animatable<Float, AnimationVector1D>,
     onUpdateEblanApplicationInfo: (EblanApplicationInfo) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
     onUpdateIsLongPress: (Boolean) -> Unit,
@@ -454,10 +447,6 @@ internal suspend fun handleOnLongPressEblanApplicationInfoItem(
     onUpdatePopupMenu: (Boolean) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
 ) {
-    scale.animateTo(0.5f)
-
-    scale.animateTo(1f)
-
     onUpdateImageBitmap(graphicsLayer.toImageBitmap())
 
     onUpdateOverlayBounds(
@@ -474,11 +463,11 @@ internal suspend fun handleOnLongPressEblanApplicationInfoItem(
 
     onUpdateEblanApplicationInfo(eblanApplicationInfo)
 
-    onUpdateIsVisibleOverlay(true)
-
     onUpdatePopupMenu(true)
 
     onUpdateIsLongPress(true)
 
     keyboardController?.hide()
+
+    onUpdateIsVisibleOverlay(true)
 }
