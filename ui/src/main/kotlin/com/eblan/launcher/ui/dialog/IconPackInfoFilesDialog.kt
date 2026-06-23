@@ -44,12 +44,14 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.eblan.launcher.designsystem.component.EblanDialog
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.framework.FileManager
 import com.eblan.launcher.domain.model.IconPackInfoComponent
+import com.eblan.launcher.ui.R
 import com.eblan.launcher.ui.local.LocalFileManager
 import com.eblan.launcher.ui.local.LocalIconKeyGenerator
 import com.eblan.launcher.ui.local.LocalIconPackManager
@@ -123,7 +125,7 @@ fun IconPackInfoFilesDialog(
                         scope.launch { searchBarState.animateToCollapsed() }
                     },
                     placeholder = {
-                        Text(text = "Search Applications")
+                        Text(text = stringResource(R.string.search_applications))
                     },
                 )
             },
@@ -200,7 +202,7 @@ fun IconPackInfoFilesDialog(
             modifier = Modifier.fillMaxWidth(),
             onClick = onDismissRequest,
         ) {
-            Text(text = "Cancel")
+            Text(text = stringResource(R.string.cancel))
         }
     }
 }

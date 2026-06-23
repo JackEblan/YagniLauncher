@@ -31,8 +31,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import com.eblan.launcher.designsystem.component.EblanDialog
+import com.eblan.launcher.ui.R
 
 @Composable
 internal fun EditIconSizeDialog(
@@ -41,9 +43,7 @@ internal fun EditIconSizeDialog(
     onDismissRequest: () -> Unit,
     onUpdateIconSize: (Int) -> Unit,
 ) {
-    var value by remember {
-        mutableStateOf("$iconSize")
-    }
+    var value by remember { mutableStateOf("$iconSize") }
 
     var isError by remember { mutableStateOf(false) }
 
@@ -52,7 +52,7 @@ internal fun EditIconSizeDialog(
         onDismissRequest = onDismissRequest,
     ) {
         Text(
-            text = "Icon Size",
+            text = stringResource(R.string.icon_size),
             style = MaterialTheme.typography.titleLarge,
         )
 
@@ -64,12 +64,12 @@ internal fun EditIconSizeDialog(
             },
             modifier = Modifier.fillMaxWidth(),
             label = {
-                Text(text = "Icon Size")
+                Text(text = stringResource(R.string.icon_size))
             },
             isError = isError,
             supportingText = if (isError) {
                 {
-                    Text(text = "Icon Size is not valid")
+                    Text(text = stringResource(R.string.icon_size_is_not_valid))
                 }
             } else {
                 null
@@ -86,7 +86,7 @@ internal fun EditIconSizeDialog(
             TextButton(
                 onClick = onDismissRequest,
             ) {
-                Text(text = "Cancel")
+                Text(text = stringResource(R.string.cancel))
             }
 
             TextButton(
@@ -100,7 +100,7 @@ internal fun EditIconSizeDialog(
                     }
                 },
             ) {
-                Text(text = "Update")
+                Text(text = stringResource(R.string.update))
             }
         }
     }

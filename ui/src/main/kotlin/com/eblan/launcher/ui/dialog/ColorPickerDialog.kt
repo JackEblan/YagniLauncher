@@ -48,9 +48,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.eblan.launcher.designsystem.component.EblanDialog
+import com.eblan.launcher.ui.R
 
 @Composable
 fun ColorPickerDialog(
@@ -113,7 +115,7 @@ fun ColorPickerDialog(
             TextButton(
                 onClick = onDismissRequest,
             ) {
-                Text("Cancel")
+                Text(text = stringResource(R.string.cancel))
             }
 
             Spacer(
@@ -129,7 +131,7 @@ fun ColorPickerDialog(
                     )
                 },
             ) {
-                Text("Save")
+                Text(text = stringResource(R.string.save))
             }
         }
     }

@@ -17,6 +17,7 @@
  */
 package com.eblan.launcher.ui.settings
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -39,11 +40,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.eblan.launcher.domain.model.GridItemSettings
 import com.eblan.launcher.domain.model.HorizontalAlignment
 import com.eblan.launcher.domain.model.TextColor
 import com.eblan.launcher.domain.model.VerticalArrangement
+import com.eblan.launcher.ui.R
 import com.eblan.launcher.ui.dialog.ColorPickerDialog
 import com.eblan.launcher.ui.dialog.EditCornerRadiusDialog
 import com.eblan.launcher.ui.dialog.EditIconSizeDialog
@@ -58,6 +62,8 @@ fun GridItemSettings(
     gridItemSettings: GridItemSettings,
     onUpdateGridItemSettings: (GridItemSettings) -> Unit,
 ) {
+    val context = LocalContext.current
+
     var showIconSizeDialog by remember { mutableStateOf(false) }
 
     var showTextColorDialog by remember { mutableStateOf(false) }
@@ -77,7 +83,7 @@ fun GridItemSettings(
     Column(modifier = modifier) {
         Text(
             modifier = Modifier.padding(15.dp),
-            text = "Grid Item",
+            text = stringResource(R.string.grid_item),
             style = MaterialTheme.typography.bodySmall,
         )
 
@@ -87,7 +93,7 @@ fun GridItemSettings(
                 .padding(horizontal = 15.dp),
         ) {
             SettingsColumn(
-                title = "Icon Size",
+                title = stringResource(R.string.icon_size),
                 subtitle = "${gridItemSettings.iconSize}",
                 onClick = {
                     showIconSizeDialog = true
@@ -97,8 +103,8 @@ fun GridItemSettings(
             HorizontalDivider(modifier = Modifier.fillMaxWidth())
 
             TextColorSettingsRow(
-                textColorTitle = "Text Color",
-                customColorTitle = "Custom Text Color",
+                textColorTitle = stringResource(R.string.text_color),
+                customColorTitle = stringResource(R.string.custom_text_color),
                 textColor = gridItemSettings.textColor,
                 customColor = gridItemSettings.customTextColor,
                 onClick = {
@@ -109,7 +115,7 @@ fun GridItemSettings(
             HorizontalDivider(modifier = Modifier.fillMaxWidth())
 
             SettingsColumn(
-                title = "Text Size",
+                title = stringResource(R.string.text_size),
                 subtitle = "${gridItemSettings.textSize}",
                 onClick = {
                     showTextSizeDialog = true
@@ -119,7 +125,7 @@ fun GridItemSettings(
             HorizontalDivider(modifier = Modifier.fillMaxWidth())
 
             CustomColorSettingsRow(
-                title = "Background Color",
+                title = stringResource(R.string.background_color),
                 customColor = gridItemSettings.customBackgroundColor,
                 onClick = {
                     showBackgroundColorDialog = true
@@ -129,7 +135,7 @@ fun GridItemSettings(
             HorizontalDivider(modifier = Modifier.fillMaxWidth())
 
             SettingsColumn(
-                title = "Padding",
+                title = stringResource(R.string.padding),
                 subtitle = "${gridItemSettings.padding}",
                 onClick = {
                     showPaddingDialog = true
@@ -139,7 +145,7 @@ fun GridItemSettings(
             HorizontalDivider(modifier = Modifier.fillMaxWidth())
 
             SettingsColumn(
-                title = "Corner Radius",
+                title = stringResource(R.string.corner_radius),
                 subtitle = "${gridItemSettings.cornerRadius}",
                 onClick = {
                     showCornerRadiusDialog = true
@@ -150,8 +156,8 @@ fun GridItemSettings(
 
             SettingsSwitch(
                 checked = gridItemSettings.showLabel,
-                title = "Show Label",
-                subtitle = "Show label",
+                title = stringResource(R.string.show_label),
+                subtitle = stringResource(R.string.show_label),
                 onCheckedChange = { showLabel ->
                     onUpdateGridItemSettings(gridItemSettings.copy(showLabel = showLabel))
                 },
@@ -161,8 +167,8 @@ fun GridItemSettings(
 
             SettingsSwitch(
                 checked = gridItemSettings.singleLineLabel,
-                title = "Single Line Label",
-                subtitle = "Show single line label",
+                title = stringResource(R.string.single_line_label),
+                subtitle = stringResource(R.string.single_line_label),
                 onCheckedChange = { singleLineLabel ->
                     onUpdateGridItemSettings(gridItemSettings.copy(singleLineLabel = singleLineLabel))
                 },
@@ -171,7 +177,7 @@ fun GridItemSettings(
             HorizontalDivider(modifier = Modifier.fillMaxWidth())
 
             SettingsColumn(
-                title = "Horizontal Alignment",
+                title = stringResource(R.string.horizontal_alignment),
                 subtitle = gridItemSettings.horizontalAlignment.name.replace(
                     regex = Regex(pattern = "([a-z])([A-Z])"),
                     replacement = "$1 $2",
@@ -184,7 +190,7 @@ fun GridItemSettings(
             HorizontalDivider(modifier = Modifier.fillMaxWidth())
 
             SettingsColumn(
-                title = "Vertical Arrangement",
+                title = stringResource(R.string.vertical_arrangement),
                 subtitle = gridItemSettings.verticalArrangement.name,
                 onClick = {
                     showVerticalArrangement = true
@@ -213,7 +219,7 @@ fun GridItemSettings(
 
     if (showTextColorDialog) {
         TextColorDialog(
-            title = "Text Color",
+            title = stringResource(R.string.text_color),
             textColor = gridItemSettings.textColor,
             customTextColor = gridItemSettings.customTextColor,
             onDismissRequest = {
@@ -252,7 +258,7 @@ fun GridItemSettings(
 
     if (showBackgroundColorDialog) {
         ColorPickerDialog(
-            title = "Background Color",
+            title = stringResource(R.string.background_color),
             customColor = gridItemSettings.customBackgroundColor,
             onDismissRequest = {
                 showBackgroundColorDialog = false
@@ -303,14 +309,11 @@ fun GridItemSettings(
 
     if (showHorizontalAlignment) {
         RadioOptionsDialog(
-            title = "Horizontal Alignment",
+            title = stringResource(R.string.horizontal_alignment),
             options = HorizontalAlignment.entries,
             selected = gridItemSettings.horizontalAlignment,
             label = {
-                it.name.replace(
-                    regex = Regex(pattern = "([a-z])([A-Z])"),
-                    replacement = "$1 $2",
-                )
+                it.getHorizontalAlignmentTitle(context = context)
             },
             onDismissRequest = {
                 showHorizontalAlignment = false
@@ -325,11 +328,11 @@ fun GridItemSettings(
 
     if (showVerticalArrangement) {
         RadioOptionsDialog(
-            title = "Vertical Arrangement",
+            title = stringResource(R.string.vertical_arrangement),
             options = VerticalArrangement.entries,
             selected = gridItemSettings.verticalArrangement,
             label = {
-                it.name
+                it.getVerticalArrangementTitle(context = context)
             },
             onDismissRequest = {
                 showVerticalArrangement = false
@@ -405,4 +408,16 @@ private fun CustomColorSettingsRow(
                 ),
         )
     }
+}
+
+private fun HorizontalAlignment.getHorizontalAlignmentTitle(context: Context): String = when (this) {
+    HorizontalAlignment.Start -> context.getString(R.string.start)
+    HorizontalAlignment.CenterHorizontally -> context.getString(R.string.center_horizontally)
+    HorizontalAlignment.End -> context.getString(R.string.end)
+}
+
+private fun VerticalArrangement.getVerticalArrangementTitle(context: Context): String = when (this) {
+    VerticalArrangement.Top -> context.getString(R.string.top)
+    VerticalArrangement.Center -> context.getString(R.string.center)
+    VerticalArrangement.Bottom -> context.getString(R.string.bottom)
 }

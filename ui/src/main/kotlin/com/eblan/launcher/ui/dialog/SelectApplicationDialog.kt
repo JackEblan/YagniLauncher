@@ -31,10 +31,12 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.eblan.launcher.designsystem.component.EblanDialog
 import com.eblan.launcher.domain.model.EblanApplicationInfo
+import com.eblan.launcher.ui.R
 
 @Composable
 fun SelectApplicationDialog(
@@ -48,7 +50,7 @@ fun SelectApplicationDialog(
         onDismissRequest = onDismissRequest,
     ) {
         Text(
-            text = "Select Application",
+            text = stringResource(R.string.select_application),
             style = MaterialTheme.typography.titleLarge,
         )
 
@@ -67,7 +69,7 @@ fun SelectApplicationDialog(
             TextButton(
                 onClick = onDismissRequest,
             ) {
-                Text(text = "Cancel")
+                Text(text = stringResource(R.string.cancel))
             }
         }
     }

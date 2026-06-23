@@ -17,6 +17,7 @@
  */
 package com.eblan.launcher.ui.settings
 
+import android.content.Context
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ElevatedCard
@@ -27,10 +28,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.eblan.launcher.domain.model.EblanAction
 import com.eblan.launcher.domain.model.EblanActionType
 import com.eblan.launcher.domain.model.EblanApplicationInfo
+import com.eblan.launcher.ui.R
 import com.eblan.launcher.ui.dialog.EblanActionDialog
 
 @Composable
@@ -44,6 +47,8 @@ fun EblanActionSettings(
     onUpdateSwipeUp: (EblanAction) -> Unit,
     onUpdateSwipeDown: (EblanAction) -> Unit,
 ) {
+    val context = LocalContext.current
+
     var showDoubleTapDialog by remember { mutableStateOf(false) }
 
     var showSwipeUpDialog by remember { mutableStateOf(false) }
@@ -57,7 +62,10 @@ fun EblanActionSettings(
     ) {
         SettingsColumn(
             title = "Double Tap",
-            subtitle = doubleTap.eblanActionType.getEblanActionTypeSubtitle(componentName = doubleTap.componentName),
+            subtitle = doubleTap.eblanActionType.getEblanActionTypeSubtitle(
+                context = context,
+                componentName = doubleTap.componentName,
+            ),
             onClick = {
                 showDoubleTapDialog = true
             },
@@ -67,7 +75,10 @@ fun EblanActionSettings(
 
         SettingsColumn(
             title = "Swipe Up",
-            subtitle = swipeUp.eblanActionType.getEblanActionTypeSubtitle(componentName = swipeUp.componentName),
+            subtitle = swipeUp.eblanActionType.getEblanActionTypeSubtitle(
+                context = context,
+                componentName = swipeUp.componentName,
+            ),
             onClick = {
                 showSwipeUpDialog = true
             },
@@ -77,7 +88,10 @@ fun EblanActionSettings(
 
         SettingsColumn(
             title = "Swipe Down",
-            subtitle = swipeDown.eblanActionType.getEblanActionTypeSubtitle(componentName = swipeDown.componentName),
+            subtitle = swipeDown.eblanActionType.getEblanActionTypeSubtitle(
+                context = context,
+                componentName = swipeDown.componentName,
+            ),
             onClick = {
                 showSwipeDownDialog = true
             },
@@ -133,12 +147,28 @@ fun EblanActionSettings(
     }
 }
 
-fun EblanActionType.getEblanActionTypeSubtitle(componentName: String): String = when (this) {
-    EblanActionType.None -> "None"
-    EblanActionType.OpenApp -> "Open ${componentName.ifBlank { "App" }}"
-    EblanActionType.OpenAppDrawer -> "Open App Drawer"
-    EblanActionType.OpenNotificationPanel -> "Open Notification Panel"
-    EblanActionType.LockScreen -> "Lock Screen"
-    EblanActionType.OpenQuickSettings -> "Open Quick Settings"
-    EblanActionType.OpenRecents -> "Open Recents"
+fun EblanActionType.getEblanActionTypeSubtitle(
+    context: Context,
+    componentName: String,
+): String = when (this) {
+    EblanActionType.None -> context.getString(R.string.none)
+
+    EblanActionType.OpenApp -> context.getString(
+        R.string.open,
+        componentName.ifBlank {
+            context.getString(
+                R.string.app,
+            )
+        },
+    )
+
+    EblanActionType.OpenAppDrawer -> context.getString(R.string.open_app_drawer)
+
+    EblanActionType.OpenNotificationPanel -> context.getString(R.string.open_notification_panel)
+
+    EblanActionType.LockScreen -> context.getString(R.string.lock_screen)
+
+    EblanActionType.OpenQuickSettings -> context.getString(R.string.open_quick_settings)
+
+    EblanActionType.OpenRecents -> context.getString(R.string.open_recents)
 }
