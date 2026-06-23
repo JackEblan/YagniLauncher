@@ -31,9 +31,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import com.eblan.launcher.designsystem.component.EblanDialog
 import com.eblan.launcher.designsystem.component.EblanRadioButton
 import com.eblan.launcher.domain.model.EblanApplicationInfoOrder
+import com.eblan.launcher.feature.home.R
 import com.eblan.launcher.ui.settings.SettingsSwitch
 
 @Composable
@@ -55,7 +57,7 @@ internal fun EblanApplicationInfoOrderDialog(
         onDismissRequest = onDismissRequest,
     ) {
         Text(
-            text = "Sort Applications",
+            text = stringResource(R.string.sort_applications),
             style = MaterialTheme.typography.titleLarge,
         )
 
@@ -77,8 +79,8 @@ internal fun EblanApplicationInfoOrderDialog(
             if (selectedEblanApplicationInfoOrder == EblanApplicationInfoOrder.Index) {
                 SettingsSwitch(
                     checked = isRearrangeEblanApplicationInfo,
-                    title = "Rearrange Applications",
-                    subtitle = "Rearrange applications by index",
+                    title = stringResource(R.string.rearrange_applications),
+                    subtitle = stringResource(R.string.rearrange_applications_by_index),
                     onCheckedChange = {
                         isRearrangeEblanApplicationInfo = it
                     },
@@ -93,7 +95,7 @@ internal fun EblanApplicationInfoOrderDialog(
             TextButton(
                 onClick = onDismissRequest,
             ) {
-                Text(text = "Cancel")
+                Text(text = stringResource(R.string.cancel))
             }
 
             TextButton(
@@ -105,7 +107,7 @@ internal fun EblanApplicationInfoOrderDialog(
                     )
                 },
             ) {
-                Text(text = "Update")
+                Text(text = stringResource(R.string.update))
             }
         }
     }

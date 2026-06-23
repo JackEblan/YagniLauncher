@@ -37,6 +37,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntSize
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -565,8 +566,8 @@ private fun RequestPermissionsEffect(modifier: Modifier = Modifier) {
     if (showTextDialog) {
         TextDialog(
             modifier = modifier,
-            title = "Request Permissions",
-            text = "Allow permissions so we can inform you about important crash reports and make phone shortcuts",
+            title = stringResource(R.string.request_permissions),
+            text = stringResource(R.string.allow_permissions_so_we_can_inform_you_about_important_crash_reports_and_make_phone_shortcuts),
             onClick = {
                 notificationsPermissionState.launchMultiplePermissionRequest()
 

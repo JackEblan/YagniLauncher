@@ -39,6 +39,7 @@ import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.domain.model.PinItemRequestType
+import com.eblan.launcher.feature.home.R
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.framework.imageserializer.AndroidImageSerializer
@@ -88,7 +89,7 @@ internal suspend fun handleDropGridItem(
 
         Toast.makeText(
             context,
-            "Please wait for the white box indicator",
+            context.getString(R.string.please_wait_for_the_white_box_indicator),
             Toast.LENGTH_LONG,
         ).show()
     }

@@ -65,6 +65,12 @@ internal fun getWidgetGridItem(
         icon = icon,
     )
 
+    val eblanAction = EblanAction(
+        eblanActionType = EblanActionType.None,
+        serialNumber = 0L,
+        componentName = "",
+    )
+
     return GridItem(
         id = id,
         page = page,
@@ -76,20 +82,8 @@ internal fun getWidgetGridItem(
         associate = Associate.Grid,
         override = false,
         gridItemSettings = gridItemSettings,
-        doubleTap = EblanAction(
-            eblanActionType = EblanActionType.None,
-            serialNumber = 0L,
-            componentName = "",
-        ),
-        swipeUp = EblanAction(
-            eblanActionType = EblanActionType.None,
-            serialNumber = 0L,
-            componentName = "",
-        ),
-        swipeDown = EblanAction(
-            eblanActionType = EblanActionType.None,
-            serialNumber = 0L,
-            componentName = "",
-        ),
+        doubleTap = eblanAction,
+        swipeUp = eblanAction,
+        swipeDown = eblanAction,
     )
 }
