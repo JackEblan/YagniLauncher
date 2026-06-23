@@ -98,7 +98,6 @@ internal fun FolderScreen(
     moveGridItemResult: MoveGridItemResult?,
     homeSettings: HomeSettings,
     isDragging: Boolean,
-    isCloseFolderGridItemPopup: Boolean,
     dragIntOffset: IntOffset,
     lockMovement: Boolean,
     folderCellWidth: Int,
@@ -469,8 +468,6 @@ internal fun FolderScreen(
                                 ),
                                 moveGridItemResult = moveGridItemResult,
                                 progress = progress.value,
-                                isDragging = isDragging,
-                                isCloseFolderGridItemPopup = isCloseFolderGridItemPopup,
                                 onOpenAppDrawer = onOpenAppDrawer,
                                 onTapApplicationInfo = { serialNumber, componentName ->
                                     val sourceBoundsX = x + leftPadding

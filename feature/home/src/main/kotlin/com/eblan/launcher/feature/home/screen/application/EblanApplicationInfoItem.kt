@@ -179,7 +179,6 @@ internal fun EblanApplicationInfoItem(
             drag = drag,
             eblanApplicationInfo = eblanApplicationInfo,
             isLongPress = isLongPress,
-            scale = scale,
             swipeY = swipeY,
             screenHeight = screenHeight,
             onDismiss = onDismiss,
@@ -226,7 +225,6 @@ internal fun EblanApplicationInfoItem(
                                     intOffset = intOffset,
                                     intSize = intSize,
                                     keyboardController = keyboardController,
-                                    scale = scale,
                                     onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
                                     onUpdateImageBitmap = onUpdateImageBitmap,
                                     onUpdateIsLongPress = { isLongPress = it },
@@ -348,12 +346,11 @@ internal suspend fun handleOnTapEblanApplicationInfoItem(
 }
 
 @OptIn(ExperimentalUuidApi::class)
-internal suspend fun handleDragEblanApplicationInfoItem(
+internal fun handleDragEblanApplicationInfoItem(
     appDrawerSettings: AppDrawerSettings,
     drag: Drag,
     eblanApplicationInfo: EblanApplicationInfo,
     isLongPress: Boolean,
-    scale: Animatable<Float, AnimationVector1D>,
     swipeY: Float,
     screenHeight: Int,
     onDismiss: () -> Unit,
@@ -423,12 +420,6 @@ internal suspend fun handleDragEblanApplicationInfoItem(
         }
 
         Drag.Cancel, Drag.End -> {
-            if (scale.isRunning) {
-                scale.stop()
-
-                scale.animateTo(1f)
-            }
-
             onUpdateIsLongPress(false)
 
             if (swipeY < screenHeight) {
@@ -448,7 +439,6 @@ internal suspend fun handleOnLongPressEblanApplicationInfoItem(
     intOffset: IntOffset,
     intSize: IntSize,
     keyboardController: SoftwareKeyboardController?,
-    scale: Animatable<Float, AnimationVector1D>,
     onUpdateEblanApplicationInfo: (EblanApplicationInfo) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
     onUpdateIsLongPress: (Boolean) -> Unit,
@@ -457,10 +447,6 @@ internal suspend fun handleOnLongPressEblanApplicationInfoItem(
     onUpdatePopupMenu: (Boolean) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
 ) {
-    scale.animateTo(0.5f)
-
-    scale.animateTo(1f)
-
     onUpdateImageBitmap(graphicsLayer.toImageBitmap())
 
     onUpdateOverlayBounds(

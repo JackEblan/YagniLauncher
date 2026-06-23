@@ -39,7 +39,6 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -81,7 +80,6 @@ import com.eblan.launcher.feature.home.util.FOLDER_PREVIEW_COLUMNS
 import com.eblan.launcher.feature.home.util.FOLDER_PREVIEW_ROWS
 import com.eblan.launcher.feature.home.util.getHorizontalAlignment
 import com.eblan.launcher.feature.home.util.getVerticalArrangement
-import com.eblan.launcher.feature.home.util.handleDrag
 import com.eblan.launcher.feature.home.util.onDoubleTap
 import com.eblan.launcher.feature.home.util.onPress
 import com.eblan.launcher.ui.local.LocalLauncherApps
@@ -103,8 +101,6 @@ internal fun InteractiveFolderGridItem(
     sharedElementKey: SharedElementKey,
     moveGridItemResult: MoveGridItemResult?,
     progress: Float,
-    isDragging: Boolean,
-    isCloseFolderGridItemPopup: Boolean,
     onOpenAppDrawer: () -> Unit,
     onTapApplicationInfo: (
         serialNumber: Long,
@@ -158,8 +154,6 @@ internal fun InteractiveFolderGridItem(
                 sharedElementKey = sharedElementKey,
                 statusBarNotifications = statusBarNotifications,
                 padding = padding,
-                isDragging = isDragging,
-                isCloseFolderGridItemPopup = isCloseFolderGridItemPopup,
                 onUpdateIsCloseFolderGridItemPopup = onUpdateIsCloseFolderGridItemPopup,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
@@ -187,8 +181,6 @@ internal fun InteractiveFolderGridItem(
                 isVisibleOverlay = isVisibleOverlay,
                 sharedElementKey = sharedElementKey,
                 padding = padding,
-                isDragging = isDragging,
-                isCloseFolderGridItemPopup = isCloseFolderGridItemPopup,
                 onUpdateIsCloseFolderGridItemPopup = onUpdateIsCloseFolderGridItemPopup,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
@@ -215,8 +207,6 @@ internal fun InteractiveFolderGridItem(
                 isVisibleOverlay = isVisibleOverlay,
                 sharedElementKey = sharedElementKey,
                 padding = padding,
-                isDragging = isDragging,
-                isCloseFolderGridItemPopup = isCloseFolderGridItemPopup,
                 onUpdateIsCloseFolderGridItemPopup = onUpdateIsCloseFolderGridItemPopup,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
@@ -242,8 +232,6 @@ internal fun InteractiveFolderGridItem(
                 isSelected = isSelected,
                 isVisibleOverlay = isVisibleOverlay,
                 sharedElementKey = sharedElementKey,
-                isDragging = isDragging,
-                isCloseFolderGridItemPopup = isCloseFolderGridItemPopup,
                 onUpdateIsCloseFolderGridItemPopup = onUpdateIsCloseFolderGridItemPopup,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
@@ -276,8 +264,6 @@ private fun InteractiveFolderApplicationInfoGridItem(
     sharedElementKey: SharedElementKey,
     statusBarNotifications: Map<String, Int>,
     padding: Dp,
-    isDragging: Boolean,
-    isCloseFolderGridItemPopup: Boolean,
     onUpdateIsCloseFolderGridItemPopup: (Boolean) -> Unit,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
@@ -334,19 +320,15 @@ private fun InteractiveFolderApplicationInfoGridItem(
 
     val scale = remember { Animatable(1f) }
 
-    val currentIsDragging = rememberUpdatedState(isDragging)
-    val currentIsCloseFolderGridItemPopup = rememberUpdatedState(isCloseFolderGridItemPopup)
+    LaunchedEffect(
+        key1 = drag,
+        key2 = hasInteraction,
+    ) {
+        if (drag == Drag.Dragging && hasInteraction) {
+            onUpdateIsDragging(true)
 
-    LaunchedEffect(key1 = drag) {
-        handleDrag(
-            drag = drag,
-            hasInteraction = hasInteraction,
-            scale = scale,
-            isDragging = currentIsDragging,
-            isCloseGridItemPopup = currentIsCloseFolderGridItemPopup,
-            onUpdateIsDragging = onUpdateIsDragging,
-            onUpdateIsCloseGridItemPopup = onUpdateIsCloseFolderGridItemPopup,
-        )
+            onUpdateIsCloseFolderGridItemPopup(true)
+        }
     }
 
     Column(
@@ -375,7 +357,6 @@ private fun InteractiveFolderApplicationInfoGridItem(
                                     intSize = intSize,
                                     sharedElementKey = sharedElementKey,
                                     gridItem = gridItem,
-                                    scale = scale,
                                     onUpdateImageBitmap = onUpdateImageBitmap,
                                     onUpdateOverlayBounds = onUpdateOverlayBounds,
                                     onUpdateSharedElementKey = onUpdateSharedElementKey,
@@ -509,8 +490,6 @@ private fun InteractiveFolderShortcutInfoGridItem(
     isVisibleOverlay: Boolean,
     sharedElementKey: SharedElementKey,
     padding: Dp,
-    isDragging: Boolean,
-    isCloseFolderGridItemPopup: Boolean,
     onUpdateIsCloseFolderGridItemPopup: (Boolean) -> Unit,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
@@ -562,19 +541,15 @@ private fun InteractiveFolderShortcutInfoGridItem(
 
     val scale = remember { Animatable(1f) }
 
-    val currentIsDragging = rememberUpdatedState(isDragging)
-    val currentIsCloseFolderGridItemPopup = rememberUpdatedState(isCloseFolderGridItemPopup)
+    LaunchedEffect(
+        key1 = drag,
+        key2 = hasInteraction,
+    ) {
+        if (drag == Drag.Dragging && hasInteraction) {
+            onUpdateIsDragging(true)
 
-    LaunchedEffect(key1 = drag) {
-        handleDrag(
-            drag = drag,
-            hasInteraction = hasInteraction,
-            scale = scale,
-            isDragging = currentIsDragging,
-            isCloseGridItemPopup = currentIsCloseFolderGridItemPopup,
-            onUpdateIsDragging = onUpdateIsDragging,
-            onUpdateIsCloseGridItemPopup = onUpdateIsCloseFolderGridItemPopup,
-        )
+            onUpdateIsCloseFolderGridItemPopup(true)
+        }
     }
 
     Column(
@@ -603,7 +578,6 @@ private fun InteractiveFolderShortcutInfoGridItem(
                                     intSize = intSize,
                                     sharedElementKey = sharedElementKey,
                                     gridItem = gridItem,
-                                    scale = scale,
                                     onUpdateImageBitmap = onUpdateImageBitmap,
                                     onUpdateOverlayBounds = onUpdateOverlayBounds,
                                     onUpdateSharedElementKey = onUpdateSharedElementKey,
@@ -737,8 +711,6 @@ private fun InteractiveFolderShortcutConfigGridItem(
     isVisibleOverlay: Boolean,
     sharedElementKey: SharedElementKey,
     padding: Dp,
-    isDragging: Boolean,
-    isCloseFolderGridItemPopup: Boolean,
     onUpdateIsCloseFolderGridItemPopup: (Boolean) -> Unit,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
@@ -818,19 +790,15 @@ private fun InteractiveFolderShortcutConfigGridItem(
 
     val scale = remember { Animatable(1f) }
 
-    val currentIsDragging = rememberUpdatedState(isDragging)
-    val currentIsCloseFolderGridItemPopup = rememberUpdatedState(isCloseFolderGridItemPopup)
+    LaunchedEffect(
+        key1 = drag,
+        key2 = hasInteraction,
+    ) {
+        if (drag == Drag.Dragging && hasInteraction) {
+            onUpdateIsDragging(true)
 
-    LaunchedEffect(key1 = drag) {
-        handleDrag(
-            drag = drag,
-            hasInteraction = hasInteraction,
-            scale = scale,
-            isDragging = currentIsDragging,
-            isCloseGridItemPopup = currentIsCloseFolderGridItemPopup,
-            onUpdateIsDragging = onUpdateIsDragging,
-            onUpdateIsCloseGridItemPopup = onUpdateIsCloseFolderGridItemPopup,
-        )
+            onUpdateIsCloseFolderGridItemPopup(true)
+        }
     }
 
     Column(
@@ -859,7 +827,6 @@ private fun InteractiveFolderShortcutConfigGridItem(
                                     intSize = intSize,
                                     sharedElementKey = sharedElementKey,
                                     gridItem = gridItem,
-                                    scale = scale,
                                     onUpdateImageBitmap = onUpdateImageBitmap,
                                     onUpdateOverlayBounds = onUpdateOverlayBounds,
                                     onUpdateSharedElementKey = onUpdateSharedElementKey,
@@ -971,8 +938,6 @@ private fun InteractiveNestedFolderGridItem(
     isSelected: Boolean,
     isVisibleOverlay: Boolean,
     sharedElementKey: SharedElementKey,
-    isDragging: Boolean,
-    isCloseFolderGridItemPopup: Boolean,
     onUpdateIsCloseFolderGridItemPopup: (Boolean) -> Unit,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
@@ -1016,19 +981,15 @@ private fun InteractiveNestedFolderGridItem(
 
     val scale = remember { Animatable(1f) }
 
-    val currentIsDragging = rememberUpdatedState(isDragging)
-    val currentIsCloseFolderGridItemPopup = rememberUpdatedState(isCloseFolderGridItemPopup)
+    LaunchedEffect(
+        key1 = drag,
+        key2 = hasInteraction,
+    ) {
+        if (drag == Drag.Dragging && hasInteraction) {
+            onUpdateIsDragging(true)
 
-    LaunchedEffect(key1 = drag) {
-        handleDrag(
-            drag = drag,
-            hasInteraction = hasInteraction,
-            scale = scale,
-            isDragging = currentIsDragging,
-            isCloseGridItemPopup = currentIsCloseFolderGridItemPopup,
-            onUpdateIsDragging = onUpdateIsDragging,
-            onUpdateIsCloseGridItemPopup = onUpdateIsCloseFolderGridItemPopup,
-        )
+            onUpdateIsCloseFolderGridItemPopup(true)
+        }
     }
 
     Column(
@@ -1057,7 +1018,6 @@ private fun InteractiveNestedFolderGridItem(
                                     intSize = intSize,
                                     sharedElementKey = sharedElementKey,
                                     gridItem = gridItem,
-                                    scale = scale,
                                     onUpdateImageBitmap = onUpdateImageBitmap,
                                     onUpdateOverlayBounds = onUpdateOverlayBounds,
                                     onUpdateSharedElementKey = onUpdateSharedElementKey,

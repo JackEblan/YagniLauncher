@@ -113,7 +113,6 @@ import com.eblan.launcher.feature.home.model.SharedElementKey
 import com.eblan.launcher.feature.home.screen.application.ApplicationInfoPopup
 import com.eblan.launcher.feature.home.screen.application.ApplicationScreenEffect
 import com.eblan.launcher.feature.home.screen.application.ApplicationSearchBarWithoutMenu
-import com.eblan.launcher.feature.home.screen.application.EblanApplicationInfoItem
 import com.eblan.launcher.feature.home.screen.application.EblanApplicationInfoTabRow
 import com.eblan.launcher.feature.home.screen.application.PrivateApplicationInfoPopup
 import com.eblan.launcher.feature.home.screen.application.QuiteModeScreen
@@ -818,7 +817,6 @@ private fun EblanApplicationInfoItem(
             drag = drag,
             eblanApplicationInfo = eblanApplicationInfo,
             isLongPress = isLongPress,
-            scale = scale,
             swipeY = swipeY,
             screenHeight = screenHeight,
             onDismiss = onDismiss,
@@ -865,7 +863,6 @@ private fun EblanApplicationInfoItem(
                                     intOffset = intOffset,
                                     intSize = intSize,
                                     keyboardController = keyboardController,
-                                    scale = scale,
                                     onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
                                     onUpdateImageBitmap = onUpdateImageBitmap,
                                     onUpdateIsLongPress = { isLongPress = it },

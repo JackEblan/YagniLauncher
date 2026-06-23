@@ -603,7 +603,7 @@ internal fun PagerScreen(
     ) {
         Column(
             modifier = Modifier
-                .pointerInput(Unit) {
+                .pointerInput(key1 = isVisibleOverlay) {
                     detectVerticalDragGestures(
                         onVerticalDrag = { _, dragAmount ->
                             pagerScreenState.verticalDrag(dragAmount = dragAmount)
@@ -702,7 +702,6 @@ internal fun PagerScreen(
                             moveGridItemResult = moveGridItemResult,
                             lockMovement = lockMovement,
                             isDragging = pagerScreenState.isDragging,
-                            isCloseGridItemPopup = pagerScreenState.isCloseGridItemPopup,
                             onOpenAppDrawer = pagerScreenState::openApplicationScreen,
                             onTapApplicationInfo = { serialNumber, componentName ->
                                 val sourceBoundsX = x + leftPadding
@@ -825,7 +824,6 @@ internal fun PagerScreen(
                             moveGridItemResult = moveGridItemResult,
                             lockMovement = lockMovement,
                             isDragging = pagerScreenState.isDragging,
-                            isCloseGridItemPopup = pagerScreenState.isCloseGridItemPopup,
                             onOpenAppDrawer = pagerScreenState::openApplicationScreen,
                             onTapApplicationInfo = { serialNumber, componentName ->
                                 val left = x + leftPadding
@@ -975,7 +973,6 @@ internal fun PagerScreen(
                 moveGridItemResult = moveGridItemResult,
                 homeSettings = homeSettings,
                 isDragging = pagerScreenState.isDragging,
-                isCloseFolderGridItemPopup = pagerScreenState.isCloseFolderGridItemPopup,
                 dragIntOffset = pagerScreenState.dragIntOffset,
                 lockMovement = lockMovement,
                 folderCellWidth = homeSettings.folderCellWidth,

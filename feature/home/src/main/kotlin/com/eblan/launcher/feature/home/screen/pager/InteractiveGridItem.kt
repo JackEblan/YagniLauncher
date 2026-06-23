@@ -85,7 +85,6 @@ import com.eblan.launcher.feature.home.util.getGridItemTextColor
 import com.eblan.launcher.feature.home.util.getHorizontalAlignment
 import com.eblan.launcher.feature.home.util.getSystemTextColor
 import com.eblan.launcher.feature.home.util.getVerticalArrangement
-import com.eblan.launcher.feature.home.util.handleDrag
 import com.eblan.launcher.feature.home.util.onDoubleTap
 import com.eblan.launcher.feature.home.util.onPress
 import com.eblan.launcher.ui.local.LocalAppWidgetHost
@@ -113,7 +112,6 @@ internal fun InteractiveGridItem(
     moveGridItemResult: MoveGridItemResult?,
     lockMovement: Boolean,
     isDragging: Boolean,
-    isCloseGridItemPopup: Boolean,
     onOpenAppDrawer: () -> Unit,
     onTapApplicationInfo: (
         serialNumber: Long,
@@ -186,8 +184,6 @@ internal fun InteractiveGridItem(
                 sharedElementKey = sharedElementKey,
                 statusBarNotifications = statusBarNotifications,
                 textColor = currentTextColor,
-                isDragging = isDragging,
-                isCloseGridItemPopup = isCloseGridItemPopup,
                 onUpdateIsCloseGridItemPopup = onUpdateIsCloseGridItemPopup,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
@@ -215,8 +211,6 @@ internal fun InteractiveGridItem(
                 sharedElementKey = sharedElementKey,
                 textColor = currentTextColor,
                 gridItem = gridItem,
-                isDragging = isDragging,
-                isCloseGridItemPopup = isCloseGridItemPopup,
                 onUpdateIsCloseGridItemPopup = onUpdateIsCloseGridItemPopup,
                 onShowGridItemPopup = onShowGridItemPopup,
                 onUpdateGridItemSource = onUpdateGridItemSource,
@@ -245,8 +239,6 @@ internal fun InteractiveGridItem(
                 newGridItemSource = newGridItemSource,
                 sharedElementKey = sharedElementKey,
                 textColor = currentTextColor,
-                isDragging = isDragging,
-                isCloseGridItemPopup = isCloseGridItemPopup,
                 onUpdateIsCloseGridItemPopup = onUpdateIsCloseGridItemPopup,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
@@ -279,7 +271,6 @@ internal fun InteractiveGridItem(
                 moveGridItemResult = moveGridItemResult,
                 lockMovement = lockMovement,
                 isDragging = isDragging,
-                isCloseGridItemPopup = isCloseGridItemPopup,
                 onUpdateIsCloseGridItemPopup = onUpdateIsCloseGridItemPopup,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
@@ -310,8 +301,6 @@ internal fun InteractiveGridItem(
                 newGridItemSource = newGridItemSource,
                 sharedElementKey = sharedElementKey,
                 textColor = currentTextColor,
-                isDragging = isDragging,
-                isCloseGridItemPopup = isCloseGridItemPopup,
                 onUpdateIsCloseGridItemPopup = onUpdateIsCloseGridItemPopup,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
@@ -345,8 +334,6 @@ private fun InteractiveApplicationInfoGridItem(
     sharedElementKey: SharedElementKey,
     statusBarNotifications: Map<String, Int>,
     textColor: Color,
-    isDragging: Boolean,
-    isCloseGridItemPopup: Boolean,
     onUpdateIsCloseGridItemPopup: (Boolean) -> Unit,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
@@ -406,19 +393,15 @@ private fun InteractiveApplicationInfoGridItem(
 
     val scale = remember { Animatable(1f) }
 
-    val currentIsDragging = rememberUpdatedState(isDragging)
-    val currentIsCloseGridItemPopup = rememberUpdatedState(isCloseGridItemPopup)
+    LaunchedEffect(
+        key1 = drag,
+        key2 = hasInteraction,
+    ) {
+        if (drag == Drag.Dragging && hasInteraction) {
+            onUpdateIsDragging(true)
 
-    LaunchedEffect(key1 = drag) {
-        handleDrag(
-            drag = drag,
-            hasInteraction = hasInteraction,
-            scale = scale,
-            isDragging = currentIsDragging,
-            isCloseGridItemPopup = currentIsCloseGridItemPopup,
-            onUpdateIsDragging = onUpdateIsDragging,
-            onUpdateIsCloseGridItemPopup = onUpdateIsCloseGridItemPopup,
-        )
+            onUpdateIsCloseGridItemPopup(true)
+        }
     }
 
     Column(
@@ -448,7 +431,6 @@ private fun InteractiveApplicationInfoGridItem(
                                     gridItemSource = newGridItemSource,
                                     sharedElementKey = sharedElementKey,
                                     gridItem = gridItem,
-                                    scale = scale,
                                     onUpdateGridItemSource = onUpdateGridItemSource,
                                     onUpdateImageBitmap = onUpdateImageBitmap,
                                     onUpdateOverlayBounds = onUpdateOverlayBounds,
@@ -587,8 +569,6 @@ private fun InteractiveWidgetGridItem(
     sharedElementKey: SharedElementKey,
     textColor: Color,
     gridItem: GridItem,
-    isDragging: Boolean,
-    isCloseGridItemPopup: Boolean,
     onUpdateIsCloseGridItemPopup: (Boolean) -> Unit,
     onShowGridItemPopup: (
         intOffset: IntOffset,
@@ -627,19 +607,15 @@ private fun InteractiveWidgetGridItem(
 
     val scale = remember { Animatable(1f) }
 
-    val currentIsDragging = rememberUpdatedState(isDragging)
-    val currentIsCloseGridItemPopup = rememberUpdatedState(isCloseGridItemPopup)
+    LaunchedEffect(
+        key1 = drag,
+        key2 = hasInteraction,
+    ) {
+        if (drag == Drag.Dragging && hasInteraction) {
+            onUpdateIsDragging(true)
 
-    LaunchedEffect(key1 = drag) {
-        handleDrag(
-            drag = drag,
-            hasInteraction = hasInteraction,
-            scale = scale,
-            isDragging = currentIsDragging,
-            isCloseGridItemPopup = currentIsCloseGridItemPopup,
-            onUpdateIsDragging = onUpdateIsDragging,
-            onUpdateIsCloseGridItemPopup = onUpdateIsCloseGridItemPopup,
-        )
+            onUpdateIsCloseGridItemPopup(true)
+        }
     }
 
     Box(
@@ -698,7 +674,6 @@ private fun InteractiveWidgetGridItem(
                                     gridItemSource = newGridItemSource,
                                     sharedElementKey = sharedElementKey,
                                     gridItem = gridItem,
-                                    scale = scale,
                                     onUpdateGridItemSource = onUpdateGridItemSource,
                                     onUpdateImageBitmap = onUpdateImageBitmap,
                                     onUpdateOverlayBounds = onUpdateOverlayBounds,
@@ -730,7 +705,6 @@ private fun InteractiveWidgetGridItem(
                                         gridItemSource = newGridItemSource,
                                         sharedElementKey = sharedElementKey,
                                         gridItem = gridItem,
-                                        scale = scale,
                                         onUpdateGridItemSource = onUpdateGridItemSource,
                                         onUpdateImageBitmap = onUpdateImageBitmap,
                                         onUpdateOverlayBounds = onUpdateOverlayBounds,
@@ -768,8 +742,6 @@ private fun InteractiveShortcutInfoGridItem(
     newGridItemSource: GridItemSource,
     sharedElementKey: SharedElementKey,
     textColor: Color,
-    isDragging: Boolean,
-    isCloseGridItemPopup: Boolean,
     onUpdateIsCloseGridItemPopup: (Boolean) -> Unit,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
@@ -824,19 +796,15 @@ private fun InteractiveShortcutInfoGridItem(
 
     val scale = remember { Animatable(1f) }
 
-    val currentIsDragging = rememberUpdatedState(isDragging)
-    val currentIsCloseGridItemPopup = rememberUpdatedState(isCloseGridItemPopup)
+    LaunchedEffect(
+        key1 = drag,
+        key2 = hasInteraction,
+    ) {
+        if (drag == Drag.Dragging && hasInteraction) {
+            onUpdateIsDragging(true)
 
-    LaunchedEffect(key1 = drag) {
-        handleDrag(
-            drag = drag,
-            hasInteraction = hasInteraction,
-            scale = scale,
-            isDragging = currentIsDragging,
-            isCloseGridItemPopup = currentIsCloseGridItemPopup,
-            onUpdateIsDragging = onUpdateIsDragging,
-            onUpdateIsCloseGridItemPopup = onUpdateIsCloseGridItemPopup,
-        )
+            onUpdateIsCloseGridItemPopup(true)
+        }
     }
 
     Column(
@@ -866,7 +834,6 @@ private fun InteractiveShortcutInfoGridItem(
                                     gridItemSource = newGridItemSource,
                                     sharedElementKey = sharedElementKey,
                                     gridItem = gridItem,
-                                    scale = scale,
                                     onUpdateGridItemSource = onUpdateGridItemSource,
                                     onUpdateImageBitmap = onUpdateImageBitmap,
                                     onUpdateOverlayBounds = onUpdateOverlayBounds,
@@ -1012,7 +979,6 @@ private fun InteractiveFolderGridItem(
     moveGridItemResult: MoveGridItemResult?,
     lockMovement: Boolean,
     isDragging: Boolean,
-    isCloseGridItemPopup: Boolean,
     onUpdateIsCloseGridItemPopup: (Boolean) -> Unit,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
@@ -1065,21 +1031,19 @@ private fun InteractiveFolderGridItem(
 
     val currentDrag = rememberUpdatedState(drag)
     val currentIsDragging = rememberUpdatedState(isDragging)
-    val currentIsCloseGridItemPopup = rememberUpdatedState(isCloseGridItemPopup)
     val currentIsVisibleOverlay = rememberUpdatedState(isVisibleOverlay)
     val currentGridItem = rememberUpdatedState(gridItem)
     val currentLockMovement = rememberUpdatedState(lockMovement)
 
-    LaunchedEffect(key1 = drag) {
-        handleDrag(
-            drag = drag,
-            hasInteraction = hasInteraction,
-            scale = scale,
-            isDragging = currentIsDragging,
-            isCloseGridItemPopup = currentIsCloseGridItemPopup,
-            onUpdateIsDragging = onUpdateIsDragging,
-            onUpdateIsCloseGridItemPopup = onUpdateIsCloseGridItemPopup,
-        )
+    LaunchedEffect(
+        key1 = drag,
+        key2 = hasInteraction,
+    ) {
+        if (drag == Drag.Dragging && hasInteraction) {
+            onUpdateIsDragging(true)
+
+            onUpdateIsCloseGridItemPopup(true)
+        }
     }
 
     LaunchedEffect(key1 = moveGridItemResult) {
@@ -1124,7 +1088,6 @@ private fun InteractiveFolderGridItem(
                                     gridItemSource = newGridItemSource,
                                     sharedElementKey = sharedElementKey,
                                     gridItem = gridItem,
-                                    scale = scale,
                                     onUpdateGridItemSource = onUpdateGridItemSource,
                                     onUpdateImageBitmap = onUpdateImageBitmap,
                                     onUpdateOverlayBounds = onUpdateOverlayBounds,
@@ -1279,8 +1242,6 @@ private fun InteractiveShortcutConfigGridItem(
     newGridItemSource: GridItemSource,
     sharedElementKey: SharedElementKey,
     textColor: Color,
-    isDragging: Boolean,
-    isCloseGridItemPopup: Boolean,
     onUpdateIsCloseGridItemPopup: (Boolean) -> Unit,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
@@ -1363,19 +1324,15 @@ private fun InteractiveShortcutConfigGridItem(
 
     val scale = remember { Animatable(1f) }
 
-    val currentIsDragging = rememberUpdatedState(isDragging)
-    val currentIsCloseGridItemPopup = rememberUpdatedState(isCloseGridItemPopup)
+    LaunchedEffect(
+        key1 = drag,
+        key2 = hasInteraction,
+    ) {
+        if (drag == Drag.Dragging && hasInteraction) {
+            onUpdateIsDragging(true)
 
-    LaunchedEffect(key1 = drag) {
-        handleDrag(
-            drag = drag,
-            hasInteraction = hasInteraction,
-            scale = scale,
-            isDragging = currentIsDragging,
-            isCloseGridItemPopup = currentIsCloseGridItemPopup,
-            onUpdateIsDragging = onUpdateIsDragging,
-            onUpdateIsCloseGridItemPopup = onUpdateIsCloseGridItemPopup,
-        )
+            onUpdateIsCloseGridItemPopup(true)
+        }
     }
 
     Column(
@@ -1405,7 +1362,6 @@ private fun InteractiveShortcutConfigGridItem(
                                     gridItemSource = newGridItemSource,
                                     sharedElementKey = sharedElementKey,
                                     gridItem = gridItem,
-                                    scale = scale,
                                     onUpdateGridItemSource = onUpdateGridItemSource,
                                     onUpdateImageBitmap = onUpdateImageBitmap,
                                     onUpdateOverlayBounds = onUpdateOverlayBounds,
