@@ -6,12 +6,12 @@
 
 Only 2 MB Android Launcher, total control, zero bloat, zero tracking
 
-![GitHub Release](https://img.shields.io/github/v/release/JackEblan/YagniLauncher?style=for-the-badge&color=lightseagreen)
+![GitHub Release](https://img.shields.io/github/v/release/JackEblan/YagniLauncher?style=for-the-badge&color=mediumseagreen)
 ![IzzyOnDroid Version](https://img.shields.io/f-droid/v/com.eblan.launcher?baseUrl=https%3A%2F%2Fapt.izzysoft.de%2Ffdroid&style=for-the-badge&label=IzzyOnDroid&color=mediumseagreen)
-![F-Droid Version](https://img.shields.io/f-droid/v/com.eblan.launcher?style=for-the-badge&color=seagreen)
-![GitHub License](https://img.shields.io/github/license/JackEblan/YagniLauncher?style=for-the-badge&color=teal)
-![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/JackEblan/YagniLauncher/total?style=for-the-badge&color=aquamarine)
-![Lines Of Code](https://img.shields.io/endpoint?url=https%3A%2F%2Fghloc.vercel.app%2Fapi%2FJackEblan%2FYagniLauncher%2Fbadge%3Fformat%3Dhuman%26filter%3Dsrc%2Fmain%2Fkotlin&style=for-the-badge&color=lightseagreen)
+![F-Droid Version](https://img.shields.io/f-droid/v/com.eblan.launcher?style=for-the-badge&color=mediumseagreen)
+![GitHub License](https://img.shields.io/github/license/JackEblan/YagniLauncher?style=for-the-badge&color=mediumseagreen)
+![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/JackEblan/YagniLauncher/total?style=for-the-badge&color=mediumseagreen)
+![Lines Of Code](https://img.shields.io/endpoint?url=https%3A%2F%2Fghloc.vercel.app%2Fapi%2FJackEblan%2FYagniLauncher%2Fbadge%3Fformat%3Dhuman%26filter%3Dsrc%2Fmain%2Fkotlin&style=for-the-badge&color=mediumseagreen)
 
 [<img src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png" alt="Get it on IzzyOnDroid" height="80">](https://apt.izzysoft.de/packages/com.eblan.launcher)
 [<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png" alt="Get it on F-Droid" height="80">](https://f-droid.org/en/packages/com.eblan.launcher/)
@@ -62,12 +62,14 @@ Thanks for all your support. I’m continuously improving the user experience, e
 
 </div>
 
+## Translations
+Translations are managed on [Crowdin](https://crowdin.com/project/yagni-launcher/invite?h=ebbe36a561731a4055b372e27d1dea8c2807413). Contributions are welcome.
+
 ## Links
 - [Android Launchers Memory Usage In The Cached Processes](https://youtu.be/-0cEKr-H5FU?si=RhaWvdf5ElBFoHnJ)
 - [Support Me On Ko-Fi](https://ko-fi.com/I3I01OJG21)
 
 ## License
-
 **Yagni Launcher** is licensed under the GNU General Public License v3.0. See the [license](LICENSE)
 for more
 information.
