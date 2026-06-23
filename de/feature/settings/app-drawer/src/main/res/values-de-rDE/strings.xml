@@ -17,25 +17,25 @@
   ~
   -->
 <resources>
-    <string name="horizontal_grid">Horizontal Grid</string>
-    <string name="columns">Columns</string>
-    <string name="columns_is_not_valid">Columns is not valid</string>
-    <string name="rows">Rows</string>
-    <string name="rows_is_not_valid">Rows is not valid</string>
-    <string name="cancel">Cancel</string>
-    <string name="update">Update</string>
-    <string name="vertical_grid">Vertical Grid</string>
-    <string name="rows_height">Rows Height</string>
-    <string name="rows_height_is_not_valid">Rows height is not valid</string>
-    <string name="hidden_applications">Hidden Applications</string>
-    <string name="no_hidden_applications">No hidden Applications</string>
+    <string name="horizontal_grid">Horizontales Raster</string>
+    <string name="columns">Spalten</string>
+    <string name="columns_is_not_valid">Spalten sind ungültig</string>
+    <string name="rows">Zeilen</string>
+    <string name="rows_is_not_valid">Zeilen sind ungültig</string>
+    <string name="cancel">Abbrechen</string>
+    <string name="update">Aktualisieren</string>
+    <string name="vertical_grid">Vertikales Gitter</string>
+    <string name="rows_height">Zeilenhöhe</string>
+    <string name="rows_height_is_not_valid">Zeilenhöhe ist ungültig</string>
+    <string name="hidden_applications">Versteckte Anwendungen</string>
+    <string name="no_hidden_applications">Keine versteckten Anwendungen</string>
     <string name="okay">Okay</string>
-    <string name="app_drawer">App Drawer</string>
-    <string name="app_drawer_type">App Drawer Type</string>
-    <string name="grid">Grid</string>
-    <string name="background_color">Background Color</string>
-    <string name="custom_background_color">Custom Background Color</string>
-    <string name="exclude_tagged_apps">Exclude Tagged Apps</string>
-    <string name="hide_selected_apps_from_the_app_drawer">Hide selected apps from the app drawer</string>
-    <string name="hide_apps_marked_with_selected_tags">Hide apps marked with selected tags</string>
+    <string name="app_drawer">App-Übersicht</string>
+    <string name="app_drawer_type">App-Drawer-Typ</string>
+    <string name="grid">Raster</string>
+    <string name="background_color">Hintergrundfarbe</string>
+    <string name="custom_background_color">Eigene Hintergrundfarbe</string>
+    <string name="exclude_tagged_apps">Markierte Apps ausschließen</string>
+    <string name="hide_selected_apps_from_the_app_drawer">Ausgewählte Apps im App-Drawer ausblenden</string>
+    <string name="hide_apps_marked_with_selected_tags">Apps mit markierten Tags ausblenden</string>
 </resources>
