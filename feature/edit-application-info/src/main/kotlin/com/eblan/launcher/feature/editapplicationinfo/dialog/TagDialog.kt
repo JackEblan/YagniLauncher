@@ -34,11 +34,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import com.eblan.launcher.designsystem.component.EblanDialog
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.EblanApplicationInfoTag
 import com.eblan.launcher.domain.model.EblanApplicationInfoTagUi
+import com.eblan.launcher.feature.editapplicationinfo.R
 
 @Composable
 internal fun AddTagDialog(
@@ -55,7 +57,7 @@ internal fun AddTagDialog(
         onDismissRequest = onDismissRequest,
     ) {
         Text(
-            text = "Add Tag",
+            text = stringResource(R.string.add_tag),
             style = MaterialTheme.typography.titleLarge,
         )
 
@@ -67,12 +69,12 @@ internal fun AddTagDialog(
             },
             modifier = Modifier.fillMaxWidth(),
             label = {
-                Text(text = "Add Tag")
+                Text(text = stringResource(R.string.add_tag))
             },
             isError = isError,
             supportingText = if (isError) {
                 {
-                    Text(text = "Tag is not valid")
+                    Text(text = stringResource(R.string.tag_is_not_valid))
                 }
             } else {
                 null
@@ -86,7 +88,7 @@ internal fun AddTagDialog(
             TextButton(
                 onClick = onDismissRequest,
             ) {
-                Text(text = "Cancel")
+                Text(text = stringResource(R.string.cancel))
             }
 
             TextButton(
@@ -104,7 +106,7 @@ internal fun AddTagDialog(
                     }
                 },
             ) {
-                Text(text = "Add")
+                Text(text = stringResource(R.string.add))
             }
         }
     }
@@ -134,7 +136,7 @@ internal fun UpdateTagDialog(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                text = "Update Tag",
+                text = stringResource(R.string.update_tag),
                 style = MaterialTheme.typography.titleLarge,
             )
 
@@ -165,11 +167,11 @@ internal fun UpdateTagDialog(
             },
             modifier = Modifier.fillMaxWidth(),
             label = {
-                Text(text = "Update Tag")
+                Text(text = stringResource(R.string.update_tag))
             },
             supportingText = {
                 if (isError) {
-                    Text(text = "Tag is not valid")
+                    Text(text = stringResource(R.string.tag_is_not_valid))
                 }
             },
             isError = isError,
@@ -186,7 +188,7 @@ internal fun UpdateTagDialog(
             TextButton(
                 onClick = onDismissRequest,
             ) {
-                Text(text = "Cancel")
+                Text(text = stringResource(R.string.cancel))
             }
 
             TextButton(
@@ -205,7 +207,7 @@ internal fun UpdateTagDialog(
                     }
                 },
             ) {
-                Text(text = "Update")
+                Text(text = stringResource(R.string.update))
             }
         }
     }

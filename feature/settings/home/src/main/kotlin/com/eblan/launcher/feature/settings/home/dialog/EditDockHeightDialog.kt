@@ -31,8 +31,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import com.eblan.launcher.designsystem.component.EblanDialog
+import com.eblan.launcher.feature.settings.home.R
 
 @Composable
 internal fun EditDockHeightDialog(
@@ -41,9 +43,7 @@ internal fun EditDockHeightDialog(
     onDismissRequest: () -> Unit,
     onUpdateDockHeight: (Int) -> Unit,
 ) {
-    var value by remember {
-        mutableStateOf("$dockHeight")
-    }
+    var value by remember { mutableStateOf("$dockHeight") }
 
     var isError by remember { mutableStateOf(false) }
 
@@ -52,7 +52,7 @@ internal fun EditDockHeightDialog(
         onDismissRequest = onDismissRequest,
     ) {
         Text(
-            text = "Dock Height",
+            text = stringResource(R.string.dock_height),
             style = MaterialTheme.typography.titleLarge,
         )
 
@@ -64,12 +64,12 @@ internal fun EditDockHeightDialog(
             },
             modifier = Modifier.fillMaxWidth(),
             label = {
-                Text(text = "Dock Height")
+                Text(text = stringResource(R.string.dock_height))
             },
             isError = isError,
             supportingText = if (isError) {
                 {
-                    Text(text = "Dock Height is not valid")
+                    Text(text = stringResource(R.string.dock_height_is_not_valid))
                 }
             } else {
                 null
@@ -86,7 +86,7 @@ internal fun EditDockHeightDialog(
             TextButton(
                 onClick = onDismissRequest,
             ) {
-                Text(text = "Cancel")
+                Text(text = stringResource(R.string.cancel))
             }
 
             TextButton(
@@ -100,7 +100,7 @@ internal fun EditDockHeightDialog(
                     }
                 },
             ) {
-                Text(text = "Update")
+                Text(text = stringResource(R.string.update))
             }
         }
     }

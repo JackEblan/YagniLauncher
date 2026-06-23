@@ -31,10 +31,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.eblan.launcher.designsystem.component.EblanDialog
 import com.eblan.launcher.domain.model.HomeSettings
+import com.eblan.launcher.feature.settings.home.R
 
 @Composable
 internal fun EditFolderCellDimensionDialog(
@@ -54,7 +56,7 @@ internal fun EditFolderCellDimensionDialog(
         onDismissRequest = onDismissRequest,
     ) {
         Text(
-            text = "Folder Cell Dimension",
+            text = stringResource(R.string.folder_cell_dimension),
             style = MaterialTheme.typography.titleLarge,
         )
 
@@ -68,10 +70,10 @@ internal fun EditFolderCellDimensionDialog(
                     firstError = false
                 },
                 modifier = Modifier.weight(1f),
-                label = { Text(text = "Cell Width") },
+                label = { Text(text = stringResource(R.string.cell_width)) },
                 supportingText = if (firstError) {
                     {
-                        Text(text = "Cell width is not valid")
+                        Text(text = stringResource(R.string.cell_width_is_not_valid))
                     }
                 } else {
                     null
@@ -89,10 +91,10 @@ internal fun EditFolderCellDimensionDialog(
                     secondError = false
                 },
                 modifier = Modifier.weight(1f),
-                label = { Text(text = "Cell Height") },
+                label = { Text(text = stringResource(R.string.cell_height)) },
                 supportingText = if (secondError) {
                     {
-                        Text(text = "Cell height is not valid")
+                        Text(text = stringResource(R.string.cell_height_is_not_valid))
                     }
                 } else {
                     null
@@ -111,7 +113,7 @@ internal fun EditFolderCellDimensionDialog(
             TextButton(
                 onClick = onDismissRequest,
             ) {
-                Text(text = "Cancel")
+                Text(text = stringResource(R.string.cancel))
             }
 
             TextButton(
@@ -138,7 +140,7 @@ internal fun EditFolderCellDimensionDialog(
                     }
                 },
             ) {
-                Text(text = "Update")
+                Text(text = stringResource(R.string.update))
             }
         }
     }

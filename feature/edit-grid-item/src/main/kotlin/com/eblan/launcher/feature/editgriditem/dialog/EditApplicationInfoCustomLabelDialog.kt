@@ -33,10 +33,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import com.eblan.launcher.designsystem.component.EblanDialog
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
+import com.eblan.launcher.feature.editgriditem.R
 
 @Composable
 internal fun EditApplicationInfoCustomLabelDialog(
@@ -62,7 +64,7 @@ internal fun EditApplicationInfoCustomLabelDialog(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                text = "Custom Label",
+                text = stringResource(R.string.custom_label),
                 style = MaterialTheme.typography.titleLarge,
             )
 
@@ -93,12 +95,12 @@ internal fun EditApplicationInfoCustomLabelDialog(
             },
             modifier = Modifier.fillMaxWidth(),
             label = {
-                Text(text = "Custom Label")
+                Text(text = stringResource(R.string.custom_label))
             },
             isError = isError,
             supportingText = if (isError) {
                 {
-                    Text("Custom label is not valid")
+                    Text(text = stringResource(R.string.custom_label_is_not_valid))
                 }
             } else {
                 null
@@ -110,7 +112,7 @@ internal fun EditApplicationInfoCustomLabelDialog(
             horizontalArrangement = Arrangement.End,
         ) {
             TextButton(onClick = onDismissRequest) {
-                Text(text = "Cancel")
+                Text(text = stringResource(R.string.cancel))
             }
 
             TextButton(
@@ -128,7 +130,7 @@ internal fun EditApplicationInfoCustomLabelDialog(
                     }
                 },
             ) {
-                Text(text = "Update")
+                Text(text = stringResource(R.string.update))
             }
         }
     }

@@ -39,6 +39,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -117,10 +118,10 @@ internal fun EditGridItemScreen(
                             is GridItemData.ShortcutConfig -> data.activityLabel.toString()
                             is GridItemData.ShortcutInfo -> data.shortLabel
                             is GridItemData.Folder -> data.label
-                            else -> "Grid Item"
+                            else -> error("Unsupported Grid Item")
                         }
 
-                        Text(text = "Edit $label")
+                        Text(text = stringResource(R.string.edit, label))
                     },
                     navigationIcon = {
                         IconButton(onClick = onNavigateUp) {
@@ -249,7 +250,7 @@ private fun Success(
 
         Text(
             modifier = Modifier.padding(15.dp),
-            text = "Grid Item Actions",
+            text = stringResource(R.string.grid_item_actions),
             style = MaterialTheme.typography.bodySmall,
         )
 
@@ -316,8 +317,8 @@ private fun EditApplicationInfo(
     HorizontalDivider(modifier = Modifier.fillMaxWidth())
 
     SettingsColumn(
-        title = "Custom Label",
-        subtitle = data.customLabel ?: "None",
+        title = stringResource(R.string.custom_label),
+        subtitle = data.customLabel ?: stringResource(R.string.none),
         onClick = {
             showCustomLabelDialog = true
         },
@@ -327,8 +328,8 @@ private fun EditApplicationInfo(
 
     SettingsSwitch(
         checked = gridItem.override,
-        title = "Override",
-        subtitle = "Override the Grid Item Settings",
+        title = stringResource(R.string.override),
+        subtitle = stringResource(R.string.override_the_grid_item_settings),
         onCheckedChange = {
             onUpdateGridItem(gridItem.copy(override = it))
         },
@@ -414,7 +415,7 @@ private fun EditFolder(
     HorizontalDivider(modifier = Modifier.fillMaxWidth())
 
     SettingsColumn(
-        title = "Edit Label",
+        title = stringResource(R.string.edit_label),
         subtitle = data.label,
         onClick = {
             showEditLabelDialog = true
@@ -425,8 +426,8 @@ private fun EditFolder(
 
     SettingsSwitch(
         checked = gridItem.override,
-        title = "Override",
-        subtitle = "Override the Grid Item Settings",
+        title = stringResource(R.string.override),
+        subtitle = stringResource(R.string.override_the_grid_item_settings),
         onCheckedChange = {
             onUpdateGridItem(gridItem.copy(override = it))
         },
@@ -512,8 +513,8 @@ private fun EditShortcutInfo(
     HorizontalDivider(modifier = Modifier.fillMaxWidth())
 
     SettingsColumn(
-        title = "Custom Short Label",
-        subtitle = data.customShortLabel ?: "None",
+        title = stringResource(R.string.custom_short_label),
+        subtitle = data.customShortLabel ?: stringResource(R.string.none),
         onClick = {
             showCustomShortLabelDialog = true
         },
@@ -523,8 +524,8 @@ private fun EditShortcutInfo(
 
     SettingsSwitch(
         checked = gridItem.override,
-        title = "Override",
-        subtitle = "Override the Grid Item Settings",
+        title = stringResource(R.string.override),
+        subtitle = stringResource(R.string.override_the_grid_item_settings),
         onCheckedChange = {
             onUpdateGridItem(gridItem.copy(override = it))
         },
@@ -610,8 +611,8 @@ private fun EditShortcutConfig(
     HorizontalDivider(modifier = Modifier.fillMaxWidth())
 
     SettingsColumn(
-        title = "Custom Label",
-        subtitle = data.customLabel ?: "None",
+        title = stringResource(R.string.custom_label),
+        subtitle = data.customLabel ?: stringResource(R.string.none),
         onClick = {
             showCustomLabelDialog = true
         },
@@ -621,8 +622,8 @@ private fun EditShortcutConfig(
 
     SettingsSwitch(
         checked = gridItem.override,
-        title = "Override",
-        subtitle = "Override the Grid Item Settings",
+        title = stringResource(R.string.override),
+        subtitle = stringResource(R.string.override_the_grid_item_settings),
         onCheckedChange = {
             onUpdateGridItem(gridItem.copy(override = it))
         },

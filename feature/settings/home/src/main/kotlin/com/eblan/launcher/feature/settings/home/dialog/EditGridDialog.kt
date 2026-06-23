@@ -31,10 +31,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.eblan.launcher.designsystem.component.EblanDialog
 import com.eblan.launcher.domain.model.HomeSettings
+import com.eblan.launcher.feature.settings.home.R
 
 @Composable
 internal fun EditGridDialog(
@@ -54,7 +56,7 @@ internal fun EditGridDialog(
         onDismissRequest = onDismissRequest,
     ) {
         Text(
-            text = "Grid",
+            text = stringResource(R.string.grid),
             style = MaterialTheme.typography.titleLarge,
         )
 
@@ -68,10 +70,10 @@ internal fun EditGridDialog(
                     firstError = false
                 },
                 modifier = Modifier.weight(1f),
-                label = { Text(text = "Columns") },
+                label = { Text(text = stringResource(R.string.columns)) },
                 supportingText = if (firstError) {
                     {
-                        Text(text = "Columns is not valid")
+                        Text(text = stringResource(R.string.columns_is_not_valid))
                     }
                 } else {
                     null
@@ -89,10 +91,10 @@ internal fun EditGridDialog(
                     secondError = false
                 },
                 modifier = Modifier.weight(1f),
-                label = { Text(text = "Rows") },
+                label = { Text(text = stringResource(R.string.rows)) },
                 supportingText = if (secondError) {
                     {
-                        Text(text = "Rows is not valid")
+                        Text(text = stringResource(R.string.rows_is_not_valid))
                     }
                 } else {
                     null
@@ -111,7 +113,7 @@ internal fun EditGridDialog(
             TextButton(
                 onClick = onDismissRequest,
             ) {
-                Text(text = "Cancel")
+                Text(text = stringResource(R.string.cancel))
             }
 
             TextButton(
@@ -138,7 +140,7 @@ internal fun EditGridDialog(
                     }
                 },
             ) {
-                Text(text = "Update")
+                Text(text = stringResource(R.string.update))
             }
         }
     }

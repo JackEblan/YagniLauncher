@@ -41,6 +41,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -96,7 +97,7 @@ internal fun GeneralSettingsScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(text = "General")
+                    Text(text = stringResource(R.string.general))
                 },
                 navigationIcon = {
                     IconButton(onClick = onNavigateUp) {
@@ -163,8 +164,8 @@ private fun Success(
                 .padding(horizontal = 15.dp),
         ) {
             SettingsColumn(
-                title = "Import Icon Pack",
-                subtitle = "Import icon pack",
+                title = stringResource(R.string.import_icon_pack),
+                subtitle = stringResource(R.string.import_icon_pack),
                 onClick = {
                     showImportIconPackDialog = true
                 },
@@ -173,8 +174,8 @@ private fun Success(
             HorizontalDivider(modifier = Modifier.fillMaxWidth())
 
             SettingsColumn(
-                title = "Select Icon Pack",
-                subtitle = generalSettings.iconPackInfoPackageName.ifEmpty { "Default" },
+                title = stringResource(R.string.select_icon_pack),
+                subtitle = generalSettings.iconPackInfoPackageName.ifEmpty { stringResource(R.string.default_icon_pack) },
                 onClick = {
                     selectIconPackDialog = true
                 },
@@ -183,7 +184,7 @@ private fun Success(
             HorizontalDivider(modifier = Modifier.fillMaxWidth())
 
             SettingsColumn(
-                title = "Theme",
+                title = stringResource(R.string.theme),
                 subtitle = generalSettings.theme.name,
                 onClick = {
                     showDarkThemeConfigDialog = true
@@ -195,8 +196,8 @@ private fun Success(
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 SettingsSwitch(
                     checked = generalSettings.dynamicTheme,
-                    title = "Dynamic Theme",
-                    subtitle = "Dynamic theme",
+                    title = stringResource(R.string.dynamic_theme),
+                    subtitle = stringResource(R.string.dynamic_theme),
                     onCheckedChange = { dynamicTheme ->
                         onUpdateGeneralSettings(generalSettings.copy(dynamicTheme = dynamicTheme))
                     },
@@ -207,8 +208,8 @@ private fun Success(
 
             if (!settings.isNotificationAccessGranted()) {
                 SettingsColumn(
-                    title = "Notification Dots",
-                    subtitle = "Show notification dots",
+                    title = stringResource(R.string.notification_dots),
+                    subtitle = stringResource(R.string.show_notification_dots),
                     onClick = {
                         val intent = Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)
 

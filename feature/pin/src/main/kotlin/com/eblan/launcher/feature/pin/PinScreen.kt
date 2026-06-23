@@ -63,6 +63,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draganddrop.DragAndDropTransferData
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -496,7 +497,7 @@ private fun PinBottomSheet(
 
                 Text(
                     modifier = Modifier.fillMaxWidth(),
-                    text = "Touch and hold the widget to move it around the home screen",
+                    text = stringResource(R.string.touch_and_hold_the_widget_to_move_it_around_the_home_screen),
                     textAlign = TextAlign.Center,
                 )
 
@@ -545,7 +546,7 @@ private fun PinBottomSheet(
                             }
                         },
                     ) {
-                        Text(text = "Cancel")
+                        Text(text = stringResource(R.string.cancel))
                     }
 
                     Button(
@@ -555,7 +556,7 @@ private fun PinBottomSheet(
                             }
                         },
                     ) {
-                        Text(text = "Add")
+                        Text(text = stringResource(R.string.add))
                     }
                 }
             }

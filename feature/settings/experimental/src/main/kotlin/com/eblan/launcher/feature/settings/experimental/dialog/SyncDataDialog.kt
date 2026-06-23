@@ -29,7 +29,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import com.eblan.launcher.designsystem.component.EblanDialog
+import com.eblan.launcher.feature.settings.experimental.R
 import com.eblan.launcher.ui.settings.SettingsSwitch
 
 @Composable
@@ -44,7 +46,7 @@ internal fun SyncDataDialog(
         onDismissRequest = onDismissRequest,
     ) {
         Text(
-            text = "Warning",
+            text = stringResource(R.string.warning),
             style = MaterialTheme.typography.titleLarge,
         )
 
@@ -52,8 +54,7 @@ internal fun SyncDataDialog(
             modifier = Modifier.verticalScroll(rememberScrollState()),
         ) {
             Text(
-                text = "Disabling background sync helps save a bit of memory and keeps things lighter, but it also means Yagni Launcher won’t automatically update your apps, widgets, or shortcuts.\n" +
-                    "Your app drawer might show outdated icons, missing widgets, or shortcuts that no longer work.",
+                text = stringResource(R.string.disable_background_sync_description),
             )
 
             ElevatedCard(
@@ -61,8 +62,8 @@ internal fun SyncDataDialog(
             ) {
                 SettingsSwitch(
                     checked = syncData,
-                    title = "Sync Data",
-                    subtitle = "Keep data up to date",
+                    title = stringResource(R.string.sync_data),
+                    subtitle = stringResource(R.string.keep_data_up_to_date),
                     onCheckedChange = onUpdateSyncData,
                 )
             }
@@ -75,7 +76,7 @@ internal fun SyncDataDialog(
             TextButton(
                 onClick = onDismissRequest,
             ) {
-                Text(text = "Okay")
+                Text(text = stringResource(R.string.okay))
             }
         }
     }

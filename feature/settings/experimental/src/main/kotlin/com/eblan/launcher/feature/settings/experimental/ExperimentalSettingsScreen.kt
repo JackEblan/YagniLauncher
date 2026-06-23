@@ -37,6 +37,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -75,7 +76,7 @@ internal fun ExperimentalSettingsScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(text = "Experimental")
+                    Text(text = stringResource(R.string.experimental))
                 },
                 navigationIcon = {
                     IconButton(onClick = onNavigateUp) {
@@ -128,8 +129,8 @@ private fun Success(
                 .padding(horizontal = 15.dp),
         ) {
             SettingsColumn(
-                title = "Sync Data",
-                subtitle = "Enable or disable sync data",
+                title = stringResource(R.string.sync_data),
+                subtitle = stringResource(R.string.enable_or_disable_sync_data),
                 onClick = {
                     showSyncDataDialog = true
                 },
@@ -139,8 +140,8 @@ private fun Success(
 
             SettingsSwitch(
                 checked = experimentalSettings.lockMovement,
-                title = "Lock Movement",
-                subtitle = "Prevent other grid items from moving",
+                title = stringResource(R.string.lock_movement),
+                subtitle = stringResource(R.string.prevent_other_grid_items_from_moving),
                 onCheckedChange = { lockMovement ->
                     onUpdateExperimentalSettings(experimentalSettings.copy(lockMovement = lockMovement))
                 },
