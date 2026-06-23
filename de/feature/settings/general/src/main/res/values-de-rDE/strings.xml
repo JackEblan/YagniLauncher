@@ -17,21 +17,21 @@
   ~
   -->
 <resources>
-    <string name="import_icon_pack">Import Icon Pack</string>
-    <string name="no_icon_packs">No icon packs</string>
-    <string name="cancel">Cancel</string>
-    <string name="select_icon_pack">Select Icon Pack</string>
-    <string name="please_import_an_icon_pack_first">Please import an icon pack first</string>
+    <string name="import_icon_pack">Icon-Paket importieren</string>
+    <string name="no_icon_packs">Keine Icon-Pakete</string>
+    <string name="cancel">Abbrechen</string>
+    <string name="select_icon_pack">Symbolpaket auswählen</string>
+    <string name="please_import_an_icon_pack_first">Bitte zuerst ein Icon Pack importieren</string>
     <string name="reset">Reset</string>
-    <string name="general">General</string>
-    <string name="default_icon_pack">Default</string>
-    <string name="theme">Theme</string>
-    <string name="dynamic_theme">Dynamic Theme</string>
-    <string name="notification_dots">Notification Dots</string>
-    <string name="show_notification_dots">Show notification dots</string>
-    <string name="apply_icons_from_supported_icon_packs">Apply icons from supported icon packs</string>
-    <string name="adapt_colors_to_your_wallpaper_automatically">Adapt colors to your wallpaper automatically</string>
+    <string name="general">Allgemein</string>
+    <string name="default_icon_pack">Standard</string>
+    <string name="theme">Thema</string>
+    <string name="dynamic_theme">Dynamisches Thema</string>
+    <string name="notification_dots">Benachrichtigungspunkte</string>
+    <string name="show_notification_dots">Zeige Benachrichtigungspunkte</string>
+    <string name="apply_icons_from_supported_icon_packs">Symbole von unterstützten Symbol-Paketen anwenden</string>
+    <string name="adapt_colors_to_your_wallpaper_automatically">Farben automatisch an Ihr Hintergrundbild anpassen</string>
     <string name="system">System</string>
-    <string name="light">Light</string>
-    <string name="dark">Dark</string>
+    <string name="light">Hell</string>
+    <string name="dark">Dunkel</string>
 </resources>
