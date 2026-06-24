@@ -38,6 +38,7 @@ import com.eblan.launcher.designsystem.component.EblanDialog
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.EblanApplicationInfo
 import com.eblan.launcher.feature.settings.appdrawer.R
+import com.eblan.launcher.common.R as commonR
 
 @Composable
 internal fun HiddenEblanApplicationInfosDialog(
@@ -111,7 +112,7 @@ internal fun HiddenEblanApplicationInfosDialog(
             TextButton(
                 onClick = onDismissRequest,
             ) {
-                Text(text = stringResource(R.string.okay))
+                Text(text = stringResource(commonR.string.okay))
             }
         }
     }

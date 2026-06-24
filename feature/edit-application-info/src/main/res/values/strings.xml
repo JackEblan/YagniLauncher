@@ -16,16 +16,9 @@
   ~
   -->
 <resources>
-    <string name="custom_label">Custom Label</string>
-    <string name="custom_label_is_not_valid">Custom label is not valid</string>
-    <string name="cancel">Cancel</string>
-    <string name="update">Update</string>
     <string name="add_tag">Add Tag</string>
     <string name="tag_is_not_valid">Tag is not valid</string>
-    <string name="add">Add</string>
     <string name="update_tag">Update Tag</string>
-    <string name="edit">Edit %1$s</string>
-    <string name="none">None</string>
     <string name="hide_from_drawer">Hide From Drawer</string>
     <string name="view_hidden_apps_in_app_drawer_settings">View hidden apps in App Drawer settings</string>
 </resources>

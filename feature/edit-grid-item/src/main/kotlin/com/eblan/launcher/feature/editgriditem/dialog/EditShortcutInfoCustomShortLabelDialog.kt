@@ -39,6 +39,7 @@ import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.feature.editgriditem.R
+import com.eblan.launcher.common.R as commonR
 
 @Composable
 internal fun EditShortcutInfoCustomShortLabelDialog(
@@ -112,7 +113,7 @@ internal fun EditShortcutInfoCustomShortLabelDialog(
             horizontalArrangement = Arrangement.End,
         ) {
             TextButton(onClick = onDismissRequest) {
-                Text(text = stringResource(R.string.cancel))
+                Text(text = stringResource(commonR.string.cancel))
             }
 
             TextButton(
@@ -130,7 +131,7 @@ internal fun EditShortcutInfoCustomShortLabelDialog(
                     }
                 },
             ) {
-                Text(text = stringResource(R.string.update))
+                Text(text = stringResource(commonR.string.update))
             }
         }
     }

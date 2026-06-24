@@ -51,7 +51,6 @@ import com.eblan.launcher.designsystem.component.EblanDialog
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.framework.FileManager
 import com.eblan.launcher.domain.model.IconPackInfoComponent
-import com.eblan.launcher.ui.R
 import com.eblan.launcher.ui.local.LocalFileManager
 import com.eblan.launcher.ui.local.LocalIconKeyGenerator
 import com.eblan.launcher.ui.local.LocalIconPackManager
@@ -63,6 +62,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import java.io.File
 import kotlin.time.Duration.Companion.milliseconds
+import com.eblan.launcher.common.R as commonR
 
 @OptIn(ExperimentalMaterial3Api::class, FlowPreview::class)
 @Composable
@@ -125,7 +125,7 @@ fun IconPackInfoFilesDialog(
                         scope.launch { searchBarState.animateToCollapsed() }
                     },
                     placeholder = {
-                        Text(text = stringResource(R.string.search_applications))
+                        Text(text = stringResource(commonR.string.search_applications))
                     },
                 )
             },
@@ -202,7 +202,7 @@ fun IconPackInfoFilesDialog(
             modifier = Modifier.fillMaxWidth(),
             onClick = onDismissRequest,
         ) {
-            Text(text = stringResource(R.string.cancel))
+            Text(text = stringResource(commonR.string.cancel))
         }
     }
 }

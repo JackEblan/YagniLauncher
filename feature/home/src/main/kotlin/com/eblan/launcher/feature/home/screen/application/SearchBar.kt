@@ -33,8 +33,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
-import com.eblan.launcher.feature.home.R
 import kotlinx.coroutines.launch
+import com.eblan.launcher.common.R as commonR
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -79,7 +79,7 @@ internal fun ApplicationSearchBar(
                     }
                 },
                 placeholder = {
-                    Text(text = stringResource(R.string.search_applications))
+                    Text(text = stringResource(commonR.string.search_applications))
                 },
             )
         },
@@ -111,7 +111,7 @@ internal fun ApplicationSearchBarWithoutMenu(
                     )
                 },
                 onSearch = { scope.launch { searchBarState.animateToCollapsed() } },
-                placeholder = { Text(text = stringResource(R.string.search_applications)) },
+                placeholder = { Text(text = stringResource(commonR.string.search_applications)) },
             )
         },
     )

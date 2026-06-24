@@ -54,6 +54,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.ui.local.LocalPackageManager
+import com.eblan.launcher.common.R as commonR
 
 @Composable
 internal fun SettingsRoute(
@@ -99,7 +100,7 @@ internal fun SettingsScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(text = stringResource(R.string.settings))
+                    Text(text = stringResource(commonR.string.settings))
                 },
                 navigationIcon = {
                     IconButton(onClick = onFinish) {
@@ -141,7 +142,7 @@ internal fun SettingsScreen(
                 SettingsRow(
                     imageVector = EblanLauncherIcons.Settings,
                     subtitle = stringResource(R.string.themes_icon_packs),
-                    title = stringResource(R.string.general),
+                    title = stringResource(commonR.string.general),
                     onClick = onGeneral,
                 )
 
@@ -150,7 +151,7 @@ internal fun SettingsScreen(
                 SettingsRow(
                     imageVector = EblanLauncherIcons.Home,
                     subtitle = stringResource(R.string.grid_icon_dock_and_more),
-                    title = stringResource(R.string.home),
+                    title = stringResource(commonR.string.home),
                     onClick = onHome,
                 )
 
@@ -159,7 +160,7 @@ internal fun SettingsScreen(
                 SettingsRow(
                     imageVector = EblanLauncherIcons.Apps,
                     subtitle = stringResource(R.string.columns_and_rows_count),
-                    title = stringResource(R.string.app_drawer),
+                    title = stringResource(commonR.string.app_drawer),
                     onClick = onAppDrawer,
                 )
 
@@ -168,7 +169,7 @@ internal fun SettingsScreen(
                 SettingsRow(
                     imageVector = EblanLauncherIcons.Gesture,
                     subtitle = stringResource(R.string.swipe_gesture_actions),
-                    title = stringResource(R.string.gestures),
+                    title = stringResource(commonR.string.gestures),
                     onClick = onGestures,
                 )
 
@@ -177,7 +178,7 @@ internal fun SettingsScreen(
                 SettingsRow(
                     imageVector = EblanLauncherIcons.DeveloperMode,
                     subtitle = stringResource(R.string.advanced_options_for_power_users),
-                    title = stringResource(R.string.experimental),
+                    title = stringResource(commonR.string.experimental),
                     onClick = onExperimental,
                 )
             }

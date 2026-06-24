@@ -37,6 +37,7 @@ import com.eblan.launcher.designsystem.component.EblanDialog
 import com.eblan.launcher.designsystem.component.EblanRadioButton
 import com.eblan.launcher.domain.model.TextColor
 import com.eblan.launcher.ui.R
+import com.eblan.launcher.common.R as commonR
 
 @Composable
 fun TextColorDialog(
@@ -92,7 +93,7 @@ fun TextColorDialog(
             TextButton(
                 onClick = onDismissRequest,
             ) {
-                Text(text = stringResource(R.string.cancel))
+                Text(text = stringResource(commonR.string.cancel))
             }
 
             TextButton(
@@ -103,7 +104,7 @@ fun TextColorDialog(
                     )
                 },
             ) {
-                Text(text = stringResource(R.string.update))
+                Text(text = stringResource(commonR.string.update))
             }
         }
     }
@@ -128,8 +129,8 @@ fun TextColorDialog(
 
 @Composable
 private fun TextColor.getTextColorTitle() = when (this) {
-    TextColor.System -> stringResource(R.string.system)
-    TextColor.Light -> stringResource(R.string.light)
-    TextColor.Dark -> stringResource(R.string.dark)
+    TextColor.System -> stringResource(commonR.string.system)
+    TextColor.Light -> stringResource(commonR.string.light)
+    TextColor.Dark -> stringResource(commonR.string.dark)
     TextColor.Custom -> stringResource(R.string.custom)
 }

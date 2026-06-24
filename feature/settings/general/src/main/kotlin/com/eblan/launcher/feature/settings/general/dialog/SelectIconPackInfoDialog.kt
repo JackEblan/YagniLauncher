@@ -39,6 +39,7 @@ import com.eblan.launcher.designsystem.component.EblanDialog
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.EblanIconPackInfo
 import com.eblan.launcher.feature.settings.general.R
+import com.eblan.launcher.common.R as commonR
 
 @Composable
 internal fun SelectIconPackInfoDialog(
@@ -120,7 +121,7 @@ internal fun SelectIconPackInfoDialog(
             TextButton(
                 onClick = onDismissRequest,
             ) {
-                Text(text = stringResource(R.string.cancel))
+                Text(text = stringResource(commonR.string.cancel))
             }
 
             TextButton(

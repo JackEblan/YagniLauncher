@@ -54,6 +54,7 @@ import com.eblan.launcher.feature.settings.home.model.HomeSettingsUiState
 import com.eblan.launcher.ui.settings.GridItemSettings
 import com.eblan.launcher.ui.settings.SettingsColumn
 import com.eblan.launcher.ui.settings.SettingsSwitch
+import com.eblan.launcher.common.R as commonR
 
 @Composable
 internal fun HomeSettingsRoute(
@@ -83,7 +84,7 @@ internal fun HomeSettingsScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(text = stringResource(R.string.home))
+                    Text(text = stringResource(commonR.string.home))
                 },
                 navigationIcon = {
                     IconButton(onClick = onNavigateUp) {
@@ -143,7 +144,7 @@ private fun Success(
                 .padding(horizontal = 15.dp),
         ) {
             SettingsColumn(
-                title = stringResource(R.string.grid),
+                title = stringResource(commonR.string.grid),
                 subtitle = "${homeSettings.columns}x${homeSettings.rows}",
                 onClick = {
                     showGridDialog = true

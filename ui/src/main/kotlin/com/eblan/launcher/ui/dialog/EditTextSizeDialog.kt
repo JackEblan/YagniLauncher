@@ -35,6 +35,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import com.eblan.launcher.designsystem.component.EblanDialog
 import com.eblan.launcher.ui.R
+import com.eblan.launcher.common.R as commonR
 
 @Composable
 internal fun EditTextSizeDialog(
@@ -86,7 +87,7 @@ internal fun EditTextSizeDialog(
             TextButton(
                 onClick = onDismissRequest,
             ) {
-                Text(text = stringResource(R.string.cancel))
+                Text(text = stringResource(commonR.string.cancel))
             }
 
             TextButton(
@@ -100,7 +101,7 @@ internal fun EditTextSizeDialog(
                     }
                 },
             ) {
-                Text(text = stringResource(R.string.update))
+                Text(text = stringResource(commonR.string.update))
             }
         }
     }

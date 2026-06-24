@@ -37,7 +37,7 @@ import androidx.compose.ui.res.stringResource
 import com.eblan.launcher.designsystem.component.EblanDialog
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.EblanApplicationInfo
-import com.eblan.launcher.feature.editapplicationinfo.R
+import com.eblan.launcher.common.R as commonR
 
 @Composable
 internal fun EditEblanApplicationInfoCustomLabelDialog(
@@ -62,7 +62,7 @@ internal fun EditEblanApplicationInfoCustomLabelDialog(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                text = stringResource(R.string.custom_label),
+                text = stringResource(commonR.string.custom_label),
                 style = MaterialTheme.typography.titleLarge,
             )
 
@@ -91,12 +91,12 @@ internal fun EditEblanApplicationInfoCustomLabelDialog(
             },
             modifier = Modifier.fillMaxWidth(),
             label = {
-                Text(text = stringResource(R.string.custom_label))
+                Text(text = stringResource(commonR.string.custom_label))
             },
             isError = isError,
             supportingText = if (isError) {
                 {
-                    Text(text = stringResource(R.string.custom_label_is_not_valid))
+                    Text(text = stringResource(commonR.string.custom_label_is_not_valid))
                 }
             } else {
                 null
@@ -110,7 +110,7 @@ internal fun EditEblanApplicationInfoCustomLabelDialog(
             TextButton(
                 onClick = onDismissRequest,
             ) {
-                Text(text = stringResource(R.string.cancel))
+                Text(text = stringResource(commonR.string.cancel))
             }
 
             TextButton(
@@ -126,7 +126,7 @@ internal fun EditEblanApplicationInfoCustomLabelDialog(
                     }
                 },
             ) {
-                Text(text = stringResource(R.string.update))
+                Text(text = stringResource(commonR.string.update))
             }
         }
     }

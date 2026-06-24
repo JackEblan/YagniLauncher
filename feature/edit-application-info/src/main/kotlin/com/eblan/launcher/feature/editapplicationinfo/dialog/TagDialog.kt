@@ -41,6 +41,7 @@ import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.EblanApplicationInfoTag
 import com.eblan.launcher.domain.model.EblanApplicationInfoTagUi
 import com.eblan.launcher.feature.editapplicationinfo.R
+import com.eblan.launcher.common.R as commonR
 
 @Composable
 internal fun AddTagDialog(
@@ -88,7 +89,7 @@ internal fun AddTagDialog(
             TextButton(
                 onClick = onDismissRequest,
             ) {
-                Text(text = stringResource(R.string.cancel))
+                Text(text = stringResource(commonR.string.cancel))
             }
 
             TextButton(
@@ -106,7 +107,7 @@ internal fun AddTagDialog(
                     }
                 },
             ) {
-                Text(text = stringResource(R.string.add))
+                Text(text = stringResource(commonR.string.add))
             }
         }
     }
@@ -188,7 +189,7 @@ internal fun UpdateTagDialog(
             TextButton(
                 onClick = onDismissRequest,
             ) {
-                Text(text = stringResource(R.string.cancel))
+                Text(text = stringResource(commonR.string.cancel))
             }
 
             TextButton(
@@ -207,7 +208,7 @@ internal fun UpdateTagDialog(
                     }
                 },
             ) {
-                Text(text = stringResource(R.string.update))
+                Text(text = stringResource(commonR.string.update))
             }
         }
     }

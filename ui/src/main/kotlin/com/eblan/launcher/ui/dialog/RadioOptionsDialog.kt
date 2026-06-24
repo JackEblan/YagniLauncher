@@ -34,7 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.eblan.launcher.designsystem.component.EblanDialog
 import com.eblan.launcher.designsystem.component.EblanRadioButton
-import com.eblan.launcher.ui.R
+import com.eblan.launcher.common.R as commonR
 
 @Composable
 fun <T> RadioOptionsDialog(
@@ -78,7 +78,7 @@ fun <T> RadioOptionsDialog(
             TextButton(
                 onClick = onDismissRequest,
             ) {
-                Text(text = stringResource(R.string.cancel))
+                Text(text = stringResource(commonR.string.cancel))
             }
 
             TextButton(
@@ -86,7 +86,7 @@ fun <T> RadioOptionsDialog(
                     onUpdateClick(selectedOption)
                 },
             ) {
-                Text(text = stringResource(R.string.update))
+                Text(text = stringResource(commonR.string.update))
             }
         }
     }

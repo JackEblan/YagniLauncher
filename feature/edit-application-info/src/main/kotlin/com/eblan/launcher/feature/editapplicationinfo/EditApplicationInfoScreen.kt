@@ -64,6 +64,7 @@ import com.eblan.launcher.ui.dialog.IconPackInfoFilesDialog
 import com.eblan.launcher.ui.edit.CustomIcon
 import com.eblan.launcher.ui.settings.SettingsColumn
 import com.eblan.launcher.ui.settings.SettingsSwitch
+import com.eblan.launcher.common.R as commonR
 
 @Composable
 internal fun EditApplicationInfoRoute(
@@ -126,7 +127,7 @@ internal fun EditApplicationInfoScreen(
                     title = {
                         Text(
                             text = stringResource(
-                                R.string.edit,
+                                commonR.string.edit,
                                 editApplicationInfoUiState.eblanApplicationInfo.label,
                             ),
                         )
@@ -232,8 +233,8 @@ private fun Success(
         HorizontalDivider(modifier = Modifier.fillMaxWidth())
 
         SettingsColumn(
-            title = stringResource(R.string.custom_label),
-            subtitle = eblanApplicationInfo.customLabel ?: stringResource(R.string.none),
+            title = stringResource(commonR.string.custom_label),
+            subtitle = eblanApplicationInfo.customLabel ?: stringResource(commonR.string.none),
             onClick = {
                 showCustomLabelDialog = true
             },
@@ -409,7 +410,7 @@ private fun AddTag(
             )
 
             Text(
-                text = stringResource(R.string.add),
+                text = stringResource(commonR.string.add),
                 style = MaterialTheme.typography.bodyMedium,
             )
         }

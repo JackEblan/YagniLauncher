@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import com.eblan.launcher.designsystem.component.EblanDialog
 import com.eblan.launcher.domain.model.HomeSettings
 import com.eblan.launcher.feature.settings.home.R
+import com.eblan.launcher.common.R as commonR
 
 @Composable
 internal fun EditFolderMaxGridDialog(
@@ -113,7 +114,7 @@ internal fun EditFolderMaxGridDialog(
             TextButton(
                 onClick = onDismissRequest,
             ) {
-                Text(text = stringResource(R.string.cancel))
+                Text(text = stringResource(commonR.string.cancel))
             }
 
             TextButton(
@@ -140,7 +141,7 @@ internal fun EditFolderMaxGridDialog(
                     }
                 },
             ) {
-                Text(text = stringResource(R.string.update))
+                Text(text = stringResource(commonR.string.update))
             }
         }
     }

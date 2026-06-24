@@ -52,6 +52,7 @@ import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.Associate
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.feature.home.R
+import com.eblan.launcher.common.R as commonR
 
 @Composable
 internal fun SettingsPopup(
@@ -165,7 +166,7 @@ private fun SettingsMenu(
             Column {
                 PopupMenuRow(
                     imageVector = EblanLauncherIcons.Settings,
-                    title = stringResource(R.string.settings),
+                    title = stringResource(commonR.string.settings),
                     onClick = onSettings,
                 )
 

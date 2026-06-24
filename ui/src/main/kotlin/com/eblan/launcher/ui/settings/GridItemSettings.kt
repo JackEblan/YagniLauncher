@@ -55,6 +55,7 @@ import com.eblan.launcher.ui.dialog.EditPaddingDialog
 import com.eblan.launcher.ui.dialog.EditTextSizeDialog
 import com.eblan.launcher.ui.dialog.RadioOptionsDialog
 import com.eblan.launcher.ui.dialog.TextColorDialog
+import com.eblan.launcher.common.R as commonR
 
 @Composable
 fun GridItemSettings(
@@ -125,7 +126,7 @@ fun GridItemSettings(
             HorizontalDivider(modifier = Modifier.fillMaxWidth())
 
             CustomColorSettingsRow(
-                title = stringResource(R.string.background_color),
+                title = stringResource(commonR.string.background_color),
                 customColor = gridItemSettings.customBackgroundColor,
                 onClick = {
                     showBackgroundColorDialog = true
@@ -258,7 +259,7 @@ fun GridItemSettings(
 
     if (showBackgroundColorDialog) {
         ColorPickerDialog(
-            title = stringResource(R.string.background_color),
+            title = stringResource(commonR.string.background_color),
             customColor = gridItemSettings.customBackgroundColor,
             onDismissRequest = {
                 showBackgroundColorDialog = false

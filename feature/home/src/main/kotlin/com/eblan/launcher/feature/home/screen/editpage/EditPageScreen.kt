@@ -72,10 +72,10 @@ import com.eblan.launcher.domain.model.EditPageData
 import com.eblan.launcher.domain.model.HomeSettings
 import com.eblan.launcher.domain.model.PageItem
 import com.eblan.launcher.domain.model.TextColor
-import com.eblan.launcher.feature.home.R
 import com.eblan.launcher.feature.home.component.GridLayout
 import com.eblan.launcher.feature.home.model.Screen
 import kotlinx.coroutines.launch
+import com.eblan.launcher.common.R as commonR
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -344,7 +344,7 @@ private fun ExpandableFloatingActionButton(
             ) {
                 ElevatedButton(onClick = onAdd) {
                     Text(
-                        text = stringResource(R.string.add),
+                        text = stringResource(commonR.string.add),
                         style = MaterialTheme.typography.bodyMedium,
                     )
                 }
@@ -353,7 +353,7 @@ private fun ExpandableFloatingActionButton(
                     onClick = onSave,
                 ) {
                     Text(
-                        text = stringResource(R.string.save),
+                        text = stringResource(commonR.string.save),
                         style = MaterialTheme.typography.bodyMedium,
                     )
                 }
@@ -362,7 +362,7 @@ private fun ExpandableFloatingActionButton(
                     onClick = onCancel,
                 ) {
                     Text(
-                        text = stringResource(R.string.cancel),
+                        text = stringResource(commonR.string.cancel),
                         style = MaterialTheme.typography.bodyMedium,
                     )
                 }

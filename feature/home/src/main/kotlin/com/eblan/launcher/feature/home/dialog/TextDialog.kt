@@ -35,6 +35,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.eblan.launcher.designsystem.component.EblanDialog
 import com.eblan.launcher.feature.home.R
+import com.eblan.launcher.common.R as commonR
 
 @Composable
 internal fun TextDialog(
@@ -76,7 +77,7 @@ internal fun TextDialog(
             Button(
                 onClick = onClick,
             ) {
-                Text(text = stringResource(R.string.okay))
+                Text(text = stringResource(commonR.string.okay))
             }
         }
     }

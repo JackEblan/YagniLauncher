@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import com.eblan.launcher.designsystem.component.EblanDialog
 import com.eblan.launcher.domain.model.AppDrawerSettings
 import com.eblan.launcher.feature.settings.appdrawer.R
+import com.eblan.launcher.common.R as commonR
 
 @Composable
 internal fun EditVerticalGridDialog(
@@ -76,10 +77,10 @@ internal fun EditVerticalGridDialog(
                     firstError = false
                 },
                 modifier = Modifier.weight(1f),
-                label = { Text(text = stringResource(R.string.columns)) },
+                label = { Text(text = stringResource(commonR.string.columns)) },
                 supportingText = if (firstError) {
                     {
-                        Text(text = stringResource(R.string.columns_is_not_valid))
+                        Text(text = stringResource(commonR.string.columns_is_not_valid))
                     }
                 } else {
                     null
@@ -119,7 +120,7 @@ internal fun EditVerticalGridDialog(
             TextButton(
                 onClick = onDismissRequest,
             ) {
-                Text(text = stringResource(R.string.cancel))
+                Text(text = stringResource(commonR.string.cancel))
             }
 
             TextButton(
@@ -146,7 +147,7 @@ internal fun EditVerticalGridDialog(
                     }
                 },
             ) {
-                Text(text = stringResource(R.string.update))
+                Text(text = stringResource(commonR.string.update))
             }
         }
     }

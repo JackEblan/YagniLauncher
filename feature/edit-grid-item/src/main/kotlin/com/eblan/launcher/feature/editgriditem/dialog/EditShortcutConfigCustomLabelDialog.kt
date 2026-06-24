@@ -38,7 +38,7 @@ import com.eblan.launcher.designsystem.component.EblanDialog
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
-import com.eblan.launcher.feature.editgriditem.R
+import com.eblan.launcher.common.R as commonR
 
 @Composable
 internal fun EditShortcutConfigCustomLabelDialog(
@@ -64,7 +64,7 @@ internal fun EditShortcutConfigCustomLabelDialog(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                text = stringResource(R.string.custom_label),
+                text = stringResource(commonR.string.custom_label),
                 style = MaterialTheme.typography.titleLarge,
             )
 
@@ -95,12 +95,12 @@ internal fun EditShortcutConfigCustomLabelDialog(
             },
             modifier = Modifier.fillMaxWidth(),
             label = {
-                Text(text = stringResource(R.string.custom_label))
+                Text(text = stringResource(commonR.string.custom_label))
             },
             isError = isError,
             supportingText = if (isError) {
                 {
-                    Text(text = stringResource(R.string.custom_label_is_not_valid))
+                    Text(text = stringResource(commonR.string.custom_label_is_not_valid))
                 }
             } else {
                 null
@@ -112,7 +112,7 @@ internal fun EditShortcutConfigCustomLabelDialog(
             horizontalArrangement = Arrangement.End,
         ) {
             TextButton(onClick = onDismissRequest) {
-                Text(text = stringResource(R.string.cancel))
+                Text(text = stringResource(commonR.string.cancel))
             }
 
             TextButton(
@@ -130,7 +130,7 @@ internal fun EditShortcutConfigCustomLabelDialog(
                     }
                 },
             ) {
-                Text(text = stringResource(R.string.update))
+                Text(text = stringResource(commonR.string.update))
             }
         }
     }

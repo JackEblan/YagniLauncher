@@ -36,6 +36,7 @@ import com.eblan.launcher.domain.model.EblanActionType
 import com.eblan.launcher.domain.model.EblanApplicationInfo
 import com.eblan.launcher.ui.R
 import com.eblan.launcher.ui.dialog.EblanActionDialog
+import com.eblan.launcher.common.R as commonR
 
 @Composable
 fun EblanActionSettings(
@@ -152,7 +153,7 @@ fun EblanActionType.getEblanActionTypeSubtitle(
     context: Context,
     componentName: String,
 ): String = when (this) {
-    EblanActionType.None -> context.getString(R.string.none)
+    EblanActionType.None -> context.getString(commonR.string.none)
 
     EblanActionType.OpenApp -> context.getString(
         R.string.open,

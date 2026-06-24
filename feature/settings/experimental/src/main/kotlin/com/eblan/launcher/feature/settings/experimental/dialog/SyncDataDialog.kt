@@ -33,6 +33,7 @@ import androidx.compose.ui.res.stringResource
 import com.eblan.launcher.designsystem.component.EblanDialog
 import com.eblan.launcher.feature.settings.experimental.R
 import com.eblan.launcher.ui.settings.SettingsSwitch
+import com.eblan.launcher.common.R as commonR
 
 @Composable
 internal fun SyncDataDialog(
@@ -76,7 +77,7 @@ internal fun SyncDataDialog(
             TextButton(
                 onClick = onDismissRequest,
             ) {
-                Text(text = stringResource(R.string.okay))
+                Text(text = stringResource(commonR.string.okay))
             }
         }
     }

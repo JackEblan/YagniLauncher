@@ -47,6 +47,7 @@ import com.eblan.launcher.feature.settings.experimental.dialog.SyncDataDialog
 import com.eblan.launcher.feature.settings.experimental.model.ExperimentalSettingsUiState
 import com.eblan.launcher.ui.settings.SettingsColumn
 import com.eblan.launcher.ui.settings.SettingsSwitch
+import com.eblan.launcher.common.R as commonR
 
 @Composable
 internal fun ExperimentalSettingsRoute(
@@ -76,7 +77,7 @@ internal fun ExperimentalSettingsScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(text = stringResource(R.string.experimental))
+                    Text(text = stringResource(commonR.string.experimental))
                 },
                 navigationIcon = {
                     IconButton(onClick = onNavigateUp) {

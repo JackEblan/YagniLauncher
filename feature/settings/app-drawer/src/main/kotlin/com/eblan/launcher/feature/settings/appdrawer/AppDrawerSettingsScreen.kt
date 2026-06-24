@@ -56,6 +56,7 @@ import com.eblan.launcher.ui.settings.GridItemSettings
 import com.eblan.launcher.ui.settings.SettingsColumn
 import com.eblan.launcher.ui.settings.SettingsSwitch
 import com.eblan.launcher.ui.settings.TextColorSettingsRow
+import com.eblan.launcher.common.R as commonR
 
 @Composable
 internal fun AppDrawerSettingsRoute(
@@ -87,7 +88,7 @@ internal fun AppDrawerSettingsScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(text = stringResource(R.string.app_drawer))
+                    Text(text = stringResource(commonR.string.app_drawer))
                 },
                 navigationIcon = {
                     IconButton(onClick = onNavigateUp) {
@@ -163,7 +164,7 @@ private fun Success(
             when (appDrawerSettings.appDrawerType) {
                 AppDrawerType.Vertical -> {
                     SettingsColumn(
-                        title = stringResource(R.string.grid),
+                        title = stringResource(commonR.string.grid),
                         subtitle = "${appDrawerSettings.appDrawerColumns}x${appDrawerSettings.appDrawerRowsHeight}",
                         onClick = {
                             showVerticalGridDialog = true
@@ -173,7 +174,7 @@ private fun Success(
 
                 AppDrawerType.Horizontal -> {
                     SettingsColumn(
-                        title = stringResource(R.string.grid),
+                        title = stringResource(commonR.string.grid),
                         subtitle = "${appDrawerSettings.horizontalAppDrawerColumns}x${appDrawerSettings.horizontalAppDrawerRows}",
                         onClick = {
                             showHorizontalGridDialog = true
@@ -187,7 +188,7 @@ private fun Success(
             HorizontalDivider(modifier = Modifier.fillMaxWidth())
 
             TextColorSettingsRow(
-                textColorTitle = stringResource(R.string.background_color),
+                textColorTitle = stringResource(commonR.string.background_color),
                 customColorTitle = stringResource(R.string.custom_background_color),
                 textColor = appDrawerSettings.backgroundColor,
                 customColor = appDrawerSettings.customBackgroundColor,
@@ -277,7 +278,7 @@ private fun Success(
 
     if (showTextColorDialog) {
         TextColorDialog(
-            title = stringResource(R.string.background_color),
+            title = stringResource(commonR.string.background_color),
             textColor = appDrawerSettings.backgroundColor,
             customTextColor = appDrawerSettings.customBackgroundColor,
             onDismissRequest = {

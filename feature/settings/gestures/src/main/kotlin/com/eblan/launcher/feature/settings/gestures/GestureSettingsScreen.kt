@@ -36,6 +36,7 @@ import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.GestureSettings
 import com.eblan.launcher.feature.settings.gestures.model.GesturesSettingsUiState
 import com.eblan.launcher.ui.settings.EblanActionSettings
+import com.eblan.launcher.common.R as commonR
 
 @Composable
 internal fun GestureSettingsRoute(
@@ -65,7 +66,7 @@ private fun GestureSettingsScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(text = stringResource(R.string.gestures))
+                    Text(text = stringResource(commonR.string.gestures))
                 },
                 navigationIcon = {
                     IconButton(onClick = onNavigateUp) {

@@ -36,7 +36,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.eblan.launcher.designsystem.component.EblanDialog
 import com.eblan.launcher.domain.model.HomeSettings
-import com.eblan.launcher.feature.settings.home.R
+import com.eblan.launcher.common.R as commonR
 
 @Composable
 internal fun EditGridDialog(
@@ -56,7 +56,7 @@ internal fun EditGridDialog(
         onDismissRequest = onDismissRequest,
     ) {
         Text(
-            text = stringResource(R.string.grid),
+            text = stringResource(commonR.string.grid),
             style = MaterialTheme.typography.titleLarge,
         )
 
@@ -70,10 +70,10 @@ internal fun EditGridDialog(
                     firstError = false
                 },
                 modifier = Modifier.weight(1f),
-                label = { Text(text = stringResource(R.string.columns)) },
+                label = { Text(text = stringResource(commonR.string.columns)) },
                 supportingText = if (firstError) {
                     {
-                        Text(text = stringResource(R.string.columns_is_not_valid))
+                        Text(text = stringResource(commonR.string.columns_is_not_valid))
                     }
                 } else {
                     null
@@ -91,10 +91,10 @@ internal fun EditGridDialog(
                     secondError = false
                 },
                 modifier = Modifier.weight(1f),
-                label = { Text(text = stringResource(R.string.rows)) },
+                label = { Text(text = stringResource(commonR.string.rows)) },
                 supportingText = if (secondError) {
                     {
-                        Text(text = stringResource(R.string.rows_is_not_valid))
+                        Text(text = stringResource(commonR.string.rows_is_not_valid))
                     }
                 } else {
                     null
@@ -113,7 +113,7 @@ internal fun EditGridDialog(
             TextButton(
                 onClick = onDismissRequest,
             ) {
-                Text(text = stringResource(R.string.cancel))
+                Text(text = stringResource(commonR.string.cancel))
             }
 
             TextButton(
@@ -140,7 +140,7 @@ internal fun EditGridDialog(
                     }
                 },
             ) {
-                Text(text = stringResource(R.string.update))
+                Text(text = stringResource(commonR.string.update))
             }
         }
     }

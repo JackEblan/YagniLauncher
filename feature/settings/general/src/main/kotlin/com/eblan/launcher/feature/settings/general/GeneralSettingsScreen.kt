@@ -59,6 +59,7 @@ import com.eblan.launcher.ui.dialog.RadioOptionsDialog
 import com.eblan.launcher.ui.local.LocalSettings
 import com.eblan.launcher.ui.settings.SettingsColumn
 import com.eblan.launcher.ui.settings.SettingsSwitch
+import com.eblan.launcher.common.R as commonR
 
 @Composable
 internal fun GeneralSettingsRoute(
@@ -98,7 +99,7 @@ internal fun GeneralSettingsScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(text = stringResource(R.string.general))
+                    Text(text = stringResource(commonR.string.general))
                 },
                 navigationIcon = {
                     IconButton(onClick = onNavigateUp) {
@@ -288,7 +289,7 @@ private fun Success(
 }
 
 private fun Theme.getThemeTitle(context: Context) = when (this) {
-    Theme.System -> context.getString(R.string.system)
-    Theme.Light -> context.getString(R.string.light)
-    Theme.Dark -> context.getString(R.string.dark)
+    Theme.System -> context.getString(commonR.string.system)
+    Theme.Light -> context.getString(commonR.string.light)
+    Theme.Dark -> context.getString(commonR.string.dark)
 }

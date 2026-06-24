@@ -37,6 +37,7 @@ import coil3.compose.AsyncImage
 import com.eblan.launcher.designsystem.component.EblanDialog
 import com.eblan.launcher.domain.model.EblanApplicationInfo
 import com.eblan.launcher.ui.R
+import com.eblan.launcher.common.R as commonR
 
 @Composable
 fun SelectApplicationDialog(
@@ -69,7 +70,7 @@ fun SelectApplicationDialog(
             TextButton(
                 onClick = onDismissRequest,
             ) {
-                Text(text = stringResource(R.string.cancel))
+                Text(text = stringResource(commonR.string.cancel))
             }
         }
     }

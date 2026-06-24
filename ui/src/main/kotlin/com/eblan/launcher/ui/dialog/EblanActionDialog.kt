@@ -54,6 +54,7 @@ import com.eblan.launcher.domain.model.EblanApplicationInfo
 import com.eblan.launcher.ui.R
 import com.eblan.launcher.ui.local.LocalAccessibilityManager
 import com.eblan.launcher.ui.settings.getEblanActionTypeSubtitle
+import com.eblan.launcher.common.R as commonR
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -133,7 +134,7 @@ internal fun EblanActionDialog(
             TextButton(
                 onClick = onDismissRequest,
             ) {
-                Text(text = stringResource(R.string.cancel))
+                Text(text = stringResource(commonR.string.cancel))
             }
 
             Spacer(
@@ -145,7 +146,7 @@ internal fun EblanActionDialog(
                     onSelectEblanAction(selectedEblanAction)
                 },
             ) {
-                Text(text = stringResource(R.string.cancel))
+                Text(text = stringResource(commonR.string.cancel))
             }
         }
     }

@@ -17,12 +17,8 @@
   -->
 <resources>
     <string name="dock_grid">Dock Grid</string>
-    <string name="columns">Columns</string>
     <string name="dock_columns_is_not_valid">Dock columns is not valid</string>
-    <string name="rows">Rows</string>
     <string name="dock_rows_is_not_valid">Dock rows is not valid</string>
-    <string name="cancel">Cancel</string>
-    <string name="update">Update</string>
     <string name="dock_height">Dock Height</string>
     <string name="dock_height_is_not_valid">Dock Height is not valid</string>
     <string name="folder_cell_dimension">Folder Cell Dimension</string>
@@ -35,10 +31,6 @@
     <string name="folder_max_grid">Folder Max Grid</string>
     <string name="max_rows">Max Rows</string>
     <string name="max_rows_is_not_valid">Max rows is not valid</string>
-    <string name="grid">Grid</string>
-    <string name="columns_is_not_valid">Columns is not valid</string>
-    <string name="rows_is_not_valid">Rows is not valid</string>
-    <string name="home">Home</string>
     <string name="infinite_scrolling">Infinite Scrolling</string>
     <string name="seamless_loop_page_scroll">Seamless loop page scroll</string>
     <string name="wallpaper_scrolling">Wallpaper Scrolling</string>

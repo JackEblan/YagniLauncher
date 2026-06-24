@@ -79,6 +79,7 @@ import com.eblan.launcher.feature.home.util.getHorizontalAlignment
 import com.eblan.launcher.feature.home.util.getSystemTextColor
 import com.eblan.launcher.feature.home.util.getVerticalArrangement
 import kotlin.uuid.ExperimentalUuidApi
+import com.eblan.launcher.common.R as commonR
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalSharedTransitionApi::class)
 @Composable
@@ -287,7 +288,7 @@ private fun ExpandableFloatingActionButton(
                     onClick = onSave,
                 ) {
                     Text(
-                        text = stringResource(R.string.save),
+                        text = stringResource(commonR.string.save),
                         style = MaterialTheme.typography.bodyMedium,
                     )
                 }
@@ -296,7 +297,7 @@ private fun ExpandableFloatingActionButton(
                     onClick = onCancel,
                 ) {
                     Text(
-                        text = stringResource(R.string.cancel),
+                        text = stringResource(commonR.string.cancel),
                         style = MaterialTheme.typography.bodyMedium,
                     )
                 }

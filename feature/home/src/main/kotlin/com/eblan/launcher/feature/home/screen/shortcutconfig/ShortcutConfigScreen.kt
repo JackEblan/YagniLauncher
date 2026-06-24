@@ -98,7 +98,6 @@ import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.GridItemSettings
 import com.eblan.launcher.domain.model.MoveGridItemResult
-import com.eblan.launcher.feature.home.R
 import com.eblan.launcher.feature.home.component.OffsetNestedScrollConnection
 import com.eblan.launcher.feature.home.component.OffsetOverscrollEffect
 import com.eblan.launcher.feature.home.model.Drag
@@ -113,6 +112,7 @@ import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
+import com.eblan.launcher.common.R as commonR
 
 @OptIn(ExperimentalSharedTransitionApi::class, ExperimentalMaterial3Api::class, FlowPreview::class)
 @Composable
@@ -216,7 +216,7 @@ internal fun ShortcutConfigScreen(
                             )
                         },
                         onSearch = { scope.launch { searchBarState.animateToCollapsed() } },
-                        placeholder = { Text(text = stringResource(R.string.search_applications)) },
+                        placeholder = { Text(text = stringResource(commonR.string.search_applications)) },
                     )
                 },
             )

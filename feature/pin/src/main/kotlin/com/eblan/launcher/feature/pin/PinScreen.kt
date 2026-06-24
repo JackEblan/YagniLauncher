@@ -81,6 +81,7 @@ import com.eblan.launcher.ui.local.LocalPinItemRequest
 import com.eblan.launcher.ui.local.LocalUserManager
 import kotlinx.coroutines.launch
 import java.io.File
+import com.eblan.launcher.common.R as commonR
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -546,7 +547,7 @@ private fun PinBottomSheet(
                             }
                         },
                     ) {
-                        Text(text = stringResource(R.string.cancel))
+                        Text(text = stringResource(commonR.string.cancel))
                     }
 
                     Button(
@@ -556,7 +557,7 @@ private fun PinBottomSheet(
                             }
                         },
                     ) {
-                        Text(text = stringResource(R.string.add))
+                        Text(text = stringResource(commonR.string.add))
                     }
                 }
             }

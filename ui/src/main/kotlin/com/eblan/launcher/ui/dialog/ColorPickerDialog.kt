@@ -52,7 +52,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.eblan.launcher.designsystem.component.EblanDialog
-import com.eblan.launcher.ui.R
+import com.eblan.launcher.common.R as commonR
 
 @Composable
 fun ColorPickerDialog(
@@ -115,7 +115,7 @@ fun ColorPickerDialog(
             TextButton(
                 onClick = onDismissRequest,
             ) {
-                Text(text = stringResource(R.string.cancel))
+                Text(text = stringResource(commonR.string.cancel))
             }
 
             Spacer(
@@ -131,7 +131,7 @@ fun ColorPickerDialog(
                     )
                 },
             ) {
-                Text(text = stringResource(R.string.save))
+                Text(text = stringResource(commonR.string.save))
             }
         }
     }

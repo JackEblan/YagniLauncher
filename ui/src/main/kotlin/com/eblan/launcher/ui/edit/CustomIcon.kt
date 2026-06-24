@@ -50,6 +50,7 @@ import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.PackageManagerIconPackInfo
 import com.eblan.launcher.ui.R
 import com.eblan.launcher.ui.settings.SettingsColumn
+import com.eblan.launcher.common.R as commonR
 
 @Composable
 fun CustomIcon(
@@ -106,7 +107,7 @@ fun CustomIcon(
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                Text(text = customIcon ?: stringResource(R.string.none))
+                Text(text = customIcon ?: stringResource(commonR.string.none))
             }
 
             IconButton(

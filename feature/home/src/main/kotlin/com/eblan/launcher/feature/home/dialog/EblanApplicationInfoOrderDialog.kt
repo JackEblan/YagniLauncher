@@ -37,6 +37,7 @@ import com.eblan.launcher.designsystem.component.EblanRadioButton
 import com.eblan.launcher.domain.model.EblanApplicationInfoOrder
 import com.eblan.launcher.feature.home.R
 import com.eblan.launcher.ui.settings.SettingsSwitch
+import com.eblan.launcher.common.R as commonR
 
 @Composable
 internal fun EblanApplicationInfoOrderDialog(
@@ -95,7 +96,7 @@ internal fun EblanApplicationInfoOrderDialog(
             TextButton(
                 onClick = onDismissRequest,
             ) {
-                Text(text = stringResource(R.string.cancel))
+                Text(text = stringResource(commonR.string.cancel))
             }
 
             TextButton(
@@ -107,7 +108,7 @@ internal fun EblanApplicationInfoOrderDialog(
                     )
                 },
             ) {
-                Text(text = stringResource(R.string.update))
+                Text(text = stringResource(commonR.string.update))
             }
         }
     }

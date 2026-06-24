@@ -55,6 +55,7 @@ dependencies {
     api(projects.framework.wallpaperManager)
     api(projects.framework.widgetManager)
 
+    implementation(projects.common)
     implementation(projects.designSystem)
     implementation(projects.domain.common)
     implementation(projects.domain.framework)

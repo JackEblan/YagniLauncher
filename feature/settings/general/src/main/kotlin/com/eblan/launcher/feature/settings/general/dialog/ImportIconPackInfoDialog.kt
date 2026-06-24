@@ -37,6 +37,7 @@ import coil3.compose.AsyncImage
 import com.eblan.launcher.designsystem.component.EblanDialog
 import com.eblan.launcher.domain.model.PackageManagerIconPackInfo
 import com.eblan.launcher.feature.settings.general.R
+import com.eblan.launcher.common.R as commonR
 
 @Composable
 internal fun ImportIconPackInfoDialog(
@@ -106,7 +107,7 @@ internal fun ImportIconPackInfoDialog(
             TextButton(
                 onClick = onDismissRequest,
             ) {
-                Text(text = stringResource(R.string.cancel))
+                Text(text = stringResource(commonR.string.cancel))
             }
         }
     }

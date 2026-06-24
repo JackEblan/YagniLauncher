@@ -61,6 +61,7 @@ import com.eblan.launcher.ui.settings.EblanActionSettings
 import com.eblan.launcher.ui.settings.GridItemSettings
 import com.eblan.launcher.ui.settings.SettingsColumn
 import com.eblan.launcher.ui.settings.SettingsSwitch
+import com.eblan.launcher.common.R as commonR
 
 @Composable
 internal fun EditGridItemRoute(
@@ -121,7 +122,7 @@ internal fun EditGridItemScreen(
                             else -> error("Unsupported Grid Item")
                         }
 
-                        Text(text = stringResource(R.string.edit, label))
+                        Text(text = stringResource(commonR.string.edit, label))
                     },
                     navigationIcon = {
                         IconButton(onClick = onNavigateUp) {
@@ -317,8 +318,8 @@ private fun EditApplicationInfo(
     HorizontalDivider(modifier = Modifier.fillMaxWidth())
 
     SettingsColumn(
-        title = stringResource(R.string.custom_label),
-        subtitle = data.customLabel ?: stringResource(R.string.none),
+        title = stringResource(commonR.string.custom_label),
+        subtitle = data.customLabel ?: stringResource(commonR.string.none),
         onClick = {
             showCustomLabelDialog = true
         },
@@ -514,7 +515,7 @@ private fun EditShortcutInfo(
 
     SettingsColumn(
         title = stringResource(R.string.custom_short_label),
-        subtitle = data.customShortLabel ?: stringResource(R.string.none),
+        subtitle = data.customShortLabel ?: stringResource(commonR.string.none),
         onClick = {
             showCustomShortLabelDialog = true
         },
@@ -611,8 +612,8 @@ private fun EditShortcutConfig(
     HorizontalDivider(modifier = Modifier.fillMaxWidth())
 
     SettingsColumn(
-        title = stringResource(R.string.custom_label),
-        subtitle = data.customLabel ?: stringResource(R.string.none),
+        title = stringResource(commonR.string.custom_label),
+        subtitle = data.customLabel ?: stringResource(commonR.string.none),
         onClick = {
             showCustomLabelDialog = true
         },
