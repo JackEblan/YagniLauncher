@@ -146,7 +146,7 @@ internal fun EblanActionDialog(
                     onSelectEblanAction(selectedEblanAction)
                 },
             ) {
-                Text(text = stringResource(commonR.string.cancel))
+                Text(text = stringResource(commonR.string.update))
             }
         }
     }
