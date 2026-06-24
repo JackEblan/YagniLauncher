@@ -21,8 +21,6 @@
     <string name="disable_background_sync_description">    Die Deaktivierung der Hintergrundsynchronisation hilft, etwas Speicher zu sparen und die Dinge leichter zu halten, aber es bedeutet auch, dass Yagni Launcher Ihre Apps, Widgets oder Verknüpfungen nicht automatisch aktualisiert.\n\nIhr App-Drawer könnte veraltete Symbole, fehlende Widgets oder Verknüpfungen anzeigen, die nicht mehr funktionieren.</string>
     <string name="sync_data">Sync-Daten</string>
     <string name="keep_data_up_to_date">Daten aktuell halten</string>
-    <string name="okay">Okay</string>
-    <string name="experimental">Experimentell</string>
     <string name="enable_or_disable_sync_data">Sync-Daten aktivieren oder deaktivieren</string>
     <string name="lock_movement">Bewegung sperren</string>
     <string name="prevent_other_grid_items_from_moving">Andere Gitterelemente nicht bewegen</string>
