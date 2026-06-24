@@ -19,11 +19,9 @@
 <resources>
     <string name="import_icon_pack">Icon-Paket importieren</string>
     <string name="no_icon_packs">Keine Icon-Pakete</string>
-    <string name="cancel">Abbrechen</string>
     <string name="select_icon_pack">Symbolpaket auswählen</string>
     <string name="please_import_an_icon_pack_first">Bitte zuerst ein Icon Pack importieren</string>
     <string name="reset">Reset</string>
-    <string name="general">Allgemein</string>
     <string name="default_icon_pack">Standard</string>
     <string name="theme">Thema</string>
     <string name="dynamic_theme">Dynamisches Thema</string>
@@ -31,7 +29,4 @@
     <string name="show_notification_dots">Zeige Benachrichtigungspunkte</string>
     <string name="apply_icons_from_supported_icon_packs">Symbole von unterstützten Symbol-Paketen anwenden</string>
     <string name="adapt_colors_to_your_wallpaper_automatically">Farben automatisch an Ihr Hintergrundbild anpassen</string>
-    <string name="system">System</string>
-    <string name="light">Hell</string>
-    <string name="dark">Dunkel</string>
 </resources>
