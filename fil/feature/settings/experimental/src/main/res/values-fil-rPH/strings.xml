@@ -21,8 +21,6 @@
     <string name="disable_background_sync_description">    Disabling background sync helps save a bit of memory and keeps things lighter, but it also means Yagni Launcher won’t automatically update your apps, widgets, or shortcuts.\n\nYour app drawer might show outdated icons, missing widgets, or shortcuts that no longer work.</string>
     <string name="sync_data">Sync Data</string>
     <string name="keep_data_up_to_date">Keep data up to date</string>
-    <string name="okay">Okay</string>
-    <string name="experimental">Experimental</string>
     <string name="enable_or_disable_sync_data">Enable or disable sync data</string>
     <string name="lock_movement">Lock Movement</string>
     <string name="prevent_other_grid_items_from_moving">Prevent other grid items from moving</string>
