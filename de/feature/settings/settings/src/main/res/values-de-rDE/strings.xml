@@ -17,19 +17,13 @@
   ~
   -->
 <resources>
-    <string name="settings">Einstellungen</string>
     <string name="choose_yagni_launcher">Yagni-Launcher auswählen</string>
     <string name="default_launcher">Standard-Launcher</string>
     <string name="themes_icon_packs">Designs, Icon-Pakete</string>
-    <string name="general">Allgemein</string>
     <string name="grid_icon_dock_and_more">Raster, Icon, Dock und mehr</string>
-    <string name="home">Zuhause</string>
     <string name="columns_and_rows_count">Spalten- und Zeilenzahl</string>
-    <string name="app_drawer">App-Übersicht</string>
     <string name="swipe_gesture_actions">Wischgesten Aktionen</string>
-    <string name="gestures">Gesten</string>
     <string name="advanced_options_for_power_users">Erweiterte Optionen für Power-Benutzer</string>
-    <string name="experimental">Experimentell</string>
     <string name="thank_you_for_using_yagni_launcher_alpha">Vielen Dank für die Verwendung von Yagni Launcher Alpha!</string>
     <string name="about_development_description">    Entwicklung begann im Januar 2025 mit regelmäßigen wöchentlichen Updates. Dies ist mein bisher komplexes Projekt und ich widme erhebliche Anstrengungen für seine Verbesserung.</string>
     <string name="support_message">    Wenn Sie Wert in der Anwendung finden Ihre Unterstützung würde durch eine Spende auf Ko-fi oder durch das Projektarchiv auf GitHub sehr geschätzt.</string>
