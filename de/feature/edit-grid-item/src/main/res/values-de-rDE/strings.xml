@@ -17,17 +17,11 @@
   ~
   -->
 <resources>
-    <string name="custom_label">Eigene Bezeichnung</string>
-    <string name="custom_label_is_not_valid">Benutzerdefiniertes Label ist ungültig</string>
-    <string name="cancel">Abbrechen</string>
-    <string name="update">Aktualisieren</string>
     <string name="label">Label</string>
     <string name="label_is_not_valid">Label ist ungültig</string>
     <string name="custom_short_label">Eigene Kurzbezeichnung</string>
     <string name="custom_short_label_is_not_valid">Benutzerdefinierte Kurzbezeichnung ist ungültig</string>
-    <string name="edit">Bearbeite %1$s</string>
     <string name="grid_item_actions">Rasterelement Aktionen</string>
-    <string name="none">Keine</string>
     <string name="override">Überschreiben</string>
     <string name="override_the_grid_item_settings">Einstellungen des Rasters überschreiben</string>
     <string name="edit_label">Label bearbeiten</string>
