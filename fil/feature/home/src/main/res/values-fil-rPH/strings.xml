@@ -17,24 +17,18 @@
   ~
   -->
 <resources>
-    <string name="search_applications">Search Applications</string>
     <string name="personal">Personal</string>
     <string name="clone">Clone</string>
     <string name="work">Work</string>
     <string name="sort_applications">Sort Applications</string>
     <string name="rearrange_applications">Rearrange Applications</string>
     <string name="rearrange_applications_by_index">Rearrange applications by index</string>
-    <string name="cancel">Cancel</string>
-    <string name="update">Update</string>
     <string name="drag_an_item_to_rearrange">Drag an item to rearrange</string>
-    <string name="save">Save</string>
     <string name="work_apps_are_paused">Work apps are paused</string>
     <string name="you_won_t_receive_notifications_from_your_work_apps">You won\'t receive notifications from your work apps</string>
     <string name="unpause">Unpause</string>
     <string name="private_space">Private</string>
-    <string name="add">Add</string>
     <string name="please_wait_for_the_white_box_indicator">Please wait for the white box indicator</string>
-    <string name="settings">Settings</string>
     <string name="edit_pages">Edit Pages</string>
     <string name="edit_dock_pages">Edit Dock Pages</string>
     <string name="widgets">Widgets</string>
@@ -44,5 +38,4 @@
     <string name="request_permissions">Request Permissions</string>
     <string name="allow_permissions_so_we_can_inform_you_about_important_crash_reports_and_make_phone_shortcuts">Allow permissions so we can inform you about important crash reports and make phone shortcuts</string>
     <string name="later">Later</string>
-    <string name="okay">Okay</string>
 </resources>
