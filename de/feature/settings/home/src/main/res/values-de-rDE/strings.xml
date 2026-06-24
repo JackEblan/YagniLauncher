@@ -18,12 +18,8 @@
   -->
 <resources>
     <string name="dock_grid">Dockraster</string>
-    <string name="columns">Spalten</string>
     <string name="dock_columns_is_not_valid">Dock-Spalten sind ungültig</string>
-    <string name="rows">Zeilen</string>
     <string name="dock_rows_is_not_valid">Dock-Zeilen sind ungültig</string>
-    <string name="cancel">Abbrechen</string>
-    <string name="update">Aktualisieren</string>
     <string name="dock_height">Dock-Höhe</string>
     <string name="dock_height_is_not_valid">Dock-Höhe ist nicht gültig</string>
     <string name="folder_cell_dimension">Ordnerzelle Dimension</string>
@@ -36,10 +32,6 @@
     <string name="folder_max_grid">OrdnerMax Gitter</string>
     <string name="max_rows">Max. Zeilen</string>
     <string name="max_rows_is_not_valid">Maximale Zeilen sind ungültig</string>
-    <string name="grid">Raster</string>
-    <string name="columns_is_not_valid">Spalten sind ungültig</string>
-    <string name="rows_is_not_valid">Zeilen sind ungültig</string>
-    <string name="home">Zuhause</string>
     <string name="infinite_scrolling">Unendliche Scrollen</string>
     <string name="seamless_loop_page_scroll">Nahtlose Schleifen-Seite scrollen</string>
     <string name="wallpaper_scrolling">Hintergrundbild Scrollen</string>
