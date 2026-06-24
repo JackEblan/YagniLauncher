@@ -205,7 +205,6 @@ fun IconPackInfoFilesDialog(
             horizontalArrangement = Arrangement.End,
         ) {
             TextButton(
-                modifier = Modifier.fillMaxWidth(),
                 onClick = onDismissRequest,
             ) {
                 Text(text = stringResource(commonR.string.cancel))
