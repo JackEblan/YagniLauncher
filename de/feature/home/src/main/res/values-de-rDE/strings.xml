@@ -17,24 +17,18 @@
   ~
   -->
 <resources>
-    <string name="search_applications">Anwendungen durchsuchen</string>
     <string name="personal">Persönlich</string>
     <string name="clone">Klonen</string>
     <string name="work">Arbeit</string>
     <string name="sort_applications">Anwendungen sortieren</string>
     <string name="rearrange_applications">Anwendungen neu anordnen</string>
     <string name="rearrange_applications_by_index">Anwendungen nach Index neu anordnen</string>
-    <string name="cancel">Abbrechen</string>
-    <string name="update">Aktualisieren</string>
     <string name="drag_an_item_to_rearrange">Ziehe ein Item um es neu anzuordnen</string>
-    <string name="save">Speichern</string>
     <string name="work_apps_are_paused">Arbeits-Apps pausiert</string>
     <string name="you_won_t_receive_notifications_from_your_work_apps">Sie erhalten keine Benachrichtigungen von Ihren Arbeits-Apps</string>
     <string name="unpause">Unpause</string>
     <string name="private_space">Privat</string>
-    <string name="add">Neu</string>
     <string name="please_wait_for_the_white_box_indicator">Bitte warten Sie auf die weiße Box Anzeige</string>
-    <string name="settings">Einstellungen</string>
     <string name="edit_pages">Seiten bearbeiten</string>
     <string name="edit_dock_pages">Dock-Seiten bearbeiten</string>
     <string name="widgets">Widgets</string>
@@ -44,5 +38,4 @@
     <string name="request_permissions">Berechtigungen anfordern</string>
     <string name="allow_permissions_so_we_can_inform_you_about_important_crash_reports_and_make_phone_shortcuts">Erlaube Berechtigungen, damit wir dich über wichtige Absturzberichte informieren und Telefonverknüpfungen erstellen können</string>
     <string name="later">Später</string>
-    <string name="okay">Okay</string>
 </resources>
