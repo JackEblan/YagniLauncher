@@ -61,10 +61,6 @@ internal fun ScrollBarThumb(
         index: Int,
         offset: Int,
     ) -> Unit,
-    onAnimateScrollToItem: suspend (
-        index: Int,
-        offset: Int,
-    ) -> Unit,
 ) {
     val density = LocalDensity.current
 
@@ -126,7 +122,7 @@ internal fun ScrollBarThumb(
                                 ) * (totalItems - 1)
 
                         scope.launch {
-                            onAnimateScrollToItem(
+                            onScrollToItem(
                                 item.roundToInt()
                                     .coerceAtMost(totalItems - 1),
                                 0,

@@ -730,7 +730,6 @@ private fun EblanApplicationInfos(
                 lazyListState = lazyListState,
                 paddingValues = paddingValues,
                 onScrollToItem = lazyListState::scrollToItem,
-                onAnimateScrollToItem = lazyListState::animateScrollToItem,
             )
         }
     }

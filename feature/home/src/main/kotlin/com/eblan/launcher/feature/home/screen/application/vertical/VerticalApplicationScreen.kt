@@ -723,7 +723,6 @@ private fun EblanApplicationInfos(
                 lazyGridState = lazyGridState,
                 paddingValues = paddingValues,
                 onScrollToItem = lazyGridState::scrollToItem,
-                onAnimateScrollToItem = lazyGridState::animateScrollToItem,
             )
         }
     }

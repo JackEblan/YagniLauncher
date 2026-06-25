@@ -168,7 +168,6 @@ internal fun DragAndDropEblanApplicationInfos(
                 lazyGridState = lazyGridState,
                 paddingValues = paddingValues,
                 onScrollToItem = lazyGridState::scrollToItem,
-                onAnimateScrollToItem = lazyGridState::animateScrollToItem,
             )
         }
 

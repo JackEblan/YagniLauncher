@@ -63,10 +63,6 @@ internal fun ScrollBarThumb(
         index: Int,
         offset: Int,
     ) -> Unit,
-    onAnimateScrollToItem: suspend (
-        index: Int,
-        offset: Int,
-    ) -> Unit,
 ) {
     val density = LocalDensity.current
 
@@ -131,7 +127,7 @@ internal fun ScrollBarThumb(
                             ) * (totalRows - 1)
 
                         scope.launch {
-                            onAnimateScrollToItem(
+                            onScrollToItem(
                                 (row.roundToInt() * appDrawerColumns)
                                     .coerceAtMost(lazyGridState.layoutInfo.totalItemsCount - 1),
                                 0,
