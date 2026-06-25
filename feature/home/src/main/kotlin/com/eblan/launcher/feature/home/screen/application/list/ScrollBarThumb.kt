@@ -106,7 +106,8 @@ internal fun ScrollBarThumb(
                             lazyListState.layoutInfo.viewportSize.height - bottomPadding
 
                         val maxThumbY =
-                            viewportHeight - with(density) { thumbHeight.roundToPx() }
+                            (viewportHeight - with(density) { thumbHeight.roundToPx() })
+                                .coerceAtLeast(0)
 
                         val targetThumbY =
                             (offset.y - with(density) { thumbHeight.roundToPx() / 2f })
@@ -252,7 +253,7 @@ private fun getViewPortThumbY(
     val layoutInfo = lazyListState.layoutInfo
     val visibleItems = layoutInfo.visibleItemsInfo
 
-    val firstItem = visibleItems.first()
+    val firstItem = visibleItems.firstOrNull() ?: return 0f
 
     val visibleHeight = visibleItems.sumOf { it.size }
     val avgItemSize = visibleHeight / visibleItems.size
