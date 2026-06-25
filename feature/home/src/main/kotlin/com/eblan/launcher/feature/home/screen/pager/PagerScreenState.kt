@@ -776,17 +776,6 @@ internal class PagerScreenState(
         overlayIntOffset = overlayIntOffset?.plus(dragAmount.round())
     }
 
-    fun handleIsScrollInProgress(
-        isGridScrollInProgress: Boolean,
-        isDockScrollInProgress: Boolean,
-    ) {
-        if (isGridScrollInProgress || isDockScrollInProgress) {
-            dismissGridItemPopup()
-
-            dismissSettingsPopup()
-        }
-    }
-
     fun updateOverlayBounds(
         intOffset: IntOffset,
         intSize: IntSize,

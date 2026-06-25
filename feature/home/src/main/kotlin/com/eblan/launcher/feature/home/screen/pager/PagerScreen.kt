@@ -556,16 +556,6 @@ internal fun PagerScreen(
         pagerScreenState.handleIsPressHome()
     }
 
-    LaunchedEffect(
-        key1 = gridHorizontalPagerState.isScrollInProgress,
-        key2 = dockGridHorizontalPagerState.isScrollInProgress,
-    ) {
-        pagerScreenState.handleIsScrollInProgress(
-            isGridScrollInProgress = gridHorizontalPagerState.isScrollInProgress,
-            isDockScrollInProgress = dockGridHorizontalPagerState.isScrollInProgress,
-        )
-    }
-
     BackHandler(
         enabled = pagerScreenState.swipeY.value == screenHeight.toFloat() &&
             !pagerScreenState.showGridItemPopup && !pagerScreenState.showSettingsPopup &&
@@ -693,7 +683,6 @@ internal fun PagerScreen(
                             statusBarNotifications = pagerScreenState.statusBarNotifications,
                             textColor = textColor,
                             isVisibleOverlay = isVisibleOverlay,
-                            newGridItemSource = GridItemSource.Existing,
                             sharedElementKey = SharedElementKey(
                                 id = gridItem.id,
                                 parent = SharedElementKey.Parent.Grid,
@@ -702,6 +691,7 @@ internal fun PagerScreen(
                             moveGridItemResult = moveGridItemResult,
                             lockMovement = lockMovement,
                             isDragging = pagerScreenState.isDragging,
+                            showGridItemPopup = pagerScreenState.showGridItemPopup,
                             onOpenAppDrawer = pagerScreenState::openApplicationScreen,
                             onTapApplicationInfo = { serialNumber, componentName ->
                                 val sourceBoundsX = x + leftPadding
@@ -815,7 +805,6 @@ internal fun PagerScreen(
                             statusBarNotifications = pagerScreenState.statusBarNotifications,
                             textColor = textColor,
                             isVisibleOverlay = isVisibleOverlay,
-                            newGridItemSource = GridItemSource.Existing,
                             sharedElementKey = SharedElementKey(
                                 id = gridItem.id,
                                 parent = SharedElementKey.Parent.Dock,
@@ -824,6 +813,7 @@ internal fun PagerScreen(
                             moveGridItemResult = moveGridItemResult,
                             lockMovement = lockMovement,
                             isDragging = pagerScreenState.isDragging,
+                            showGridItemPopup = pagerScreenState.showGridItemPopup,
                             onOpenAppDrawer = pagerScreenState::openApplicationScreen,
                             onTapApplicationInfo = { serialNumber, componentName ->
                                 val left = x + leftPadding
@@ -980,6 +970,7 @@ internal fun PagerScreen(
                 screenWidth = screenWidth,
                 screenHeight = screenHeight,
                 lastFolderPopup = lastPopupFolderGridItem,
+                showFolderGridItemPopup = pagerScreenState.showFolderGridItemPopup,
                 onDeleteFolderPopupEntry = onDeleteFolderPopupEntry,
                 onMoveFolderGridItemOutsideFolder = onMoveFolderGridItemOutsideFolder,
                 onOpenAppDrawer = pagerScreenState::openApplicationScreen,

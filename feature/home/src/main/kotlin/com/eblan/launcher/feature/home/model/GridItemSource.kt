@@ -24,7 +24,5 @@ internal sealed interface GridItemSource {
 
     data object New : GridItemSource
 
-    data class Pin(
-        val pinItemRequest: PinItemRequest,
-    ) : GridItemSource
+    data class Pin(val pinItemRequest: PinItemRequest) : GridItemSource
 }

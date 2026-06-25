@@ -69,7 +69,6 @@ internal suspend fun onLongPress(
     graphicsLayer: GraphicsLayer,
     intOffset: IntOffset,
     intSize: IntSize,
-    gridItemSource: GridItemSource,
     sharedElementKey: SharedElementKey,
     gridItem: GridItem,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
@@ -86,7 +85,7 @@ internal suspend fun onLongPress(
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
-    onUpdateGridItemSource(gridItemSource)
+    onUpdateGridItemSource(GridItemSource.Existing)
 
     onUpdateMoveGridItemResult(
         MoveGridItemResult(

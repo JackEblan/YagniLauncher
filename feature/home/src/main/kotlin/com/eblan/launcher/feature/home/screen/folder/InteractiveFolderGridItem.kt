@@ -34,12 +34,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -101,6 +98,7 @@ internal fun InteractiveFolderGridItem(
     sharedElementKey: SharedElementKey,
     moveGridItemResult: MoveGridItemResult?,
     progress: Float,
+    showFolderGridItemPopup: Boolean,
     onOpenAppDrawer: () -> Unit,
     onTapApplicationInfo: (
         serialNumber: Long,
@@ -154,6 +152,7 @@ internal fun InteractiveFolderGridItem(
                 sharedElementKey = sharedElementKey,
                 statusBarNotifications = statusBarNotifications,
                 padding = padding,
+                showFolderGridItemPopup = showFolderGridItemPopup,
                 onUpdateIsCloseFolderGridItemPopup = onUpdateIsCloseFolderGridItemPopup,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
@@ -181,6 +180,7 @@ internal fun InteractiveFolderGridItem(
                 isVisibleOverlay = isVisibleOverlay,
                 sharedElementKey = sharedElementKey,
                 padding = padding,
+                showFolderGridItemPopup = showFolderGridItemPopup,
                 onUpdateIsCloseFolderGridItemPopup = onUpdateIsCloseFolderGridItemPopup,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
@@ -207,6 +207,7 @@ internal fun InteractiveFolderGridItem(
                 isVisibleOverlay = isVisibleOverlay,
                 sharedElementKey = sharedElementKey,
                 padding = padding,
+                showFolderGridItemPopup = showFolderGridItemPopup,
                 onUpdateIsCloseFolderGridItemPopup = onUpdateIsCloseFolderGridItemPopup,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
@@ -232,6 +233,7 @@ internal fun InteractiveFolderGridItem(
                 isSelected = isSelected,
                 isVisibleOverlay = isVisibleOverlay,
                 sharedElementKey = sharedElementKey,
+                showFolderGridItemPopup = showFolderGridItemPopup,
                 onUpdateIsCloseFolderGridItemPopup = onUpdateIsCloseFolderGridItemPopup,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
@@ -264,6 +266,7 @@ private fun InteractiveFolderApplicationInfoGridItem(
     sharedElementKey: SharedElementKey,
     statusBarNotifications: Map<String, Int>,
     padding: Dp,
+    showFolderGridItemPopup: Boolean,
     onUpdateIsCloseFolderGridItemPopup: (Boolean) -> Unit,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
@@ -290,9 +293,9 @@ private fun InteractiveFolderApplicationInfoGridItem(
 
     val settings = LocalSettings.current
 
-    var intOffset by remember { mutableStateOf(IntOffset.Zero) }
+    var intOffset = remember { IntOffset.Zero }
 
-    var intSize by remember { mutableStateOf(IntSize.Zero) }
+    var intSize = remember { IntSize.Zero }
 
     val graphicsLayer = rememberGraphicsLayer()
 
@@ -323,8 +326,12 @@ private fun InteractiveFolderApplicationInfoGridItem(
     LaunchedEffect(
         key1 = drag,
         key2 = hasInteraction,
+        key3 = showFolderGridItemPopup,
     ) {
-        if (drag == Drag.Dragging && hasInteraction) {
+        if (drag == Drag.Dragging &&
+            hasInteraction &&
+            showFolderGridItemPopup
+        ) {
             onUpdateIsDragging(true)
 
             onUpdateIsCloseFolderGridItemPopup(true)
@@ -414,7 +421,7 @@ private fun InteractiveFolderApplicationInfoGridItem(
                 .alpha(alpha),
         ) {
             AsyncImage(
-                model = Builder(LocalContext.current).data(data.customIcon ?: icon)
+                model = Builder(context).data(data.customIcon ?: icon)
                     .addLastModifiedToFileCacheKey(true)
                     .size(Size.ORIGINAL)
                     .build(),
@@ -490,6 +497,7 @@ private fun InteractiveFolderShortcutInfoGridItem(
     isVisibleOverlay: Boolean,
     sharedElementKey: SharedElementKey,
     padding: Dp,
+    showFolderGridItemPopup: Boolean,
     onUpdateIsCloseFolderGridItemPopup: (Boolean) -> Unit,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
@@ -515,9 +523,9 @@ private fun InteractiveFolderShortcutInfoGridItem(
 
     val context = LocalContext.current
 
-    var intOffset by remember { mutableStateOf(IntOffset.Zero) }
+    var intOffset = remember { IntOffset.Zero }
 
-    var intSize by remember { mutableStateOf(IntSize.Zero) }
+    var intSize = remember { IntSize.Zero }
 
     val graphicsLayer = rememberGraphicsLayer()
 
@@ -544,8 +552,12 @@ private fun InteractiveFolderShortcutInfoGridItem(
     LaunchedEffect(
         key1 = drag,
         key2 = hasInteraction,
+        key3 = showFolderGridItemPopup,
     ) {
-        if (drag == Drag.Dragging && hasInteraction) {
+        if (drag == Drag.Dragging &&
+            hasInteraction &&
+            showFolderGridItemPopup
+        ) {
             onUpdateIsDragging(true)
 
             onUpdateIsCloseFolderGridItemPopup(true)
@@ -638,7 +650,7 @@ private fun InteractiveFolderShortcutInfoGridItem(
                 .alpha(alpha),
         ) {
             AsyncImage(
-                model = Builder(LocalContext.current).data(customIcon)
+                model = Builder(context).data(customIcon)
                     .addLastModifiedToFileCacheKey(true)
                     .size(Size.ORIGINAL)
                     .build(),
@@ -674,7 +686,7 @@ private fun InteractiveFolderShortcutInfoGridItem(
             )
 
             AsyncImage(
-                model = Builder(LocalContext.current).data(data.eblanApplicationInfoIcon)
+                model = Builder(context).data(data.eblanApplicationInfoIcon)
                     .size(Size.ORIGINAL)
                     .build(),
                 modifier = Modifier
@@ -711,6 +723,7 @@ private fun InteractiveFolderShortcutConfigGridItem(
     isVisibleOverlay: Boolean,
     sharedElementKey: SharedElementKey,
     padding: Dp,
+    showFolderGridItemPopup: Boolean,
     onUpdateIsCloseFolderGridItemPopup: (Boolean) -> Unit,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
@@ -732,9 +745,9 @@ private fun InteractiveFolderShortcutConfigGridItem(
 
     val context = LocalContext.current
 
-    var intOffset by remember { mutableStateOf(IntOffset.Zero) }
+    var intOffset = remember { IntOffset.Zero }
 
-    var intSize by remember { mutableStateOf(IntSize.Zero) }
+    var intSize = remember { IntSize.Zero }
 
     val graphicsLayer = rememberGraphicsLayer()
 
@@ -793,8 +806,12 @@ private fun InteractiveFolderShortcutConfigGridItem(
     LaunchedEffect(
         key1 = drag,
         key2 = hasInteraction,
+        key3 = showFolderGridItemPopup,
     ) {
-        if (drag == Drag.Dragging && hasInteraction) {
+        if (drag == Drag.Dragging &&
+            hasInteraction &&
+            showFolderGridItemPopup
+        ) {
             onUpdateIsDragging(true)
 
             onUpdateIsCloseFolderGridItemPopup(true)
@@ -875,7 +892,7 @@ private fun InteractiveFolderShortcutConfigGridItem(
         verticalArrangement = verticalArrangement,
     ) {
         AsyncImage(
-            model = Builder(LocalContext.current).data(icon)
+            model = Builder(context).data(icon)
                 .addLastModifiedToFileCacheKey(true)
                 .size(Size.ORIGINAL)
                 .build(),
@@ -938,6 +955,7 @@ private fun InteractiveNestedFolderGridItem(
     isSelected: Boolean,
     isVisibleOverlay: Boolean,
     sharedElementKey: SharedElementKey,
+    showFolderGridItemPopup: Boolean,
     onUpdateIsCloseFolderGridItemPopup: (Boolean) -> Unit,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
@@ -959,9 +977,9 @@ private fun InteractiveNestedFolderGridItem(
 
     val context = LocalContext.current
 
-    var intOffset by remember { mutableStateOf(IntOffset.Zero) }
+    var intOffset = remember { IntOffset.Zero }
 
-    var intSize by remember { mutableStateOf(IntSize.Zero) }
+    var intSize = remember { IntSize.Zero }
 
     val graphicsLayer = rememberGraphicsLayer()
 
@@ -984,8 +1002,12 @@ private fun InteractiveNestedFolderGridItem(
     LaunchedEffect(
         key1 = drag,
         key2 = hasInteraction,
+        key3 = showFolderGridItemPopup,
     ) {
-        if (drag == Drag.Dragging && hasInteraction) {
+        if (drag == Drag.Dragging &&
+            hasInteraction &&
+            showFolderGridItemPopup
+        ) {
             onUpdateIsDragging(true)
 
             onUpdateIsCloseFolderGridItemPopup(true)
