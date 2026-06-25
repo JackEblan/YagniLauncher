@@ -838,6 +838,7 @@ internal class PagerScreenState(
     }
 
     fun dismissGridItemPopup() {
+        println("Something reset")
         popupIntOffset = null
 
         popupIntSize = null

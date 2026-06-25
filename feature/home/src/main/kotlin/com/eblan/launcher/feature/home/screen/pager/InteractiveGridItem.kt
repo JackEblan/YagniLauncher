@@ -108,6 +108,7 @@ internal fun InteractiveGridItem(
     moveGridItemResult: MoveGridItemResult?,
     lockMovement: Boolean,
     isDragging: Boolean,
+    showGridItemPopup: Boolean,
     onOpenAppDrawer: () -> Unit,
     onTapApplicationInfo: (
         serialNumber: Long,
@@ -179,6 +180,7 @@ internal fun InteractiveGridItem(
                 sharedElementKey = sharedElementKey,
                 statusBarNotifications = statusBarNotifications,
                 textColor = currentTextColor,
+                showGridItemPopup = showGridItemPopup,
                 onUpdateIsCloseGridItemPopup = onUpdateIsCloseGridItemPopup,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
@@ -205,6 +207,7 @@ internal fun InteractiveGridItem(
                 sharedElementKey = sharedElementKey,
                 textColor = currentTextColor,
                 gridItem = gridItem,
+                showGridItemPopup = showGridItemPopup,
                 onUpdateIsCloseGridItemPopup = onUpdateIsCloseGridItemPopup,
                 onShowGridItemPopup = onShowGridItemPopup,
                 onUpdateGridItemSource = onUpdateGridItemSource,
@@ -232,6 +235,7 @@ internal fun InteractiveGridItem(
                 isVisibleOverlay = isVisibleOverlay,
                 sharedElementKey = sharedElementKey,
                 textColor = currentTextColor,
+                showGridItemPopup = showGridItemPopup,
                 onUpdateIsCloseGridItemPopup = onUpdateIsCloseGridItemPopup,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
@@ -263,6 +267,7 @@ internal fun InteractiveGridItem(
                 moveGridItemResult = moveGridItemResult,
                 lockMovement = lockMovement,
                 isDragging = isDragging,
+                showGridItemPopup = showGridItemPopup,
                 onUpdateIsCloseGridItemPopup = onUpdateIsCloseGridItemPopup,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
@@ -292,6 +297,7 @@ internal fun InteractiveGridItem(
                 isVisibleOverlay = isVisibleOverlay,
                 sharedElementKey = sharedElementKey,
                 textColor = currentTextColor,
+                showGridItemPopup = showGridItemPopup,
                 onUpdateIsCloseGridItemPopup = onUpdateIsCloseGridItemPopup,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
@@ -324,6 +330,7 @@ private fun InteractiveApplicationInfoGridItem(
     sharedElementKey: SharedElementKey,
     statusBarNotifications: Map<String, Int>,
     textColor: Color,
+    showGridItemPopup: Boolean,
     onUpdateIsCloseGridItemPopup: (Boolean) -> Unit,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
@@ -386,8 +393,12 @@ private fun InteractiveApplicationInfoGridItem(
     LaunchedEffect(
         key1 = drag,
         key2 = hasInteraction,
+        key3 = showGridItemPopup,
     ) {
-        if (drag == Drag.Dragging && hasInteraction) {
+        if (drag == Drag.Dragging &&
+            hasInteraction &&
+            showGridItemPopup
+        ) {
             onUpdateIsDragging(true)
 
             onUpdateIsCloseGridItemPopup(true)
@@ -557,6 +568,7 @@ private fun InteractiveWidgetGridItem(
     sharedElementKey: SharedElementKey,
     textColor: Color,
     gridItem: GridItem,
+    showGridItemPopup: Boolean,
     onUpdateIsCloseGridItemPopup: (Boolean) -> Unit,
     onShowGridItemPopup: (
         intOffset: IntOffset,
@@ -598,8 +610,12 @@ private fun InteractiveWidgetGridItem(
     LaunchedEffect(
         key1 = drag,
         key2 = hasInteraction,
+        key3 = showGridItemPopup,
     ) {
-        if (drag == Drag.Dragging && hasInteraction) {
+        if (drag == Drag.Dragging &&
+            hasInteraction &&
+            showGridItemPopup
+        ) {
             onUpdateIsDragging(true)
 
             onUpdateIsCloseGridItemPopup(true)
@@ -727,6 +743,7 @@ private fun InteractiveShortcutInfoGridItem(
     isVisibleOverlay: Boolean,
     sharedElementKey: SharedElementKey,
     textColor: Color,
+    showGridItemPopup: Boolean,
     onUpdateIsCloseGridItemPopup: (Boolean) -> Unit,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
@@ -784,8 +801,12 @@ private fun InteractiveShortcutInfoGridItem(
     LaunchedEffect(
         key1 = drag,
         key2 = hasInteraction,
+        key3 = showGridItemPopup,
     ) {
-        if (drag == Drag.Dragging && hasInteraction) {
+        if (drag == Drag.Dragging &&
+            hasInteraction &&
+            showGridItemPopup
+        ) {
             onUpdateIsDragging(true)
 
             onUpdateIsCloseGridItemPopup(true)
@@ -962,6 +983,7 @@ private fun InteractiveFolderGridItem(
     moveGridItemResult: MoveGridItemResult?,
     lockMovement: Boolean,
     isDragging: Boolean,
+    showGridItemPopup: Boolean,
     onUpdateIsCloseGridItemPopup: (Boolean) -> Unit,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
@@ -1021,8 +1043,12 @@ private fun InteractiveFolderGridItem(
     LaunchedEffect(
         key1 = drag,
         key2 = hasInteraction,
+        key3 = showGridItemPopup,
     ) {
-        if (drag == Drag.Dragging && hasInteraction) {
+        if (drag == Drag.Dragging &&
+            hasInteraction &&
+            showGridItemPopup
+        ) {
             onUpdateIsDragging(true)
 
             onUpdateIsCloseGridItemPopup(true)
@@ -1223,6 +1249,7 @@ private fun InteractiveShortcutConfigGridItem(
     isVisibleOverlay: Boolean,
     sharedElementKey: SharedElementKey,
     textColor: Color,
+    showGridItemPopup: Boolean,
     onUpdateIsCloseGridItemPopup: (Boolean) -> Unit,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
@@ -1308,8 +1335,12 @@ private fun InteractiveShortcutConfigGridItem(
     LaunchedEffect(
         key1 = drag,
         key2 = hasInteraction,
+        key3 = showGridItemPopup,
     ) {
-        if (drag == Drag.Dragging && hasInteraction) {
+        if (drag == Drag.Dragging &&
+            hasInteraction &&
+            showGridItemPopup
+        ) {
             onUpdateIsDragging(true)
 
             onUpdateIsCloseGridItemPopup(true)

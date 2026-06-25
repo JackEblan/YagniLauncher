@@ -105,6 +105,7 @@ internal fun FolderScreen(
     screenHeight: Int,
     screenWidth: Int,
     lastFolderPopup: FolderPopup?,
+    showFolderGridItemPopup: Boolean,
     onDeleteFolderPopupEntry: (FolderPopupEntry) -> Unit,
     onMoveFolderGridItemOutsideFolder: (GridItem) -> Unit,
     onOpenAppDrawer: () -> Unit,
@@ -468,6 +469,7 @@ internal fun FolderScreen(
                                 ),
                                 moveGridItemResult = moveGridItemResult,
                                 progress = progress.value,
+                                showFolderGridItemPopup = showFolderGridItemPopup,
                                 onOpenAppDrawer = onOpenAppDrawer,
                                 onTapApplicationInfo = { serialNumber, componentName ->
                                     val sourceBoundsX = x + leftPadding

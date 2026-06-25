@@ -701,6 +701,7 @@ internal fun PagerScreen(
                             moveGridItemResult = moveGridItemResult,
                             lockMovement = lockMovement,
                             isDragging = pagerScreenState.isDragging,
+                            showGridItemPopup = pagerScreenState.showGridItemPopup,
                             onOpenAppDrawer = pagerScreenState::openApplicationScreen,
                             onTapApplicationInfo = { serialNumber, componentName ->
                                 val sourceBoundsX = x + leftPadding
@@ -822,6 +823,7 @@ internal fun PagerScreen(
                             moveGridItemResult = moveGridItemResult,
                             lockMovement = lockMovement,
                             isDragging = pagerScreenState.isDragging,
+                            showGridItemPopup = pagerScreenState.showGridItemPopup,
                             onOpenAppDrawer = pagerScreenState::openApplicationScreen,
                             onTapApplicationInfo = { serialNumber, componentName ->
                                 val left = x + leftPadding
@@ -978,6 +980,7 @@ internal fun PagerScreen(
                 screenWidth = screenWidth,
                 screenHeight = screenHeight,
                 lastFolderPopup = lastPopupFolderGridItem,
+                showFolderGridItemPopup = pagerScreenState.showFolderGridItemPopup,
                 onDeleteFolderPopupEntry = onDeleteFolderPopupEntry,
                 onMoveFolderGridItemOutsideFolder = onMoveFolderGridItemOutsideFolder,
                 onOpenAppDrawer = pagerScreenState::openApplicationScreen,

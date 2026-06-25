@@ -98,6 +98,7 @@ internal fun InteractiveFolderGridItem(
     sharedElementKey: SharedElementKey,
     moveGridItemResult: MoveGridItemResult?,
     progress: Float,
+    showFolderGridItemPopup: Boolean,
     onOpenAppDrawer: () -> Unit,
     onTapApplicationInfo: (
         serialNumber: Long,
@@ -151,6 +152,7 @@ internal fun InteractiveFolderGridItem(
                 sharedElementKey = sharedElementKey,
                 statusBarNotifications = statusBarNotifications,
                 padding = padding,
+                showFolderGridItemPopup = showFolderGridItemPopup,
                 onUpdateIsCloseFolderGridItemPopup = onUpdateIsCloseFolderGridItemPopup,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
@@ -178,6 +180,7 @@ internal fun InteractiveFolderGridItem(
                 isVisibleOverlay = isVisibleOverlay,
                 sharedElementKey = sharedElementKey,
                 padding = padding,
+                showFolderGridItemPopup = showFolderGridItemPopup,
                 onUpdateIsCloseFolderGridItemPopup = onUpdateIsCloseFolderGridItemPopup,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
@@ -204,6 +207,7 @@ internal fun InteractiveFolderGridItem(
                 isVisibleOverlay = isVisibleOverlay,
                 sharedElementKey = sharedElementKey,
                 padding = padding,
+                showFolderGridItemPopup = showFolderGridItemPopup,
                 onUpdateIsCloseFolderGridItemPopup = onUpdateIsCloseFolderGridItemPopup,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
@@ -229,6 +233,7 @@ internal fun InteractiveFolderGridItem(
                 isSelected = isSelected,
                 isVisibleOverlay = isVisibleOverlay,
                 sharedElementKey = sharedElementKey,
+                showFolderGridItemPopup = showFolderGridItemPopup,
                 onUpdateIsCloseFolderGridItemPopup = onUpdateIsCloseFolderGridItemPopup,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
@@ -261,6 +266,7 @@ private fun InteractiveFolderApplicationInfoGridItem(
     sharedElementKey: SharedElementKey,
     statusBarNotifications: Map<String, Int>,
     padding: Dp,
+    showFolderGridItemPopup: Boolean,
     onUpdateIsCloseFolderGridItemPopup: (Boolean) -> Unit,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
@@ -320,8 +326,12 @@ private fun InteractiveFolderApplicationInfoGridItem(
     LaunchedEffect(
         key1 = drag,
         key2 = hasInteraction,
+        key3 = showFolderGridItemPopup,
     ) {
-        if (drag == Drag.Dragging && hasInteraction) {
+        if (drag == Drag.Dragging &&
+            hasInteraction &&
+            showFolderGridItemPopup
+        ) {
             onUpdateIsDragging(true)
 
             onUpdateIsCloseFolderGridItemPopup(true)
@@ -487,6 +497,7 @@ private fun InteractiveFolderShortcutInfoGridItem(
     isVisibleOverlay: Boolean,
     sharedElementKey: SharedElementKey,
     padding: Dp,
+    showFolderGridItemPopup: Boolean,
     onUpdateIsCloseFolderGridItemPopup: (Boolean) -> Unit,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
@@ -541,8 +552,12 @@ private fun InteractiveFolderShortcutInfoGridItem(
     LaunchedEffect(
         key1 = drag,
         key2 = hasInteraction,
+        key3 = showFolderGridItemPopup,
     ) {
-        if (drag == Drag.Dragging && hasInteraction) {
+        if (drag == Drag.Dragging &&
+            hasInteraction &&
+            showFolderGridItemPopup
+        ) {
             onUpdateIsDragging(true)
 
             onUpdateIsCloseFolderGridItemPopup(true)
@@ -708,6 +723,7 @@ private fun InteractiveFolderShortcutConfigGridItem(
     isVisibleOverlay: Boolean,
     sharedElementKey: SharedElementKey,
     padding: Dp,
+    showFolderGridItemPopup: Boolean,
     onUpdateIsCloseFolderGridItemPopup: (Boolean) -> Unit,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
@@ -790,8 +806,12 @@ private fun InteractiveFolderShortcutConfigGridItem(
     LaunchedEffect(
         key1 = drag,
         key2 = hasInteraction,
+        key3 = showFolderGridItemPopup,
     ) {
-        if (drag == Drag.Dragging && hasInteraction) {
+        if (drag == Drag.Dragging &&
+            hasInteraction &&
+            showFolderGridItemPopup
+        ) {
             onUpdateIsDragging(true)
 
             onUpdateIsCloseFolderGridItemPopup(true)
@@ -935,6 +955,7 @@ private fun InteractiveNestedFolderGridItem(
     isSelected: Boolean,
     isVisibleOverlay: Boolean,
     sharedElementKey: SharedElementKey,
+    showFolderGridItemPopup: Boolean,
     onUpdateIsCloseFolderGridItemPopup: (Boolean) -> Unit,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
@@ -981,8 +1002,12 @@ private fun InteractiveNestedFolderGridItem(
     LaunchedEffect(
         key1 = drag,
         key2 = hasInteraction,
+        key3 = showFolderGridItemPopup,
     ) {
-        if (drag == Drag.Dragging && hasInteraction) {
+        if (drag == Drag.Dragging &&
+            hasInteraction &&
+            showFolderGridItemPopup
+        ) {
             onUpdateIsDragging(true)
 
             onUpdateIsCloseFolderGridItemPopup(true)
