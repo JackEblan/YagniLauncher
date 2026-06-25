@@ -391,9 +391,9 @@ private fun EblanAppWidgetProviderInfoItem(
 ) {
     val scope = rememberCoroutineScope()
 
-    var intOffset by remember { mutableStateOf(IntOffset.Zero) }
+    var intOffset = remember { IntOffset.Zero }
 
-    var intSize by remember { mutableStateOf(IntSize.Zero) }
+    var intSize = remember { IntSize.Zero }
 
     val preview = eblanAppWidgetProviderInfo.preview ?: eblanAppWidgetProviderInfo.applicationIcon
 

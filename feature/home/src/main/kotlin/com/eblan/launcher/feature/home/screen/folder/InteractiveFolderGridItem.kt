@@ -34,12 +34,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -290,9 +287,9 @@ private fun InteractiveFolderApplicationInfoGridItem(
 
     val settings = LocalSettings.current
 
-    var intOffset by remember { mutableStateOf(IntOffset.Zero) }
+    var intOffset = remember { IntOffset.Zero }
 
-    var intSize by remember { mutableStateOf(IntSize.Zero) }
+    var intSize = remember { IntSize.Zero }
 
     val graphicsLayer = rememberGraphicsLayer()
 
@@ -414,7 +411,7 @@ private fun InteractiveFolderApplicationInfoGridItem(
                 .alpha(alpha),
         ) {
             AsyncImage(
-                model = Builder(LocalContext.current).data(data.customIcon ?: icon)
+                model = Builder(context).data(data.customIcon ?: icon)
                     .addLastModifiedToFileCacheKey(true)
                     .size(Size.ORIGINAL)
                     .build(),
@@ -515,9 +512,9 @@ private fun InteractiveFolderShortcutInfoGridItem(
 
     val context = LocalContext.current
 
-    var intOffset by remember { mutableStateOf(IntOffset.Zero) }
+    var intOffset = remember { IntOffset.Zero }
 
-    var intSize by remember { mutableStateOf(IntSize.Zero) }
+    var intSize = remember { IntSize.Zero }
 
     val graphicsLayer = rememberGraphicsLayer()
 
@@ -638,7 +635,7 @@ private fun InteractiveFolderShortcutInfoGridItem(
                 .alpha(alpha),
         ) {
             AsyncImage(
-                model = Builder(LocalContext.current).data(customIcon)
+                model = Builder(context).data(customIcon)
                     .addLastModifiedToFileCacheKey(true)
                     .size(Size.ORIGINAL)
                     .build(),
@@ -674,7 +671,7 @@ private fun InteractiveFolderShortcutInfoGridItem(
             )
 
             AsyncImage(
-                model = Builder(LocalContext.current).data(data.eblanApplicationInfoIcon)
+                model = Builder(context).data(data.eblanApplicationInfoIcon)
                     .size(Size.ORIGINAL)
                     .build(),
                 modifier = Modifier
@@ -732,9 +729,9 @@ private fun InteractiveFolderShortcutConfigGridItem(
 
     val context = LocalContext.current
 
-    var intOffset by remember { mutableStateOf(IntOffset.Zero) }
+    var intOffset = remember { IntOffset.Zero }
 
-    var intSize by remember { mutableStateOf(IntSize.Zero) }
+    var intSize = remember { IntSize.Zero }
 
     val graphicsLayer = rememberGraphicsLayer()
 
@@ -875,7 +872,7 @@ private fun InteractiveFolderShortcutConfigGridItem(
         verticalArrangement = verticalArrangement,
     ) {
         AsyncImage(
-            model = Builder(LocalContext.current).data(icon)
+            model = Builder(context).data(icon)
                 .addLastModifiedToFileCacheKey(true)
                 .size(Size.ORIGINAL)
                 .build(),
@@ -959,9 +956,9 @@ private fun InteractiveNestedFolderGridItem(
 
     val context = LocalContext.current
 
-    var intOffset by remember { mutableStateOf(IntOffset.Zero) }
+    var intOffset = remember { IntOffset.Zero }
 
-    var intSize by remember { mutableStateOf(IntSize.Zero) }
+    var intSize = remember { IntSize.Zero }
 
     val graphicsLayer = rememberGraphicsLayer()
 

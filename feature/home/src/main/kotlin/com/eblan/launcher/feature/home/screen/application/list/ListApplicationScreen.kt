@@ -765,13 +765,11 @@ private fun EblanApplicationInfoItem(
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
-    var intOffset by remember { mutableStateOf(IntOffset.Zero) }
-
-    var intSize by remember { mutableStateOf(IntSize.Zero) }
-
     val graphicsLayer = rememberGraphicsLayer()
 
     val scope = rememberCoroutineScope()
+
+    val context = LocalContext.current
 
     val density = LocalDensity.current
 
@@ -805,6 +803,10 @@ private fun EblanApplicationInfoItem(
     val alpha = if (isLongPress) 0f else 1f
 
     val scale = remember { Animatable(1f) }
+
+    var intOffset = remember { IntOffset.Zero }
+
+    var intSize = remember { IntSize.Zero }
 
     LaunchedEffect(
         key1 = drag,
@@ -891,7 +893,7 @@ private fun EblanApplicationInfoItem(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
+            model = ImageRequest.Builder(context)
                 .data(eblanApplicationInfo.customIcon ?: icon)
                 .addLastModifiedToFileCacheKey(true)
                 .build(),

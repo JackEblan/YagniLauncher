@@ -170,10 +170,6 @@ internal fun EblanApplicationInfoItem(
 
     var intSize = remember { IntSize.Zero }
 
-    val iconSizePx = with(density) {
-        appDrawerSettings.gridItemSettings.iconSize.dp.roundToPx()
-    }
-
     LaunchedEffect(
         key1 = drag,
         key2 = isLongPress,
@@ -269,7 +265,6 @@ internal fun EblanApplicationInfoItem(
             model = ImageRequest.Builder(context)
                 .data(eblanApplicationInfo.customIcon ?: icon)
                 .addLastModifiedToFileCacheKey(true)
-                .size(iconSizePx)
                 .build(),
             contentDescription = null,
             modifier = Modifier.size(appDrawerSettings.gridItemSettings.iconSize.dp)
