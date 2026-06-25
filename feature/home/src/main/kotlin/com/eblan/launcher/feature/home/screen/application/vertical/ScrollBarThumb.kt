@@ -263,7 +263,7 @@ private fun getViewPortThumbY(
     val layoutInfo = lazyGridState.layoutInfo
     val visibleItems = layoutInfo.visibleItemsInfo
 
-    val firstItem = visibleItems.firstOrNull() ?: return 0f
+    val firstItem = visibleItems.first()
 
     val avgItemHeight = visibleItems.sumOf { it.size.height } / visibleItems.size
 

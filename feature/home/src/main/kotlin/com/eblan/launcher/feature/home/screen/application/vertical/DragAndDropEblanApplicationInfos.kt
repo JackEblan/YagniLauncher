@@ -52,6 +52,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -118,6 +119,12 @@ internal fun DragAndDropEblanApplicationInfos(
 
     val dragAnItemToRearrangeString = stringResource(R.string.drag_an_item_to_rearrange)
 
+    val canScroll by remember(key1 = lazyGridState) {
+        derivedStateOf {
+            lazyGridState.canScrollForward || lazyGridState.canScrollBackward
+        }
+    }
+
     LaunchedEffect(key1 = Unit) {
         Toast.makeText(
             context,
@@ -159,7 +166,7 @@ internal fun DragAndDropEblanApplicationInfos(
             }
         }
 
-        if (!WindowInsets.isImeVisible) {
+        if (!WindowInsets.isImeVisible && canScroll) {
             ScrollBarThumb(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
