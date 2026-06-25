@@ -780,9 +780,15 @@ internal class PagerScreenState(
         isGridScrollInProgress: Boolean,
         isDockScrollInProgress: Boolean,
     ) {
-        if (isGridScrollInProgress || isDockScrollInProgress) {
-            dismissGridItemPopup()
+        if (!isGridScrollInProgress || !isDockScrollInProgress) {
+            return
+        }
 
+        if (showGridItemPopup) {
+            dismissGridItemPopup()
+        }
+
+        if (showFolderGridItemPopup) {
             dismissSettingsPopup()
         }
     }
