@@ -693,7 +693,6 @@ internal fun PagerScreen(
                             statusBarNotifications = pagerScreenState.statusBarNotifications,
                             textColor = textColor,
                             isVisibleOverlay = isVisibleOverlay,
-                            newGridItemSource = GridItemSource.Existing,
                             sharedElementKey = SharedElementKey(
                                 id = gridItem.id,
                                 parent = SharedElementKey.Parent.Grid,
@@ -815,7 +814,6 @@ internal fun PagerScreen(
                             statusBarNotifications = pagerScreenState.statusBarNotifications,
                             textColor = textColor,
                             isVisibleOverlay = isVisibleOverlay,
-                            newGridItemSource = GridItemSource.Existing,
                             sharedElementKey = SharedElementKey(
                                 id = gridItem.id,
                                 parent = SharedElementKey.Parent.Dock,
