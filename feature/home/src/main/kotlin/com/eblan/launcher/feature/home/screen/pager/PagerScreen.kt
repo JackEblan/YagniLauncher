@@ -556,16 +556,6 @@ internal fun PagerScreen(
         pagerScreenState.handleIsPressHome()
     }
 
-    LaunchedEffect(
-        key1 = gridHorizontalPagerState.isScrollInProgress,
-        key2 = dockGridHorizontalPagerState.isScrollInProgress,
-    ) {
-        pagerScreenState.handleIsScrollInProgress(
-            isGridScrollInProgress = gridHorizontalPagerState.isScrollInProgress,
-            isDockScrollInProgress = dockGridHorizontalPagerState.isScrollInProgress,
-        )
-    }
-
     BackHandler(
         enabled = pagerScreenState.swipeY.value == screenHeight.toFloat() &&
             !pagerScreenState.showGridItemPopup && !pagerScreenState.showSettingsPopup &&
