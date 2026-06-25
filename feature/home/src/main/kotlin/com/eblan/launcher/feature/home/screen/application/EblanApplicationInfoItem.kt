@@ -142,8 +142,6 @@ internal fun EblanApplicationInfoItem(
         systemTextColor = appDrawerSettings.gridItemSettings.textColor,
     )
 
-    val appDrawerRowsHeight = appDrawerSettings.appDrawerRowsHeight.dp
-
     val maxLines = if (appDrawerSettings.gridItemSettings.singleLineLabel) 1 else Int.MAX_VALUE
 
     val icon = eblanApplicationInfo.iconPackInfoFilePath ?: eblanApplicationInfo.icon
@@ -248,7 +246,7 @@ internal fun EblanApplicationInfoItem(
             }
             .run {
                 if (appDrawerType == AppDrawerType.Vertical) {
-                    height(appDrawerRowsHeight)
+                    height(appDrawerSettings.appDrawerRowsHeight.dp)
                 } else {
                     fillMaxSize()
                 }

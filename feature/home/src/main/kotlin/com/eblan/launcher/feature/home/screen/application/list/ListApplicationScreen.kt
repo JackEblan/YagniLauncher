@@ -209,8 +209,6 @@ internal fun ListApplicationScreen(
 
     var selectedEblanApplicationInfo by remember { mutableStateOf<EblanApplicationInfo?>(null) }
 
-    val lazyListState = rememberLazyListState()
-
     val eblanUserPageKeys =
         remember(key1 = getEblanApplicationInfosByLabelAndTag.eblanApplicationInfos) {
             getEblanApplicationInfosByLabelAndTag.eblanApplicationInfos.keys.distinctBy { it.eblanUser.serialNumber }
@@ -286,7 +284,6 @@ internal fun ListApplicationScreen(
                 paddingValues = paddingValues,
                 isVisibleOverlay = isVisibleOverlay,
                 showPopupApplicationMenu = showPopupApplicationMenu,
-                lazyListState = lazyListState,
                 swipeY = swipeY,
                 screenHeight = screenHeight,
                 onDismiss = onDismiss,
@@ -424,7 +421,6 @@ private fun EblanApplicationInfosPage(
     paddingValues: PaddingValues,
     showPopupApplicationMenu: Boolean,
     isVisibleOverlay: Boolean,
-    lazyListState: LazyListState,
     swipeY: Float,
     screenHeight: Int,
     onDismiss: () -> Unit,
@@ -449,6 +445,8 @@ private fun EblanApplicationInfosPage(
     val userManager = LocalUserManager.current
 
     val packageManager = LocalPackageManager.current
+
+    val lazyListState = rememberLazyListState()
 
     val eblanUserPageKey =
         getEblanApplicationInfosByLabelAndTag.eblanApplicationInfos.keys.toList().getOrElse(
