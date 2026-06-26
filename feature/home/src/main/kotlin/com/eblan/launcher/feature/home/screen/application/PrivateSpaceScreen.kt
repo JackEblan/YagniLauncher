@@ -44,15 +44,13 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
@@ -72,6 +70,7 @@ import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.addLastModifiedToFileCacheKey
+import coil3.request.crossfade
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.AppDrawerSettings
 import com.eblan.launcher.domain.model.EblanApplicationInfo
@@ -236,9 +235,7 @@ internal fun PrivateSpaceEblanApplicationInfoItem(
     onUpdatePopupMenu: (Boolean) -> Unit,
     onUpdateEblanApplicationInfo: (EblanApplicationInfo) -> Unit,
 ) {
-    var intOffset by remember { mutableStateOf(IntOffset.Zero) }
-
-    var intSize by remember { mutableStateOf(IntSize.Zero) }
+    val context = LocalContext.current
 
     val density = LocalDensity.current
 
@@ -276,6 +273,14 @@ internal fun PrivateSpaceEblanApplicationInfoItem(
     }
 
     val scale = remember { Animatable(1f) }
+
+    var intOffset = remember { IntOffset.Zero }
+
+    var intSize = remember { IntSize.Zero }
+
+    val iconSizePx = with(density) {
+        appDrawerSettings.gridItemSettings.iconSize.dp.roundToPx()
+    }
 
     Column(
         modifier = modifier
@@ -335,9 +340,12 @@ internal fun PrivateSpaceEblanApplicationInfoItem(
         verticalArrangement = verticalArrangement,
     ) {
         AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
+            model = ImageRequest.Builder(context)
                 .data(eblanApplicationInfo.customIcon ?: icon)
-                .addLastModifiedToFileCacheKey(true).build(),
+                .addLastModifiedToFileCacheKey(true)
+                .size(iconSizePx)
+                .crossfade(false)
+                .build(),
             contentDescription = null,
             modifier = Modifier
                 .onGloballyPositioned { layoutCoordinates ->
@@ -347,6 +355,8 @@ internal fun PrivateSpaceEblanApplicationInfoItem(
                 }
                 .size(appDrawerSettings.gridItemSettings.iconSize.dp)
                 .scale(scale.value),
+            placeholder = ColorPainter(Color.Transparent),
+            error = ColorPainter(Color.Transparent),
         )
 
         Spacer(modifier = Modifier.height(10.dp))

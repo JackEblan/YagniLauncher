@@ -49,6 +49,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.compose.ui.graphics.layer.drawLayer
+import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -68,6 +69,7 @@ import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.addLastModifiedToFileCacheKey
+import coil3.request.crossfade
 import com.eblan.launcher.domain.model.AppDrawerSettings
 import com.eblan.launcher.domain.model.AppDrawerType
 import com.eblan.launcher.domain.model.Associate
@@ -170,6 +172,10 @@ internal fun EblanApplicationInfoItem(
 
     var intSize = remember { IntSize.Zero }
 
+    val iconSizePx = with(density) {
+        appDrawerSettings.gridItemSettings.iconSize.dp.roundToPx()
+    }
+
     LaunchedEffect(
         key1 = drag,
         key2 = isLongPress,
@@ -265,6 +271,8 @@ internal fun EblanApplicationInfoItem(
             model = ImageRequest.Builder(context)
                 .data(eblanApplicationInfo.customIcon ?: icon)
                 .addLastModifiedToFileCacheKey(true)
+                .size(iconSizePx)
+                .crossfade(false)
                 .build(),
             contentDescription = null,
             modifier = Modifier.size(appDrawerSettings.gridItemSettings.iconSize.dp)
@@ -298,6 +306,8 @@ internal fun EblanApplicationInfoItem(
                         this
                     }
                 },
+            placeholder = ColorPainter(Color.Transparent),
+            error = ColorPainter(Color.Transparent),
         )
 
         if (appDrawerSettings.gridItemSettings.showLabel) {
