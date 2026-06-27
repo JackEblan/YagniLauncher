@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.Velocity
 
 internal class OffsetNestedScrollConnection(
     private val onVerticalDrag: (Float) -> Unit,
-    private val onDragEnd: (Float) -> Unit,
+    private val onDragEnd: () -> Unit,
 ) : NestedScrollConnection {
     override fun onPostScroll(
         consumed: Offset,
@@ -37,9 +37,7 @@ internal class OffsetNestedScrollConnection(
     }
 
     override suspend fun onPostFling(consumed: Velocity, available: Velocity): Velocity {
-        val remaining = available - consumed
-
-        onDragEnd(remaining.y)
+        onDragEnd()
 
         return super.onPostFling(consumed, available)
     }

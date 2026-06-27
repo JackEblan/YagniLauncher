@@ -112,7 +112,7 @@ internal fun ApplicationScreen(
     swipeY: Float,
     isVisibleOverlay: Boolean,
     onDismiss: () -> Unit,
-    onDragEnd: (Float) -> Unit,
+    onDragEnd: () -> Unit,
     onEditApplicationInfo: (
         serialNumber: Long,
         componentName: String,
@@ -273,7 +273,7 @@ internal fun QuiteModeScreen(
     packageManager: AndroidPackageManagerWrapper,
     userHandle: UserHandle?,
     userManager: AndroidUserManagerWrapper,
-    onDragEnd: (Float) -> Unit,
+    onDragEnd: () -> Unit,
     onUpdateRequestQuietModeEnabled: (Boolean) -> Unit,
     onVerticalDrag: (Float) -> Unit,
 ) {
@@ -284,9 +284,7 @@ internal fun QuiteModeScreen(
                     onVerticalDrag = { _, dragAmount ->
                         onVerticalDrag(dragAmount)
                     },
-                    onDragEnd = {
-                        onDragEnd(0f)
-                    },
+                    onDragEnd = onDragEnd,
                 )
             }
             .fillMaxSize()

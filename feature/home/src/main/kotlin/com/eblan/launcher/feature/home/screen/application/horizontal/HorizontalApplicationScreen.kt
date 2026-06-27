@@ -104,7 +104,7 @@ internal fun HorizontalApplicationScreen(
     swipeY: Float,
     isVisibleOverlay: Boolean,
     onDismiss: () -> Unit,
-    onDragEnd: (Float) -> Unit,
+    onDragEnd: () -> Unit,
     onEditApplicationInfo: (
         serialNumber: Long,
         componentName: String,
@@ -363,7 +363,7 @@ private fun EblanApplicationInfosPage(
     isVisibleOverlay: Boolean,
     isScrollInProgress: Boolean,
     onDismiss: () -> Unit,
-    onDragEnd: (Float) -> Unit,
+    onDragEnd: () -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
@@ -498,7 +498,7 @@ private fun EblanApplicationInfos(
     screenHeight: Int,
     isScrollInProgress: Boolean,
     onDismiss: () -> Unit,
-    onDragEnd: (Float) -> Unit,
+    onDragEnd: () -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
@@ -521,9 +521,7 @@ private fun EblanApplicationInfos(
                     onVerticalDrag = { _, dragAmount ->
                         onVerticalDrag(dragAmount)
                     },
-                    onDragEnd = {
-                        onDragEnd(0f)
-                    },
+                    onDragEnd = onDragEnd,
                 )
             }
             .fillMaxSize(),

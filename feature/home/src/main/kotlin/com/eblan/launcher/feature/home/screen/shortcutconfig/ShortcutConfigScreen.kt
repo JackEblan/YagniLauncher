@@ -135,7 +135,7 @@ internal fun ShortcutConfigScreen(
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
     onVerticalDrag: (Float) -> Unit,
-    onDragEnd: (Float) -> Unit,
+    onDragEnd: () -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
@@ -309,7 +309,7 @@ private fun EblanShortcutConfigsPage(
     gridItemSettings: GridItemSettings,
     index: Int,
     paddingValues: PaddingValues,
-    onDragEnd: (Float) -> Unit,
+    onDragEnd: () -> Unit,
     onUpdateOverlayBounds: (IntOffset, IntSize) -> Unit,
     onVerticalDrag: (Float) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,

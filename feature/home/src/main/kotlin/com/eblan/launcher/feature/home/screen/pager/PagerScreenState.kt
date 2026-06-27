@@ -1271,25 +1271,16 @@ internal class PagerScreenState(
         isCloseFolderGridItemPopup = value
     }
 
-    fun handleOnDragEndApplicationScreen(remaining: Float) {
-        handleApplyFling(
-            offsetY = swipeY,
-            remaining = remaining,
-        )
+    fun handleOnDragEndApplicationScreen() {
+        handleApplyFling(offsetY = swipeY)
     }
 
-    fun handleOnDragEndWidgetScreen(remaining: Float) {
-        handleApplyFling(
-            offsetY = widgetScreenOffsetY,
-            remaining = remaining,
-        )
+    fun handleOnDragEndWidgetScreen() {
+        handleApplyFling(offsetY = widgetScreenOffsetY)
     }
 
-    fun handleOnDragEndShortcutConfigScreen(remaining: Float) {
-        handleApplyFling(
-            offsetY = shortcutConfigScreenOffsetY,
-            remaining = remaining,
-        )
+    fun handleOnDragEndShortcutConfigScreen() {
+        handleApplyFling(offsetY = shortcutConfigScreenOffsetY)
     }
 
     fun handleOnDragEndAppWidgetScreen() {
@@ -1308,18 +1299,9 @@ internal class PagerScreenState(
         }
     }
 
-    private fun handleApplyFling(
-        offsetY: Animatable<Float, AnimationVector1D>,
-        remaining: Float,
-    ) {
+    private fun handleApplyFling(offsetY: Animatable<Float, AnimationVector1D>) {
         scope.launch {
-            if (offsetY.value <= 0f && remaining > 10000f) {
-                offsetY.animateTo(
-                    targetValue = screenHeight.toFloat(),
-                    initialVelocity = remaining,
-                    animationSpec = tween(easing = FastOutSlowInEasing),
-                )
-            } else if (offsetY.value > 200f) {
+            if (offsetY.value > 200f) {
                 offsetY.animateTo(
                     targetValue = screenHeight.toFloat(),
                     animationSpec = tween(easing = FastOutSlowInEasing),
@@ -1327,7 +1309,6 @@ internal class PagerScreenState(
             } else {
                 offsetY.animateTo(
                     targetValue = 0f,
-                    initialVelocity = remaining,
                     animationSpec = spring(
                         dampingRatio = Spring.DampingRatioNoBouncy,
                         stiffness = Spring.StiffnessLow,

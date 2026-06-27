@@ -18,22 +18,32 @@
 package com.eblan.launcher.feature.home.component
 
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.OverscrollEffect
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.layout.Measurable
+import androidx.compose.ui.layout.MeasureResult
+import androidx.compose.ui.layout.MeasureScope
 import androidx.compose.ui.node.DelegatableNode
+import androidx.compose.ui.node.LayoutModifierNode
+import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Velocity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlin.math.abs
+import kotlin.math.roundToInt
 import kotlin.math.sign
 
 internal class OffsetOverscrollEffect(
     private val scope: CoroutineScope,
     private val onVerticalDrag: (Float) -> Unit,
-    private val onDragEnd: (Float) -> Unit,
+    private val onDragEnd: () -> Unit,
 ) : OverscrollEffect {
     private val overscrollOffset = Animatable(0f)
+    private val overscrollBounceOffset = Animatable(0f)
 
     override fun applyToScroll(
         delta: Offset,
@@ -89,16 +99,44 @@ internal class OffsetOverscrollEffect(
         velocity: Velocity,
         performFling: suspend (Velocity) -> Velocity,
     ) {
-        val remaining = velocity - performFling(velocity)
+        if (overscrollOffset.value == 0f) {
+            val remaining = velocity - performFling(velocity)
+
+            overscrollBounceOffset.animateTo(
+                targetValue = 0f,
+                initialVelocity = remaining.y,
+                animationSpec = spring(
+                    dampingRatio = Spring.DampingRatioNoBouncy,
+                    stiffness = Spring.StiffnessLow,
+                ),
+            )
+        }
 
         overscrollOffset.snapTo(0f)
 
-        onDragEnd(remaining.y)
+        onDragEnd()
     }
 
     override val isInProgress: Boolean
-        get() = overscrollOffset.value != 0f
+        get() = overscrollOffset.value != 0f || overscrollBounceOffset.value != 0f
 
-    override val node: DelegatableNode
-        get() = super.node
+    override val node: DelegatableNode =
+        object : Modifier.Node(), LayoutModifierNode {
+            override fun MeasureScope.measure(
+                measurable: Measurable,
+                constraints: Constraints,
+            ): MeasureResult {
+                val placeable = measurable.measure(constraints)
+
+                return layout(
+                    width = placeable.width,
+                    height = placeable.height,
+                ) {
+                    placeable.placeRelativeWithLayer(
+                        x = 0,
+                        y = overscrollBounceOffset.value.roundToInt(),
+                    )
+                }
+            }
+        }
 }
