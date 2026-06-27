@@ -44,8 +44,11 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -274,9 +277,9 @@ internal fun PrivateSpaceEblanApplicationInfoItem(
 
     val scale = remember { Animatable(1f) }
 
-    var intOffset = remember { IntOffset.Zero }
+    var intOffset by remember { mutableStateOf(IntOffset.Zero) }
 
-    var intSize = remember { IntSize.Zero }
+    var intSize by remember { mutableStateOf(IntSize.Zero) }
 
     val iconSizePx = with(density) {
         appDrawerSettings.gridItemSettings.iconSize.dp.roundToPx()

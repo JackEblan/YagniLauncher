@@ -504,9 +504,9 @@ private fun EblanShortcutConfigItem(
 ) {
     val scope = rememberCoroutineScope()
 
-    var intOffset = remember { IntOffset.Zero }
+    var intOffset by remember { mutableStateOf(IntOffset.Zero) }
 
-    var intSize = remember { IntSize.Zero }
+    var intSize by remember { mutableStateOf(IntSize.Zero) }
 
     val graphicsLayer = rememberGraphicsLayer()
 

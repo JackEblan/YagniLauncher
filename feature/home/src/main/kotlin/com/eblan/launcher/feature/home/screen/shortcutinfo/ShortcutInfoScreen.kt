@@ -164,15 +164,15 @@ private fun ShortcutInfoMenuItem(
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
     onDismiss: () -> Unit,
 ) {
-    var intOffset = remember { IntOffset.Zero }
-
-    var intSize = remember { IntSize.Zero }
-
     val graphicsLayer = rememberGraphicsLayer()
 
     val scope = rememberCoroutineScope()
 
     var isLongPress by remember { mutableStateOf(false) }
+
+    var intOffset by remember { mutableStateOf(IntOffset.Zero) }
+
+    var intSize by remember { mutableStateOf(IntSize.Zero) }
 
     ListItem(
         modifier = modifier

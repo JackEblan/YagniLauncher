@@ -168,9 +168,9 @@ internal fun EblanApplicationInfoItem(
 
     val scale = remember { Animatable(1f) }
 
-    var intOffset = remember { IntOffset.Zero }
+    var intOffset by remember { mutableStateOf(IntOffset.Zero) }
 
-    var intSize = remember { IntSize.Zero }
+    var intSize by remember { mutableStateOf(IntSize.Zero) }
 
     val iconSizePx = with(density) {
         appDrawerSettings.gridItemSettings.iconSize.dp.roundToPx()

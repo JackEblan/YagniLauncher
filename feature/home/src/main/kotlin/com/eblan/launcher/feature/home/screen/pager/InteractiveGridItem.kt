@@ -34,10 +34,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -358,9 +361,9 @@ private fun InteractiveApplicationInfoGridItem(
 
     val settings = LocalSettings.current
 
-    var intOffset = remember { IntOffset.Zero }
+    var intOffset by remember { mutableStateOf(IntOffset.Zero) }
 
-    var intSize = remember { IntSize.Zero }
+    var intSize by remember { mutableStateOf(IntSize.Zero) }
 
     val graphicsLayer = rememberGraphicsLayer()
 
@@ -585,10 +588,6 @@ private fun InteractiveWidgetGridItem(
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
-    var intOffset = remember { IntOffset.Zero }
-
-    var intSize = remember { IntSize.Zero }
-
     val appWidgetHost = LocalAppWidgetHost.current
 
     val appWidgetManager = LocalAppWidgetManager.current
@@ -607,6 +606,9 @@ private fun InteractiveWidgetGridItem(
 
     val scale = remember { Animatable(1f) }
 
+    var intOffset by remember { mutableStateOf(IntOffset.Zero) }
+
+    var intSize by remember { mutableStateOf(IntSize.Zero) }
     LaunchedEffect(
         key1 = drag,
         key2 = hasInteraction,
@@ -770,9 +772,9 @@ private fun InteractiveShortcutInfoGridItem(
 
     val context = LocalContext.current
 
-    var intOffset = remember { IntOffset.Zero }
+    var intOffset by remember { mutableStateOf(IntOffset.Zero) }
 
-    var intSize = remember { IntSize.Zero }
+    var intSize by remember { mutableStateOf(IntSize.Zero) }
 
     val graphicsLayer = rememberGraphicsLayer()
 
@@ -1010,9 +1012,9 @@ private fun InteractiveFolderGridItem(
 
     val context = LocalContext.current
 
-    var intOffset = remember { IntOffset.Zero }
+    var intOffset by remember { mutableStateOf(IntOffset.Zero) }
 
-    var intSize = remember { IntSize.Zero }
+    var intSize by remember { mutableStateOf(IntSize.Zero) }
 
     val graphicsLayer = rememberGraphicsLayer()
 
