@@ -109,6 +109,7 @@ internal fun EblanApplicationInfoItem(
     appDrawerType: AppDrawerType,
     swipeY: Float,
     screenHeight: Int,
+    isScrollInProgress: Boolean,
     onDismiss: () -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
@@ -290,7 +291,10 @@ internal fun EblanApplicationInfoItem(
                     intSize = layoutCoordinates.size
                 }
                 .run {
-                    if (!isLongPress && !isVisibleOverlay) {
+                    if (!isScrollInProgress &&
+                        !isLongPress &&
+                        !isVisibleOverlay
+                    ) {
                         with(sharedTransitionScope) {
                             sharedElementWithCallerManagedVisibility(
                                 rememberSharedContentState(

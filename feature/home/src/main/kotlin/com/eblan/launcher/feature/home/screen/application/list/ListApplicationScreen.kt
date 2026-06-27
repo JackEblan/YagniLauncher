@@ -655,7 +655,7 @@ private fun EblanApplicationInfos(
                         items = getEblanApplicationInfosByLabelAndTag.eblanApplicationInfos[eblanUserPageKey].orEmpty(),
                         key = { eblanApplicationInfo -> eblanApplicationInfo.serialNumber to eblanApplicationInfo.componentName },
                     ) { eblanApplicationInfo ->
-                        EblanApplicationInfoItem(
+                        EblanApplicationInfoListItem(
                             sharedTransitionScope = sharedTransitionScope,
                             appDrawerSettings = appDrawerSettings,
                             drag = drag,
@@ -664,6 +664,7 @@ private fun EblanApplicationInfos(
                             isVisibleOverlay = isVisibleOverlay,
                             swipeY = swipeY,
                             screenHeight = screenHeight,
+                            isScrollInProgress = lazyListState.isScrollInProgress,
                             onDismiss = onDismiss,
                             onUpdateGridItemSource = onUpdateGridItemSource,
                             onUpdateImageBitmap = onUpdateImageBitmap,
@@ -699,7 +700,7 @@ private fun EblanApplicationInfos(
                         getEblanApplicationInfosByLabelAndTag.eblanApplicationInfos[eblanUserPageKey].orEmpty(),
                         key = { eblanApplicationInfo -> eblanApplicationInfo.serialNumber to eblanApplicationInfo.componentName },
                     ) { eblanApplicationInfo ->
-                        EblanApplicationInfoItem(
+                        EblanApplicationInfoListItem(
                             sharedTransitionScope = sharedTransitionScope,
                             appDrawerSettings = appDrawerSettings,
                             drag = drag,
@@ -708,6 +709,7 @@ private fun EblanApplicationInfos(
                             isVisibleOverlay = isVisibleOverlay,
                             swipeY = swipeY,
                             screenHeight = screenHeight,
+                            isScrollInProgress = lazyListState.isScrollInProgress,
                             onDismiss = onDismiss,
                             onUpdateGridItemSource = onUpdateGridItemSource,
                             onUpdateImageBitmap = onUpdateImageBitmap,
@@ -743,7 +745,7 @@ private fun EblanApplicationInfos(
     ExperimentalLayoutApi::class,
 )
 @Composable
-private fun EblanApplicationInfoItem(
+private fun EblanApplicationInfoListItem(
     modifier: Modifier = Modifier,
     sharedTransitionScope: SharedTransitionScope,
     appDrawerSettings: AppDrawerSettings,
@@ -753,6 +755,7 @@ private fun EblanApplicationInfoItem(
     isVisibleOverlay: Boolean,
     swipeY: Float,
     screenHeight: Int,
+    isScrollInProgress: Boolean,
     onDismiss: () -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
@@ -923,7 +926,10 @@ private fun EblanApplicationInfoItem(
                     intSize = layoutCoordinates.size
                 }
                 .run {
-                    if (!isLongPress && !isVisibleOverlay) {
+                    if (!isScrollInProgress &&
+                        !isLongPress &&
+                        !isVisibleOverlay
+                    ) {
                         with(sharedTransitionScope) {
                             sharedElementWithCallerManagedVisibility(
                                 rememberSharedContentState(
