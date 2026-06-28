@@ -1147,10 +1147,10 @@ private fun InteractiveNestedFolderGridItem(
                     modifier = Modifier.matchParentSize(),
                     gridItems = data.gridItemsByPage.values.firstOrNull()
                         ?.take(FOLDER_PREVIEW_COLUMNS * FOLDER_PREVIEW_ROWS),
-                    content = { gridItem ->
+                    content = {
                         PreviewNestedFolderGridItem(
                             alpha = alpha,
-                            gridItem = gridItem,
+                            gridItem = it,
                         )
                     },
                 )

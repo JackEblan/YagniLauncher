@@ -344,16 +344,16 @@ private fun PinWidgetScreen(
                 appWidgetManager = appWidgetManager,
                 gridItem = gridItem,
                 userHandle = appWidgetProviderInfo.profile,
-                onAddedToHomeScreenToast = { message ->
+                onAddedToHomeScreenToast = {
                     Toast.makeText(
                         context,
-                        message,
+                        it,
                         Toast.LENGTH_LONG,
                     ).show()
                 },
                 onLaunch = appWidgetLauncher::launch,
-                onUpdateAppWidgetId = { newAppWidgetId ->
-                    appWidgetId = newAppWidgetId
+                onUpdateAppWidgetId = {
+                    appWidgetId = it
                 },
                 onUpdateGridItemCache = onUpdateGridItemCache,
             )

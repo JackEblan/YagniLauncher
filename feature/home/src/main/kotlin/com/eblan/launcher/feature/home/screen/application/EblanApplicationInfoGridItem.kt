@@ -98,7 +98,7 @@ import kotlin.uuid.Uuid
     ExperimentalLayoutApi::class,
 )
 @Composable
-internal fun EblanApplicationInfoItem(
+internal fun EblanApplicationInfoGridItem(
     modifier: Modifier = Modifier,
     sharedTransitionScope: SharedTransitionScope,
     appDrawerSettings: AppDrawerSettings,
@@ -191,8 +191,8 @@ internal fun EblanApplicationInfoItem(
             onDismiss = onDismiss,
             onUpdateGridItemSource = onUpdateGridItemSource,
             onUpdateIsDragging = onUpdateIsDragging,
-            onUpdateIsLongPress = { newIsLongPress ->
-                isLongPress = newIsLongPress
+            onUpdateIsLongPress = {
+                isLongPress = it
             },
             onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
             onUpdatePopupMenu = onUpdatePopupMenu,

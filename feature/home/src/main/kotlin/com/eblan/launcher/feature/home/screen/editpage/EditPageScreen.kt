@@ -217,9 +217,9 @@ internal fun EditPageScreen(
                             columns = columns,
                             gridItems = pageItem.gridItems,
                             rows = rows,
-                            content = { gridItem ->
+                            content = {
                                 GridItemContent(
-                                    gridItem = gridItem,
+                                    gridItem = it,
                                     gridItemSettings = homeSettings.gridItemSettings,
                                     hasShortcutHostPermission = hasShortcutHostPermission,
                                     statusBarNotifications = emptyMap(),

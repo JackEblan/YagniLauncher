@@ -157,8 +157,8 @@ private fun Success(
                 checked = homeSettings.infiniteScroll,
                 title = stringResource(R.string.infinite_scrolling),
                 subtitle = stringResource(R.string.seamless_loop_page_scroll),
-                onCheckedChange = { infiniteScroll ->
-                    onUpdateHomeSettings(homeSettings.copy(infiniteScroll = infiniteScroll))
+                onCheckedChange = {
+                    onUpdateHomeSettings(homeSettings.copy(infiniteScroll = it))
                 },
             )
 
@@ -168,8 +168,8 @@ private fun Success(
                 checked = homeSettings.wallpaperScroll,
                 title = stringResource(R.string.wallpaper_scrolling),
                 subtitle = stringResource(R.string.scroll_wallpaper_across_pages),
-                onCheckedChange = { wallpaperScroll ->
-                    onUpdateHomeSettings(homeSettings.copy(wallpaperScroll = wallpaperScroll))
+                onCheckedChange = {
+                    onUpdateHomeSettings(homeSettings.copy(wallpaperScroll = it))
                 },
             )
 
@@ -179,8 +179,8 @@ private fun Success(
                 checked = homeSettings.lockScreenOrientation,
                 title = stringResource(R.string.lock_screen_orientation),
                 subtitle = stringResource(R.string.prevent_rotation_when_device_orientation_changes),
-                onCheckedChange = { lockScreenOrientation ->
-                    onUpdateHomeSettings(homeSettings.copy(lockScreenOrientation = lockScreenOrientation))
+                onCheckedChange = {
+                    onUpdateHomeSettings(homeSettings.copy(lockScreenOrientation = it))
                 },
             )
 
@@ -190,8 +190,8 @@ private fun Success(
                 checked = homeSettings.addNewAppsToHomeScreen,
                 title = stringResource(R.string.add_new_apps),
                 subtitle = stringResource(R.string.add_new_apps_to_home_screen),
-                onCheckedChange = { addNewAppsToHomeScreen ->
-                    onUpdateHomeSettings(homeSettings.copy(addNewAppsToHomeScreen = addNewAppsToHomeScreen))
+                onCheckedChange = {
+                    onUpdateHomeSettings(homeSettings.copy(addNewAppsToHomeScreen = it))
                 },
             )
         }
@@ -231,8 +231,8 @@ private fun Success(
                 checked = homeSettings.dockInfiniteScroll,
                 title = stringResource(R.string.dock_infinite_scroll),
                 subtitle = stringResource(R.string.seamless_loop_page_scroll),
-                onCheckedChange = { dockInfiniteScroll ->
-                    onUpdateHomeSettings(homeSettings.copy(dockInfiniteScroll = dockInfiniteScroll))
+                onCheckedChange = {
+                    onUpdateHomeSettings(homeSettings.copy(dockInfiniteScroll = it))
                 },
             )
         }
@@ -269,8 +269,8 @@ private fun Success(
 
         GridItemSettings(
             gridItemSettings = homeSettings.gridItemSettings,
-            onUpdateGridItemSettings = { gridItemSettings ->
-                onUpdateHomeSettings(homeSettings.copy(gridItemSettings = gridItemSettings))
+            onUpdateGridItemSettings = {
+                onUpdateHomeSettings(homeSettings.copy(gridItemSettings = it))
             },
         )
     }
@@ -301,10 +301,10 @@ private fun Success(
             onDismissRequest = {
                 showDockHeightDialog = false
             },
-            onUpdateDockHeight = { dockHeight ->
+            onUpdateDockHeight = {
                 onUpdateHomeSettings(
                     homeSettings.copy(
-                        dockHeight = dockHeight,
+                        dockHeight = it,
                     ),
                 )
 

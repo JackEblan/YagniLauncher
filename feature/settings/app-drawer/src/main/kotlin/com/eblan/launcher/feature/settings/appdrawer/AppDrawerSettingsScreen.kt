@@ -213,16 +213,16 @@ private fun Success(
                 checked = appDrawerSettings.excludeTaggedApps,
                 title = stringResource(R.string.exclude_tagged_apps),
                 subtitle = stringResource(R.string.hide_apps_marked_with_selected_tags),
-                onCheckedChange = { excludeTaggedApps ->
-                    onUpdateAppDrawerSettings(appDrawerSettings.copy(excludeTaggedApps = excludeTaggedApps))
+                onCheckedChange = {
+                    onUpdateAppDrawerSettings(appDrawerSettings.copy(excludeTaggedApps = it))
                 },
             )
         }
 
         GridItemSettings(
             gridItemSettings = appDrawerSettings.gridItemSettings,
-            onUpdateGridItemSettings = { gridItemSettings ->
-                onUpdateAppDrawerSettings(appDrawerSettings.copy(gridItemSettings = gridItemSettings))
+            onUpdateGridItemSettings = {
+                onUpdateAppDrawerSettings(appDrawerSettings.copy(gridItemSettings = it))
             },
         )
     }
@@ -238,8 +238,8 @@ private fun Success(
             onDismissRequest = {
                 showAppDrawerTypeDialog = false
             },
-            onUpdateClick = { appDrawerType ->
-                onUpdateAppDrawerSettings(appDrawerSettings.copy(appDrawerType = appDrawerType))
+            onUpdateClick = {
+                onUpdateAppDrawerSettings(appDrawerSettings.copy(appDrawerType = it))
 
                 showAppDrawerTypeDialog = false
             },

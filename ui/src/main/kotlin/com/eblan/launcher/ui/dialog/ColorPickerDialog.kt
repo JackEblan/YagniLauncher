@@ -206,10 +206,10 @@ private fun SaturationValueCanvas(
             modifier = Modifier
                 .pointerInput(key1 = Unit) {
                     detectTapGestures(
-                        onTap = { offset ->
-                            onSaturationSelected((offset.x / size.width).coerceIn(0f, 1f))
+                        onTap = {
+                            onSaturationSelected((it.x / size.width).coerceIn(0f, 1f))
 
-                            onValueSelected(1f - (offset.y / size.height).coerceIn(0f, 1f))
+                            onValueSelected(1f - (it.y / size.height).coerceIn(0f, 1f))
                         },
                     )
                 }
@@ -272,8 +272,8 @@ private fun HueCanvas(
         modifier = modifier
             .pointerInput(key1 = Unit) {
                 detectTapGestures(
-                    onTap = { offset ->
-                        onHueSelected((offset.x / size.width).coerceIn(0f, 1f) * 360f)
+                    onTap = {
+                        onHueSelected((it.x / size.width).coerceIn(0f, 1f) * 360f)
                     },
                 )
             }

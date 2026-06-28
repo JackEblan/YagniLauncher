@@ -200,8 +200,8 @@ private fun Success(
                     checked = generalSettings.dynamicTheme,
                     title = stringResource(R.string.dynamic_theme),
                     subtitle = stringResource(R.string.adapt_colors_to_your_wallpaper_automatically),
-                    onCheckedChange = { dynamicTheme ->
-                        onUpdateGeneralSettings(generalSettings.copy(dynamicTheme = dynamicTheme))
+                    onCheckedChange = {
+                        onUpdateGeneralSettings(generalSettings.copy(dynamicTheme = it))
                     },
                 )
 
@@ -235,8 +235,8 @@ private fun Success(
             onDismissRequest = {
                 showDarkThemeConfigDialog = false
             },
-            onUpdateClick = { darkThemeConfig ->
-                onUpdateGeneralSettings(generalSettings.copy(theme = darkThemeConfig))
+            onUpdateClick = {
+                onUpdateGeneralSettings(generalSettings.copy(theme = it))
 
                 showDarkThemeConfigDialog = false
             },
@@ -279,8 +279,8 @@ private fun Success(
 
                 selectIconPackDialog = false
             },
-            onUpdateIconPackInfoPackageName = { iconPackInfoPackageName ->
-                onUpdateGeneralSettings(generalSettings.copy(iconPackInfoPackageName = iconPackInfoPackageName))
+            onUpdateIconPackInfoPackageName = {
+                onUpdateGeneralSettings(generalSettings.copy(iconPackInfoPackageName = it))
 
                 selectIconPackDialog = false
             },

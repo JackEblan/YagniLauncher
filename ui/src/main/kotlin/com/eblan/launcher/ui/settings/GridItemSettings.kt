@@ -159,8 +159,8 @@ fun GridItemSettings(
                 checked = gridItemSettings.showLabel,
                 title = stringResource(R.string.show_label),
                 subtitle = stringResource(R.string.display_app_names_below_icons),
-                onCheckedChange = { showLabel ->
-                    onUpdateGridItemSettings(gridItemSettings.copy(showLabel = showLabel))
+                onCheckedChange = {
+                    onUpdateGridItemSettings(gridItemSettings.copy(showLabel = it))
                 },
             )
 
@@ -170,8 +170,8 @@ fun GridItemSettings(
                 checked = gridItemSettings.singleLineLabel,
                 title = stringResource(R.string.single_line_label),
                 subtitle = stringResource(R.string.limit_app_names_to_one_line),
-                onCheckedChange = { singleLineLabel ->
-                    onUpdateGridItemSettings(gridItemSettings.copy(singleLineLabel = singleLineLabel))
+                onCheckedChange = {
+                    onUpdateGridItemSettings(gridItemSettings.copy(singleLineLabel = it))
                 },
             )
 
@@ -206,10 +206,10 @@ fun GridItemSettings(
             onDismissRequest = {
                 showIconSizeDialog = false
             },
-            onUpdateIconSize = { iconSize ->
+            onUpdateIconSize = {
                 onUpdateGridItemSettings(
                     gridItemSettings.copy(
-                        iconSize = iconSize,
+                        iconSize = it,
                     ),
                 )
 
@@ -245,10 +245,10 @@ fun GridItemSettings(
             onDismissRequest = {
                 showTextSizeDialog = false
             },
-            onUpdateTextSize = { textSize ->
+            onUpdateTextSize = {
                 onUpdateGridItemSettings(
                     gridItemSettings.copy(
-                        textSize = textSize,
+                        textSize = it,
                     ),
                 )
 
@@ -264,8 +264,8 @@ fun GridItemSettings(
             onDismissRequest = {
                 showBackgroundColorDialog = false
             },
-            onSelectColor = { newCustomColor ->
-                onUpdateGridItemSettings(gridItemSettings.copy(customBackgroundColor = newCustomColor))
+            onSelectColor = {
+                onUpdateGridItemSettings(gridItemSettings.copy(customBackgroundColor = it))
 
                 showBackgroundColorDialog = false
             },
@@ -278,10 +278,10 @@ fun GridItemSettings(
             onDismissRequest = {
                 showPaddingDialog = false
             },
-            onUpdatePadding = { padding ->
+            onUpdatePadding = {
                 onUpdateGridItemSettings(
                     gridItemSettings.copy(
-                        padding = padding,
+                        padding = it,
                     ),
                 )
 
@@ -296,10 +296,10 @@ fun GridItemSettings(
             onDismissRequest = {
                 showCornerRadiusDialog = false
             },
-            onUpdateCornerRadius = { cornerRadius ->
+            onUpdateCornerRadius = {
                 onUpdateGridItemSettings(
                     gridItemSettings.copy(
-                        cornerRadius = cornerRadius,
+                        cornerRadius = it,
                     ),
                 )
 
@@ -319,8 +319,8 @@ fun GridItemSettings(
             onDismissRequest = {
                 showHorizontalAlignment = false
             },
-            onUpdateClick = { horizontalAlignment ->
-                onUpdateGridItemSettings(gridItemSettings.copy(horizontalAlignment = horizontalAlignment))
+            onUpdateClick = {
+                onUpdateGridItemSettings(gridItemSettings.copy(horizontalAlignment = it))
 
                 showHorizontalAlignment = false
             },
@@ -338,8 +338,8 @@ fun GridItemSettings(
             onDismissRequest = {
                 showVerticalArrangement = false
             },
-            onUpdateClick = { verticalArrangement ->
-                onUpdateGridItemSettings(gridItemSettings.copy(verticalArrangement = verticalArrangement))
+            onUpdateClick = {
+                onUpdateGridItemSettings(gridItemSettings.copy(verticalArrangement = it))
 
                 showVerticalArrangement = false
             },

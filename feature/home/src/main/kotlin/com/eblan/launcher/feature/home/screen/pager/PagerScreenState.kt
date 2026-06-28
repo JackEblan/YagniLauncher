@@ -1346,10 +1346,10 @@ internal class PagerScreenState(
                     it.lastSwipeDownY,
                 )
             },
-            restore = { saved ->
+            restore = {
                 PagerScreenState(
-                    initialSwipeUpY = saved[0],
-                    initialSwipeDownY = saved[1],
+                    initialSwipeUpY = it[0],
+                    initialSwipeDownY = it[1],
                     screenWidth = screenWidth,
                     screenHeight = screenHeight,
                     fileManager = fileManager,

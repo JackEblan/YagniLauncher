@@ -243,8 +243,8 @@ private fun Success(
         VerticalSlideReveal(visible = gridItem.override) {
             GridItemSettings(
                 gridItemSettings = gridItem.gridItemSettings,
-                onUpdateGridItemSettings = { gridItemSettings ->
-                    onUpdateGridItem(gridItem.copy(gridItemSettings = gridItemSettings))
+                onUpdateGridItemSettings = {
+                    onUpdateGridItem(gridItem.copy(gridItemSettings = it))
                 },
             )
         }
@@ -260,14 +260,14 @@ private fun Success(
             swipeUp = gridItem.swipeUp,
             swipeDown = gridItem.swipeDown,
             eblanApplicationInfos = eblanApplicationInfos,
-            onUpdateDoubleTap = { doubleTap ->
-                onUpdateGridItem(gridItem.copy(doubleTap = doubleTap))
+            onUpdateDoubleTap = {
+                onUpdateGridItem(gridItem.copy(doubleTap = it))
             },
-            onUpdateSwipeUp = { swipeUp ->
-                onUpdateGridItem(gridItem.copy(swipeUp = swipeUp))
+            onUpdateSwipeUp = {
+                onUpdateGridItem(gridItem.copy(swipeUp = it))
             },
-            onUpdateSwipeDown = { swipeDown ->
-                onUpdateGridItem(gridItem.copy(swipeDown = swipeDown))
+            onUpdateSwipeDown = {
+                onUpdateGridItem(gridItem.copy(swipeDown = it))
             },
         )
     }
@@ -305,8 +305,8 @@ private fun EditApplicationInfo(
 
             onUpdateIconPackInfoPackageName(packageName)
         },
-        onUpdateUri = { uri ->
-            val newData = data.copy(customIcon = uri)
+        onUpdateUri = {
+            val newData = data.copy(customIcon = it)
 
             onUpdateGridItem(gridItem.copy(data = newData))
         },
@@ -347,11 +347,11 @@ private fun EditApplicationInfo(
 
                 showCustomIconDialog = false
             },
-            onUpdateIcon = { icon ->
+            onUpdateIcon = {
                 onUpdateGridItem(
                     getGridItem(
                         gridItem = gridItem,
-                        customIcon = icon,
+                        customIcon = it,
                     ),
                 )
             },
@@ -403,8 +403,8 @@ private fun EditFolder(
 
             onUpdateIconPackInfoPackageName(packageName)
         },
-        onUpdateUri = { uri ->
-            val newData = data.copy(icon = uri)
+        onUpdateUri = {
+            val newData = data.copy(icon = it)
 
             onUpdateGridItem(gridItem.copy(data = newData))
         },
@@ -445,11 +445,11 @@ private fun EditFolder(
 
                 showCustomIconDialog = false
             },
-            onUpdateIcon = { icon ->
+            onUpdateIcon = {
                 onUpdateGridItem(
                     getGridItem(
                         gridItem = gridItem,
-                        customIcon = icon,
+                        customIcon = it,
                     ),
                 )
             },
@@ -501,8 +501,8 @@ private fun EditShortcutInfo(
 
             onUpdateIconPackInfoPackageName(packageName)
         },
-        onUpdateUri = { uri ->
-            val newData = data.copy(customIcon = uri)
+        onUpdateUri = {
+            val newData = data.copy(customIcon = it)
 
             onUpdateGridItem(gridItem.copy(data = newData))
         },
@@ -543,11 +543,11 @@ private fun EditShortcutInfo(
 
                 showCustomIconDialog = false
             },
-            onUpdateIcon = { icon ->
+            onUpdateIcon = {
                 onUpdateGridItem(
                     getGridItem(
                         gridItem = gridItem,
-                        customIcon = icon,
+                        customIcon = it,
                     ),
                 )
             },
@@ -599,8 +599,8 @@ private fun EditShortcutConfig(
 
             onUpdateIconPackInfoPackageName(packageName)
         },
-        onUpdateUri = { uri ->
-            val newData = data.copy(customIcon = uri)
+        onUpdateUri = {
+            val newData = data.copy(customIcon = it)
 
             onUpdateGridItem(gridItem.copy(data = newData))
         },
@@ -641,11 +641,11 @@ private fun EditShortcutConfig(
 
                 showCustomIconDialog = false
             },
-            onUpdateIcon = { icon ->
+            onUpdateIcon = {
                 onUpdateGridItem(
                     getGridItem(
                         gridItem = gridItem,
-                        customIcon = icon,
+                        customIcon = it,
                     ),
                 )
             },

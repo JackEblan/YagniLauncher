@@ -669,9 +669,9 @@ private fun InteractiveWidgetGridItem(
                     )
                 },
                 modifier = commonModifier,
-                update = { view ->
+                update = {
                     if (!isVisibleOverlay) {
-                        view.setOnLongClickListener {
+                        it.setOnLongClickListener {
                             scope.launch {
                                 onLongPress(
                                     graphicsLayer = graphicsLayer,
@@ -1207,10 +1207,10 @@ private fun InteractiveFolderGridItem(
                     modifier = Modifier.matchParentSize(),
                     gridItems = data.gridItemsByPage.values.firstOrNull()
                         ?.take(FOLDER_PREVIEW_COLUMNS * FOLDER_PREVIEW_ROWS),
-                    content = { gridItem ->
+                    content = {
                         PreviewFolderGridItem(
                             sharedTransitionScope = sharedTransitionScope,
-                            gridItem = gridItem,
+                            gridItem = it,
                             isScrollInProgress = isScrollInProgress,
                             isVisibleOverlay = isVisibleOverlay,
                             parent = sharedElementKey.parent,

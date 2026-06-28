@@ -288,8 +288,8 @@ private fun FolderGridItemPopupContent(
                         hasShortcutHostPermission = hasShortcutHostPermission,
                         icon = data.icon,
                         isVisibleOverlay = isVisibleOverlay,
-                        onUpdateIsDragging = { isDragging ->
-                            onUpdateIsDragging(isDragging)
+                        onUpdateIsDragging = {
+                            onUpdateIsDragging(it)
 
                             onDismissRequest()
 

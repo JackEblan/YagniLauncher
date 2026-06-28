@@ -143,8 +143,8 @@ private fun Success(
                 checked = experimentalSettings.lockMovement,
                 title = stringResource(R.string.lock_movement),
                 subtitle = stringResource(R.string.prevent_other_grid_items_from_moving),
-                onCheckedChange = { lockMovement ->
-                    onUpdateExperimentalSettings(experimentalSettings.copy(lockMovement = lockMovement))
+                onCheckedChange = {
+                    onUpdateExperimentalSettings(experimentalSettings.copy(lockMovement = it))
                 },
             )
         }
@@ -153,8 +153,8 @@ private fun Success(
     if (showSyncDataDialog) {
         SyncDataDialog(syncData = experimentalSettings.syncData, onDismissRequest = {
             showSyncDataDialog = false
-        }, onUpdateSyncData = { newSyncData ->
-            onUpdateExperimentalSettings(experimentalSettings.copy(syncData = newSyncData))
+        }, onUpdateSyncData = {
+            onUpdateExperimentalSettings(experimentalSettings.copy(syncData = it))
         })
     }
 }

@@ -270,8 +270,8 @@ private fun GridItemPopupContent(
 
                             onDismissRequest()
                         },
-                        onUpdateIsDragging = { isDragging ->
-                            onUpdateIsDragging(isDragging)
+                        onUpdateIsDragging = {
+                            onUpdateIsDragging(it)
 
                             onDismissRequest()
                         },

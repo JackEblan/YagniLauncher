@@ -163,8 +163,8 @@ internal fun ScrollBarThumb(
                                     deltaY = dragAmount.y,
                                     scope = scope,
                                     onScrollToItem = onScrollToItem,
-                                    onUpdateThumbY = { newThumbY ->
-                                        thumbY = newThumbY
+                                    onUpdateThumbY = {
+                                        thumbY = it
                                     },
                                 )
                             },

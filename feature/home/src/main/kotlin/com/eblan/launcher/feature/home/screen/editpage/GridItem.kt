@@ -333,9 +333,9 @@ private fun FolderGridItem(
                     modifier = Modifier.matchParentSize(),
                     gridItems = data.gridItemsByPage.values.firstOrNull()
                         ?.take(FOLDER_PREVIEW_COLUMNS * FOLDER_PREVIEW_ROWS),
-                    content = { gridItem ->
+                    content = {
                         PreviewFolderGridItemContent(
-                            gridItem = gridItem,
+                            gridItem = it,
                             textColor = textColor,
                         )
                     },

@@ -74,7 +74,7 @@ import com.eblan.launcher.feature.home.model.SharedElementKey
 import com.eblan.launcher.feature.home.screen.application.ApplicationInfoPopup
 import com.eblan.launcher.feature.home.screen.application.ApplicationScreenEffect
 import com.eblan.launcher.feature.home.screen.application.ApplicationSearchBarWithoutMenu
-import com.eblan.launcher.feature.home.screen.application.EblanApplicationInfoItem
+import com.eblan.launcher.feature.home.screen.application.EblanApplicationInfoGridItem
 import com.eblan.launcher.feature.home.screen.application.EblanApplicationInfoTabRow
 import com.eblan.launcher.feature.home.screen.application.PrivateApplicationInfoPopup
 import com.eblan.launcher.feature.home.screen.application.PrivateSpaceEblanApplicationInfoItem
@@ -176,8 +176,8 @@ internal fun HorizontalApplicationScreen(
         onDismiss = onDismiss,
         onGetEblanApplicationInfosByLabel = onGetEblanApplicationInfosByLabel,
         onGetEblanApplicationInfosByTagId = onGetEblanApplicationInfosByTagId,
-        onShowPopupApplicationMenu = { newShowPopupApplicationMenu ->
-            showPopupApplicationMenu = newShowPopupApplicationMenu
+        onShowPopupApplicationMenu = {
+            showPopupApplicationMenu = it
         },
     )
 
@@ -197,8 +197,8 @@ internal fun HorizontalApplicationScreen(
                     TagElevatedFilterChip(
                         eblanApplicationInfoTag = eblanApplicationInfoTag,
                         selectedEblanApplicationInfoTag = selectedEblanApplicationInfoTagId,
-                        onUpdateEblanApplicationInfoTag = { newEblanApplicationInfoTagId ->
-                            selectedEblanApplicationInfoTagId = newEblanApplicationInfoTagId
+                        onUpdateEblanApplicationInfoTag = {
+                            selectedEblanApplicationInfoTagId = it
                         },
                     )
                 }
@@ -243,16 +243,16 @@ internal fun HorizontalApplicationScreen(
 
                     popupIntSize = intSize
                 },
-                onUpdatePopupMenu = { newShowPopupApplicationMenu ->
-                    showPopupApplicationMenu = newShowPopupApplicationMenu
+                onUpdatePopupMenu = {
+                    showPopupApplicationMenu = it
                 },
-                onUpdatePrivatePopupMenu = { newShowPrivatePopupApplicationMenu ->
-                    showPrivatePopupApplicationMenu = newShowPrivatePopupApplicationMenu
+                onUpdatePrivatePopupMenu = {
+                    showPrivatePopupApplicationMenu = it
                 },
                 onUpdateSharedElementKey = onUpdateSharedElementKey,
                 onVerticalDrag = onVerticalDrag,
-                onUpdateEblanApplicationInfo = { eblanApplicationInfo ->
-                    selectedEblanApplicationInfo = eblanApplicationInfo
+                onUpdateEblanApplicationInfo = {
+                    selectedEblanApplicationInfo = it
                 },
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                 onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
@@ -274,12 +274,12 @@ internal fun HorizontalApplicationScreen(
             onDismissRequest = {
                 showPopupApplicationMenu = false
             },
-            onUpdateIsDragging = { isDragging ->
+            onUpdateIsDragging = {
                 showPopupApplicationMenu = false
 
                 onDismiss()
 
-                onUpdateIsDragging(isDragging)
+                onUpdateIsDragging(it)
             },
             onEditApplicationInfo = onEditApplicationInfo,
             onTapShortcutInfo = { serialNumber, packageName, shortcutId ->
@@ -422,8 +422,8 @@ private fun EblanApplicationInfosPage(
                 userHandle = userHandle,
                 userManager = userManager,
                 onDragEnd = onDragEnd,
-                onUpdateRequestQuietModeEnabled = { newIsQuietModeEnabled ->
-                    isQuietModeEnabled = newIsQuietModeEnabled
+                onUpdateRequestQuietModeEnabled = {
+                    isQuietModeEnabled = it
                 },
                 onVerticalDrag = onVerticalDrag,
             )
@@ -528,17 +528,17 @@ private fun EblanApplicationInfos(
         columns = appDrawerSettings.horizontalAppDrawerColumns,
         eblanApplicationInfos = getEblanApplicationInfosByLabelAndTag.eblanApplicationInfos[eblanUserPageKey],
         rows = appDrawerSettings.horizontalAppDrawerRows,
-        content = { eblanApplicationInfo ->
+        content = {
             when (eblanUserPageKey.eblanUser.eblanUserType) {
                 EblanUserType.Personal,
                 EblanUserType.Clone,
                 EblanUserType.Work,
                 -> {
-                    EblanApplicationInfoItem(
+                    EblanApplicationInfoGridItem(
                         sharedTransitionScope = sharedTransitionScope,
                         appDrawerSettings = appDrawerSettings,
                         drag = drag,
-                        eblanApplicationInfo = eblanApplicationInfo,
+                        eblanApplicationInfo = it,
                         paddingValues = paddingValues,
                         isVisibleOverlay = isVisibleOverlay,
                         appDrawerType = appDrawerSettings.appDrawerType,
@@ -561,7 +561,7 @@ private fun EblanApplicationInfos(
                 EblanUserType.Private -> {
                     PrivateSpaceEblanApplicationInfoItem(
                         appDrawerSettings = appDrawerSettings,
-                        eblanApplicationInfo = eblanApplicationInfo,
+                        eblanApplicationInfo = it,
                         paddingValues = paddingValues,
                         isVisibleOverlay = isVisibleOverlay,
                         onUpdateOverlayBounds = onUpdateOverlayBounds,

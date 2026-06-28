@@ -105,8 +105,8 @@ fun EblanActionSettings(
             title = stringResource(R.string.double_tap),
             eblanAction = doubleTap,
             eblanApplicationInfos = eblanApplicationInfos,
-            onSelectEblanAction = { newEblanAction ->
-                onUpdateDoubleTap(newEblanAction)
+            onSelectEblanAction = {
+                onUpdateDoubleTap(it)
 
                 showDoubleTapDialog = false
             },
@@ -121,8 +121,8 @@ fun EblanActionSettings(
             title = stringResource(R.string.swipe_up),
             eblanAction = swipeUp,
             eblanApplicationInfos = eblanApplicationInfos,
-            onSelectEblanAction = { newEblanAction ->
-                onUpdateSwipeUp(newEblanAction)
+            onSelectEblanAction = {
+                onUpdateSwipeUp(it)
 
                 showSwipeUpDialog = false
             },
@@ -137,8 +137,8 @@ fun EblanActionSettings(
             title = stringResource(R.string.swipe_down),
             eblanAction = swipeDown,
             eblanApplicationInfos = eblanApplicationInfos,
-            onSelectEblanAction = { newEblanAction ->
-                onUpdateSwipeDown(newEblanAction)
+            onSelectEblanAction = {
+                onUpdateSwipeDown(it)
 
                 showSwipeDownDialog = false
             },

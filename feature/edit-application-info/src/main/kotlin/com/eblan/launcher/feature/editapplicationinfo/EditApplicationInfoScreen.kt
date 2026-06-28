@@ -246,8 +246,8 @@ private fun Success(
             checked = eblanApplicationInfo.isHidden,
             title = stringResource(R.string.hide_from_drawer),
             subtitle = stringResource(R.string.view_hidden_apps_in_app_drawer_settings),
-            onCheckedChange = { isHidden ->
-                onUpdateEblanApplicationInfo(eblanApplicationInfo.copy(isHidden = isHidden))
+            onCheckedChange = {
+                onUpdateEblanApplicationInfo(eblanApplicationInfo.copy(isHidden = it))
             },
         )
 
@@ -262,8 +262,8 @@ private fun Success(
 
                     showCustomIconDialog = false
                 },
-                onUpdateIcon = { icon ->
-                    onUpdateEblanApplicationInfo(eblanApplicationInfo.copy(customIcon = icon))
+                onUpdateIcon = {
+                    onUpdateEblanApplicationInfo(eblanApplicationInfo.copy(customIcon = it))
                 },
                 onSearchIconPackInfoComponent = onSearchIconPackInfoComponent,
             )

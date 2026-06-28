@@ -227,8 +227,8 @@ internal fun ListApplicationScreen(
         onDismiss = onDismiss,
         onGetEblanApplicationInfosByLabel = onGetEblanApplicationInfosByLabel,
         onGetEblanApplicationInfosByTagId = onGetEblanApplicationInfosByTagId,
-        onShowPopupApplicationMenu = { newShowPopupApplicationMenu ->
-            showPopupApplicationMenu = newShowPopupApplicationMenu
+        onShowPopupApplicationMenu = {
+            showPopupApplicationMenu = it
         },
     )
 
@@ -248,12 +248,12 @@ internal fun ListApplicationScreen(
 
         if (eblanApplicationInfoTags.isNotEmpty()) {
             LazyRow(modifier = Modifier.fillMaxWidth()) {
-                items(eblanApplicationInfoTags) { eblanApplicationInfoTag ->
+                items(eblanApplicationInfoTags) {
                     TagElevatedFilterChip(
-                        eblanApplicationInfoTag = eblanApplicationInfoTag,
+                        eblanApplicationInfoTag = it,
                         selectedEblanApplicationInfoTag = selectedEblanApplicationInfoTagId,
-                        onUpdateEblanApplicationInfoTag = { newEblanApplicationInfoTagId ->
-                            selectedEblanApplicationInfoTagId = newEblanApplicationInfoTagId
+                        onUpdateEblanApplicationInfoTag = {
+                            selectedEblanApplicationInfoTagId = it
                         },
                     )
                 }
@@ -304,16 +304,16 @@ internal fun ListApplicationScreen(
 
                     popupIntSize = intSize
                 },
-                onUpdatePopupMenu = { newShowPopupApplicationMenu ->
-                    showPopupApplicationMenu = newShowPopupApplicationMenu
+                onUpdatePopupMenu = {
+                    showPopupApplicationMenu = it
                 },
-                onUpdatePrivatePopupMenu = { newShowPrivatePopupApplicationMenu ->
-                    showPrivatePopupApplicationMenu = newShowPrivatePopupApplicationMenu
+                onUpdatePrivatePopupMenu = {
+                    showPrivatePopupApplicationMenu = it
                 },
                 onUpdateSharedElementKey = onUpdateSharedElementKey,
                 onVerticalDrag = onVerticalDrag,
-                onUpdateEblanApplicationInfo = { eblanApplicationInfo ->
-                    selectedEblanApplicationInfo = eblanApplicationInfo
+                onUpdateEblanApplicationInfo = {
+                    selectedEblanApplicationInfo = it
                 },
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                 onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
@@ -335,12 +335,12 @@ internal fun ListApplicationScreen(
             onDismissRequest = {
                 showPopupApplicationMenu = false
             },
-            onUpdateIsDragging = { isDragging ->
+            onUpdateIsDragging = {
                 showPopupApplicationMenu = false
 
                 onDismiss()
 
-                onUpdateIsDragging(isDragging)
+                onUpdateIsDragging(it)
             },
             onEditApplicationInfo = onEditApplicationInfo,
             onTapShortcutInfo = { serialNumber, packageName, shortcutId ->
@@ -489,8 +489,8 @@ private fun EblanApplicationInfosPage(
                 userHandle = userHandle,
                 userManager = userManager,
                 onDragEnd = onDragEnd,
-                onUpdateRequestQuietModeEnabled = { newIsQuietModeEnabled ->
-                    isQuietModeEnabled = newIsQuietModeEnabled
+                onUpdateRequestQuietModeEnabled = {
+                    isQuietModeEnabled = it
                 },
                 onVerticalDrag = onVerticalDrag,
             )
@@ -653,13 +653,13 @@ private fun EblanApplicationInfos(
                 EblanUserType.Personal -> {
                     items(
                         items = getEblanApplicationInfosByLabelAndTag.eblanApplicationInfos[eblanUserPageKey].orEmpty(),
-                        key = { eblanApplicationInfo -> eblanApplicationInfo.serialNumber to eblanApplicationInfo.componentName },
-                    ) { eblanApplicationInfo ->
+                        key = { it.serialNumber to it.componentName },
+                    ) {
                         EblanApplicationInfoListItem(
                             sharedTransitionScope = sharedTransitionScope,
                             appDrawerSettings = appDrawerSettings,
                             drag = drag,
-                            eblanApplicationInfo = eblanApplicationInfo,
+                            eblanApplicationInfo = it,
                             paddingValues = paddingValues,
                             isVisibleOverlay = isVisibleOverlay,
                             swipeY = swipeY,
@@ -686,8 +686,8 @@ private fun EblanApplicationInfos(
                         privateEblanApplicationInfos = getEblanApplicationInfosByLabelAndTag.privateEblanApplicationInfos,
                         privateEblanUser = getEblanApplicationInfosByLabelAndTag.privateEblanUser,
                         isVisibleOverlay = isVisibleOverlay,
-                        onUpdateIsQuietModeEnabled = { newIsQuiteModeEnabled ->
-                            isQuietModeEnabled = newIsQuiteModeEnabled
+                        onUpdateIsQuietModeEnabled = {
+                            isQuietModeEnabled = it
                         },
                         onUpdateOverlayBounds = onUpdateOverlayBounds,
                         onUpdatePopupMenu = onUpdatePrivatePopupMenu,
@@ -698,13 +698,13 @@ private fun EblanApplicationInfos(
                 else -> {
                     items(
                         getEblanApplicationInfosByLabelAndTag.eblanApplicationInfos[eblanUserPageKey].orEmpty(),
-                        key = { eblanApplicationInfo -> eblanApplicationInfo.serialNumber to eblanApplicationInfo.componentName },
-                    ) { eblanApplicationInfo ->
+                        key = { it.serialNumber to it.componentName },
+                    ) {
                         EblanApplicationInfoListItem(
                             sharedTransitionScope = sharedTransitionScope,
                             appDrawerSettings = appDrawerSettings,
                             drag = drag,
-                            eblanApplicationInfo = eblanApplicationInfo,
+                            eblanApplicationInfo = it,
                             paddingValues = paddingValues,
                             isVisibleOverlay = isVisibleOverlay,
                             swipeY = swipeY,
@@ -831,8 +831,8 @@ private fun EblanApplicationInfoListItem(
             onDismiss = onDismiss,
             onUpdateGridItemSource = onUpdateGridItemSource,
             onUpdateIsDragging = onUpdateIsDragging,
-            onUpdateIsLongPress = { newIsLongPress ->
-                isLongPress = newIsLongPress
+            onUpdateIsLongPress = {
+                isLongPress = it
             },
             onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
             onUpdatePopupMenu = onUpdatePopupMenu,

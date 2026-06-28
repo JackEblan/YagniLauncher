@@ -449,22 +449,22 @@ internal fun FolderScreen(
                         previewColumns = FOLDER_PREVIEW_COLUMNS,
                         previewRows = FOLDER_PREVIEW_ROWS,
                         progress = progress.value,
-                        content = { gridItem ->
-                            val x = gridItem.startColumn * minCellWidthPx
+                        content = {
+                            val x = it.startColumn * minCellWidthPx
 
-                            val y = gridItem.startRow * minCellHeightPx
+                            val y = it.startRow * minCellHeightPx
 
                             InteractiveFolderGridItem(
                                 sharedTransitionScope = sharedTransitionScope,
                                 drag = drag,
-                                gridItem = gridItem,
+                                gridItem = it,
                                 gridItemSettings = gridItemSettings,
                                 hasShortcutHostPermission = hasShortcutHostPermission,
                                 isScrollInProgress = folderGridHorizontalPagerState.isScrollInProgress,
                                 statusBarNotifications = statusBarNotifications,
                                 isVisibleOverlay = isVisibleOverlay,
                                 sharedElementKey = SharedElementKey(
-                                    id = gridItem.id,
+                                    id = it.id,
                                     parent = SharedElementKey.Parent.Folder,
                                 ),
                                 moveGridItemResult = moveGridItemResult,
@@ -487,8 +487,8 @@ internal fun FolderScreen(
                                         ),
                                     )
                                 },
-                                onTapShortcutConfig = { uri ->
-                                    context.startActivity(parseUri(uri, 0))
+                                onTapShortcutConfig = {
+                                    context.startActivity(parseUri(it, 0))
                                 },
                                 onTapShortcutInfo = { serialNumber, packageName, shortcutId ->
                                     val sourceBoundsX = x + leftPadding

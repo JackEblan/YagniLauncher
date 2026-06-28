@@ -170,7 +170,7 @@ internal fun Modifier.dragContainer(lazyColumnDragDropState: LazyColumnDragDropS
             change.consume()
             lazyColumnDragDropState.onDrag(offset = offset)
         },
-        onDragStart = { offset -> lazyColumnDragDropState.onDragStart(offset) },
+        onDragStart = { lazyColumnDragDropState.onDragStart(it) },
         onDragEnd = { lazyColumnDragDropState.onDragInterrupted() },
         onDragCancel = { lazyColumnDragDropState.onDragInterrupted() },
     )

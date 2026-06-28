@@ -95,24 +95,24 @@ private fun GestureSettingsScreen(
                         swipeUp = gesturesSettingsUiState.gestureSettings.swipeUp,
                         swipeDown = gesturesSettingsUiState.gestureSettings.swipeDown,
                         eblanApplicationInfos = gesturesSettingsUiState.eblanApplicationInfos,
-                        onUpdateDoubleTap = { doubleTap ->
+                        onUpdateDoubleTap = {
                             onUpdateGestureSettings(
                                 gesturesSettingsUiState.gestureSettings.copy(
-                                    doubleTap = doubleTap,
+                                    doubleTap = it,
                                 ),
                             )
                         },
-                        onUpdateSwipeUp = { swipeUp ->
+                        onUpdateSwipeUp = {
                             onUpdateGestureSettings(
                                 gesturesSettingsUiState.gestureSettings.copy(
-                                    swipeUp = swipeUp,
+                                    swipeUp = it,
                                 ),
                             )
                         },
-                        onUpdateSwipeDown = { swipeDown ->
+                        onUpdateSwipeDown = {
                             onUpdateGestureSettings(
                                 gesturesSettingsUiState.gestureSettings.copy(
-                                    swipeDown = swipeDown,
+                                    swipeDown = it,
                                 ),
                             )
                         },

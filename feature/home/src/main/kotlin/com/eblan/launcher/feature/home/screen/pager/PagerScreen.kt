@@ -584,8 +584,8 @@ internal fun PagerScreen(
                 )
             }
             .dragAndDropTarget(
-                shouldStartDragAndDrop = { event ->
-                    event.mimeTypes().contains(ClipDescription.MIMETYPE_TEXT_PLAIN)
+                shouldStartDragAndDrop = {
+                    it.mimeTypes().contains(ClipDescription.MIMETYPE_TEXT_PLAIN)
                 },
                 target = pagerScreenState.target,
             )
@@ -625,8 +625,8 @@ internal fun PagerScreen(
                         onDoubleTap = {
                             pagerScreenState.updateHasDoubleTap(value = true)
                         },
-                        onLongPress = { offset ->
-                            pagerScreenState.showSettingsPopup(offset = offset)
+                        onLongPress = {
+                            pagerScreenState.showSettingsPopup(offset = it)
                         },
                     )
                 }
@@ -658,25 +658,25 @@ internal fun PagerScreen(
                     columns = homeSettings.columns,
                     gridItems = gridItemsByPage[page],
                     rows = homeSettings.rows,
-                    content = { gridItem ->
+                    content = {
                         val gridHeight = safeDrawingHeight - pageIndicatorHeightPx - dockHeightPx
 
                         val cellWidth = safeDrawingWidth / homeSettings.columns
 
                         val cellHeight = gridHeight / homeSettings.rows
 
-                        val x = gridItem.startColumn * cellWidth
+                        val x = it.startColumn * cellWidth
 
-                        val y = gridItem.startRow * cellHeight
+                        val y = it.startRow * cellHeight
 
-                        val width = gridItem.columnSpan * cellWidth
+                        val width = it.columnSpan * cellWidth
 
-                        val height = gridItem.rowSpan * cellHeight
+                        val height = it.rowSpan * cellHeight
 
                         InteractiveGridItem(
                             sharedTransitionScope = this@SharedTransitionLayout,
                             drag = pagerScreenState.drag,
-                            gridItem = gridItem,
+                            gridItem = it,
                             gridItemSettings = homeSettings.gridItemSettings,
                             hasShortcutHostPermission = hasShortcutHostPermission,
                             isScrollInProgress = gridHorizontalPagerState.isScrollInProgress,
@@ -684,7 +684,7 @@ internal fun PagerScreen(
                             textColor = textColor,
                             isVisibleOverlay = isVisibleOverlay,
                             sharedElementKey = SharedElementKey(
-                                id = gridItem.id,
+                                id = it.id,
                                 parent = SharedElementKey.Parent.Grid,
                             ),
                             isVisibleFolder = folderPopups.isNotEmpty(),
@@ -710,8 +710,8 @@ internal fun PagerScreen(
                                 )
                             },
                             onUpsertFolderPopupEntry = onUpsertFolderPopupEntry,
-                            onTapShortcutConfig = { uri ->
-                                context.startActivity(parseUri(uri, 0))
+                            onTapShortcutConfig = {
+                                context.startActivity(parseUri(it, 0))
                             },
                             onTapShortcutInfo = { serialNumber, packageName, shortcutId ->
                                 val sourceBoundsX = x + leftPadding
@@ -782,23 +782,23 @@ internal fun PagerScreen(
                     columns = homeSettings.dockColumns,
                     gridItems = dockGridItemsByPage[page],
                     rows = homeSettings.dockRows,
-                    content = { gridItem ->
+                    content = {
                         val cellWidth = safeDrawingWidth / homeSettings.dockColumns
 
                         val cellHeight = dockHeightPx / homeSettings.dockRows
 
-                        val x = gridItem.startColumn * cellWidth
+                        val x = it.startColumn * cellWidth
 
-                        val y = gridItem.startRow * cellHeight
+                        val y = it.startRow * cellHeight
 
-                        val width = gridItem.columnSpan * cellWidth
+                        val width = it.columnSpan * cellWidth
 
-                        val height = gridItem.rowSpan * cellHeight
+                        val height = it.rowSpan * cellHeight
 
                         InteractiveGridItem(
                             sharedTransitionScope = this@SharedTransitionLayout,
                             drag = pagerScreenState.drag,
-                            gridItem = gridItem,
+                            gridItem = it,
                             gridItemSettings = homeSettings.gridItemSettings,
                             hasShortcutHostPermission = hasShortcutHostPermission,
                             isScrollInProgress = dockGridHorizontalPagerState.isScrollInProgress,
@@ -806,7 +806,7 @@ internal fun PagerScreen(
                             textColor = textColor,
                             isVisibleOverlay = isVisibleOverlay,
                             sharedElementKey = SharedElementKey(
-                                id = gridItem.id,
+                                id = it.id,
                                 parent = SharedElementKey.Parent.Dock,
                             ),
                             isVisibleFolder = folderPopups.isNotEmpty(),
@@ -832,8 +832,8 @@ internal fun PagerScreen(
                                 )
                             },
                             onUpsertFolderPopupEntry = onUpsertFolderPopupEntry,
-                            onTapShortcutConfig = { uri ->
-                                context.startActivity(parseUri(uri, 0))
+                            onTapShortcutConfig = {
+                                context.startActivity(parseUri(it, 0))
                             },
                             onTapShortcutInfo = { serialNumber, packageName, shortcutId ->
                                 val sourceBoundsX = x + leftPadding
@@ -901,9 +901,9 @@ internal fun PagerScreen(
                         componentName = componentName,
                     )
                 },
-                onResize = { newResizeGridItem ->
+                onResize = {
                     pagerScreenState.resize(
-                        resizeGridItem = newResizeGridItem,
+                        resizeGridItem = it,
                         onUpdateResizeGridItem = onUpdateResizeGridItem,
                     )
                 },
