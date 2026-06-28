@@ -23,17 +23,45 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.unit.Velocity
 
 internal class OffsetNestedScrollConnection(
+    private val swipeY: () -> Float,
+    private val isAtTop: () -> Boolean,
     private val onVerticalDrag: (Float) -> Unit,
     private val onDragEnd: () -> Unit,
 ) : NestedScrollConnection {
+    override fun onPreScroll(
+        available: Offset,
+        source: NestedScrollSource,
+    ): Offset {
+        if (available.y < 0f && swipeY() > 0f) {
+            onVerticalDrag(available.y)
+
+            return Offset(
+                0f,
+                available.y,
+            )
+        }
+
+        return Offset.Zero
+    }
+
     override fun onPostScroll(
         consumed: Offset,
         available: Offset,
         source: NestedScrollSource,
     ): Offset {
-        onVerticalDrag(available.y)
+        if (
+            source == NestedScrollSource.UserInput &&
+            available.y > 0f && isAtTop()
+        ) {
+            onVerticalDrag(available.y)
 
-        return super.onPostScroll(consumed, available, source)
+            return Offset(
+                x = 0f,
+                y = available.y,
+            )
+        }
+
+        return Offset.Zero
     }
 
     override suspend fun onPostFling(consumed: Velocity, available: Velocity): Velocity {

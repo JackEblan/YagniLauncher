@@ -89,7 +89,7 @@ internal fun AppWidgetScreen(
     rows: Int,
     screenHeight: Int,
     screenWidth: Int,
-    offsetY: Float,
+    swipeY: Float,
     onDismiss: () -> Unit,
     onDismissApplicationScreen: () -> Unit,
     onUpdateOverlayBounds: (
@@ -110,19 +110,19 @@ internal fun AppWidgetScreen(
     val lazyListState = rememberLazyListState()
 
     LaunchedEffect(key1 = isPressHome) {
-        if (isPressHome && offsetY < screenHeight.toFloat()) {
+        if (isPressHome && swipeY < screenHeight.toFloat()) {
             onDismiss()
         }
     }
 
-    BackHandler(enabled = offsetY < screenHeight.toFloat()) {
+    BackHandler(enabled = swipeY < screenHeight.toFloat()) {
         onDismiss()
     }
 
     Box(
         modifier = modifier
             .offset {
-                IntOffset(x = 0, y = offsetY.roundToInt())
+                IntOffset(x = 0, y = swipeY.roundToInt())
             }
             .pointerInput(key1 = Unit) {
                 detectTapGestures(

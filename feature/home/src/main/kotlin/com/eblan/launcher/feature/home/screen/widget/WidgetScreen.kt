@@ -35,7 +35,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberOverscrollEffect
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -51,12 +50,12 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -88,7 +87,6 @@ import com.eblan.launcher.domain.model.GridItemSettings
 import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.feature.home.R
 import com.eblan.launcher.feature.home.component.OffsetNestedScrollConnection
-import com.eblan.launcher.feature.home.component.OffsetOverscrollEffect
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
@@ -114,7 +112,7 @@ internal fun WidgetScreen(
     rows: Int,
     screenHeight: Int,
     screenWidth: Int,
-    offsetY: Float,
+    swipeY: Float,
     alpha: Float,
     cornerSize: Dp,
     onDismiss: () -> Unit,
@@ -138,22 +136,14 @@ internal fun WidgetScreen(
 
     val lazyListState = rememberLazyListState()
 
-    val overscrollEffect = remember(key1 = scope) {
-        OffsetOverscrollEffect(
-            scope = scope,
-            onVerticalDrag = onVerticalDrag,
-            onDragEnd = onDragEnd,
-        )
-    }
-
-    val canScroll by remember(key1 = lazyListState) {
-        derivedStateOf {
-            lazyListState.canScrollForward || lazyListState.canScrollBackward
-        }
-    }
+    val currentSwipeY by rememberUpdatedState(swipeY)
 
     val nestedScrollConnection = remember {
         OffsetNestedScrollConnection(
+            swipeY = { currentSwipeY },
+            isAtTop = {
+                !lazyListState.canScrollBackward
+            },
             onVerticalDrag = onVerticalDrag,
             onDragEnd = onDragEnd,
         )
@@ -164,11 +154,11 @@ internal fun WidgetScreen(
     val textFieldState = rememberTextFieldState()
 
     LaunchedEffect(key1 = isPressHome) {
-        if (isPressHome && offsetY < screenHeight.toFloat()) {
+        if (isPressHome && swipeY < screenHeight.toFloat()) {
             onDismiss()
         }
 
-        if (isPressHome && offsetY < screenHeight.toFloat() && searchBarState.currentValue == SearchBarValue.Expanded) {
+        if (isPressHome && swipeY < screenHeight.toFloat() && searchBarState.currentValue == SearchBarValue.Expanded) {
             searchBarState.animateToCollapsed()
         }
     }
@@ -185,14 +175,14 @@ internal fun WidgetScreen(
         }.collect()
     }
 
-    BackHandler(enabled = offsetY < screenHeight.toFloat()) {
+    BackHandler(enabled = swipeY < screenHeight.toFloat()) {
         onDismiss()
     }
 
     Surface(
         modifier = modifier
             .graphicsLayer {
-                translationY = offsetY
+                translationY = swipeY
                 this.alpha = alpha
                 clip = true
                 shape = RoundedCornerShape(cornerSize)
@@ -201,13 +191,7 @@ internal fun WidgetScreen(
     ) {
         Column(
             modifier = Modifier
-                .run {
-                    if (!canScroll) {
-                        nestedScroll(nestedScrollConnection)
-                    } else {
-                        this
-                    }
-                }
+                .nestedScroll(nestedScrollConnection)
                 .fillMaxSize()
                 .padding(
                     top = paddingValues.calculateTopPadding(),
@@ -240,11 +224,6 @@ internal fun WidgetScreen(
                 modifier = Modifier.fillMaxSize(),
                 state = lazyListState,
                 contentPadding = PaddingValues(bottom = paddingValues.calculateBottomPadding()),
-                overscrollEffect = if (canScroll) {
-                    overscrollEffect
-                } else {
-                    rememberOverscrollEffect()
-                },
             ) {
                 items(eblanAppWidgetProviderInfos.keys.toList()) { eblanApplicationInfoGroup ->
                     key(eblanApplicationInfoGroup.packageName) {

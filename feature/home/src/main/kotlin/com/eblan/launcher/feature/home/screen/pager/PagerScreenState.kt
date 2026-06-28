@@ -280,31 +280,31 @@ internal class PagerScreenState(
         ((swipeY.value - threshold) / threshold).coerceIn(0f, 1f)
     }
 
-    val widgetScreenOffsetY = Animatable(screenHeight.toFloat())
+    val widgetScreenSwipeY = Animatable(screenHeight.toFloat())
 
     val widgetScreenAlpha by derivedStateOf {
-        ((screenHeight - widgetScreenOffsetY.value) / (screenHeight / 2)).coerceIn(0f, 1f)
+        ((screenHeight - widgetScreenSwipeY.value) / (screenHeight / 2)).coerceIn(0f, 1f)
     }
 
     val widgetScreenCornerSize by derivedStateOf {
-        val progress = (widgetScreenOffsetY.value / screenHeight).coerceIn(0f, 1f)
+        val progress = (widgetScreenSwipeY.value / screenHeight).coerceIn(0f, 1f)
 
         (20 * progress).dp
     }
 
-    val shortcutConfigScreenOffsetY = Animatable(screenHeight.toFloat())
+    val shortcutConfigScreenSwipeY = Animatable(screenHeight.toFloat())
 
     val shortcutConfigScreenAlpha by derivedStateOf {
-        ((screenHeight - shortcutConfigScreenOffsetY.value) / (screenHeight / 2)).coerceIn(0f, 1f)
+        ((screenHeight - shortcutConfigScreenSwipeY.value) / (screenHeight / 2)).coerceIn(0f, 1f)
     }
 
     val shortcutConfigScreenCornerSize by derivedStateOf {
-        val progress = (shortcutConfigScreenOffsetY.value / screenHeight).coerceIn(0f, 1f)
+        val progress = (shortcutConfigScreenSwipeY.value / screenHeight).coerceIn(0f, 1f)
 
         (20 * progress).dp
     }
 
-    val appWidgetScreenOffsetY = Animatable(screenHeight.toFloat())
+    val appWidgetScreenSwipeY = Animatable(screenHeight.toFloat())
 
     var isCloseGridItemPopup by mutableStateOf(false)
         private set
@@ -647,8 +647,8 @@ internal class PagerScreenState(
         isPressHome = true
 
         if (swipeY.value < screenHeight.toFloat() ||
-            widgetScreenOffsetY.value < screenHeight.toFloat() ||
-            shortcutConfigScreenOffsetY.value < screenHeight.toFloat() ||
+            widgetScreenSwipeY.value < screenHeight.toFloat() ||
+            shortcutConfigScreenSwipeY.value < screenHeight.toFloat() ||
             eblanApplicationInfoGroup != null
         ) {
             return
@@ -961,7 +961,7 @@ internal class PagerScreenState(
         scope.launch {
             showWidgetScreen = true
 
-            widgetScreenOffsetY.animateTo(
+            widgetScreenSwipeY.animateTo(
                 targetValue = 0f,
                 animationSpec = tween(
                     easing = FastOutSlowInEasing,
@@ -972,7 +972,7 @@ internal class PagerScreenState(
 
     fun dismissWidgetScreen() {
         scope.launch {
-            widgetScreenOffsetY.animateTo(
+            widgetScreenSwipeY.animateTo(
                 targetValue = screenHeight.toFloat(),
                 animationSpec = tween(
                     easing = FastOutSlowInEasing,
@@ -989,8 +989,8 @@ internal class PagerScreenState(
 
     fun verticalDragWidgetScreen(dragAmount: Float) {
         scope.launch {
-            widgetScreenOffsetY.snapTo(
-                (widgetScreenOffsetY.value + dragAmount).coerceIn(
+            widgetScreenSwipeY.snapTo(
+                (widgetScreenSwipeY.value + dragAmount).coerceIn(
                     0f,
                     screenHeight.toFloat(),
                 ),
@@ -1000,8 +1000,8 @@ internal class PagerScreenState(
 
     fun verticalDragShortcutConfigScreen(dragAmount: Float) {
         scope.launch {
-            shortcutConfigScreenOffsetY.snapTo(
-                (shortcutConfigScreenOffsetY.value + dragAmount).coerceIn(
+            shortcutConfigScreenSwipeY.snapTo(
+                (shortcutConfigScreenSwipeY.value + dragAmount).coerceIn(
                     0f,
                     screenHeight.toFloat(),
                 ),
@@ -1013,7 +1013,7 @@ internal class PagerScreenState(
         scope.launch {
             showShortcutConfigScreen = true
 
-            shortcutConfigScreenOffsetY.animateTo(
+            shortcutConfigScreenSwipeY.animateTo(
                 targetValue = 0f,
                 animationSpec = tween(
                     easing = FastOutSlowInEasing,
@@ -1024,7 +1024,7 @@ internal class PagerScreenState(
 
     fun dismissShortcutConfigScreen() {
         scope.launch {
-            shortcutConfigScreenOffsetY.animateTo(
+            shortcutConfigScreenSwipeY.animateTo(
                 targetValue = screenHeight.toFloat(),
                 animationSpec = tween(
                     easing = FastOutSlowInEasing,
@@ -1041,7 +1041,7 @@ internal class PagerScreenState(
 
     fun dismissAppWidgetScreen() {
         scope.launch {
-            appWidgetScreenOffsetY.animateTo(
+            appWidgetScreenSwipeY.animateTo(
                 targetValue = screenHeight.toFloat(),
                 animationSpec = tween(
                     easing = FastOutSlowInEasing,
@@ -1060,7 +1060,7 @@ internal class PagerScreenState(
         scope.launch {
             eblanApplicationInfoGroup = value
 
-            appWidgetScreenOffsetY.animateTo(
+            appWidgetScreenSwipeY.animateTo(
                 targetValue = 0f,
                 animationSpec = tween(
                     easing = FastOutSlowInEasing,
@@ -1129,8 +1129,8 @@ internal class PagerScreenState(
 
     fun verticalDragAppWidgetScreen(dragAmount: Float) {
         scope.launch {
-            appWidgetScreenOffsetY.snapTo(
-                (appWidgetScreenOffsetY.value + dragAmount).coerceIn(
+            appWidgetScreenSwipeY.snapTo(
+                (appWidgetScreenSwipeY.value + dragAmount).coerceIn(
                     0f,
                     screenHeight.toFloat(),
                 ),
@@ -1272,26 +1272,26 @@ internal class PagerScreenState(
     }
 
     fun handleOnDragEndApplicationScreen() {
-        handleApplyFling(offsetY = swipeY)
+        handleApplyFling(swipeY = swipeY)
     }
 
     fun handleOnDragEndWidgetScreen() {
-        handleApplyFling(offsetY = widgetScreenOffsetY)
+        handleApplyFling(swipeY = widgetScreenSwipeY)
     }
 
     fun handleOnDragEndShortcutConfigScreen() {
-        handleApplyFling(offsetY = shortcutConfigScreenOffsetY)
+        handleApplyFling(swipeY = shortcutConfigScreenSwipeY)
     }
 
     fun handleOnDragEndAppWidgetScreen() {
         scope.launch {
-            if (appWidgetScreenOffsetY.value > 200f) {
-                appWidgetScreenOffsetY.animateTo(
+            if (appWidgetScreenSwipeY.value > 200f) {
+                appWidgetScreenSwipeY.animateTo(
                     targetValue = screenHeight.toFloat(),
                     animationSpec = tween(easing = FastOutSlowInEasing),
                 )
             } else {
-                appWidgetScreenOffsetY.animateTo(
+                appWidgetScreenSwipeY.animateTo(
                     targetValue = 0f,
                     animationSpec = tween(easing = FastOutSlowInEasing),
                 )
@@ -1299,15 +1299,15 @@ internal class PagerScreenState(
         }
     }
 
-    private fun handleApplyFling(offsetY: Animatable<Float, AnimationVector1D>) {
+    private fun handleApplyFling(swipeY: Animatable<Float, AnimationVector1D>) {
         scope.launch {
-            if (offsetY.value > 200f) {
-                offsetY.animateTo(
+            if (swipeY.value > 200f) {
+                swipeY.animateTo(
                     targetValue = screenHeight.toFloat(),
                     animationSpec = tween(easing = FastOutSlowInEasing),
                 )
             } else {
-                offsetY.animateTo(
+                swipeY.animateTo(
                     targetValue = 0f,
                     animationSpec = spring(
                         dampingRatio = Spring.DampingRatioNoBouncy,

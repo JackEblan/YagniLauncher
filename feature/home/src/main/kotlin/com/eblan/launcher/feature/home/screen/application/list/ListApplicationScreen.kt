@@ -41,13 +41,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.rememberOverscrollEffect
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -62,6 +60,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -71,7 +70,6 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.layer.drawLayer
-import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.input.pointer.pointerInput
@@ -108,7 +106,6 @@ import com.eblan.launcher.domain.model.GetEblanApplicationInfosByLabelAndTag
 import com.eblan.launcher.domain.model.ManagedProfileResult
 import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.feature.home.component.OffsetNestedScrollConnection
-import com.eblan.launcher.feature.home.component.OffsetOverscrollEffect
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
@@ -131,7 +128,6 @@ import com.eblan.launcher.ui.local.LocalUserManager
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.launch
 import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class, FlowPreview::class)
 @Composable
@@ -448,8 +444,6 @@ private fun EblanApplicationInfosPage(
 
     val packageManager = LocalPackageManager.current
 
-    val lazyListState = rememberLazyListState()
-
     val eblanUserPageKey =
         getEblanApplicationInfosByLabelAndTag.eblanApplicationInfos.keys.toList().getOrElse(
             index = index,
@@ -514,7 +508,6 @@ private fun EblanApplicationInfosPage(
                 paddingValues = paddingValues,
                 showPopupApplicationMenu = showPopupApplicationMenu,
                 isVisibleOverlay = isVisibleOverlay,
-                lazyListState = lazyListState,
                 swipeY = swipeY,
                 screenHeight = screenHeight,
                 onDismiss = onDismiss,
@@ -574,7 +567,6 @@ private fun EblanApplicationInfos(
     paddingValues: PaddingValues,
     isVisibleOverlay: Boolean,
     showPopupApplicationMenu: Boolean,
-    lazyListState: LazyListState,
     swipeY: Float,
     screenHeight: Int,
     onDismiss: () -> Unit,
@@ -594,15 +586,7 @@ private fun EblanApplicationInfos(
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
-    val scope = rememberCoroutineScope()
-
-    val overscrollEffect = remember(key1 = scope) {
-        OffsetOverscrollEffect(
-            scope = scope,
-            onVerticalDrag = onVerticalDrag,
-            onDragEnd = onDragEnd,
-        )
-    }
+    val lazyListState = rememberLazyListState()
 
     val canScroll by remember(key1 = lazyListState) {
         derivedStateOf {
@@ -610,14 +594,29 @@ private fun EblanApplicationInfos(
         }
     }
 
+    val currentSwipeY by rememberUpdatedState(swipeY)
+
     val nestedScrollConnection = remember {
         OffsetNestedScrollConnection(
+            swipeY = { currentSwipeY },
+            isAtTop = {
+                !lazyListState.canScrollBackward
+            },
             onVerticalDrag = onVerticalDrag,
             onDragEnd = onDragEnd,
         )
     }
 
     var isQuietModeEnabled by remember { mutableStateOf(false) }
+
+    val isScrollInProgress by remember(
+        key1 = lazyListState,
+        key2 = swipeY,
+    ) {
+        derivedStateOf {
+            lazyListState.isScrollInProgress && swipeY == 0f
+        }
+    }
 
     LaunchedEffect(key1 = lazyListState.isScrollInProgress) {
         if (lazyListState.isScrollInProgress && showPopupApplicationMenu) {
@@ -627,13 +626,7 @@ private fun EblanApplicationInfos(
 
     Box(
         modifier = modifier
-            .run {
-                if (!canScroll) {
-                    nestedScroll(nestedScrollConnection)
-                } else {
-                    this
-                }
-            }
+            .nestedScroll(nestedScrollConnection)
             .fillMaxSize(),
     ) {
         LazyColumn(
@@ -642,11 +635,6 @@ private fun EblanApplicationInfos(
             contentPadding = PaddingValues(
                 bottom = paddingValues.calculateBottomPadding(),
             ),
-            overscrollEffect = if (canScroll) {
-                overscrollEffect
-            } else {
-                rememberOverscrollEffect()
-            },
             userScrollEnabled = !isVisibleOverlay,
         ) {
             when (eblanUserPageKey.eblanUser.eblanUserType) {
@@ -664,7 +652,7 @@ private fun EblanApplicationInfos(
                             isVisibleOverlay = isVisibleOverlay,
                             swipeY = swipeY,
                             screenHeight = screenHeight,
-                            isScrollInProgress = lazyListState.isScrollInProgress,
+                            isScrollInProgress = isScrollInProgress,
                             onDismiss = onDismiss,
                             onUpdateGridItemSource = onUpdateGridItemSource,
                             onUpdateImageBitmap = onUpdateImageBitmap,
@@ -709,7 +697,7 @@ private fun EblanApplicationInfos(
                             isVisibleOverlay = isVisibleOverlay,
                             swipeY = swipeY,
                             screenHeight = screenHeight,
-                            isScrollInProgress = lazyListState.isScrollInProgress,
+                            isScrollInProgress = isScrollInProgress,
                             onDismiss = onDismiss,
                             onUpdateGridItemSource = onUpdateGridItemSource,
                             onUpdateImageBitmap = onUpdateImageBitmap,
@@ -803,8 +791,6 @@ private fun EblanApplicationInfoListItem(
 
     var isLongPress by remember { mutableStateOf(false) }
 
-    val applicationScreenId = remember { Uuid.random().toHexString() }
-
     val alpha = if (isLongPress) 0f else 1f
 
     val scale = remember { Animatable(1f) }
@@ -816,6 +802,11 @@ private fun EblanApplicationInfoListItem(
     val iconSizePx = with(density) {
         appDrawerSettings.gridItemSettings.iconSize.dp.roundToPx()
     }
+
+    val sharedElementKey = SharedElementKey(
+        id = "${eblanApplicationInfo.serialNumber} ${eblanApplicationInfo.packageName} ${eblanApplicationInfo.componentName}",
+        parent = SharedElementKey.Parent.SwipeY,
+    )
 
     LaunchedEffect(
         key1 = drag,
@@ -866,7 +857,7 @@ private fun EblanApplicationInfoListItem(
                         {
                             scope.launch {
                                 handleOnLongPressEblanApplicationInfoItem(
-                                    applicationScreenId = applicationScreenId,
+                                    sharedElementKey = sharedElementKey,
                                     eblanApplicationInfo = eblanApplicationInfo,
                                     graphicsLayer = graphicsLayer,
                                     intOffset = intOffset,
@@ -933,10 +924,7 @@ private fun EblanApplicationInfoListItem(
                         with(sharedTransitionScope) {
                             sharedElementWithCallerManagedVisibility(
                                 rememberSharedContentState(
-                                    key = SharedElementKey(
-                                        id = applicationScreenId,
-                                        parent = SharedElementKey.Parent.SwipeY,
-                                    ),
+                                    key = sharedElementKey,
                                 ),
                                 visible = true,
                             )
@@ -945,8 +933,6 @@ private fun EblanApplicationInfoListItem(
                         this
                     }
                 },
-            placeholder = ColorPainter(Color.Transparent),
-            error = ColorPainter(Color.Transparent),
         )
 
         if (appDrawerSettings.gridItemSettings.showLabel) {

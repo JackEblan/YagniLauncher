@@ -41,7 +41,6 @@ import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.rememberOverscrollEffect
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -53,7 +52,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -80,7 +79,6 @@ import com.eblan.launcher.domain.model.GetEblanApplicationInfosByLabelAndTag
 import com.eblan.launcher.domain.model.ManagedProfileResult
 import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.feature.home.component.OffsetNestedScrollConnection
-import com.eblan.launcher.feature.home.component.OffsetOverscrollEffect
 import com.eblan.launcher.feature.home.dialog.EblanApplicationInfoOrderDialog
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
@@ -245,7 +243,6 @@ internal fun VerticalApplicationScreen(
             modifier = Modifier.fillMaxSize(),
             state = horizontalPagerState,
             userScrollEnabled = !isVisibleOverlay,
-            beyondViewportPageCount = eblanUserPageKeys.size,
         ) { index ->
             EblanApplicationInfosPage(
                 sharedTransitionScope = sharedTransitionScope,
@@ -579,17 +576,7 @@ private fun EblanApplicationInfos(
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
-    val scope = rememberCoroutineScope()
-
     val lazyGridState = rememberLazyGridState()
-
-    val overscrollEffect = remember(key1 = scope) {
-        OffsetOverscrollEffect(
-            scope = scope,
-            onVerticalDrag = onVerticalDrag,
-            onDragEnd = onDragEnd,
-        )
-    }
 
     val canScroll by remember(key1 = lazyGridState) {
         derivedStateOf {
@@ -597,14 +584,29 @@ private fun EblanApplicationInfos(
         }
     }
 
+    val currentSwipeY by rememberUpdatedState(swipeY)
+
     val nestedScrollConnection = remember {
         OffsetNestedScrollConnection(
+            swipeY = { currentSwipeY },
+            isAtTop = {
+                !lazyGridState.canScrollBackward
+            },
             onVerticalDrag = onVerticalDrag,
             onDragEnd = onDragEnd,
         )
     }
 
     var isQuietModeEnabled by remember { mutableStateOf(false) }
+
+    val isScrollInProgress by remember(
+        key1 = lazyGridState,
+        key2 = swipeY,
+    ) {
+        derivedStateOf {
+            lazyGridState.isScrollInProgress && swipeY == 0f
+        }
+    }
 
     LaunchedEffect(key1 = lazyGridState.isScrollInProgress) {
         if (lazyGridState.isScrollInProgress && showPopupApplicationMenu) {
@@ -614,13 +616,7 @@ private fun EblanApplicationInfos(
 
     Box(
         modifier = modifier
-            .run {
-                if (!canScroll) {
-                    nestedScroll(nestedScrollConnection)
-                } else {
-                    this
-                }
-            }
+            .nestedScroll(nestedScrollConnection)
             .fillMaxSize(),
     ) {
         LazyVerticalGrid(
@@ -630,11 +626,6 @@ private fun EblanApplicationInfos(
             contentPadding = PaddingValues(
                 bottom = paddingValues.calculateBottomPadding(),
             ),
-            overscrollEffect = if (canScroll) {
-                overscrollEffect
-            } else {
-                rememberOverscrollEffect()
-            },
             userScrollEnabled = !isVisibleOverlay,
         ) {
             when (eblanUserPageKey.eblanUser.eblanUserType) {
@@ -653,7 +644,7 @@ private fun EblanApplicationInfos(
                             appDrawerType = appDrawerSettings.appDrawerType,
                             swipeY = swipeY,
                             screenHeight = screenHeight,
-                            isScrollInProgress = lazyGridState.isScrollInProgress,
+                            isScrollInProgress = isScrollInProgress,
                             onDismiss = onDismiss,
                             onUpdateGridItemSource = onUpdateGridItemSource,
                             onUpdateImageBitmap = onUpdateImageBitmap,
@@ -699,7 +690,7 @@ private fun EblanApplicationInfos(
                             appDrawerType = appDrawerSettings.appDrawerType,
                             swipeY = swipeY,
                             screenHeight = screenHeight,
-                            isScrollInProgress = lazyGridState.isScrollInProgress,
+                            isScrollInProgress = isScrollInProgress,
                             onDismiss = onDismiss,
                             onUpdateGridItemSource = onUpdateGridItemSource,
                             onUpdateImageBitmap = onUpdateImageBitmap,

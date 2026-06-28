@@ -49,7 +49,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.compose.ui.graphics.layer.drawLayer
-import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -163,8 +162,6 @@ internal fun EblanApplicationInfoGridItem(
 
     var isLongPress by remember { mutableStateOf(false) }
 
-    val applicationScreenId = remember { Uuid.random().toHexString() }
-
     val alpha = if (isLongPress) 0f else 1f
 
     val scale = remember { Animatable(1f) }
@@ -176,6 +173,11 @@ internal fun EblanApplicationInfoGridItem(
     val iconSizePx = with(density) {
         appDrawerSettings.gridItemSettings.iconSize.dp.roundToPx()
     }
+
+    val sharedElementKey = SharedElementKey(
+        id = "${eblanApplicationInfo.serialNumber} ${eblanApplicationInfo.packageName} ${eblanApplicationInfo.componentName}",
+        parent = SharedElementKey.Parent.SwipeY,
+    )
 
     LaunchedEffect(
         key1 = drag,
@@ -226,12 +228,12 @@ internal fun EblanApplicationInfoGridItem(
                         {
                             scope.launch {
                                 handleOnLongPressEblanApplicationInfoItem(
-                                    applicationScreenId = applicationScreenId,
                                     eblanApplicationInfo = eblanApplicationInfo,
                                     graphicsLayer = graphicsLayer,
                                     intOffset = intOffset,
                                     intSize = intSize,
                                     keyboardController = keyboardController,
+                                    sharedElementKey = sharedElementKey,
                                     onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
                                     onUpdateImageBitmap = onUpdateImageBitmap,
                                     onUpdateIsLongPress = { isLongPress = it },
@@ -298,10 +300,7 @@ internal fun EblanApplicationInfoGridItem(
                         with(sharedTransitionScope) {
                             sharedElementWithCallerManagedVisibility(
                                 rememberSharedContentState(
-                                    key = SharedElementKey(
-                                        id = applicationScreenId,
-                                        parent = SharedElementKey.Parent.SwipeY,
-                                    ),
+                                    key = sharedElementKey,
                                 ),
                                 visible = true,
                             )
@@ -310,8 +309,6 @@ internal fun EblanApplicationInfoGridItem(
                         this
                     }
                 },
-            placeholder = ColorPainter(Color.Transparent),
-            error = ColorPainter(Color.Transparent),
         )
 
         if (appDrawerSettings.gridItemSettings.showLabel) {
@@ -450,12 +447,12 @@ internal fun handleDragEblanApplicationInfoItem(
 
 @OptIn(ExperimentalUuidApi::class)
 internal suspend fun handleOnLongPressEblanApplicationInfoItem(
-    applicationScreenId: String,
     eblanApplicationInfo: EblanApplicationInfo,
     graphicsLayer: GraphicsLayer,
     intOffset: IntOffset,
     intSize: IntSize,
     keyboardController: SoftwareKeyboardController?,
+    sharedElementKey: SharedElementKey,
     onUpdateEblanApplicationInfo: (EblanApplicationInfo) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
     onUpdateIsLongPress: (Boolean) -> Unit,
@@ -471,12 +468,7 @@ internal suspend fun handleOnLongPressEblanApplicationInfoItem(
         intSize,
     )
 
-    onUpdateSharedElementKey(
-        SharedElementKey(
-            id = applicationScreenId,
-            parent = SharedElementKey.Parent.SwipeY,
-        ),
-    )
+    onUpdateSharedElementKey(sharedElementKey)
 
     onUpdateEblanApplicationInfo(eblanApplicationInfo)
 

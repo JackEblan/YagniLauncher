@@ -37,7 +37,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.rememberOverscrollEffect
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -55,12 +54,12 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -97,7 +96,6 @@ import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.GridItemSettings
 import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.feature.home.component.OffsetNestedScrollConnection
-import com.eblan.launcher.feature.home.component.OffsetOverscrollEffect
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
@@ -121,7 +119,7 @@ internal fun ShortcutConfigScreen(
     isPressHome: Boolean,
     paddingValues: PaddingValues,
     screenHeight: Int,
-    offsetY: Float,
+    swipeY: Float,
     alpha: Float,
     cornerSize: Dp,
     onDismiss: () -> Unit,
@@ -175,14 +173,14 @@ internal fun ShortcutConfigScreen(
         }
     }
 
-    BackHandler(enabled = offsetY < screenHeight.toFloat()) {
+    BackHandler(enabled = swipeY < screenHeight.toFloat()) {
         onDismiss()
     }
 
     Surface(
         modifier = modifier
             .graphicsLayer {
-                translationY = offsetY
+                translationY = swipeY
                 this.alpha = alpha
                 clip = true
                 shape = RoundedCornerShape(cornerSize)
@@ -236,6 +234,7 @@ internal fun ShortcutConfigScreen(
                         gridItemSettings = gridItemSettings,
                         index = index,
                         paddingValues = paddingValues,
+                        swipeY = swipeY,
                         onDragEnd = onDragEnd,
                         onUpdateOverlayBounds = onUpdateOverlayBounds,
                         onVerticalDrag = onVerticalDrag,
@@ -255,6 +254,7 @@ internal fun ShortcutConfigScreen(
                     gridItemSettings = gridItemSettings,
                     index = 0,
                     paddingValues = paddingValues,
+                    swipeY = swipeY,
                     onDragEnd = onDragEnd,
                     onUpdateOverlayBounds = onUpdateOverlayBounds,
                     onVerticalDrag = onVerticalDrag,
@@ -309,6 +309,7 @@ private fun EblanShortcutConfigsPage(
     gridItemSettings: GridItemSettings,
     index: Int,
     paddingValues: PaddingValues,
+    swipeY: Float,
     onDragEnd: () -> Unit,
     onUpdateOverlayBounds: (IntOffset, IntSize) -> Unit,
     onVerticalDrag: (Float) -> Unit,
@@ -320,16 +321,6 @@ private fun EblanShortcutConfigsPage(
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
-    val scope = rememberCoroutineScope()
-
-    val overscrollEffect = remember {
-        OffsetOverscrollEffect(
-            scope = scope,
-            onVerticalDrag = onVerticalDrag,
-            onDragEnd = onDragEnd,
-        )
-    }
-
     val lazyListState = rememberLazyListState()
 
     val serialNumber = eblanShortcutConfigs.keys.toList().getOrElse(
@@ -339,14 +330,14 @@ private fun EblanShortcutConfigsPage(
         },
     )
 
-    val canScroll by remember(key1 = lazyListState) {
-        derivedStateOf {
-            lazyListState.canScrollForward || lazyListState.canScrollBackward
-        }
-    }
+    val currentSwipeY by rememberUpdatedState(swipeY)
 
     val nestedScrollConnection = remember {
         OffsetNestedScrollConnection(
+            swipeY = { currentSwipeY },
+            isAtTop = {
+                !lazyListState.canScrollBackward
+            },
             onVerticalDrag = onVerticalDrag,
             onDragEnd = onDragEnd,
         )
@@ -354,13 +345,7 @@ private fun EblanShortcutConfigsPage(
 
     Box(
         modifier = modifier
-            .run {
-                if (!canScroll) {
-                    nestedScroll(nestedScrollConnection)
-                } else {
-                    this
-                }
-            }
+            .nestedScroll(nestedScrollConnection)
             .fillMaxSize(),
     ) {
         LazyColumn(
@@ -369,11 +354,6 @@ private fun EblanShortcutConfigsPage(
             contentPadding = PaddingValues(
                 bottom = paddingValues.calculateBottomPadding(),
             ),
-            overscrollEffect = if (canScroll) {
-                overscrollEffect
-            } else {
-                rememberOverscrollEffect()
-            },
         ) {
             items(eblanShortcutConfigs[serialNumber].orEmpty().keys.toList()) { eblanApplicationInfoGroup ->
                 key(eblanApplicationInfoGroup.serialNumber, eblanApplicationInfoGroup.packageName) {
