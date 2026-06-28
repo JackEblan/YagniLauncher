@@ -609,15 +609,6 @@ private fun EblanApplicationInfos(
 
     var isQuietModeEnabled by remember { mutableStateOf(false) }
 
-    val isScrollInProgress by remember(
-        key1 = lazyListState,
-        key2 = swipeY,
-    ) {
-        derivedStateOf {
-            lazyListState.isScrollInProgress && swipeY == 0f
-        }
-    }
-
     LaunchedEffect(key1 = lazyListState.isScrollInProgress) {
         if (lazyListState.isScrollInProgress && showPopupApplicationMenu) {
             onUpdatePopupMenu(false)
@@ -652,7 +643,7 @@ private fun EblanApplicationInfos(
                             isVisibleOverlay = isVisibleOverlay,
                             swipeY = swipeY,
                             screenHeight = screenHeight,
-                            isScrollInProgress = isScrollInProgress,
+                            isScrollInProgress = lazyListState.isScrollInProgress,
                             onDismiss = onDismiss,
                             onUpdateGridItemSource = onUpdateGridItemSource,
                             onUpdateImageBitmap = onUpdateImageBitmap,
@@ -697,7 +688,7 @@ private fun EblanApplicationInfos(
                             isVisibleOverlay = isVisibleOverlay,
                             swipeY = swipeY,
                             screenHeight = screenHeight,
-                            isScrollInProgress = isScrollInProgress,
+                            isScrollInProgress = lazyListState.isScrollInProgress,
                             onDismiss = onDismiss,
                             onUpdateGridItemSource = onUpdateGridItemSource,
                             onUpdateImageBitmap = onUpdateImageBitmap,

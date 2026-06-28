@@ -599,15 +599,6 @@ private fun EblanApplicationInfos(
 
     var isQuietModeEnabled by remember { mutableStateOf(false) }
 
-    val isScrollInProgress by remember(
-        key1 = lazyGridState,
-        key2 = swipeY,
-    ) {
-        derivedStateOf {
-            lazyGridState.isScrollInProgress && swipeY == 0f
-        }
-    }
-
     LaunchedEffect(key1 = lazyGridState.isScrollInProgress) {
         if (lazyGridState.isScrollInProgress && showPopupApplicationMenu) {
             onUpdatePopupMenu(false)
@@ -644,7 +635,7 @@ private fun EblanApplicationInfos(
                             appDrawerType = appDrawerSettings.appDrawerType,
                             swipeY = swipeY,
                             screenHeight = screenHeight,
-                            isScrollInProgress = isScrollInProgress,
+                            isScrollInProgress = lazyGridState.isScrollInProgress,
                             onDismiss = onDismiss,
                             onUpdateGridItemSource = onUpdateGridItemSource,
                             onUpdateImageBitmap = onUpdateImageBitmap,
@@ -690,7 +681,7 @@ private fun EblanApplicationInfos(
                             appDrawerType = appDrawerSettings.appDrawerType,
                             swipeY = swipeY,
                             screenHeight = screenHeight,
-                            isScrollInProgress = isScrollInProgress,
+                            isScrollInProgress = lazyGridState.isScrollInProgress,
                             onDismiss = onDismiss,
                             onUpdateGridItemSource = onUpdateGridItemSource,
                             onUpdateImageBitmap = onUpdateImageBitmap,
