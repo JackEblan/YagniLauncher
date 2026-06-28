@@ -1,0 +1,1 @@
+- Improved App Drawer performance
