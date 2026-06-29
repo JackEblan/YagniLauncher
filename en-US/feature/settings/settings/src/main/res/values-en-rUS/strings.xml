@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~
+  ~   Copyright 2023 Einstein Blanco
+  ~
+  ~   Licensed under the GNU General Public License v3.0 (the "License");
+  ~   you may not use this file except in compliance with the License.
+  ~   You may obtain a copy of the License at
+  ~
+  ~       https://www.gnu.org/licenses/gpl-3.0
+  ~
+  ~   Unless required by applicable law or agreed to in writing, software
+  ~   distributed under the License is distributed on an "AS IS" BASIS,
+  ~   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~   See the License for the specific language governing permissions and
+  ~   limitations under the License.
+  ~
+  -->
+<resources>
+    <string name="settings">Settings</string>
+    <string name="choose_yagni_launcher">Choose Yagni Launcher</string>
+    <string name="default_launcher">Default Launcher</string>
+    <string name="themes_icon_packs">Themes, icon packs</string>
+    <string name="general">General</string>
+    <string name="grid_icon_dock_and_more">Grid, icon, dock, and more</string>
+    <string name="home">Home</string>
+    <string name="columns_and_rows_count">Columns and rows count</string>
+    <string name="app_drawer">App Drawer</string>
+    <string name="swipe_gesture_actions">Swipe gesture actions</string>
+    <string name="gestures">Gestures</string>
+    <string name="advanced_options_for_power_users">Advanced options for power users</string>
+    <string name="experimental">Experimental</string>
+    <string name="thank_you_for_using_yagni_launcher_alpha">Thank you for using Yagni Launcher Alpha!</string>
+    <string name="about_development_description">    Development began in January 2025 with regular weekly updates. This is my most complex project to date, and I dedicate significant effort to its improvement.</string>
+    <string name="support_message">    If you find value in the application, your support would be greatly appreciated through a donation on Ko-fi or by starring the repository on GitHub.</string>
+    <string name="support_on_ko_fi">Support on Ko-Fi</string>
+    <string name="star_on_github">Star on GitHub</string>
+    <string name="note_this_informational_card_will_be_removed_in_future_stable_releases">Note: This informational card will be removed in future stable releases</string>
+</resources>

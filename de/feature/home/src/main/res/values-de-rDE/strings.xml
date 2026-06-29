@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~
+  ~   Copyright 2023 Einstein Blanco
+  ~
+  ~   Licensed under the GNU General Public License v3.0 (the "License");
+  ~   you may not use this file except in compliance with the License.
+  ~   You may obtain a copy of the License at
+  ~
+  ~       https://www.gnu.org/licenses/gpl-3.0
+  ~
+  ~   Unless required by applicable law or agreed to in writing, software
+  ~   distributed under the License is distributed on an "AS IS" BASIS,
+  ~   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~   See the License for the specific language governing permissions and
+  ~   limitations under the License.
+  ~
+  -->
+<resources>
+    <string name="personal">Persönlich</string>
+    <string name="clone">Klonen</string>
+    <string name="work">Arbeit</string>
+    <string name="sort_applications">Anwendungen sortieren</string>
+    <string name="rearrange_applications">Anwendungen neu anordnen</string>
+    <string name="rearrange_applications_by_index">Anwendungen nach Index neu anordnen</string>
+    <string name="drag_an_item_to_rearrange">Ziehe ein Item um es neu anzuordnen</string>
+    <string name="work_apps_are_paused">Arbeits-Apps pausiert</string>
+    <string name="you_won_t_receive_notifications_from_your_work_apps">Sie erhalten keine Benachrichtigungen von Ihren Arbeits-Apps</string>
+    <string name="unpause">Unpause</string>
+    <string name="private_space">Privat</string>
+    <string name="please_wait_for_the_white_box_indicator">Bitte warten Sie auf die weiße Box Anzeige</string>
+    <string name="edit_pages">Seiten bearbeiten</string>
+    <string name="edit_dock_pages">Dock-Seiten bearbeiten</string>
+    <string name="widgets">Widgets</string>
+    <string name="shortcuts">Verknüpfungen</string>
+    <string name="wallpaper">Hintergrundbild</string>
+    <string name="search_widgets">Such-Widgets</string>
+    <string name="request_permissions">Berechtigungen anfordern</string>
+    <string name="allow_permissions_so_we_can_inform_you_about_important_crash_reports_and_make_phone_shortcuts">Erlaube Berechtigungen, damit wir dich über wichtige Absturzberichte informieren und Telefonverknüpfungen erstellen können</string>
+    <string name="later">Später</string>
+</resources>
