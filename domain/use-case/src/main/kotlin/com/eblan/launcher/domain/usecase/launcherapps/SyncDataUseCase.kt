@@ -35,7 +35,6 @@ import com.eblan.launcher.domain.model.ExperimentalSettings
 import com.eblan.launcher.domain.model.FastAppWidgetManagerAppWidgetProviderInfo
 import com.eblan.launcher.domain.model.FastLauncherAppsActivityInfo
 import com.eblan.launcher.domain.model.FastLauncherAppsShortcutInfo
-import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.HomeSettings
 import com.eblan.launcher.domain.model.SyncEblanApplicationInfo
 import com.eblan.launcher.domain.repository.ApplicationInfoGridItemRepository
@@ -48,6 +47,7 @@ import com.eblan.launcher.domain.repository.ShortcutInfoGridItemRepository
 import com.eblan.launcher.domain.repository.UserDataRepository
 import com.eblan.launcher.domain.repository.WidgetGridItemRepository
 import com.eblan.launcher.domain.usecase.grid.GetGridItemsUseCase
+import com.eblan.launcher.domain.usecase.grid.isTopLevel
 import com.eblan.launcher.domain.usecase.iconpack.updateIconPackInfos
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.currentCoroutineContext
@@ -229,13 +229,7 @@ class SyncDataUseCase @Inject constructor(
 
         val gridItems = getGridItemsUseCase()
             .filter {
-                when (val data = it.data) {
-                    is GridItemData.ApplicationInfo -> data.folderId == null
-                    is GridItemData.Folder -> data.folderId == null
-                    is GridItemData.ShortcutConfig -> data.folderId == null
-                    is GridItemData.ShortcutInfo -> data.folderId == null
-                    is GridItemData.Widget -> true
-                } && it.associate == Associate.Grid
+                it.isTopLevel() && it.associate == Associate.Grid
             }
             .toMutableList()
 

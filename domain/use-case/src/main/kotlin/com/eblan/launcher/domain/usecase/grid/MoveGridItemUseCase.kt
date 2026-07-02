@@ -53,13 +53,7 @@ class MoveGridItemUseCase @Inject constructor(
             val gridItemsByPage = getGridItemsUseCase().filter {
                 ensureActive()
 
-                when (val data = it.data) {
-                    is GridItemData.ApplicationInfo -> data.folderId == null
-                    is GridItemData.Folder -> data.folderId == null
-                    is GridItemData.ShortcutConfig -> data.folderId == null
-                    is GridItemData.ShortcutInfo -> data.folderId == null
-                    is GridItemData.Widget -> true
-                } && isGridItemSpanWithinBounds(
+                it.isTopLevel() && isGridItemSpanWithinBounds(
                     gridItem = it,
                     columns = columns,
                     rows = rows,

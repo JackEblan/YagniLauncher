@@ -28,7 +28,6 @@ import com.eblan.launcher.domain.framework.PackageManagerWrapper
 import com.eblan.launcher.domain.model.ApplicationInfoGridItem
 import com.eblan.launcher.domain.model.Associate
 import com.eblan.launcher.domain.model.EblanApplicationInfo
-import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.HomeSettings
 import com.eblan.launcher.domain.model.LauncherAppsActivityInfo
 import com.eblan.launcher.domain.repository.ApplicationInfoGridItemRepository
@@ -38,6 +37,7 @@ import com.eblan.launcher.domain.repository.EblanShortcutConfigRepository
 import com.eblan.launcher.domain.repository.EblanShortcutInfoRepository
 import com.eblan.launcher.domain.repository.UserDataRepository
 import com.eblan.launcher.domain.usecase.grid.GetGridItemsUseCase
+import com.eblan.launcher.domain.usecase.grid.isTopLevel
 import com.eblan.launcher.domain.usecase.iconpack.cacheIconPackFile
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.currentCoroutineContext
@@ -153,13 +153,7 @@ class AddPackageUseCase @Inject constructor(
 
         val gridItems = getGridItemsUseCase()
             .filter {
-                when (val data = it.data) {
-                    is GridItemData.ApplicationInfo -> data.folderId == null
-                    is GridItemData.Folder -> data.folderId == null
-                    is GridItemData.ShortcutConfig -> data.folderId == null
-                    is GridItemData.ShortcutInfo -> data.folderId == null
-                    is GridItemData.Widget -> true
-                } && it.associate == Associate.Grid
+                it.isTopLevel() && it.associate == Associate.Grid
             }
             .toMutableList()
 

@@ -319,6 +319,14 @@ internal suspend fun FolderGridItemWrapper.asGridItem(
     )
 }
 
+internal fun GridItem.isTopLevel() = when (val itemData = data) {
+    is GridItemData.ApplicationInfo -> itemData.folderId == null
+    is GridItemData.Folder -> itemData.folderId == null
+    is GridItemData.ShortcutConfig -> itemData.folderId == null
+    is GridItemData.ShortcutInfo -> itemData.folderId == null
+    is GridItemData.Widget -> true
+}
+
 private suspend fun FolderGridItemWrapper.asPreviewGridItem(
     maxFolderColumns: Int,
     maxFolderRows: Int,
