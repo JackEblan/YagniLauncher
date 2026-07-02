@@ -161,7 +161,6 @@ internal fun handleAnimateScrollToPage(
 }
 
 internal suspend fun handleDragGridItem(
-    gridItems: State<List<GridItem>>,
     columns: Int,
     gridCurrentPage: Int,
     dockGridCurrentPage: Int,
@@ -184,7 +183,6 @@ internal suspend fun handleDragGridItem(
     moveGridItemResult: State<MoveGridItemResult?>,
     layoutDirection: LayoutDirection,
     onMoveGridItem: (
-        gridItems: List<GridItem>,
         movingGridItem: GridItem,
         x: Int,
         y: Int,
@@ -253,7 +251,6 @@ internal suspend fun handleDragGridItem(
         -> {
             if (isOnDock) {
                 dragDockGridItem(
-                    gridItems = gridItems,
                     currentPage = dockGridCurrentPage,
                     dockColumns = dockColumns,
                     dockHeightPx = dockHeightPx,
@@ -270,7 +267,6 @@ internal suspend fun handleDragGridItem(
                 )
             } else {
                 dragGridItem(
-                    gridItems = gridItems,
                     columns = columns,
                     currentPage = gridCurrentPage,
                     dockHeightPx = dockHeightPx,
@@ -292,7 +288,6 @@ internal suspend fun handleDragGridItem(
 }
 
 private fun dragGridItem(
-    gridItems: State<List<GridItem>>,
     columns: Int,
     currentPage: Int,
     dockHeightPx: Int,
@@ -305,7 +300,6 @@ private fun dragGridItem(
     safeDrawingWidth: Int,
     moveGridItemResult: State<MoveGridItemResult?>,
     onMoveGridItem: (
-        gridItems: List<GridItem>,
         movingGridItem: GridItem,
         x: Int,
         y: Int,
@@ -357,7 +351,6 @@ private fun dragGridItem(
 
     if (isGridItemSpanWithinBounds) {
         onMoveGridItem(
-            gridItems.value,
             moveGridItem,
             dragX,
             dragY,
@@ -370,7 +363,6 @@ private fun dragGridItem(
 }
 
 private fun dragDockGridItem(
-    gridItems: State<List<GridItem>>,
     currentPage: Int,
     dockColumns: Int,
     dockHeightPx: Int,
@@ -382,7 +374,6 @@ private fun dragDockGridItem(
     safeDrawingWidth: Int,
     moveGridItemResult: State<MoveGridItemResult?>,
     onMoveGridItem: (
-        gridItems: List<GridItem>,
         movingGridItem: GridItem,
         x: Int,
         y: Int,
@@ -433,7 +424,6 @@ private fun dragDockGridItem(
         )
     ) {
         onMoveGridItem(
-            gridItems.value,
             moveGridItem,
             dragX,
             dockY,

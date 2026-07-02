@@ -221,7 +221,6 @@ internal fun HomeScreen(
     ) -> Unit,
     onMoveFolderGridItemOutsideFolder: (GridItem) -> Unit,
     onMoveGridItem: (
-        gridItems: List<GridItem>,
         movingGridItem: GridItem,
         x: Int,
         y: Int,
@@ -393,7 +392,6 @@ private fun Success(
     ) -> Unit,
     onMoveFolderGridItemOutsideFolder: (GridItem) -> Unit,
     onMoveGridItem: (
-        gridItems: List<GridItem>,
         movingGridItem: GridItem,
         x: Int,
         y: Int,

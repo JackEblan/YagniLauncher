@@ -219,7 +219,6 @@ internal class HomeViewModel @Inject constructor(
     val isVisibleOverlay = _isVisibleOverlay.asStateFlow()
 
     fun moveGridItem(
-        gridItems: List<GridItem>,
         movingGridItem: GridItem,
         x: Int,
         y: Int,
@@ -233,7 +232,6 @@ internal class HomeViewModel @Inject constructor(
         moveGridItemJob = viewModelScope.launch {
             _moveGridItemResult.update {
                 moveGridItemUseCase(
-                    gridItems = gridItems,
                     movingGridItem = movingGridItem,
                     x = x,
                     y = y,

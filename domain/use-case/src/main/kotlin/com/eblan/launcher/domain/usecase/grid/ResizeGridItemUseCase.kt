@@ -27,6 +27,7 @@ import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.repository.GridRepository
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -42,29 +43,35 @@ class ResizeGridItemUseCase @Inject constructor(
     ): GridItem = withContext(defaultDispatcher) {
         val gridItems =
             getGridItemsUseCase().filter {
+                ensureActive()
+
                 when (val data = it.data) {
                     is GridItemData.ApplicationInfo -> data.folderId == null
                     is GridItemData.Folder -> data.folderId == null
                     is GridItemData.ShortcutConfig -> data.folderId == null
                     is GridItemData.ShortcutInfo -> data.folderId == null
                     is GridItemData.Widget -> false
-                } &&
-                    isGridItemSpanWithinBounds(
-                        gridItem = it,
-                        columns = columns,
-                        rows = rows,
-                    ) && it.page == resizingGridItem.page &&
+                } && isGridItemSpanWithinBounds(
+                    gridItem = it,
+                    columns = columns,
+                    rows = rows,
+                ) && it.page == resizingGridItem.page &&
                     it.associate == resizingGridItem.associate
             }.toMutableList()
 
         val index =
-            gridItems.indexOfFirst { it.id == resizingGridItem.id }
+            gridItems.indexOfFirst {
+                ensureActive()
+                it.id == resizingGridItem.id
+            }
 
         val oldGridItem = gridItems[index]
 
         gridItems[index] = resizingGridItem
 
         val gridItemBySpan = gridItems.find {
+            ensureActive()
+
             it.id != resizingGridItem.id && rectanglesOverlap(
                 moving = resizingGridItem,
                 other = it,
