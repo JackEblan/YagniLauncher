@@ -106,9 +106,8 @@ internal fun EblanApplicationInfoGridItem(
     paddingValues: PaddingValues,
     isVisibleOverlay: Boolean,
     appDrawerType: AppDrawerType,
-    swipeY: Float,
-    screenHeight: Int,
     isScrollInProgress: Boolean,
+    isSwiping: Boolean,
     onDismiss: () -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
@@ -188,8 +187,7 @@ internal fun EblanApplicationInfoGridItem(
             drag = drag,
             eblanApplicationInfo = eblanApplicationInfo,
             isLongPress = isLongPress,
-            swipeY = swipeY,
-            screenHeight = screenHeight,
+            isSwiping = isSwiping,
             onDismiss = onDismiss,
             onUpdateGridItemSource = onUpdateGridItemSource,
             onUpdateIsDragging = onUpdateIsDragging,
@@ -293,7 +291,7 @@ internal fun EblanApplicationInfoGridItem(
                     intSize = layoutCoordinates.size
                 }
                 .run {
-                    if (swipeY == 0f &&
+                    if (!isSwiping &&
                         !isScrollInProgress &&
                         !isLongPress &&
                         !isVisibleOverlay
@@ -366,8 +364,7 @@ internal fun handleDragEblanApplicationInfoItem(
     drag: Drag,
     eblanApplicationInfo: EblanApplicationInfo,
     isLongPress: Boolean,
-    swipeY: Float,
-    screenHeight: Int,
+    isSwiping: Boolean,
     onDismiss: () -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
@@ -437,7 +434,7 @@ internal fun handleDragEblanApplicationInfoItem(
         Drag.Cancel, Drag.End -> {
             onUpdateIsLongPress(false)
 
-            if (swipeY < screenHeight) {
+            if (!isSwiping) {
                 onUpdateIsVisibleOverlay(false)
             }
         }
