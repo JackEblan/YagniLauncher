@@ -194,6 +194,9 @@ internal fun ShortcutConfigGridItem.asGridItem(): GridItem = GridItem(
     swipeDown = swipeDown,
 )
 
+/**
+ * Folder Grid Item without grid items
+ */
 internal fun FolderGridItem.asIconGridItem(): GridItem = GridItem(
     id = id,
     page = page,
