@@ -18,10 +18,8 @@
 package com.eblan.launcher.data.repository
 
 import com.eblan.launcher.data.repository.mapper.asEntity
-import com.eblan.launcher.data.repository.mapper.asGridItem
 import com.eblan.launcher.data.repository.mapper.asModel
 import com.eblan.launcher.data.room.dao.ShortcutInfoGridItemDao
-import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.PartialShortcutInfoGridItem
 import com.eblan.launcher.domain.model.ShortcutInfoGridItem
 import com.eblan.launcher.domain.repository.ShortcutInfoGridItemRepository
@@ -29,31 +27,12 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 internal class DefaultShortcutInfoGridItemRepository @Inject constructor(private val shortcutInfoGridItemDao: ShortcutInfoGridItemDao) : ShortcutInfoGridItemRepository {
-    override val gridItemsFlow =
+    override val shortcutInfoGridItemsFlow =
         shortcutInfoGridItemDao.getShortcutInfoGridItemEntitiesFlow().map { entities ->
-            entities.filter {
-                it.folderId == null
-            }.map {
-                it.asGridItem()
+            entities.map { entity ->
+                entity.asModel()
             }
         }
-
-    override val gridItemsWithFolderIdFlow =
-        shortcutInfoGridItemDao.getShortcutInfoGridItemEntitiesFlow().map { entities ->
-            entities.map {
-                it.asGridItem()
-            }
-        }
-
-    override suspend fun getGridItems(): List<GridItem> = shortcutInfoGridItemDao.getShortcutInfoGridItemEntities().filter {
-        it.folderId == null
-    }.map {
-        it.asGridItem()
-    }
-
-    override suspend fun getGridItemsWithFolderId(): List<GridItem> = shortcutInfoGridItemDao.getShortcutInfoGridItemEntities().map {
-        it.asGridItem()
-    }
 
     override suspend fun getShortcutInfoGridItems(): List<ShortcutInfoGridItem> = shortcutInfoGridItemDao.getShortcutInfoGridItemEntities().map {
         it.asModel()

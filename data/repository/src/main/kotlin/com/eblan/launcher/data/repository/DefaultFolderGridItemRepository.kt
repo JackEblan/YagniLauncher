@@ -19,6 +19,7 @@ package com.eblan.launcher.data.repository
 
 import com.eblan.launcher.data.repository.mapper.asEntity
 import com.eblan.launcher.data.repository.mapper.asFolderGridItemWrapper
+import com.eblan.launcher.data.repository.mapper.asModel
 import com.eblan.launcher.data.room.dao.FolderGridItemDao
 import com.eblan.launcher.domain.model.FolderGridItem
 import com.eblan.launcher.domain.model.FolderGridItemWrapper
@@ -49,6 +50,12 @@ internal class DefaultFolderGridItemRepository @Inject constructor(private val f
         it.folderGridItemEntity.folderId == null
     }.map {
         it.asFolderGridItemWrapper()
+    }
+
+    override suspend fun getFolderGridItems(): List<FolderGridItem> = folderGridItemDao.getFolderGridItemEntitiesFlow().filter {
+        it.folderId == null
+    }.map {
+        it.asModel()
     }
 
     override suspend fun getFolderGridItemWrappersWithFolderId(): List<FolderGridItemWrapper> = folderGridItemDao.getFolderGridItemWrapperEntities().map {

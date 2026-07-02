@@ -22,35 +22,6 @@ import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.ShortcutInfoGridItem
 
-internal fun ShortcutInfoGridItemEntity.asGridItem(): GridItem = GridItem(
-    id = id,
-    page = page,
-    startColumn = startColumn,
-    startRow = startRow,
-    columnSpan = columnSpan,
-    rowSpan = rowSpan,
-    data = GridItemData.ShortcutInfo(
-        shortcutId = shortcutId,
-        packageName = packageName,
-        serialNumber = serialNumber,
-        shortLabel = shortLabel,
-        longLabel = longLabel,
-        icon = icon,
-        isEnabled = isEnabled,
-        eblanApplicationInfoIcon = eblanApplicationInfoIcon,
-        customIcon = customIcon,
-        customShortLabel = customShortLabel,
-        index = index,
-        folderId = folderId,
-    ),
-    associate = associate,
-    override = override,
-    gridItemSettings = gridItemSettings,
-    doubleTap = doubleTap,
-    swipeUp = swipeUp,
-    swipeDown = swipeDown,
-)
-
 internal fun ShortcutInfoGridItemEntity.asModel(): ShortcutInfoGridItem = ShortcutInfoGridItem(
     id = id,
     page = page,

@@ -18,86 +18,23 @@
 package com.eblan.launcher.data.repository
 
 import com.eblan.launcher.data.repository.mapper.asEntity
-import com.eblan.launcher.data.repository.mapper.asGridItem
 import com.eblan.launcher.data.repository.mapper.asModel
 import com.eblan.launcher.data.room.dao.ApplicationInfoGridItemDao
-import com.eblan.launcher.domain.common.Dispatcher
-import com.eblan.launcher.domain.common.EblanDispatchers
-import com.eblan.launcher.domain.common.IconKeyGenerator
-import com.eblan.launcher.domain.framework.FileManager
 import com.eblan.launcher.domain.model.ApplicationInfoGridItem
-import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.PartialApplicationInfoGridItem
 import com.eblan.launcher.domain.repository.ApplicationInfoGridItemRepository
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 internal class DefaultApplicationInfoGridItemRepository @Inject constructor(
     private val applicationInfoGridItemDao: ApplicationInfoGridItemDao,
-    private val fileManager: FileManager,
-    private val iconKeyGenerator: IconKeyGenerator,
-    private val userDataRepository: DefaultUserDataRepository,
-    @param:Dispatcher(EblanDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) : ApplicationInfoGridItemRepository {
-    override val gridItemsFlow = combine(
-        userDataRepository.userDataFlow,
-        applicationInfoGridItemDao.getApplicationInfoGridItemEntitiesFlow(),
-    ) { userData, entities ->
-        entities.filter {
-            it.folderId == null
-        }.map {
-            it.asGridItem(
-                fileManager = fileManager,
-                iconKeyGenerator = iconKeyGenerator,
-                iconPackInfoPackageName = userData.generalSettings.iconPackInfoPackageName,
-            )
+    override val applicationInfoGridItems =
+        applicationInfoGridItemDao.getApplicationInfoGridItemEntitiesFlow().map { entities ->
+            entities.map { entity ->
+                entity.asModel()
+            }
         }
-    }.flowOn(ioDispatcher)
-
-    override val gridItemsWithFolderIdFlow = combine(
-        userDataRepository.userDataFlow,
-        applicationInfoGridItemDao.getApplicationInfoGridItemEntitiesFlow(),
-    ) { userData, applicationInfoGridItems ->
-        applicationInfoGridItems.map {
-            it.asGridItem(
-                fileManager = fileManager,
-                iconKeyGenerator = iconKeyGenerator,
-                iconPackInfoPackageName = userData.generalSettings.iconPackInfoPackageName,
-            )
-        }
-    }.flowOn(ioDispatcher)
-
-    override suspend fun getGridItems(): List<GridItem> = withContext(ioDispatcher) {
-        val iconPackInfoPackageName =
-            userDataRepository.userDataFlow.first().generalSettings.iconPackInfoPackageName
-
-        applicationInfoGridItemDao.getApplicationInfoGridItemEntities().filter {
-            it.folderId == null
-        }.map {
-            it.asGridItem(
-                fileManager = fileManager,
-                iconKeyGenerator = iconKeyGenerator,
-                iconPackInfoPackageName = iconPackInfoPackageName,
-            )
-        }
-    }
-
-    override suspend fun getGridItemsWithFolderId(): List<GridItem> = withContext(ioDispatcher) {
-        val iconPackInfoPackageName =
-            userDataRepository.userDataFlow.first().generalSettings.iconPackInfoPackageName
-
-        applicationInfoGridItemDao.getApplicationInfoGridItemEntities().map {
-            it.asGridItem(
-                fileManager = fileManager,
-                iconKeyGenerator = iconKeyGenerator,
-                iconPackInfoPackageName = iconPackInfoPackageName,
-            )
-        }
-    }
 
     override suspend fun getApplicationInfoGridItems(): List<ApplicationInfoGridItem> = applicationInfoGridItemDao.getApplicationInfoGridItemEntities().map {
         it.asModel()

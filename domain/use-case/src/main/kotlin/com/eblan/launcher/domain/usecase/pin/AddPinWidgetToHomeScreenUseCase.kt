@@ -32,7 +32,7 @@ import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.repository.GridRepository
 import com.eblan.launcher.domain.repository.UserDataRepository
-import com.eblan.launcher.domain.usecase.grid.GetFolderGridItemsUseCase
+import com.eblan.launcher.domain.usecase.grid.GetGridItemsUseCase
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
@@ -47,7 +47,7 @@ class AddPinWidgetToHomeScreenUseCase @Inject constructor(
     private val packageManagerWrapper: PackageManagerWrapper,
     private val gridRepository: GridRepository,
     private val iconKeyGenerator: IconKeyGenerator,
-    private val getFolderGridItemsUseCase: GetFolderGridItemsUseCase,
+    private val getGridItemsUseCase: GetGridItemsUseCase,
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) {
     @OptIn(ExperimentalUuidApi::class)
@@ -165,8 +165,16 @@ class AddPinWidgetToHomeScreenUseCase @Inject constructor(
             swipeDown = eblanAction,
         )
 
-        val gridItems = gridRepository.getGridItems().plus(getFolderGridItemsUseCase())
-            .filter { it.associate == Associate.Grid }
+        val gridItems = getGridItemsUseCase()
+            .filter {
+                when (val data = it.data) {
+                    is GridItemData.ApplicationInfo -> data.folderId == null
+                    is GridItemData.Folder -> data.folderId == null
+                    is GridItemData.ShortcutConfig -> data.folderId == null
+                    is GridItemData.ShortcutInfo -> data.folderId == null
+                    is GridItemData.Widget -> false
+                } && it.associate == Associate.Grid
+            }
 
         val newGridItem = findAvailableRegionByPage(
             gridItems = gridItems,

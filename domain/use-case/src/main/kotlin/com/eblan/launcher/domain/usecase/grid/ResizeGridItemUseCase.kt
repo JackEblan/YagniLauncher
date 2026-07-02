@@ -24,6 +24,7 @@ import com.eblan.launcher.domain.grid.isGridItemSpanWithinBounds
 import com.eblan.launcher.domain.grid.rectanglesOverlap
 import com.eblan.launcher.domain.grid.resolveConflicts
 import com.eblan.launcher.domain.model.GridItem
+import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.repository.GridRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
@@ -31,7 +32,7 @@ import javax.inject.Inject
 
 class ResizeGridItemUseCase @Inject constructor(
     private val gridRepository: GridRepository,
-    private val getFolderGridItemsUseCase: GetFolderGridItemsUseCase,
+    private val getGridItemsUseCase: GetGridItemsUseCase,
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke(
@@ -40,12 +41,19 @@ class ResizeGridItemUseCase @Inject constructor(
         rows: Int,
     ): GridItem = withContext(defaultDispatcher) {
         val gridItems =
-            gridRepository.getGridItems().plus(getFolderGridItemsUseCase()).filter {
-                isGridItemSpanWithinBounds(
-                    gridItem = it,
-                    columns = columns,
-                    rows = rows,
-                ) && it.page == resizingGridItem.page &&
+            getGridItemsUseCase().filter {
+                when (val data = it.data) {
+                    is GridItemData.ApplicationInfo -> data.folderId == null
+                    is GridItemData.Folder -> data.folderId == null
+                    is GridItemData.ShortcutConfig -> data.folderId == null
+                    is GridItemData.ShortcutInfo -> data.folderId == null
+                    is GridItemData.Widget -> false
+                } &&
+                    isGridItemSpanWithinBounds(
+                        gridItem = it,
+                        columns = columns,
+                        rows = rows,
+                    ) && it.page == resizingGridItem.page &&
                     it.associate == resizingGridItem.associate
             }.toMutableList()
 

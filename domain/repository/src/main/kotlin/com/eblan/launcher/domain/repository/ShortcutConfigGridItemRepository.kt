@@ -17,19 +17,12 @@
  */
 package com.eblan.launcher.domain.repository
 
-import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.PartialShortcutConfigGridItem
 import com.eblan.launcher.domain.model.ShortcutConfigGridItem
 import kotlinx.coroutines.flow.Flow
 
 interface ShortcutConfigGridItemRepository {
-    val gridItemsFlow: Flow<List<GridItem>>
-
-    val gridItemsWithFolderIdFlow: Flow<List<GridItem>>
-
-    suspend fun getGridItems(): List<GridItem>
-
-    suspend fun getGridItemsWithFolderId(): List<GridItem>
+    val shortcutConfigGridItemsFlow: Flow<List<ShortcutConfigGridItem>>
 
     suspend fun getShortcutConfigGridItems(): List<ShortcutConfigGridItem>
 

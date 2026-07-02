@@ -18,10 +18,8 @@
 package com.eblan.launcher.data.repository
 
 import com.eblan.launcher.data.repository.mapper.asEntity
-import com.eblan.launcher.data.repository.mapper.asGridItem
 import com.eblan.launcher.data.repository.mapper.asModel
 import com.eblan.launcher.data.room.dao.ShortcutConfigGridItemDao
-import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.PartialShortcutConfigGridItem
 import com.eblan.launcher.domain.model.ShortcutConfigGridItem
 import com.eblan.launcher.domain.repository.ShortcutConfigGridItemRepository
@@ -29,32 +27,12 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 internal class DefaultShortcutConfigGridItemRepository @Inject constructor(private val shortcutConfigGridItemDao: ShortcutConfigGridItemDao) : ShortcutConfigGridItemRepository {
-    override val gridItemsFlow =
-        shortcutConfigGridItemDao.getShortcutConfigGridItemEntitiesFlow()
-            .map { entities ->
-                entities.filter {
-                    it.folderId == null
-                }.map {
-                    it.asGridItem()
-                }
-            }
-
-    override val gridItemsWithFolderIdFlow =
+    override val shortcutConfigGridItemsFlow =
         shortcutConfigGridItemDao.getShortcutConfigGridItemEntitiesFlow().map { entities ->
-            entities.map {
-                it.asGridItem()
+            entities.map { entity ->
+                entity.asModel()
             }
         }
-
-    override suspend fun getGridItems(): List<GridItem> = shortcutConfigGridItemDao.getShortcutConfigGridItemEntities().filter {
-        it.folderId == null
-    }.map {
-        it.asGridItem()
-    }
-
-    override suspend fun getGridItemsWithFolderId(): List<GridItem> = shortcutConfigGridItemDao.getShortcutConfigGridItemEntities().map {
-        it.asGridItem()
-    }
 
     override suspend fun getShortcutConfigGridItems(): List<ShortcutConfigGridItem> = shortcutConfigGridItemDao.getShortcutConfigGridItemEntities().map {
         it.asModel()

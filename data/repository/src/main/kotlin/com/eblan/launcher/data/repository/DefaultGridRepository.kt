@@ -40,8 +40,6 @@ import com.eblan.launcher.domain.repository.ShortcutConfigGridItemRepository
 import com.eblan.launcher.domain.repository.ShortcutInfoGridItemRepository
 import com.eblan.launcher.domain.repository.WidgetGridItemRepository
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.withContext
 import java.io.File
 import javax.inject.Inject
@@ -56,27 +54,6 @@ internal class DefaultGridRepository @Inject constructor(
     private val appWidgetHostWrapper: AppWidgetHostWrapper,
     @param:Dispatcher(EblanDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) : GridRepository {
-    override val gridItemsFlow: Flow<List<GridItem>> = combine(
-        applicationInfoGridItemRepository.gridItemsFlow,
-        widgetGridItemRepository.gridItemsFlow,
-        shortcutInfoGridItemRepository.gridItemsFlow,
-        shortcutConfigGridItemRepository.gridItemsFlow,
-    ) { applicationInfoGridItems, widgetGridItems, shortcutInfoGridItems, shortcutConfigGridItems ->
-        applicationInfoGridItems + widgetGridItems + shortcutInfoGridItems + shortcutConfigGridItems
-    }
-
-    override val gridItemsWithFolderIdFlow: Flow<List<GridItem>> = combine(
-        applicationInfoGridItemRepository.gridItemsWithFolderIdFlow,
-        shortcutInfoGridItemRepository.gridItemsWithFolderIdFlow,
-        shortcutConfigGridItemRepository.gridItemsWithFolderIdFlow,
-    ) { applicationInfoGridItems, shortcutInfoGridItems, shortcutConfigGridItems ->
-        applicationInfoGridItems + shortcutInfoGridItems + shortcutConfigGridItems
-    }
-
-    override suspend fun getGridItems(): List<GridItem> = applicationInfoGridItemRepository.getGridItems() + widgetGridItemRepository.getGridItems() + shortcutInfoGridItemRepository.getGridItems() + shortcutConfigGridItemRepository.getGridItems()
-
-    override suspend fun getGridItemsWithFolderId(): List<GridItem> = applicationInfoGridItemRepository.getGridItemsWithFolderId() + shortcutInfoGridItemRepository.getGridItemsWithFolderId() + shortcutConfigGridItemRepository.getGridItemsWithFolderId()
-
     override suspend fun insertGridItem(gridItem: GridItem) {
         when (val data = gridItem.data) {
             is GridItemData.ApplicationInfo -> {
