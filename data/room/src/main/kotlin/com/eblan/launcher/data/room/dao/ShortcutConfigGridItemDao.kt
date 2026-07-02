@@ -70,4 +70,7 @@ interface ShortcutConfigGridItemDao {
 
     @Upsert
     suspend fun upsertShortcutConfigGridItemEntity(entity: ShortcutConfigGridItemEntity)
+
+    @Query("DELETE FROM ShortcutConfigGridItemEntity WHERE id = :id")
+    suspend fun deleteShortcutConfigGridItemEntityById(id: String)
 }

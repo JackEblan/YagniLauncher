@@ -45,4 +45,6 @@ interface FolderGridItemRepository {
     suspend fun insertFolderGridItems(folderGridItems: List<FolderGridItem>)
 
     suspend fun upsertFolderGridItem(folderGridItem: FolderGridItem)
+
+    suspend fun deleteFolderGridItemById(id: String)
 }

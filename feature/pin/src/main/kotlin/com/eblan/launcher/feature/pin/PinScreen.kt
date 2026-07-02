@@ -107,10 +107,10 @@ fun PinScreen(
                 isFinished = isFinished,
                 pinItemRequest = pinItemRequest,
                 onAddPinWidgetToHomeScreen = viewModel::addPinWidgetToHomeScreen,
-                onDeleteGridItemCache = viewModel::deleteGridItemCache,
+                onDeleteGridItemCache = viewModel::deleteGridItem,
                 onDragStart = onDragStart,
                 onFinish = onFinish,
-                onUpdateGridItemCache = viewModel::updateGridItemDataCache,
+                onUpdateGridItemCache = viewModel::updateGridItemData,
                 onUpdateGridItems = viewModel::updateGridItems,
             )
         }
@@ -122,7 +122,7 @@ fun PinScreen(
                 isFinished = isFinished,
                 pinItemRequest = pinItemRequest,
                 onAddPinShortcutToHomeScreen = viewModel::addPinShortcutToHomeScreen,
-                onDeleteShortcutGridItem = viewModel::deleteGridItemCache,
+                onDeleteShortcutGridItem = viewModel::deleteGridItem,
                 onDragStart = onDragStart,
                 onFinish = onFinish,
                 onUpdateGridItems = viewModel::updateGridItems,

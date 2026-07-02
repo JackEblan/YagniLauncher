@@ -58,4 +58,6 @@ interface ApplicationInfoGridItemRepository {
     suspend fun insertApplicationInfoGridItem(applicationInfoGridItem: ApplicationInfoGridItem)
 
     suspend fun upsertApplicationInfoGridItem(applicationInfoGridItem: ApplicationInfoGridItem)
+
+    suspend fun deleteApplicationInfoGridItemById(id: String)
 }

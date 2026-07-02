@@ -390,7 +390,7 @@ internal class HomeViewModel @Inject constructor(
                 null
             }
 
-            gridRepository.deleteGridItem(gridItem = gridItem)
+            gridRepository.deleteGridItemById(gridItem = gridItem)
         }
     }
 
@@ -439,7 +439,7 @@ internal class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             val movingGridItem = moveGridItemResult.movingGridItem
 
-            gridRepository.deleteGridItem(gridItem = movingGridItem)
+            gridRepository.deleteGridItemById(gridItem = movingGridItem)
 
             val eblanApplicationInfoIcon =
                 packageManagerWrapper.getComponentName(packageName = pinItemRequestType.packageName)

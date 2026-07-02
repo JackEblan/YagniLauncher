@@ -63,4 +63,7 @@ interface FolderGridItemDao {
 
     @Upsert
     suspend fun upsertFolderGridItemEntity(entity: FolderGridItemEntity)
+
+    @Query("DELETE FROM FolderGridItemEntity WHERE id = :id")
+    suspend fun deleteFolderGridItemEntityById(id: String)
 }

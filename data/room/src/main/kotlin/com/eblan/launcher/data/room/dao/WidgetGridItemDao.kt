@@ -64,4 +64,7 @@ interface WidgetGridItemDao {
 
     @Upsert
     suspend fun upsertWidgetGridItemEntity(entity: WidgetGridItemEntity)
+
+    @Query("DELETE FROM WidgetGridItemEntity WHERE id = :id")
+    suspend fun deleteWidgetGridItemEntityById(id: String)
 }

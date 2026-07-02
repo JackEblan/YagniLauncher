@@ -293,7 +293,8 @@ internal fun EblanApplicationInfoGridItem(
                     intSize = layoutCoordinates.size
                 }
                 .run {
-                    if (!isScrollInProgress &&
+                    if (swipeY == 0f &&
+                        !isScrollInProgress &&
                         !isLongPress &&
                         !isVisibleOverlay
                     ) {

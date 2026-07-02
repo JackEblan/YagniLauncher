@@ -117,7 +117,7 @@ class PinScreenViewModel @Inject constructor(
         }
     }
 
-    fun updateGridItemDataCache(gridItem: GridItem) {
+    fun updateGridItemData(gridItem: GridItem) {
         viewModelScope.launch {
             gridRepository.updateGridItem(gridItem = gridItem)
 
@@ -127,7 +127,7 @@ class PinScreenViewModel @Inject constructor(
         }
     }
 
-    fun deleteGridItemCache(gridItem: GridItem) {
+    fun deleteGridItem(gridItem: GridItem) {
         viewModelScope.launch {
             val data = gridItem.data
 

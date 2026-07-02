@@ -170,4 +170,8 @@ internal class DefaultApplicationInfoGridItemRepository @Inject constructor(
     override suspend fun upsertApplicationInfoGridItem(applicationInfoGridItem: ApplicationInfoGridItem) {
         applicationInfoGridItemDao.upsertApplicationInfoGridItemEntity(entity = applicationInfoGridItem.asEntity())
     }
+
+    override suspend fun deleteApplicationInfoGridItemById(id: String) {
+        applicationInfoGridItemDao.deleteApplicationInfoGridItemEntityById(id = id)
+    }
 }

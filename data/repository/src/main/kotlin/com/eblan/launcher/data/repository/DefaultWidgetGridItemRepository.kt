@@ -27,7 +27,6 @@ import com.eblan.launcher.domain.model.WidgetGridItem
 import com.eblan.launcher.domain.repository.WidgetGridItemRepository
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
-import kotlin.collections.map
 
 internal class DefaultWidgetGridItemRepository @Inject constructor(private val widgetGridItemDao: WidgetGridItemDao) : WidgetGridItemRepository {
     override val gridItemsFlow =
@@ -99,5 +98,9 @@ internal class DefaultWidgetGridItemRepository @Inject constructor(private val w
 
     override suspend fun upsertWidgetGridItem(widgetGridItem: WidgetGridItem) {
         widgetGridItemDao.upsertWidgetGridItemEntity(entity = widgetGridItem.asEntity())
+    }
+
+    override suspend fun deleteWidgetGridItemById(id: String) {
+        widgetGridItemDao.deleteWidgetGridItemEntityById(id = id)
     }
 }

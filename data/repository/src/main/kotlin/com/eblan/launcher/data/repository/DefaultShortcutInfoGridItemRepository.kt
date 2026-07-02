@@ -124,4 +124,8 @@ internal class DefaultShortcutInfoGridItemRepository @Inject constructor(private
     override suspend fun upsertShortcutInfoGridItem(shortcutInfoGridItem: ShortcutInfoGridItem) {
         shortcutInfoGridItemDao.upsertShortcutInfoGridItemEntity(entity = shortcutInfoGridItem.asEntity())
     }
+
+    override suspend fun deleteShortcutInfoGridItemById(id: String) {
+        shortcutInfoGridItemDao.deleteShortcutInfoGridItemEntityById(id = id)
+    }
 }

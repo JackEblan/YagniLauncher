@@ -80,12 +80,12 @@ internal suspend fun handleDropGridItem(
         return
     }
 
-    fun cancelWithToast() {
+    fun cancelAndDeleteGridItem() {
         onUpdateIsVisibleOverlay(false)
 
         onUpdateIsDragging(false)
 
-        onDragCancelAfterMove()
+        onResetGridAfterDeleteGridItem(currentMoveGridItemResult.movingGridItem)
 
         Toast.makeText(
             context,
@@ -100,15 +100,23 @@ internal suspend fun handleDropGridItem(
 
     when (currentGridItemSource) {
         is GridItemSource.Existing -> {
+            fun cancel() {
+                onUpdateIsVisibleOverlay(false)
+
+                onUpdateIsDragging(false)
+
+                onDragCancelAfterMove()
+            }
+
             if (isLongPress) {
                 onUpdateIsVisibleOverlay(false)
 
                 return
             }
 
-            if (isVisibleOverlay.value && isMoveGridItemResultFailed) return cancelWithToast()
+            if (isVisibleOverlay.value && isMoveGridItemResultFailed) return cancel()
 
-            if (lockMovement) return cancelWithToast()
+            if (lockMovement) return cancel()
 
             if (isVisibleOverlay.value) {
                 onDragEndAfterMove(currentMoveGridItemResult)
@@ -118,9 +126,9 @@ internal suspend fun handleDropGridItem(
         }
 
         is GridItemSource.New -> {
-            if (isVisibleOverlay.value && isDragging && isMoveGridItemResultFailed) return cancelWithToast()
+            if (isVisibleOverlay.value && isDragging && isMoveGridItemResultFailed) return cancelAndDeleteGridItem()
 
-            if (lockMovement) return cancelWithToast()
+            if (lockMovement) return cancelAndDeleteGridItem()
 
             if (isVisibleOverlay.value && isDragging) {
                 val movingGridItem = currentMoveGridItemResult.movingGridItem
@@ -167,9 +175,9 @@ internal suspend fun handleDropGridItem(
         }
 
         is GridItemSource.Pin -> {
-            if (isVisibleOverlay.value && isDragging && isMoveGridItemResultFailed) return cancelWithToast()
+            if (isVisibleOverlay.value && isDragging && isMoveGridItemResultFailed) return cancelAndDeleteGridItem()
 
-            if (lockMovement) return cancelWithToast()
+            if (lockMovement) return cancelAndDeleteGridItem()
 
             if (isVisibleOverlay.value && isDragging) {
                 val movingGridItem = currentMoveGridItemResult.movingGridItem
