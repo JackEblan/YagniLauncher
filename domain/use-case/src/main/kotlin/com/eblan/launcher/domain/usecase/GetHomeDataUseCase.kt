@@ -28,6 +28,7 @@ import com.eblan.launcher.domain.framework.WallpaperManagerWrapper
 import com.eblan.launcher.domain.grid.isGridItemSpanWithinBounds
 import com.eblan.launcher.domain.model.Associate
 import com.eblan.launcher.domain.model.GridItem
+import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.HomeData
 import com.eblan.launcher.domain.model.TextColor
 import com.eblan.launcher.domain.model.Theme
@@ -161,7 +162,15 @@ class GetHomeDataUseCase @Inject constructor(
             gridItemsFlow,
             folderGridItemsFlow,
         ) { gridItems, folderGridItems ->
-            gridItems + folderGridItems
+            (gridItems + folderGridItems).filter {
+                when (val data = it.data) {
+                    is GridItemData.ApplicationInfo -> data.folderId == null
+                    is GridItemData.Folder -> data.folderId == null
+                    is GridItemData.ShortcutConfig -> data.folderId == null
+                    is GridItemData.ShortcutInfo -> data.folderId == null
+                    is GridItemData.Widget -> false
+                }
+            }
         }
     }
 
