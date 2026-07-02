@@ -248,8 +248,8 @@ internal fun ListApplicationScreen(
                     TagElevatedFilterChip(
                         eblanApplicationInfoTag = it,
                         selectedEblanApplicationInfoTag = selectedEblanApplicationInfoTagId,
-                        onUpdateEblanApplicationInfoTag = {
-                            selectedEblanApplicationInfoTagId = it
+                        onUpdateEblanApplicationInfoTag = { id ->
+                            selectedEblanApplicationInfoTagId = id
                         },
                     )
                 }
