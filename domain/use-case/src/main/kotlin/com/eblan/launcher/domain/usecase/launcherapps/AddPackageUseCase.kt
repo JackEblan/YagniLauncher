@@ -158,7 +158,7 @@ class AddPackageUseCase @Inject constructor(
                     is GridItemData.Folder -> data.folderId == null
                     is GridItemData.ShortcutConfig -> data.folderId == null
                     is GridItemData.ShortcutInfo -> data.folderId == null
-                    is GridItemData.Widget -> false
+                    is GridItemData.Widget -> true
                 } && it.associate == Associate.Grid
             }
             .toMutableList()
