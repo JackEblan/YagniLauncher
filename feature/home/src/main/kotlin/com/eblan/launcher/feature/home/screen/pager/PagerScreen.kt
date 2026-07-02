@@ -181,7 +181,6 @@ internal fun PagerScreen(
     ) -> Unit,
     onMoveFolderGridItemOutsideFolder: (GridItem) -> Unit,
     onMoveGridItem: (
-        gridItems: List<GridItem>,
         movingGridItem: GridItem,
         x: Int,
         y: Int,
@@ -393,7 +392,6 @@ internal fun PagerScreen(
 
     val lastPopupFolderGridItem = folderPopups.lastOrNull()
 
-    val currentGridItems = rememberUpdatedState(gridItems)
     val currentGridItemSource = rememberUpdatedState(gridItemSource)
     val currentIsVisibleOverlay = rememberUpdatedState(isVisibleOverlay)
     val currentMoveGridItemResult = rememberUpdatedState(moveGridItemResult)
@@ -419,7 +417,6 @@ internal fun PagerScreen(
 
     LaunchedEffect(key1 = pagerScreenState.dragIntOffset) {
         pagerScreenState.handleDragGridItemEffect(
-            gridItems = currentGridItems,
             gridCurrentPage = gridCurrentPage,
             dockGridCurrentPage = dockGridCurrentPage,
             density = density,
@@ -710,8 +707,8 @@ internal fun PagerScreen(
                                 )
                             },
                             onUpsertFolderPopupEntry = onUpsertFolderPopupEntry,
-                            onTapShortcutConfig = {
-                                context.startActivity(parseUri(it, 0))
+                            onTapShortcutConfig = { shortcutIntentUri ->
+                                context.startActivity(parseUri(shortcutIntentUri, 0))
                             },
                             onTapShortcutInfo = { serialNumber, packageName, shortcutId ->
                                 val sourceBoundsX = x + leftPadding
@@ -832,8 +829,8 @@ internal fun PagerScreen(
                                 )
                             },
                             onUpsertFolderPopupEntry = onUpsertFolderPopupEntry,
-                            onTapShortcutConfig = {
-                                context.startActivity(parseUri(it, 0))
+                            onTapShortcutConfig = { shortcutIntentUri ->
+                                context.startActivity(parseUri(shortcutIntentUri, 0))
                             },
                             onTapShortcutInfo = { serialNumber, packageName, shortcutId ->
                                 val sourceBoundsX = x + leftPadding

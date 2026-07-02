@@ -17,15 +17,12 @@
  */
 package com.eblan.launcher.domain.repository
 
-import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.PartialUpdateWidgetGridItem
 import com.eblan.launcher.domain.model.WidgetGridItem
 import kotlinx.coroutines.flow.Flow
 
 interface WidgetGridItemRepository {
-    val gridItemsFlow: Flow<List<GridItem>>
-
-    suspend fun getGridItems(): List<GridItem>
+    val widgetGridItemsFlow: Flow<List<WidgetGridItem>>
 
     suspend fun getWidgetGridItems(): List<WidgetGridItem>
 

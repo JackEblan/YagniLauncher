@@ -222,8 +222,8 @@ internal fun VerticalApplicationScreen(
                     TagElevatedFilterChip(
                         eblanApplicationInfoTag = it,
                         selectedEblanApplicationInfoTag = selectedEblanApplicationInfoTagId,
-                        onUpdateEblanApplicationInfoTag = {
-                            selectedEblanApplicationInfoTagId = it
+                        onUpdateEblanApplicationInfoTag = { id ->
+                            selectedEblanApplicationInfoTagId = id
                         },
                     )
                 }

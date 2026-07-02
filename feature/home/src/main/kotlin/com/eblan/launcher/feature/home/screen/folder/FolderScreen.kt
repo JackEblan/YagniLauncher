@@ -487,8 +487,8 @@ internal fun FolderScreen(
                                         ),
                                     )
                                 },
-                                onTapShortcutConfig = {
-                                    context.startActivity(parseUri(it, 0))
+                                onTapShortcutConfig = { shortcutIntentUri ->
+                                    context.startActivity(parseUri(shortcutIntentUri, 0))
                                 },
                                 onTapShortcutInfo = { serialNumber, packageName, shortcutId ->
                                     val sourceBoundsX = x + leftPadding

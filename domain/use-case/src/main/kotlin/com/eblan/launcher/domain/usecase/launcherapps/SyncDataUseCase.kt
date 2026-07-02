@@ -42,12 +42,12 @@ import com.eblan.launcher.domain.repository.EblanAppWidgetProviderInfoRepository
 import com.eblan.launcher.domain.repository.EblanApplicationInfoRepository
 import com.eblan.launcher.domain.repository.EblanShortcutConfigRepository
 import com.eblan.launcher.domain.repository.EblanShortcutInfoRepository
-import com.eblan.launcher.domain.repository.GridRepository
 import com.eblan.launcher.domain.repository.ShortcutConfigGridItemRepository
 import com.eblan.launcher.domain.repository.ShortcutInfoGridItemRepository
 import com.eblan.launcher.domain.repository.UserDataRepository
 import com.eblan.launcher.domain.repository.WidgetGridItemRepository
-import com.eblan.launcher.domain.usecase.grid.GetFolderGridItemsUseCase
+import com.eblan.launcher.domain.usecase.grid.GetGridItemsUseCase
+import com.eblan.launcher.domain.usecase.grid.isTopLevel
 import com.eblan.launcher.domain.usecase.iconpack.updateIconPackInfos
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.currentCoroutineContext
@@ -75,8 +75,7 @@ class SyncDataUseCase @Inject constructor(
     private val iconPackManager: IconPackManager,
     private val shortcutConfigGridItemRepository: ShortcutConfigGridItemRepository,
     private val iconKeyGenerator: IconKeyGenerator,
-    private val gridRepository: GridRepository,
-    private val getFolderGridItemsUseCase: GetFolderGridItemsUseCase,
+    private val getGridItemsUseCase: GetGridItemsUseCase,
     @param:Dispatcher(EblanDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke() {
@@ -228,8 +227,11 @@ class SyncDataUseCase @Inject constructor(
     ) {
         if (!homeSettings.addNewAppsToHomeScreen || experimentalSettings.firstLaunch) return
 
-        val gridItems = gridRepository.getGridItems().plus(getFolderGridItemsUseCase())
-            .filter { it.associate == Associate.Grid }.toMutableList()
+        val gridItems = getGridItemsUseCase()
+            .filter {
+                it.isTopLevel() && it.associate == Associate.Grid
+            }
+            .toMutableList()
 
         val oldAddNewEblanApplicationInfos =
             oldSyncEblanApplicationInfos.filterNot {

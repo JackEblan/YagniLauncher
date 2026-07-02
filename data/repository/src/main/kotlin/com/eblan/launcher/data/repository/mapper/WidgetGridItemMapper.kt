@@ -18,57 +18,9 @@
 package com.eblan.launcher.data.repository.mapper
 
 import com.eblan.launcher.data.room.entity.WidgetGridItemEntity
-import com.eblan.launcher.domain.model.EblanAction
-import com.eblan.launcher.domain.model.EblanActionType
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.WidgetGridItem
-
-internal fun WidgetGridItemEntity.asGridItem(): GridItem = GridItem(
-    id = id,
-    page = page,
-    startColumn = startColumn,
-    startRow = startRow,
-    columnSpan = columnSpan,
-    rowSpan = rowSpan,
-    data = GridItemData.Widget(
-        appWidgetId = appWidgetId,
-        componentName = componentName,
-        packageName = packageName,
-        serialNumber = serialNumber,
-        configure = configure,
-        minWidth = minWidth,
-        minHeight = minHeight,
-        resizeMode = resizeMode,
-        minResizeWidth = minResizeWidth,
-        minResizeHeight = minResizeHeight,
-        maxResizeWidth = maxResizeWidth,
-        maxResizeHeight = maxResizeHeight,
-        targetCellHeight = targetCellHeight,
-        targetCellWidth = targetCellWidth,
-        preview = preview,
-        label = label,
-        icon = icon,
-    ),
-    associate = associate,
-    override = override,
-    gridItemSettings = gridItemSettings,
-    doubleTap = EblanAction(
-        eblanActionType = EblanActionType.None,
-        serialNumber = 0L,
-        componentName = "",
-    ),
-    swipeUp = EblanAction(
-        eblanActionType = EblanActionType.None,
-        serialNumber = 0L,
-        componentName = "",
-    ),
-    swipeDown = EblanAction(
-        eblanActionType = EblanActionType.None,
-        serialNumber = 0L,
-        componentName = "",
-    ),
-)
 
 internal fun WidgetGridItemEntity.asModel(): WidgetGridItem = WidgetGridItem(
     id = id,

@@ -37,10 +37,10 @@ import javax.inject.Inject
 
 class MoveGridItemUseCase @Inject constructor(
     private val gridRepository: GridRepository,
+    private val getGridItemsUseCase: GetGridItemsUseCase,
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke(
-        gridItems: List<GridItem>,
         movingGridItem: GridItem,
         x: Int,
         y: Int,
@@ -50,10 +50,10 @@ class MoveGridItemUseCase @Inject constructor(
         gridHeight: Int,
     ): MoveGridItemResult {
         return withContext(defaultDispatcher) {
-            val gridItemsByPage = gridItems.filter {
+            val gridItemsByPage = getGridItemsUseCase().filter {
                 ensureActive()
 
-                isGridItemSpanWithinBounds(
+                it.isTopLevel() && isGridItemSpanWithinBounds(
                     gridItem = it,
                     columns = columns,
                     rows = rows,

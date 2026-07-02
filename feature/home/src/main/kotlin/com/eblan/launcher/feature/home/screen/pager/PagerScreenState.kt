@@ -363,7 +363,6 @@ internal class PagerScreenState(
     }
 
     suspend fun handleDragGridItemEffect(
-        gridItems: State<List<GridItem>>,
         gridCurrentPage: Int,
         dockGridCurrentPage: Int,
         density: Density,
@@ -377,7 +376,6 @@ internal class PagerScreenState(
         moveGridItemResult: State<MoveGridItemResult?>,
         layoutDirection: LayoutDirection,
         onMoveGridItem: (
-            gridItems: List<GridItem>,
             movingGridItem: GridItem,
             x: Int,
             y: Int,
@@ -388,7 +386,6 @@ internal class PagerScreenState(
         ) -> Unit,
     ) {
         handleDragGridItem(
-            gridItems = gridItems,
             columns = homeSettings.columns,
             gridCurrentPage = gridCurrentPage,
             dockGridCurrentPage = dockGridCurrentPage,

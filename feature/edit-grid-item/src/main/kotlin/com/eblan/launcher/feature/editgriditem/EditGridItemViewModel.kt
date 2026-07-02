@@ -30,7 +30,7 @@ import com.eblan.launcher.domain.model.IconPackInfoComponent
 import com.eblan.launcher.domain.model.PackageManagerIconPackInfo
 import com.eblan.launcher.domain.repository.GridRepository
 import com.eblan.launcher.domain.usecase.application.GetEblanApplicationInfosUseCase
-import com.eblan.launcher.domain.usecase.grid.GetGridItemByIdUseCase
+import com.eblan.launcher.domain.usecase.grid.GetGridItemsUseCase
 import com.eblan.launcher.feature.editgriditem.model.EditGridItemUiState
 import com.eblan.launcher.feature.editgriditem.navigation.EditGridItemRouteData
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -52,7 +52,7 @@ internal class EditGridItemViewModel @Inject constructor(
     packageManagerWrapper: PackageManagerWrapper,
     private val gridRepository: GridRepository,
     getEblanApplicationInfosUseCase: GetEblanApplicationInfosUseCase,
-    private val getGridItemByIdUseCase: GetGridItemByIdUseCase,
+    private val getGridItemsUseCase: GetGridItemsUseCase,
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) : ViewModel() {
     private val editGridItemRouteData = savedStateHandle.toRoute<EditGridItemRouteData>()
@@ -148,10 +148,12 @@ internal class EditGridItemViewModel @Inject constructor(
     }
 
     private fun getGridItem() {
-        viewModelScope.launch {
+        viewModelScope.launch(defaultDispatcher) {
             _editGridItemUiState.update {
                 EditGridItemUiState.Success(
-                    gridItem = getGridItemByIdUseCase(id = editGridItemRouteData.id),
+                    gridItem = getGridItemsUseCase().find {
+                        it.id == editGridItemRouteData.id
+                    },
                 )
             }
         }

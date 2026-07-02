@@ -20,12 +20,15 @@ package com.eblan.launcher.domain.usecase.grid
 import com.eblan.launcher.domain.common.IconKeyGenerator
 import com.eblan.launcher.domain.framework.FileManager
 import com.eblan.launcher.domain.model.ApplicationInfoGridItem
+import com.eblan.launcher.domain.model.EblanAction
+import com.eblan.launcher.domain.model.EblanActionType
 import com.eblan.launcher.domain.model.FolderGridItem
 import com.eblan.launcher.domain.model.FolderGridItemWrapper
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.ShortcutConfigGridItem
 import com.eblan.launcher.domain.model.ShortcutInfoGridItem
+import com.eblan.launcher.domain.model.WidgetGridItem
 import com.eblan.launcher.domain.repository.FolderGridItemRepository
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
@@ -33,6 +36,193 @@ import java.io.File
 import kotlin.math.ceil
 import kotlin.math.min
 import kotlin.math.sqrt
+
+internal suspend fun ApplicationInfoGridItem.asGridItem(
+    fileManager: FileManager,
+    iconKeyGenerator: IconKeyGenerator,
+    iconPackInfoPackageName: String,
+): GridItem {
+    val iconPacksDirectory = fileManager.getFilesDirectory(
+        FileManager.ICON_PACKS_DIR,
+    )
+
+    val iconPackDirectory = File(
+        iconPacksDirectory,
+        iconPackInfoPackageName,
+    )
+
+    val iconPackInfoFilePath = File(
+        iconPackDirectory,
+        iconKeyGenerator.getHashedName(name = componentName),
+    )
+
+    return GridItem(
+        id = id,
+        page = page,
+        startColumn = startColumn,
+        startRow = startRow,
+        columnSpan = columnSpan,
+        rowSpan = rowSpan,
+        data = GridItemData.ApplicationInfo(
+            serialNumber = serialNumber,
+            componentName = componentName,
+            packageName = packageName,
+            icon = icon,
+            label = label,
+            customIcon = customIcon,
+            customLabel = customLabel,
+            index = index,
+            folderId = folderId,
+            iconPackInfoFilePath = if (iconPackInfoFilePath.exists()) {
+                iconPackInfoFilePath.absolutePath
+            } else {
+                null
+            },
+        ),
+        associate = associate,
+        override = override,
+        gridItemSettings = gridItemSettings,
+        doubleTap = doubleTap,
+        swipeUp = swipeUp,
+        swipeDown = swipeDown,
+    )
+}
+
+internal fun WidgetGridItem.asGridItem(): GridItem = GridItem(
+    id = id,
+    page = page,
+    startColumn = startColumn,
+    startRow = startRow,
+    columnSpan = columnSpan,
+    rowSpan = rowSpan,
+    data = GridItemData.Widget(
+        appWidgetId = appWidgetId,
+        componentName = componentName,
+        packageName = packageName,
+        serialNumber = serialNumber,
+        configure = configure,
+        minWidth = minWidth,
+        minHeight = minHeight,
+        resizeMode = resizeMode,
+        minResizeWidth = minResizeWidth,
+        minResizeHeight = minResizeHeight,
+        maxResizeWidth = maxResizeWidth,
+        maxResizeHeight = maxResizeHeight,
+        targetCellHeight = targetCellHeight,
+        targetCellWidth = targetCellWidth,
+        preview = preview,
+        label = label,
+        icon = icon,
+    ),
+    associate = associate,
+    override = override,
+    gridItemSettings = gridItemSettings,
+    doubleTap = EblanAction(
+        eblanActionType = EblanActionType.None,
+        serialNumber = 0L,
+        componentName = "",
+    ),
+    swipeUp = EblanAction(
+        eblanActionType = EblanActionType.None,
+        serialNumber = 0L,
+        componentName = "",
+    ),
+    swipeDown = EblanAction(
+        eblanActionType = EblanActionType.None,
+        serialNumber = 0L,
+        componentName = "",
+    ),
+)
+
+internal fun ShortcutInfoGridItem.asGridItem(): GridItem = GridItem(
+    id = id,
+    page = page,
+    startColumn = startColumn,
+    startRow = startRow,
+    columnSpan = columnSpan,
+    rowSpan = rowSpan,
+    data = GridItemData.ShortcutInfo(
+        shortcutId = shortcutId,
+        packageName = packageName,
+        serialNumber = serialNumber,
+        shortLabel = shortLabel,
+        longLabel = longLabel,
+        icon = icon,
+        isEnabled = isEnabled,
+        eblanApplicationInfoIcon = eblanApplicationInfoIcon,
+        customIcon = customIcon,
+        customShortLabel = customShortLabel,
+        index = index,
+        folderId = folderId,
+    ),
+    associate = associate,
+    override = override,
+    gridItemSettings = gridItemSettings,
+    doubleTap = doubleTap,
+    swipeUp = swipeUp,
+    swipeDown = swipeDown,
+)
+
+internal fun ShortcutConfigGridItem.asGridItem(): GridItem = GridItem(
+    id = id,
+    page = page,
+    startColumn = startColumn,
+    startRow = startRow,
+    columnSpan = columnSpan,
+    rowSpan = rowSpan,
+    data = GridItemData.ShortcutConfig(
+        serialNumber = serialNumber,
+        componentName = componentName,
+        packageName = packageName,
+        activityIcon = activityIcon,
+        activityLabel = activityLabel,
+        applicationIcon = applicationIcon,
+        applicationLabel = applicationLabel,
+        shortcutIntentName = shortcutIntentName,
+        shortcutIntentIcon = shortcutIntentIcon,
+        shortcutIntentUri = shortcutIntentUri,
+        customIcon = customIcon,
+        customLabel = customLabel,
+        index = index,
+        folderId = folderId,
+    ),
+    associate = associate,
+    override = override,
+    gridItemSettings = gridItemSettings,
+    doubleTap = doubleTap,
+    swipeUp = swipeUp,
+    swipeDown = swipeDown,
+)
+
+/**
+ * Folder Grid Item without grid items
+ */
+internal fun FolderGridItem.asIconGridItem(): GridItem = GridItem(
+    id = id,
+    page = page,
+    startColumn = startColumn,
+    startRow = startRow,
+    columnSpan = columnSpan,
+    rowSpan = rowSpan,
+    data = GridItemData.Folder(
+        id = id,
+        label = label,
+        gridItems = emptyList(),
+        gridItemsByPage = emptyMap(),
+        icon = icon,
+        columns = 0,
+        rows = 0,
+        maxIndex = 0,
+        index = index,
+        folderId = folderId,
+    ),
+    associate = associate,
+    override = override,
+    gridItemSettings = gridItemSettings,
+    doubleTap = doubleTap,
+    swipeUp = swipeUp,
+    swipeDown = swipeDown,
+)
 
 internal suspend fun FolderGridItemWrapper.asGridItem(
     folderGridItemRepository: FolderGridItemRepository,
@@ -127,6 +317,14 @@ internal suspend fun FolderGridItemWrapper.asGridItem(
         swipeUp = folderGridItem.swipeUp,
         swipeDown = folderGridItem.swipeDown,
     )
+}
+
+internal fun GridItem.isTopLevel() = when (val itemData = data) {
+    is GridItemData.ApplicationInfo -> itemData.folderId == null
+    is GridItemData.Folder -> itemData.folderId == null
+    is GridItemData.ShortcutConfig -> itemData.folderId == null
+    is GridItemData.ShortcutInfo -> itemData.folderId == null
+    is GridItemData.Widget -> true
 }
 
 private suspend fun FolderGridItemWrapper.asPreviewGridItem(
@@ -237,141 +435,3 @@ private fun getGridDimension(
 
     return columns to rows
 }
-
-private suspend fun ApplicationInfoGridItem.asGridItem(
-    fileManager: FileManager,
-    iconKeyGenerator: IconKeyGenerator,
-    iconPackInfoPackageName: String,
-): GridItem {
-    val iconPacksDirectory = fileManager.getFilesDirectory(
-        FileManager.ICON_PACKS_DIR,
-    )
-
-    val iconPackDirectory = File(
-        iconPacksDirectory,
-        iconPackInfoPackageName,
-    )
-
-    val iconPackInfoFilePath = File(
-        iconPackDirectory,
-        iconKeyGenerator.getHashedName(name = componentName),
-    )
-
-    return GridItem(
-        id = id,
-        page = page,
-        startColumn = startColumn,
-        startRow = startRow,
-        columnSpan = columnSpan,
-        rowSpan = rowSpan,
-        data = GridItemData.ApplicationInfo(
-            serialNumber = serialNumber,
-            componentName = componentName,
-            packageName = packageName,
-            icon = icon,
-            label = label,
-            customIcon = customIcon,
-            customLabel = customLabel,
-            index = index,
-            folderId = folderId,
-            iconPackInfoFilePath = if (iconPackInfoFilePath.exists()) {
-                iconPackInfoFilePath.absolutePath
-            } else {
-                null
-            },
-        ),
-        associate = associate,
-        override = override,
-        gridItemSettings = gridItemSettings,
-        doubleTap = doubleTap,
-        swipeUp = swipeUp,
-        swipeDown = swipeDown,
-    )
-}
-
-private fun ShortcutInfoGridItem.asGridItem(): GridItem = GridItem(
-    id = id,
-    page = page,
-    startColumn = startColumn,
-    startRow = startRow,
-    columnSpan = columnSpan,
-    rowSpan = rowSpan,
-    data = GridItemData.ShortcutInfo(
-        shortcutId = shortcutId,
-        packageName = packageName,
-        serialNumber = serialNumber,
-        shortLabel = shortLabel,
-        longLabel = longLabel,
-        icon = icon,
-        isEnabled = isEnabled,
-        eblanApplicationInfoIcon = eblanApplicationInfoIcon,
-        customIcon = customIcon,
-        customShortLabel = customShortLabel,
-        index = index,
-        folderId = folderId,
-    ),
-    associate = associate,
-    override = override,
-    gridItemSettings = gridItemSettings,
-    doubleTap = doubleTap,
-    swipeUp = swipeUp,
-    swipeDown = swipeDown,
-)
-
-private fun ShortcutConfigGridItem.asGridItem(): GridItem = GridItem(
-    id = id,
-    page = page,
-    startColumn = startColumn,
-    startRow = startRow,
-    columnSpan = columnSpan,
-    rowSpan = rowSpan,
-    data = GridItemData.ShortcutConfig(
-        serialNumber = serialNumber,
-        componentName = componentName,
-        packageName = packageName,
-        activityIcon = activityIcon,
-        activityLabel = activityLabel,
-        applicationIcon = applicationIcon,
-        applicationLabel = applicationLabel,
-        shortcutIntentName = shortcutIntentName,
-        shortcutIntentIcon = shortcutIntentIcon,
-        shortcutIntentUri = shortcutIntentUri,
-        customIcon = customIcon,
-        customLabel = customLabel,
-        index = index,
-        folderId = folderId,
-    ),
-    associate = associate,
-    override = override,
-    gridItemSettings = gridItemSettings,
-    doubleTap = doubleTap,
-    swipeUp = swipeUp,
-    swipeDown = swipeDown,
-)
-
-private fun FolderGridItem.asIconGridItem(): GridItem = GridItem(
-    id = id,
-    page = page,
-    startColumn = startColumn,
-    startRow = startRow,
-    columnSpan = columnSpan,
-    rowSpan = rowSpan,
-    data = GridItemData.Folder(
-        id = id,
-        label = label,
-        gridItems = emptyList(),
-        gridItemsByPage = emptyMap(),
-        icon = icon,
-        columns = 0,
-        rows = 0,
-        maxIndex = 0,
-        index = index,
-        folderId = folderId,
-    ),
-    associate = associate,
-    override = override,
-    gridItemSettings = gridItemSettings,
-    doubleTap = doubleTap,
-    swipeUp = swipeUp,
-    swipeDown = swipeDown,
-)
