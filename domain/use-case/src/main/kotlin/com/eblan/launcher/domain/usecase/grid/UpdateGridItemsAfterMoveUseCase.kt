@@ -56,15 +56,17 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
                         val userData = userDataRepository.userDataFlow.first()
 
                         val conflictingFolderGridItem =
-                            folderGridItemRepository.getFolderGridItemWrapper(id = conflictingGridItem.id)
-                                ?.asGridItem(
-                                    folderGridItemRepository = folderGridItemRepository,
-                                    maxFolderColumns = userData.homeSettings.maxFolderColumns,
-                                    maxFolderRows = userData.homeSettings.maxFolderRows,
-                                    fileManager = fileManager,
-                                    iconKeyGenerator = iconKeyGenerator,
-                                    iconPackInfoPackageName = userData.generalSettings.iconPackInfoPackageName,
-                                )
+                            requireNotNull(
+                                folderGridItemRepository.getFolderGridItemWrapper(id = conflictingGridItem.id)
+                                    ?.asGridItem(
+                                        folderGridItemRepository = folderGridItemRepository,
+                                        maxFolderColumns = userData.homeSettings.maxFolderColumns,
+                                        maxFolderRows = userData.homeSettings.maxFolderRows,
+                                        fileManager = fileManager,
+                                        iconKeyGenerator = iconKeyGenerator,
+                                        iconPackInfoPackageName = userData.generalSettings.iconPackInfoPackageName,
+                                    ),
+                            )
 
                         addMovingGridItemIntoFolder(
                             conflictingFolderGridItem = conflictingFolderGridItem,
@@ -88,10 +90,11 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
     }
 
     private suspend fun addMovingGridItemIntoFolder(
-        conflictingFolderGridItem: GridItem?,
+        conflictingFolderGridItem: GridItem,
         movingGridItem: GridItem,
     ) {
-        val data = conflictingFolderGridItem?.data as? GridItemData.Folder ?: return
+        val data = conflictingFolderGridItem.data as? GridItemData.Folder
+            ?: error("Unsupported addMovingGridItemIntoFolder")
 
         val index = data.gridItems.maxOfOrNull {
             when (val folderData = it.data) {
