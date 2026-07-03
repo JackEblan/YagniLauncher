@@ -218,6 +218,7 @@ internal fun PagerScreen(
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
     onUpdateResizeGridItem: (GridItem) -> Unit,
     onResetGridAfterMoveGridItem: () -> Unit,
+    onUpdateGridItem: (GridItem) -> Unit,
 ) {
     val context = LocalContext.current
 
@@ -741,6 +742,7 @@ internal fun PagerScreen(
                             onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                             onShowFolderWhenDragging = onShowFolderWhenDragging,
                             onResetGridAfterMoveGridItem = onResetGridAfterMoveGridItem,
+                            onUpdateGridItem = onUpdateGridItem,
                         )
                     },
                 )
@@ -864,6 +866,7 @@ internal fun PagerScreen(
                             onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                             onShowFolderWhenDragging = onShowFolderWhenDragging,
                             onResetGridAfterMoveGridItem = onResetGridAfterMoveGridItem,
+                            onUpdateGridItem = onUpdateGridItem,
                         )
                     },
                 )

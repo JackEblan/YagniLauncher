@@ -84,6 +84,7 @@ internal suspend fun onLongPress(
     ) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
+    onUpdateGridItem: (GridItem) -> Unit,
 ) {
     onUpdateGridItemSource(GridItemSource.Existing)
 
@@ -110,6 +111,8 @@ internal suspend fun onLongPress(
     )
 
     onUpdateIsVisibleOverlay(true)
+
+    onUpdateGridItem(gridItem.copy(isVisibleOverlay = true))
 }
 
 internal fun handleAnimateScrollToPage(

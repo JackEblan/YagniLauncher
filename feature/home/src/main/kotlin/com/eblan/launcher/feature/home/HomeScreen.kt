@@ -168,6 +168,7 @@ internal fun HomeRoute(
         onUpdateMoveGridItemResult = viewModel::updateMoveGridItemResult,
         onUpdateResizeGridItem = viewModel::updateResizeGridItem,
         onResetGridAfterMoveGridItem = viewModel::resetGridAfterMoveGridItem,
+        onUpdateGridItem = viewModel::updateGridItem,
     )
 }
 
@@ -267,6 +268,7 @@ internal fun HomeScreen(
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
     onUpdateResizeGridItem: (GridItem) -> Unit,
     onResetGridAfterMoveGridItem: () -> Unit,
+    onUpdateGridItem: (GridItem) -> Unit,
 ) {
     val paddingValues = WindowInsets.safeDrawing.asPaddingValues()
 
@@ -336,6 +338,7 @@ internal fun HomeScreen(
                 onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                 onUpdateResizeGridItem = onUpdateResizeGridItem,
                 onResetGridAfterMoveGridItem = onResetGridAfterMoveGridItem,
+                onUpdateGridItem = onUpdateGridItem,
             )
         }
     }
@@ -440,6 +443,7 @@ private fun Success(
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
     onUpdateResizeGridItem: (GridItem) -> Unit,
     onResetGridAfterMoveGridItem: () -> Unit,
+    onUpdateGridItem: (GridItem) -> Unit,
 ) {
     val activity = LocalActivity.current
 
@@ -518,6 +522,7 @@ private fun Success(
                     onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                     onUpdateResizeGridItem = onUpdateResizeGridItem,
                     onResetGridAfterMoveGridItem = onResetGridAfterMoveGridItem,
+                    onUpdateGridItem = onUpdateGridItem,
                 )
             }
 

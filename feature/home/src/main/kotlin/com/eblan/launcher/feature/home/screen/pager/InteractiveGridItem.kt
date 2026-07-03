@@ -144,6 +144,7 @@ internal fun InteractiveGridItem(
         movingGridItem: GridItem,
     ) -> Unit,
     onResetGridAfterMoveGridItem: () -> Unit,
+    onUpdateGridItem: (GridItem) -> Unit,
 ) {
     val isSelected =
         moveGridItemResult != null && moveGridItemResult.movingGridItem.id == gridItem.id
@@ -197,6 +198,7 @@ internal fun InteractiveGridItem(
                 onUpdateSharedElementKey = onUpdateSharedElementKey,
                 onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                 onResetGridAfterMoveGridItem = onResetGridAfterMoveGridItem,
+                onUpdateGridItem = onUpdateGridItem,
             )
         }
 
@@ -223,6 +225,7 @@ internal fun InteractiveGridItem(
                 onUpdateSharedElementKey = onUpdateSharedElementKey,
                 onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                 onResetGridAfterMoveGridItem = onResetGridAfterMoveGridItem,
+                onUpdateGridItem = onUpdateGridItem,
             )
         }
 
@@ -254,6 +257,7 @@ internal fun InteractiveGridItem(
                 onUpdateSharedElementKey = onUpdateSharedElementKey,
                 onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                 onResetGridAfterMoveGridItem = onResetGridAfterMoveGridItem,
+                onUpdateGridItem = onUpdateGridItem,
             )
         }
 
@@ -288,6 +292,7 @@ internal fun InteractiveGridItem(
                 onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                 onShowFolderWhenDragging = onShowFolderWhenDragging,
                 onResetGridAfterMoveGridItem = onResetGridAfterMoveGridItem,
+                onUpdateGridItem = onUpdateGridItem,
             )
         }
 
@@ -318,6 +323,7 @@ internal fun InteractiveGridItem(
                 onUpdateSharedElementKey = onUpdateSharedElementKey,
                 onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                 onResetGridAfterMoveGridItem = onResetGridAfterMoveGridItem,
+                onUpdateGridItem = onUpdateGridItem,
             )
         }
     }
@@ -361,6 +367,7 @@ private fun InteractiveApplicationInfoGridItem(
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
     onResetGridAfterMoveGridItem: () -> Unit,
+    onUpdateGridItem: (GridItem) -> Unit,
 ) {
     val launcherApps = LocalLauncherApps.current
 
@@ -415,8 +422,13 @@ private fun InteractiveApplicationInfoGridItem(
         }
     }
 
-    LaunchedEffect(key1 = gridItem) {
-        if (gridItem.isVisibleOverlay) {
+    LaunchedEffect(
+        key1 = drag,
+        key2 = gridItem,
+    ) {
+        if ((drag == Drag.Cancel || drag == Drag.End) &&
+            gridItem.isVisibleOverlay
+        ) {
             onResetGridAfterMoveGridItem()
         }
     }
@@ -454,6 +466,7 @@ private fun InteractiveApplicationInfoGridItem(
                                     onShowGridItemPopup = onShowGridItemPopup,
                                     onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                                     onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                                    onUpdateGridItem = onUpdateGridItem,
                                 )
                             }
                         }
@@ -601,6 +614,7 @@ private fun InteractiveWidgetGridItem(
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
     onResetGridAfterMoveGridItem: () -> Unit,
+    onUpdateGridItem: (GridItem) -> Unit,
 ) {
     val appWidgetHost = LocalAppWidgetHost.current
 
@@ -638,8 +652,13 @@ private fun InteractiveWidgetGridItem(
         }
     }
 
-    LaunchedEffect(key1 = gridItem) {
-        if (gridItem.isVisibleOverlay) {
+    LaunchedEffect(
+        key1 = drag,
+        key2 = gridItem,
+    ) {
+        if ((drag == Drag.Cancel || drag == Drag.End) &&
+            gridItem.isVisibleOverlay
+        ) {
             onResetGridAfterMoveGridItem()
         }
     }
@@ -706,6 +725,7 @@ private fun InteractiveWidgetGridItem(
                                     onShowGridItemPopup = onShowGridItemPopup,
                                     onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                                     onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                                    onUpdateGridItem = onUpdateGridItem,
                                 )
                             }
 
@@ -736,6 +756,7 @@ private fun InteractiveWidgetGridItem(
                                         onShowGridItemPopup = onShowGridItemPopup,
                                         onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                                         onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                                        onUpdateGridItem = onUpdateGridItem,
                                     )
                                 }
                             }
@@ -788,6 +809,7 @@ private fun InteractiveShortcutInfoGridItem(
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
     onResetGridAfterMoveGridItem: () -> Unit,
+    onUpdateGridItem: (GridItem) -> Unit,
 ) {
     val launcherApps = LocalLauncherApps.current
 
@@ -836,8 +858,13 @@ private fun InteractiveShortcutInfoGridItem(
         }
     }
 
-    LaunchedEffect(key1 = gridItem) {
-        if (gridItem.isVisibleOverlay) {
+    LaunchedEffect(
+        key1 = drag,
+        key2 = gridItem,
+    ) {
+        if ((drag == Drag.Cancel || drag == Drag.End) &&
+            gridItem.isVisibleOverlay
+        ) {
             onResetGridAfterMoveGridItem()
         }
     }
@@ -875,6 +902,7 @@ private fun InteractiveShortcutInfoGridItem(
                                     onShowGridItemPopup = onShowGridItemPopup,
                                     onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                                     onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                                    onUpdateGridItem = onUpdateGridItem,
                                 )
                             }
                         }
@@ -1035,6 +1063,7 @@ private fun InteractiveFolderGridItem(
         movingGridItem: GridItem,
     ) -> Unit,
     onResetGridAfterMoveGridItem: () -> Unit,
+    onUpdateGridItem: (GridItem) -> Unit,
 ) {
     val launcherApps = LocalLauncherApps.current
 
@@ -1085,8 +1114,13 @@ private fun InteractiveFolderGridItem(
         }
     }
 
-    LaunchedEffect(key1 = gridItem) {
-        if (gridItem.isVisibleOverlay) {
+    LaunchedEffect(
+        key1 = drag,
+        key2 = gridItem,
+    ) {
+        if ((drag == Drag.Cancel || drag == Drag.End) &&
+            gridItem.isVisibleOverlay
+        ) {
             onResetGridAfterMoveGridItem()
         }
     }
@@ -1139,6 +1173,7 @@ private fun InteractiveFolderGridItem(
                                     onShowGridItemPopup = onShowGridItemPopup,
                                     onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                                     onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                                    onUpdateGridItem = onUpdateGridItem,
                                 )
                             }
                         }
@@ -1250,6 +1285,8 @@ private fun InteractiveFolderGridItem(
                             parent = sharedElementKey.parent,
                             moveGridItemResult = moveGridItemResult,
                             textColor = textColor,
+                            drag = drag,
+                            onResetGridAfterMoveGridItem = onResetGridAfterMoveGridItem,
                         )
                     },
                 )
@@ -1304,6 +1341,7 @@ private fun InteractiveShortcutConfigGridItem(
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
     onResetGridAfterMoveGridItem: () -> Unit,
+    onUpdateGridItem: (GridItem) -> Unit,
 ) {
     val launcherApps = LocalLauncherApps.current
 
@@ -1384,8 +1422,13 @@ private fun InteractiveShortcutConfigGridItem(
         }
     }
 
-    LaunchedEffect(key1 = gridItem) {
-        if (gridItem.isVisibleOverlay) {
+    LaunchedEffect(
+        key1 = drag,
+        key2 = gridItem,
+    ) {
+        if ((drag == Drag.Cancel || drag == Drag.End) &&
+            gridItem.isVisibleOverlay
+        ) {
             onResetGridAfterMoveGridItem()
         }
     }
@@ -1423,6 +1466,7 @@ private fun InteractiveShortcutConfigGridItem(
                                     onShowGridItemPopup = onShowGridItemPopup,
                                     onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                                     onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                                    onUpdateGridItem = onUpdateGridItem,
                                 )
                             }
                         }
@@ -1527,6 +1571,8 @@ private fun PreviewFolderGridItem(
     parent: SharedElementKey.Parent,
     moveGridItemResult: MoveGridItemResult?,
     textColor: Color,
+    drag: Drag,
+    onResetGridAfterMoveGridItem: () -> Unit,
 ) {
     val context = LocalContext.current
 
@@ -1558,6 +1604,17 @@ private fun PreviewFolderGridItem(
                     this
                 }
             }
+
+        LaunchedEffect(
+            key1 = drag,
+            key2 = gridItem,
+        ) {
+            if ((drag == Drag.Cancel || drag == Drag.End) &&
+                gridItem.isVisibleOverlay
+            ) {
+                onResetGridAfterMoveGridItem()
+            }
+        }
 
         when (val data = gridItem.data) {
             is GridItemData.ApplicationInfo -> {

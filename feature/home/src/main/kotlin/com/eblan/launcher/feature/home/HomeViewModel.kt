@@ -685,4 +685,10 @@ internal class HomeViewModel @Inject constructor(
             null
         }
     }
+
+    fun updateGridItem(gridItem: GridItem) {
+        viewModelScope.launch {
+            gridRepository.updateGridItem(gridItem = gridItem)
+        }
+    }
 }
