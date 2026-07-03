@@ -47,6 +47,7 @@ internal fun ShortcutInfoGridItemEntity.asModel(): ShortcutInfoGridItem = Shortc
     swipeDown = swipeDown,
     index = index,
     folderId = folderId,
+    isVisibleOverlay = isVisibleOverlay,
 )
 
 internal fun ShortcutInfoGridItem.asEntity(): ShortcutInfoGridItemEntity = ShortcutInfoGridItemEntity(
@@ -74,6 +75,7 @@ internal fun ShortcutInfoGridItem.asEntity(): ShortcutInfoGridItemEntity = Short
     swipeDown = swipeDown,
     index = index,
     folderId = folderId,
+    isVisibleOverlay = isVisibleOverlay,
 )
 
 internal fun GridItem.asShortcutInfoGridItem(data: GridItemData.ShortcutInfo): ShortcutInfoGridItem = ShortcutInfoGridItem(
@@ -101,4 +103,5 @@ internal fun GridItem.asShortcutInfoGridItem(data: GridItemData.ShortcutInfo): S
     swipeDown = swipeDown,
     index = data.index,
     folderId = data.folderId,
+    isVisibleOverlay = isVisibleOverlay,
 )

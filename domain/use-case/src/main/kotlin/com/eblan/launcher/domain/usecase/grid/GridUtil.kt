@@ -85,6 +85,7 @@ internal suspend fun ApplicationInfoGridItem.asGridItem(
         doubleTap = doubleTap,
         swipeUp = swipeUp,
         swipeDown = swipeDown,
+        isVisibleOverlay = isVisibleOverlay,
     )
 }
 
@@ -132,6 +133,7 @@ internal fun WidgetGridItem.asGridItem(): GridItem = GridItem(
         serialNumber = 0L,
         componentName = "",
     ),
+    isVisibleOverlay = isVisibleOverlay,
 )
 
 internal fun ShortcutInfoGridItem.asGridItem(): GridItem = GridItem(
@@ -161,6 +163,7 @@ internal fun ShortcutInfoGridItem.asGridItem(): GridItem = GridItem(
     doubleTap = doubleTap,
     swipeUp = swipeUp,
     swipeDown = swipeDown,
+    isVisibleOverlay = isVisibleOverlay,
 )
 
 internal fun ShortcutConfigGridItem.asGridItem(): GridItem = GridItem(
@@ -192,6 +195,7 @@ internal fun ShortcutConfigGridItem.asGridItem(): GridItem = GridItem(
     doubleTap = doubleTap,
     swipeUp = swipeUp,
     swipeDown = swipeDown,
+    isVisibleOverlay = isVisibleOverlay,
 )
 
 /**
@@ -222,6 +226,7 @@ internal fun FolderGridItem.asIconGridItem(): GridItem = GridItem(
     doubleTap = doubleTap,
     swipeUp = swipeUp,
     swipeDown = swipeDown,
+    isVisibleOverlay = isVisibleOverlay,
 )
 
 internal suspend fun FolderGridItemWrapper.asGridItem(
@@ -316,6 +321,7 @@ internal suspend fun FolderGridItemWrapper.asGridItem(
         doubleTap = folderGridItem.doubleTap,
         swipeUp = folderGridItem.swipeUp,
         swipeDown = folderGridItem.swipeDown,
+        isVisibleOverlay = folderGridItem.isVisibleOverlay,
     )
 }
 
@@ -409,6 +415,7 @@ private suspend fun FolderGridItemWrapper.asPreviewGridItem(
         doubleTap = folderGridItem.doubleTap,
         swipeUp = folderGridItem.swipeUp,
         swipeDown = folderGridItem.swipeDown,
+        isVisibleOverlay = folderGridItem.isVisibleOverlay,
     )
 }
 

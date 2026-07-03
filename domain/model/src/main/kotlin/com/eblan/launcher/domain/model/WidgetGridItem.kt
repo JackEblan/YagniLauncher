@@ -44,4 +44,5 @@ data class WidgetGridItem(
     val icon: String?,
     val override: Boolean,
     val gridItemSettings: GridItemSettings,
+    val isVisibleOverlay: Boolean,
 )

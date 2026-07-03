@@ -533,6 +533,7 @@ private fun EblanShortcutConfigItem(
                                 doubleTap = eblanAction,
                                 swipeUp = eblanAction,
                                 swipeDown = eblanAction,
+                                isVisibleOverlay = false,
                             )
 
                             onUpdateGridItemSource(GridItemSource.New)

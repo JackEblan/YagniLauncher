@@ -52,4 +52,5 @@ data class WidgetGridItemEntity(
     val override: Boolean,
     val serialNumber: Long,
     @Embedded val gridItemSettings: GridItemSettings,
+    val isVisibleOverlay: Boolean,
 )

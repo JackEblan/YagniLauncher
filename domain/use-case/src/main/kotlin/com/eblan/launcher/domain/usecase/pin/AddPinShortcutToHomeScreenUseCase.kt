@@ -117,6 +117,7 @@ class AddPinShortcutToHomeScreenUseCase @Inject constructor(
             doubleTap = eblanAction,
             swipeUp = eblanAction,
             swipeDown = eblanAction,
+            isVisibleOverlay = false,
         )
 
         val gridItems = getGridItemsUseCase()

@@ -44,6 +44,7 @@ internal fun ApplicationInfoGridItemEntity.asModel(): ApplicationInfoGridItem = 
     swipeDown = swipeDown,
     index = index,
     folderId = folderId,
+    isVisibleOverlay = isVisibleOverlay,
 )
 
 internal fun ApplicationInfoGridItem.asEntity(): ApplicationInfoGridItemEntity = ApplicationInfoGridItemEntity(
@@ -68,6 +69,7 @@ internal fun ApplicationInfoGridItem.asEntity(): ApplicationInfoGridItemEntity =
     swipeDown = swipeDown,
     index = index,
     folderId = folderId,
+    isVisibleOverlay = isVisibleOverlay,
 )
 
 internal fun GridItem.asApplicationInfoGridItem(data: GridItemData.ApplicationInfo): ApplicationInfoGridItem = ApplicationInfoGridItem(
@@ -92,4 +94,5 @@ internal fun GridItem.asApplicationInfoGridItem(data: GridItemData.ApplicationIn
     swipeDown = swipeDown,
     index = data.index,
     folderId = data.folderId,
+    isVisibleOverlay = isVisibleOverlay,
 )

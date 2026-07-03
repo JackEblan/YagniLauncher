@@ -85,5 +85,6 @@ internal fun getWidgetGridItem(
         doubleTap = eblanAction,
         swipeUp = eblanAction,
         swipeDown = eblanAction,
+        isVisibleOverlay = false,
     )
 }

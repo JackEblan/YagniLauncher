@@ -56,4 +56,5 @@ data class ShortcutInfoGridItemEntity(
     @Embedded(prefix = "swipeDown_") val swipeDown: EblanAction,
     val index: Int,
     val folderId: String?,
+    val isVisibleOverlay: Boolean,
 )

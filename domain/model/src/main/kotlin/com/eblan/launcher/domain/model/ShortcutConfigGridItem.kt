@@ -44,4 +44,5 @@ data class ShortcutConfigGridItem(
     val swipeDown: EblanAction,
     val index: Int,
     val folderId: String?,
+    val isVisibleOverlay: Boolean,
 )

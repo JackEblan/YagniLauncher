@@ -336,25 +336,11 @@ internal class HomeViewModel @Inject constructor(
         }
     }
 
-    fun resetGridAfterMove(moveGridItemResult: MoveGridItemResult) {
+    fun updateGridItemsAfterMove(moveGridItemResult: MoveGridItemResult) {
         viewModelScope.launch {
             moveGridItemJob?.cancelAndJoin()
 
             updateGridItemsAfterMoveUseCase(moveGridItemResult = moveGridItemResult)
-
-            delay(100L.milliseconds)
-
-            _isVisibleOverlay.update {
-                false
-            }
-
-            _moveGridItemResult.update {
-                null
-            }
-
-            _gridItemSource.update {
-                null
-            }
         }
     }
 
@@ -472,7 +458,7 @@ internal class HomeViewModel @Inject constructor(
 
             gridRepository.insertGridItem(gridItem = movingGridItem.copy(data = data))
 
-            resetGridAfterMove(moveGridItemResult = moveGridItemResult)
+            updateGridItemsAfterMove(moveGridItemResult = moveGridItemResult)
         }
     }
 
@@ -683,6 +669,20 @@ internal class HomeViewModel @Inject constructor(
     fun deleteFolderPopupEntry(folderPopupEntry: FolderPopupEntry) {
         _folderPopupEntries.update {
             it - folderPopupEntry
+        }
+    }
+
+    fun resetGridAfterMoveGridItem() {
+        _isVisibleOverlay.update {
+            false
+        }
+
+        _moveGridItemResult.update {
+            null
+        }
+
+        _gridItemSource.update {
+            null
         }
     }
 }

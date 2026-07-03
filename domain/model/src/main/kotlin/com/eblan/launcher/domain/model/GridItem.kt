@@ -31,6 +31,7 @@ data class GridItem(
     val doubleTap: EblanAction,
     val swipeUp: EblanAction,
     val swipeDown: EblanAction,
+    val isVisibleOverlay: Boolean,
 )
 
 enum class Associate {

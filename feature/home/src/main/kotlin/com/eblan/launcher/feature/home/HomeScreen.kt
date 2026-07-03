@@ -147,8 +147,8 @@ internal fun HomeRoute(
         onMoveFolderGridItemOutsideFolder = viewModel::moveFolderGridItemOutsideFolder,
         onMoveGridItem = viewModel::moveGridItem,
         onResetConfigureResultCode = onResetConfigureResultCode,
-        onResetGridAfterMove = viewModel::resetGridAfterMove,
-        onResetGridAfterMoveFolder = viewModel::resetGridAfterMoveFolder,
+        onUpdateGridItemsAfterMove = viewModel::updateGridItemsAfterMove,
+        onUpdateGridItemsAfterMoveFolder = viewModel::resetGridAfterMoveFolder,
         onResetGridAfterResize = viewModel::resetGridAfterResize,
         onResetPinGridItem = viewModel::resetPinGridItem,
         onResizeGridItem = viewModel::resizeGridItem,
@@ -167,6 +167,7 @@ internal fun HomeRoute(
         onUpdateIsVisibleOverlay = viewModel::updateIsVisibleOverlay,
         onUpdateMoveGridItemResult = viewModel::updateMoveGridItemResult,
         onUpdateResizeGridItem = viewModel::updateResizeGridItem,
+        onResetGridAfterMoveGridItem = viewModel::resetGridAfterMoveGridItem,
     )
 }
 
@@ -230,8 +231,8 @@ internal fun HomeScreen(
         gridHeight: Int,
     ) -> Unit,
     onResetConfigureResultCode: () -> Unit,
-    onResetGridAfterMove: (MoveGridItemResult) -> Unit,
-    onResetGridAfterMoveFolder: () -> Unit,
+    onUpdateGridItemsAfterMove: (MoveGridItemResult) -> Unit,
+    onUpdateGridItemsAfterMoveFolder: () -> Unit,
     onResetGridAfterResize: () -> Unit,
     onResetPinGridItem: () -> Unit,
     onResizeGridItem: (
@@ -265,6 +266,7 @@ internal fun HomeScreen(
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
     onUpdateResizeGridItem: (GridItem) -> Unit,
+    onResetGridAfterMoveGridItem: () -> Unit,
 ) {
     val paddingValues = WindowInsets.safeDrawing.asPaddingValues()
 
@@ -313,8 +315,8 @@ internal fun HomeScreen(
                 onMoveFolderGridItemOutsideFolder = onMoveFolderGridItemOutsideFolder,
                 onMoveGridItem = onMoveGridItem,
                 onResetConfigureResultCode = onResetConfigureResultCode,
-                onResetGridAfterMove = onResetGridAfterMove,
-                onResetGridAfterMoveFolder = onResetGridAfterMoveFolder,
+                onUpdateGridItemsAfterMove = onUpdateGridItemsAfterMove,
+                onUpdateGridItemsAfterMoveFolder = onUpdateGridItemsAfterMoveFolder,
                 onResetGridAfterResize = onResetGridAfterResize,
                 onResetPinGridItem = onResetPinGridItem,
                 onResizeGridItem = onResizeGridItem,
@@ -333,6 +335,7 @@ internal fun HomeScreen(
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                 onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                 onUpdateResizeGridItem = onUpdateResizeGridItem,
+                onResetGridAfterMoveGridItem = onResetGridAfterMoveGridItem,
             )
         }
     }
@@ -401,8 +404,8 @@ private fun Success(
         gridHeight: Int,
     ) -> Unit,
     onResetConfigureResultCode: () -> Unit,
-    onResetGridAfterMove: (MoveGridItemResult) -> Unit,
-    onResetGridAfterMoveFolder: () -> Unit,
+    onUpdateGridItemsAfterMove: (MoveGridItemResult) -> Unit,
+    onUpdateGridItemsAfterMoveFolder: () -> Unit,
     onResetGridAfterResize: () -> Unit,
     onResetPinGridItem: () -> Unit,
     onResizeGridItem: (
@@ -436,6 +439,7 @@ private fun Success(
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
     onUpdateResizeGridItem: (GridItem) -> Unit,
+    onResetGridAfterMoveGridItem: () -> Unit,
 ) {
     val activity = LocalActivity.current
 
@@ -482,8 +486,8 @@ private fun Success(
                     onDeleteGridItem = onDeleteGridItem,
                     onResetGridAfterDeleteGridItem = onResetGridAfterDeleteGridItem,
                     onDragCancelAfterMove = onCancelGrid,
-                    onDragEndAfterMove = onResetGridAfterMove,
-                    onDragEndAfterMoveFolder = onResetGridAfterMoveFolder,
+                    onDragEndAfterMove = onUpdateGridItemsAfterMove,
+                    onDragEndAfterMoveFolder = onUpdateGridItemsAfterMoveFolder,
                     onEditApplicationInfo = onEditApplicationInfo,
                     onEditGridItem = onEditGridItem,
                     onEditPage = onEditPage,
@@ -513,6 +517,7 @@ private fun Success(
                     onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                     onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                     onUpdateResizeGridItem = onUpdateResizeGridItem,
+                    onResetGridAfterMoveGridItem = onResetGridAfterMoveGridItem,
                 )
             }
 

@@ -586,6 +586,7 @@ internal suspend fun addNewApplicationToHomeScreen(
         doubleTap = eblanAction,
         swipeUp = eblanAction,
         swipeDown = eblanAction,
+        isVisibleOverlay = false,
     )
 
     val newGridItem = findAvailableRegionByPage(
@@ -622,6 +623,7 @@ internal suspend fun addNewApplicationToHomeScreen(
                 swipeDown = newGridItem.swipeDown,
                 index = data.index,
                 folderId = data.folderId,
+                isVisibleOverlay = newGridItem.isVisibleOverlay,
             ),
         )
     }

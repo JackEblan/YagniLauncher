@@ -49,6 +49,7 @@ internal fun WidgetGridItemEntity.asModel(): WidgetGridItem = WidgetGridItem(
     override = override,
     serialNumber = serialNumber,
     gridItemSettings = gridItemSettings,
+    isVisibleOverlay = isVisibleOverlay,
 )
 
 internal fun WidgetGridItem.asEntity(): WidgetGridItemEntity = WidgetGridItemEntity(
@@ -78,6 +79,7 @@ internal fun WidgetGridItem.asEntity(): WidgetGridItemEntity = WidgetGridItemEnt
     override = override,
     serialNumber = serialNumber,
     gridItemSettings = gridItemSettings,
+    isVisibleOverlay = isVisibleOverlay,
 )
 
 internal fun GridItem.asWidgetGridItem(data: GridItemData.Widget): WidgetGridItem = WidgetGridItem(
@@ -107,4 +109,5 @@ internal fun GridItem.asWidgetGridItem(data: GridItemData.Widget): WidgetGridIte
     override = override,
     serialNumber = data.serialNumber,
     gridItemSettings = gridItemSettings,
+    isVisibleOverlay = isVisibleOverlay,
 )

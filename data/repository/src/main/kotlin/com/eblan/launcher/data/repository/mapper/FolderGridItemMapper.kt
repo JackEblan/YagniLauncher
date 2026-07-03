@@ -57,6 +57,7 @@ internal fun FolderGridItemEntity.asModel(): FolderGridItem = FolderGridItem(
     swipeDown = swipeDown,
     index = index,
     folderId = folderId,
+    isVisibleOverlay = isVisibleOverlay,
 )
 
 internal fun FolderGridItem.asEntity(): FolderGridItemEntity = FolderGridItemEntity(
@@ -76,6 +77,7 @@ internal fun FolderGridItem.asEntity(): FolderGridItemEntity = FolderGridItemEnt
     swipeDown = swipeDown,
     index = index,
     folderId = folderId,
+    isVisibleOverlay = isVisibleOverlay,
 )
 
 internal fun GridItem.asFolderGridItem(data: GridItemData.Folder): FolderGridItem = FolderGridItem(
@@ -95,4 +97,5 @@ internal fun GridItem.asFolderGridItem(data: GridItemData.Folder): FolderGridIte
     swipeDown = swipeDown,
     index = data.index,
     folderId = data.folderId,
+    isVisibleOverlay = isVisibleOverlay,
 )

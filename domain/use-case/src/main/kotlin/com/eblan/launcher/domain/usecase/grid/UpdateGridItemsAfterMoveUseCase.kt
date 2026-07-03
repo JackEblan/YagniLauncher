@@ -85,6 +85,8 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
                         )
                     }
                 }
+            } else {
+                gridRepository.updateGridItem(gridItem = movingGridItem.copy(isVisibleOverlay = false))
             }
         }
     }
@@ -130,7 +132,12 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
             else -> error("Unsupported addMovingGridItemIntoFolder")
         }
 
-        gridRepository.updateGridItem(gridItem = movingGridItem.copy(data = newData))
+        gridRepository.updateGridItem(
+            gridItem = movingGridItem.copy(
+                data = newData,
+                isVisibleOverlay = false,
+            ),
+        )
     }
 
     @OptIn(ExperimentalUuidApi::class)
@@ -207,7 +214,10 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
         gridRepository.upsertGridItems(
             gridItems = listOf(
                 conflictingGridItem.copy(data = conflictingData),
-                movingGridItem.copy(data = movingData),
+                movingGridItem.copy(
+                    data = movingData,
+                    isVisibleOverlay = false,
+                ),
                 conflictingGridItem.copy(
                     id = id,
                     data = GridItemData.Folder(

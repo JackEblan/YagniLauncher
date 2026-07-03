@@ -42,4 +42,5 @@ data class ShortcutInfoGridItem(
     val swipeDown: EblanAction,
     val index: Int,
     val folderId: String?,
+    val isVisibleOverlay: Boolean,
 )

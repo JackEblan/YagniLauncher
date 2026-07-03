@@ -416,6 +416,7 @@ internal fun handleDragEblanApplicationInfoItem(
                 doubleTap = eblanAction,
                 swipeUp = eblanAction,
                 swipeDown = eblanAction,
+                isVisibleOverlay = false,
             )
 
             onUpdateGridItemSource(GridItemSource.New)

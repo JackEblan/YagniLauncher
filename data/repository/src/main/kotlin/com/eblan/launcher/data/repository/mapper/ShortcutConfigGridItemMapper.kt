@@ -49,6 +49,7 @@ internal fun ShortcutConfigGridItemEntity.asModel(): ShortcutConfigGridItem = Sh
     swipeDown = swipeDown,
     index = index,
     folderId = folderId,
+    isVisibleOverlay = isVisibleOverlay,
 )
 
 internal fun ShortcutConfigGridItem.asEntity(): ShortcutConfigGridItemEntity = ShortcutConfigGridItemEntity(
@@ -78,6 +79,7 @@ internal fun ShortcutConfigGridItem.asEntity(): ShortcutConfigGridItemEntity = S
     swipeDown = swipeDown,
     index = index,
     folderId = folderId,
+    isVisibleOverlay = isVisibleOverlay,
 )
 
 internal fun GridItem.asShortcutConfigGridItem(data: GridItemData.ShortcutConfig): ShortcutConfigGridItem = ShortcutConfigGridItem(
@@ -107,4 +109,5 @@ internal fun GridItem.asShortcutConfigGridItem(data: GridItemData.ShortcutConfig
     swipeDown = swipeDown,
     index = data.index,
     folderId = data.folderId,
+    isVisibleOverlay = isVisibleOverlay,
 )

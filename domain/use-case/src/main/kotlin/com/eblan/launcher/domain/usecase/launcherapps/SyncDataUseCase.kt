@@ -525,6 +525,7 @@ class SyncDataUseCase @Inject constructor(
                     swipeDown = eblanAction,
                     index = -1,
                     folderId = null,
+                    isVisibleOverlay = false,
                 ),
             )
         }

@@ -117,6 +117,7 @@ class GetPinGridItemUseCase @Inject constructor(
                         serialNumber = 0L,
                         componentName = "",
                     ),
+                    isVisibleOverlay = false,
                 )
             }
 
@@ -178,6 +179,7 @@ class GetPinGridItemUseCase @Inject constructor(
                         serialNumber = 0L,
                         componentName = "",
                     ),
+                    isVisibleOverlay = false,
                 )
             }
         }
