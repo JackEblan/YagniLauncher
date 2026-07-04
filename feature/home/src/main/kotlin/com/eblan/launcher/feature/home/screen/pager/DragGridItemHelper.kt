@@ -530,10 +530,21 @@ private fun getMoveGridItem(
 ): GridItem = when (gridItemSource) {
     is GridItemSource.Existing,
     -> {
+        val (startColumn, startRow) = getStartPosition(
+            x = gridX,
+            y = gridY,
+            cellWidth = cellWidth,
+            cellHeight = cellHeight,
+            columns = columns,
+            rows = rows,
+            columnSpan = gridItem.columnSpan,
+            rowSpan = gridItem.rowSpan,
+        )
+
         gridItem.copy(
             page = currentPage,
-            startColumn = gridX / cellWidth,
-            startRow = gridY / cellHeight,
+            startColumn = startColumn,
+            startRow = startRow,
             associate = associate,
         )
     }
