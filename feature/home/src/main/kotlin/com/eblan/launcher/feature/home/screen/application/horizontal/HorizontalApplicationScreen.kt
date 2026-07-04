@@ -148,7 +148,7 @@ internal fun HorizontalApplicationScreen(
 
     val horizontalPagerState = rememberPagerState(
         pageCount = {
-            getEblanApplicationInfosByLabelAndTag.eblanApplicationInfos.keys.size
+            getEblanApplicationInfosByLabelAndTag.eblanApplicationInfoWithIconPackInfos.keys.size
         },
     )
 
@@ -161,8 +161,8 @@ internal fun HorizontalApplicationScreen(
     var selectedEblanApplicationInfo by remember { mutableStateOf<EblanApplicationInfo?>(null) }
 
     val eblanUserPageKeys =
-        remember(key1 = getEblanApplicationInfosByLabelAndTag.eblanApplicationInfos) {
-            getEblanApplicationInfosByLabelAndTag.eblanApplicationInfos.keys.distinctBy { it.eblanUser.serialNumber }
+        remember(key1 = getEblanApplicationInfosByLabelAndTag.eblanApplicationInfoWithIconPackInfos) {
+            getEblanApplicationInfosByLabelAndTag.eblanApplicationInfoWithIconPackInfos.keys.distinctBy { it.eblanUser.serialNumber }
         }
 
     ApplicationScreenEffect(
@@ -209,7 +209,7 @@ internal fun HorizontalApplicationScreen(
             EblanApplicationInfoTabRow(
                 currentPage = horizontalPagerState.currentPage,
                 eblanUserPageKeys = eblanUserPageKeys,
-                eblanApplicationInfos = getEblanApplicationInfosByLabelAndTag.eblanApplicationInfos,
+                eblanApplicationInfos = getEblanApplicationInfosByLabelAndTag.eblanApplicationInfoWithIconPackInfos,
                 onAnimateScrollToPage = horizontalPagerState::animateScrollToPage,
             )
         }
@@ -382,7 +382,7 @@ private fun EblanApplicationInfosPage(
     val packageManager = LocalPackageManager.current
 
     val eblanUserPageKey =
-        getEblanApplicationInfosByLabelAndTag.eblanApplicationInfos.keys.toList().getOrElse(
+        getEblanApplicationInfosByLabelAndTag.eblanApplicationInfoWithIconPackInfos.keys.toList().getOrElse(
             index = index,
             defaultValue = {
                 EblanUserPageKey(
@@ -522,7 +522,7 @@ private fun EblanApplicationInfos(
             }
             .fillMaxSize(),
         columns = appDrawerSettings.horizontalAppDrawerColumns,
-        eblanApplicationInfos = getEblanApplicationInfosByLabelAndTag.eblanApplicationInfos[eblanUserPageKey],
+        eblanApplicationInfoWithIconPackInfos = getEblanApplicationInfosByLabelAndTag.eblanApplicationInfoWithIconPackInfos[eblanUserPageKey],
         rows = appDrawerSettings.horizontalAppDrawerRows,
         content = {
             when (eblanUserPageKey.eblanUser.eblanUserType) {
@@ -534,7 +534,7 @@ private fun EblanApplicationInfos(
                         sharedTransitionScope = sharedTransitionScope,
                         appDrawerSettings = appDrawerSettings,
                         drag = drag,
-                        eblanApplicationInfo = it,
+                        eblanApplicationInfoWithIconPackInfo = it,
                         paddingValues = paddingValues,
                         isVisibleOverlay = isVisibleOverlay,
                         appDrawerType = appDrawerSettings.appDrawerType,
@@ -556,7 +556,7 @@ private fun EblanApplicationInfos(
                 EblanUserType.Private -> {
                     PrivateSpaceEblanApplicationInfoItem(
                         appDrawerSettings = appDrawerSettings,
-                        eblanApplicationInfo = it,
+                        eblanApplicationInfoWithIconPackInfo = it,
                         paddingValues = paddingValues,
                         isVisibleOverlay = isVisibleOverlay,
                         onUpdateOverlayBounds = onUpdateOverlayBounds,

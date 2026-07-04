@@ -162,7 +162,7 @@ internal fun VerticalApplicationScreen(
 
     val horizontalPagerState = rememberPagerState(
         pageCount = {
-            getEblanApplicationInfosByLabelAndTag.eblanApplicationInfos.keys.size
+            getEblanApplicationInfosByLabelAndTag.eblanApplicationInfoWithIconPackInfos.keys.size
         },
     )
 
@@ -179,8 +179,8 @@ internal fun VerticalApplicationScreen(
     var selectedEblanApplicationInfo by remember { mutableStateOf<EblanApplicationInfo?>(null) }
 
     val eblanUserPageKeys =
-        remember(key1 = getEblanApplicationInfosByLabelAndTag.eblanApplicationInfos) {
-            getEblanApplicationInfosByLabelAndTag.eblanApplicationInfos.keys.distinctBy { it.eblanUser.serialNumber }
+        remember(key1 = getEblanApplicationInfosByLabelAndTag.eblanApplicationInfoWithIconPackInfos) {
+            getEblanApplicationInfosByLabelAndTag.eblanApplicationInfoWithIconPackInfos.keys.distinctBy { it.eblanUser.serialNumber }
         }
 
     ApplicationScreenEffect(
@@ -234,7 +234,7 @@ internal fun VerticalApplicationScreen(
             EblanApplicationInfoTabRow(
                 currentPage = horizontalPagerState.currentPage,
                 eblanUserPageKeys = eblanUserPageKeys,
-                eblanApplicationInfos = getEblanApplicationInfosByLabelAndTag.eblanApplicationInfos,
+                eblanApplicationInfos = getEblanApplicationInfosByLabelAndTag.eblanApplicationInfoWithIconPackInfos,
                 onAnimateScrollToPage = horizontalPagerState::animateScrollToPage,
             )
         }
@@ -433,19 +433,20 @@ private fun EblanApplicationInfosPage(
     val packageManager = LocalPackageManager.current
 
     val eblanUserPageKey =
-        getEblanApplicationInfosByLabelAndTag.eblanApplicationInfos.keys.toList().getOrElse(
-            index = index,
-            defaultValue = {
-                EblanUserPageKey(
-                    eblanUser = EblanUser(
-                        serialNumber = 0L,
-                        eblanUserType = EblanUserType.Personal,
-                        isPrivateSpaceEntryPointHidden = false,
-                    ),
-                    page = 0,
-                )
-            },
-        )
+        getEblanApplicationInfosByLabelAndTag.eblanApplicationInfoWithIconPackInfos.keys.toList()
+            .getOrElse(
+                index = index,
+                defaultValue = {
+                    EblanUserPageKey(
+                        eblanUser = EblanUser(
+                            serialNumber = 0L,
+                            eblanUserType = EblanUserType.Personal,
+                            isPrivateSpaceEntryPointHidden = false,
+                        ),
+                        page = 0,
+                    )
+                },
+            )
 
     val userHandle =
         userManager.getUserForSerialNumber(serialNumber = eblanUserPageKey.eblanUser.serialNumber)
@@ -618,14 +619,14 @@ private fun EblanApplicationInfos(
             when (eblanUserPageKey.eblanUser.eblanUserType) {
                 EblanUserType.Personal -> {
                     items(
-                        items = getEblanApplicationInfosByLabelAndTag.eblanApplicationInfos[eblanUserPageKey].orEmpty(),
-                        key = { it.serialNumber to it.componentName },
+                        items = getEblanApplicationInfosByLabelAndTag.eblanApplicationInfoWithIconPackInfos[eblanUserPageKey].orEmpty(),
+                        key = { it.eblanApplicationInfo.serialNumber to it.eblanApplicationInfo.componentName },
                     ) {
                         EblanApplicationInfoGridItem(
                             sharedTransitionScope = sharedTransitionScope,
                             appDrawerSettings = appDrawerSettings,
                             drag = drag,
-                            eblanApplicationInfo = it,
+                            eblanApplicationInfoWithIconPackInfo = it,
                             paddingValues = paddingValues,
                             isVisibleOverlay = isVisibleOverlay,
                             appDrawerType = appDrawerSettings.appDrawerType,
@@ -649,7 +650,7 @@ private fun EblanApplicationInfos(
                         isQuietModeEnabled = isQuietModeEnabled,
                         managedProfileResult = managedProfileResult,
                         paddingValues = paddingValues,
-                        privateEblanApplicationInfos = getEblanApplicationInfosByLabelAndTag.privateEblanApplicationInfos,
+                        privateEblanApplicationInfoWithIconPackInfos = getEblanApplicationInfosByLabelAndTag.privateEblanApplicationInfoWithIconPackInfos,
                         privateEblanUser = getEblanApplicationInfosByLabelAndTag.privateEblanUser,
                         isVisibleOverlay = isVisibleOverlay,
                         onUpdateIsQuietModeEnabled = {
@@ -663,14 +664,17 @@ private fun EblanApplicationInfos(
 
                 else -> {
                     items(
-                        items = getEblanApplicationInfosByLabelAndTag.eblanApplicationInfos[eblanUserPageKey].orEmpty(),
-                        key = { it.serialNumber to it.componentName },
+                        items = getEblanApplicationInfosByLabelAndTag.eblanApplicationInfoWithIconPackInfos[eblanUserPageKey].orEmpty(),
+                        key = {
+                            it.eblanApplicationInfo.serialNumber to
+                                it.eblanApplicationInfo.componentName
+                        },
                     ) {
                         EblanApplicationInfoGridItem(
                             sharedTransitionScope = sharedTransitionScope,
                             appDrawerSettings = appDrawerSettings,
                             drag = drag,
-                            eblanApplicationInfo = it,
+                            eblanApplicationInfoWithIconPackInfo = it,
                             paddingValues = paddingValues,
                             isVisibleOverlay = isVisibleOverlay,
                             appDrawerType = appDrawerSettings.appDrawerType,

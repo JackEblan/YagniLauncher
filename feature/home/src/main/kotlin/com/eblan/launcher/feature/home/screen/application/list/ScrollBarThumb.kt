@@ -17,7 +17,6 @@
  */
 package com.eblan.launcher.feature.home.screen.application.list
 
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -57,10 +56,7 @@ internal fun ScrollBarThumb(
     modifier: Modifier = Modifier,
     lazyListState: LazyListState,
     paddingValues: PaddingValues,
-    onScrollToItem: suspend (
-        index: Int,
-        offset: Int,
-    ) -> Unit,
+    onScrollToItem: suspend (Int) -> Unit,
 ) {
     val density = LocalDensity.current
 
@@ -93,9 +89,11 @@ internal fun ScrollBarThumb(
 
     var thumbY by remember { mutableFloatStateOf(0f) }
 
-    val animatedThumbY by animateFloatAsState(
-        targetValue = if (isDraggingThumb) thumbY else viewPortThumbY,
-    )
+    val animatedThumbY by remember {
+        derivedStateOf {
+            if (isDraggingThumb) thumbY else viewPortThumbY
+        }
+    }
 
     Row(modifier = modifier) {
         Box(
@@ -126,7 +124,6 @@ internal fun ScrollBarThumb(
                             onScrollToItem(
                                 item.roundToInt()
                                     .coerceAtMost(totalItems - 1),
-                                0,
                             )
                         }
                     }
@@ -195,7 +192,7 @@ private fun handleVerticalDrag(
     thumbY: Float,
     deltaY: Float,
     scope: CoroutineScope,
-    onScrollToItem: suspend (index: Int, offset: Int) -> Unit,
+    onScrollToItem: suspend (Int) -> Unit,
     onUpdateThumbY: (Float) -> Unit,
 ) {
     if (deltaY == 0f) return
@@ -233,14 +230,10 @@ private fun handleVerticalDrag(
         .toInt()
         .coerceIn(0, totalItems - 1)
 
-    val offset = (targetScrollY % avgItemSize)
-        .toInt()
-        .coerceAtLeast(0)
-
     onUpdateThumbY(newThumbY)
 
     scope.launch {
-        onScrollToItem(targetIndex, offset)
+        onScrollToItem(targetIndex)
     }
 }
 
