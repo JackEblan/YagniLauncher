@@ -143,6 +143,7 @@ internal fun InteractiveGridItem(
         folderPopupEntry: FolderPopupEntry,
         movingGridItem: GridItem,
     ) -> Unit,
+    onResetGrid: () -> Unit,
 ) {
     val isSelected =
         moveGridItemResult != null && moveGridItemResult.movingGridItem.id == gridItem.id
@@ -291,6 +292,7 @@ internal fun InteractiveGridItem(
                 onUpdateSharedElementKey = onUpdateSharedElementKey,
                 onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                 onShowFolderWhenDragging = onShowFolderWhenDragging,
+                onResetGrid = onResetGrid,
             )
         }
 
@@ -945,6 +947,7 @@ private fun InteractiveFolderGridItem(
         folderPopupEntry: FolderPopupEntry,
         movingGridItem: GridItem,
     ) -> Unit,
+    onResetGrid: () -> Unit,
 ) {
     val launcherApps = LocalLauncherApps.current
 
@@ -1135,6 +1138,8 @@ private fun InteractiveFolderGridItem(
                             parent = sharedElementKey.parent,
                             moveGridItemResult = moveGridItemResult,
                             textColor = textColor,
+                            drag = drag,
+                            onResetGrid = onResetGrid,
                         )
                     },
                 )
@@ -1383,6 +1388,8 @@ private fun PreviewFolderGridItem(
     parent: SharedElementKey.Parent,
     moveGridItemResult: MoveGridItemResult?,
     textColor: Color,
+    drag: Drag,
+    onResetGrid: () -> Unit,
 ) {
     val context = LocalContext.current
 
@@ -1414,6 +1421,17 @@ private fun PreviewFolderGridItem(
                     this
                 }
             }
+
+        LaunchedEffect(
+            key1 = drag,
+            key2 = hasInteraction,
+        ) {
+            if ((drag == Drag.Cancel || drag == Drag.End) &&
+                hasInteraction
+            ) {
+                onResetGrid()
+            }
+        }
 
         when (val data = gridItem.data) {
             is GridItemData.ApplicationInfo -> {

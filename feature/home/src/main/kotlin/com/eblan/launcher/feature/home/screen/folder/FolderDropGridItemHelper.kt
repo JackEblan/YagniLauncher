@@ -26,7 +26,7 @@ internal fun handleDropFolderGridItem(
     lockMovement: State<Boolean>,
     isVisibleOverlay: State<Boolean>,
     isLast: Boolean,
-    onDragCancelAfterMoveFolder: () -> Unit,
+    onResetGrid: () -> Unit,
     onDragEndAfterMoveFolder: () -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
@@ -50,7 +50,7 @@ internal fun handleDropFolderGridItem(
 
         onUpdateIsDragging(false)
 
-        onDragCancelAfterMoveFolder()
+        onResetGrid()
 
         return
     }

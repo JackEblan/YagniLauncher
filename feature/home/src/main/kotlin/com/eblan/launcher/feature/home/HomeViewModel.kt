@@ -336,29 +336,15 @@ internal class HomeViewModel @Inject constructor(
         }
     }
 
-    fun resetGridAfterMove(moveGridItemResult: MoveGridItemResult) {
+    fun updateGridItemsAfterMove(moveGridItemResult: MoveGridItemResult) {
         viewModelScope.launch {
             moveGridItemJob?.cancelAndJoin()
 
             updateGridItemsAfterMoveUseCase(moveGridItemResult = moveGridItemResult)
-
-            delay(defaultDelay.milliseconds)
-
-            _isVisibleOverlay.update {
-                false
-            }
-
-            _moveGridItemResult.update {
-                null
-            }
-
-            _gridItemSource.update {
-                null
-            }
         }
     }
 
-    fun cancelGrid() {
+    fun resetGrid() {
         viewModelScope.launch {
             moveGridItemJob?.cancelAndJoin()
 
@@ -472,7 +458,7 @@ internal class HomeViewModel @Inject constructor(
 
             gridRepository.insertGridItem(gridItem = movingGridItem.copy(data = data))
 
-            resetGridAfterMove(moveGridItemResult = moveGridItemResult)
+            updateGridItemsAfterMove(moveGridItemResult = moveGridItemResult)
         }
     }
 

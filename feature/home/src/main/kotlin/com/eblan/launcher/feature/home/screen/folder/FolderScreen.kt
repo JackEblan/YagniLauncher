@@ -136,7 +136,7 @@ internal fun FolderScreen(
         currentPage: Int,
     ) -> Unit,
     onDismissFolderGridItemPopup: () -> Unit,
-    onDragCancelAfterMoveFolder: () -> Unit,
+    onResetGrid: () -> Unit,
     onDragEndAfterMoveFolder: () -> Unit,
     onUpsertFolderPopupEntry: (FolderPopupEntry) -> Unit,
 ) {
@@ -349,7 +349,7 @@ internal fun FolderScreen(
             lockMovement = currentLockMovement,
             isVisibleOverlay = currentIsVisibleOverlay,
             isLast = isLastFolderGridItem,
-            onDragCancelAfterMoveFolder = onDragCancelAfterMoveFolder,
+            onResetGrid = onResetGrid,
             onDragEndAfterMoveFolder = onDragEndAfterMoveFolder,
             onUpdateIsDragging = onUpdateIsDragging,
             onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
