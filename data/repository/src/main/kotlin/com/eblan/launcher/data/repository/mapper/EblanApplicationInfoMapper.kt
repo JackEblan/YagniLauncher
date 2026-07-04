@@ -34,18 +34,16 @@ fun EblanApplicationInfo.asEntity(): EblanApplicationInfoEntity = EblanApplicati
     flags = flags,
 )
 
-fun EblanApplicationInfoEntity.asModel(): EblanApplicationInfo {
-    return EblanApplicationInfo(
-        componentName = componentName,
-        serialNumber = serialNumber,
-        packageName = packageName,
-        icon = icon,
-        label = label,
-        customIcon = customIcon,
-        customLabel = customLabel,
-        isHidden = isHidden,
-        lastUpdateTime = lastUpdateTime,
-        index = index,
-        flags = flags,
-    )
-}
+fun EblanApplicationInfoEntity.asModel(): EblanApplicationInfo = EblanApplicationInfo(
+    componentName = componentName,
+    serialNumber = serialNumber,
+    packageName = packageName,
+    icon = icon,
+    label = label,
+    customIcon = customIcon,
+    customLabel = customLabel,
+    isHidden = isHidden,
+    lastUpdateTime = lastUpdateTime,
+    index = index,
+    flags = flags,
+)

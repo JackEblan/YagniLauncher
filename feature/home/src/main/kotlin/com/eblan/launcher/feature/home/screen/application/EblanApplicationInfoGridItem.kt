@@ -75,6 +75,7 @@ import com.eblan.launcher.domain.model.Associate
 import com.eblan.launcher.domain.model.EblanAction
 import com.eblan.launcher.domain.model.EblanActionType
 import com.eblan.launcher.domain.model.EblanApplicationInfo
+import com.eblan.launcher.domain.model.EblanApplicationInfoWithIconPackInfo
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.MoveGridItemResult
@@ -102,7 +103,7 @@ internal fun EblanApplicationInfoGridItem(
     sharedTransitionScope: SharedTransitionScope,
     appDrawerSettings: AppDrawerSettings,
     drag: Drag,
-    eblanApplicationInfo: EblanApplicationInfo,
+    eblanApplicationInfoWithIconPackInfo: EblanApplicationInfoWithIconPackInfo,
     paddingValues: PaddingValues,
     isVisibleOverlay: Boolean,
     appDrawerType: AppDrawerType,
@@ -143,7 +144,8 @@ internal fun EblanApplicationInfoGridItem(
 
     val maxLines = if (appDrawerSettings.gridItemSettings.singleLineLabel) 1 else Int.MAX_VALUE
 
-    val icon = eblanApplicationInfo.iconPackInfoFilePath ?: eblanApplicationInfo.icon
+    val icon = eblanApplicationInfoWithIconPackInfo.iconPackInfoFilePath
+        ?: eblanApplicationInfoWithIconPackInfo.eblanApplicationInfo.icon
 
     val horizontalAlignment =
         getHorizontalAlignment(horizontalAlignment = appDrawerSettings.gridItemSettings.horizontalAlignment)
@@ -174,7 +176,7 @@ internal fun EblanApplicationInfoGridItem(
     }
 
     val sharedElementKey = SharedElementKey(
-        id = "${eblanApplicationInfo.serialNumber} ${eblanApplicationInfo.packageName} ${eblanApplicationInfo.componentName}",
+        id = "${eblanApplicationInfoWithIconPackInfo.eblanApplicationInfo.serialNumber} ${eblanApplicationInfoWithIconPackInfo.eblanApplicationInfo.packageName} ${eblanApplicationInfoWithIconPackInfo.eblanApplicationInfo.componentName}",
         parent = SharedElementKey.Parent.SwipeY,
     )
 
@@ -185,7 +187,7 @@ internal fun EblanApplicationInfoGridItem(
         handleDragEblanApplicationInfoItem(
             appDrawerSettings = appDrawerSettings,
             drag = drag,
-            eblanApplicationInfo = eblanApplicationInfo,
+            eblanApplicationInfoWithIconPackInfo = eblanApplicationInfoWithIconPackInfo,
             isLongPress = isLongPress,
             isSwiping = isSwiping,
             onDismiss = onDismiss,
@@ -208,7 +210,7 @@ internal fun EblanApplicationInfoGridItem(
                         {
                             scope.launch {
                                 handleOnTapEblanApplicationInfoItem(
-                                    eblanApplicationInfo = eblanApplicationInfo,
+                                    eblanApplicationInfoWithIconPackInfo = eblanApplicationInfoWithIconPackInfo,
                                     intOffset = intOffset,
                                     intSize = intSize,
                                     keyboardController = keyboardController,
@@ -226,7 +228,7 @@ internal fun EblanApplicationInfoGridItem(
                         {
                             scope.launch {
                                 handleOnLongPressEblanApplicationInfoItem(
-                                    eblanApplicationInfo = eblanApplicationInfo,
+                                    eblanApplicationInfo = eblanApplicationInfoWithIconPackInfo.eblanApplicationInfo,
                                     graphicsLayer = graphicsLayer,
                                     intOffset = intOffset,
                                     intSize = intSize,
@@ -270,7 +272,7 @@ internal fun EblanApplicationInfoGridItem(
     ) {
         AsyncImage(
             model = ImageRequest.Builder(context)
-                .data(eblanApplicationInfo.customIcon ?: icon)
+                .data(eblanApplicationInfoWithIconPackInfo.eblanApplicationInfo.customIcon ?: icon)
                 .addLastModifiedToFileCacheKey(true)
                 .size(iconSizePx)
                 .crossfade(false)
@@ -315,7 +317,8 @@ internal fun EblanApplicationInfoGridItem(
 
             Text(
                 modifier = Modifier.alpha(alpha),
-                text = eblanApplicationInfo.customLabel ?: eblanApplicationInfo.label,
+                text = eblanApplicationInfoWithIconPackInfo.eblanApplicationInfo.customLabel
+                    ?: eblanApplicationInfoWithIconPackInfo.eblanApplicationInfo.label,
                 color = textColor,
                 textAlign = TextAlign.Center,
                 maxLines = maxLines,
@@ -327,7 +330,7 @@ internal fun EblanApplicationInfoGridItem(
 }
 
 internal suspend fun handleOnTapEblanApplicationInfoItem(
-    eblanApplicationInfo: EblanApplicationInfo,
+    eblanApplicationInfoWithIconPackInfo: EblanApplicationInfoWithIconPackInfo,
     intOffset: IntOffset,
     intSize: IntSize,
     keyboardController: SoftwareKeyboardController?,
@@ -345,8 +348,8 @@ internal suspend fun handleOnTapEblanApplicationInfoItem(
     scale.animateTo(1f)
 
     launcherApps.startMainActivity(
-        serialNumber = eblanApplicationInfo.serialNumber,
-        componentName = eblanApplicationInfo.componentName,
+        serialNumber = eblanApplicationInfoWithIconPackInfo.eblanApplicationInfo.serialNumber,
+        componentName = eblanApplicationInfoWithIconPackInfo.eblanApplicationInfo.componentName,
         sourceBounds = Rect(
             left,
             top,
@@ -362,7 +365,7 @@ internal suspend fun handleOnTapEblanApplicationInfoItem(
 internal fun handleDragEblanApplicationInfoItem(
     appDrawerSettings: AppDrawerSettings,
     drag: Drag,
-    eblanApplicationInfo: EblanApplicationInfo,
+    eblanApplicationInfoWithIconPackInfo: EblanApplicationInfoWithIconPackInfo,
     isLongPress: Boolean,
     isSwiping: Boolean,
     onDismiss: () -> Unit,
@@ -384,16 +387,16 @@ internal fun handleDragEblanApplicationInfoItem(
             val pagerScreenId = Uuid.random().toHexString()
 
             val data = GridItemData.ApplicationInfo(
-                serialNumber = eblanApplicationInfo.serialNumber,
-                componentName = eblanApplicationInfo.componentName,
-                packageName = eblanApplicationInfo.packageName,
-                icon = eblanApplicationInfo.icon,
-                label = eblanApplicationInfo.label,
-                customIcon = eblanApplicationInfo.customIcon,
-                customLabel = eblanApplicationInfo.customLabel,
+                serialNumber = eblanApplicationInfoWithIconPackInfo.eblanApplicationInfo.serialNumber,
+                componentName = eblanApplicationInfoWithIconPackInfo.eblanApplicationInfo.componentName,
+                packageName = eblanApplicationInfoWithIconPackInfo.eblanApplicationInfo.packageName,
+                icon = eblanApplicationInfoWithIconPackInfo.eblanApplicationInfo.icon,
+                label = eblanApplicationInfoWithIconPackInfo.eblanApplicationInfo.label,
+                customIcon = eblanApplicationInfoWithIconPackInfo.eblanApplicationInfo.customIcon,
+                customLabel = eblanApplicationInfoWithIconPackInfo.eblanApplicationInfo.customLabel,
                 index = -1,
                 folderId = null,
-                iconPackInfoFilePath = eblanApplicationInfo.iconPackInfoFilePath,
+                iconPackInfoFilePath = eblanApplicationInfoWithIconPackInfo.iconPackInfoFilePath,
             )
 
             val eblanAction = EblanAction(

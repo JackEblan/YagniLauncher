@@ -67,6 +67,7 @@ import com.eblan.launcher.domain.model.EblanAppWidgetProviderInfo
 import com.eblan.launcher.domain.model.EblanApplicationInfo
 import com.eblan.launcher.domain.model.EblanApplicationInfoGroup
 import com.eblan.launcher.domain.model.EblanApplicationInfoTag
+import com.eblan.launcher.domain.model.EblanApplicationInfoWithIconPackInfo
 import com.eblan.launcher.domain.model.EblanShortcutInfo
 import com.eblan.launcher.domain.model.EblanShortcutInfoByGroup
 import com.eblan.launcher.domain.model.EblanUserPageKey
@@ -359,7 +360,7 @@ internal fun EblanApplicationInfoTabRow(
     modifier: Modifier = Modifier,
     currentPage: Int,
     eblanUserPageKeys: List<EblanUserPageKey>,
-    eblanApplicationInfos: Map<EblanUserPageKey, List<EblanApplicationInfo>>,
+    eblanApplicationInfos: Map<EblanUserPageKey, List<EblanApplicationInfoWithIconPackInfo>>,
     onAnimateScrollToPage: suspend (Int) -> Unit,
 ) {
     val scope = rememberCoroutineScope()

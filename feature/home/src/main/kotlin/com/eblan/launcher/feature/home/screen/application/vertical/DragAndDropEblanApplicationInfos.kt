@@ -73,6 +73,7 @@ import coil3.request.addLastModifiedToFileCacheKey
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.AppDrawerSettings
 import com.eblan.launcher.domain.model.EblanApplicationInfo
+import com.eblan.launcher.domain.model.EblanApplicationInfoWithIconPackInfo
 import com.eblan.launcher.domain.model.EblanUserPageKey
 import com.eblan.launcher.domain.model.GetEblanApplicationInfosByLabelAndTag
 import com.eblan.launcher.feature.home.R
@@ -100,7 +101,7 @@ internal fun DragAndDropEblanApplicationInfos(
     val lazyGridState = rememberLazyGridState()
 
     val eblanApplicationInfos =
-        getEblanApplicationInfosByLabelAndTag.eblanApplicationInfos[eblanUserPageKey].orEmpty()
+        getEblanApplicationInfosByLabelAndTag.eblanApplicationInfoWithIconPackInfos[eblanUserPageKey].orEmpty()
 
     var currentEblanApplicationInfos by remember { mutableStateOf(eblanApplicationInfos) }
 
@@ -152,14 +153,14 @@ internal fun DragAndDropEblanApplicationInfos(
         ) {
             itemsIndexed(
                 items = currentEblanApplicationInfos,
-                key = { _, eblanApplicationInfo -> eblanApplicationInfo.componentName },
+                key = { _, eblanApplicationInfoWithIconPackInfo -> eblanApplicationInfoWithIconPackInfo.eblanApplicationInfo.componentName },
             ) { index, eblanApplicationInfo ->
                 DraggableItem(
                     dragDropState = gridDragDropState,
                     index = index,
                 ) {
                     EblanApplicationInfoItem(
-                        eblanApplicationInfo = eblanApplicationInfo,
+                        eblanApplicationInfoWithIconPackInfo = eblanApplicationInfo,
                         appDrawerSettings = appDrawerSettings,
                     )
                 }
@@ -188,7 +189,11 @@ internal fun DragAndDropEblanApplicationInfos(
             expanded = expanded,
             onExpandedChange = { expanded = it },
             onSave = {
-                onUpdateEblanApplicationInfos(currentEblanApplicationInfos)
+                onUpdateEblanApplicationInfos(
+                    currentEblanApplicationInfos.map {
+                        it.eblanApplicationInfo
+                    },
+                )
 
                 isDismiss = true
             },
@@ -201,7 +206,7 @@ internal fun DragAndDropEblanApplicationInfos(
 @Composable
 private fun EblanApplicationInfoItem(
     modifier: Modifier = Modifier,
-    eblanApplicationInfo: EblanApplicationInfo,
+    eblanApplicationInfoWithIconPackInfo: EblanApplicationInfoWithIconPackInfo,
     appDrawerSettings: AppDrawerSettings,
 ) {
     val textColor = getSystemTextColor(
@@ -213,7 +218,8 @@ private fun EblanApplicationInfoItem(
 
     val maxLines = if (appDrawerSettings.gridItemSettings.singleLineLabel) 1 else Int.MAX_VALUE
 
-    val icon = eblanApplicationInfo.iconPackInfoFilePath ?: eblanApplicationInfo.icon
+    val icon = eblanApplicationInfoWithIconPackInfo.iconPackInfoFilePath
+        ?: eblanApplicationInfoWithIconPackInfo.eblanApplicationInfo.icon
 
     val horizontalAlignment =
         getHorizontalAlignment(horizontalAlignment = appDrawerSettings.gridItemSettings.horizontalAlignment)
@@ -237,13 +243,16 @@ private fun EblanApplicationInfoItem(
         ) {
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data(eblanApplicationInfo.customIcon ?: icon)
+                    .data(
+                        eblanApplicationInfoWithIconPackInfo.eblanApplicationInfo.customIcon
+                            ?: icon,
+                    )
                     .addLastModifiedToFileCacheKey(true).build(),
                 contentDescription = null,
                 modifier = Modifier.matchParentSize(),
             )
 
-            if (eblanApplicationInfo.serialNumber != 0L) {
+            if (eblanApplicationInfoWithIconPackInfo.eblanApplicationInfo.serialNumber != 0L) {
                 ElevatedCard(
                     modifier = Modifier
                         .size((appDrawerSettings.gridItemSettings.iconSize * 0.40).dp)
@@ -262,7 +271,8 @@ private fun EblanApplicationInfoItem(
             Spacer(modifier = Modifier.height(10.dp))
 
             Text(
-                text = eblanApplicationInfo.customLabel ?: eblanApplicationInfo.label,
+                text = eblanApplicationInfoWithIconPackInfo.eblanApplicationInfo.customLabel
+                    ?: eblanApplicationInfoWithIconPackInfo.eblanApplicationInfo.label,
                 color = textColor,
                 textAlign = TextAlign.Center,
                 maxLines = maxLines,

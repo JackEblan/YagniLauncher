@@ -64,6 +64,7 @@ import coil3.request.addLastModifiedToFileCacheKey
 import coil3.request.crossfade
 import com.eblan.launcher.domain.model.AppDrawerSettings
 import com.eblan.launcher.domain.model.EblanApplicationInfo
+import com.eblan.launcher.domain.model.EblanApplicationInfoWithIconPackInfo
 import com.eblan.launcher.domain.model.EblanUser
 import com.eblan.launcher.domain.model.ManagedProfileResult
 import com.eblan.launcher.feature.home.screen.application.PrivateSpaceStickyHeader
@@ -80,7 +81,7 @@ internal fun LazyListScope.privateSpace(
     isQuietModeEnabled: Boolean,
     managedProfileResult: ManagedProfileResult?,
     paddingValues: PaddingValues,
-    privateEblanApplicationInfos: List<EblanApplicationInfo>,
+    privateEblanApplicationInfos: List<EblanApplicationInfoWithIconPackInfo>,
     privateEblanUser: EblanUser?,
     isVisibleOverlay: Boolean,
     onUpdateIsQuietModeEnabled: (Boolean) -> Unit,
@@ -106,7 +107,7 @@ internal fun LazyListScope.privateSpace(
         items(privateEblanApplicationInfos) { eblanApplicationInfo ->
             PrivateSpaceEblanApplicationInfoItem(
                 appDrawerSettings = appDrawerSettings,
-                eblanApplicationInfo = eblanApplicationInfo,
+                eblanApplicationInfoWithIconPackInfo = eblanApplicationInfo,
                 paddingValues = paddingValues,
                 isVisibleOverlay = isVisibleOverlay,
                 onUpdateOverlayBounds = onUpdateOverlayBounds,
@@ -126,7 +127,7 @@ internal fun LazyListScope.privateSpace(
 private fun PrivateSpaceEblanApplicationInfoItem(
     modifier: Modifier = Modifier,
     appDrawerSettings: AppDrawerSettings,
-    eblanApplicationInfo: EblanApplicationInfo,
+    eblanApplicationInfoWithIconPackInfo: EblanApplicationInfoWithIconPackInfo,
     paddingValues: PaddingValues,
     isVisibleOverlay: Boolean,
     onUpdateOverlayBounds: (
@@ -155,7 +156,7 @@ private fun PrivateSpaceEblanApplicationInfoItem(
 
     val maxLines = if (appDrawerSettings.gridItemSettings.singleLineLabel) 1 else Int.MAX_VALUE
 
-    val icon = eblanApplicationInfo.iconPackInfoFilePath ?: eblanApplicationInfo.icon
+    val icon = eblanApplicationInfoWithIconPackInfo.iconPackInfoFilePath ?: eblanApplicationInfoWithIconPackInfo.eblanApplicationInfo.icon
 
     val leftPadding = with(density) {
         paddingValues.calculateLeftPadding(layoutDirection).roundToPx()
@@ -183,7 +184,7 @@ private fun PrivateSpaceEblanApplicationInfoItem(
                         {
                             scope.launch {
                                 handleOnTapEblanApplicationInfoItem(
-                                    eblanApplicationInfo = eblanApplicationInfo,
+                                    eblanApplicationInfoWithIconPackInfo = eblanApplicationInfoWithIconPackInfo,
                                     intOffset = intOffset,
                                     intSize = intSize,
                                     keyboardController = keyboardController,
@@ -202,7 +203,7 @@ private fun PrivateSpaceEblanApplicationInfoItem(
                             scope.launch {
                                 handleOnLongPressPrivateSpaceEblanApplicationInfoItem(
                                     onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
-                                    eblanApplicationInfo = eblanApplicationInfo,
+                                    eblanApplicationInfo = eblanApplicationInfoWithIconPackInfo.eblanApplicationInfo,
                                     onUpdateOverlayBounds = onUpdateOverlayBounds,
                                     intOffset = intOffset,
                                     intSize = intSize,
@@ -233,7 +234,7 @@ private fun PrivateSpaceEblanApplicationInfoItem(
     ) {
         AsyncImage(
             model = ImageRequest.Builder(context)
-                .data(eblanApplicationInfo.customIcon ?: icon)
+                .data(eblanApplicationInfoWithIconPackInfo.eblanApplicationInfo.customIcon ?: icon)
                 .addLastModifiedToFileCacheKey(true)
                 .size(iconSizePx)
                 .crossfade(false)
@@ -254,7 +255,7 @@ private fun PrivateSpaceEblanApplicationInfoItem(
         Spacer(modifier = Modifier.width(10.dp))
 
         Text(
-            text = eblanApplicationInfo.customLabel ?: eblanApplicationInfo.label,
+            text = eblanApplicationInfoWithIconPackInfo.eblanApplicationInfo.customLabel ?: eblanApplicationInfoWithIconPackInfo.eblanApplicationInfo.label,
             color = textColor,
             textAlign = TextAlign.Center,
             maxLines = maxLines,
