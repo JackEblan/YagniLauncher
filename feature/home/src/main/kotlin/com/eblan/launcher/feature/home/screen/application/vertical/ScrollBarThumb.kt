@@ -17,7 +17,6 @@
  */
 package com.eblan.launcher.feature.home.screen.application.vertical
 
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -59,10 +58,7 @@ internal fun ScrollBarThumb(
     appDrawerColumns: Int,
     lazyGridState: LazyGridState,
     paddingValues: PaddingValues,
-    onScrollToItem: suspend (
-        index: Int,
-        offset: Int,
-    ) -> Unit,
+    onScrollToItem: suspend (Int) -> Unit,
 ) {
     val density = LocalDensity.current
 
@@ -96,9 +92,11 @@ internal fun ScrollBarThumb(
 
     var thumbY by remember { mutableFloatStateOf(0f) }
 
-    val animatedThumbY by animateFloatAsState(
-        targetValue = if (isDraggingThumb) thumbY else viewPortThumbY,
-    )
+    val animatedThumbY by remember {
+        derivedStateOf {
+            if (isDraggingThumb) thumbY else viewPortThumbY
+        }
+    }
 
     Row(modifier = modifier) {
         Box(
@@ -131,7 +129,6 @@ internal fun ScrollBarThumb(
                             onScrollToItem(
                                 (row.roundToInt() * appDrawerColumns)
                                     .coerceAtMost(lazyGridState.layoutInfo.totalItemsCount - 1),
-                                0,
                             )
                         }
                     }
@@ -203,7 +200,7 @@ private fun handleVerticalDrag(
     thumbY: Float,
     deltaY: Float,
     scope: CoroutineScope,
-    onScrollToItem: suspend (index: Int, offset: Int) -> Unit,
+    onScrollToItem: suspend (Int) -> Unit,
     onUpdateThumbY: (Float) -> Unit,
 ) {
     if (deltaY == 0f) return
@@ -239,17 +236,13 @@ private fun handleVerticalDrag(
 
     val rowInt = targetRow.toInt()
 
-    val offsetInRow = (targetScrollY % avgItemHeight)
-        .toInt()
-        .coerceAtLeast(0)
-
     val targetIndex = (rowInt * appDrawerColumns)
         .coerceIn(0, totalItems - 1)
 
     onUpdateThumbY(newThumbY)
 
     scope.launch {
-        onScrollToItem(targetIndex, offsetInRow)
+        onScrollToItem(targetIndex)
     }
 }
 
