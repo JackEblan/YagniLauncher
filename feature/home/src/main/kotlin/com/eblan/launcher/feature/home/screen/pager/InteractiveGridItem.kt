@@ -979,6 +979,11 @@ private fun InteractiveFolderGridItem(
     val currentGridItem = rememberUpdatedState(gridItem)
     val currentLockMovement = rememberUpdatedState(lockMovement)
 
+    val previewFolderGridItems = remember(key1 = data.gridItemsByPage) {
+        data.gridItemsByPage.values.firstOrNull()
+            ?.take(FOLDER_PREVIEW_COLUMNS * FOLDER_PREVIEW_ROWS)
+    }
+
     LaunchedEffect(key1 = moveGridItemResult) {
         handleConflictingGridItem(
             drag = currentDrag,
@@ -1127,8 +1132,7 @@ private fun InteractiveFolderGridItem(
             ) {
                 PreviewFolderGridLayout(
                     modifier = Modifier.matchParentSize(),
-                    gridItems = data.gridItemsByPage.values.firstOrNull()
-                        ?.take(FOLDER_PREVIEW_COLUMNS * FOLDER_PREVIEW_ROWS),
+                    gridItems = previewFolderGridItems,
                     content = {
                         PreviewFolderGridItem(
                             sharedTransitionScope = sharedTransitionScope,
@@ -1139,6 +1143,7 @@ private fun InteractiveFolderGridItem(
                             moveGridItemResult = moveGridItemResult,
                             textColor = textColor,
                             drag = drag,
+                            folderGridItems = data.gridItems,
                             onResetGrid = onResetGrid,
                         )
                     },
@@ -1389,6 +1394,7 @@ private fun PreviewFolderGridItem(
     moveGridItemResult: MoveGridItemResult?,
     textColor: Color,
     drag: Drag,
+    folderGridItems: List<GridItem>,
     onResetGrid: () -> Unit,
 ) {
     val context = LocalContext.current
@@ -1424,10 +1430,14 @@ private fun PreviewFolderGridItem(
 
         LaunchedEffect(
             key1 = drag,
-            key2 = hasInteraction,
+            key2 = folderGridItems,
+            key3 = moveGridItemResult?.movingGridItem?.id,
         ) {
+            val id = moveGridItemResult?.movingGridItem?.id
+
             if ((drag == Drag.Cancel || drag == Drag.End) &&
-                hasInteraction
+                id != null &&
+                folderGridItems.any { it.id == id }
             ) {
                 onResetGrid()
             }

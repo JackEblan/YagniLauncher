@@ -459,6 +459,8 @@ internal class HomeViewModel @Inject constructor(
             gridRepository.insertGridItem(gridItem = movingGridItem.copy(data = data))
 
             updateGridItemsAfterMove(moveGridItemResult = moveGridItemResult)
+
+            resetGrid()
         }
     }
 

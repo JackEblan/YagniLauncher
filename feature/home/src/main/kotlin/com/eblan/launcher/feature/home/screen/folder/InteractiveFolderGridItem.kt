@@ -950,6 +950,11 @@ private fun InteractiveNestedFolderGridItem(
 
     val scale = remember { Animatable(1f) }
 
+    val previewFolderGridItems = remember(key1 = data.gridItemsByPage) {
+        data.gridItemsByPage.values.firstOrNull()
+            ?.take(FOLDER_PREVIEW_COLUMNS * FOLDER_PREVIEW_ROWS)
+    }
+
     LaunchedEffect(
         key1 = drag,
         key2 = hasInteraction,
@@ -1093,8 +1098,7 @@ private fun InteractiveNestedFolderGridItem(
             ) {
                 PreviewFolderGridLayout(
                     modifier = Modifier.matchParentSize(),
-                    gridItems = data.gridItemsByPage.values.firstOrNull()
-                        ?.take(FOLDER_PREVIEW_COLUMNS * FOLDER_PREVIEW_ROWS),
+                    gridItems = previewFolderGridItems,
                     content = {
                         PreviewNestedFolderGridItem(
                             alpha = alpha,
