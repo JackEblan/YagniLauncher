@@ -33,6 +33,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.clearText
 import androidx.compose.material3.ElevatedFilterChip
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChipDefaults
@@ -252,7 +253,6 @@ internal fun ApplicationScreen(
                     onEditApplicationInfo = onEditApplicationInfo,
                     onGetEblanApplicationInfosByLabel = onGetEblanApplicationInfosByLabel,
                     onGetEblanApplicationInfosByTagId = onGetEblanApplicationInfosByTagId,
-                    onUpdateEblanApplicationInfos = onUpdateEblanApplicationInfos,
                     onUpdateGridItemSource = onUpdateGridItemSource,
                     onUpdateImageBitmap = onUpdateImageBitmap,
                     onUpdateIsDragging = onUpdateIsDragging,
@@ -439,6 +439,14 @@ internal fun ApplicationScreenEffect(
     LaunchedEffect(key1 = horizontalPagerState.isScrollInProgress) {
         if (horizontalPagerState.isScrollInProgress && showPopupApplicationMenu) {
             onShowPopupApplicationMenu(false)
+        }
+    }
+
+    LaunchedEffect(key1 = swipeY) {
+        if (swipeY.toInt() == screenHeight) {
+            textFieldState.clearText()
+
+            horizontalPagerState.scrollToPage(0)
         }
     }
 

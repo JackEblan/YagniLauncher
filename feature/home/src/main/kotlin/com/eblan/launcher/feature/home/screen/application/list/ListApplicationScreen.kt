@@ -95,7 +95,6 @@ import com.eblan.launcher.domain.model.AppDrawerSettings
 import com.eblan.launcher.domain.model.EblanAppWidgetProviderInfo
 import com.eblan.launcher.domain.model.EblanApplicationInfo
 import com.eblan.launcher.domain.model.EblanApplicationInfoGroup
-import com.eblan.launcher.domain.model.EblanApplicationInfoOrder
 import com.eblan.launcher.domain.model.EblanApplicationInfoTag
 import com.eblan.launcher.domain.model.EblanApplicationInfoWithIconPackInfo
 import com.eblan.launcher.domain.model.EblanShortcutInfo
@@ -120,7 +119,6 @@ import com.eblan.launcher.feature.home.screen.application.TagElevatedFilterChip
 import com.eblan.launcher.feature.home.screen.application.handleDragEblanApplicationInfoItem
 import com.eblan.launcher.feature.home.screen.application.handleOnLongPressEblanApplicationInfoItem
 import com.eblan.launcher.feature.home.screen.application.handleOnTapEblanApplicationInfoItem
-import com.eblan.launcher.feature.home.screen.application.vertical.DragAndDropEblanApplicationInfos
 import com.eblan.launcher.feature.home.util.getSystemTextColor
 import com.eblan.launcher.feature.home.util.onPress
 import com.eblan.launcher.ui.local.LocalLauncherApps
@@ -156,7 +154,6 @@ internal fun ListApplicationScreen(
     ) -> Unit,
     onGetEblanApplicationInfosByLabel: (String) -> Unit,
     onGetEblanApplicationInfosByTagId: (Long?) -> Unit,
-    onUpdateEblanApplicationInfos: (List<EblanApplicationInfo>) -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
@@ -203,8 +200,6 @@ internal fun ListApplicationScreen(
     val textFieldState = rememberTextFieldState()
 
     var selectedEblanApplicationInfoTagId by remember { mutableStateOf<Long?>(null) }
-
-    var isRearrangeEblanApplicationInfo by remember { mutableStateOf(false) }
 
     var selectedEblanApplicationInfo by remember { mutableStateOf<EblanApplicationInfo?>(null) }
 
@@ -275,21 +270,16 @@ internal fun ListApplicationScreen(
                 sharedTransitionScope = sharedTransitionScope,
                 appDrawerSettings = appDrawerSettings,
                 drag = drag,
-                eblanApplicationInfoOrder = appDrawerSettings.eblanApplicationInfoOrder,
                 getEblanApplicationInfosByLabelAndTag = getEblanApplicationInfosByLabelAndTag,
                 index = index,
-                isRearrangeEblanApplicationInfo = isRearrangeEblanApplicationInfo,
                 managedProfileResult = managedProfileResult,
                 paddingValues = paddingValues,
                 isVisibleOverlay = isVisibleOverlay,
                 showPopupApplicationMenu = showPopupApplicationMenu,
                 swipeY = swipeY,
+                screenHeight = screenHeight,
                 onDismiss = onDismiss,
-                onDismissDragAndDrop = {
-                    isRearrangeEblanApplicationInfo = false
-                },
                 onDragEnd = onDragEnd,
-                onUpdateEblanApplicationInfos = onUpdateEblanApplicationInfos,
                 onUpdateGridItemSource = onUpdateGridItemSource,
                 onUpdateImageBitmap = onUpdateImageBitmap,
                 onUpdateIsDragging = onUpdateIsDragging,
@@ -411,19 +401,16 @@ private fun EblanApplicationInfosPage(
     sharedTransitionScope: SharedTransitionScope,
     appDrawerSettings: AppDrawerSettings,
     drag: Drag,
-    eblanApplicationInfoOrder: EblanApplicationInfoOrder,
     getEblanApplicationInfosByLabelAndTag: GetEblanApplicationInfosByLabelAndTag,
     index: Int,
-    isRearrangeEblanApplicationInfo: Boolean,
     managedProfileResult: ManagedProfileResult?,
     paddingValues: PaddingValues,
     showPopupApplicationMenu: Boolean,
     isVisibleOverlay: Boolean,
     swipeY: Float,
+    screenHeight: Int,
     onDismiss: () -> Unit,
-    onDismissDragAndDrop: () -> Unit,
     onDragEnd: () -> Unit,
-    onUpdateEblanApplicationInfos: (List<EblanApplicationInfo>) -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
@@ -488,15 +475,6 @@ private fun EblanApplicationInfosPage(
                 },
                 onVerticalDrag = onVerticalDrag,
             )
-        } else if (isRearrangeEblanApplicationInfo && eblanApplicationInfoOrder == EblanApplicationInfoOrder.Index) {
-            DragAndDropEblanApplicationInfos(
-                appDrawerSettings = appDrawerSettings,
-                eblanUserPageKey = eblanUserPageKey,
-                getEblanApplicationInfosByLabelAndTag = getEblanApplicationInfosByLabelAndTag,
-                paddingValues = paddingValues,
-                onDismissDragAndDrop = onDismissDragAndDrop,
-                onUpdateEblanApplicationInfos = onUpdateEblanApplicationInfos,
-            )
         } else {
             EblanApplicationInfos(
                 sharedTransitionScope = sharedTransitionScope,
@@ -509,6 +487,7 @@ private fun EblanApplicationInfosPage(
                 showPopupApplicationMenu = showPopupApplicationMenu,
                 isVisibleOverlay = isVisibleOverlay,
                 swipeY = swipeY,
+                screenHeight = screenHeight,
                 onDismiss = onDismiss,
                 onDragEnd = onDragEnd,
                 onUpdateGridItemSource = onUpdateGridItemSource,
@@ -567,6 +546,7 @@ private fun EblanApplicationInfos(
     isVisibleOverlay: Boolean,
     showPopupApplicationMenu: Boolean,
     swipeY: Float,
+    screenHeight: Int,
     onDismiss: () -> Unit,
     onDragEnd: () -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
@@ -610,6 +590,12 @@ private fun EblanApplicationInfos(
     LaunchedEffect(key1 = lazyListState.isScrollInProgress) {
         if (lazyListState.isScrollInProgress && showPopupApplicationMenu) {
             onUpdatePopupMenu(false)
+        }
+    }
+
+    LaunchedEffect(key1 = swipeY) {
+        if (swipeY.toInt() == screenHeight) {
+            lazyListState.scrollToItem(0)
         }
     }
 

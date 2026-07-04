@@ -257,6 +257,7 @@ internal fun VerticalApplicationScreen(
                 isVisibleOverlay = isVisibleOverlay,
                 showPopupApplicationMenu = showPopupApplicationMenu,
                 swipeY = swipeY,
+                screenHeight = screenHeight,
                 onDismiss = onDismiss,
                 onDismissDragAndDrop = {
                     isRearrangeEblanApplicationInfo = false
@@ -409,6 +410,7 @@ private fun EblanApplicationInfosPage(
     showPopupApplicationMenu: Boolean,
     isVisibleOverlay: Boolean,
     swipeY: Float,
+    screenHeight: Int,
     onDismiss: () -> Unit,
     onDismissDragAndDrop: () -> Unit,
     onDragEnd: () -> Unit,
@@ -483,6 +485,8 @@ private fun EblanApplicationInfosPage(
                 eblanUserPageKey = eblanUserPageKey,
                 getEblanApplicationInfosByLabelAndTag = getEblanApplicationInfosByLabelAndTag,
                 paddingValues = paddingValues,
+                swipeY = swipeY,
+                screenHeight = screenHeight,
                 onDismissDragAndDrop = onDismissDragAndDrop,
                 onUpdateEblanApplicationInfos = onUpdateEblanApplicationInfos,
             )
@@ -498,6 +502,7 @@ private fun EblanApplicationInfosPage(
                 showPopupApplicationMenu = showPopupApplicationMenu,
                 isVisibleOverlay = isVisibleOverlay,
                 swipeY = swipeY,
+                screenHeight = screenHeight,
                 onDismiss = onDismiss,
                 onDragEnd = onDragEnd,
                 onUpdateGridItemSource = onUpdateGridItemSource,
@@ -556,6 +561,7 @@ private fun EblanApplicationInfos(
     isVisibleOverlay: Boolean,
     showPopupApplicationMenu: Boolean,
     swipeY: Float,
+    screenHeight: Int,
     onDismiss: () -> Unit,
     onDragEnd: () -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
@@ -599,6 +605,12 @@ private fun EblanApplicationInfos(
     LaunchedEffect(key1 = lazyGridState.isScrollInProgress) {
         if (lazyGridState.isScrollInProgress && showPopupApplicationMenu) {
             onUpdatePopupMenu(false)
+        }
+    }
+
+    LaunchedEffect(key1 = swipeY) {
+        if (swipeY.toInt() == screenHeight) {
+            lazyGridState.scrollToItem(0)
         }
     }
 

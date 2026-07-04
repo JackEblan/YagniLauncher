@@ -91,6 +91,8 @@ internal fun DragAndDropEblanApplicationInfos(
     eblanUserPageKey: EblanUserPageKey,
     getEblanApplicationInfosByLabelAndTag: GetEblanApplicationInfosByLabelAndTag,
     paddingValues: PaddingValues,
+    swipeY: Float,
+    screenHeight: Int,
     onDismissDragAndDrop: () -> Unit,
     onUpdateEblanApplicationInfos: (List<EblanApplicationInfo>) -> Unit,
 ) {
@@ -137,6 +139,12 @@ internal fun DragAndDropEblanApplicationInfos(
     LaunchedEffect(key1 = eblanApplicationInfos) {
         if (isDismiss) {
             onDismissDragAndDrop()
+        }
+    }
+
+    LaunchedEffect(key1 = swipeY) {
+        if (swipeY.toInt() == screenHeight) {
+            lazyGridState.scrollToItem(0)
         }
     }
 
