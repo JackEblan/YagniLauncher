@@ -17,9 +17,11 @@
  */
 package com.eblan.launcher.feature.home.screen.application
 
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.clearText
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -62,15 +64,28 @@ internal fun ApplicationSearchBar(
                     )
                 },
                 trailingIcon = {
-                    IconButton(
-                        onClick = {
-                            onUpdateShowEblanApplicationInfoOrderDialog(true)
-                        },
-                    ) {
-                        Icon(
-                            imageVector = EblanLauncherIcons.MoreVert,
-                            contentDescription = null,
-                        )
+                    Row {
+                        IconButton(
+                            onClick = {
+                                textFieldState.clearText()
+                            },
+                        ) {
+                            Icon(
+                                imageVector = EblanLauncherIcons.Close,
+                                contentDescription = null,
+                            )
+                        }
+
+                        IconButton(
+                            onClick = {
+                                onUpdateShowEblanApplicationInfoOrderDialog(true)
+                            },
+                        ) {
+                            Icon(
+                                imageVector = EblanLauncherIcons.MoreVert,
+                                contentDescription = null,
+                            )
+                        }
                     }
                 },
                 onSearch = {
@@ -109,6 +124,18 @@ internal fun ApplicationSearchBarWithoutMenu(
                         imageVector = EblanLauncherIcons.Search,
                         contentDescription = null,
                     )
+                },
+                trailingIcon = {
+                    IconButton(
+                        onClick = {
+                            textFieldState.clearText()
+                        },
+                    ) {
+                        Icon(
+                            imageVector = EblanLauncherIcons.Close,
+                            contentDescription = null,
+                        )
+                    }
                 },
                 onSearch = { scope.launch { searchBarState.animateToCollapsed() } },
                 placeholder = { Text(text = stringResource(commonR.string.search_applications)) },
