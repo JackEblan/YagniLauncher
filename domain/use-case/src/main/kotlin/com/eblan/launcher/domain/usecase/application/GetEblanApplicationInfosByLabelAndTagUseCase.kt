@@ -19,10 +19,12 @@ package com.eblan.launcher.domain.usecase.application
 
 import com.eblan.launcher.domain.common.Dispatcher
 import com.eblan.launcher.domain.common.EblanDispatchers
+import com.eblan.launcher.domain.common.IconKeyGenerator
+import com.eblan.launcher.domain.framework.FileManager
 import com.eblan.launcher.domain.framework.LauncherAppsWrapper
 import com.eblan.launcher.domain.model.AppDrawerType
-import com.eblan.launcher.domain.model.EblanApplicationInfo
 import com.eblan.launcher.domain.model.EblanApplicationInfoOrder
+import com.eblan.launcher.domain.model.EblanApplicationInfoWithIconPackInfo
 import com.eblan.launcher.domain.model.EblanUserPageKey
 import com.eblan.launcher.domain.model.EblanUserType
 import com.eblan.launcher.domain.model.GetEblanApplicationInfosByLabelAndTag
@@ -33,12 +35,15 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
+import java.io.File
 import javax.inject.Inject
 
 class GetEblanApplicationInfosByLabelAndTagUseCase @Inject constructor(
     private val eblanApplicationInfoRepository: EblanApplicationInfoRepository,
     private val launcherAppsWrapper: LauncherAppsWrapper,
     private val userDataRepository: UserDataRepository,
+    private val fileManager: FileManager,
+    private val iconKeyGenerator: IconKeyGenerator,
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) {
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -51,6 +56,17 @@ class GetEblanApplicationInfosByLabelAndTagUseCase @Inject constructor(
         userDataRepository.userDataFlow,
         eblanApplicationInfoRepository.eblanApplicationInfosFlow,
     ) { tagId, label, userData, eblanApplicationInfos ->
+        val iconPacksDirectory = fileManager.getFilesDirectory(
+            FileManager.ICON_PACKS_DIR,
+        )
+
+        val iconPackInfoPackageName = userData.generalSettings.iconPackInfoPackageName
+
+        val iconPackDirectory = File(
+            iconPacksDirectory,
+            iconPackInfoPackageName,
+        )
+
         val currentEblanApplicationInfos = if (tagId != null) {
             eblanApplicationInfoRepository.getEblanApplicationInfosByTagId(id = tagId)
         } else if (userData.appDrawerSettings.excludeTaggedApps) {
@@ -59,38 +75,51 @@ class GetEblanApplicationInfosByLabelAndTagUseCase @Inject constructor(
             eblanApplicationInfos
         }
 
-        val eblanApplicationInfosByLabel =
-            currentEblanApplicationInfos.filter {
-                !it.isHidden && it.label.contains(
-                    label,
-                    ignoreCase = true,
-                )
-            }.sortedBy { it.label.lowercase() }.toMutableList()
+        val eblanApplicationInfoWithIconPackInfosByLabel = currentEblanApplicationInfos.filter {
+            !it.isHidden && it.label.contains(
+                label,
+                ignoreCase = true,
+            )
+        }.map {
+            val iconPackInfoFilePath = File(
+                iconPackDirectory,
+                iconKeyGenerator.getHashedName(name = it.componentName),
+            )
+
+            EblanApplicationInfoWithIconPackInfo(
+                eblanApplicationInfo = it,
+                iconPackInfoFilePath = if (iconPackInfoFilePath.exists()) {
+                    iconPackInfoFilePath.absolutePath
+                } else {
+                    null
+                },
+            )
+        }.sortedBy { it.eblanApplicationInfo.label.lowercase() }.toMutableList()
 
         updateEblanApplicationInfoIndexes(
             eblanApplicationInfoOrder = userData.appDrawerSettings.eblanApplicationInfoOrder,
-            eblanApplicationInfos = eblanApplicationInfosByLabel,
+            eblanApplicationInfos = eblanApplicationInfoWithIconPackInfosByLabel,
         )
 
         when (userData.appDrawerSettings.appDrawerType) {
             AppDrawerType.Vertical, AppDrawerType.List -> {
-                getVerticalOrListEblanApplicationInfosByLabel(eblanApplicationInfos = eblanApplicationInfosByLabel)
+                getVerticalOrListEblanApplicationInfosByLabel(eblanApplicationInfos = eblanApplicationInfoWithIconPackInfosByLabel)
             }
 
             AppDrawerType.Horizontal -> {
                 getHorizontalEblanApplicationInfosByLabel(
                     horizontalAppDrawerColumns = userData.appDrawerSettings.horizontalAppDrawerColumns,
                     horizontalAppDrawerRows = userData.appDrawerSettings.horizontalAppDrawerRows,
-                    eblanApplicationInfosByLabel = eblanApplicationInfosByLabel,
+                    eblanApplicationInfosByLabel = eblanApplicationInfoWithIconPackInfosByLabel,
                 )
             }
         }
     }.flowOn(defaultDispatcher)
 
-    private fun getVerticalOrListEblanApplicationInfosByLabel(eblanApplicationInfos: MutableList<EblanApplicationInfo>): GetEblanApplicationInfosByLabelAndTag {
+    private fun getVerticalOrListEblanApplicationInfosByLabel(eblanApplicationInfos: MutableList<EblanApplicationInfoWithIconPackInfo>): GetEblanApplicationInfosByLabelAndTag {
         val groupedEblanApplicationInfos = eblanApplicationInfos.groupBy {
             EblanUserPageKey(
-                eblanUser = launcherAppsWrapper.getUser(serialNumber = it.serialNumber),
+                eblanUser = launcherAppsWrapper.getUser(serialNumber = it.eblanApplicationInfo.serialNumber),
                 page = 0,
             )
         }.toSortedMap(nullsLast(compareBy { it.eblanUser.serialNumber }))
@@ -100,21 +129,21 @@ class GetEblanApplicationInfosByLabelAndTagUseCase @Inject constructor(
         }
 
         return GetEblanApplicationInfosByLabelAndTag(
-            eblanApplicationInfos = groupedEblanApplicationInfos.filterKeys { it != privateEblanUserPageKey },
+            eblanApplicationInfoWithIconPackInfos = groupedEblanApplicationInfos.filterKeys { it != privateEblanUserPageKey },
             privateEblanUser = privateEblanUserPageKey?.eblanUser,
-            privateEblanApplicationInfos = groupedEblanApplicationInfos[privateEblanUserPageKey].orEmpty(),
+            privateEblanApplicationInfoWithIconPackInfos = groupedEblanApplicationInfos[privateEblanUserPageKey].orEmpty(),
         )
     }
 
     private fun getHorizontalEblanApplicationInfosByLabel(
         horizontalAppDrawerColumns: Int,
         horizontalAppDrawerRows: Int,
-        eblanApplicationInfosByLabel: MutableList<EblanApplicationInfo>,
+        eblanApplicationInfosByLabel: MutableList<EblanApplicationInfoWithIconPackInfo>,
     ): GetEblanApplicationInfosByLabelAndTag {
         val pageSize = horizontalAppDrawerColumns * horizontalAppDrawerRows
 
         val groupedEblanApplicationInfos = eblanApplicationInfosByLabel.groupBy {
-            launcherAppsWrapper.getUser(serialNumber = it.serialNumber)
+            launcherAppsWrapper.getUser(serialNumber = it.eblanApplicationInfo.serialNumber)
         }.toSortedMap(nullsLast(compareBy { it.serialNumber }))
             .flatMap { (eblanUser, eblanApplicationInfos) ->
                 eblanApplicationInfos.chunked(pageSize).mapIndexed { index, eblanApplicationInfos ->
@@ -126,19 +155,20 @@ class GetEblanApplicationInfosByLabelAndTagUseCase @Inject constructor(
             }.toMap()
 
         return GetEblanApplicationInfosByLabelAndTag(
-            eblanApplicationInfos = groupedEblanApplicationInfos,
+            eblanApplicationInfoWithIconPackInfos = groupedEblanApplicationInfos,
             privateEblanUser = null,
-            privateEblanApplicationInfos = emptyList(),
+            privateEblanApplicationInfoWithIconPackInfos = emptyList(),
         )
     }
 
     private fun updateEblanApplicationInfoIndexes(
         eblanApplicationInfoOrder: EblanApplicationInfoOrder,
-        eblanApplicationInfos: MutableList<EblanApplicationInfo>,
+        eblanApplicationInfos: MutableList<EblanApplicationInfoWithIconPackInfo>,
     ) {
         if (eblanApplicationInfoOrder != EblanApplicationInfoOrder.Index) return
 
-        val indexedEblanApplicationInfos = eblanApplicationInfos.filter { it.index >= 0 }
+        val indexedEblanApplicationInfos =
+            eblanApplicationInfos.filter { it.eblanApplicationInfo.index >= 0 }
 
         indexedEblanApplicationInfos.forEach {
             val fromIndex = eblanApplicationInfos.indexOf(it)
@@ -146,7 +176,7 @@ class GetEblanApplicationInfosByLabelAndTagUseCase @Inject constructor(
             if (fromIndex > -1) {
                 eblanApplicationInfos.removeAt(fromIndex)
 
-                val toIndex = it.index.coerceAtMost(eblanApplicationInfos.size)
+                val toIndex = it.eblanApplicationInfo.index.coerceAtMost(eblanApplicationInfos.size)
 
                 eblanApplicationInfos.add(toIndex, it)
             }

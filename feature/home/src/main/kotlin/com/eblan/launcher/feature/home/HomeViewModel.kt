@@ -161,9 +161,9 @@ internal class HomeViewModel @Inject constructor(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
         initialValue = GetEblanApplicationInfosByLabelAndTag(
-            eblanApplicationInfos = emptyMap(),
+            eblanApplicationInfoWithIconPackInfos = emptyMap(),
             privateEblanUser = null,
-            privateEblanApplicationInfos = emptyList(),
+            privateEblanApplicationInfoWithIconPackInfos = emptyList(),
         ),
     )
 

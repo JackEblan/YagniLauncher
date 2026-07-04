@@ -145,7 +145,6 @@ class AddPackageUseCase @Inject constructor(
                 lastUpdateTime = lastUpdateTime,
                 index = -1,
                 flags = flags,
-                iconPackInfoFilePath = null,
             ),
         )
 

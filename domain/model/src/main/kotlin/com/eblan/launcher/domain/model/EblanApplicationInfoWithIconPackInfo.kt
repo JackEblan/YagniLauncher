@@ -17,16 +17,7 @@
  */
 package com.eblan.launcher.domain.model
 
-data class EblanApplicationInfo(
-    val componentName: String,
-    val serialNumber: Long,
-    val packageName: String,
-    val icon: String?,
-    val label: String,
-    val customIcon: String?,
-    val customLabel: String?,
-    val isHidden: Boolean,
-    val lastUpdateTime: Long,
-    val index: Int,
-    val flags: Int,
+data class EblanApplicationInfoWithIconPackInfo(
+    val eblanApplicationInfo: EblanApplicationInfo,
+    val iconPackInfoFilePath: String?,
 )
