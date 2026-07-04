@@ -601,7 +601,55 @@ private suspend fun handleFolderPopup(
                 ),
             )
 
-            onMoveFolderGridItemOutsideFolder(gridItem)
+            when (val data = gridItem.data) {
+                is GridItemData.ApplicationInfo -> {
+                    onMoveFolderGridItemOutsideFolder(
+                        gridItem.copy(
+                            data = data.copy(
+                                index = -1,
+                                folderId = null,
+                            ),
+                        ),
+                    )
+                }
+
+                is GridItemData.Folder -> {
+                    onMoveFolderGridItemOutsideFolder(
+                        gridItem.copy(
+                            data = data.copy(
+                                index = -1,
+                                folderId = null,
+                            ),
+                        ),
+                    )
+                }
+
+                is GridItemData.ShortcutConfig -> {
+                    onMoveFolderGridItemOutsideFolder(
+                        gridItem.copy(
+                            data = data.copy(
+                                index = -1,
+                                folderId = null,
+                            ),
+                        ),
+                    )
+                }
+
+                is GridItemData.ShortcutInfo -> {
+                    onMoveFolderGridItemOutsideFolder(
+                        gridItem.copy(
+                            data = data.copy(
+                                index = -1,
+                                folderId = null,
+                            ),
+                        ),
+                    )
+                }
+
+                is GridItemData.Widget -> {
+                    onMoveFolderGridItemOutsideFolder(gridItem)
+                }
+            }
         }
 
         onDeleteFolderPopupEntry(folderPopup.folderPopupEntry)

@@ -20,7 +20,7 @@ package com.eblan.launcher.feature.home.model
 import android.content.pm.LauncherApps.PinItemRequest
 
 internal sealed interface GridItemSource {
-    data object Existing : GridItemSource
+    data class Existing(val isFolderGridItem: Boolean) : GridItemSource
 
     data object New : GridItemSource
 

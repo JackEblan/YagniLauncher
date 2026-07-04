@@ -85,7 +85,7 @@ internal suspend fun onLongPress(
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
-    onUpdateGridItemSource(GridItemSource.Existing)
+    onUpdateGridItemSource(GridItemSource.Existing(isFolderGridItem = false))
 
     onUpdateMoveGridItemResult(
         MoveGridItemResult(
@@ -328,7 +328,7 @@ private fun dragGridItem(
 
     val cellHeight = gridHeightWithPadding / rows
 
-    val moveGridItem = getMoveGridItemAndResetFolderId(
+    val moveGridItem = getMoveGridItem(
         associate = Associate.Grid,
         cellHeight = cellHeight,
         cellWidth = cellWidth,
@@ -402,7 +402,7 @@ private fun dragDockGridItem(
 
     val dockY = dragY - (safeDrawingHeight - dockHeightPx)
 
-    val moveGridItem = getMoveGridItemAndResetFolderId(
+    val moveGridItem = getMoveGridItem(
         associate = Associate.Dock,
         cellHeight = cellHeight,
         cellWidth = cellWidth,
@@ -514,7 +514,7 @@ internal suspend fun handleConflictingGridItem(
     )
 }
 
-private fun getMoveGridItemAndResetFolderId(
+private fun getMoveGridItem(
     associate: Associate,
     cellHeight: Int,
     cellWidth: Int,
@@ -530,79 +530,12 @@ private fun getMoveGridItemAndResetFolderId(
 ): GridItem = when (gridItemSource) {
     is GridItemSource.Existing,
     -> {
-        val (startColumn, startRow) = getStartPosition(
-            x = gridX,
-            y = gridY,
-            cellWidth = cellWidth,
-            cellHeight = cellHeight,
-            columns = columns,
-            rows = rows,
-            columnSpan = gridItem.columnSpan,
-            rowSpan = gridItem.rowSpan,
+        gridItem.copy(
+            page = currentPage,
+            startColumn = gridX / cellWidth,
+            startRow = gridY / cellHeight,
+            associate = associate,
         )
-
-        when (val data = gridItem.data) {
-            is GridItemData.ApplicationInfo -> {
-                gridItem.copy(
-                    page = currentPage,
-                    startColumn = startColumn,
-                    startRow = startRow,
-                    data = data.copy(
-                        index = -1,
-                        folderId = null,
-                    ),
-                    associate = associate,
-                )
-            }
-
-            is GridItemData.ShortcutConfig -> {
-                gridItem.copy(
-                    page = currentPage,
-                    startColumn = startColumn,
-                    startRow = startRow,
-                    data = data.copy(
-                        index = -1,
-                        folderId = null,
-                    ),
-                    associate = associate,
-                )
-            }
-
-            is GridItemData.ShortcutInfo -> {
-                gridItem.copy(
-                    page = currentPage,
-                    startColumn = startColumn,
-                    startRow = startRow,
-                    data = data.copy(
-                        index = -1,
-                        folderId = null,
-                    ),
-                    associate = associate,
-                )
-            }
-
-            is GridItemData.Folder -> {
-                gridItem.copy(
-                    page = currentPage,
-                    startColumn = gridX / cellWidth,
-                    startRow = gridY / cellHeight,
-                    data = data.copy(
-                        index = -1,
-                        folderId = null,
-                    ),
-                    associate = associate,
-                )
-            }
-
-            is GridItemData.Widget -> {
-                gridItem.copy(
-                    page = currentPage,
-                    startColumn = gridX / cellWidth,
-                    startRow = gridY / cellHeight,
-                    associate = associate,
-                )
-            }
-        }
     }
 
     is GridItemSource.New, is GridItemSource.Pin,

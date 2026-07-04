@@ -106,6 +106,10 @@ internal suspend fun handleDropGridItem(
                 onUpdateIsDragging(false)
 
                 onDragCancelAfterMove()
+
+                if (currentGridItemSource.isFolderGridItem) {
+                    onResetGridAfterDeleteGridItem(currentMoveGridItemResult.movingGridItem)
+                }
             }
 
             if (isLongPress) {
