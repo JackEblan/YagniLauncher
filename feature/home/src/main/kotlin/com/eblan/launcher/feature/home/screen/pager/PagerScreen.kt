@@ -150,8 +150,7 @@ internal fun PagerScreen(
     isVisibleOverlay: Boolean,
     onDeleteGridItem: (GridItem) -> Unit,
     onResetGridAfterDeleteGridItem: (GridItem) -> Unit,
-    onDragCancelAfterMove: () -> Unit,
-    onDragEndAfterMove: (MoveGridItemResult) -> Unit,
+    onUpdateGridItemsAfterMove: (MoveGridItemResult) -> Unit,
     onDragEndAfterMoveFolder: () -> Unit,
     onEditApplicationInfo: (
         serialNumber: Long,
@@ -217,6 +216,7 @@ internal fun PagerScreen(
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
     onUpdateResizeGridItem: (GridItem) -> Unit,
+    onResetGrid: () -> Unit,
 ) {
     val context = LocalContext.current
 
@@ -311,7 +311,8 @@ internal fun PagerScreen(
                 result = result,
                 fileManager = fileManager,
                 onDeleteGridItem = onResetGridAfterDeleteGridItem,
-                onDragEndAfterMove = onDragEndAfterMove,
+                onUpdateGridItemsAfterMove = onUpdateGridItemsAfterMove,
+                onResetGrid = onResetGrid,
             )
         }
     }
@@ -443,8 +444,8 @@ internal fun PagerScreen(
             isVisibleOverlay = currentIsVisibleOverlay,
             onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
             onResetGridAfterDeleteGridItem = onResetGridAfterDeleteGridItem,
-            onDragCancelAfterMove = onDragCancelAfterMove,
-            onDragEndAfterMove = onDragEndAfterMove,
+            onResetGrid = onResetGrid,
+            onUpdateGridItemsAfterMove = onUpdateGridItemsAfterMove,
         )
     }
 
@@ -463,7 +464,8 @@ internal fun PagerScreen(
             moveGridItemResult = moveGridItemResult,
             updatedWidgetGridItem = pagerScreenState.updatedWidgetGridItem,
             onDeleteGridItem = onResetGridAfterDeleteGridItem,
-            onDragEndAfterMove = onDragEndAfterMove,
+            onUpdateGridItemsAfterMove = onUpdateGridItemsAfterMove,
+            onResetGrid = onResetGrid,
         )
     }
 
@@ -493,8 +495,9 @@ internal fun PagerScreen(
             resultCode = configureResultCode,
             updatedGridItem = pagerScreenState.updatedWidgetGridItem,
             onDeleteGridItem = onDeleteGridItem,
-            onDragEndAfterMove = onDragEndAfterMove,
+            onUpdateGridItemsAfterMove = onUpdateGridItemsAfterMove,
             onResetConfigureResultCode = onResetConfigureResultCode,
+            onResetGrid = onResetGrid,
         )
     }
 
@@ -739,6 +742,7 @@ internal fun PagerScreen(
                             onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                             onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                             onShowFolderWhenDragging = onShowFolderWhenDragging,
+                            onResetGrid = onResetGrid,
                         )
                     },
                 )
@@ -861,6 +865,7 @@ internal fun PagerScreen(
                             onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                             onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                             onShowFolderWhenDragging = onShowFolderWhenDragging,
+                            onResetGrid = onResetGrid,
                         )
                     },
                 )
@@ -982,7 +987,7 @@ internal fun PagerScreen(
                 onUpsertFolderPopupEntry = onUpsertFolderPopupEntry,
                 onMoveFolderGridItem = onMoveFolderGridItem,
                 onDismissFolderGridItemPopup = pagerScreenState::dismissFolderGridItemPopup,
-                onDragCancelAfterMoveFolder = onDragCancelAfterMove,
+                onResetGrid = onResetGrid,
                 onDragEndAfterMoveFolder = onDragEndAfterMoveFolder,
             )
         }

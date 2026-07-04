@@ -32,6 +32,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -305,6 +306,11 @@ private fun FolderGridItem(
 
     val commonModifier = Modifier.size(gridItemSettings.iconSize.dp)
 
+    val previewFolderGridItems = remember(key1 = data.gridItemsByPage) {
+        data.gridItemsByPage.values.firstOrNull()
+            ?.take(FOLDER_PREVIEW_COLUMNS * FOLDER_PREVIEW_ROWS)
+    }
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -331,8 +337,7 @@ private fun FolderGridItem(
             ) {
                 PreviewFolderGridLayout(
                     modifier = Modifier.matchParentSize(),
-                    gridItems = data.gridItemsByPage.values.firstOrNull()
-                        ?.take(FOLDER_PREVIEW_COLUMNS * FOLDER_PREVIEW_ROWS),
+                    gridItems = previewFolderGridItems,
                     content = {
                         PreviewFolderGridItemContent(
                             gridItem = it,
