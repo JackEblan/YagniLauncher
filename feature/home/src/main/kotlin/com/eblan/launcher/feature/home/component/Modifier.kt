@@ -84,10 +84,12 @@ internal fun Modifier.swipeGestures(
                 },
                 onDragEnd = {
                     scope.launch {
+                        val lastSwipeY = swipeY.value
+
                         swipeY.animateTo(0f)
 
                         when {
-                            swipeY.value <= -maxSwipeY -> {
+                            lastSwipeY <= -maxSwipeY -> {
                                 handleEblanAction(
                                     context = context,
                                     eblanAction = swipeUp,
@@ -96,7 +98,7 @@ internal fun Modifier.swipeGestures(
                                 )
                             }
 
-                            swipeY.value >= maxSwipeY -> {
+                            lastSwipeY >= maxSwipeY -> {
                                 handleEblanAction(
                                     context = context,
                                     eblanAction = swipeDown,
