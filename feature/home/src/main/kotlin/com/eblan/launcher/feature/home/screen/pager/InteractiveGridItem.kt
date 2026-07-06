@@ -1144,6 +1144,7 @@ private fun InteractiveFolderGridItem(
                             textColor = textColor,
                             drag = drag,
                             folderGridItems = data.gridItems,
+                            isVisibleFolder = isVisibleFolder,
                             onResetGrid = onResetGrid,
                         )
                     },
@@ -1395,6 +1396,7 @@ private fun PreviewFolderGridItem(
     textColor: Color,
     drag: Drag,
     folderGridItems: List<GridItem>,
+    isVisibleFolder: Boolean,
     onResetGrid: () -> Unit,
 ) {
     val context = LocalContext.current
@@ -1437,7 +1439,8 @@ private fun PreviewFolderGridItem(
 
             if ((drag == Drag.Cancel || drag == Drag.End) &&
                 id != null &&
-                folderGridItems.any { it.id == id }
+                folderGridItems.any { it.id == id } &&
+                !isVisibleFolder
             ) {
                 onResetGrid()
             }
