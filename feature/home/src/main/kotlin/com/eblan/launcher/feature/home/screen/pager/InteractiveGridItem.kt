@@ -1431,9 +1431,10 @@ private fun PreviewFolderGridItem(
             }
 
         LaunchedEffect(
-            key1 = drag,
-            key2 = folderGridItems,
-            key3 = moveGridItemResult?.movingGridItem?.id,
+            drag,
+            folderGridItems,
+            moveGridItemResult?.movingGridItem?.id,
+            isVisibleFolder,
         ) {
             val id = moveGridItemResult?.movingGridItem?.id
 
