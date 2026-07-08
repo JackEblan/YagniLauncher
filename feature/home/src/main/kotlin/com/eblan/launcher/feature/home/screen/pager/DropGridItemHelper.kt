@@ -254,9 +254,17 @@ internal fun handleAppWidgetLauncherResult(
     onDeleteAppWidgetId: () -> Unit,
     onUpdateWidgetGridItem: (GridItem) -> Unit,
 ) {
-    val movingGridItem = requireNotNull(moveGridItemResult?.movingGridItem)
+    val movingGridItem = moveGridItemResult?.movingGridItem ?: run {
+        onDeleteAppWidgetId()
 
-    val data = movingGridItem.data as GridItemData.Widget
+        return
+    }
+
+    val data = movingGridItem.data as? GridItemData.Widget ?: run {
+        onDeleteAppWidgetId()
+
+        return
+    }
 
     if (result.resultCode == Activity.RESULT_OK) {
         val appWidgetId = result.data?.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, -1) ?: -1
@@ -292,18 +300,38 @@ internal fun handleConfigureLauncherResultEffect(
 ) {
     if (resultCode == null) return
 
-    requireNotNull(moveGridItemResult)
+    val currentMoveGridItemResult = moveGridItemResult ?: run {
+        updatedGridItem
+            ?.takeIf { it.data is GridItemData.Widget }
+            ?.let(onDeleteGridItem)
 
-    requireNotNull(updatedGridItem)
+        onResetConfigureResultCode()
 
-    check(updatedGridItem.data is GridItemData.Widget)
+        return
+    }
+
+    val currentUpdatedGridItem = updatedGridItem ?: run {
+        currentMoveGridItemResult.movingGridItem
+            .takeIf { it.data is GridItemData.Widget }
+            ?.let(onDeleteGridItem)
+
+        onResetConfigureResultCode()
+
+        return
+    }
+
+    if (currentUpdatedGridItem.data !is GridItemData.Widget) {
+        onResetConfigureResultCode()
+
+        return
+    }
 
     if (resultCode == Activity.RESULT_OK) {
-        onUpdateGridItemsAfterMove(moveGridItemResult.copy(movingGridItem = updatedGridItem))
+        onUpdateGridItemsAfterMove(currentMoveGridItemResult.copy(movingGridItem = currentUpdatedGridItem))
 
         onResetGrid()
     } else {
-        onDeleteGridItem(updatedGridItem)
+        onDeleteGridItem(currentUpdatedGridItem)
     }
 
     onResetConfigureResultCode()
@@ -314,6 +342,7 @@ internal fun handleDeleteAppWidgetId(
     deleteAppWidgetId: Boolean,
     moveGridItemResult: MoveGridItemResult?,
     onResetGridAfterDeleteGridItem: (GridItem) -> Unit,
+    onDeleteAppWidgetId: (Int) -> Unit,
     onResetAppWidgetId: () -> Unit,
 ) {
     if (appWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID ||
@@ -322,9 +351,21 @@ internal fun handleDeleteAppWidgetId(
         return
     }
 
-    val movingGridItem = requireNotNull(moveGridItemResult?.movingGridItem)
+    val movingGridItem = moveGridItemResult?.movingGridItem ?: run {
+        onDeleteAppWidgetId(appWidgetId)
 
-    check(movingGridItem.data is GridItemData.Widget)
+        onResetAppWidgetId()
+
+        return
+    }
+
+    if (movingGridItem.data !is GridItemData.Widget) {
+        onDeleteAppWidgetId(appWidgetId)
+
+        onResetAppWidgetId()
+
+        return
+    }
 
     onResetGridAfterDeleteGridItem(movingGridItem)
 
@@ -343,20 +384,28 @@ internal fun handleBoundWidgetEffect(
 ) {
     if (updatedWidgetGridItem == null) return
 
-    requireNotNull(gridItemSource)
+    val data = updatedWidgetGridItem.data as? GridItemData.Widget ?: return
 
-    requireNotNull(moveGridItemResult)
+    val currentGridItemSource = gridItemSource ?: run {
+        onDeleteGridItem(updatedWidgetGridItem)
 
-    val data = updatedWidgetGridItem.data as GridItemData.Widget
+        return
+    }
 
-    when (gridItemSource) {
+    val currentMoveGridItemResult = moveGridItemResult ?: run {
+        onDeleteGridItem(updatedWidgetGridItem)
+
+        return
+    }
+
+    when (currentGridItemSource) {
         is GridItemSource.New -> {
             startAppWidgetConfigureActivityForResult(
                 activity = activity,
                 androidAppWidgetHostWrapper = androidAppWidgetHostWrapper,
                 appWidgetId = data.appWidgetId,
                 configure = data.configure,
-                moveGridItemResult = moveGridItemResult,
+                moveGridItemResult = currentMoveGridItemResult,
                 updatedWidgetGridItem = updatedWidgetGridItem,
                 onDeleteGridItem = onDeleteGridItem,
                 onUpdateGridItemsAfterMove = onUpdateGridItemsAfterMove,
@@ -367,8 +416,8 @@ internal fun handleBoundWidgetEffect(
         is GridItemSource.Pin -> {
             bindPinWidget(
                 appWidgetId = data.appWidgetId,
-                moveGridItemResult = moveGridItemResult,
-                pinItemRequest = gridItemSource.pinItemRequest,
+                moveGridItemResult = currentMoveGridItemResult,
+                pinItemRequest = currentGridItemSource.pinItemRequest,
                 updatedWidgetGridItem = updatedWidgetGridItem,
                 onDeleteGridItem = onDeleteGridItem,
                 onUpdateGridItemsAfterMove = onUpdateGridItemsAfterMove,
@@ -390,9 +439,11 @@ internal suspend fun handleShortcutConfigLauncherResult(
     onUpdateGridItemsAfterMove: (MoveGridItemResult) -> Unit,
     onResetGrid: () -> Unit,
 ) {
-    requireNotNull(moveGridItemResult)
+    val currentMoveGridItemResult = moveGridItemResult ?: return
 
-    val movingGridItem = moveGridItemResult.movingGridItem
+    val movingGridItem = currentMoveGridItemResult.movingGridItem
+
+    val movingData = movingGridItem.data as? GridItemData.ShortcutConfig ?: return
 
     if (result.resultCode == Activity.RESULT_CANCELED) {
         onDeleteGridItem(movingGridItem)
@@ -426,8 +477,6 @@ internal suspend fun handleShortcutConfigLauncherResult(
         }
     }?.toUri(Intent.URI_INTENT_SCHEME)
 
-    val movingData = movingGridItem.data as GridItemData.ShortcutConfig
-
     val shortcutIntentIcon = icon?.let { currentByteArray ->
         fileManager.updateAndGetFilePath(
             fileManager.getFilesDirectory(FileManager.SHORTCUT_INTENT_ICONS_DIR),
@@ -442,9 +491,9 @@ internal suspend fun handleShortcutConfigLauncherResult(
         shortcutIntentUri = shortcutIntentUri,
     )
 
-    val newMovingGridItem = moveGridItemResult.movingGridItem.copy(data = newData)
+    val newMovingGridItem = currentMoveGridItemResult.movingGridItem.copy(data = newData)
 
-    onUpdateGridItemsAfterMove(moveGridItemResult.copy(movingGridItem = newMovingGridItem))
+    onUpdateGridItemsAfterMove(currentMoveGridItemResult.copy(movingGridItem = newMovingGridItem))
 
     onResetGrid()
 }
@@ -464,9 +513,11 @@ internal suspend fun handleShortcutConfigIntentSenderLauncherResult(
         pinItemRequestType: PinItemRequestType.ShortcutInfo,
     ) -> Unit,
 ) {
-    requireNotNull(moveGridItemResult)
+    val currentMoveGridItemResult = moveGridItemResult ?: return
 
-    val movingGridItem = moveGridItemResult.movingGridItem
+    val movingGridItem = currentMoveGridItemResult.movingGridItem
+
+    if (movingGridItem.data !is GridItemData.ShortcutConfig) return
 
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O || result.resultCode == Activity.RESULT_CANCELED) {
         onDeleteGridItem(movingGridItem)
@@ -527,7 +578,7 @@ internal suspend fun handleShortcutConfigIntentSenderLauncherResult(
         )
 
         onUpdateShortcutConfigIntoShortcutInfoGridItem(
-            moveGridItemResult,
+            currentMoveGridItemResult,
             pinItemRequestType,
         )
     } else {

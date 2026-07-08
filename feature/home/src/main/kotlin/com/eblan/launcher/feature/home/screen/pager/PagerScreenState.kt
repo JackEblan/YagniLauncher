@@ -469,6 +469,7 @@ internal class PagerScreenState(
             deleteAppWidgetId = deleteAppWidgetId,
             moveGridItemResult = moveGridItemResult,
             onResetGridAfterDeleteGridItem = onResetGridAfterDeleteGridItem,
+            onDeleteAppWidgetId = androidAppWidgetHostWrapper::deleteAppWidgetId,
             onResetAppWidgetId = {
                 lastAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID
 
