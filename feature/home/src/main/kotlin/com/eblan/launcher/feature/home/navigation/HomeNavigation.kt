@@ -19,6 +19,7 @@ package com.eblan.launcher.feature.home.navigation
 
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import com.eblan.launcher.domain.model.SettingsRoute
 import com.eblan.launcher.feature.home.HomeRoute
 
 fun NavGraphBuilder.homeScreen(
@@ -29,7 +30,7 @@ fun NavGraphBuilder.homeScreen(
     ) -> Unit,
     onEditGridItem: (String) -> Unit,
     onResetConfigureResultCode: () -> Unit,
-    onSettings: () -> Unit,
+    onSettings: (SettingsRoute) -> Unit,
 ) {
     composable<HomeRouteData> {
         HomeRoute(

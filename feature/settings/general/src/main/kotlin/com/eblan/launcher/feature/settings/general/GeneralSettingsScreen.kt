@@ -117,20 +117,15 @@ internal fun GeneralSettingsScreen(
                 .fillMaxSize()
                 .padding(paddingValues),
         ) {
-            when (generalSettingsUiState) {
-                GeneralSettingsUiState.Loading -> {
-                }
-
-                is GeneralSettingsUiState.Success -> {
-                    Success(
-                        modifier = modifier,
-                        eblanIconPackInfos = eblanIconPackInfos,
-                        generalSettings = generalSettingsUiState.generalSettings,
-                        packageManagerIconPackInfos = packageManagerIconPackInfos,
-                        onDeleteEblanIconPackInfo = onDeleteEblanIconPackInfo,
-                        onUpdateGeneralSettings = onUpdateGeneralSettings,
-                    )
-                }
+            if (generalSettingsUiState is GeneralSettingsUiState.Success) {
+                Success(
+                    modifier = modifier,
+                    eblanIconPackInfos = eblanIconPackInfos,
+                    generalSettings = generalSettingsUiState.generalSettings,
+                    packageManagerIconPackInfos = packageManagerIconPackInfos,
+                    onDeleteEblanIconPackInfo = onDeleteEblanIconPackInfo,
+                    onUpdateGeneralSettings = onUpdateGeneralSettings,
+                )
             }
         }
     }

@@ -61,6 +61,7 @@ import com.eblan.launcher.domain.model.HomeData
 import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.domain.model.PageItem
 import com.eblan.launcher.domain.model.PinItemRequestType
+import com.eblan.launcher.domain.model.SettingsRoute
 import com.eblan.launcher.feature.home.dialog.TextDialog
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.HomeUiState
@@ -82,7 +83,7 @@ internal fun HomeRoute(
     ) -> Unit,
     onEditGridItem: (String) -> Unit,
     onResetConfigureResultCode: () -> Unit,
-    onSettings: () -> Unit,
+    onSettings: (SettingsRoute) -> Unit,
 ) {
     val homeUiState by viewModel.homeUiState.collectAsStateWithLifecycle()
 
@@ -245,7 +246,7 @@ internal fun HomeScreen(
         pageItemsToDelete: List<PageItem>,
         associate: Associate,
     ) -> Unit,
-    onSettings: () -> Unit,
+    onSettings: (SettingsRoute) -> Unit,
     onStartSyncData: () -> Unit,
     onStopSyncData: () -> Unit,
     onUpdateAppDrawerSettings: (AppDrawerSettings) -> Unit,
@@ -416,7 +417,7 @@ private fun Success(
         pageItemsToDelete: List<PageItem>,
         associate: Associate,
     ) -> Unit,
-    onSettings: () -> Unit,
+    onSettings: (SettingsRoute) -> Unit,
     onStartSyncData: () -> Unit,
     onStopSyncData: () -> Unit,
     onUpdateAppDrawerSettings: (AppDrawerSettings) -> Unit,

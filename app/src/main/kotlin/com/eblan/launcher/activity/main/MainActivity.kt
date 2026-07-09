@@ -34,6 +34,7 @@ import com.eblan.launcher.activity.settings.SettingsActivity
 import com.eblan.launcher.designsystem.theme.EblanLauncherTheme
 import com.eblan.launcher.domain.common.IconKeyGenerator
 import com.eblan.launcher.domain.framework.FileManager
+import com.eblan.launcher.domain.model.SettingsRoute
 import com.eblan.launcher.framework.accessibilitymanager.AndroidAccessibilityManagerWrapper
 import com.eblan.launcher.framework.iconpackmanager.AndroidIconPackManager
 import com.eblan.launcher.framework.imageserializer.AndroidImageSerializer
@@ -153,7 +154,11 @@ class MainActivity : ComponentActivity() {
                                     configureResultCode = null
                                 },
                                 onSettings = {
-                                    startActivity(Intent(this, SettingsActivity::class.java))
+                                    startActivity(
+                                        Intent(this, SettingsActivity::class.java).apply {
+                                            putExtra(SettingsRoute.NAME, it)
+                                        },
+                                    )
                                 },
                             )
                         }

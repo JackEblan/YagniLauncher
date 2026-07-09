@@ -51,6 +51,7 @@ import androidx.compose.ui.window.Popup
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.Associate
 import com.eblan.launcher.domain.model.GridItem
+import com.eblan.launcher.domain.model.SettingsRoute
 import com.eblan.launcher.feature.home.R
 import com.eblan.launcher.common.R as commonR
 
@@ -64,7 +65,7 @@ internal fun SettingsPopup(
         gridItems: List<GridItem>,
         associate: Associate,
     ) -> Unit,
-    onSettings: () -> Unit,
+    onSettings: (SettingsRoute) -> Unit,
     onShortcutConfigActivities: () -> Unit,
     onWallpaper: () -> Unit,
     onWidgets: () -> Unit,
@@ -123,7 +124,7 @@ internal fun SettingsPopup(
                     transitionState.targetState = false
                 },
                 onSettings = {
-                    onSettings()
+                    onSettings(SettingsRoute.Settings)
 
                     transitionState.targetState = false
                 },

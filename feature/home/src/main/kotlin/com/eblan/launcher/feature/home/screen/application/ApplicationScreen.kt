@@ -76,6 +76,7 @@ import com.eblan.launcher.domain.model.EblanUserType
 import com.eblan.launcher.domain.model.GetEblanApplicationInfosByLabelAndTag
 import com.eblan.launcher.domain.model.ManagedProfileResult
 import com.eblan.launcher.domain.model.MoveGridItemResult
+import com.eblan.launcher.domain.model.SettingsRoute
 import com.eblan.launcher.domain.model.TextColor
 import com.eblan.launcher.feature.home.R
 import com.eblan.launcher.feature.home.model.Drag
@@ -135,6 +136,7 @@ internal fun ApplicationScreen(
     onWidgets: (EblanApplicationInfoGroup) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
+    onSettings: (SettingsRoute) -> Unit,
 ) {
     Surface(
         modifier = modifier
@@ -196,6 +198,7 @@ internal fun ApplicationScreen(
                     onWidgets = onWidgets,
                     onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                     onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                    onSettings = onSettings,
                 )
             }
 

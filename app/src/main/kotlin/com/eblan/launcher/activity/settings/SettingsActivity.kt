@@ -18,6 +18,7 @@
 package com.eblan.launcher.activity.settings
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -34,6 +35,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
 import com.eblan.launcher.activity.main.MainActivity
 import com.eblan.launcher.designsystem.theme.EblanLauncherTheme
+import com.eblan.launcher.domain.model.SettingsRoute
 import com.eblan.launcher.domain.model.Theme
 import com.eblan.launcher.framework.accessibilitymanager.AndroidAccessibilityManagerWrapper
 import com.eblan.launcher.framework.packagemanager.AndroidPackageManagerWrapper
@@ -62,6 +64,16 @@ class SettingsActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        @Suppress("DEPRECATION")
+        val settingsRoute = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            intent.getSerializableExtra(
+                SettingsRoute.NAME,
+                SettingsRoute::class.java,
+            )
+        } else {
+            intent.getSerializableExtra(SettingsRoute.NAME) as? SettingsRoute
+        }
 
         setContent {
             CompositionLocalProvider(
@@ -101,6 +113,7 @@ class SettingsActivity : ComponentActivity() {
                             Surface {
                                 SettingsNavHost(
                                     navController = navController,
+                                    settingsRoute = settingsRoute,
                                     onFinish = {
                                         startActivity(Intent(this, MainActivity::class.java))
 

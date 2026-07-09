@@ -106,18 +106,13 @@ internal fun AppDrawerSettingsScreen(
                 .fillMaxSize()
                 .padding(paddingValues),
         ) {
-            when (appDrawerSettingsUiState) {
-                AppDrawerSettingsUiState.Loading -> {
-                }
-
-                is AppDrawerSettingsUiState.Success -> {
-                    Success(
-                        appDrawerSettings = appDrawerSettingsUiState.appDrawerSettings,
-                        eblanApplicationInfos = appDrawerSettingsUiState.eblanApplicationInfos,
-                        onUpdateAppDrawerSettings = onUpdateAppDrawerSettings,
-                        onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
-                    )
-                }
+            if (appDrawerSettingsUiState is AppDrawerSettingsUiState.Success) {
+                Success(
+                    appDrawerSettings = appDrawerSettingsUiState.appDrawerSettings,
+                    eblanApplicationInfos = appDrawerSettingsUiState.eblanApplicationInfos,
+                    onUpdateAppDrawerSettings = onUpdateAppDrawerSettings,
+                    onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
+                )
             }
         }
     }

@@ -20,6 +20,7 @@ package com.eblan.launcher.navigation
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
+import com.eblan.launcher.domain.model.SettingsRoute
 import com.eblan.launcher.feature.editapplicationinfo.navigation.editApplicationScreen
 import com.eblan.launcher.feature.editapplicationinfo.navigation.navigateToEditApplicationScreen
 import com.eblan.launcher.feature.editgriditem.navigation.editGridItemScreen
@@ -32,7 +33,7 @@ fun MainNavHost(
     configureResultCode: Int?,
     navController: NavHostController,
     onResetConfigureResultCode: () -> Unit,
-    onSettings: () -> Unit,
+    onSettings: (SettingsRoute) -> Unit,
 ) {
     NavHost(
         navController = navController,

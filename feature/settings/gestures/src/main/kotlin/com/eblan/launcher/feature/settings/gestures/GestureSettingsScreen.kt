@@ -84,40 +84,35 @@ private fun GestureSettingsScreen(
                 .fillMaxSize()
                 .padding(paddingValues),
         ) {
-            when (gesturesSettingsUiState) {
-                GesturesSettingsUiState.Loading -> {
-                }
-
-                is GesturesSettingsUiState.Success -> {
-                    EblanActionSettings(
-                        modifier = modifier,
-                        doubleTap = gesturesSettingsUiState.gestureSettings.doubleTap,
-                        swipeUp = gesturesSettingsUiState.gestureSettings.swipeUp,
-                        swipeDown = gesturesSettingsUiState.gestureSettings.swipeDown,
-                        eblanApplicationInfos = gesturesSettingsUiState.eblanApplicationInfos,
-                        onUpdateDoubleTap = {
-                            onUpdateGestureSettings(
-                                gesturesSettingsUiState.gestureSettings.copy(
-                                    doubleTap = it,
-                                ),
-                            )
-                        },
-                        onUpdateSwipeUp = {
-                            onUpdateGestureSettings(
-                                gesturesSettingsUiState.gestureSettings.copy(
-                                    swipeUp = it,
-                                ),
-                            )
-                        },
-                        onUpdateSwipeDown = {
-                            onUpdateGestureSettings(
-                                gesturesSettingsUiState.gestureSettings.copy(
-                                    swipeDown = it,
-                                ),
-                            )
-                        },
-                    )
-                }
+            if (gesturesSettingsUiState is GesturesSettingsUiState.Success) {
+                EblanActionSettings(
+                    modifier = modifier,
+                    doubleTap = gesturesSettingsUiState.gestureSettings.doubleTap,
+                    swipeUp = gesturesSettingsUiState.gestureSettings.swipeUp,
+                    swipeDown = gesturesSettingsUiState.gestureSettings.swipeDown,
+                    eblanApplicationInfos = gesturesSettingsUiState.eblanApplicationInfos,
+                    onUpdateDoubleTap = {
+                        onUpdateGestureSettings(
+                            gesturesSettingsUiState.gestureSettings.copy(
+                                doubleTap = it,
+                            ),
+                        )
+                    },
+                    onUpdateSwipeUp = {
+                        onUpdateGestureSettings(
+                            gesturesSettingsUiState.gestureSettings.copy(
+                                swipeUp = it,
+                            ),
+                        )
+                    },
+                    onUpdateSwipeDown = {
+                        onUpdateGestureSettings(
+                            gesturesSettingsUiState.gestureSettings.copy(
+                                swipeDown = it,
+                            ),
+                        )
+                    },
+                )
             }
         }
     }

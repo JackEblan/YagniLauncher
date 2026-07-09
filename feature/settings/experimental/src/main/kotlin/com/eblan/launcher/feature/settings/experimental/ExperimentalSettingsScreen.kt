@@ -95,17 +95,12 @@ internal fun ExperimentalSettingsScreen(
                 .fillMaxSize()
                 .padding(paddingValues),
         ) {
-            when (experimentalSettingsUiState) {
-                ExperimentalSettingsUiState.Loading -> {
-                }
-
-                is ExperimentalSettingsUiState.Success -> {
-                    Success(
-                        modifier = modifier,
-                        experimentalSettings = experimentalSettingsUiState.experimentalSettings,
-                        onUpdateExperimentalSettings = onUpdateExperimentalSettings,
-                    )
-                }
+            if (experimentalSettingsUiState is ExperimentalSettingsUiState.Success) {
+                Success(
+                    modifier = modifier,
+                    experimentalSettings = experimentalSettingsUiState.experimentalSettings,
+                    onUpdateExperimentalSettings = onUpdateExperimentalSettings,
+                )
             }
         }
     }

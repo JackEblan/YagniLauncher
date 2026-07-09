@@ -102,16 +102,11 @@ internal fun HomeSettingsScreen(
                 .fillMaxSize()
                 .padding(paddingValues),
         ) {
-            when (homeSettingsUiState) {
-                HomeSettingsUiState.Loading -> {
-                }
-
-                is HomeSettingsUiState.Success -> {
-                    Success(
-                        homeSettings = homeSettingsUiState.homeSettings,
-                        onUpdateHomeSettings = onUpdateHomeSettings,
-                    )
-                }
+            if (homeSettingsUiState is HomeSettingsUiState.Success) {
+                Success(
+                    homeSettings = homeSettingsUiState.homeSettings,
+                    onUpdateHomeSettings = onUpdateHomeSettings,
+                )
             }
         }
     }
