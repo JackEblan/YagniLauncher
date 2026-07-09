@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
@@ -41,10 +42,19 @@ import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.clearText
 import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.SearchBar
+import androidx.compose.material3.SearchBarDefaults
+import androidx.compose.material3.SearchBarState
+import androidx.compose.material3.Text
 import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -52,6 +62,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -60,6 +71,7 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
@@ -78,6 +90,8 @@ import com.eblan.launcher.domain.model.EblanUserType
 import com.eblan.launcher.domain.model.GetEblanApplicationInfosByLabelAndTag
 import com.eblan.launcher.domain.model.ManagedProfileResult
 import com.eblan.launcher.domain.model.MoveGridItemResult
+import com.eblan.launcher.domain.model.SettingsRoute
+import com.eblan.launcher.feature.home.R
 import com.eblan.launcher.feature.home.component.OffsetNestedScrollConnection
 import com.eblan.launcher.feature.home.dialog.EblanApplicationInfoOrderDialog
 import com.eblan.launcher.feature.home.model.Drag
@@ -85,7 +99,6 @@ import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
 import com.eblan.launcher.feature.home.screen.application.ApplicationInfoPopup
 import com.eblan.launcher.feature.home.screen.application.ApplicationScreenEffect
-import com.eblan.launcher.feature.home.screen.application.ApplicationSearchBar
 import com.eblan.launcher.feature.home.screen.application.EblanApplicationInfoGridItem
 import com.eblan.launcher.feature.home.screen.application.EblanApplicationInfoTabRow
 import com.eblan.launcher.feature.home.screen.application.PrivateApplicationInfoPopup
@@ -96,6 +109,8 @@ import com.eblan.launcher.ui.local.LocalLauncherApps
 import com.eblan.launcher.ui.local.LocalPackageManager
 import com.eblan.launcher.ui.local.LocalUserManager
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.launch
+import com.eblan.launcher.common.R as commonR
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class, FlowPreview::class)
 @Composable
@@ -137,6 +152,7 @@ internal fun VerticalApplicationScreen(
     onWidgets: (EblanApplicationInfoGroup) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
+    onSettings: (SettingsRoute) -> Unit,
 ) {
     val density = LocalDensity.current
 
@@ -208,9 +224,10 @@ internal fun VerticalApplicationScreen(
                 end = paddingValues.calculateEndPadding(layoutDirection),
             ),
     ) {
-        ApplicationSearchBar(
+        VerticalApplicationScreenSearchBar(
             searchBarState = searchBarState,
             textFieldState = textFieldState,
+            onSettings = onSettings,
             onUpdateShowEblanApplicationInfoOrderDialog = {
                 showEblanApplicationInfoOrderDialog = it
             },
@@ -392,6 +409,97 @@ internal fun VerticalApplicationScreen(
             },
         )
     }
+}
+
+@Composable
+@OptIn(ExperimentalMaterial3Api::class)
+private fun VerticalApplicationScreenSearchBar(
+    modifier: Modifier = Modifier,
+    searchBarState: SearchBarState,
+    textFieldState: TextFieldState,
+    onSettings: (SettingsRoute) -> Unit,
+    onUpdateShowEblanApplicationInfoOrderDialog: (Boolean) -> Unit,
+) {
+    var searchBarMenuExpanded by remember { mutableStateOf(false) }
+
+    val scope = rememberCoroutineScope()
+
+    SearchBar(
+        state = searchBarState,
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(10.dp),
+        inputField = {
+            SearchBarDefaults.InputField(
+                textFieldState = textFieldState,
+                searchBarState = searchBarState,
+                leadingIcon = {
+                    Icon(
+                        imageVector = EblanLauncherIcons.Search,
+                        contentDescription = null,
+                    )
+                },
+                trailingIcon = {
+                    Row {
+                        IconButton(
+                            onClick = {
+                                textFieldState.clearText()
+                            },
+                        ) {
+                            Icon(
+                                imageVector = EblanLauncherIcons.Close,
+                                contentDescription = null,
+                            )
+                        }
+
+                        Box {
+                            IconButton(
+                                onClick = {
+                                    searchBarMenuExpanded = true
+                                },
+                            ) {
+                                Icon(
+                                    imageVector = EblanLauncherIcons.MoreVert,
+                                    contentDescription = null,
+                                )
+                            }
+
+                            DropdownMenu(
+                                expanded = searchBarMenuExpanded,
+                                onDismissRequest = { searchBarMenuExpanded = false },
+                            ) {
+                                DropdownMenuItem(
+                                    text = { Text(text = stringResource(R.string.sort)) },
+                                    onClick = {
+                                        searchBarMenuExpanded = false
+
+                                        onUpdateShowEblanApplicationInfoOrderDialog(true)
+                                    },
+                                )
+
+                                DropdownMenuItem(
+                                    text = { Text(text = stringResource(commonR.string.settings)) },
+                                    onClick = {
+                                        searchBarMenuExpanded = false
+
+                                        onSettings(SettingsRoute.AppDrawer)
+                                    },
+                                )
+                            }
+                        }
+                    }
+                },
+                onSearch = {
+                    scope.launch {
+                        searchBarState.animateToCollapsed()
+                    }
+                },
+                placeholder = {
+                    Text(text = stringResource(commonR.string.search_applications))
+                },
+            )
+        },
+    )
 }
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalSharedTransitionApi::class)
