@@ -557,41 +557,29 @@ internal class PagerScreenState(
         )
     }
 
-    fun swipeEblanAction(
-        context: Context,
-        gestureSettings: GestureSettings,
-        launcherApps: AndroidLauncherAppsWrapper,
-        screenHeight: Int,
-        swipeDownY: Float,
-        swipeUpY: Float,
-    ) {
+    fun swipeEblanAction() {
         val swipeThreshold = 100f
 
-        if (swipeUpY < screenHeight - swipeThreshold) {
+        if (swipeUpY.value < screenHeight - swipeThreshold) {
             handleEblanAction(
                 context = context,
                 eblanAction = gestureSettings.swipeUp,
-                launcherApps = launcherApps,
+                launcherApps = androidLauncherAppsWrapper,
                 onOpenAppDrawer = {},
             )
         }
 
-        if (swipeDownY < screenHeight - swipeThreshold) {
+        if (swipeDownY.value < screenHeight - swipeThreshold) {
             handleEblanAction(
                 context = context,
                 eblanAction = gestureSettings.swipeDown,
-                launcherApps = launcherApps,
+                launcherApps = androidLauncherAppsWrapper,
                 onOpenAppDrawer = {},
             )
         }
     }
 
-    fun resetSwipeOffset(
-        gestureSettings: GestureSettings,
-        screenHeight: Int,
-        swipeDownY: Animatable<Float, AnimationVector1D>,
-        swipeUpY: Animatable<Float, AnimationVector1D>,
-    ) {
+    fun resetSwipeOffset() {
         suspend fun animateOffset(
             eblanAction: EblanAction,
             swipeY: Animatable<Float, AnimationVector1D>,

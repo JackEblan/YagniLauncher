@@ -589,7 +589,7 @@ internal fun PagerScreen(
 
     SharedTransitionLayout(
         modifier = modifier
-            .pointerInput(Unit) {
+            .pointerInput(key1 = pagerScreenState) {
                 detectDragGesturesAfterLongPress(
                     onDragStart = pagerScreenState::dragStart,
                     onDragEnd = {
@@ -613,34 +613,25 @@ internal fun PagerScreen(
     ) {
         Column(
             modifier = Modifier
-                .pointerInput(key1 = isVisibleOverlay) {
+                .pointerInput(
+                    key1 = isVisibleOverlay,
+                    key2 = pagerScreenState,
+                ) {
                     detectVerticalDragGestures(
                         onVerticalDrag = { _, dragAmount ->
                             pagerScreenState.verticalDrag(dragAmount = dragAmount)
                         },
                         onDragEnd = {
-                            pagerScreenState.swipeEblanAction(
-                                context = context,
-                                gestureSettings = gestureSettings,
-                                launcherApps = androidLauncherAppsWrapper,
-                                screenHeight = screenHeight,
-                                swipeDownY = pagerScreenState.swipeDownY.value,
-                                swipeUpY = pagerScreenState.swipeUpY.value,
-                            )
+                            pagerScreenState.swipeEblanAction()
 
-                            pagerScreenState.resetSwipeOffset(
-                                gestureSettings = gestureSettings,
-                                screenHeight = screenHeight,
-                                swipeDownY = pagerScreenState.swipeDownY,
-                                swipeUpY = pagerScreenState.swipeUpY,
-                            )
+                            pagerScreenState.resetSwipeOffset()
                         },
                         onDragCancel = {
                             pagerScreenState.verticalDragEnd()
                         },
                     )
                 }
-                .pointerInput(Unit) {
+                .pointerInput(key1 = pagerScreenState) {
                     detectTapGestures(
                         onDoubleTap = {
                             pagerScreenState.updateHasDoubleTap(value = true)
