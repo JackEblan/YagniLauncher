@@ -74,6 +74,7 @@ internal fun ExperimentalSettingsScreen(
     onUpdateExperimentalSettings: (ExperimentalSettings) -> Unit,
 ) {
     Scaffold(
+        modifier = modifier,
         topBar = {
             TopAppBar(
                 title = {
@@ -90,22 +91,17 @@ internal fun ExperimentalSettingsScreen(
             )
         },
     ) { paddingValues ->
-        Box(
-            modifier = modifier
-                .fillMaxSize()
-                .padding(paddingValues),
-        ) {
-            when (experimentalSettingsUiState) {
-                ExperimentalSettingsUiState.Loading -> {
-                }
-
-                is ExperimentalSettingsUiState.Success -> {
-                    Success(
-                        modifier = modifier,
-                        experimentalSettings = experimentalSettingsUiState.experimentalSettings,
-                        onUpdateExperimentalSettings = onUpdateExperimentalSettings,
-                    )
-                }
+        if (experimentalSettingsUiState is ExperimentalSettingsUiState.Success) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
+            ) {
+                Success(
+                    modifier = modifier,
+                    experimentalSettings = experimentalSettingsUiState.experimentalSettings,
+                    onUpdateExperimentalSettings = onUpdateExperimentalSettings,
+                )
             }
         }
     }
@@ -151,10 +147,14 @@ private fun Success(
     }
 
     if (showSyncDataDialog) {
-        SyncDataDialog(syncData = experimentalSettings.syncData, onDismissRequest = {
-            showSyncDataDialog = false
-        }, onUpdateSyncData = {
-            onUpdateExperimentalSettings(experimentalSettings.copy(syncData = it))
-        })
+        SyncDataDialog(
+            syncData = experimentalSettings.syncData,
+            onDismissRequest = {
+                showSyncDataDialog = false
+            },
+            onUpdateSyncData = {
+                onUpdateExperimentalSettings(experimentalSettings.copy(syncData = it))
+            },
+        )
     }
 }

@@ -81,6 +81,7 @@ internal fun HomeSettingsScreen(
     onUpdateHomeSettings: (HomeSettings) -> Unit,
 ) {
     Scaffold(
+        modifier = modifier,
         topBar = {
             TopAppBar(
                 title = {
@@ -97,21 +98,16 @@ internal fun HomeSettingsScreen(
             )
         },
     ) { paddingValues ->
-        Box(
-            modifier = modifier
-                .fillMaxSize()
-                .padding(paddingValues),
-        ) {
-            when (homeSettingsUiState) {
-                HomeSettingsUiState.Loading -> {
-                }
-
-                is HomeSettingsUiState.Success -> {
-                    Success(
-                        homeSettings = homeSettingsUiState.homeSettings,
-                        onUpdateHomeSettings = onUpdateHomeSettings,
-                    )
-                }
+        if (homeSettingsUiState is HomeSettingsUiState.Success) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
+            ) {
+                Success(
+                    homeSettings = homeSettingsUiState.homeSettings,
+                    onUpdateHomeSettings = onUpdateHomeSettings,
+                )
             }
         }
     }

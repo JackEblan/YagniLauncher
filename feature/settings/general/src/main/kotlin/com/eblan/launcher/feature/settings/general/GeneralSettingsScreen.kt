@@ -96,6 +96,7 @@ internal fun GeneralSettingsScreen(
     onUpdateGeneralSettings: (GeneralSettings) -> Unit,
 ) {
     Scaffold(
+        modifier = modifier,
         topBar = {
             TopAppBar(
                 title = {
@@ -112,25 +113,20 @@ internal fun GeneralSettingsScreen(
             )
         },
     ) { paddingValues ->
-        Box(
-            modifier = modifier
-                .fillMaxSize()
-                .padding(paddingValues),
-        ) {
-            when (generalSettingsUiState) {
-                GeneralSettingsUiState.Loading -> {
-                }
-
-                is GeneralSettingsUiState.Success -> {
-                    Success(
-                        modifier = modifier,
-                        eblanIconPackInfos = eblanIconPackInfos,
-                        generalSettings = generalSettingsUiState.generalSettings,
-                        packageManagerIconPackInfos = packageManagerIconPackInfos,
-                        onDeleteEblanIconPackInfo = onDeleteEblanIconPackInfo,
-                        onUpdateGeneralSettings = onUpdateGeneralSettings,
-                    )
-                }
+        if (generalSettingsUiState is GeneralSettingsUiState.Success) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
+            ) {
+                Success(
+                    modifier = modifier,
+                    eblanIconPackInfos = eblanIconPackInfos,
+                    generalSettings = generalSettingsUiState.generalSettings,
+                    packageManagerIconPackInfos = packageManagerIconPackInfos,
+                    onDeleteEblanIconPackInfo = onDeleteEblanIconPackInfo,
+                    onUpdateGeneralSettings = onUpdateGeneralSettings,
+                )
             }
         }
     }

@@ -235,7 +235,7 @@ private fun AlphaWarningCard(modifier: Modifier = Modifier) {
     ElevatedCard(
         modifier = modifier
             .fillMaxWidth()
-            .padding(10.dp),
+            .padding(15.dp),
     ) {
         Column(
             modifier = Modifier
