@@ -540,18 +540,6 @@ internal fun PagerScreen(
         }
     }
 
-    LaunchedEffect(key1 = pagerScreenState.swipeUpY) {
-        snapshotFlow { pagerScreenState.swipeUpY.value }.onEach { y ->
-            pagerScreenState.updateLastSwipeUpY(value = y)
-        }.collect()
-    }
-
-    LaunchedEffect(key1 = pagerScreenState.swipeDownY) {
-        snapshotFlow { pagerScreenState.swipeDownY.value }.onEach { y ->
-            pagerScreenState.updateLastSwipeDownY(value = y)
-        }.collect()
-    }
-
     LaunchedEffect(key1 = pagerScreenState.isPressHome) {
         pagerScreenState.handleIsPressHome()
     }

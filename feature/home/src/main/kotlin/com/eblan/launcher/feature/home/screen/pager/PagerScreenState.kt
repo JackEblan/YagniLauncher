@@ -39,13 +39,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.Saver
-import androidx.compose.runtime.saveable.listSaver
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.draganddrop.DragAndDropEvent
 import androidx.compose.ui.draganddrop.DragAndDropTarget
@@ -108,8 +105,7 @@ import kotlin.math.roundToInt
  */
 @OptIn(ExperimentalFoundationApi::class)
 internal class PagerScreenState(
-    initialSwipeUpY: Float,
-    initialSwipeDownY: Float,
+    density: Density,
     private val screenWidth: Int,
     private val screenHeight: Int,
     private val fileManager: FileManager,
@@ -124,16 +120,11 @@ internal class PagerScreenState(
     private val androidAppWidgetHostWrapper: AndroidAppWidgetHostWrapper,
     private val androidAppWidgetManagerWrapper: AndroidAppWidgetManagerWrapper,
     private val androidWallpaperManagerWrapper: AndroidWallpaperManagerWrapper,
-    private val density: Density,
     private val experimentalSettings: ExperimentalSettings,
     private val iconKeyGenerator: IconKeyGenerator,
     private val onGetPinGridItem: (PinItemRequestType) -> Unit,
     private val onResetPinGridItem: () -> Unit,
 ) {
-    private var lastSwipeUpY by mutableFloatStateOf(initialSwipeUpY)
-
-    private var lastSwipeDownY by mutableFloatStateOf(initialSwipeDownY)
-
     var hasDoubleTap by mutableStateOf(false)
         private set
 
@@ -206,9 +197,9 @@ internal class PagerScreenState(
     var associate by mutableStateOf<Associate?>(null)
         private set
 
-    val swipeUpY = Animatable(initialSwipeUpY)
+    val swipeUpY = Animatable(screenHeight.toFloat())
 
-    val swipeDownY = Animatable(initialSwipeDownY)
+    val swipeDownY = Animatable(screenHeight.toFloat())
 
     val target = object : DragAndDropTarget {
         override fun onStarted(event: DragAndDropEvent) {
@@ -782,14 +773,6 @@ internal class PagerScreenState(
         drag = Drag.None
     }
 
-    fun updateLastSwipeUpY(value: Float) {
-        lastSwipeUpY = value
-    }
-
-    fun updateLastSwipeDownY(value: Float) {
-        lastSwipeDownY = value
-    }
-
     fun updateHasDoubleTap(value: Boolean) {
         hasDoubleTap = value
     }
@@ -1302,62 +1285,6 @@ internal class PagerScreenState(
             }
         }
     }
-
-    companion object {
-        fun Saver(
-            screenWidth: Int,
-            screenHeight: Int,
-            fileManager: FileManager,
-            androidImageSerializer: AndroidImageSerializer,
-            androidLauncherAppsWrapper: AndroidLauncherAppsWrapper,
-            scope: CoroutineScope,
-            context: Context,
-            androidUserManagerWrapper: AndroidUserManagerWrapper,
-            pinItemRequestWrapper: PinItemRequestWrapper,
-            gestureSettings: GestureSettings,
-            homeSettings: HomeSettings,
-            androidAppWidgetHostWrapper: AndroidAppWidgetHostWrapper,
-            androidAppWidgetManagerWrapper: AndroidAppWidgetManagerWrapper,
-            androidWallpaperManagerWrapper: AndroidWallpaperManagerWrapper,
-            density: Density,
-            experimentalSettings: ExperimentalSettings,
-            iconKeyGenerator: IconKeyGenerator,
-            onGetPinGridItem: (PinItemRequestType) -> Unit,
-            onResetPinGridItem: () -> Unit,
-        ): Saver<PagerScreenState, *> = listSaver(
-            save = {
-                listOf(
-                    it.lastSwipeUpY,
-                    it.lastSwipeDownY,
-                )
-            },
-            restore = {
-                PagerScreenState(
-                    initialSwipeUpY = it[0],
-                    initialSwipeDownY = it[1],
-                    screenWidth = screenWidth,
-                    screenHeight = screenHeight,
-                    fileManager = fileManager,
-                    androidImageSerializer = androidImageSerializer,
-                    androidLauncherAppsWrapper = androidLauncherAppsWrapper,
-                    scope = scope,
-                    context = context,
-                    androidUserManagerWrapper = androidUserManagerWrapper,
-                    pinItemRequestWrapper = pinItemRequestWrapper,
-                    gestureSettings = gestureSettings,
-                    homeSettings = homeSettings,
-                    androidAppWidgetHostWrapper = androidAppWidgetHostWrapper,
-                    androidAppWidgetManagerWrapper = androidAppWidgetManagerWrapper,
-                    androidWallpaperManagerWrapper = androidWallpaperManagerWrapper,
-                    density = density,
-                    experimentalSettings = experimentalSettings,
-                    iconKeyGenerator = iconKeyGenerator,
-                    onGetPinGridItem = onGetPinGridItem,
-                    onResetPinGridItem = onResetPinGridItem,
-                )
-            },
-        )
-    }
 }
 
 @Composable
@@ -1394,37 +1321,15 @@ internal fun rememberPagerScreenState(
 
     val iconKeyGenerator = LocalIconKeyGenerator.current
 
-    return rememberSaveable(
+    return remember(
         screenWidth,
         screenHeight,
         gestureSettings,
         homeSettings,
         experimentalSettings,
-        saver = PagerScreenState.Saver(
-            screenWidth = screenWidth,
-            screenHeight = screenHeight,
-            fileManager = fileManager,
-            androidImageSerializer = androidImageSerializer,
-            androidLauncherAppsWrapper = androidLauncherAppsWrapper,
-            scope = scope,
-            context = context,
-            androidUserManagerWrapper = androidUserManagerWrapper,
-            pinItemRequestWrapper = pinItemRequestWrapper,
-            gestureSettings = gestureSettings,
-            homeSettings = homeSettings,
-            androidAppWidgetHostWrapper = androidAppWidgetHostWrapper,
-            androidAppWidgetManagerWrapper = androidAppWidgetManagerWrapper,
-            androidWallpaperManagerWrapper = androidWallpaperManagerWrapper,
-            density = density,
-            experimentalSettings = experimentalSettings,
-            iconKeyGenerator = iconKeyGenerator,
-            onGetPinGridItem = onGetPinGridItem,
-            onResetPinGridItem = onResetPinGridItem,
-        ),
     ) {
         PagerScreenState(
-            initialSwipeUpY = screenHeight.toFloat(),
-            initialSwipeDownY = screenHeight.toFloat(),
+            density = density,
             screenWidth = screenWidth,
             screenHeight = screenHeight,
             fileManager = fileManager,
@@ -1439,7 +1344,6 @@ internal fun rememberPagerScreenState(
             androidAppWidgetHostWrapper = androidAppWidgetHostWrapper,
             androidAppWidgetManagerWrapper = androidAppWidgetManagerWrapper,
             androidWallpaperManagerWrapper = androidWallpaperManagerWrapper,
-            density = density,
             experimentalSettings = experimentalSettings,
             iconKeyGenerator = iconKeyGenerator,
             onGetPinGridItem = onGetPinGridItem,
