@@ -19,9 +19,11 @@ package com.eblan.launcher.feature.settings.settings.navigation
 
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import com.eblan.launcher.domain.model.SettingsRoute
 import com.eblan.launcher.feature.settings.settings.SettingsRoute
 
 fun NavGraphBuilder.settingsScreen(
+    settingsRoute: SettingsRoute,
     onAppDrawer: () -> Unit,
     onExperimental: () -> Unit,
     onFinish: () -> Unit,
@@ -31,6 +33,7 @@ fun NavGraphBuilder.settingsScreen(
 ) {
     composable<SettingsRouteData> {
         SettingsRoute(
+            settingsRoute = settingsRoute,
             onAppDrawer = onAppDrawer,
             onExperimental = onExperimental,
             onFinish = onFinish,

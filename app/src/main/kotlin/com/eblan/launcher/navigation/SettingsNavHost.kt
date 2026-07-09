@@ -18,7 +18,6 @@
 package com.eblan.launcher.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import com.eblan.launcher.domain.model.SettingsRoute
@@ -34,32 +33,19 @@ import com.eblan.launcher.feature.settings.home.navigation.homeSettingsScreen
 import com.eblan.launcher.feature.settings.home.navigation.navigateToHomeSettings
 import com.eblan.launcher.feature.settings.settings.navigation.SettingsRouteData
 import com.eblan.launcher.feature.settings.settings.navigation.settingsScreen
-import kotlinx.coroutines.delay
-import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun SettingsNavHost(
     navController: NavHostController,
-    settingsRoute: SettingsRoute?,
+    settingsRoute: SettingsRoute,
     onFinish: () -> Unit,
 ) {
-    LaunchedEffect(key1 = settingsRoute) {
-        when (settingsRoute) {
-            SettingsRoute.AppDrawer -> {
-                delay(500L.milliseconds)
-
-                navController.navigateToAppDrawerSettings()
-            }
-
-            else -> Unit
-        }
-    }
-
     NavHost(
         navController = navController,
         startDestination = SettingsRouteData::class,
     ) {
         settingsScreen(
+            settingsRoute = settingsRoute,
             onAppDrawer = navController::navigateToAppDrawerSettings,
             onExperimental = navController::navigateToExperimentalSettings,
             onFinish = onFinish,

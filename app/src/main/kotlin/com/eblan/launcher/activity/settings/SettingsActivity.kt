@@ -66,14 +66,16 @@ class SettingsActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         @Suppress("DEPRECATION")
-        val settingsRoute = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            intent.getSerializableExtra(
-                SettingsRoute.NAME,
-                SettingsRoute::class.java,
-            )
-        } else {
-            intent.getSerializableExtra(SettingsRoute.NAME) as? SettingsRoute
-        }
+        val settingsRoute = requireNotNull(
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                intent.getSerializableExtra(
+                    SettingsRoute.NAME,
+                    SettingsRoute::class.java,
+                )
+            } else {
+                intent.getSerializableExtra(SettingsRoute.NAME) as? SettingsRoute
+            },
+        )
 
         setContent {
             CompositionLocalProvider(

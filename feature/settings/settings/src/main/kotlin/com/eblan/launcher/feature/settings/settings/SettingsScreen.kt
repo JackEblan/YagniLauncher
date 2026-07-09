@@ -23,6 +23,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -44,6 +45,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -53,12 +55,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
+import com.eblan.launcher.domain.model.SettingsRoute
 import com.eblan.launcher.ui.local.LocalPackageManager
 import com.eblan.launcher.common.R as commonR
 
 @Composable
 internal fun SettingsRoute(
     modifier: Modifier = Modifier,
+    settingsRoute: SettingsRoute,
     onAppDrawer: () -> Unit,
     onExperimental: () -> Unit,
     onFinish: () -> Unit,
@@ -68,6 +72,7 @@ internal fun SettingsRoute(
 ) {
     SettingsScreen(
         modifier = modifier,
+        settingsRoute = settingsRoute,
         onAppDrawer = onAppDrawer,
         onExperimental = onExperimental,
         onFinish = onFinish,
@@ -81,6 +86,7 @@ internal fun SettingsRoute(
 @Composable
 internal fun SettingsScreen(
     modifier: Modifier = Modifier,
+    settingsRoute: SettingsRoute,
     onAppDrawer: () -> Unit,
     onExperimental: () -> Unit,
     onFinish: () -> Unit,
@@ -88,15 +94,18 @@ internal fun SettingsScreen(
     onGestures: () -> Unit,
     onHome: () -> Unit,
 ) {
-    val context = LocalContext.current
-
-    val packageManager = LocalPackageManager.current
+    LaunchedEffect(key1 = settingsRoute) {
+        if (settingsRoute == SettingsRoute.AppDrawer) {
+            onAppDrawer()
+        }
+    }
 
     BackHandler {
         onFinish()
     }
 
     Scaffold(
+        modifier = modifier,
         topBar = {
             TopAppBar(
                 title = {
@@ -113,75 +122,101 @@ internal fun SettingsScreen(
             )
         },
     ) { paddingValues ->
-        Column(
-            modifier = modifier
-                .verticalScroll(rememberScrollState())
-                .fillMaxSize()
-                .padding(paddingValues),
+        if (settingsRoute == SettingsRoute.Settings) {
+            Success(
+                paddingValues = paddingValues,
+                onGeneral = onGeneral,
+                onHome = onHome,
+                onAppDrawer = onAppDrawer,
+                onGestures = onGestures,
+                onExperimental = onExperimental,
+            )
+        }
+    }
+}
+
+@Composable
+private fun Success(
+    modifier: Modifier = Modifier,
+    paddingValues: PaddingValues,
+    onGeneral: () -> Unit,
+    onHome: () -> Unit,
+    onAppDrawer: () -> Unit,
+    onGestures: () -> Unit,
+    onExperimental: () -> Unit,
+) {
+    val context = LocalContext.current
+
+    val packageManager = LocalPackageManager.current
+
+    Column(
+        modifier = modifier
+            .verticalScroll(rememberScrollState())
+            .fillMaxSize()
+            .padding(paddingValues),
+    ) {
+        AlphaWarningCard()
+
+        ElevatedCard(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 15.dp),
         ) {
-            AlphaWarningCard()
-
-            ElevatedCard(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 15.dp),
-            ) {
-                if (!packageManager.isDefaultLauncher()) {
-                    SettingsRow(
-                        imageVector = EblanLauncherIcons.Info,
-                        subtitle = stringResource(R.string.choose_yagni_launcher),
-                        title = stringResource(R.string.default_launcher),
-                        onClick = {
-                            context.startActivity(Intent(ACTION_HOME_SETTINGS))
-                        },
-                    )
-
-                    HorizontalDivider(modifier = Modifier.fillMaxWidth())
-                }
-
+            if (!packageManager.isDefaultLauncher()) {
                 SettingsRow(
-                    imageVector = EblanLauncherIcons.Settings,
-                    subtitle = stringResource(R.string.themes_icon_packs),
-                    title = stringResource(commonR.string.general),
-                    onClick = onGeneral,
+                    imageVector = EblanLauncherIcons.Info,
+                    subtitle = stringResource(R.string.choose_yagni_launcher),
+                    title = stringResource(R.string.default_launcher),
+                    onClick = {
+                        context.startActivity(Intent(ACTION_HOME_SETTINGS))
+                    },
                 )
 
                 HorizontalDivider(modifier = Modifier.fillMaxWidth())
-
-                SettingsRow(
-                    imageVector = EblanLauncherIcons.Home,
-                    subtitle = stringResource(R.string.grid_icon_dock_and_more),
-                    title = stringResource(commonR.string.home),
-                    onClick = onHome,
-                )
-
-                HorizontalDivider(modifier = Modifier.fillMaxWidth())
-
-                SettingsRow(
-                    imageVector = EblanLauncherIcons.Apps,
-                    subtitle = stringResource(R.string.columns_and_rows_count),
-                    title = stringResource(commonR.string.app_drawer),
-                    onClick = onAppDrawer,
-                )
-
-                HorizontalDivider(modifier = Modifier.fillMaxWidth())
-
-                SettingsRow(
-                    imageVector = EblanLauncherIcons.Gesture,
-                    subtitle = stringResource(R.string.swipe_gesture_actions),
-                    title = stringResource(commonR.string.gestures),
-                    onClick = onGestures,
-                )
-
-                HorizontalDivider(modifier = Modifier.fillMaxWidth())
-
-                SettingsRow(
-                    imageVector = EblanLauncherIcons.DeveloperMode,
-                    subtitle = stringResource(R.string.advanced_options_for_power_users),
-                    title = stringResource(commonR.string.experimental),
-                    onClick = onExperimental,
-                )
             }
+
+            SettingsRow(
+                imageVector = EblanLauncherIcons.Settings,
+                subtitle = stringResource(R.string.themes_icon_packs),
+                title = stringResource(commonR.string.general),
+                onClick = onGeneral,
+            )
+
+            HorizontalDivider(modifier = Modifier.fillMaxWidth())
+
+            SettingsRow(
+                imageVector = EblanLauncherIcons.Home,
+                subtitle = stringResource(R.string.grid_icon_dock_and_more),
+                title = stringResource(commonR.string.home),
+                onClick = onHome,
+            )
+
+            HorizontalDivider(modifier = Modifier.fillMaxWidth())
+
+            SettingsRow(
+                imageVector = EblanLauncherIcons.Apps,
+                subtitle = stringResource(R.string.columns_and_rows_count),
+                title = stringResource(commonR.string.app_drawer),
+                onClick = onAppDrawer,
+            )
+
+            HorizontalDivider(modifier = Modifier.fillMaxWidth())
+
+            SettingsRow(
+                imageVector = EblanLauncherIcons.Gesture,
+                subtitle = stringResource(R.string.swipe_gesture_actions),
+                title = stringResource(commonR.string.gestures),
+                onClick = onGestures,
+            )
+
+            HorizontalDivider(modifier = Modifier.fillMaxWidth())
+
+            SettingsRow(
+                imageVector = EblanLauncherIcons.DeveloperMode,
+                subtitle = stringResource(R.string.advanced_options_for_power_users),
+                title = stringResource(commonR.string.experimental),
+                onClick = onExperimental,
+            )
         }
     }
 }
@@ -235,7 +270,7 @@ private fun AlphaWarningCard(modifier: Modifier = Modifier) {
     ElevatedCard(
         modifier = modifier
             .fillMaxWidth()
-            .padding(10.dp),
+            .padding(15.dp),
     ) {
         Column(
             modifier = Modifier
