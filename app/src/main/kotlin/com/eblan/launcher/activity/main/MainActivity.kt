@@ -154,8 +154,6 @@ class MainActivity : ComponentActivity() {
                                 },
                                 onSettings = {
                                     startActivity(Intent(this, SettingsActivity::class.java))
-
-                                    finish()
                                 },
                             )
                         }

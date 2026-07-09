@@ -1409,6 +1409,9 @@ internal fun rememberPagerScreenState(
     return rememberSaveable(
         screenWidth,
         screenHeight,
+        gestureSettings,
+        homeSettings,
+        experimentalSettings,
         saver = PagerScreenState.Saver(
             screenWidth = screenWidth,
             screenHeight = screenHeight,

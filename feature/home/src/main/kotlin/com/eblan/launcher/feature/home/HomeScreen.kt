@@ -439,7 +439,7 @@ private fun Success(
 ) {
     val activity = LocalActivity.current
 
-    LaunchedEffect(key1 = Unit) {
+    LaunchedEffect(key1 = homeData.userData.homeSettings.lockScreenOrientation) {
         if (homeData.userData.homeSettings.lockScreenOrientation) {
             activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LOCKED
         }

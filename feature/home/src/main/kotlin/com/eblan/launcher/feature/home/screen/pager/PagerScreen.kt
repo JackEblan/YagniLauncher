@@ -408,7 +408,7 @@ internal fun PagerScreen(
     }
 
     LifecycleEffect(
-        syncDataEnabled = experimentalSettings.syncData,
+        syncData = experimentalSettings.syncData,
         userManagerWrapper = androidUserManagerWrapper,
         onManagedProfileResultChange = pagerScreenState::updateManagedProfileResult,
         onStartSyncData = onStartSyncData,
@@ -554,6 +554,26 @@ internal fun PagerScreen(
 
     LaunchedEffect(key1 = pagerScreenState.isPressHome) {
         pagerScreenState.handleIsPressHome()
+    }
+
+    LaunchedEffect(key1 = homeSettings.infiniteScroll) {
+        gridHorizontalPagerState.scrollToPage(
+            if (homeSettings.infiniteScroll) {
+                (Int.MAX_VALUE / 2) + homeSettings.initialPage
+            } else {
+                homeSettings.initialPage
+            },
+        )
+    }
+
+    LaunchedEffect(key1 = homeSettings.dockInfiniteScroll) {
+        dockGridHorizontalPagerState.scrollToPage(
+            if (homeSettings.dockInfiniteScroll) {
+                (Int.MAX_VALUE / 2) + homeSettings.dockInitialPage
+            } else {
+                homeSettings.dockInitialPage
+            },
+        )
     }
 
     BackHandler(
