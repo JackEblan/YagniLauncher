@@ -30,6 +30,8 @@ data class GridItemSettings(
     val padding: Int,
     val cornerRadius: Int,
     val gridItemLayoutType: GridItemLayoutType,
+    val horizontalArrangement: HorizontalArrangement,
+    val verticalAlignment: VerticalAlignment,
 )
 
 enum class HorizontalAlignment {
@@ -41,6 +43,18 @@ enum class HorizontalAlignment {
 enum class VerticalArrangement {
     Top,
     Center,
+    Bottom,
+}
+
+enum class HorizontalArrangement {
+    Start,
+    Center,
+    End,
+}
+
+enum class VerticalAlignment {
+    Top,
+    CenterVertically,
     Bottom,
 }
 

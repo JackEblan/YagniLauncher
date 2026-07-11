@@ -20,16 +20,34 @@ package com.eblan.launcher.feature.home.util
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.ui.Alignment
 import com.eblan.launcher.domain.model.HorizontalAlignment
+import com.eblan.launcher.domain.model.HorizontalArrangement
+import com.eblan.launcher.domain.model.VerticalAlignment
 import com.eblan.launcher.domain.model.VerticalArrangement
 
-internal fun getHorizontalAlignment(horizontalAlignment: HorizontalAlignment): Alignment.Horizontal = when (horizontalAlignment) {
-    HorizontalAlignment.Start -> Alignment.Start
-    HorizontalAlignment.CenterHorizontally -> Alignment.CenterHorizontally
-    HorizontalAlignment.End -> Alignment.End
-}
+internal fun getHorizontalAlignment(horizontalAlignment: HorizontalAlignment): Alignment.Horizontal =
+    when (horizontalAlignment) {
+        HorizontalAlignment.Start -> Alignment.Start
+        HorizontalAlignment.CenterHorizontally -> Alignment.CenterHorizontally
+        HorizontalAlignment.End -> Alignment.End
+    }
 
-internal fun getVerticalArrangement(verticalArrangement: VerticalArrangement): Arrangement.Vertical = when (verticalArrangement) {
-    VerticalArrangement.Top -> Arrangement.Top
-    VerticalArrangement.Center -> Arrangement.Center
-    VerticalArrangement.Bottom -> Arrangement.Bottom
-}
+internal fun getVerticalArrangement(verticalArrangement: VerticalArrangement): Arrangement.Vertical =
+    when (verticalArrangement) {
+        VerticalArrangement.Top -> Arrangement.Top
+        VerticalArrangement.Center -> Arrangement.Center
+        VerticalArrangement.Bottom -> Arrangement.Bottom
+    }
+
+internal fun getHorizontalArrangement(horizontalArrangement: HorizontalArrangement): Arrangement.Horizontal =
+    when (horizontalArrangement) {
+        HorizontalArrangement.Start -> Arrangement.Start
+        HorizontalArrangement.Center -> Arrangement.Center
+        HorizontalArrangement.End -> Arrangement.End
+    }
+
+internal fun getVerticalAlignment(verticalAlignment: VerticalAlignment): Alignment.Vertical =
+    when (verticalAlignment) {
+        VerticalAlignment.Top -> Alignment.Top
+        VerticalAlignment.CenterVertically -> Alignment.CenterVertically
+        VerticalAlignment.Bottom -> Alignment.Bottom
+    }

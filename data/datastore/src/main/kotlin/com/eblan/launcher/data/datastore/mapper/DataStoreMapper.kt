@@ -44,8 +44,10 @@ import com.eblan.launcher.domain.model.GridItemLayoutType
 import com.eblan.launcher.domain.model.GridItemSettings
 import com.eblan.launcher.domain.model.HomeSettings
 import com.eblan.launcher.domain.model.HorizontalAlignment
+import com.eblan.launcher.domain.model.HorizontalArrangement
 import com.eblan.launcher.domain.model.TextColor
 import com.eblan.launcher.domain.model.Theme
+import com.eblan.launcher.domain.model.VerticalAlignment
 import com.eblan.launcher.domain.model.VerticalArrangement
 
 internal fun HomeSettingsProto.toHomeSettings(): HomeSettings = HomeSettings(
@@ -96,6 +98,8 @@ internal fun GridItemSettingsProto.toGridItemSettings(): GridItemSettings = Grid
     padding = padding,
     cornerRadius = cornerRadius,
     gridItemLayoutType = gridItemLayoutTypeProto.toGridItemLayoutType(),
+    horizontalArrangement = HorizontalArrangement.Center,
+    verticalAlignment = VerticalAlignment.CenterVertically,
 )
 
 internal fun GeneralSettingsProto.toGeneralSettings(): GeneralSettings = GeneralSettings(
