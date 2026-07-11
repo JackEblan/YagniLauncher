@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+option java_package = "com.eblan.launcher.data.datastore.proto.home";
+option java_multiple_files = true;
+
+enum GridItemLayoutTypeProto {
+  START_ICON_END_LABEL = 0;
+  START_LABEL_END_ICON = 1;
+  TOP_ICON_BOTTOM_LABEL = 2;
+  TOP_LABEL_BOTTOM_ICON = 3;
+  ICON_ONLY = 4;
+  LABEL_ONLY = 5;
+}

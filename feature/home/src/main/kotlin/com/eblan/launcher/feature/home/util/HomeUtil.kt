@@ -38,7 +38,7 @@ internal fun handleEblanAction(
     onOpenAppDrawer: () -> Unit,
 ) {
     when (eblanAction.eblanActionType) {
-        EblanActionType.OpenApp -> {
+        EblanActionType.OPEN_APP -> {
             launcherApps.startMainActivity(
                 serialNumber = eblanAction.serialNumber,
                 componentName = eblanAction.componentName,
@@ -46,47 +46,47 @@ internal fun handleEblanAction(
             )
         }
 
-        EblanActionType.OpenNotificationPanel -> {
+        EblanActionType.OPEN_NOTIFICATION_PANEL -> {
             val intent = Intent(GlobalAction.NAME).setPackage(context.packageName).putExtra(
                 GlobalAction.GLOBAL_ACTION_TYPE,
-                GlobalAction.Notifications.name,
+                GlobalAction.NOTIFICATIONS.name,
             )
 
             context.sendBroadcast(intent)
         }
 
-        EblanActionType.LockScreen -> {
+        EblanActionType.LOCK_SCREEN -> {
             val intent = Intent(GlobalAction.NAME).setPackage(context.packageName).putExtra(
                 GlobalAction.GLOBAL_ACTION_TYPE,
-                GlobalAction.LockScreen.name,
+                GlobalAction.LOCK_SCREEN.name,
             )
 
             context.sendBroadcast(intent)
         }
 
-        EblanActionType.OpenQuickSettings -> {
+        EblanActionType.OPEN_QUICK_SETTINGS -> {
             val intent = Intent(GlobalAction.NAME).setPackage(context.packageName).putExtra(
                 GlobalAction.GLOBAL_ACTION_TYPE,
-                GlobalAction.QuickSettings.name,
+                GlobalAction.QUICK_SETTINGS.name,
             )
 
             context.sendBroadcast(intent)
         }
 
-        EblanActionType.OpenRecents -> {
+        EblanActionType.OPEN_RECENTS -> {
             val intent = Intent(GlobalAction.NAME).setPackage(context.packageName).putExtra(
                 GlobalAction.GLOBAL_ACTION_TYPE,
-                GlobalAction.Recents.name,
+                GlobalAction.RECENTS.name,
             )
 
             context.sendBroadcast(intent)
         }
 
-        EblanActionType.OpenAppDrawer -> {
+        EblanActionType.OPEN_APP_DRAWER -> {
             onOpenAppDrawer()
         }
 
-        EblanActionType.None -> Unit
+        EblanActionType.NONE -> Unit
     }
 }
 
@@ -97,7 +97,7 @@ internal fun onDoubleTap(
     scope: CoroutineScope,
     onOpenAppDrawer: () -> Unit,
 ) {
-    if (doubleTap.eblanActionType == EblanActionType.None) return
+    if (doubleTap.eblanActionType == EblanActionType.NONE) return
 
     scope.launch {
         handleEblanAction(

@@ -1042,8 +1042,8 @@ internal fun PagerScreen(
             )
         }
 
-        if (gestureSettings.swipeUp.eblanActionType == EblanActionType.OpenAppDrawer ||
-            gestureSettings.swipeDown.eblanActionType == EblanActionType.OpenAppDrawer
+        if (gestureSettings.swipeUp.eblanActionType == EblanActionType.OPEN_APP_DRAWER ||
+            gestureSettings.swipeDown.eblanActionType == EblanActionType.OPEN_APP_DRAWER
         ) {
             ApplicationScreen(
                 sharedTransitionScope = this@SharedTransitionLayout,

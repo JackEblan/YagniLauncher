@@ -191,7 +191,7 @@ internal fun InteractiveGridItem(
     when (val data = gridItem.data) {
         is GridItemData.ApplicationInfo -> {
             when (currentGridItemSettings.gridItemLayoutType) {
-                GridItemLayoutType.StartIconEndLabel -> {
+                GridItemLayoutType.START_ICON_END_LABEL -> {
                     StartIconEndLabelApplicationInfoGridItem(
                         modifier = modifier,
                         sharedTransitionScope = sharedTransitionScope,
@@ -218,7 +218,7 @@ internal fun InteractiveGridItem(
                     )
                 }
 
-                GridItemLayoutType.StartLabelEndIcon -> {
+                GridItemLayoutType.START_LABEL_END_ICON -> {
                     StartLabelEndIconApplicationInfoGridItem(
                         modifier = modifier,
                         sharedTransitionScope = sharedTransitionScope,
@@ -245,7 +245,7 @@ internal fun InteractiveGridItem(
                     )
                 }
 
-                GridItemLayoutType.TopIconBottomLabel -> {
+                GridItemLayoutType.TOP_ICON_BOTTOM_LABEL -> {
                     TopIconBottomLabelApplicationInfoGridItem(
                         modifier = modifier,
                         sharedTransitionScope = sharedTransitionScope,
@@ -272,7 +272,7 @@ internal fun InteractiveGridItem(
                     )
                 }
 
-                GridItemLayoutType.TopLabelBottomIcon -> {
+                GridItemLayoutType.TOP_LABEL_BOTTOM_ICON -> {
                     TopLabelBottomIconApplicationInfoGridItem(
                         modifier = modifier,
                         sharedTransitionScope = sharedTransitionScope,
@@ -299,7 +299,7 @@ internal fun InteractiveGridItem(
                     )
                 }
 
-                GridItemLayoutType.IconOnly -> {
+                GridItemLayoutType.ICON_ONLY -> {
                     IconOnlyApplicationInfoGridItem(
                         modifier = modifier,
                         sharedTransitionScope = sharedTransitionScope,
@@ -326,7 +326,7 @@ internal fun InteractiveGridItem(
                     )
                 }
 
-                GridItemLayoutType.LabelOnly -> {
+                GridItemLayoutType.LABEL_ONLY -> {
                     LabelOnlyApplicationInfoGridItem(
                         modifier = modifier,
                         sharedTransitionScope = sharedTransitionScope,

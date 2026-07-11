@@ -68,7 +68,7 @@ internal class DataStoreMigration : DataMigration<UserDataProto> {
             if (currentData.homeSettingsProto.gridItemSettingsProto.gridItemLayoutTypeProto == GridItemLayoutTypeProto.UNRECOGNIZED) {
                 homeBuilder.setGridItemSettingsProto(
                     currentData.homeSettingsProto.gridItemSettingsProto.toBuilder()
-                        .setGridItemLayoutTypeProto(GridItemLayoutTypeProto.TopIconBottomLabel)
+                        .setGridItemLayoutTypeProto(GridItemLayoutTypeProto.TOP_ICON_BOTTOM_LABEL)
                         .build(),
                 )
             }
@@ -96,7 +96,7 @@ internal class DataStoreMigration : DataMigration<UserDataProto> {
             if (currentData.appDrawerSettingsProto.gridItemSettingsProto.gridItemLayoutTypeProto == GridItemLayoutTypeProto.UNRECOGNIZED) {
                 appDrawerBuilder.setGridItemSettingsProto(
                     currentData.appDrawerSettingsProto.gridItemSettingsProto.toBuilder()
-                        .setGridItemLayoutTypeProto(GridItemLayoutTypeProto.TopIconBottomLabel)
+                        .setGridItemLayoutTypeProto(GridItemLayoutTypeProto.TOP_ICON_BOTTOM_LABEL)
                         .build(),
                 )
             }

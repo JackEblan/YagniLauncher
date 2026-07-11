@@ -12,11 +12,11 @@ message EblanActionProto {
 }
 
 enum EblanActionTypeProto {
-  None = 0;
-  OpenAppDrawer = 1;
-  OpenNotificationPanel = 2;
-  OpenApp = 3;
-  LockScreen = 4;
-  OpenQuickSettings = 5;
-  OpenRecents = 6;
+  NONE = 0;
+  OPEN_APP_DRAWER = 1;
+  OPEN_NOTIFICATION_PANEL = 2;
+  OPEN_APP = 3;
+  LOCK_SCREEN = 4;
+  OPEN_QUICK_SETTINGS = 5;
+  OPEN_RECENTS = 6;
 }

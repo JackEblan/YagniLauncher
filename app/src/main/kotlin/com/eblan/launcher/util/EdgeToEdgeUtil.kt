@@ -25,11 +25,11 @@ import com.eblan.launcher.domain.model.Theme
 
 fun ComponentActivity.handleEdgeToEdge(theme: Theme) {
     when (theme) {
-        Theme.System -> {
+        Theme.SYSTEM -> {
             enableEdgeToEdge()
         }
 
-        Theme.Light -> {
+        Theme.LIGHT -> {
             enableEdgeToEdge(
                 statusBarStyle = SystemBarStyle.light(
                     scrim = Color.TRANSPARENT,
@@ -42,7 +42,7 @@ fun ComponentActivity.handleEdgeToEdge(theme: Theme) {
             )
         }
 
-        Theme.Dark -> {
+        Theme.DARK -> {
             enableEdgeToEdge(
                 statusBarStyle = SystemBarStyle.dark(scrim = Color.TRANSPARENT),
                 navigationBarStyle = SystemBarStyle.dark(scrim = Color.TRANSPARENT),

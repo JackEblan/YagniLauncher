@@ -242,9 +242,9 @@ internal class PagerScreenState(
     }
 
     val swipeY by derivedStateOf {
-        if (swipeUpY.value < screenHeight.toFloat() && gestureSettings.swipeUp.eblanActionType == EblanActionType.OpenAppDrawer) {
+        if (swipeUpY.value < screenHeight.toFloat() && gestureSettings.swipeUp.eblanActionType == EblanActionType.OPEN_APP_DRAWER) {
             swipeUpY
-        } else if (swipeDownY.value < screenHeight.toFloat() && gestureSettings.swipeDown.eblanActionType == EblanActionType.OpenAppDrawer) {
+        } else if (swipeDownY.value < screenHeight.toFloat() && gestureSettings.swipeDown.eblanActionType == EblanActionType.OPEN_APP_DRAWER) {
             swipeDownY
         } else {
             Animatable(screenHeight.toFloat())
@@ -575,7 +575,7 @@ internal class PagerScreenState(
             eblanAction: EblanAction,
             swipeY: Animatable<Float, AnimationVector1D>,
         ) {
-            if (eblanAction.eblanActionType == EblanActionType.OpenAppDrawer) {
+            if (eblanAction.eblanActionType == EblanActionType.OPEN_APP_DRAWER) {
                 val targetValue = if (swipeY.value < screenHeight - 200f) {
                     0f
                 } else {

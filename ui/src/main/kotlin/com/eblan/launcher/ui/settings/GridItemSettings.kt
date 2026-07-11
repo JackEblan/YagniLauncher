@@ -357,9 +357,9 @@ fun TextColorSettingsRow(
     onClick: () -> Unit,
 ) {
     when (textColor) {
-        TextColor.System,
-        TextColor.Light,
-        TextColor.Dark,
+        TextColor.SYSTEM,
+        TextColor.LIGHT,
+        TextColor.DARK,
         -> {
             SettingsColumn(
                 modifier = modifier,
@@ -369,7 +369,7 @@ fun TextColorSettingsRow(
             )
         }
 
-        TextColor.Custom -> {
+        TextColor.CUSTOM -> {
             CustomColorSettingsRow(
                 modifier = modifier,
                 title = customColorTitle,
@@ -412,13 +412,13 @@ private fun CustomColorSettingsRow(
 }
 
 private fun HorizontalAlignment.getHorizontalAlignmentTitle(context: Context): String = when (this) {
-    HorizontalAlignment.Start -> context.getString(R.string.start)
-    HorizontalAlignment.CenterHorizontally -> context.getString(R.string.center_horizontally)
-    HorizontalAlignment.End -> context.getString(R.string.end)
+    HorizontalAlignment.START -> context.getString(R.string.start)
+    HorizontalAlignment.CENTER_HORIZONTALLY -> context.getString(R.string.center_horizontally)
+    HorizontalAlignment.END -> context.getString(R.string.end)
 }
 
 private fun VerticalArrangement.getVerticalArrangementTitle(context: Context): String = when (this) {
-    VerticalArrangement.Top -> context.getString(R.string.top)
-    VerticalArrangement.Center -> context.getString(R.string.center)
-    VerticalArrangement.Bottom -> context.getString(R.string.bottom)
+    VerticalArrangement.TOP -> context.getString(R.string.top)
+    VerticalArrangement.CENTER -> context.getString(R.string.center)
+    VerticalArrangement.BOTTOM -> context.getString(R.string.bottom)
 }

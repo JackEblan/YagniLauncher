@@ -24,10 +24,10 @@ data class EblanUser(
 )
 
 enum class EblanUserType {
-    Personal,
-    Clone,
-    Work,
-    Private,
+    PERSONAL,
+    CLONE,
+    WORK,
+    PRIVATE,
 }
 
 data class EblanUserPageKey(

@@ -158,7 +158,7 @@ private fun Success(
             HorizontalDivider(modifier = Modifier.fillMaxWidth())
 
             when (appDrawerSettings.appDrawerType) {
-                AppDrawerType.Vertical -> {
+                AppDrawerType.VERTICAL -> {
                     SettingsColumn(
                         title = stringResource(commonR.string.grid),
                         subtitle = "${appDrawerSettings.appDrawerColumns}x${appDrawerSettings.appDrawerRowsHeight}",
@@ -168,7 +168,7 @@ private fun Success(
                     )
                 }
 
-                AppDrawerType.Horizontal -> {
+                AppDrawerType.HORIZONTAL -> {
                     SettingsColumn(
                         title = stringResource(commonR.string.grid),
                         subtitle = "${appDrawerSettings.horizontalAppDrawerColumns}x${appDrawerSettings.horizontalAppDrawerRows}",
@@ -178,7 +178,7 @@ private fun Success(
                     )
                 }
 
-                AppDrawerType.List -> Unit
+                AppDrawerType.LIST -> Unit
             }
 
             HorizontalDivider(modifier = Modifier.fillMaxWidth())

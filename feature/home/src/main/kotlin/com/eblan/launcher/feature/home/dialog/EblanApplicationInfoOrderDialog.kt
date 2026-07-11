@@ -77,7 +77,7 @@ internal fun EblanApplicationInfoOrderDialog(
                 )
             }
 
-            if (selectedEblanApplicationInfoOrder == EblanApplicationInfoOrder.Index) {
+            if (selectedEblanApplicationInfoOrder == EblanApplicationInfoOrder.INDEX) {
                 SettingsSwitch(
                     checked = isRearrangeEblanApplicationInfo,
                     title = stringResource(R.string.rearrange_applications),
@@ -103,7 +103,7 @@ internal fun EblanApplicationInfoOrderDialog(
                 onClick = {
                     onUpdateClick(
                         selectedEblanApplicationInfoOrder,
-                        selectedEblanApplicationInfoOrder == EblanApplicationInfoOrder.Index &&
+                        selectedEblanApplicationInfoOrder == EblanApplicationInfoOrder.INDEX &&
                             isRearrangeEblanApplicationInfo,
                     )
                 },

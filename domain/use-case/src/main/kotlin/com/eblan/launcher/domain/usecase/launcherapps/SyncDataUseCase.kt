@@ -497,7 +497,7 @@ class SyncDataUseCase @Inject constructor(
             val startRow = index / columns
 
             val eblanAction = EblanAction(
-                eblanActionType = EblanActionType.None,
+                eblanActionType = EblanActionType.NONE,
                 serialNumber = 0L,
                 componentName = "",
             )

@@ -181,7 +181,7 @@ internal fun WidgetGridItemResizeOverlay(
                     columns = columns,
                     gridWidth = gridWidth,
                     gridHeight = gridHeight,
-                    anchor = SideAnchor.Bottom,
+                    anchor = SideAnchor.BOTTOM,
                 )
             }
 
@@ -194,7 +194,7 @@ internal fun WidgetGridItemResizeOverlay(
                     columns = columns,
                     gridWidth = gridWidth,
                     gridHeight = gridHeight,
-                    anchor = SideAnchor.Left,
+                    anchor = SideAnchor.LEFT,
                 )
             }
 
@@ -207,7 +207,7 @@ internal fun WidgetGridItemResizeOverlay(
                     columns = columns,
                     gridWidth = gridWidth,
                     gridHeight = gridHeight,
-                    anchor = SideAnchor.Top,
+                    anchor = SideAnchor.TOP,
                 )
             }
 
@@ -220,7 +220,7 @@ internal fun WidgetGridItemResizeOverlay(
                     columns = columns,
                     gridWidth = gridWidth,
                     gridHeight = gridHeight,
-                    anchor = SideAnchor.Right,
+                    anchor = SideAnchor.RIGHT,
                 )
             }
 

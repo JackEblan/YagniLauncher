@@ -143,7 +143,7 @@ class MoveGridItemUseCase @Inject constructor(
         )
 
         return when (resolveDirection) {
-            ResolveDirection.Left, ResolveDirection.Right -> {
+            ResolveDirection.LEFT, ResolveDirection.RIGHT -> {
                 val resolvedConflicts = resolveConflicts(
                     gridItems = gridItems,
                     resolveDirection = resolveDirection,
@@ -163,7 +163,7 @@ class MoveGridItemUseCase @Inject constructor(
                 )
             }
 
-            ResolveDirection.Center -> {
+            ResolveDirection.CENTER -> {
                 if (movingGridItem.data is GridItemData.Widget ||
                     conflictingGridItem.data is GridItemData.Widget
                 ) {

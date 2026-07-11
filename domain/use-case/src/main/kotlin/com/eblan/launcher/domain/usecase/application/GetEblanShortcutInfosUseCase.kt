@@ -35,7 +35,7 @@ class GetEblanShortcutInfosUseCase @Inject constructor(
 ) {
     operator fun invoke(): Flow<Map<EblanShortcutInfoByGroup, List<EblanShortcutInfo>>> = eblanShortcutInfoRepository.eblanShortcutInfosFlow.map { eblanShortcutInfos ->
         eblanShortcutInfos.filter {
-            it.shortcutQueryFlag != ShortcutQueryFlag.Pinned
+            it.shortcutQueryFlag != ShortcutQueryFlag.PINNED
         }.groupBy { eblanShortcutInfo ->
             EblanShortcutInfoByGroup(
                 serialNumber = eblanShortcutInfo.serialNumber,

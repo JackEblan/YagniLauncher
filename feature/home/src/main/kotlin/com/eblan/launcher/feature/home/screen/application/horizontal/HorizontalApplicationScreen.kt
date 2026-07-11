@@ -389,7 +389,7 @@ private fun EblanApplicationInfosPage(
                     EblanUserPageKey(
                         eblanUser = EblanUser(
                             serialNumber = 0L,
-                            eblanUserType = EblanUserType.Personal,
+                            eblanUserType = EblanUserType.PERSONAL,
                             isPrivateSpaceEntryPointHidden = false,
                         ),
                         page = 0,
@@ -530,9 +530,9 @@ private fun EblanApplicationInfos(
         rows = appDrawerSettings.horizontalAppDrawerRows,
         content = {
             when (eblanUserPageKey.eblanUser.eblanUserType) {
-                EblanUserType.Personal,
-                EblanUserType.Clone,
-                EblanUserType.Work,
+                EblanUserType.PERSONAL,
+                EblanUserType.CLONE,
+                EblanUserType.WORK,
                 -> {
                     EblanApplicationInfoGridItem(
                         sharedTransitionScope = sharedTransitionScope,
@@ -557,7 +557,7 @@ private fun EblanApplicationInfos(
                     )
                 }
 
-                EblanUserType.Private -> {
+                EblanUserType.PRIVATE -> {
                     PrivateSpaceEblanApplicationInfoItem(
                         appDrawerSettings = appDrawerSettings,
                         eblanApplicationInfoWithIconPackInfo = it,

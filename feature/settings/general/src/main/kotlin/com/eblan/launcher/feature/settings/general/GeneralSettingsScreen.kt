@@ -285,7 +285,7 @@ private fun Success(
 }
 
 private fun Theme.getThemeTitle(context: Context) = when (this) {
-    Theme.System -> context.getString(commonR.string.system)
-    Theme.Light -> context.getString(commonR.string.light)
-    Theme.Dark -> context.getString(commonR.string.dark)
+    Theme.SYSTEM -> context.getString(commonR.string.system)
+    Theme.LIGHT -> context.getString(commonR.string.light)
+    Theme.DARK -> context.getString(commonR.string.dark)
 }

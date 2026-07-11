@@ -153,9 +153,9 @@ fun EblanActionType.getEblanActionTypeSubtitle(
     context: Context,
     componentName: String,
 ): String = when (this) {
-    EblanActionType.None -> context.getString(commonR.string.none)
+    EblanActionType.NONE -> context.getString(commonR.string.none)
 
-    EblanActionType.OpenApp -> context.getString(
+    EblanActionType.OPEN_APP -> context.getString(
         R.string.open,
         componentName.ifBlank {
             context.getString(
@@ -164,13 +164,13 @@ fun EblanActionType.getEblanActionTypeSubtitle(
         },
     )
 
-    EblanActionType.OpenAppDrawer -> context.getString(R.string.open_app_drawer)
+    EblanActionType.OPEN_APP_DRAWER -> context.getString(R.string.open_app_drawer)
 
-    EblanActionType.OpenNotificationPanel -> context.getString(R.string.open_notification_panel)
+    EblanActionType.OPEN_NOTIFICATION_PANEL -> context.getString(R.string.open_notification_panel)
 
-    EblanActionType.LockScreen -> context.getString(R.string.lock_screen)
+    EblanActionType.LOCK_SCREEN -> context.getString(R.string.lock_screen)
 
-    EblanActionType.OpenQuickSettings -> context.getString(R.string.open_quick_settings)
+    EblanActionType.OPEN_QUICK_SETTINGS -> context.getString(R.string.open_quick_settings)
 
-    EblanActionType.OpenRecents -> context.getString(R.string.open_recents)
+    EblanActionType.OPEN_RECENTS -> context.getString(R.string.open_recents)
 }

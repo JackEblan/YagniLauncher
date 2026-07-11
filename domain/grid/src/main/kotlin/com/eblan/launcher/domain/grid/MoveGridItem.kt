@@ -83,7 +83,7 @@ private fun moveGridItem(
     columns: Int,
     rows: Int,
 ): GridItem? = when (resolveDirection) {
-    ResolveDirection.Left -> {
+    ResolveDirection.LEFT -> {
         moveGridItemToLeft(
             moving = moving,
             conflicting = conflicting,
@@ -92,7 +92,7 @@ private fun moveGridItem(
         )
     }
 
-    ResolveDirection.Right -> {
+    ResolveDirection.RIGHT -> {
         moveGridItemToRight(
             moving = moving,
             conflicting = conflicting,
@@ -101,7 +101,7 @@ private fun moveGridItem(
         )
     }
 
-    ResolveDirection.Center -> moving
+    ResolveDirection.CENTER -> moving
 }
 
 private fun moveGridItemToRight(

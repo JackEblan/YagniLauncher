@@ -84,7 +84,7 @@ class GetHomeDataUseCase @Inject constructor(
         val gridItemSettings = userData.homeSettings.gridItemSettings
 
         val textColor = when (gridItemSettings.textColor) {
-            TextColor.System -> {
+            TextColor.SYSTEM -> {
                 getTextColorFromWallpaperColors(
                     theme = userData.generalSettings.theme,
                     colorHints = colorHints,
@@ -173,25 +173,25 @@ class GetHomeDataUseCase @Inject constructor(
         val hintSupportsDarkText = colorHints and wallpaperManagerWrapper.hintSupportsDarkText != 0
 
         if (hintSupportsDarkText) {
-            TextColor.Dark
+            TextColor.DARK
         } else {
-            TextColor.Light
+            TextColor.LIGHT
         }
     } else {
         getTextColorFromSystemTheme(theme = theme)
     }
 
     private fun getTextColorFromSystemTheme(theme: Theme): TextColor = when (theme) {
-        Theme.System -> {
+        Theme.SYSTEM -> {
             getTextColorFromSystemTheme(theme = resourcesWrapper.getSystemTheme())
         }
 
-        Theme.Light -> {
-            TextColor.Light
+        Theme.LIGHT -> {
+            TextColor.LIGHT
         }
 
-        Theme.Dark -> {
-            TextColor.Dark
+        Theme.DARK -> {
+            TextColor.DARK
         }
     }
 }

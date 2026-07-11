@@ -102,11 +102,11 @@ class GetEblanApplicationInfosByLabelAndTagUseCase @Inject constructor(
         )
 
         when (userData.appDrawerSettings.appDrawerType) {
-            AppDrawerType.Vertical, AppDrawerType.List -> {
+            AppDrawerType.VERTICAL, AppDrawerType.LIST -> {
                 getVerticalOrListEblanApplicationInfosByLabel(eblanApplicationInfos = eblanApplicationInfoWithIconPackInfosByLabel)
             }
 
-            AppDrawerType.Horizontal -> {
+            AppDrawerType.HORIZONTAL -> {
                 getHorizontalEblanApplicationInfosByLabel(
                     horizontalAppDrawerColumns = userData.appDrawerSettings.horizontalAppDrawerColumns,
                     horizontalAppDrawerRows = userData.appDrawerSettings.horizontalAppDrawerRows,
@@ -125,7 +125,7 @@ class GetEblanApplicationInfosByLabelAndTagUseCase @Inject constructor(
         }.toSortedMap(nullsLast(compareBy { it.eblanUser.serialNumber }))
 
         val privateEblanUserPageKey = groupedEblanApplicationInfos.keys.firstOrNull {
-            it.eblanUser.eblanUserType == EblanUserType.Private
+            it.eblanUser.eblanUserType == EblanUserType.PRIVATE
         }
 
         return GetEblanApplicationInfosByLabelAndTag(
@@ -165,7 +165,7 @@ class GetEblanApplicationInfosByLabelAndTagUseCase @Inject constructor(
         eblanApplicationInfoOrder: EblanApplicationInfoOrder,
         eblanApplicationInfos: MutableList<EblanApplicationInfoWithIconPackInfo>,
     ) {
-        if (eblanApplicationInfoOrder != EblanApplicationInfoOrder.Index) return
+        if (eblanApplicationInfoOrder != EblanApplicationInfoOrder.INDEX) return
 
         val indexedEblanApplicationInfos =
             eblanApplicationInfos.filter { it.eblanApplicationInfo.index >= 0 }

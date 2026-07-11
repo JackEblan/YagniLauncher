@@ -24,30 +24,26 @@ import com.eblan.launcher.domain.model.HorizontalArrangement
 import com.eblan.launcher.domain.model.VerticalAlignment
 import com.eblan.launcher.domain.model.VerticalArrangement
 
-internal fun getHorizontalAlignment(horizontalAlignment: HorizontalAlignment): Alignment.Horizontal =
-    when (horizontalAlignment) {
-        HorizontalAlignment.Start -> Alignment.Start
-        HorizontalAlignment.CenterHorizontally -> Alignment.CenterHorizontally
-        HorizontalAlignment.End -> Alignment.End
-    }
+internal fun getHorizontalAlignment(horizontalAlignment: HorizontalAlignment): Alignment.Horizontal = when (horizontalAlignment) {
+    HorizontalAlignment.START -> Alignment.Start
+    HorizontalAlignment.CENTER_HORIZONTALLY -> Alignment.CenterHorizontally
+    HorizontalAlignment.END -> Alignment.End
+}
 
-internal fun getVerticalArrangement(verticalArrangement: VerticalArrangement): Arrangement.Vertical =
-    when (verticalArrangement) {
-        VerticalArrangement.Top -> Arrangement.Top
-        VerticalArrangement.Center -> Arrangement.Center
-        VerticalArrangement.Bottom -> Arrangement.Bottom
-    }
+internal fun getVerticalArrangement(verticalArrangement: VerticalArrangement): Arrangement.Vertical = when (verticalArrangement) {
+    VerticalArrangement.TOP -> Arrangement.Top
+    VerticalArrangement.CENTER -> Arrangement.Center
+    VerticalArrangement.BOTTOM -> Arrangement.Bottom
+}
 
-internal fun getHorizontalArrangement(horizontalArrangement: HorizontalArrangement): Arrangement.Horizontal =
-    when (horizontalArrangement) {
-        HorizontalArrangement.Start -> Arrangement.Start
-        HorizontalArrangement.Center -> Arrangement.Center
-        HorizontalArrangement.End -> Arrangement.End
-    }
+internal fun getHorizontalArrangement(horizontalArrangement: HorizontalArrangement): Arrangement.Horizontal = when (horizontalArrangement) {
+    HorizontalArrangement.START -> Arrangement.Start
+    HorizontalArrangement.CENTER -> Arrangement.Center
+    HorizontalArrangement.END -> Arrangement.End
+}
 
-internal fun getVerticalAlignment(verticalAlignment: VerticalAlignment): Alignment.Vertical =
-    when (verticalAlignment) {
-        VerticalAlignment.Top -> Alignment.Top
-        VerticalAlignment.CenterVertically -> Alignment.CenterVertically
-        VerticalAlignment.Bottom -> Alignment.Bottom
-    }
+internal fun getVerticalAlignment(verticalAlignment: VerticalAlignment): Alignment.Vertical = when (verticalAlignment) {
+    VerticalAlignment.TOP -> Alignment.Top
+    VerticalAlignment.CENTER_VERTICALLY -> Alignment.CenterVertically
+    VerticalAlignment.BOTTOM -> Alignment.Bottom
+}

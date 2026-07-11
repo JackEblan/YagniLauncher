@@ -35,34 +35,34 @@ data class GridItemSettings(
 )
 
 enum class HorizontalAlignment {
-    Start,
-    CenterHorizontally,
-    End,
+    START,
+    CENTER_HORIZONTALLY,
+    END,
 }
 
 enum class VerticalArrangement {
-    Top,
-    Center,
-    Bottom,
+    TOP,
+    CENTER,
+    BOTTOM,
 }
 
 enum class HorizontalArrangement {
-    Start,
-    Center,
-    End,
+    START,
+    CENTER,
+    END,
 }
 
 enum class VerticalAlignment {
-    Top,
-    CenterVertically,
-    Bottom,
+    TOP,
+    CENTER_VERTICALLY,
+    BOTTOM,
 }
 
 enum class GridItemLayoutType {
-    StartIconEndLabel,
-    StartLabelEndIcon,
-    TopIconBottomLabel,
-    TopLabelBottomIcon,
-    IconOnly,
-    LabelOnly,
+    START_ICON_END_LABEL,
+    START_LABEL_END_ICON,
+    TOP_ICON_BOTTOM_LABEL,
+    TOP_LABEL_BOTTOM_ICON,
+    ICON_ONLY,
+    LABEL_ONLY,
 }

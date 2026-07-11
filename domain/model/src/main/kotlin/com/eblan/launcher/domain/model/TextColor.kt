@@ -18,8 +18,8 @@
 package com.eblan.launcher.domain.model
 
 enum class TextColor {
-    System,
-    Light,
-    Dark,
-    Custom,
+    SYSTEM,
+    LIGHT,
+    DARK,
+    CUSTOM,
 }
