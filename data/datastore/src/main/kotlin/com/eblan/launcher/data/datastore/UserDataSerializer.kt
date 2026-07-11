@@ -32,7 +32,9 @@ import com.eblan.launcher.data.datastore.proto.home.GridItemLayoutTypeProto
 import com.eblan.launcher.data.datastore.proto.home.GridItemSettingsProto
 import com.eblan.launcher.data.datastore.proto.home.HomeSettingsProto
 import com.eblan.launcher.data.datastore.proto.home.HorizontalAlignmentProto
+import com.eblan.launcher.data.datastore.proto.home.HorizontalArrangementProto
 import com.eblan.launcher.data.datastore.proto.home.TextColorProto
+import com.eblan.launcher.data.datastore.proto.home.VerticalAlignment
 import com.eblan.launcher.data.datastore.proto.home.VerticalArrangementProto
 import com.eblan.launcher.domain.model.EblanAction
 import com.eblan.launcher.domain.model.EblanActionType
@@ -62,6 +64,8 @@ class UserDataSerializer @Inject constructor() : Serializer<UserDataProto> {
         padding = 0
         cornerRadius = 0
         gridItemLayoutTypeProto = GridItemLayoutTypeProto.TOP_ICON_BOTTOM_LABEL
+        horizontalArrangementProto = HorizontalArrangementProto.HORIZONTAL_ARRANGEMENT_CENTER
+        verticalAlignmentProto = VerticalAlignment.VERTICAL_ALIGNMENT_TOP
     }.build()
 
     private val defaultHomeSettingsProto = HomeSettingsProto.newBuilder().apply {

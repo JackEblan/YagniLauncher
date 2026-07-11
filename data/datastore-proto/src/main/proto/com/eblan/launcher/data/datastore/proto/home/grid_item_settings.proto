@@ -23,4 +23,6 @@ message GridItemSettingsProto {
   int32 padding = 10;
   int32 cornerRadius = 11;
   GridItemLayoutTypeProto gridItemLayoutTypeProto = 12;
+  HorizontalArrangementProto horizontalArrangementProto = 13;
+  VerticalAlignment verticalAlignmentProto = 14;
 }
