@@ -17,6 +17,7 @@ message GridItemSettingsProto {
   int32 customBackgroundColor = 9;
   int32 padding = 10;
   int32 cornerRadius = 11;
+  GridItemLayoutTypeProto gridItemLayoutTypeProto  =12;
 }
 
 enum HorizontalAlignmentProto {
@@ -29,4 +30,13 @@ enum VerticalArrangementProto {
   Top = 0;
   Center = 1;
   Bottom = 2;
+}
+
+enum GridItemLayoutTypeProto {
+  StartIconEndLabel = 0;
+  StartLabelEndIcon = 1;
+  TopIconBottomLabel = 2;
+  TopLabelBottomIcon = 3;
+  IconOnly = 4;
+  LabelOnly = 5;
 }

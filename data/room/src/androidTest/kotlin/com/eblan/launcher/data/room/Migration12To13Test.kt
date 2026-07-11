@@ -30,7 +30,6 @@ import java.io.IOException
 
 @RunWith(AndroidJUnit4::class)
 class Migration12To13Test {
-
     private val testDatabase = "migration-test"
 
     @get:Rule

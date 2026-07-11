@@ -20,19 +20,40 @@ package com.eblan.launcher.data.room.migration
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
-class Migration15To16 : Migration(15, 16) {
+class Migration17To18 : Migration(17, 18) {
     override fun migrate(db: SupportSQLiteDatabase) {
         db.execSQL(
             """
-            ALTER TABLE FolderGridItemEntity 
-            ADD COLUMN `folderId` TEXT
+            ALTER TABLE ApplicationInfoGridItemEntity 
+            ADD COLUMN `gridItemLayoutType` TEXT NOT NULL DEFAULT `TopIconBottomLabel`
+            """.trimIndent(),
+        )
+
+        db.execSQL(
+            """
+            ALTER TABLE WidgetGridItemEntity 
+            ADD COLUMN `gridItemLayoutType` TEXT NOT NULL DEFAULT `TopIconBottomLabel`
+            """.trimIndent(),
+        )
+
+        db.execSQL(
+            """
+            ALTER TABLE ShortcutInfoGridItemEntity 
+            ADD COLUMN `gridItemLayoutType` TEXT NOT NULL DEFAULT `TopIconBottomLabel`
+            """.trimIndent(),
+        )
+
+        db.execSQL(
+            """
+            ALTER TABLE ShortcutConfigGridItemEntity 
+            ADD COLUMN `gridItemLayoutType` TEXT NOT NULL DEFAULT `TopIconBottomLabel`
             """.trimIndent(),
         )
 
         db.execSQL(
             """
             ALTER TABLE FolderGridItemEntity 
-            ADD COLUMN `index` INTEGER NOT NULL DEFAULT 0
+            ADD COLUMN `gridItemLayoutType` TEXT NOT NULL DEFAULT `TopIconBottomLabel`
             """.trimIndent(),
         )
     }

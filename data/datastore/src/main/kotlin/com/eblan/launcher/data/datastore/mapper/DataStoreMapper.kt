@@ -26,6 +26,7 @@ import com.eblan.launcher.data.datastore.proto.general.ThemeProto
 import com.eblan.launcher.data.datastore.proto.gesture.EblanActionProto
 import com.eblan.launcher.data.datastore.proto.gesture.EblanActionTypeProto
 import com.eblan.launcher.data.datastore.proto.gesture.GestureSettingsProto
+import com.eblan.launcher.data.datastore.proto.home.GridItemLayoutTypeProto
 import com.eblan.launcher.data.datastore.proto.home.GridItemSettingsProto
 import com.eblan.launcher.data.datastore.proto.home.HomeSettingsProto
 import com.eblan.launcher.data.datastore.proto.home.HorizontalAlignmentProto
@@ -39,6 +40,7 @@ import com.eblan.launcher.domain.model.EblanApplicationInfoOrder
 import com.eblan.launcher.domain.model.ExperimentalSettings
 import com.eblan.launcher.domain.model.GeneralSettings
 import com.eblan.launcher.domain.model.GestureSettings
+import com.eblan.launcher.domain.model.GridItemLayoutType
 import com.eblan.launcher.domain.model.GridItemSettings
 import com.eblan.launcher.domain.model.HomeSettings
 import com.eblan.launcher.domain.model.HorizontalAlignment
@@ -93,6 +95,7 @@ internal fun GridItemSettingsProto.toGridItemSettings(): GridItemSettings = Grid
     customBackgroundColor = customBackgroundColor,
     padding = padding,
     cornerRadius = cornerRadius,
+    gridItemLayoutType = gridItemLayoutTypeProto.toGridItemLayoutType(),
 )
 
 internal fun GeneralSettingsProto.toGeneralSettings(): GeneralSettings = GeneralSettings(
@@ -107,7 +110,8 @@ internal fun GridItemSettings.toGridItemSettingsProto(): GridItemSettingsProto =
     .setHorizontalAlignmentProto(horizontalAlignment.toHorizontalAlignmentProto())
     .setVerticalArrangementProto(verticalArrangement.toVerticalArrangementProto())
     .setCustomTextColor(customTextColor).setCustomBackgroundColor(customBackgroundColor)
-    .setPadding(padding).setCornerRadius(cornerRadius).build()
+    .setPadding(padding).setCornerRadius(cornerRadius)
+    .setGridItemLayoutTypeProto(gridItemLayoutType.toGridItemLayoutTypeProto()).build()
 
 internal fun HomeSettings.toHomeSettingsProto(): HomeSettingsProto = HomeSettingsProto.newBuilder().setColumns(columns).setRows(rows).setPageCount(pageCount)
     .setInfiniteScroll(infiniteScroll).setDockColumns(dockColumns).setDockRows(dockRows)
@@ -256,4 +260,23 @@ private fun AppDrawerTypeProto.toAppDrawerType(): AppDrawerType = when (this) {
     AppDrawerTypeProto.Vertical, AppDrawerTypeProto.UNRECOGNIZED -> AppDrawerType.Vertical
     AppDrawerTypeProto.Horizontal -> AppDrawerType.Horizontal
     AppDrawerTypeProto.List -> AppDrawerType.List
+}
+
+private fun GridItemLayoutTypeProto.toGridItemLayoutType(): GridItemLayoutType = when (this) {
+    GridItemLayoutTypeProto.StartIconEndLabel -> GridItemLayoutType.StartIconEndLabel
+    GridItemLayoutTypeProto.StartLabelEndIcon -> GridItemLayoutType.StartLabelEndIcon
+    GridItemLayoutTypeProto.TopIconBottomLabel -> GridItemLayoutType.TopIconBottomLabel
+    GridItemLayoutTypeProto.TopLabelBottomIcon -> GridItemLayoutType.TopLabelBottomIcon
+    GridItemLayoutTypeProto.IconOnly -> GridItemLayoutType.IconOnly
+    GridItemLayoutTypeProto.LabelOnly -> GridItemLayoutType.LabelOnly
+    GridItemLayoutTypeProto.UNRECOGNIZED -> GridItemLayoutType.TopIconBottomLabel
+}
+
+private fun GridItemLayoutType.toGridItemLayoutTypeProto(): GridItemLayoutTypeProto = when (this) {
+    GridItemLayoutType.StartIconEndLabel -> GridItemLayoutTypeProto.StartIconEndLabel
+    GridItemLayoutType.StartLabelEndIcon -> GridItemLayoutTypeProto.StartLabelEndIcon
+    GridItemLayoutType.TopIconBottomLabel -> GridItemLayoutTypeProto.TopIconBottomLabel
+    GridItemLayoutType.TopLabelBottomIcon -> GridItemLayoutTypeProto.TopLabelBottomIcon
+    GridItemLayoutType.IconOnly -> GridItemLayoutTypeProto.IconOnly
+    GridItemLayoutType.LabelOnly -> GridItemLayoutTypeProto.LabelOnly
 }

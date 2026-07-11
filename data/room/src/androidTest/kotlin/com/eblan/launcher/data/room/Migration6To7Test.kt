@@ -29,7 +29,6 @@ import java.io.IOException
 
 @RunWith(AndroidJUnit4::class)
 class Migration6To7Test {
-
     private val testDatabase = "migration-test"
 
     @get:Rule

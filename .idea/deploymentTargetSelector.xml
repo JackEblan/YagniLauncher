@@ -47,7 +47,7 @@
         <option name="selectionMode" value="DROPDOWN" />
         <DialogSelection />
       </SelectionState>
-      <SelectionState runConfigName="Migration15To16Test">
+      <SelectionState runConfigName="Migration17To18Test">
         <option name="selectionMode" value="DROPDOWN" />
         <DropdownSelection timestamp="2026-05-23T01:42:17.432439357Z">
           <Target type="DEFAULT_BOOT">
