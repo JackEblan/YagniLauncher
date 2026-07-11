@@ -47,7 +47,7 @@ internal class DefaultAppWidgetManagerWrapper @Inject constructor(
     private val fileManager: FileManager,
     private val packageManagerWrapper: PackageManagerWrapper,
     private val iconKeyGenerator: IconKeyGenerator,
-    @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
+    @param:Dispatcher(EblanDispatchers.DEFAULT) private val defaultDispatcher: CoroutineDispatcher,
 ) : AppWidgetManagerWrapper,
     AndroidAppWidgetManagerWrapper {
     private val appWidgetManager = AppWidgetManager.getInstance(context)

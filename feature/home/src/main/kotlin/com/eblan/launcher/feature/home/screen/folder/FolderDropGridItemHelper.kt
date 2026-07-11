@@ -31,9 +31,9 @@ internal fun handleDropFolderGridItem(
     onUpdateIsDragging: (Boolean) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
 ) {
-    if (drag == Drag.None ||
-        drag == Drag.Start ||
-        drag == Drag.Dragging ||
+    if (drag == Drag.NONE ||
+        drag == Drag.START ||
+        drag == Drag.DRAGGING ||
         !isLast
     ) {
         return

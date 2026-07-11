@@ -182,7 +182,7 @@ internal class PagerScreenState(
     var overlayImageBitmap by mutableStateOf<ImageBitmap?>(null)
         private set
 
-    var drag by mutableStateOf(Drag.None)
+    var drag by mutableStateOf(Drag.NONE)
         private set
 
     var sharedElementKey by mutableStateOf<SharedElementKey?>(null)
@@ -207,7 +207,7 @@ internal class PagerScreenState(
                 IntOffset(x = x.roundToInt(), y = y.roundToInt())
             }
 
-            drag = Drag.Start
+            drag = Drag.START
 
             dragIntOffset = offset
 
@@ -217,7 +217,7 @@ internal class PagerScreenState(
         }
 
         override fun onEnded(event: DragAndDropEvent) {
-            drag = Drag.End
+            drag = Drag.END
 
             val pinItemRequest = pinItemRequestWrapper.getPinItemRequest()
 
@@ -233,7 +233,7 @@ internal class PagerScreenState(
                 IntOffset(x = x.roundToInt(), y = y.roundToInt())
             }
 
-            drag = Drag.Dragging
+            drag = Drag.DRAGGING
 
             dragIntOffset = offset
         }
@@ -733,7 +733,7 @@ internal class PagerScreenState(
     }
 
     fun dragStart(offset: Offset) {
-        drag = Drag.Start
+        drag = Drag.START
 
         dragIntOffset = offset.round()
 
@@ -744,7 +744,7 @@ internal class PagerScreenState(
         accumulatedDragOffset += dragAmount
 
         if (accumulatedDragOffset.getDistance() >= touchSlop) {
-            drag = Drag.Dragging
+            drag = Drag.DRAGGING
         }
 
         dragIntOffset += dragAmount.round()
@@ -770,7 +770,7 @@ internal class PagerScreenState(
 
         overlayIntSize = null
 
-        drag = Drag.None
+        drag = Drag.NONE
     }
 
     fun updateHasDoubleTap(value: Boolean) {

@@ -33,7 +33,7 @@ import java.io.FileOutputStream
 import javax.inject.Inject
 
 internal class DefaultImageSerializer @Inject constructor(
-    @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
+    @param:Dispatcher(EblanDispatchers.DEFAULT) private val defaultDispatcher: CoroutineDispatcher,
     @param:Dispatcher(EblanDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) : AndroidImageSerializer {
     override suspend fun createByteArray(drawable: Drawable): ByteArray? = withContext(defaultDispatcher) {

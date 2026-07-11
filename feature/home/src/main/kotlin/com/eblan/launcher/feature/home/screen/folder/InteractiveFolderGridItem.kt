@@ -147,7 +147,7 @@ internal fun InteractiveFolderGridItem(
         key2 = hasInteraction,
         key3 = showFolderGridItemPopup,
     ) {
-        if (drag == Drag.Dragging &&
+        if (drag == Drag.DRAGGING &&
             hasInteraction &&
             showFolderGridItemPopup
         ) {
@@ -960,7 +960,7 @@ private fun InteractiveNestedFolderGridItem(
         key2 = hasInteraction,
         key3 = showFolderGridItemPopup,
     ) {
-        if (drag == Drag.Dragging &&
+        if (drag == Drag.DRAGGING &&
             hasInteraction &&
             showFolderGridItemPopup
         ) {

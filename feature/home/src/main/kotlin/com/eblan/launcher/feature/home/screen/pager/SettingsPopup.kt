@@ -109,7 +109,7 @@ internal fun SettingsPopup(
                 onEditDockPage = {
                     onEditPage(
                         gridItems,
-                        Associate.Dock,
+                        Associate.DOCK,
                     )
 
                     transitionState.targetState = false
@@ -117,7 +117,7 @@ internal fun SettingsPopup(
                 onEditPage = {
                     onEditPage(
                         gridItems,
-                        Associate.Grid,
+                        Associate.GRID,
                     )
 
                     transitionState.targetState = false

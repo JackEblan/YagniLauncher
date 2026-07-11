@@ -31,7 +31,7 @@ import javax.inject.Inject
 
 class GetEblanShortcutInfosUseCase @Inject constructor(
     private val eblanShortcutInfoRepository: EblanShortcutInfoRepository,
-    @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
+    @param:Dispatcher(EblanDispatchers.DEFAULT) private val defaultDispatcher: CoroutineDispatcher,
 ) {
     operator fun invoke(): Flow<Map<EblanShortcutInfoByGroup, List<EblanShortcutInfo>>> = eblanShortcutInfoRepository.eblanShortcutInfosFlow.map { eblanShortcutInfos ->
         eblanShortcutInfos.filter {

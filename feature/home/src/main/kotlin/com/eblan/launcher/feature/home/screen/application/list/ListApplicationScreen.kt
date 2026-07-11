@@ -787,7 +787,7 @@ private fun EblanApplicationInfoListItem(
 
     val sharedElementKey = SharedElementKey(
         id = "${eblanApplicationInfoWithIconPackInfo.eblanApplicationInfo.serialNumber} ${eblanApplicationInfoWithIconPackInfo.eblanApplicationInfo.packageName} ${eblanApplicationInfoWithIconPackInfo.eblanApplicationInfo.componentName}",
-        parent = SharedElementKey.Parent.SwipeY,
+        parent = SharedElementKey.Parent.SWIPE_Y,
     )
 
     LaunchedEffect(

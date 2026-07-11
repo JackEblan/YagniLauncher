@@ -44,7 +44,7 @@ class GetEblanApplicationInfosByLabelAndTagUseCase @Inject constructor(
     private val userDataRepository: UserDataRepository,
     private val fileManager: FileManager,
     private val iconKeyGenerator: IconKeyGenerator,
-    @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
+    @param:Dispatcher(EblanDispatchers.DEFAULT) private val defaultDispatcher: CoroutineDispatcher,
 ) {
     @OptIn(ExperimentalCoroutinesApi::class)
     operator fun invoke(

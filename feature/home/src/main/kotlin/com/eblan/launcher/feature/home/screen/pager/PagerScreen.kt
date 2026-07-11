@@ -579,10 +579,10 @@ internal fun PagerScreen(
                 detectDragGesturesAfterLongPress(
                     onDragStart = pagerScreenState::dragStart,
                     onDragEnd = {
-                        pagerScreenState.updateDrag(Drag.End)
+                        pagerScreenState.updateDrag(Drag.END)
                     },
                     onDragCancel = {
-                        pagerScreenState.updateDrag(Drag.Cancel)
+                        pagerScreenState.updateDrag(Drag.CANCEL)
                     },
                     onDrag = { _, dragAmount ->
                         pagerScreenState.drag(dragAmount = dragAmount)
@@ -682,7 +682,7 @@ internal fun PagerScreen(
                             isVisibleOverlay = isVisibleOverlay,
                             sharedElementKey = SharedElementKey(
                                 id = it.id,
-                                parent = SharedElementKey.Parent.Grid,
+                                parent = SharedElementKey.Parent.GRID,
                             ),
                             isVisibleFolder = folderPopups.isNotEmpty(),
                             moveGridItemResult = moveGridItemResult,
@@ -805,7 +805,7 @@ internal fun PagerScreen(
                             isVisibleOverlay = isVisibleOverlay,
                             sharedElementKey = SharedElementKey(
                                 id = it.id,
-                                parent = SharedElementKey.Parent.Dock,
+                                parent = SharedElementKey.Parent.DOCK,
                             ),
                             isVisibleFolder = folderPopups.isNotEmpty(),
                             moveGridItemResult = moveGridItemResult,

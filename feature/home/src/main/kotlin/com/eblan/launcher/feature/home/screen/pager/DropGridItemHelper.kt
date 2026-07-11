@@ -76,9 +76,9 @@ internal suspend fun handleDropGridItem(
 
     val currentMoveGridItemResult = moveGridItemResult.value ?: return
 
-    if (drag == Drag.None ||
-        drag == Drag.Start ||
-        drag == Drag.Dragging
+    if (drag == Drag.NONE ||
+        drag == Drag.START ||
+        drag == Drag.DRAGGING
     ) {
         return
     }
@@ -99,7 +99,7 @@ internal suspend fun handleDropGridItem(
 
     val isLongPress = isVisibleOverlay.value && !isDragging
 
-    val isMoveGridItemResultFailed = drag == Drag.Cancel ||
+    val isMoveGridItemResultFailed = drag == Drag.CANCEL ||
         !currentMoveGridItemResult.isSuccess
 
     when (currentGridItemSource) {

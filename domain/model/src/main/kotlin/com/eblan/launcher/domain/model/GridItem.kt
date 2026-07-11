@@ -34,6 +34,6 @@ data class GridItem(
 )
 
 enum class Associate {
-    Grid,
-    Dock,
+    GRID,
+    DOCK,
 }

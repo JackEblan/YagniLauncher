@@ -27,7 +27,7 @@ import java.security.MessageDigest
 import javax.inject.Inject
 
 internal class DefaultIconKeyGenerator @Inject constructor(
-    @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
+    @param:Dispatcher(EblanDispatchers.DEFAULT) private val defaultDispatcher: CoroutineDispatcher,
 ) : IconKeyGenerator {
     override suspend fun getActivityIconKey(
         serialNumber: Long,

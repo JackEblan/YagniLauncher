@@ -171,14 +171,14 @@ internal fun InteractiveGridItem(
 
     val hasInteraction = isSelected && isVisibleOverlay
 
-    val isVisibleWhiteBox = hasInteraction && drag == Drag.Dragging
+    val isVisibleWhiteBox = hasInteraction && drag == Drag.DRAGGING
 
     LaunchedEffect(
         key1 = drag,
         key2 = hasInteraction,
         key3 = showGridItemPopup,
     ) {
-        if (drag == Drag.Dragging &&
+        if (drag == Drag.DRAGGING &&
             hasInteraction &&
             showGridItemPopup
         ) {
@@ -1358,7 +1358,7 @@ private fun PreviewFolderGridItem(
         ) {
             val id = moveGridItemResult?.movingGridItem?.id
 
-            if ((drag == Drag.Cancel || drag == Drag.End) &&
+            if ((drag == Drag.CANCEL || drag == Drag.END) &&
                 id != null &&
                 folderGridItems.any { it.id == id } &&
                 !isVisibleFolder

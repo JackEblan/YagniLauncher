@@ -231,7 +231,7 @@ private fun ShortcutInfoMenuItem(
                                         columnSpan = 1,
                                         rowSpan = 1,
                                         data = data,
-                                        associate = Associate.Grid,
+                                        associate = Associate.GRID,
                                         override = false,
                                         gridItemSettings = gridItemSettings,
                                         doubleTap = eblanAction,
@@ -259,7 +259,7 @@ private fun ShortcutInfoMenuItem(
                                     onUpdateSharedElementKey(
                                         SharedElementKey(
                                             id = id,
-                                            parent = SharedElementKey.Parent.Grid,
+                                            parent = SharedElementKey.Parent.GRID,
                                         ),
                                     )
 
@@ -302,7 +302,7 @@ private fun PrivateShortcutInfoMenuItem(
     var isLongPress by remember { mutableStateOf(false) }
 
     LaunchedEffect(key1 = drag) {
-        if (drag == Drag.End || drag == Drag.Cancel) {
+        if (drag == Drag.END || drag == Drag.CANCEL) {
             isLongPress = false
         }
     }

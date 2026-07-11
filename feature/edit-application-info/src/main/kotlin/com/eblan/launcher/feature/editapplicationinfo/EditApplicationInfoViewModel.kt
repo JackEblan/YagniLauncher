@@ -57,7 +57,7 @@ internal class EditApplicationInfoViewModel @Inject constructor(
     getEblanApplicationInfoTagUseCase: GetEblanApplicationInfoTagUseCase,
     private val eblanApplicationInfoTagRepository: EblanApplicationInfoTagRepository,
     private val eblanApplicationInfoTagCrossRefRepository: EblanApplicationInfoTagCrossRefRepository,
-    @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
+    @param:Dispatcher(EblanDispatchers.DEFAULT) private val defaultDispatcher: CoroutineDispatcher,
 ) : ViewModel() {
     private val editApplicationInfoRouteData =
         savedStateHandle.toRoute<EditApplicationInfoRouteData>()

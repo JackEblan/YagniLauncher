@@ -53,7 +53,7 @@ internal class EditGridItemViewModel @Inject constructor(
     private val gridRepository: GridRepository,
     getEblanApplicationInfosUseCase: GetEblanApplicationInfosUseCase,
     private val getGridItemsUseCase: GetGridItemsUseCase,
-    @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
+    @param:Dispatcher(EblanDispatchers.DEFAULT) private val defaultDispatcher: CoroutineDispatcher,
 ) : ViewModel() {
     private val editGridItemRouteData = savedStateHandle.toRoute<EditGridItemRouteData>()
 

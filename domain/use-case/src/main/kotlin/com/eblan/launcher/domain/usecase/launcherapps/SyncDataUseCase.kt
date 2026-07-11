@@ -229,7 +229,7 @@ class SyncDataUseCase @Inject constructor(
 
         val gridItems = getGridItemsUseCase()
             .filter {
-                it.isTopLevel() && it.associate == Associate.Grid
+                it.isTopLevel() && it.associate == Associate.GRID
             }
             .toMutableList()
 
@@ -535,7 +535,7 @@ class SyncDataUseCase @Inject constructor(
                     index = index,
                     eblanApplicationInfo = launcherAppsActivityInfo,
                     columns = homeSettings.columns,
-                    associate = Associate.Grid,
+                    associate = Associate.GRID,
                 )
             }
 
@@ -546,7 +546,7 @@ class SyncDataUseCase @Inject constructor(
                     index = index,
                     eblanApplicationInfo = launcherAppsActivityInfo,
                     columns = homeSettings.dockColumns,
-                    associate = Associate.Dock,
+                    associate = Associate.DOCK,
                 )
             }
 

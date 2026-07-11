@@ -450,7 +450,7 @@ private fun Success(
         targetState = screen,
     ) { targetState ->
         when (targetState) {
-            Screen.Pager -> {
+            Screen.PAGER -> {
                 PagerScreen(
                     appDrawerSettings = homeData.userData.appDrawerSettings,
                     configureResultCode = configureResultCode,
@@ -516,11 +516,11 @@ private fun Success(
                 )
             }
 
-            Screen.Loading -> {
+            Screen.LOADING -> {
                 LoadingScreen()
             }
 
-            Screen.EditPage -> {
+            Screen.EDIT_PAGE -> {
                 EditPageScreen(
                     editPageData = editPageData,
                     hasShortcutHostPermission = homeData.hasShortcutHostPermission,

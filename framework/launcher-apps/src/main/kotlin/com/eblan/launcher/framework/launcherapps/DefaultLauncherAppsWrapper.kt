@@ -74,7 +74,7 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
     private val packageManagerWrapper: PackageManagerWrapper,
     private val androidPackageManager: AndroidPackageManagerWrapper,
     private val iconKeyGenerator: IconKeyGenerator,
-    @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
+    @param:Dispatcher(EblanDispatchers.DEFAULT) private val defaultDispatcher: CoroutineDispatcher,
 ) : LauncherAppsWrapper,
     AndroidLauncherAppsWrapper {
     private val launcherApps =

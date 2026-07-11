@@ -27,7 +27,7 @@ import javax.inject.Inject
 
 class UpdateEblanApplicationInfosIndexesUseCase @Inject constructor(
     private val eblanApplicationInfoRepository: EblanApplicationInfoRepository,
-    @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
+    @param:Dispatcher(EblanDispatchers.DEFAULT) private val defaultDispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke(eblanApplicationInfos: List<EblanApplicationInfo>) {
         withContext(defaultDispatcher) {

@@ -31,7 +31,7 @@ import javax.inject.Inject
 class UpdatePageItemsUseCase @Inject constructor(
     private val userDataRepository: UserDataRepository,
     private val gridRepository: GridRepository,
-    @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
+    @param:Dispatcher(EblanDispatchers.DEFAULT) private val defaultDispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke(
         id: Int,
@@ -55,7 +55,7 @@ class UpdatePageItemsUseCase @Inject constructor(
             val newInitialPage = pageItems.indexOfFirst { it.id == id }
 
             when (associate) {
-                Associate.Grid -> {
+                Associate.GRID -> {
                     userDataRepository.updateHomeSettings(
                         homeSettings = homeSettings.copy(
                             pageCount = pageItems.size,
@@ -64,7 +64,7 @@ class UpdatePageItemsUseCase @Inject constructor(
                     )
                 }
 
-                Associate.Dock -> {
+                Associate.DOCK -> {
                     userDataRepository.updateHomeSettings(
                         homeSettings = homeSettings.copy(
                             dockPageCount = pageItems.size,

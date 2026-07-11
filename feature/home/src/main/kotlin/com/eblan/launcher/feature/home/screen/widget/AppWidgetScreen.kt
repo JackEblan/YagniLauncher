@@ -282,7 +282,7 @@ private fun EblanAppWidgetProviderInfoItem(
                             onUpdateSharedElementKey(
                                 SharedElementKey(
                                     id = id,
-                                    parent = SharedElementKey.Parent.Grid,
+                                    parent = SharedElementKey.Parent.GRID,
                                 ),
                             )
 

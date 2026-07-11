@@ -84,7 +84,7 @@ internal fun ResizeScreen(
             .padding(paddingValues),
     ) {
         when (resizeGridItem.associate) {
-            Associate.Grid -> {
+            Associate.GRID -> {
                 val gridHeight = constraints.maxHeight - pageIndicatorHeightPx - dockHeightPx
 
                 val cellWidth = constraints.maxWidth / homeSettings.columns
@@ -118,7 +118,7 @@ internal fun ResizeScreen(
                 )
             }
 
-            Associate.Dock -> {
+            Associate.DOCK -> {
                 val cellWidth = constraints.maxWidth / homeSettings.dockColumns
 
                 val cellHeight = dockHeightPx / homeSettings.dockRows

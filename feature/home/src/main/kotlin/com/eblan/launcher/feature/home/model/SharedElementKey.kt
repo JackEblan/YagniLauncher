@@ -22,9 +22,9 @@ internal data class SharedElementKey(
     val parent: Parent,
 ) {
     enum class Parent {
-        Grid,
-        Dock,
-        SwipeY,
-        Folder,
+        GRID,
+        DOCK,
+        SWIPE_Y,
+        FOLDER,
     }
 }

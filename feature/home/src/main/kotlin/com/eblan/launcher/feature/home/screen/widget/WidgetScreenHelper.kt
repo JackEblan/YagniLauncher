@@ -79,7 +79,7 @@ internal fun getWidgetGridItem(
         columnSpan = 1,
         rowSpan = 1,
         data = data,
-        associate = Associate.Grid,
+        associate = Associate.GRID,
         override = false,
         gridItemSettings = gridItemSettings,
         doubleTap = eblanAction,

@@ -65,7 +65,7 @@ class ActionActivity : ComponentActivity() {
     private val viewModel: ActionActivityViewModel by viewModels()
 
     @Inject
-    @Dispatcher(EblanDispatchers.Default)
+    @Dispatcher(EblanDispatchers.DEFAULT)
     lateinit var defaultDispatcher: CoroutineDispatcher
 
     @Inject

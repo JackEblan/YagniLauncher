@@ -62,7 +62,7 @@ class AddPackageUseCase @Inject constructor(
     private val iconKeyGenerator: IconKeyGenerator,
     private val applicationInfoGridItemRepository: ApplicationInfoGridItemRepository,
     private val getGridItemsUseCase: GetGridItemsUseCase,
-    @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
+    @param:Dispatcher(EblanDispatchers.DEFAULT) private val defaultDispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke(
         serialNumber: Long,
@@ -152,7 +152,7 @@ class AddPackageUseCase @Inject constructor(
 
         val gridItems = getGridItemsUseCase()
             .filter {
-                it.isTopLevel() && it.associate == Associate.Grid
+                it.isTopLevel() && it.associate == Associate.GRID
             }
             .toMutableList()
 

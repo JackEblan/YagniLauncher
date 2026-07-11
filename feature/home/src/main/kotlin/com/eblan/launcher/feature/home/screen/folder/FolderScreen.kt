@@ -465,7 +465,7 @@ internal fun FolderScreen(
                                 isVisibleOverlay = isVisibleOverlay,
                                 sharedElementKey = SharedElementKey(
                                     id = it.id,
-                                    parent = SharedElementKey.Parent.Folder,
+                                    parent = SharedElementKey.Parent.FOLDER,
                                 ),
                                 moveGridItemResult = moveGridItemResult,
                                 progress = progress.value,
@@ -589,7 +589,7 @@ private suspend fun handleFolderPopup(
 
         val gridItem = moveGridItemResult.value?.movingGridItem
 
-        if (drag.value == Drag.Dragging &&
+        if (drag.value == Drag.DRAGGING &&
             isDragging.value &&
             isVisibleOverlay.value &&
             gridItem != null
@@ -597,7 +597,7 @@ private suspend fun handleFolderPopup(
             onUpdateSharedElementKey(
                 SharedElementKey(
                     id = gridItem.id,
-                    parent = SharedElementKey.Parent.Grid,
+                    parent = SharedElementKey.Parent.GRID,
                 ),
             )
 

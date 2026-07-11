@@ -37,7 +37,7 @@ import javax.inject.Inject
 internal class DefaultPackageManagerWrapper @Inject constructor(
     @param:ApplicationContext private val context: Context,
     private val imageSerializer: AndroidImageSerializer,
-    @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
+    @param:Dispatcher(EblanDispatchers.DEFAULT) private val defaultDispatcher: CoroutineDispatcher,
 ) : PackageManagerWrapper,
     AndroidPackageManagerWrapper {
     private val packageManager = context.packageManager
