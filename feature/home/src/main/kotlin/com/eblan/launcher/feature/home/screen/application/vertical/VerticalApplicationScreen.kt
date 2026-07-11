@@ -589,7 +589,10 @@ private fun EblanApplicationInfos(
 
     val currentSwipeY by rememberUpdatedState(swipeY)
 
-    val nestedScrollConnection = remember {
+    val nestedScrollConnection = remember(
+        key1 = onVerticalDrag,
+        key2 = onDragEnd,
+    ) {
         OffsetNestedScrollConnection(
             swipeY = { currentSwipeY },
             isAtTop = {

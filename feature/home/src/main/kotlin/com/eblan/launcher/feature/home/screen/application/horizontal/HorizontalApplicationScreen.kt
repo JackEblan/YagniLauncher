@@ -382,19 +382,20 @@ private fun EblanApplicationInfosPage(
     val packageManager = LocalPackageManager.current
 
     val eblanUserPageKey =
-        getEblanApplicationInfosByLabelAndTag.eblanApplicationInfoWithIconPackInfos.keys.toList().getOrElse(
-            index = index,
-            defaultValue = {
-                EblanUserPageKey(
-                    eblanUser = EblanUser(
-                        serialNumber = 0L,
-                        eblanUserType = EblanUserType.Personal,
-                        isPrivateSpaceEntryPointHidden = false,
-                    ),
-                    page = 0,
-                )
-            },
-        )
+        getEblanApplicationInfosByLabelAndTag.eblanApplicationInfoWithIconPackInfos.keys.toList()
+            .getOrElse(
+                index = index,
+                defaultValue = {
+                    EblanUserPageKey(
+                        eblanUser = EblanUser(
+                            serialNumber = 0L,
+                            eblanUserType = EblanUserType.Personal,
+                            isPrivateSpaceEntryPointHidden = false,
+                        ),
+                        page = 0,
+                    )
+                },
+            )
 
     val userHandle =
         userManager.getUserForSerialNumber(serialNumber = eblanUserPageKey.eblanUser.serialNumber)
@@ -512,7 +513,10 @@ private fun EblanApplicationInfos(
 ) {
     HorizontalAppDrawerGridLayout(
         modifier = modifier
-            .pointerInput(key1 = Unit) {
+            .pointerInput(
+                key1 = onVerticalDrag,
+                key2 = onDragEnd,
+            ) {
                 detectVerticalDragGestures(
                     onVerticalDrag = { _, dragAmount ->
                         onVerticalDrag(dragAmount)
