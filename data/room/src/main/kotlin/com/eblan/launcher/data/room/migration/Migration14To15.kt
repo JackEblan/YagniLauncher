@@ -26,35 +26,35 @@ class Migration14To15 : Migration(14, 15) {
             """
             ALTER TABLE EblanApplicationInfoEntity 
             ADD COLUMN `flags` INTEGER NOT NULL DEFAULT 0
-        """,
+            """.trimIndent(),
         )
 
         db.execSQL(
             """
             ALTER TABLE ShortcutInfoGridItemEntity 
             ADD COLUMN `index` INTEGER NOT NULL DEFAULT 0
-        """,
+            """.trimIndent(),
         )
 
         db.execSQL(
             """
             ALTER TABLE ShortcutInfoGridItemEntity 
-            ADD COLUMN folderId TEXT
-        """,
+            ADD COLUMN `folderId` TEXT
+            """.trimIndent(),
         )
 
         db.execSQL(
             """
             ALTER TABLE ShortcutConfigGridItemEntity 
             ADD COLUMN `index` INTEGER NOT NULL DEFAULT 0
-        """,
+            """.trimIndent(),
         )
 
         db.execSQL(
             """
             ALTER TABLE ShortcutConfigGridItemEntity 
-            ADD COLUMN folderId TEXT
-        """,
+            ADD COLUMN `folderId` TEXT
+            """.trimIndent(),
         )
     }
 }

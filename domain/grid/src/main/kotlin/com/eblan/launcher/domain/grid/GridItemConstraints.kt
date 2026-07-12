@@ -67,15 +67,15 @@ fun getResolveDirectionByX(
 
     return when {
         xInGridItem < gridItemWidth / 3 -> {
-            ResolveDirection.Right
+            ResolveDirection.RIGHT
         }
 
         xInGridItem < 2 * gridItemWidth / 3 -> {
-            ResolveDirection.Center
+            ResolveDirection.CENTER
         }
 
         else -> {
-            ResolveDirection.Left
+            ResolveDirection.LEFT
         }
     }
 }
@@ -114,10 +114,10 @@ fun getRelativeResolveDirection(
     moving: GridItem,
     other: GridItem,
 ): ResolveDirection? = when {
-    moving.startColumn < other.startColumn -> ResolveDirection.Right
-    moving.startColumn > other.startColumn -> ResolveDirection.Left
-    moving.startRow > other.startRow -> ResolveDirection.Left
-    moving.startRow < other.startRow -> ResolveDirection.Right
+    moving.startColumn < other.startColumn -> ResolveDirection.RIGHT
+    moving.startColumn > other.startColumn -> ResolveDirection.LEFT
+    moving.startRow > other.startRow -> ResolveDirection.LEFT
+    moving.startRow < other.startRow -> ResolveDirection.RIGHT
     else -> null
 }
 

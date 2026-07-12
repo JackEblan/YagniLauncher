@@ -59,5 +59,6 @@ internal object RoomModule {
             1,
             2,
             11,
+            18,
         ).build()
 }

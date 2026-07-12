@@ -168,7 +168,7 @@ internal fun ShortcutConfigScreen(
     }
 
     LaunchedEffect(key1 = drag) {
-        if (drag == Drag.Start && searchBarState.currentValue == SearchBarValue.Expanded) {
+        if (drag == Drag.START && searchBarState.currentValue == SearchBarValue.Expanded) {
             searchBarState.animateToCollapsed()
         }
     }
@@ -514,7 +514,7 @@ private fun EblanShortcutConfigItem(
                             )
 
                             val eblanAction = EblanAction(
-                                eblanActionType = EblanActionType.None,
+                                eblanActionType = EblanActionType.NONE,
                                 serialNumber = 0L,
                                 componentName = "",
                             )
@@ -527,7 +527,7 @@ private fun EblanShortcutConfigItem(
                                 columnSpan = 1,
                                 rowSpan = 1,
                                 data = data,
-                                associate = Associate.Grid,
+                                associate = Associate.GRID,
                                 override = false,
                                 gridItemSettings = gridItemSettings,
                                 doubleTap = eblanAction,
@@ -555,7 +555,7 @@ private fun EblanShortcutConfigItem(
                             onUpdateSharedElementKey(
                                 SharedElementKey(
                                     id = id,
-                                    parent = SharedElementKey.Parent.Grid,
+                                    parent = SharedElementKey.Parent.GRID,
                                 ),
                             )
 

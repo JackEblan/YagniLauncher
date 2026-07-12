@@ -25,6 +25,6 @@ import kotlin.annotation.AnnotationRetention.RUNTIME
 annotation class Dispatcher(val eblanDispatcher: EblanDispatchers)
 
 enum class EblanDispatchers {
-    Default,
+    DEFAULT,
     IO,
 }

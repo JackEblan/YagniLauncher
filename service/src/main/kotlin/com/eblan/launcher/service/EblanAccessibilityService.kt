@@ -33,21 +33,21 @@ class EblanAccessibilityService : AccessibilityService() {
             when (intent?.action) {
                 GlobalAction.NAME -> {
                     when (intent.getStringExtra(GlobalAction.GLOBAL_ACTION_TYPE)) {
-                        GlobalAction.Notifications.name -> {
+                        GlobalAction.NOTIFICATIONS.name -> {
                             performGlobalAction(GLOBAL_ACTION_NOTIFICATIONS)
                         }
 
-                        GlobalAction.QuickSettings.name -> {
+                        GlobalAction.QUICK_SETTINGS.name -> {
                             performGlobalAction(GLOBAL_ACTION_QUICK_SETTINGS)
                         }
 
-                        GlobalAction.LockScreen.name -> {
+                        GlobalAction.LOCK_SCREEN.name -> {
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                                 performGlobalAction(GLOBAL_ACTION_LOCK_SCREEN)
                             }
                         }
 
-                        GlobalAction.Recents.name -> {
+                        GlobalAction.RECENTS.name -> {
                             performGlobalAction(GLOBAL_ACTION_RECENTS)
                         }
                     }

@@ -26,8 +26,8 @@ import javax.inject.Inject
 
 internal class DefaultResourcesWrapper @Inject constructor(@param:ApplicationContext private val context: Context) : ResourcesWrapper {
     override fun getSystemTheme(): Theme = when (context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
-        Configuration.UI_MODE_NIGHT_YES -> Theme.Dark
-        Configuration.UI_MODE_NIGHT_NO -> Theme.Light
-        else -> Theme.Light
+        Configuration.UI_MODE_NIGHT_YES -> Theme.DARK
+        Configuration.UI_MODE_NIGHT_NO -> Theme.LIGHT
+        else -> Theme.LIGHT
     }
 }

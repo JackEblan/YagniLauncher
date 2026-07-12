@@ -31,7 +31,7 @@ import javax.inject.Inject
 class GetEblanApplicationInfoTagUseCase @Inject constructor(
     private val eblanApplicationInfoRepository: EblanApplicationInfoRepository,
     private val eblanApplicationInfoTagRepository: EblanApplicationInfoTagRepository,
-    @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
+    @param:Dispatcher(EblanDispatchers.DEFAULT) private val defaultDispatcher: CoroutineDispatcher,
 ) {
     operator fun invoke(
         serialNumber: Long,

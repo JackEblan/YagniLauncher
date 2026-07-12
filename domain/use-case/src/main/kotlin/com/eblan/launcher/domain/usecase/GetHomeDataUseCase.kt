@@ -58,7 +58,7 @@ class GetHomeDataUseCase @Inject constructor(
     private val shortcutInfoGridItemRepository: ShortcutInfoGridItemRepository,
     private val folderGridItemRepository: FolderGridItemRepository,
     private val shortcutConfigGridItemRepository: ShortcutConfigGridItemRepository,
-    @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
+    @param:Dispatcher(EblanDispatchers.DEFAULT) private val defaultDispatcher: CoroutineDispatcher,
 ) {
     operator fun invoke(): Flow<HomeData> = combine(
         userDataRepository.userDataFlow,
@@ -70,7 +70,7 @@ class GetHomeDataUseCase @Inject constructor(
                 gridItem = it,
                 columns = userData.homeSettings.columns,
                 rows = userData.homeSettings.rows,
-            ) && it.associate == Associate.Grid
+            ) && it.associate == Associate.GRID
         }.groupBy { it.page }
 
         val dockGridItemsByPage = gridItems.filter {
@@ -78,13 +78,13 @@ class GetHomeDataUseCase @Inject constructor(
                 gridItem = it,
                 columns = userData.homeSettings.dockColumns,
                 rows = userData.homeSettings.dockRows,
-            ) && it.associate == Associate.Dock
+            ) && it.associate == Associate.DOCK
         }.groupBy { it.page }
 
         val gridItemSettings = userData.homeSettings.gridItemSettings
 
         val textColor = when (gridItemSettings.textColor) {
-            TextColor.System -> {
+            TextColor.SYSTEM -> {
                 getTextColorFromWallpaperColors(
                     theme = userData.generalSettings.theme,
                     colorHints = colorHints,
@@ -173,25 +173,25 @@ class GetHomeDataUseCase @Inject constructor(
         val hintSupportsDarkText = colorHints and wallpaperManagerWrapper.hintSupportsDarkText != 0
 
         if (hintSupportsDarkText) {
-            TextColor.Dark
+            TextColor.DARK
         } else {
-            TextColor.Light
+            TextColor.LIGHT
         }
     } else {
         getTextColorFromSystemTheme(theme = theme)
     }
 
     private fun getTextColorFromSystemTheme(theme: Theme): TextColor = when (theme) {
-        Theme.System -> {
+        Theme.SYSTEM -> {
             getTextColorFromSystemTheme(theme = resourcesWrapper.getSystemTheme())
         }
 
-        Theme.Light -> {
-            TextColor.Light
+        Theme.LIGHT -> {
+            TextColor.LIGHT
         }
 
-        Theme.Dark -> {
-            TextColor.Dark
+        Theme.DARK -> {
+            TextColor.DARK
         }
     }
 }

@@ -33,7 +33,7 @@ import javax.inject.Inject
 class GetEblanShortcutConfigsByLabelUseCase @Inject constructor(
     private val eblanShortcutConfigRepository: EblanShortcutConfigRepository,
     private val launcherAppsWrapper: LauncherAppsWrapper,
-    @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
+    @param:Dispatcher(EblanDispatchers.DEFAULT) private val defaultDispatcher: CoroutineDispatcher,
 ) {
     operator fun invoke(labelFlow: Flow<String>): Flow<Map<EblanUser, Map<EblanApplicationInfoGroup, List<EblanShortcutConfig>>>> = combine(
         eblanShortcutConfigRepository.eblanShortcutConfigsFlow,

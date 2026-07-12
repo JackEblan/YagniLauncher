@@ -74,7 +74,7 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
     private val packageManagerWrapper: PackageManagerWrapper,
     private val androidPackageManager: AndroidPackageManagerWrapper,
     private val iconKeyGenerator: IconKeyGenerator,
-    @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
+    @param:Dispatcher(EblanDispatchers.DEFAULT) private val defaultDispatcher: CoroutineDispatcher,
 ) : LauncherAppsWrapper,
     AndroidLauncherAppsWrapper {
     private val launcherApps =
@@ -463,22 +463,22 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
         val userHandle = userManagerWrapper.getUserForSerialNumber(serialNumber = serialNumber)
             ?: return EblanUser(
                 serialNumber = serialNumber,
-                eblanUserType = EblanUserType.Personal,
+                eblanUserType = EblanUserType.PERSONAL,
                 isPrivateSpaceEntryPointHidden = false,
             )
 
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
             val launcherUserInfo = launcherApps.getLauncherUserInfo(userHandle) ?: return EblanUser(
                 serialNumber = serialNumber,
-                eblanUserType = EblanUserType.Personal,
+                eblanUserType = EblanUserType.PERSONAL,
                 isPrivateSpaceEntryPointHidden = isPrivateSpaceEntryPointHidden(userHandle = userHandle),
             )
 
             val eblanUserType = when (launcherUserInfo.userType) {
-                UserManager.USER_TYPE_PROFILE_CLONE -> EblanUserType.Clone
-                UserManager.USER_TYPE_PROFILE_MANAGED -> EblanUserType.Work
-                UserManager.USER_TYPE_PROFILE_PRIVATE -> EblanUserType.Private
-                else -> EblanUserType.Personal
+                UserManager.USER_TYPE_PROFILE_CLONE -> EblanUserType.CLONE
+                UserManager.USER_TYPE_PROFILE_MANAGED -> EblanUserType.WORK
+                UserManager.USER_TYPE_PROFILE_PRIVATE -> EblanUserType.PRIVATE
+                else -> EblanUserType.PERSONAL
             }
 
             EblanUser(
@@ -491,9 +491,9 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
                 androidPackageManager.getUserBadgedLabel(
                     label = "",
                     userHandle = userHandle,
-                ).isNotBlank() -> EblanUserType.Work
+                ).isNotBlank() -> EblanUserType.WORK
 
-                else -> EblanUserType.Personal
+                else -> EblanUserType.PERSONAL
             }
 
             EblanUser(
@@ -593,15 +593,15 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
 
         val shortcutQueryFlag = when {
             isPinned -> {
-                ShortcutQueryFlag.Pinned
+                ShortcutQueryFlag.PINNED
             }
 
             isDynamic -> {
-                ShortcutQueryFlag.Dynamic
+                ShortcutQueryFlag.DYNAMIC
             }
 
             else -> {
-                ShortcutQueryFlag.Manifest
+                ShortcutQueryFlag.MANIFEST
             }
         }
 

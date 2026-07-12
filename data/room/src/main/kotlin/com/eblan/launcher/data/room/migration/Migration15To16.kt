@@ -25,15 +25,15 @@ class Migration15To16 : Migration(15, 16) {
         db.execSQL(
             """
             ALTER TABLE FolderGridItemEntity 
-            ADD COLUMN folderId TEXT
-        """,
+            ADD COLUMN `folderId` TEXT
+            """.trimIndent(),
         )
 
         db.execSQL(
             """
             ALTER TABLE FolderGridItemEntity 
             ADD COLUMN `index` INTEGER NOT NULL DEFAULT 0
-        """,
+            """.trimIndent(),
         )
     }
 }

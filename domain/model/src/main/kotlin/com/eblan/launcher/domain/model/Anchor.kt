@@ -18,8 +18,8 @@
 package com.eblan.launcher.domain.model
 
 enum class Anchor {
-    TopStart,
-    TopEnd,
-    BottomStart,
-    BottomEnd,
+    TOP_START,
+    TOP_END,
+    BOTTOM_START,
+    BOTTOM_END,
 }

@@ -45,7 +45,7 @@ class AddPinShortcutToHomeScreenUseCase @Inject constructor(
     private val packageManagerWrapper: PackageManagerWrapper,
     private val iconKeyGenerator: IconKeyGenerator,
     private val getGridItemsUseCase: GetGridItemsUseCase,
-    @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
+    @param:Dispatcher(EblanDispatchers.DEFAULT) private val defaultDispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke(
         serialNumber: Long,
@@ -98,7 +98,7 @@ class AddPinShortcutToHomeScreenUseCase @Inject constructor(
         )
 
         val eblanAction = EblanAction(
-            eblanActionType = EblanActionType.None,
+            eblanActionType = EblanActionType.NONE,
             serialNumber = 0L,
             componentName = "",
         )
@@ -111,7 +111,7 @@ class AddPinShortcutToHomeScreenUseCase @Inject constructor(
             columnSpan = 1,
             rowSpan = 1,
             data = data,
-            associate = Associate.Grid,
+            associate = Associate.GRID,
             override = false,
             gridItemSettings = homeSettings.gridItemSettings,
             doubleTap = eblanAction,
@@ -121,7 +121,7 @@ class AddPinShortcutToHomeScreenUseCase @Inject constructor(
 
         val gridItems = getGridItemsUseCase()
             .filter {
-                it.isTopLevel() && it.associate == Associate.Grid
+                it.isTopLevel() && it.associate == Associate.GRID
             }
 
         val newGridItem = findAvailableRegionByPage(

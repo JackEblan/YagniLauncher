@@ -1,6 +1,11 @@
 syntax = "proto3";
 
 import "com/eblan/launcher/data/datastore/proto/home/text_color.proto";
+import "com/eblan/launcher/data/datastore/proto/home/horizontal_alignment.proto";
+import "com/eblan/launcher/data/datastore/proto/home/horizontal_arrangement.proto";
+import "com/eblan/launcher/data/datastore/proto/home/vertical_alignment.proto";
+import "com/eblan/launcher/data/datastore/proto/home/vertical_arrangement.proto";
+import "com/eblan/launcher/data/datastore/proto/home/grid_item_layout_type.proto";
 
 option java_package = "com.eblan.launcher.data.datastore.proto.home";
 option java_multiple_files = true;
@@ -17,16 +22,7 @@ message GridItemSettingsProto {
   int32 customBackgroundColor = 9;
   int32 padding = 10;
   int32 cornerRadius = 11;
-}
-
-enum HorizontalAlignmentProto {
-  Start = 0;
-  CenterHorizontally = 1;
-  End = 2;
-}
-
-enum VerticalArrangementProto {
-  Top = 0;
-  Center = 1;
-  Bottom = 2;
+  GridItemLayoutTypeProto gridItemLayoutTypeProto = 12;
+  HorizontalArrangementProto horizontalArrangementProto = 13;
+  VerticalAlignment verticalAlignmentProto = 14;
 }

@@ -47,19 +47,19 @@ class GetApplicationThemeUseCase @Inject constructor(
         dynamicTheme: Boolean,
         colorHints: Int?,
     ): ApplicationTheme = when (theme) {
-        Theme.System -> {
+        Theme.SYSTEM -> {
             if (colorHints != null) {
                 val hintSupportsDarkTheme =
                     colorHints and wallpaperManagerWrapper.hintSupportsDarkTheme != 0
 
                 if (hintSupportsDarkTheme) {
                     ApplicationTheme(
-                        theme = Theme.Dark,
+                        theme = Theme.DARK,
                         dynamicTheme = dynamicTheme,
                     )
                 } else {
                     ApplicationTheme(
-                        theme = Theme.Light,
+                        theme = Theme.LIGHT,
                         dynamicTheme = dynamicTheme,
                     )
                 }
@@ -71,7 +71,7 @@ class GetApplicationThemeUseCase @Inject constructor(
             }
         }
 
-        Theme.Light, Theme.Dark -> {
+        Theme.LIGHT, Theme.DARK -> {
             ApplicationTheme(
                 theme = theme,
                 dynamicTheme = dynamicTheme,

@@ -146,25 +146,25 @@ internal fun ApplicationScreen(
             }
             .fillMaxSize(),
         color = when (appDrawerSettings.backgroundColor) {
-            TextColor.System -> {
+            TextColor.SYSTEM -> {
                 MaterialTheme.colorScheme.surface
             }
 
-            TextColor.Light -> {
+            TextColor.LIGHT -> {
                 Color.White
             }
 
-            TextColor.Dark -> {
+            TextColor.DARK -> {
                 Color.Black
             }
 
-            TextColor.Custom -> {
+            TextColor.CUSTOM -> {
                 Color(appDrawerSettings.customBackgroundColor)
             }
         },
     ) {
         when (appDrawerSettings.appDrawerType) {
-            AppDrawerType.Vertical -> {
+            AppDrawerType.VERTICAL -> {
                 VerticalApplicationScreen(
                     sharedTransitionScope = sharedTransitionScope,
                     appDrawerSettings = appDrawerSettings,
@@ -199,7 +199,7 @@ internal fun ApplicationScreen(
                 )
             }
 
-            AppDrawerType.Horizontal -> {
+            AppDrawerType.HORIZONTAL -> {
                 HorizontalApplicationScreen(
                     sharedTransitionScope = sharedTransitionScope,
                     appDrawerSettings = appDrawerSettings,
@@ -232,7 +232,7 @@ internal fun ApplicationScreen(
                 )
             }
 
-            AppDrawerType.List -> {
+            AppDrawerType.LIST -> {
                 ListApplicationScreen(
                     sharedTransitionScope = sharedTransitionScope,
                     appDrawerSettings = appDrawerSettings,
@@ -457,8 +457,8 @@ internal fun ApplicationScreenEffect(
 
 @Composable
 private fun EblanUserType.getEblanUserTypeTitle() = when (this) {
-    EblanUserType.Personal -> stringResource(R.string.personal)
-    EblanUserType.Clone -> stringResource(R.string.clone)
-    EblanUserType.Work -> stringResource(R.string.work)
-    EblanUserType.Private -> stringResource(R.string.private_space)
+    EblanUserType.PERSONAL -> stringResource(R.string.personal)
+    EblanUserType.CLONE -> stringResource(R.string.clone)
+    EblanUserType.WORK -> stringResource(R.string.work)
+    EblanUserType.PRIVATE -> stringResource(R.string.private_space)
 }

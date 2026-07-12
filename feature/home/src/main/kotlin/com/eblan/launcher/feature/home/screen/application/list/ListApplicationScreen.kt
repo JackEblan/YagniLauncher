@@ -438,7 +438,7 @@ private fun EblanApplicationInfosPage(
                     EblanUserPageKey(
                         eblanUser = EblanUser(
                             serialNumber = 0L,
-                            eblanUserType = EblanUserType.Personal,
+                            eblanUserType = EblanUserType.PERSONAL,
                             isPrivateSpaceEntryPointHidden = false,
                         ),
                         page = 0,
@@ -616,7 +616,7 @@ private fun EblanApplicationInfos(
             userScrollEnabled = !isVisibleOverlay,
         ) {
             when (eblanUserPageKey.eblanUser.eblanUserType) {
-                EblanUserType.Personal -> {
+                EblanUserType.PERSONAL -> {
                     items(
                         items = getEblanApplicationInfosByLabelAndTag.eblanApplicationInfoWithIconPackInfos[eblanUserPageKey].orEmpty(),
                         key = {
@@ -787,7 +787,7 @@ private fun EblanApplicationInfoListItem(
 
     val sharedElementKey = SharedElementKey(
         id = "${eblanApplicationInfoWithIconPackInfo.eblanApplicationInfo.serialNumber} ${eblanApplicationInfoWithIconPackInfo.eblanApplicationInfo.packageName} ${eblanApplicationInfoWithIconPackInfo.eblanApplicationInfo.componentName}",
-        parent = SharedElementKey.Parent.SwipeY,
+        parent = SharedElementKey.Parent.SWIPE_Y,
     )
 
     LaunchedEffect(

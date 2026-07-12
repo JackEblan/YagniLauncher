@@ -43,7 +43,7 @@ class GetPinGridItemUseCase @Inject constructor(
     private val userDataRepository: UserDataRepository,
     private val packageManagerWrapper: PackageManagerWrapper,
     private val iconKeyGenerator: IconKeyGenerator,
-    @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
+    @param:Dispatcher(EblanDispatchers.DEFAULT) private val defaultDispatcher: CoroutineDispatcher,
 ) {
     @OptIn(ExperimentalUuidApi::class)
     suspend operator fun invoke(
@@ -99,21 +99,21 @@ class GetPinGridItemUseCase @Inject constructor(
                     columnSpan = 1,
                     rowSpan = 1,
                     data = data,
-                    associate = Associate.Grid,
+                    associate = Associate.GRID,
                     override = false,
                     gridItemSettings = homeSettings.gridItemSettings,
                     doubleTap = EblanAction(
-                        eblanActionType = EblanActionType.None,
+                        eblanActionType = EblanActionType.NONE,
                         serialNumber = 0L,
                         componentName = "",
                     ),
                     swipeUp = EblanAction(
-                        eblanActionType = EblanActionType.None,
+                        eblanActionType = EblanActionType.NONE,
                         serialNumber = 0L,
                         componentName = "",
                     ),
                     swipeDown = EblanAction(
-                        eblanActionType = EblanActionType.None,
+                        eblanActionType = EblanActionType.NONE,
                         serialNumber = 0L,
                         componentName = "",
                     ),
@@ -160,21 +160,21 @@ class GetPinGridItemUseCase @Inject constructor(
                     columnSpan = 1,
                     rowSpan = 1,
                     data = data,
-                    associate = Associate.Grid,
+                    associate = Associate.GRID,
                     override = false,
                     gridItemSettings = homeSettings.gridItemSettings,
                     doubleTap = EblanAction(
-                        eblanActionType = EblanActionType.None,
+                        eblanActionType = EblanActionType.NONE,
                         serialNumber = 0L,
                         componentName = "",
                     ),
                     swipeUp = EblanAction(
-                        eblanActionType = EblanActionType.None,
+                        eblanActionType = EblanActionType.NONE,
                         serialNumber = 0L,
                         componentName = "",
                     ),
                     swipeDown = EblanAction(
-                        eblanActionType = EblanActionType.None,
+                        eblanActionType = EblanActionType.NONE,
                         serialNumber = 0L,
                         componentName = "",
                     ),

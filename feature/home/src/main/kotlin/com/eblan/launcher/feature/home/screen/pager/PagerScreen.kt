@@ -57,7 +57,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draganddrop.mimeTypes
 import androidx.compose.ui.draw.alpha
@@ -98,6 +97,7 @@ import com.eblan.launcher.feature.home.model.SharedElementKey
 import com.eblan.launcher.feature.home.screen.application.ApplicationScreen
 import com.eblan.launcher.feature.home.screen.folder.FolderGridItemPopup
 import com.eblan.launcher.feature.home.screen.folder.FolderScreen
+import com.eblan.launcher.feature.home.screen.pager.griditem.InteractiveGridItem
 import com.eblan.launcher.feature.home.screen.resize.ResizeScreen
 import com.eblan.launcher.feature.home.screen.shortcutconfig.ShortcutConfigScreen
 import com.eblan.launcher.feature.home.screen.widget.AppWidgetScreen
@@ -113,8 +113,6 @@ import com.eblan.launcher.ui.local.LocalImageSerializer
 import com.eblan.launcher.ui.local.LocalLauncherApps
 import com.eblan.launcher.ui.local.LocalUserManager
 import com.eblan.launcher.ui.local.LocalWallpaperManager
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalSharedTransitionApi::class, ExperimentalLayoutApi::class)
@@ -581,10 +579,10 @@ internal fun PagerScreen(
                 detectDragGesturesAfterLongPress(
                     onDragStart = pagerScreenState::dragStart,
                     onDragEnd = {
-                        pagerScreenState.updateDrag(Drag.End)
+                        pagerScreenState.updateDrag(Drag.END)
                     },
                     onDragCancel = {
-                        pagerScreenState.updateDrag(Drag.Cancel)
+                        pagerScreenState.updateDrag(Drag.CANCEL)
                     },
                     onDrag = { _, dragAmount ->
                         pagerScreenState.drag(dragAmount = dragAmount)
@@ -684,7 +682,7 @@ internal fun PagerScreen(
                             isVisibleOverlay = isVisibleOverlay,
                             sharedElementKey = SharedElementKey(
                                 id = it.id,
-                                parent = SharedElementKey.Parent.Grid,
+                                parent = SharedElementKey.Parent.GRID,
                             ),
                             isVisibleFolder = folderPopups.isNotEmpty(),
                             moveGridItemResult = moveGridItemResult,
@@ -807,7 +805,7 @@ internal fun PagerScreen(
                             isVisibleOverlay = isVisibleOverlay,
                             sharedElementKey = SharedElementKey(
                                 id = it.id,
-                                parent = SharedElementKey.Parent.Dock,
+                                parent = SharedElementKey.Parent.DOCK,
                             ),
                             isVisibleFolder = folderPopups.isNotEmpty(),
                             moveGridItemResult = moveGridItemResult,
@@ -1044,8 +1042,8 @@ internal fun PagerScreen(
             )
         }
 
-        if (gestureSettings.swipeUp.eblanActionType == EblanActionType.OpenAppDrawer ||
-            gestureSettings.swipeDown.eblanActionType == EblanActionType.OpenAppDrawer
+        if (gestureSettings.swipeUp.eblanActionType == EblanActionType.OPEN_APP_DRAWER ||
+            gestureSettings.swipeDown.eblanActionType == EblanActionType.OPEN_APP_DRAWER
         ) {
             ApplicationScreen(
                 sharedTransitionScope = this@SharedTransitionLayout,

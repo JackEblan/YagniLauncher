@@ -55,11 +55,11 @@ internal suspend fun handlePageDirection(
     if (pageDirection == null || folderPopups.value.isNotEmpty()) return
 
     when (pageDirection) {
-        PageDirection.Left -> {
+        PageDirection.LEFT -> {
             onAnimateScrollToPage(currentPage - 1)
         }
 
-        PageDirection.Right -> {
+        PageDirection.RIGHT -> {
             onAnimateScrollToPage(currentPage + 1)
         }
     }
@@ -196,7 +196,7 @@ internal suspend fun handleDragGridItem(
 ) {
     delay(50L.milliseconds)
 
-    if (drag != Drag.Dragging ||
+    if (drag != Drag.DRAGGING ||
         isGridScrollInProgress ||
         isDockScrollInProgress ||
         !isVisibleOverlay.value ||
@@ -313,12 +313,12 @@ private fun dragGridItem(
 ) {
     val gridItem = moveGridItemResult.value?.movingGridItem ?: return
 
-    onUpdateAssociate(Associate.Grid)
+    onUpdateAssociate(Associate.GRID)
 
     onUpdateSharedElementKey(
         SharedElementKey(
             id = gridItem.id,
-            parent = SharedElementKey.Parent.Grid,
+            parent = SharedElementKey.Parent.GRID,
         ),
     )
 
@@ -329,7 +329,7 @@ private fun dragGridItem(
     val cellHeight = gridHeightWithPadding / rows
 
     val moveGridItem = getMoveGridItem(
-        associate = Associate.Grid,
+        associate = Associate.GRID,
         cellHeight = cellHeight,
         cellWidth = cellWidth,
         columns = columns,
@@ -387,12 +387,12 @@ private fun dragDockGridItem(
 ) {
     val gridItem = moveGridItemResult.value?.movingGridItem ?: return
 
-    onUpdateAssociate(Associate.Dock)
+    onUpdateAssociate(Associate.DOCK)
 
     onUpdateSharedElementKey(
         SharedElementKey(
             id = gridItem.id,
-            parent = SharedElementKey.Parent.Dock,
+            parent = SharedElementKey.Parent.DOCK,
         ),
     )
 
@@ -403,7 +403,7 @@ private fun dragDockGridItem(
     val dockY = dragY - (safeDrawingHeight - dockHeightPx)
 
     val moveGridItem = getMoveGridItem(
-        associate = Associate.Dock,
+        associate = Associate.DOCK,
         cellHeight = cellHeight,
         cellWidth = cellWidth,
         columns = dockColumns,
@@ -456,7 +456,7 @@ internal suspend fun handleConflictingGridItem(
 
     val conflictingData = conflictingGridItem.data as? GridItemData.Folder ?: return
 
-    if (drag.value != Drag.Dragging ||
+    if (drag.value != Drag.DRAGGING ||
         !moveGridItemResult.isSuccess ||
         !isVisibleOverlay.value ||
         !isDragging.value ||
@@ -497,7 +497,7 @@ internal suspend fun handleConflictingGridItem(
     onUpdateSharedElementKey(
         SharedElementKey(
             id = movingFolderGridItem.id,
-            parent = SharedElementKey.Parent.Folder,
+            parent = SharedElementKey.Parent.FOLDER,
         ),
     )
 
@@ -663,20 +663,20 @@ private fun animateScrollToPage(
 
     fun animateScrollToPage(onUpdatePageDirection: (PageDirection?) -> Unit) {
         if (isOnLeftGrid) {
-            onUpdatePageDirection(PageDirection.Left)
+            onUpdatePageDirection(PageDirection.LEFT)
         } else if (isOnRightGrid) {
-            onUpdatePageDirection(PageDirection.Right)
+            onUpdatePageDirection(PageDirection.RIGHT)
         } else {
             onUpdatePageDirection(null)
         }
     }
 
     when (associate) {
-        Associate.Grid -> {
+        Associate.GRID -> {
             animateScrollToPage(onUpdatePageDirection = onUpdateGridPageDirection)
         }
 
-        Associate.Dock -> {
+        Associate.DOCK -> {
             animateScrollToPage(onUpdatePageDirection = onUpdateDockPageDirection)
         }
 

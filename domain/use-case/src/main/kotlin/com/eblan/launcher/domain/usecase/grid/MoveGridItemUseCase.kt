@@ -38,7 +38,7 @@ import javax.inject.Inject
 class MoveGridItemUseCase @Inject constructor(
     private val gridRepository: GridRepository,
     private val getGridItemsUseCase: GetGridItemsUseCase,
-    @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
+    @param:Dispatcher(EblanDispatchers.DEFAULT) private val defaultDispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke(
         movingGridItem: GridItem,
@@ -143,7 +143,7 @@ class MoveGridItemUseCase @Inject constructor(
         )
 
         return when (resolveDirection) {
-            ResolveDirection.Left, ResolveDirection.Right -> {
+            ResolveDirection.LEFT, ResolveDirection.RIGHT -> {
                 val resolvedConflicts = resolveConflicts(
                     gridItems = gridItems,
                     resolveDirection = resolveDirection,
@@ -163,7 +163,7 @@ class MoveGridItemUseCase @Inject constructor(
                 )
             }
 
-            ResolveDirection.Center -> {
+            ResolveDirection.CENTER -> {
                 if (movingGridItem.data is GridItemData.Widget ||
                     conflictingGridItem.data is GridItemData.Widget
                 ) {

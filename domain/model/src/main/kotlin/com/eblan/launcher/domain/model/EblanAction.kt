@@ -34,11 +34,11 @@ data class EblanAction(
 
 @Serializable
 enum class EblanActionType {
-    None,
-    OpenAppDrawer,
-    OpenNotificationPanel,
-    OpenApp,
-    LockScreen,
-    OpenQuickSettings,
-    OpenRecents,
+    NONE,
+    OPEN_APP_DRAWER,
+    OPEN_NOTIFICATION_PANEL,
+    OPEN_APP,
+    LOCK_SCREEN,
+    OPEN_QUICK_SETTINGS,
+    OPEN_RECENTS,
 }

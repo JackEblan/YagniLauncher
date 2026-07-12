@@ -149,7 +149,7 @@ private fun Success(
                 modifier = Modifier
                     .clickable {
                         scope.launch {
-                            if (eblanActionType == EblanActionType.OpenApp) {
+                            if (eblanActionType == EblanActionType.OPEN_APP) {
                                 showSelectApplicationDialog = true
                             } else {
                                 onUpdateEblanAction(
@@ -196,7 +196,7 @@ private fun Success(
                     onUpdateEblanAction(
                         R.drawable.adb_24px,
                         EblanAction(
-                            eblanActionType = EblanActionType.OpenApp,
+                            eblanActionType = EblanActionType.OPEN_APP,
                             serialNumber = it.serialNumber,
                             componentName = it.componentName,
                         ),
@@ -208,11 +208,11 @@ private fun Success(
 }
 
 private fun EblanActionType.getResId() = when (this) {
-    EblanActionType.None -> R.drawable.adb_24px
-    EblanActionType.OpenApp -> R.drawable.adb_24px
-    EblanActionType.OpenAppDrawer -> R.drawable.outline_apps_24
-    EblanActionType.OpenNotificationPanel -> R.drawable.notification_settings_24px
-    EblanActionType.LockScreen -> R.drawable.lock_24px
-    EblanActionType.OpenQuickSettings -> R.drawable.settings_24px
-    EblanActionType.OpenRecents -> R.drawable.preview_24px
+    EblanActionType.NONE -> R.drawable.adb_24px
+    EblanActionType.OPEN_APP -> R.drawable.adb_24px
+    EblanActionType.OPEN_APP_DRAWER -> R.drawable.outline_apps_24
+    EblanActionType.OPEN_NOTIFICATION_PANEL -> R.drawable.notification_settings_24px
+    EblanActionType.LOCK_SCREEN -> R.drawable.lock_24px
+    EblanActionType.OPEN_QUICK_SETTINGS -> R.drawable.settings_24px
+    EblanActionType.OPEN_RECENTS -> R.drawable.preview_24px
 }

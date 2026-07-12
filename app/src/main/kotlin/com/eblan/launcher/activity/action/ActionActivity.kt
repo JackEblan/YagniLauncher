@@ -65,7 +65,7 @@ class ActionActivity : ComponentActivity() {
     private val viewModel: ActionActivityViewModel by viewModels()
 
     @Inject
-    @Dispatcher(EblanDispatchers.Default)
+    @Dispatcher(EblanDispatchers.DEFAULT)
     lateinit var defaultDispatcher: CoroutineDispatcher
 
     @Inject
@@ -87,7 +87,7 @@ class ActionActivity : ComponentActivity() {
                         }
 
                         EblanLauncherTheme(
-                            theme = Theme.System,
+                            theme = Theme.SYSTEM,
                             dynamicTheme = false,
                         ) {
                             Surface(modifier = Modifier.fillMaxSize()) {

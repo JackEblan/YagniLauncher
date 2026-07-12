@@ -34,6 +34,6 @@ object DispatchersModule {
     fun providesIODispatcher(): CoroutineDispatcher = Dispatchers.IO
 
     @Provides
-    @Dispatcher(EblanDispatchers.Default)
+    @Dispatcher(EblanDispatchers.DEFAULT)
     fun providesDefaultDispatcher(): CoroutineDispatcher = Dispatchers.Default
 }

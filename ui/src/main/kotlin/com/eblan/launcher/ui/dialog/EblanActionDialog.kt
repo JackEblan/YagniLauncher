@@ -99,10 +99,10 @@ internal fun EblanActionDialog(
             EblanActionType.entries.forEach { eblanActionType ->
                 EblanRadioButton(
                     enabled = when (eblanActionType) {
-                        EblanActionType.OpenNotificationPanel,
-                        EblanActionType.LockScreen,
-                        EblanActionType.OpenQuickSettings,
-                        EblanActionType.OpenRecents,
+                        EblanActionType.OPEN_NOTIFICATION_PANEL,
+                        EblanActionType.LOCK_SCREEN,
+                        EblanActionType.OPEN_QUICK_SETTINGS,
+                        EblanActionType.OPEN_RECENTS,
                         -> isAccessibilityServiceEnabled
 
                         else -> true
@@ -113,7 +113,7 @@ internal fun EblanActionDialog(
                         componentName = selectedEblanAction.componentName,
                     ),
                     onClick = {
-                        if (eblanActionType == EblanActionType.OpenApp) {
+                        if (eblanActionType == EblanActionType.OPEN_APP) {
                             showSelectApplicationDialog = true
                         } else {
                             selectedEblanAction = EblanAction(
@@ -159,7 +159,7 @@ internal fun EblanActionDialog(
             },
             onClick = {
                 selectedEblanAction = EblanAction(
-                    eblanActionType = EblanActionType.OpenApp,
+                    eblanActionType = EblanActionType.OPEN_APP,
                     serialNumber = it.serialNumber,
                     componentName = it.componentName,
                 )

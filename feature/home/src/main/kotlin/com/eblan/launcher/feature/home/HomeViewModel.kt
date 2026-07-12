@@ -113,7 +113,7 @@ internal class HomeViewModel @Inject constructor(
         initialValue = HomeUiState.Loading,
     )
 
-    private val _screen = MutableStateFlow(Screen.Pager)
+    private val _screen = MutableStateFlow(Screen.PAGER)
 
     val screen = _screen.asStateFlow()
 
@@ -268,7 +268,7 @@ internal class HomeViewModel @Inject constructor(
     ) {
         viewModelScope.launch {
             _screen.update {
-                Screen.Loading
+                Screen.LOADING
             }
 
             _editPageData.update {
@@ -281,7 +281,7 @@ internal class HomeViewModel @Inject constructor(
             delay(defaultDelay.milliseconds)
 
             _screen.update {
-                Screen.EditPage
+                Screen.EDIT_PAGE
             }
         }
     }
@@ -294,7 +294,7 @@ internal class HomeViewModel @Inject constructor(
     ) {
         viewModelScope.launch {
             _screen.update {
-                Screen.Loading
+                Screen.LOADING
             }
 
             updatePageItemsUseCase(
@@ -307,7 +307,7 @@ internal class HomeViewModel @Inject constructor(
             delay(defaultDelay.milliseconds)
 
             _screen.update {
-                Screen.Pager
+                Screen.PAGER
             }
         }
     }

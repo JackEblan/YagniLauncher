@@ -18,6 +18,6 @@
 package com.eblan.launcher.domain.model
 
 enum class EblanApplicationInfoOrder {
-    Alphabetical,
-    Index,
+    ALPHABETICAL,
+    INDEX,
 }

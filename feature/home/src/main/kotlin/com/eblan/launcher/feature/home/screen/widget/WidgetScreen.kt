@@ -164,7 +164,7 @@ internal fun WidgetScreen(
     }
 
     LaunchedEffect(key1 = drag) {
-        if (drag == Drag.Start && searchBarState.currentValue == SearchBarValue.Expanded) {
+        if (drag == Drag.START && searchBarState.currentValue == SearchBarValue.Expanded) {
             searchBarState.animateToCollapsed()
         }
     }
@@ -426,7 +426,7 @@ private fun EblanAppWidgetProviderInfoItem(
                             onUpdateSharedElementKey(
                                 SharedElementKey(
                                     id = id,
-                                    parent = SharedElementKey.Parent.Grid,
+                                    parent = SharedElementKey.Parent.GRID,
                                 ),
                             )
 

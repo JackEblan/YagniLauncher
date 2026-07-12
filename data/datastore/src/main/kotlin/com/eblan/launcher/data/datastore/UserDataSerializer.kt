@@ -28,10 +28,13 @@ import com.eblan.launcher.data.datastore.proto.appdrawer.EblanApplicationInfoOrd
 import com.eblan.launcher.data.datastore.proto.experimental.ExperimentalSettingsProto
 import com.eblan.launcher.data.datastore.proto.general.GeneralSettingsProto
 import com.eblan.launcher.data.datastore.proto.gesture.GestureSettingsProto
+import com.eblan.launcher.data.datastore.proto.home.GridItemLayoutTypeProto
 import com.eblan.launcher.data.datastore.proto.home.GridItemSettingsProto
 import com.eblan.launcher.data.datastore.proto.home.HomeSettingsProto
 import com.eblan.launcher.data.datastore.proto.home.HorizontalAlignmentProto
+import com.eblan.launcher.data.datastore.proto.home.HorizontalArrangementProto
 import com.eblan.launcher.data.datastore.proto.home.TextColorProto
+import com.eblan.launcher.data.datastore.proto.home.VerticalAlignment
 import com.eblan.launcher.data.datastore.proto.home.VerticalArrangementProto
 import com.eblan.launcher.domain.model.EblanAction
 import com.eblan.launcher.domain.model.EblanActionType
@@ -43,23 +46,26 @@ import javax.inject.Inject
 
 class UserDataSerializer @Inject constructor() : Serializer<UserDataProto> {
     private val defaultGeneralSettingsProto = GeneralSettingsProto.newBuilder().apply {
-        themeProto = Theme.System.toThemeProto()
+        themeProto = Theme.SYSTEM.toThemeProto()
         dynamicTheme = false
         iconPackInfoPackageName = ""
     }.build()
 
     private val defaultGridItemSettingsProto = GridItemSettingsProto.newBuilder().apply {
         iconSize = 50
-        textColorProto = TextColorProto.TextColorSystem
+        textColorProto = TextColorProto.TEXT_COLOR_SYSTEM
         textSize = 10
         showLabel = true
         singleLineLabel = true
-        horizontalAlignmentProto = HorizontalAlignmentProto.CenterHorizontally
-        verticalArrangementProto = VerticalArrangementProto.Top
+        horizontalAlignmentProto = HorizontalAlignmentProto.HORIZONTAL_ALIGNMENT_CENTER_HORIZONTALLY
+        verticalArrangementProto = VerticalArrangementProto.VERTICAL_ARRANGEMENT_TOP
         customTextColor = 0x00000000
         customBackgroundColor = 0x00000000
         padding = 0
         cornerRadius = 0
+        gridItemLayoutTypeProto = GridItemLayoutTypeProto.TOP_ICON_BOTTOM_LABEL
+        horizontalArrangementProto = HorizontalArrangementProto.HORIZONTAL_ARRANGEMENT_CENTER
+        verticalAlignmentProto = VerticalAlignment.VERTICAL_ALIGNMENT_TOP
     }.build()
 
     private val defaultHomeSettingsProto = HomeSettingsProto.newBuilder().apply {
@@ -87,9 +93,9 @@ class UserDataSerializer @Inject constructor() : Serializer<UserDataProto> {
         appDrawerColumns = 5
         appDrawerRowsHeight = 100
         gridItemSettingsProto = defaultGridItemSettingsProto
-        eblanApplicationInfoOrderProto = EblanApplicationInfoOrderProto.Alphabetical
-        backgroundColor = TextColorProto.TextColorSystem
-        appDrawerTypeProto = AppDrawerTypeProto.Vertical
+        eblanApplicationInfoOrderProto = EblanApplicationInfoOrderProto.ALPHABETICAL
+        backgroundColor = TextColorProto.TEXT_COLOR_SYSTEM
+        appDrawerTypeProto = AppDrawerTypeProto.VERTICAL
         horizontalAppDrawerColumns = 5
         horizontalAppDrawerRows = 5
         excludeTaggedApps = false
@@ -97,19 +103,19 @@ class UserDataSerializer @Inject constructor() : Serializer<UserDataProto> {
 
     private val defaultGestureSettingsProto = GestureSettingsProto.newBuilder().apply {
         doubleTapProto = EblanAction(
-            eblanActionType = EblanActionType.None,
+            eblanActionType = EblanActionType.NONE,
             serialNumber = 0L,
             componentName = "",
         ).toEblanActionProto()
 
         swipeUpProto = EblanAction(
-            eblanActionType = EblanActionType.OpenAppDrawer,
+            eblanActionType = EblanActionType.OPEN_APP_DRAWER,
             serialNumber = 0L,
             componentName = "",
         ).toEblanActionProto()
 
         swipeDownProto = EblanAction(
-            eblanActionType = EblanActionType.None,
+            eblanActionType = EblanActionType.NONE,
             serialNumber = 0L,
             componentName = "",
         ).toEblanActionProto()

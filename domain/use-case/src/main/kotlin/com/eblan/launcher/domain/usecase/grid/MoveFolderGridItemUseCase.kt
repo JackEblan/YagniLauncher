@@ -30,7 +30,7 @@ import javax.inject.Inject
 
 class MoveFolderGridItemUseCase @Inject constructor(
     private val gridRepository: GridRepository,
-    @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
+    @param:Dispatcher(EblanDispatchers.DEFAULT) private val defaultDispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke(
         conflictingGridItem: GridItem,

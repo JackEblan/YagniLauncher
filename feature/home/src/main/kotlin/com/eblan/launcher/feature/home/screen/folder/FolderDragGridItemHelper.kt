@@ -47,11 +47,11 @@ internal suspend fun handlePageDirection(
     delay(500L.milliseconds)
 
     when (pageDirection) {
-        PageDirection.Left -> {
+        PageDirection.LEFT -> {
             onAnimateScrollToPage(currentPage - 1)
         }
 
-        PageDirection.Right -> {
+        PageDirection.RIGHT -> {
             onAnimateScrollToPage(currentPage + 1)
         }
     }
@@ -118,7 +118,7 @@ internal fun handleAnimateScrollToPage(
     isLast: Boolean,
     onUpdateFolderPageDirection: (PageDirection?) -> Unit,
 ) {
-    if (drag != Drag.Dragging ||
+    if (drag != Drag.DRAGGING ||
         !isVisibleOverlay.value ||
         !isDragging.value ||
         lockMovement.value ||
@@ -162,9 +162,9 @@ internal fun handleAnimateScrollToPage(
     val isOnRightGrid = folderDragX > folderGridWidthPx - edgeDistance
 
     if (isOnLeftGrid) {
-        onUpdateFolderPageDirection(PageDirection.Left)
+        onUpdateFolderPageDirection(PageDirection.LEFT)
     } else if (isOnRightGrid) {
-        onUpdateFolderPageDirection(PageDirection.Right)
+        onUpdateFolderPageDirection(PageDirection.RIGHT)
     } else {
         onUpdateFolderPageDirection(null)
     }
@@ -207,7 +207,7 @@ internal suspend fun handleDragFolderGridItem(
 ) {
     delay(50L.milliseconds)
 
-    if (drag != Drag.Dragging ||
+    if (drag != Drag.DRAGGING ||
         isScrollInProgress ||
         !isVisibleOverlay.value ||
         !isDragging.value ||
@@ -305,7 +305,7 @@ internal suspend fun handleDragFolderGridItem(
         onUpdateSharedElementKey(
             SharedElementKey(
                 id = movingGridItem.id,
-                parent = SharedElementKey.Parent.Folder,
+                parent = SharedElementKey.Parent.FOLDER,
             ),
         )
 

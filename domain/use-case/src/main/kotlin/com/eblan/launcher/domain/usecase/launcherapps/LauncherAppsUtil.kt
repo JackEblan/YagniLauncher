@@ -554,7 +554,7 @@ internal suspend fun addNewApplicationToHomeScreen(
     if (alreadyOnHome) return
 
     val eblanAction = EblanAction(
-        eblanActionType = EblanActionType.None,
+        eblanActionType = EblanActionType.NONE,
         serialNumber = 0L,
         componentName = "",
     )
@@ -580,7 +580,7 @@ internal suspend fun addNewApplicationToHomeScreen(
         columnSpan = 1,
         rowSpan = 1,
         data = data,
-        associate = Associate.Grid,
+        associate = Associate.GRID,
         override = false,
         gridItemSettings = homeSettings.gridItemSettings,
         doubleTap = eblanAction,

@@ -80,7 +80,7 @@ class SettingsActivity : ComponentActivity() {
                         }
 
                         EblanLauncherTheme(
-                            theme = Theme.System,
+                            theme = Theme.SYSTEM,
                             dynamicTheme = false,
                         ) {
                             Surface(modifier = Modifier.fillMaxSize()) {

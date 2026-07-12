@@ -49,7 +49,7 @@ class AddPinWidgetToHomeScreenUseCase @Inject constructor(
     private val gridRepository: GridRepository,
     private val iconKeyGenerator: IconKeyGenerator,
     private val getGridItemsUseCase: GetGridItemsUseCase,
-    @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
+    @param:Dispatcher(EblanDispatchers.DEFAULT) private val defaultDispatcher: CoroutineDispatcher,
 ) {
     @OptIn(ExperimentalUuidApi::class)
     suspend operator fun invoke(
@@ -144,7 +144,7 @@ class AddPinWidgetToHomeScreenUseCase @Inject constructor(
         )
 
         val eblanAction = EblanAction(
-            eblanActionType = EblanActionType.None,
+            eblanActionType = EblanActionType.NONE,
             serialNumber = 0L,
             componentName = "",
         )
@@ -157,7 +157,7 @@ class AddPinWidgetToHomeScreenUseCase @Inject constructor(
             columnSpan = checkedColumnSpan,
             rowSpan = checkedRowSpan,
             data = data,
-            associate = Associate.Grid,
+            associate = Associate.GRID,
             override = false,
             gridItemSettings = homeSettings.gridItemSettings,
             doubleTap = eblanAction,
@@ -166,7 +166,7 @@ class AddPinWidgetToHomeScreenUseCase @Inject constructor(
         )
 
         val gridItems = getGridItemsUseCase().filter {
-            it.isTopLevel() && it.associate == Associate.Grid
+            it.isTopLevel() && it.associate == Associate.GRID
         }
 
         val newGridItem = findAvailableRegionByPage(

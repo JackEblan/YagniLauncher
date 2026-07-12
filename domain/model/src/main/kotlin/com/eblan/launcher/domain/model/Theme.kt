@@ -18,7 +18,7 @@
 package com.eblan.launcher.domain.model
 
 enum class Theme {
-    System,
-    Light,
-    Dark,
+    SYSTEM,
+    LIGHT,
+    DARK,
 }

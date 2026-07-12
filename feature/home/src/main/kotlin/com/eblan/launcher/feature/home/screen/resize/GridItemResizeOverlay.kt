@@ -208,7 +208,7 @@ internal fun GridItemResizeOverlay(
                     columns = columns,
                     gridWidth = gridWidth,
                     gridHeight = gridHeight,
-                    anchor = Anchor.BottomEnd,
+                    anchor = Anchor.BOTTOM_END,
                 )
             }
 
@@ -221,7 +221,7 @@ internal fun GridItemResizeOverlay(
                     columns = columns,
                     gridWidth = gridWidth,
                     gridHeight = gridHeight,
-                    anchor = Anchor.BottomStart,
+                    anchor = Anchor.BOTTOM_START,
                 )
             }
 
@@ -234,7 +234,7 @@ internal fun GridItemResizeOverlay(
                     columns = columns,
                     gridWidth = gridWidth,
                     gridHeight = gridHeight,
-                    anchor = Anchor.TopEnd,
+                    anchor = Anchor.TOP_END,
                 )
             }
 
@@ -247,7 +247,7 @@ internal fun GridItemResizeOverlay(
                     columns = columns,
                     gridWidth = gridWidth,
                     gridHeight = gridHeight,
-                    anchor = Anchor.TopStart,
+                    anchor = Anchor.TOP_START,
                 )
             }
 

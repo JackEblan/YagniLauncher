@@ -18,9 +18,9 @@
 package com.eblan.launcher.feature.home.model
 
 internal enum class Drag {
-    Start,
-    End,
-    Dragging,
-    Cancel,
-    None,
+    START,
+    END,
+    DRAGGING,
+    CANCEL,
+    NONE,
 }

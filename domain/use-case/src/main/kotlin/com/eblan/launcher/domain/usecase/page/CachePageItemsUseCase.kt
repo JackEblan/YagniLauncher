@@ -32,7 +32,7 @@ import javax.inject.Inject
 
 class CachePageItemsUseCase @Inject constructor(
     private val userDataRepository: UserDataRepository,
-    @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
+    @param:Dispatcher(EblanDispatchers.DEFAULT) private val defaultDispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke(
         gridItems: List<GridItem>,
@@ -41,18 +41,18 @@ class CachePageItemsUseCase @Inject constructor(
         val userData = userDataRepository.userDataFlow.first()
 
         val columns = when (associate) {
-            Associate.Grid -> userData.homeSettings.columns
-            Associate.Dock -> userData.homeSettings.dockColumns
+            Associate.GRID -> userData.homeSettings.columns
+            Associate.DOCK -> userData.homeSettings.dockColumns
         }
 
         val rows = when (associate) {
-            Associate.Grid -> userData.homeSettings.rows
-            Associate.Dock -> userData.homeSettings.dockRows
+            Associate.GRID -> userData.homeSettings.rows
+            Associate.DOCK -> userData.homeSettings.dockRows
         }
 
         val pageCount = when (associate) {
-            Associate.Grid -> userData.homeSettings.pageCount
-            Associate.Dock -> userData.homeSettings.dockPageCount
+            Associate.GRID -> userData.homeSettings.pageCount
+            Associate.DOCK -> userData.homeSettings.dockPageCount
         }
 
         val gridItemsByPage = gridItems.filter {

@@ -120,8 +120,8 @@ internal fun EditPageScreen(
     var selectedId by remember {
         mutableIntStateOf(
             when (editPageData.associate) {
-                Associate.Grid -> homeSettings.initialPage
-                Associate.Dock -> homeSettings.dockInitialPage
+                Associate.GRID -> homeSettings.initialPage
+                Associate.DOCK -> homeSettings.dockInitialPage
             },
         )
     }
@@ -143,21 +143,21 @@ internal fun EditPageScreen(
     val scope = rememberCoroutineScope()
 
     val columns = when (editPageData.associate) {
-        Associate.Grid -> homeSettings.columns
-        Associate.Dock -> homeSettings.dockColumns
+        Associate.GRID -> homeSettings.columns
+        Associate.DOCK -> homeSettings.dockColumns
     }
 
     val rows = when (editPageData.associate) {
-        Associate.Grid -> homeSettings.rows
-        Associate.Dock -> homeSettings.dockRows
+        Associate.GRID -> homeSettings.rows
+        Associate.DOCK -> homeSettings.dockRows
     }
 
     val cardHeight = when (editPageData.associate) {
-        Associate.Grid -> with(density) {
+        Associate.GRID -> with(density) {
             gridHeight.toDp() - homeSettings.dockHeight.dp
         }
 
-        Associate.Dock -> homeSettings.dockHeight.dp
+        Associate.DOCK -> homeSettings.dockHeight.dp
     }
 
     var expanded by remember { mutableStateOf(false) }
@@ -180,7 +180,7 @@ internal fun EditPageScreen(
     }
 
     BackHandler {
-        onUpdateScreen(Screen.Pager)
+        onUpdateScreen(Screen.PAGER)
     }
 
     Box(modifier = modifier.fillMaxSize()) {
@@ -277,7 +277,7 @@ internal fun EditPageScreen(
                 expanded = false
             },
             onCancel = {
-                onUpdateScreen(Screen.Pager)
+                onUpdateScreen(Screen.PAGER)
             },
         )
     }
@@ -401,5 +401,5 @@ private fun handleActionMainIntent(
         return
     }
 
-    onUpdateScreen(Screen.Pager)
+    onUpdateScreen(Screen.PAGER)
 }

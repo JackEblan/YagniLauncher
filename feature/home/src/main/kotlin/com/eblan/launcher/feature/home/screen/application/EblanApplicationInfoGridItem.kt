@@ -177,7 +177,7 @@ internal fun EblanApplicationInfoGridItem(
 
     val sharedElementKey = SharedElementKey(
         id = "${eblanApplicationInfoWithIconPackInfo.eblanApplicationInfo.serialNumber} ${eblanApplicationInfoWithIconPackInfo.eblanApplicationInfo.packageName} ${eblanApplicationInfoWithIconPackInfo.eblanApplicationInfo.componentName}",
-        parent = SharedElementKey.Parent.SwipeY,
+        parent = SharedElementKey.Parent.SWIPE_Y,
     )
 
     LaunchedEffect(
@@ -256,7 +256,7 @@ internal fun EblanApplicationInfoGridItem(
                 )
             }
             .run {
-                if (appDrawerType == AppDrawerType.Vertical) {
+                if (appDrawerType == AppDrawerType.VERTICAL) {
                     height(appDrawerSettings.appDrawerRowsHeight.dp)
                 } else {
                     fillMaxSize()
@@ -379,7 +379,7 @@ internal fun handleDragEblanApplicationInfoItem(
     if (!isLongPress) return
 
     when (drag) {
-        Drag.Dragging -> {
+        Drag.DRAGGING -> {
             onUpdatePopupMenu(false)
 
             onDismiss()
@@ -400,7 +400,7 @@ internal fun handleDragEblanApplicationInfoItem(
             )
 
             val eblanAction = EblanAction(
-                eblanActionType = EblanActionType.None,
+                eblanActionType = EblanActionType.NONE,
                 serialNumber = 0L,
                 componentName = "",
             )
@@ -413,7 +413,7 @@ internal fun handleDragEblanApplicationInfoItem(
                 columnSpan = 1,
                 rowSpan = 1,
                 data = data,
-                associate = Associate.Grid,
+                associate = Associate.GRID,
                 override = false,
                 gridItemSettings = appDrawerSettings.gridItemSettings,
                 doubleTap = eblanAction,
@@ -434,7 +434,7 @@ internal fun handleDragEblanApplicationInfoItem(
             onUpdateIsDragging(true)
         }
 
-        Drag.Cancel, Drag.End -> {
+        Drag.CANCEL, Drag.END -> {
             onUpdateIsLongPress(false)
 
             if (!isSwiping) {

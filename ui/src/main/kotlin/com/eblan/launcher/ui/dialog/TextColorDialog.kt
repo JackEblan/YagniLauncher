@@ -76,7 +76,7 @@ fun TextColorDialog(
                     selected = selectedTextColor == textColor,
                     text = textColor.getTextColorTitle(),
                     onClick = {
-                        if (textColor == TextColor.Custom) {
+                        if (textColor == TextColor.CUSTOM) {
                             showColorPickerDialog = true
                         } else {
                             selectedTextColor = textColor
@@ -117,7 +117,7 @@ fun TextColorDialog(
                 showColorPickerDialog = false
             },
             onSelectColor = {
-                selectedTextColor = TextColor.Custom
+                selectedTextColor = TextColor.CUSTOM
 
                 selectedCustomTextColor = it
 
@@ -129,8 +129,8 @@ fun TextColorDialog(
 
 @Composable
 private fun TextColor.getTextColorTitle() = when (this) {
-    TextColor.System -> stringResource(commonR.string.system)
-    TextColor.Light -> stringResource(commonR.string.light)
-    TextColor.Dark -> stringResource(commonR.string.dark)
-    TextColor.Custom -> stringResource(R.string.custom)
+    TextColor.SYSTEM -> stringResource(commonR.string.system)
+    TextColor.LIGHT -> stringResource(commonR.string.light)
+    TextColor.DARK -> stringResource(commonR.string.dark)
+    TextColor.CUSTOM -> stringResource(R.string.custom)
 }

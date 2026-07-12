@@ -117,25 +117,25 @@ private fun resizeGridItemByAnchor(
     val newStartRow: Int
 
     when (anchor) {
-        Anchor.TopStart -> {
+        Anchor.TOP_START -> {
             newStartColumn = gridItem.startColumn
 
             newStartRow = gridItem.startRow
         }
 
-        Anchor.TopEnd -> {
+        Anchor.TOP_END -> {
             newStartColumn = gridItem.startColumn + gridItem.columnSpan - columnSpan
 
             newStartRow = gridItem.startRow
         }
 
-        Anchor.BottomStart -> {
+        Anchor.BOTTOM_START -> {
             newStartColumn = gridItem.startColumn
 
             newStartRow = gridItem.startRow + gridItem.rowSpan - rowSpan
         }
 
-        Anchor.BottomEnd -> {
+        Anchor.BOTTOM_END -> {
             newStartColumn = gridItem.startColumn + gridItem.columnSpan - columnSpan
 
             newStartRow = gridItem.startRow + gridItem.rowSpan - rowSpan
@@ -156,25 +156,25 @@ private fun resizeGridItemBySideAnchor(
     val newStartRow: Int
 
     when (anchor) {
-        SideAnchor.Top -> {
+        SideAnchor.TOP -> {
             newStartColumn = gridItem.startColumn
 
             newStartRow = gridItem.startRow
         }
 
-        SideAnchor.Bottom -> {
+        SideAnchor.BOTTOM -> {
             newStartColumn = gridItem.startColumn
 
             newStartRow = gridItem.startRow + gridItem.rowSpan - rowSpan
         }
 
-        SideAnchor.Left -> {
+        SideAnchor.LEFT -> {
             newStartColumn = gridItem.startColumn
 
             newStartRow = gridItem.startRow
         }
 
-        SideAnchor.Right -> {
+        SideAnchor.RIGHT -> {
             newStartColumn = gridItem.startColumn + gridItem.columnSpan - columnSpan
 
             newStartRow = gridItem.startRow

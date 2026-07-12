@@ -26,6 +26,7 @@ import com.eblan.launcher.data.datastore.proto.general.ThemeProto
 import com.eblan.launcher.data.datastore.proto.gesture.EblanActionProto
 import com.eblan.launcher.data.datastore.proto.gesture.EblanActionTypeProto
 import com.eblan.launcher.data.datastore.proto.gesture.GestureSettingsProto
+import com.eblan.launcher.data.datastore.proto.home.GridItemLayoutTypeProto
 import com.eblan.launcher.data.datastore.proto.home.GridItemSettingsProto
 import com.eblan.launcher.data.datastore.proto.home.HomeSettingsProto
 import com.eblan.launcher.data.datastore.proto.home.HorizontalAlignmentProto
@@ -39,11 +40,14 @@ import com.eblan.launcher.domain.model.EblanApplicationInfoOrder
 import com.eblan.launcher.domain.model.ExperimentalSettings
 import com.eblan.launcher.domain.model.GeneralSettings
 import com.eblan.launcher.domain.model.GestureSettings
+import com.eblan.launcher.domain.model.GridItemLayoutType
 import com.eblan.launcher.domain.model.GridItemSettings
 import com.eblan.launcher.domain.model.HomeSettings
 import com.eblan.launcher.domain.model.HorizontalAlignment
+import com.eblan.launcher.domain.model.HorizontalArrangement
 import com.eblan.launcher.domain.model.TextColor
 import com.eblan.launcher.domain.model.Theme
+import com.eblan.launcher.domain.model.VerticalAlignment
 import com.eblan.launcher.domain.model.VerticalArrangement
 
 internal fun HomeSettingsProto.toHomeSettings(): HomeSettings = HomeSettings(
@@ -93,6 +97,9 @@ internal fun GridItemSettingsProto.toGridItemSettings(): GridItemSettings = Grid
     customBackgroundColor = customBackgroundColor,
     padding = padding,
     cornerRadius = cornerRadius,
+    gridItemLayoutType = gridItemLayoutTypeProto.toGridItemLayoutType(),
+    horizontalArrangement = HorizontalArrangement.CENTER,
+    verticalAlignment = VerticalAlignment.CENTER_VERTICALLY,
 )
 
 internal fun GeneralSettingsProto.toGeneralSettings(): GeneralSettings = GeneralSettings(
@@ -107,7 +114,8 @@ internal fun GridItemSettings.toGridItemSettingsProto(): GridItemSettingsProto =
     .setHorizontalAlignmentProto(horizontalAlignment.toHorizontalAlignmentProto())
     .setVerticalArrangementProto(verticalArrangement.toVerticalArrangementProto())
     .setCustomTextColor(customTextColor).setCustomBackgroundColor(customBackgroundColor)
-    .setPadding(padding).setCornerRadius(cornerRadius).build()
+    .setPadding(padding).setCornerRadius(cornerRadius)
+    .setGridItemLayoutTypeProto(gridItemLayoutType.toGridItemLayoutTypeProto()).build()
 
 internal fun HomeSettings.toHomeSettingsProto(): HomeSettingsProto = HomeSettingsProto.newBuilder().setColumns(columns).setRows(rows).setPageCount(pageCount)
     .setInfiniteScroll(infiniteScroll).setDockColumns(dockColumns).setDockRows(dockRows)
@@ -166,94 +174,113 @@ internal fun EblanActionProto.toEblanAction(): EblanAction = EblanAction(
 )
 
 internal fun Theme.toThemeProto(): ThemeProto = when (this) {
-    Theme.System -> ThemeProto.DarkThemeConfigSystem
-    Theme.Light -> ThemeProto.DarkThemeConfigLight
-    Theme.Dark -> ThemeProto.DarkThemeConfigDark
+    Theme.SYSTEM -> ThemeProto.THEME_SYSTEM
+    Theme.LIGHT -> ThemeProto.THEME_LIGHT
+    Theme.DARK -> ThemeProto.THEME_DARK
 }
 
 private fun EblanActionType.toEblanActionTypeProto(): EblanActionTypeProto = when (this) {
-    EblanActionType.None -> EblanActionTypeProto.None
-    EblanActionType.OpenAppDrawer -> EblanActionTypeProto.OpenAppDrawer
-    EblanActionType.OpenNotificationPanel -> EblanActionTypeProto.OpenNotificationPanel
-    EblanActionType.OpenApp -> EblanActionTypeProto.OpenApp
-    EblanActionType.LockScreen -> EblanActionTypeProto.LockScreen
-    EblanActionType.OpenQuickSettings -> EblanActionTypeProto.OpenQuickSettings
-    EblanActionType.OpenRecents -> EblanActionTypeProto.OpenRecents
+    EblanActionType.NONE -> EblanActionTypeProto.NONE
+    EblanActionType.OPEN_APP_DRAWER -> EblanActionTypeProto.OPEN_APP_DRAWER
+    EblanActionType.OPEN_NOTIFICATION_PANEL -> EblanActionTypeProto.OPEN_NOTIFICATION_PANEL
+    EblanActionType.OPEN_APP -> EblanActionTypeProto.OPEN_APP
+    EblanActionType.LOCK_SCREEN -> EblanActionTypeProto.LOCK_SCREEN
+    EblanActionType.OPEN_QUICK_SETTINGS -> EblanActionTypeProto.OPEN_QUICK_SETTINGS
+    EblanActionType.OPEN_RECENTS -> EblanActionTypeProto.OPEN_RECENTS
 }
 
 private fun EblanActionTypeProto.toEblanActionType(): EblanActionType = when (this) {
-    EblanActionTypeProto.None, EblanActionTypeProto.UNRECOGNIZED -> EblanActionType.None
-    EblanActionTypeProto.OpenAppDrawer -> EblanActionType.OpenAppDrawer
-    EblanActionTypeProto.OpenNotificationPanel -> EblanActionType.OpenNotificationPanel
-    EblanActionTypeProto.OpenApp -> EblanActionType.OpenApp
-    EblanActionTypeProto.LockScreen -> EblanActionType.LockScreen
-    EblanActionTypeProto.OpenQuickSettings -> EblanActionType.OpenQuickSettings
-    EblanActionTypeProto.OpenRecents -> EblanActionType.OpenRecents
+    EblanActionTypeProto.NONE, EblanActionTypeProto.UNRECOGNIZED -> EblanActionType.NONE
+    EblanActionTypeProto.OPEN_APP_DRAWER -> EblanActionType.OPEN_APP_DRAWER
+    EblanActionTypeProto.OPEN_NOTIFICATION_PANEL -> EblanActionType.OPEN_NOTIFICATION_PANEL
+    EblanActionTypeProto.OPEN_APP -> EblanActionType.OPEN_APP
+    EblanActionTypeProto.LOCK_SCREEN -> EblanActionType.LOCK_SCREEN
+    EblanActionTypeProto.OPEN_QUICK_SETTINGS -> EblanActionType.OPEN_QUICK_SETTINGS
+    EblanActionTypeProto.OPEN_RECENTS -> EblanActionType.OPEN_RECENTS
 }
 
 private fun ThemeProto.toDarkThemeConfig(): Theme = when (this) {
-    ThemeProto.DarkThemeConfigSystem, ThemeProto.UNRECOGNIZED -> Theme.System
-    ThemeProto.DarkThemeConfigLight -> Theme.Light
-    ThemeProto.DarkThemeConfigDark -> Theme.Dark
+    ThemeProto.THEME_SYSTEM, ThemeProto.UNRECOGNIZED -> Theme.SYSTEM
+    ThemeProto.THEME_LIGHT -> Theme.LIGHT
+    ThemeProto.THEME_DARK -> Theme.DARK
 }
 
 private fun EblanApplicationInfoOrderProto.toEblanApplicationInfoOrder(): EblanApplicationInfoOrder = when (this) {
-    EblanApplicationInfoOrderProto.Alphabetical -> EblanApplicationInfoOrder.Alphabetical
-    EblanApplicationInfoOrderProto.Index -> EblanApplicationInfoOrder.Index
-    EblanApplicationInfoOrderProto.UNRECOGNIZED -> EblanApplicationInfoOrder.Alphabetical
+    EblanApplicationInfoOrderProto.ALPHABETICAL -> EblanApplicationInfoOrder.ALPHABETICAL
+    EblanApplicationInfoOrderProto.INDEX -> EblanApplicationInfoOrder.INDEX
+    EblanApplicationInfoOrderProto.UNRECOGNIZED -> EblanApplicationInfoOrder.ALPHABETICAL
 }
 
 private fun EblanApplicationInfoOrder.toEblanApplicationInfoOrderProto(): EblanApplicationInfoOrderProto = when (this) {
-    EblanApplicationInfoOrder.Alphabetical -> EblanApplicationInfoOrderProto.Alphabetical
-    EblanApplicationInfoOrder.Index -> EblanApplicationInfoOrderProto.Index
+    EblanApplicationInfoOrder.ALPHABETICAL -> EblanApplicationInfoOrderProto.ALPHABETICAL
+    EblanApplicationInfoOrder.INDEX -> EblanApplicationInfoOrderProto.INDEX
 }
 
 private fun TextColor.toTextColorProto(): TextColorProto = when (this) {
-    TextColor.System -> TextColorProto.TextColorSystem
-    TextColor.Light -> TextColorProto.TextColorLight
-    TextColor.Dark -> TextColorProto.TextColorDark
-    TextColor.Custom -> TextColorProto.TextColorCustom
+    TextColor.SYSTEM -> TextColorProto.TEXT_COLOR_SYSTEM
+    TextColor.LIGHT -> TextColorProto.TEXT_COLOR_LIGHT
+    TextColor.DARK -> TextColorProto.TEXT_COLOR_DARK
+    TextColor.CUSTOM -> TextColorProto.TEXT_COLOR_CUSTOM
 }
 
 private fun TextColorProto.toTextColor(): TextColor = when (this) {
-    TextColorProto.TextColorSystem, TextColorProto.UNRECOGNIZED -> TextColor.System
-    TextColorProto.TextColorLight -> TextColor.Light
-    TextColorProto.TextColorDark -> TextColor.Dark
-    TextColorProto.TextColorCustom -> TextColor.Custom
+    TextColorProto.TEXT_COLOR_SYSTEM, TextColorProto.UNRECOGNIZED -> TextColor.SYSTEM
+    TextColorProto.TEXT_COLOR_LIGHT -> TextColor.LIGHT
+    TextColorProto.TEXT_COLOR_DARK -> TextColor.DARK
+    TextColorProto.TEXT_COLOR_CUSTOM -> TextColor.CUSTOM
 }
 
 private fun HorizontalAlignment.toHorizontalAlignmentProto(): HorizontalAlignmentProto = when (this) {
-    HorizontalAlignment.Start -> HorizontalAlignmentProto.Start
-    HorizontalAlignment.CenterHorizontally -> HorizontalAlignmentProto.CenterHorizontally
-    HorizontalAlignment.End -> HorizontalAlignmentProto.End
+    HorizontalAlignment.START -> HorizontalAlignmentProto.HORIZONTAL_ALIGNMENT_START
+    HorizontalAlignment.CENTER_HORIZONTALLY -> HorizontalAlignmentProto.HORIZONTAL_ALIGNMENT_CENTER_HORIZONTALLY
+    HorizontalAlignment.END -> HorizontalAlignmentProto.HORIZONTAL_ALIGNMENT_END
 }
 
 private fun HorizontalAlignmentProto.toHorizontalAlignment(): HorizontalAlignment = when (this) {
-    HorizontalAlignmentProto.Start -> HorizontalAlignment.Start
-    HorizontalAlignmentProto.CenterHorizontally, HorizontalAlignmentProto.UNRECOGNIZED -> HorizontalAlignment.CenterHorizontally
-    HorizontalAlignmentProto.End -> HorizontalAlignment.End
+    HorizontalAlignmentProto.HORIZONTAL_ALIGNMENT_START -> HorizontalAlignment.START
+    HorizontalAlignmentProto.HORIZONTAL_ALIGNMENT_CENTER_HORIZONTALLY, HorizontalAlignmentProto.UNRECOGNIZED -> HorizontalAlignment.CENTER_HORIZONTALLY
+    HorizontalAlignmentProto.HORIZONTAL_ALIGNMENT_END -> HorizontalAlignment.END
 }
 
 private fun VerticalArrangement.toVerticalArrangementProto(): VerticalArrangementProto = when (this) {
-    VerticalArrangement.Top -> VerticalArrangementProto.Top
-    VerticalArrangement.Center -> VerticalArrangementProto.Center
-    VerticalArrangement.Bottom -> VerticalArrangementProto.Bottom
+    VerticalArrangement.TOP -> VerticalArrangementProto.VERTICAL_ARRANGEMENT_TOP
+    VerticalArrangement.CENTER -> VerticalArrangementProto.VERTICAL_ARRANGEMENT_CENTER
+    VerticalArrangement.BOTTOM -> VerticalArrangementProto.VERTICAL_ARRANGEMENT_BOTTOM
 }
 
 private fun VerticalArrangementProto.toVerticalArrangement(): VerticalArrangement = when (this) {
-    VerticalArrangementProto.Top -> VerticalArrangement.Top
-    VerticalArrangementProto.Center, VerticalArrangementProto.UNRECOGNIZED -> VerticalArrangement.Center
-    VerticalArrangementProto.Bottom -> VerticalArrangement.Bottom
+    VerticalArrangementProto.VERTICAL_ARRANGEMENT_TOP -> VerticalArrangement.TOP
+    VerticalArrangementProto.VERTICAL_ARRANGEMENT_CENTER, VerticalArrangementProto.UNRECOGNIZED -> VerticalArrangement.CENTER
+    VerticalArrangementProto.VERTICAL_ARRANGEMENT_BOTTOM -> VerticalArrangement.BOTTOM
 }
 
 private fun AppDrawerType.toAppDrawerTypeProto(): AppDrawerTypeProto = when (this) {
-    AppDrawerType.Vertical -> AppDrawerTypeProto.Vertical
-    AppDrawerType.Horizontal -> AppDrawerTypeProto.Horizontal
-    AppDrawerType.List -> AppDrawerTypeProto.List
+    AppDrawerType.VERTICAL -> AppDrawerTypeProto.VERTICAL
+    AppDrawerType.HORIZONTAL -> AppDrawerTypeProto.HORIZONTAL
+    AppDrawerType.LIST -> AppDrawerTypeProto.LIST
 }
 
 private fun AppDrawerTypeProto.toAppDrawerType(): AppDrawerType = when (this) {
-    AppDrawerTypeProto.Vertical, AppDrawerTypeProto.UNRECOGNIZED -> AppDrawerType.Vertical
-    AppDrawerTypeProto.Horizontal -> AppDrawerType.Horizontal
-    AppDrawerTypeProto.List -> AppDrawerType.List
+    AppDrawerTypeProto.VERTICAL, AppDrawerTypeProto.UNRECOGNIZED -> AppDrawerType.VERTICAL
+    AppDrawerTypeProto.HORIZONTAL -> AppDrawerType.HORIZONTAL
+    AppDrawerTypeProto.LIST -> AppDrawerType.LIST
+}
+
+private fun GridItemLayoutTypeProto.toGridItemLayoutType(): GridItemLayoutType = when (this) {
+    GridItemLayoutTypeProto.START_ICON_END_LABEL -> GridItemLayoutType.START_ICON_END_LABEL
+    GridItemLayoutTypeProto.START_LABEL_END_ICON -> GridItemLayoutType.START_LABEL_END_ICON
+    GridItemLayoutTypeProto.TOP_ICON_BOTTOM_LABEL -> GridItemLayoutType.TOP_ICON_BOTTOM_LABEL
+    GridItemLayoutTypeProto.TOP_LABEL_BOTTOM_ICON -> GridItemLayoutType.TOP_LABEL_BOTTOM_ICON
+    GridItemLayoutTypeProto.ICON_ONLY -> GridItemLayoutType.ICON_ONLY
+    GridItemLayoutTypeProto.LABEL_ONLY -> GridItemLayoutType.LABEL_ONLY
+    GridItemLayoutTypeProto.UNRECOGNIZED -> GridItemLayoutType.TOP_ICON_BOTTOM_LABEL
+}
+
+private fun GridItemLayoutType.toGridItemLayoutTypeProto(): GridItemLayoutTypeProto = when (this) {
+    GridItemLayoutType.START_ICON_END_LABEL -> GridItemLayoutTypeProto.START_ICON_END_LABEL
+    GridItemLayoutType.START_LABEL_END_ICON -> GridItemLayoutTypeProto.START_LABEL_END_ICON
+    GridItemLayoutType.TOP_ICON_BOTTOM_LABEL -> GridItemLayoutTypeProto.TOP_ICON_BOTTOM_LABEL
+    GridItemLayoutType.TOP_LABEL_BOTTOM_ICON -> GridItemLayoutTypeProto.TOP_LABEL_BOTTOM_ICON
+    GridItemLayoutType.ICON_ONLY -> GridItemLayoutTypeProto.ICON_ONLY
+    GridItemLayoutType.LABEL_ONLY -> GridItemLayoutTypeProto.LABEL_ONLY
 }
