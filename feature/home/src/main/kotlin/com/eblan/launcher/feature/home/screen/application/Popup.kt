@@ -235,8 +235,8 @@ internal fun ApplicationInfoPopup(
                 },
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                 onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
-                onDismiss = {
-                    transitionState.targetState = false
+                onUpdateTransitionState = {
+                    transitionState.targetState = it
                 },
             )
         }
@@ -406,7 +406,7 @@ private fun ApplicationInfoMenu(
     onWidgets: () -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
-    onDismiss: () -> Unit,
+    onUpdateTransitionState: (Boolean) -> Unit,
 ) {
     Surface(
         modifier = modifier.padding(5.dp),
@@ -431,7 +431,7 @@ private fun ApplicationInfoMenu(
                         onUpdateSharedElementKey = onUpdateSharedElementKey,
                         onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                         onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
-                        onDismiss = onDismiss,
+                        onUpdateTransitionState = onUpdateTransitionState,
                     )
 
                     Spacer(modifier = Modifier.height(5.dp))

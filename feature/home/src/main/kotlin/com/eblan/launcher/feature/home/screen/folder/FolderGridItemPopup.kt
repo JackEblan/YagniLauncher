@@ -186,52 +186,25 @@ internal fun FolderGridItemPopup(
                 movingFolderGridItem = movingGridItem,
                 hasShortcutHostPermission = hasShortcutHostPermission,
                 isVisibleOverlay = isVisibleOverlay,
-                onDeleteGridItem = {
-                    onDeleteGridItem(it)
-
-                    transitionState.targetState = false
-                },
-                onDismissFolder = {
-                    onUpsertFolderPopupEntry(lastFolderPopupEntry.copy(isCloseFolder = true))
-
-                    onDeleteFolderPopupEntry(lastFolderPopupEntry)
-
-                    transitionState.targetState = false
-                },
-                onDismissRequest = {
-                    transitionState.targetState = false
+                lastFolderPopupEntry = lastFolderPopupEntry,
+                onDeleteGridItem = onDeleteGridItem,
+                onUpsertFolderPopupEntry = onUpsertFolderPopupEntry,
+                onDeleteFolderPopupEntry = onDeleteFolderPopupEntry,
+                onUpdateTransitionState = {
+                    transitionState.targetState = it
                 },
                 onUpdateIsDragging = onUpdateIsDragging,
-                onEdit = {
-                    onEdit(it)
-
-                    transitionState.targetState = false
-                },
-                onInfo = { serialNumber, packageName ->
-                    onInfo(serialNumber, packageName)
-
-                    transitionState.targetState = false
-                },
-                onTapShortcutInfo = { serialNumber, packageName, shortcutId ->
-                    onTapShortcutInfo(
-                        serialNumber,
-                        packageName,
-                        shortcutId,
-                    )
-
-                    transitionState.targetState = false
-                },
+                onEdit = onEdit,
+                onInfo = onInfo,
+                onTapShortcutInfo = onTapShortcutInfo,
                 onUpdateGridItemSource = onUpdateGridItemSource,
                 onUpdateImageBitmap = onUpdateImageBitmap,
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                 onUpdateOverlayBounds = onUpdateOverlayBounds,
                 onUpdateSharedElementKey = onUpdateSharedElementKey,
-                onWidgets = {
-                    onWidgets(it)
-
-                    transitionState.targetState = false
-                },
+                onWidgets = onWidgets,
                 onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                onDismissRequest = onDismissRequest,
             )
         }
     }
@@ -246,9 +219,11 @@ private fun FolderGridItemPopupContent(
     movingFolderGridItem: GridItem,
     hasShortcutHostPermission: Boolean,
     isVisibleOverlay: Boolean,
+    lastFolderPopupEntry: FolderPopupEntry,
     onDeleteGridItem: (GridItem) -> Unit,
-    onDismissFolder: () -> Unit,
-    onDismissRequest: () -> Unit,
+    onUpsertFolderPopupEntry: (FolderPopupEntry) -> Unit,
+    onDeleteFolderPopupEntry: (FolderPopupEntry) -> Unit,
+    onUpdateTransitionState: (Boolean) -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
     onEdit: (String) -> Unit,
     onInfo: (Long, String) -> Unit,
@@ -267,6 +242,7 @@ private fun FolderGridItemPopupContent(
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onWidgets: (EblanApplicationInfoGroup) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
+    onDismissRequest: () -> Unit,
 ) {
     Surface(
         modifier = modifier.width(IntrinsicSize.Max),
@@ -291,19 +267,17 @@ private fun FolderGridItemPopupContent(
                         onUpdateIsDragging = {
                             onUpdateIsDragging(it)
 
-                            onDismissRequest()
-
-                            onDismissFolder()
+                            onUpdateTransitionState(false)
                         },
                         onDelete = {
                             onDeleteGridItem(movingFolderGridItem)
 
-                            onDismissRequest()
+                            onUpdateTransitionState(false)
                         },
                         onEdit = {
                             onEdit(movingFolderGridItem.id)
 
-                            onDismissRequest()
+                            onUpdateTransitionState(false)
                         },
                         onTapShortcutInfo = { serialNumber, packageName, shortcutId ->
                             onTapShortcutInfo(
@@ -312,7 +286,7 @@ private fun FolderGridItemPopupContent(
                                 shortcutId,
                             )
 
-                            onDismissRequest()
+                            onUpdateTransitionState(false)
                         },
                         onUpdateGridItemSource = onUpdateGridItemSource,
                         onUpdateImageBitmap = onUpdateImageBitmap,
@@ -328,9 +302,11 @@ private fun FolderGridItemPopupContent(
                                 ),
                             )
 
-                            onDismissRequest()
+                            onUpsertFolderPopupEntry(lastFolderPopupEntry.copy(isCloseFolder = true))
 
-                            onDismissFolder()
+                            onDeleteFolderPopupEntry(lastFolderPopupEntry)
+
+                            onDismissRequest()
                         },
                         onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                         onInfo = {
@@ -339,10 +315,10 @@ private fun FolderGridItemPopupContent(
                                 data.componentName,
                             )
 
-                            onDismissRequest()
+                            onUpdateTransitionState(false)
                         },
                         onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
-                        onDismiss = onDismissRequest,
+                        onUpdateTransitionState = onUpdateTransitionState,
                     )
                 }
 
@@ -354,12 +330,12 @@ private fun FolderGridItemPopupContent(
                         onDelete = {
                             onDeleteGridItem(movingFolderGridItem)
 
-                            onDismissRequest()
+                            onUpdateTransitionState(false)
                         },
                         onEdit = {
                             onEdit(movingFolderGridItem.id)
 
-                            onDismissRequest()
+                            onUpdateTransitionState(false)
                         },
                     )
                 }
@@ -398,7 +374,7 @@ private fun ApplicationInfoFolderGridItemPopupContent(
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onInfo: () -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
-    onDismiss: () -> Unit,
+    onUpdateTransitionState: (Boolean) -> Unit,
 ) {
     Surface(
         modifier = modifier.width(IntrinsicSize.Max),
@@ -424,7 +400,7 @@ private fun ApplicationInfoFolderGridItemPopupContent(
                         onUpdateSharedElementKey = onUpdateSharedElementKey,
                         onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                         onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
-                        onDismiss = onDismiss,
+                        onUpdateTransitionState = onUpdateTransitionState,
                     )
 
                     Spacer(modifier = Modifier.height(5.dp))

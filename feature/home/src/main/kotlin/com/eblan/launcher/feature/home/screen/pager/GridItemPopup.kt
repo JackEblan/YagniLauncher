@@ -169,42 +169,20 @@ internal fun GridItemPopup(
                 gridItemSettings = gridItemSettings,
                 hasShortcutHostPermission = hasShortcutHostPermission,
                 isVisibleOverlay = isVisibleOverlay,
-                onDeleteGridItem = {
-                    onDeleteGridItem(it)
-
-                    transitionState.targetState = false
+                onDeleteGridItem = onDeleteGridItem,
+                onUpdateTransitionState = {
+                    transitionState.targetState = it
                 },
-                onDismissRequest = { transitionState.targetState = false },
                 onUpdateIsDragging = onUpdateIsDragging,
-                onEdit = {
-                    onEdit(it)
-
-                    transitionState.targetState = false
-                },
-                onInfo = { serialNumber, packageName ->
-                    onInfo(serialNumber, packageName)
-
-                    transitionState.targetState = false
-                },
-                onResize = {
-                    onResize(it)
-
-                    transitionState.targetState = false
-                },
-                onTapShortcutInfo = { serialNumber, packageName, shortcutId ->
-                    onTapShortcutInfo(serialNumber, packageName, shortcutId)
-
-                    transitionState.targetState = false
-                },
+                onEdit = onEdit,
+                onInfo = onInfo,
+                onResize = onResize,
+                onTapShortcutInfo = onTapShortcutInfo,
                 onUpdateGridItemSource = onUpdateGridItemSource,
                 onUpdateImageBitmap = onUpdateImageBitmap,
                 onUpdateOverlayBounds = onUpdateOverlayBounds,
                 onUpdateSharedElementKey = onUpdateSharedElementKey,
-                onWidgets = {
-                    onWidgets(it)
-
-                    transitionState.targetState = false
-                },
+                onWidgets = onWidgets,
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                 onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
             )
@@ -222,7 +200,7 @@ private fun GridItemPopupContent(
     hasShortcutHostPermission: Boolean,
     isVisibleOverlay: Boolean,
     onDeleteGridItem: (GridItem) -> Unit,
-    onDismissRequest: () -> Unit,
+    onUpdateTransitionState: (Boolean) -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
     onEdit: (String) -> Unit,
     onInfo: (
@@ -268,15 +246,15 @@ private fun GridItemPopupContent(
                         onDelete = {
                             onDeleteGridItem(gridItem)
 
-                            onDismissRequest()
+                            onUpdateTransitionState(false)
                         },
                         onUpdateIsDragging = {
                             onUpdateIsDragging(it)
 
-                            onDismissRequest()
+                            onUpdateTransitionState(false)
                         },
                         onEdit = {
-                            onDismissRequest()
+                            onUpdateTransitionState(false)
 
                             onEdit(gridItem.id)
                         },
@@ -286,12 +264,12 @@ private fun GridItemPopupContent(
                                 data.componentName,
                             )
 
-                            onDismissRequest()
+                            onUpdateTransitionState(false)
                         },
                         onResize = {
                             onResize(gridItem)
 
-                            onDismissRequest()
+                            onUpdateTransitionState(false)
                         },
                         onTapShortcutInfo = { serialNumber, packageName, shortcutId ->
                             onTapShortcutInfo(
@@ -300,7 +278,7 @@ private fun GridItemPopupContent(
                                 shortcutId,
                             )
 
-                            onDismissRequest()
+                            onUpdateTransitionState(false)
                         },
                         onUpdateGridItemSource = onUpdateGridItemSource,
                         onUpdateImageBitmap = onUpdateImageBitmap,
@@ -316,11 +294,11 @@ private fun GridItemPopupContent(
                                 ),
                             )
 
-                            onDismissRequest()
+                            onUpdateTransitionState(false)
                         },
                         onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                         onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
-                        onDismiss = onDismissRequest,
+                        onUpdateTransitionState = onUpdateTransitionState,
                     )
                 }
 
@@ -329,17 +307,17 @@ private fun GridItemPopupContent(
                         onDelete = {
                             onDeleteGridItem(gridItem)
 
-                            onDismissRequest()
+                            onUpdateTransitionState(false)
                         },
                         onEdit = {
                             onEdit(gridItem.id)
 
-                            onDismissRequest()
+                            onUpdateTransitionState(false)
                         },
                         onResize = {
                             onResize(gridItem)
 
-                            onDismissRequest()
+                            onUpdateTransitionState(false)
                         },
                     )
                 }
@@ -352,12 +330,12 @@ private fun GridItemPopupContent(
                         onDelete = {
                             onDeleteGridItem(gridItem)
 
-                            onDismissRequest()
+                            onUpdateTransitionState(false)
                         },
                         onResize = {
                             onResize(gridItem)
 
-                            onDismissRequest()
+                            onUpdateTransitionState(false)
                         },
                     )
                 }
@@ -395,7 +373,7 @@ private fun ApplicationInfoGridItemMenu(
     onWidgets: () -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
-    onDismiss: () -> Unit,
+    onUpdateTransitionState: (Boolean) -> Unit,
 ) {
     Column(
         modifier = modifier,
@@ -418,7 +396,7 @@ private fun ApplicationInfoGridItemMenu(
                 onUpdateSharedElementKey = onUpdateSharedElementKey,
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                 onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
-                onDismiss = onDismiss,
+                onUpdateTransitionState = onUpdateTransitionState,
             )
 
             Spacer(modifier = Modifier.height(5.dp))

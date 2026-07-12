@@ -84,7 +84,7 @@ internal fun ShortcutInfoScreen(
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
-    onDismiss: () -> Unit,
+    onUpdateTransitionState: (Boolean) -> Unit,
 ) {
     Column(
         modifier = modifier
@@ -108,7 +108,7 @@ internal fun ShortcutInfoScreen(
                 onUpdateSharedElementKey = onUpdateSharedElementKey,
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                 onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
-                onDismiss = onDismiss,
+                onUpdateTransitionState = onUpdateTransitionState,
             )
         }
     }
@@ -162,7 +162,7 @@ private fun ShortcutInfoMenuItem(
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
-    onDismiss: () -> Unit,
+    onUpdateTransitionState: (Boolean) -> Unit,
 ) {
     val graphicsLayer = rememberGraphicsLayer()
 
@@ -265,7 +265,7 @@ private fun ShortcutInfoMenuItem(
 
                                     onUpdateIsVisibleOverlay(true)
 
-                                    onDismiss()
+                                    onUpdateTransitionState(false)
 
                                     onUpdateIsDragging(true)
                                 }
