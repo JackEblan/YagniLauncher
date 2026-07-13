@@ -58,9 +58,6 @@ We keep the APK size minimal and heavily cache icons and images, which improves 
 
 </div>
 
-## Translations
-Translations are managed on [Crowdin](https://crowdin.com/project/yagni-launcher/invite?h=ebbe36a561731a4055b372e27d1dea8c2807413). Contributions are welcome.
-
 ## Links
 - [Android Launchers Memory Usage In The Cached Processes](https://youtu.be/-0cEKr-H5FU?si=RhaWvdf5ElBFoHnJ)
 - [Support Me On Ko-Fi](https://ko-fi.com/I3I01OJG21)
