@@ -52,7 +52,7 @@ class PinScreenViewModel @Inject constructor(
 
     fun addPinShortcutToHomeScreen(
         serialNumber: Long,
-        id: String,
+        shortcutId: String,
         packageName: String,
         shortLabel: String,
         longLabel: String,
@@ -63,7 +63,7 @@ class PinScreenViewModel @Inject constructor(
             _gridItem.update {
                 addPinShortcutToHomeScreenUseCase(
                     serialNumber = serialNumber,
-                    id = id,
+                    shortcutId = shortcutId,
                     packageName = packageName,
                     shortLabel = shortLabel,
                     longLabel = longLabel,

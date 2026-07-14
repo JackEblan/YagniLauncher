@@ -525,7 +525,9 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
         val userHandle = userManagerWrapper.getUserForSerialNumber(serialNumber = serialNumber)
             ?: return
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1 &&
+            isUserAvailable(userHandle = userHandle)
+        ) {
             launcherApps.pinShortcuts(
                 packageName,
                 shortcutIds,

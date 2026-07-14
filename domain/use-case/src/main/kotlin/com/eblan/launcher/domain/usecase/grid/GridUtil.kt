@@ -18,6 +18,7 @@
 package com.eblan.launcher.domain.usecase.grid
 
 import com.eblan.launcher.domain.common.IconKeyGenerator
+import com.eblan.launcher.domain.framework.AppWidgetHostWrapper
 import com.eblan.launcher.domain.framework.FileManager
 import com.eblan.launcher.domain.framework.LauncherAppsWrapper
 import com.eblan.launcher.domain.model.ApplicationInfoGridItem
@@ -330,7 +331,31 @@ internal fun GridItem.isTopLevel() = when (val itemData = data) {
     is GridItemData.Widget -> true
 }
 
-internal suspend fun updatePinShortcutsByPackageName(
+internal suspend fun cleanupGridItemRecursively(
+    gridItem: GridItem,
+    appWidgetHostWrapper: AppWidgetHostWrapper,
+    launcherAppsWrapper: LauncherAppsWrapper,
+) {
+    when (val data = gridItem.data) {
+        is GridItemData.ShortcutInfo -> {
+            updatePinShortcutsByPackageName(launcherAppsWrapper, data)
+        }
+
+        is GridItemData.Widget -> {
+            appWidgetHostWrapper.deleteAppWidgetId(data.appWidgetId)
+        }
+
+        is GridItemData.Folder -> {
+            data.gridItems.forEach { child ->
+                cleanupGridItemRecursively(child, appWidgetHostWrapper, launcherAppsWrapper)
+            }
+        }
+
+        else -> Unit
+    }
+}
+
+private suspend fun updatePinShortcutsByPackageName(
     launcherAppsWrapper: LauncherAppsWrapper,
     data: GridItemData.ShortcutInfo,
 ) {

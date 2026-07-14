@@ -22,7 +22,6 @@ import com.eblan.launcher.domain.common.EblanDispatchers
 import com.eblan.launcher.domain.framework.AppWidgetHostWrapper
 import com.eblan.launcher.domain.framework.LauncherAppsWrapper
 import com.eblan.launcher.domain.model.GridItem
-import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.repository.GridRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
@@ -35,20 +34,11 @@ class DeleteGridItemUseCase @Inject constructor(
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke(gridItem: GridItem) = withContext(defaultDispatcher) {
-        when (val data = gridItem.data) {
-            is GridItemData.ShortcutInfo -> {
-                updatePinShortcutsByPackageName(
-                    launcherAppsWrapper = launcherAppsWrapper,
-                    data = data,
-                )
-            }
-
-            is GridItemData.Widget -> {
-                appWidgetHostWrapper.deleteAppWidgetId(appWidgetId = data.appWidgetId)
-            }
-
-            else -> Unit
-        }
+        cleanupGridItemRecursively(
+            gridItem = gridItem,
+            appWidgetHostWrapper = appWidgetHostWrapper,
+            launcherAppsWrapper = launcherAppsWrapper,
+        )
 
         gridRepository.deleteGridItem(gridItem = gridItem)
     }

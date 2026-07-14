@@ -22,11 +22,10 @@ import com.eblan.launcher.domain.common.EblanDispatchers
 import com.eblan.launcher.domain.framework.AppWidgetHostWrapper
 import com.eblan.launcher.domain.framework.LauncherAppsWrapper
 import com.eblan.launcher.domain.model.Associate
-import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.PageItem
 import com.eblan.launcher.domain.repository.GridRepository
 import com.eblan.launcher.domain.repository.UserDataRepository
-import com.eblan.launcher.domain.usecase.grid.updatePinShortcutsByPackageName
+import com.eblan.launcher.domain.usecase.grid.cleanupGridItemRecursively
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
@@ -50,20 +49,11 @@ class UpdatePageItemsUseCase @Inject constructor(
 
             pageItemsToDelete.forEach {
                 it.gridItems.forEach { gridItem ->
-                    when (val data = gridItem.data) {
-                        is GridItemData.ShortcutInfo -> {
-                            updatePinShortcutsByPackageName(
-                                launcherAppsWrapper = launcherAppsWrapper,
-                                data = data,
-                            )
-                        }
-
-                        is GridItemData.Widget -> {
-                            appWidgetHostWrapper.deleteAppWidgetId(appWidgetId = data.appWidgetId)
-                        }
-
-                        else -> Unit
-                    }
+                    cleanupGridItemRecursively(
+                        gridItem = gridItem,
+                        appWidgetHostWrapper = appWidgetHostWrapper,
+                        launcherAppsWrapper = launcherAppsWrapper,
+                    )
                 }
 
                 gridRepository.deleteGridItemsRecursively(gridItems = it.gridItems)
