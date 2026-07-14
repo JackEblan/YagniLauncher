@@ -346,8 +346,12 @@ internal suspend fun cleanupGridItemRecursively(
         }
 
         is GridItemData.Folder -> {
-            data.gridItems.forEach { child ->
-                cleanupGridItemRecursively(child, appWidgetHostWrapper, launcherAppsWrapper)
+            data.gridItems.forEach {
+                cleanupGridItemRecursively(
+                    gridItem = it,
+                    appWidgetHostWrapper = appWidgetHostWrapper,
+                    launcherAppsWrapper = launcherAppsWrapper,
+                )
             }
         }
 
