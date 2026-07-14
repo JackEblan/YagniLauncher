@@ -379,7 +379,7 @@ class SyncDataUseCase @Inject constructor(
 
         if (oldFastLauncherAppsShortcutInfos.toSet() == newFastLauncherAppsShortcutInfos?.toSet()) return
 
-        val launcherAppsShortcutInfos = launcherAppsWrapper.getShortcuts() ?: return
+        val launcherAppsShortcutInfos = launcherAppsWrapper.getShortcuts(shortcutQuery = null) ?: return
 
         val oldEblanShortcutInfos = eblanShortcutInfoRepository.getEblanShortcutInfos()
 

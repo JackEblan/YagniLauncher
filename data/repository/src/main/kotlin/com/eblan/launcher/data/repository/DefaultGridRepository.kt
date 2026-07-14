@@ -24,7 +24,6 @@ import com.eblan.launcher.data.repository.mapper.asShortcutInfoGridItem
 import com.eblan.launcher.data.repository.mapper.asWidgetGridItem
 import com.eblan.launcher.domain.common.Dispatcher
 import com.eblan.launcher.domain.common.EblanDispatchers
-import com.eblan.launcher.domain.framework.AppWidgetHostWrapper
 import com.eblan.launcher.domain.model.ApplicationInfoGridItem
 import com.eblan.launcher.domain.model.FolderGridItem
 import com.eblan.launcher.domain.model.GridItem
@@ -51,7 +50,6 @@ internal class DefaultGridRepository @Inject constructor(
     private val shortcutInfoGridItemRepository: ShortcutInfoGridItemRepository,
     private val folderGridItemRepository: FolderGridItemRepository,
     private val shortcutConfigGridItemRepository: ShortcutConfigGridItemRepository,
-    private val appWidgetHostWrapper: AppWidgetHostWrapper,
     @param:Dispatcher(EblanDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) : GridRepository {
     override suspend fun insertGridItem(gridItem: GridItem) {
@@ -288,8 +286,6 @@ internal class DefaultGridRepository @Inject constructor(
                 }
 
                 is GridItemData.Widget -> {
-                    appWidgetHostWrapper.deleteAppWidgetId(appWidgetId = data.appWidgetId)
-
                     widgetGridItems.add(
                         gridItem.asWidgetGridItem(data = data),
                     )
@@ -347,8 +343,6 @@ internal class DefaultGridRepository @Inject constructor(
             }
 
             is GridItemData.Widget -> {
-                appWidgetHostWrapper.deleteAppWidgetId(appWidgetId = data.appWidgetId)
-
                 widgetGridItemRepository.deleteWidgetGridItem(
                     widgetGridItem = gridItem.asWidgetGridItem(data = data),
                 )

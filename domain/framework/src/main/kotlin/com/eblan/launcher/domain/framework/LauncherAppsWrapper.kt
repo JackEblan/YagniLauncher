@@ -24,6 +24,7 @@ import com.eblan.launcher.domain.model.LauncherAppsActivityInfo
 import com.eblan.launcher.domain.model.LauncherAppsEvent
 import com.eblan.launcher.domain.model.LauncherAppsShortcutInfo
 import com.eblan.launcher.domain.model.ShortcutConfigActivityInfo
+import com.eblan.launcher.domain.model.ShortcutQuery
 import kotlinx.coroutines.flow.Flow
 
 interface LauncherAppsWrapper {
@@ -45,7 +46,7 @@ interface LauncherAppsWrapper {
         packageName: String,
     ): List<FastLauncherAppsActivityInfo>
 
-    suspend fun getShortcuts(): List<LauncherAppsShortcutInfo>?
+    suspend fun getShortcuts(shortcutQuery: ShortcutQuery?): List<LauncherAppsShortcutInfo>?
 
     suspend fun getFastShortcuts(): List<FastLauncherAppsShortcutInfo>?
 
@@ -60,4 +61,10 @@ interface LauncherAppsWrapper {
     ): List<ShortcutConfigActivityInfo>
 
     fun getUser(serialNumber: Long): EblanUser
+
+    fun pinShortcuts(
+        packageName: String,
+        shortcutIds: List<String>,
+        serialNumber: Long,
+    )
 }

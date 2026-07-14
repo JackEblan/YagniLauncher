@@ -50,6 +50,7 @@ import com.eblan.launcher.domain.model.LauncherAppsActivityInfo
 import com.eblan.launcher.domain.model.LauncherAppsEvent
 import com.eblan.launcher.domain.model.LauncherAppsShortcutInfo
 import com.eblan.launcher.domain.model.ShortcutConfigActivityInfo
+import com.eblan.launcher.domain.model.ShortcutQuery
 import com.eblan.launcher.domain.model.ShortcutQueryFlag
 import com.eblan.launcher.framework.imageserializer.AndroidImageSerializer
 import com.eblan.launcher.framework.packagemanager.AndroidPackageManagerWrapper
@@ -235,12 +236,24 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
         }
     }
 
-    override suspend fun getShortcuts(): List<LauncherAppsShortcutInfo>? = withContext(defaultDispatcher) {
+    override suspend fun getShortcuts(shortcutQuery: ShortcutQuery?): List<LauncherAppsShortcutInfo>? = withContext(defaultDispatcher) {
         if (hasShortcutHostPermission) {
             val shortcutQuery = LauncherApps.ShortcutQuery().apply {
-                setQueryFlags(
-                    LauncherApps.ShortcutQuery.FLAG_MATCH_DYNAMIC or LauncherApps.ShortcutQuery.FLAG_MATCH_MANIFEST or LauncherApps.ShortcutQuery.FLAG_MATCH_PINNED,
-                )
+                val shortcutQueryFlag = when (shortcutQuery?.shortcutQueryFlag) {
+                    ShortcutQueryFlag.Pinned -> LauncherApps.ShortcutQuery.FLAG_MATCH_PINNED
+
+                    ShortcutQueryFlag.Dynamic -> LauncherApps.ShortcutQuery.FLAG_MATCH_DYNAMIC
+
+                    ShortcutQueryFlag.Manifest -> LauncherApps.ShortcutQuery.FLAG_MATCH_MANIFEST
+
+                    null ->
+                        LauncherApps.ShortcutQuery.FLAG_MATCH_DYNAMIC or
+                            LauncherApps.ShortcutQuery.FLAG_MATCH_MANIFEST or
+                            LauncherApps.ShortcutQuery.FLAG_MATCH_PINNED
+                }
+
+                setQueryFlags(shortcutQueryFlag)
+                shortcutQuery?.packageName?.let(::setPackage)
             }
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -500,6 +513,23 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
                 serialNumber = serialNumber,
                 eblanUserType = eblanUserType,
                 isPrivateSpaceEntryPointHidden = isPrivateSpaceEntryPointHidden(userHandle = userHandle),
+            )
+        }
+    }
+
+    override fun pinShortcuts(
+        packageName: String,
+        shortcutIds: List<String>,
+        serialNumber: Long,
+    ) {
+        val userHandle = userManagerWrapper.getUserForSerialNumber(serialNumber = serialNumber)
+            ?: return
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+            launcherApps.pinShortcuts(
+                packageName,
+                shortcutIds,
+                userHandle,
             )
         }
     }
