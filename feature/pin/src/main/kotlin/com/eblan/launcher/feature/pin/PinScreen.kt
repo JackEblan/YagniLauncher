@@ -140,7 +140,7 @@ private fun PinShortcutScreen(
     pinItemRequest: PinItemRequest,
     onAddPinShortcutToHomeScreen: (
         serialNumber: Long,
-        id: String,
+        shortcutId: String,
         packageName: String,
         shortLabel: String,
         longLabel: String,

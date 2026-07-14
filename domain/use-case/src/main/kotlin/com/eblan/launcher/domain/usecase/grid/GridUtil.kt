@@ -18,7 +18,9 @@
 package com.eblan.launcher.domain.usecase.grid
 
 import com.eblan.launcher.domain.common.IconKeyGenerator
+import com.eblan.launcher.domain.framework.AppWidgetHostWrapper
 import com.eblan.launcher.domain.framework.FileManager
+import com.eblan.launcher.domain.framework.LauncherAppsWrapper
 import com.eblan.launcher.domain.model.ApplicationInfoGridItem
 import com.eblan.launcher.domain.model.EblanAction
 import com.eblan.launcher.domain.model.EblanActionType
@@ -28,6 +30,8 @@ import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.ShortcutConfigGridItem
 import com.eblan.launcher.domain.model.ShortcutInfoGridItem
+import com.eblan.launcher.domain.model.ShortcutQuery
+import com.eblan.launcher.domain.model.ShortcutQueryFlag
 import com.eblan.launcher.domain.model.WidgetGridItem
 import com.eblan.launcher.domain.repository.FolderGridItemRepository
 import kotlinx.coroutines.currentCoroutineContext
@@ -325,6 +329,53 @@ internal fun GridItem.isTopLevel() = when (val itemData = data) {
     is GridItemData.ShortcutConfig -> itemData.folderId == null
     is GridItemData.ShortcutInfo -> itemData.folderId == null
     is GridItemData.Widget -> true
+}
+
+internal suspend fun cleanupGridItemRecursively(
+    gridItem: GridItem,
+    appWidgetHostWrapper: AppWidgetHostWrapper,
+    launcherAppsWrapper: LauncherAppsWrapper,
+) {
+    when (val data = gridItem.data) {
+        is GridItemData.ShortcutInfo -> {
+            updatePinShortcutsByPackageName(launcherAppsWrapper, data)
+        }
+
+        is GridItemData.Widget -> {
+            appWidgetHostWrapper.deleteAppWidgetId(data.appWidgetId)
+        }
+
+        is GridItemData.Folder -> {
+            data.gridItems.forEach { child ->
+                cleanupGridItemRecursively(child, appWidgetHostWrapper, launcherAppsWrapper)
+            }
+        }
+
+        else -> Unit
+    }
+}
+
+private suspend fun updatePinShortcutsByPackageName(
+    launcherAppsWrapper: LauncherAppsWrapper,
+    data: GridItemData.ShortcutInfo,
+) {
+    if (!launcherAppsWrapper.hasShortcutHostPermission) return
+
+    val shortcutIds = launcherAppsWrapper.getShortcuts(
+        shortcutQuery = ShortcutQuery(
+            packageName = data.packageName,
+            shortcutQueryFlag = ShortcutQueryFlag.Pinned,
+        ),
+    )
+        ?.map { it.shortcutId } ?: return
+
+    if (data.shortcutId !in shortcutIds) return
+
+    launcherAppsWrapper.pinShortcuts(
+        packageName = data.packageName,
+        shortcutIds = shortcutIds - data.shortcutId,
+        serialNumber = data.serialNumber,
+    )
 }
 
 private suspend fun FolderGridItemWrapper.asPreviewGridItem(

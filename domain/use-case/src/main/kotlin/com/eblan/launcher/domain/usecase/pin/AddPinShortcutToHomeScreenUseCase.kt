@@ -37,6 +37,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import java.io.File
 import javax.inject.Inject
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 class AddPinShortcutToHomeScreenUseCase @Inject constructor(
     private val userDataRepository: UserDataRepository,
@@ -47,9 +49,10 @@ class AddPinShortcutToHomeScreenUseCase @Inject constructor(
     private val getGridItemsUseCase: GetGridItemsUseCase,
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) {
+    @OptIn(ExperimentalUuidApi::class)
     suspend operator fun invoke(
         serialNumber: Long,
-        id: String,
+        shortcutId: String,
         packageName: String,
         shortLabel: String,
         longLabel: String,
@@ -83,7 +86,7 @@ class AddPinShortcutToHomeScreenUseCase @Inject constructor(
                 }
 
         val data = GridItemData.ShortcutInfo(
-            shortcutId = id,
+            shortcutId = shortcutId,
             packageName = packageName,
             serialNumber = serialNumber,
             shortLabel = shortLabel,
@@ -104,7 +107,7 @@ class AddPinShortcutToHomeScreenUseCase @Inject constructor(
         )
 
         val gridItem = GridItem(
-            id = id,
+            id = Uuid.random().toHexString(),
             page = initialPage,
             startColumn = 0,
             startRow = 0,

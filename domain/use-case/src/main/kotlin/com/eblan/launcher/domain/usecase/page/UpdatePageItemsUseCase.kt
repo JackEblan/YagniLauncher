@@ -19,10 +19,13 @@ package com.eblan.launcher.domain.usecase.page
 
 import com.eblan.launcher.domain.common.Dispatcher
 import com.eblan.launcher.domain.common.EblanDispatchers
+import com.eblan.launcher.domain.framework.AppWidgetHostWrapper
+import com.eblan.launcher.domain.framework.LauncherAppsWrapper
 import com.eblan.launcher.domain.model.Associate
 import com.eblan.launcher.domain.model.PageItem
 import com.eblan.launcher.domain.repository.GridRepository
 import com.eblan.launcher.domain.repository.UserDataRepository
+import com.eblan.launcher.domain.usecase.grid.cleanupGridItemRecursively
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
@@ -31,6 +34,8 @@ import javax.inject.Inject
 class UpdatePageItemsUseCase @Inject constructor(
     private val userDataRepository: UserDataRepository,
     private val gridRepository: GridRepository,
+    private val appWidgetHostWrapper: AppWidgetHostWrapper,
+    private val launcherAppsWrapper: LauncherAppsWrapper,
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke(
@@ -43,6 +48,14 @@ class UpdatePageItemsUseCase @Inject constructor(
             val homeSettings = userDataRepository.userDataFlow.first().homeSettings
 
             pageItemsToDelete.forEach {
+                it.gridItems.forEach { gridItem ->
+                    cleanupGridItemRecursively(
+                        gridItem = gridItem,
+                        appWidgetHostWrapper = appWidgetHostWrapper,
+                        launcherAppsWrapper = launcherAppsWrapper,
+                    )
+                }
+
                 gridRepository.deleteGridItemsRecursively(gridItems = it.gridItems)
             }
 

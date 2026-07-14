@@ -19,10 +19,9 @@ package com.eblan.launcher.feature.pin
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.eblan.launcher.domain.framework.AppWidgetHostWrapper
 import com.eblan.launcher.domain.model.GridItem
-import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.repository.GridRepository
+import com.eblan.launcher.domain.usecase.grid.DeleteGridItemUseCase
 import com.eblan.launcher.domain.usecase.pin.AddPinShortcutToHomeScreenUseCase
 import com.eblan.launcher.domain.usecase.pin.AddPinWidgetToHomeScreenUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -36,8 +35,8 @@ import javax.inject.Inject
 class PinScreenViewModel @Inject constructor(
     private val addPinShortcutToHomeScreenUseCase: AddPinShortcutToHomeScreenUseCase,
     private val addPinWidgetToHomeScreenUseCase: AddPinWidgetToHomeScreenUseCase,
-    private val appWidgetHostWrapper: AppWidgetHostWrapper,
     private val gridRepository: GridRepository,
+    private val deleteGridItemUseCase: DeleteGridItemUseCase,
 ) : ViewModel() {
     private val _gridItem = MutableStateFlow<GridItem?>(null)
 
@@ -53,7 +52,7 @@ class PinScreenViewModel @Inject constructor(
 
     fun addPinShortcutToHomeScreen(
         serialNumber: Long,
-        id: String,
+        shortcutId: String,
         packageName: String,
         shortLabel: String,
         longLabel: String,
@@ -64,7 +63,7 @@ class PinScreenViewModel @Inject constructor(
             _gridItem.update {
                 addPinShortcutToHomeScreenUseCase(
                     serialNumber = serialNumber,
-                    id = id,
+                    shortcutId = shortcutId,
                     packageName = packageName,
                     shortLabel = shortLabel,
                     longLabel = longLabel,
@@ -129,13 +128,7 @@ class PinScreenViewModel @Inject constructor(
 
     fun deleteGridItem(gridItem: GridItem) {
         viewModelScope.launch {
-            val data = gridItem.data
-
-            if (data is GridItemData.Widget) {
-                appWidgetHostWrapper.deleteAppWidgetId(appWidgetId = data.appWidgetId)
-            }
-
-            gridRepository.deleteGridItem(gridItem = gridItem)
+            deleteGridItemUseCase(gridItem = gridItem)
 
             _isFinished.update {
                 true
