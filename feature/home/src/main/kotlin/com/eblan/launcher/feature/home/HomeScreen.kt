@@ -51,7 +51,6 @@ import com.eblan.launcher.domain.model.EblanShortcutConfig
 import com.eblan.launcher.domain.model.EblanShortcutInfo
 import com.eblan.launcher.domain.model.EblanShortcutInfoByGroup
 import com.eblan.launcher.domain.model.EblanUser
-import com.eblan.launcher.domain.model.EditPageData
 import com.eblan.launcher.domain.model.FolderPopup
 import com.eblan.launcher.domain.model.FolderPopupEntry
 import com.eblan.launcher.domain.model.GetEblanApplicationInfosByLabelAndTag
@@ -65,7 +64,8 @@ import com.eblan.launcher.feature.home.dialog.TextDialog
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.HomeUiState
 import com.eblan.launcher.feature.home.model.Screen
-import com.eblan.launcher.feature.home.screen.editpage.EditPageScreen
+import com.eblan.launcher.feature.home.screen.editpage.EditDockGridPageScreen
+import com.eblan.launcher.feature.home.screen.editpage.EditGridPageScreen
 import com.eblan.launcher.feature.home.screen.loading.LoadingScreen
 import com.eblan.launcher.feature.home.screen.pager.PagerScreen
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -90,7 +90,7 @@ internal fun HomeRoute(
 
     val movedGridItemResult by viewModel.movedGridItemResult.collectAsStateWithLifecycle()
 
-    val editPageData by viewModel.editPageData.collectAsStateWithLifecycle()
+    val pageItems by viewModel.pageItems.collectAsStateWithLifecycle()
 
     val pinGridItem by viewModel.pinGridItem.collectAsStateWithLifecycle()
 
@@ -122,7 +122,7 @@ internal fun HomeRoute(
         eblanApplicationInfoTags = eblanApplicationInfoTags,
         eblanShortcutConfigs = eblanShortcutConfigs,
         eblanShortcutInfosGroup = eblanShortcutInfosGroup,
-        editPageData = editPageData,
+        pageItems = pageItems,
         folderPopups = folderPopups,
         getEblanApplicationInfosByLabelAndTag = getEblanApplicationInfos,
         homeUiState = homeUiState,
@@ -180,7 +180,7 @@ internal fun HomeScreen(
     eblanApplicationInfoTags: List<EblanApplicationInfoTag>,
     eblanShortcutConfigs: Map<EblanUser, Map<EblanApplicationInfoGroup, List<EblanShortcutConfig>>>,
     eblanShortcutInfosGroup: Map<EblanShortcutInfoByGroup, List<EblanShortcutInfo>>,
-    editPageData: EditPageData?,
+    pageItems: List<PageItem>?,
     folderPopups: List<FolderPopup>,
     getEblanApplicationInfosByLabelAndTag: GetEblanApplicationInfosByLabelAndTag,
     homeUiState: HomeUiState,
@@ -285,7 +285,7 @@ internal fun HomeScreen(
                 eblanApplicationInfoTags = eblanApplicationInfoTags,
                 eblanShortcutConfigs = eblanShortcutConfigs,
                 eblanShortcutInfosGroup = eblanShortcutInfosGroup,
-                editPageData = editPageData,
+                pageItems = pageItems,
                 folderPopups = folderPopups,
                 getEblanApplicationInfosByLabelAndTag = getEblanApplicationInfosByLabelAndTag,
                 homeData = homeUiState.homeData,
@@ -348,7 +348,7 @@ private fun Success(
     eblanApplicationInfoTags: List<EblanApplicationInfoTag>,
     eblanShortcutConfigs: Map<EblanUser, Map<EblanApplicationInfoGroup, List<EblanShortcutConfig>>>,
     eblanShortcutInfosGroup: Map<EblanShortcutInfoByGroup, List<EblanShortcutInfo>>,
-    editPageData: EditPageData?,
+    pageItems: List<PageItem>?,
     folderPopups: List<FolderPopup>,
     getEblanApplicationInfosByLabelAndTag: GetEblanApplicationInfosByLabelAndTag,
     homeData: HomeData,
@@ -520,13 +520,26 @@ private fun Success(
                 LoadingScreen()
             }
 
-            Screen.EditPage -> {
-                EditPageScreen(
-                    editPageData = editPageData,
+            Screen.EditGridPage -> {
+                EditGridPageScreen(
+                    pageItems = pageItems,
                     hasShortcutHostPermission = homeData.hasShortcutHostPermission,
                     homeSettings = homeData.userData.homeSettings,
                     paddingValues = paddingValues,
+                    screenWidth = screenWidth,
                     screenHeight = screenHeight,
+                    textColor = homeData.textColor,
+                    onSaveEditPage = onSaveEditPage,
+                    onUpdateScreen = onUpdateScreen,
+                )
+            }
+
+            Screen.EditDockGridPage -> {
+                EditDockGridPageScreen(
+                    pageItems = pageItems,
+                    hasShortcutHostPermission = homeData.hasShortcutHostPermission,
+                    homeSettings = homeData.userData.homeSettings,
+                    paddingValues = paddingValues,
                     textColor = homeData.textColor,
                     onSaveEditPage = onSaveEditPage,
                     onUpdateScreen = onUpdateScreen,

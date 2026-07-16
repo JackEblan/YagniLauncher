@@ -49,28 +49,31 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
 @Composable
-internal fun rememberLazyColumnDragDropState(
+internal fun rememberLazyRowDragDropState(
     lazyListState: LazyListState,
     onMove: (Int, Int) -> Unit,
-): LazyColumnDragDropState {
+): LazyRowDragDropState {
     val scope = rememberCoroutineScope()
 
     val state = remember(key1 = lazyListState) {
-        LazyColumnDragDropState(
+        LazyRowDragDropState(
             state = lazyListState,
             onMove = onMove,
             scope = scope,
         )
     }
 
-    LaunchedEffect(key1 = state) {
-        state.scrollChannel.receiveAsFlow().onEach(lazyListState::scrollBy).collect()
+    LaunchedEffect(state) {
+        state.scrollChannel
+            .receiveAsFlow()
+            .onEach(lazyListState::scrollBy)
+            .collect()
     }
 
     return state
 }
 
-internal class LazyColumnDragDropState(
+internal class LazyRowDragDropState(
     private val state: LazyListState,
     private val scope: CoroutineScope,
     private val onMove: (Int, Int) -> Unit,
@@ -97,7 +100,10 @@ internal class LazyColumnDragDropState(
         private set
 
     internal fun onDragStart(offset: Offset) {
-        state.layoutInfo.visibleItemsInfo.firstOrNull { item -> offset.y.toInt() in item.offset..(item.offset + item.size) }
+        state.layoutInfo.visibleItemsInfo
+            .firstOrNull { item ->
+                offset.x.toInt() in item.offset..(item.offset + item.size)
+            }
             ?.also {
                 draggingItemIndex = it.index
                 draggingItemInitialOffset = it.offset
@@ -123,37 +129,45 @@ internal class LazyColumnDragDropState(
     }
 
     internal fun onDrag(offset: Offset) {
-        draggingItemDraggedDelta += offset.y
+        draggingItemDraggedDelta += offset.x
 
         val draggingItem = draggingItemLayoutInfo ?: return
+
         val startOffset = draggingItem.offset + draggingItemOffset
         val endOffset = startOffset + draggingItem.size
         val middleOffset = startOffset + (endOffset - startOffset) / 2f
 
         val targetItem = state.layoutInfo.visibleItemsInfo.find { item ->
-            middleOffset.toInt() in item.offset..item.offsetEnd && draggingItem.index != item.index
+            middleOffset.toInt() in item.offset..item.offsetEnd &&
+                draggingItem.index != item.index
         }
+
         if (targetItem != null) {
-            if (draggingItem.index == state.firstVisibleItemIndex || targetItem.index == state.firstVisibleItemIndex) {
+            if (
+                draggingItem.index == state.firstVisibleItemIndex ||
+                targetItem.index == state.firstVisibleItemIndex
+            ) {
                 state.requestScrollToItem(
                     state.firstVisibleItemIndex,
                     state.firstVisibleItemScrollOffset,
                 )
             }
-            onMove.invoke(draggingItem.index, targetItem.index)
+
+            onMove(draggingItem.index, targetItem.index)
             draggingItemIndex = targetItem.index
         } else {
             val overscroll = when {
-                draggingItemDraggedDelta > 0 -> (endOffset - state.layoutInfo.viewportEndOffset).coerceAtLeast(
-                    0f,
-                )
+                draggingItemDraggedDelta > 0 ->
+                    (endOffset - state.layoutInfo.viewportEndOffset)
+                        .coerceAtLeast(0f)
 
-                draggingItemDraggedDelta < 0 -> (startOffset - state.layoutInfo.viewportStartOffset).coerceAtMost(
-                    0f,
-                )
+                draggingItemDraggedDelta < 0 ->
+                    (startOffset - state.layoutInfo.viewportStartOffset)
+                        .coerceAtMost(0f)
 
                 else -> 0f
             }
+
             if (overscroll != 0f) {
                 scrollChannel.trySend(overscroll)
             }
@@ -164,40 +178,48 @@ internal class LazyColumnDragDropState(
         get() = this.offset + this.size
 }
 
-internal fun Modifier.dragContainer(lazyColumnDragDropState: LazyColumnDragDropState): Modifier = pointerInput(key1 = lazyColumnDragDropState) {
+internal fun Modifier.dragRowContainer(
+    lazyRowDragDropState: LazyRowDragDropState,
+) = pointerInput(lazyRowDragDropState) {
     detectDragGesturesAfterLongPress(
+        onDragStart = lazyRowDragDropState::onDragStart,
+        onDragEnd = lazyRowDragDropState::onDragInterrupted,
+        onDragCancel = lazyRowDragDropState::onDragInterrupted,
         onDrag = { change, offset ->
             change.consume()
-            lazyColumnDragDropState.onDrag(offset = offset)
+            lazyRowDragDropState.onDrag(offset)
         },
-        onDragStart = { lazyColumnDragDropState.onDragStart(it) },
-        onDragEnd = { lazyColumnDragDropState.onDragInterrupted() },
-        onDragCancel = { lazyColumnDragDropState.onDragInterrupted() },
     )
 }
 
 @Composable
-internal fun LazyItemScope.DraggableItem(
+internal fun LazyItemScope.DraggableRowItem(
     modifier: Modifier = Modifier,
-    lazyColumnDragDropState: LazyColumnDragDropState,
+    lazyRowDragDropState: LazyRowDragDropState,
     index: Int,
     content: @Composable ColumnScope.(isDragging: Boolean) -> Unit,
 ) {
-    val dragging = index == lazyColumnDragDropState.draggingItemIndex
+    val dragging = index == lazyRowDragDropState.draggingItemIndex
 
-    val draggingModifier = if (dragging) {
-        Modifier
-            .zIndex(1f)
-            .graphicsLayer { translationY = lazyColumnDragDropState.draggingItemOffset }
-    } else if (index == lazyColumnDragDropState.previousIndexOfDraggedItem) {
-        Modifier
-            .zIndex(1f)
-            .graphicsLayer {
-                translationY = lazyColumnDragDropState.previousItemOffset.value
-            }
-    } else {
-        Modifier.animateItem(fadeInSpec = null, fadeOutSpec = null)
-    }
+    val draggingModifier =
+        if (dragging) {
+            Modifier
+                .zIndex(1f)
+                .graphicsLayer {
+                    translationX = lazyRowDragDropState.draggingItemOffset
+                }
+        } else if (index == lazyRowDragDropState.previousIndexOfDraggedItem) {
+            Modifier
+                .zIndex(1f)
+                .graphicsLayer {
+                    translationX = lazyRowDragDropState.previousItemOffset.value
+                }
+        } else {
+            Modifier.animateItem(
+                fadeInSpec = null,
+                fadeOutSpec = null,
+            )
+        }
 
     Column(modifier = modifier.then(draggingModifier)) { content(dragging) }
 }

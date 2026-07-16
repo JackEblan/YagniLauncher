@@ -39,7 +39,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -68,7 +70,6 @@ import androidx.compose.ui.unit.dp
 import androidx.core.util.Consumer
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.Associate
-import com.eblan.launcher.domain.model.EditPageData
 import com.eblan.launcher.domain.model.HomeSettings
 import com.eblan.launcher.domain.model.PageItem
 import com.eblan.launcher.domain.model.TextColor
@@ -79,12 +80,13 @@ import com.eblan.launcher.common.R as commonR
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-internal fun EditPageScreen(
+internal fun EditGridPageScreen(
     modifier: Modifier = Modifier,
-    editPageData: EditPageData?,
+    pageItems: List<PageItem>?,
     hasShortcutHostPermission: Boolean,
     homeSettings: HomeSettings,
     paddingValues: PaddingValues,
+    screenWidth: Int,
     screenHeight: Int,
     textColor: TextColor,
     onSaveEditPage: (
@@ -95,36 +97,212 @@ internal fun EditPageScreen(
     ) -> Unit,
     onUpdateScreen: (Screen) -> Unit,
 ) {
-    requireNotNull(editPageData)
+    requireNotNull(pageItems)
 
     val density = LocalDensity.current
 
     val layoutDirection = LocalLayoutDirection.current
 
+    val leftPadding = with(density) {
+        paddingValues.calculateLeftPadding(layoutDirection).roundToPx()
+    }
+
     val topPadding = with(density) {
         paddingValues.calculateTopPadding().roundToPx()
+    }
+
+    val rightPadding = with(density) {
+        paddingValues.calculateRightPadding(layoutDirection).roundToPx()
     }
 
     val bottomPadding = with(density) {
         paddingValues.calculateBottomPadding().roundToPx()
     }
 
+    val horizontalPadding = leftPadding + rightPadding
+
     val verticalPadding = topPadding + bottomPadding
 
-    val gridHeight = screenHeight - verticalPadding
+    val gridWidthDp = with(density) {
+        (screenWidth - horizontalPadding).toDp()
+    }
 
-    var currentPageItems by remember { mutableStateOf(editPageData.pageItems) }
+    val gridHeightDp = with(density) {
+        (screenHeight - verticalPadding).toDp()
+    }
+
+    var currentPageItems by remember { mutableStateOf(pageItems) }
 
     val pageItemsToDelete = remember { mutableStateListOf<PageItem>() }
 
-    var selectedId by remember {
-        mutableIntStateOf(
-            when (editPageData.associate) {
-                Associate.Grid -> homeSettings.initialPage
-                Associate.Dock -> homeSettings.dockInitialPage
+    var selectedId by remember { mutableIntStateOf(homeSettings.initialPage) }
+
+    val lazyListState = rememberLazyListState()
+
+    val lazyRowDragDropState =
+        rememberLazyRowDragDropState(lazyListState = lazyListState) { from, to ->
+            currentPageItems = currentPageItems.toMutableList().apply {
+                add(
+                    index = to,
+                    element = removeAt(from),
+                )
+            }
+        }
+
+    val activity = LocalActivity.current as ComponentActivity
+
+    val scope = rememberCoroutineScope()
+
+    val columns = homeSettings.columns
+
+    val rows = homeSettings.rows
+
+    var expanded by remember { mutableStateOf(false) }
+
+    DisposableEffect(key1 = activity) {
+        val listener = Consumer<Intent> { intent ->
+            scope.launch {
+                handleActionMainIntent(
+                    intent = intent,
+                    onUpdateScreen = onUpdateScreen,
+                )
+            }
+        }
+
+        activity.addOnNewIntentListener(listener)
+
+        onDispose {
+            activity.removeOnNewIntentListener(listener)
+        }
+    }
+
+    BackHandler {
+        onUpdateScreen(Screen.Pager)
+    }
+
+    Box(modifier = modifier.fillMaxSize()) {
+        LazyRow(
+            modifier = Modifier
+                .dragRowContainer(lazyRowDragDropState = lazyRowDragDropState)
+                .matchParentSize(),
+            contentPadding = paddingValues,
+            state = lazyListState,
+        ) {
+            itemsIndexed(
+                items = currentPageItems,
+                key = { _, pageItem -> pageItem.id },
+            ) { index, pageItem ->
+                DraggableRowItem(
+                    modifier = Modifier
+                        .size(
+                            width = gridWidthDp,
+                            height = gridHeightDp,
+                        )
+                        .padding(10.dp),
+                    lazyRowDragDropState = lazyRowDragDropState,
+                    index = index,
+                ) {
+                    GridLayout(
+                        modifier = Modifier
+                            .weight(1f)
+                            .background(
+                                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.25f),
+                                shape = RoundedCornerShape(8.dp),
+                            ),
+                        columns = columns,
+                        gridItems = pageItem.gridItems,
+                        rows = rows,
+                        content = {
+                            GridItemContent(
+                                gridItem = it,
+                                gridItemSettings = homeSettings.gridItemSettings,
+                                hasShortcutHostPermission = hasShortcutHostPermission,
+                                statusBarNotifications = emptyMap(),
+                                textColor = textColor,
+                            )
+                        },
+                    )
+
+                    PageButtons(
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                            .padding(5.dp),
+                        pageItem = pageItem,
+                        selectedId = selectedId,
+                        onDeleteClick = {
+                            currentPageItems = currentPageItems.toMutableList().apply {
+                                removeIf { currentPageItem ->
+                                    currentPageItem.id == pageItem.id
+                                }
+                            }
+
+                            pageItemsToDelete.add(pageItem)
+                        },
+                        onHomeClick = {
+                            selectedId = pageItem.id
+                        },
+                    )
+                }
+            }
+        }
+
+        ExpandableFloatingActionButton(
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(
+                    end = paddingValues.calculateEndPadding(layoutDirection),
+                    bottom = paddingValues.calculateBottomPadding(),
+                ),
+            expanded = expanded,
+            onExpandedChange = { expanded = it },
+            onAdd = {
+                currentPageItems = currentPageItems.toMutableList().apply {
+                    add(PageItem(id = maxOf { it.id } + 1, gridItems = emptyList()))
+                }
+            },
+            onSave = {
+                onSaveEditPage(
+                    selectedId,
+                    currentPageItems,
+                    pageItemsToDelete,
+                    Associate.Grid,
+                )
+
+                expanded = false
+            },
+            onCancel = {
+                onUpdateScreen(Screen.Pager)
             },
         )
     }
+}
+
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Composable
+internal fun EditDockGridPageScreen(
+    modifier: Modifier = Modifier,
+    pageItems: List<PageItem>?,
+    hasShortcutHostPermission: Boolean,
+    homeSettings: HomeSettings,
+    paddingValues: PaddingValues,
+    textColor: TextColor,
+    onSaveEditPage: (
+        id: Int,
+        pageItems: List<PageItem>,
+        pageItemsToDelete: List<PageItem>,
+        associate: Associate,
+    ) -> Unit,
+    onUpdateScreen: (Screen) -> Unit,
+) {
+    requireNotNull(pageItems)
+
+    val layoutDirection = LocalLayoutDirection.current
+
+    var currentPageItems by remember { mutableStateOf(pageItems) }
+
+    val pageItemsToDelete = remember { mutableStateListOf<PageItem>() }
+
+    var selectedId by remember { mutableIntStateOf(homeSettings.dockInitialPage) }
 
     val lazyListState = rememberLazyListState()
 
@@ -142,23 +320,11 @@ internal fun EditPageScreen(
 
     val scope = rememberCoroutineScope()
 
-    val columns = when (editPageData.associate) {
-        Associate.Grid -> homeSettings.columns
-        Associate.Dock -> homeSettings.dockColumns
-    }
+    val columns = homeSettings.dockColumns
 
-    val rows = when (editPageData.associate) {
-        Associate.Grid -> homeSettings.rows
-        Associate.Dock -> homeSettings.dockRows
-    }
+    val rows = homeSettings.dockRows
 
-    val cardHeight = when (editPageData.associate) {
-        Associate.Grid -> with(density) {
-            gridHeight.toDp() - homeSettings.dockHeight.dp
-        }
-
-        Associate.Dock -> homeSettings.dockHeight.dp
-    }
+    val cardHeight = homeSettings.dockHeight.dp
 
     var expanded by remember { mutableStateOf(false) }
 
@@ -186,7 +352,7 @@ internal fun EditPageScreen(
     Box(modifier = modifier.fillMaxSize()) {
         LazyColumn(
             modifier = Modifier
-                .dragContainer(lazyColumnDragDropState = lazyColumnDragDropState)
+                .dragColumnContainer(lazyColumnDragDropState = lazyColumnDragDropState)
                 .matchParentSize(),
             state = lazyListState,
             contentPadding = paddingValues,
@@ -195,7 +361,7 @@ internal fun EditPageScreen(
                 items = currentPageItems,
                 key = { _, pageItem -> pageItem.id },
             ) { index, pageItem ->
-                DraggableItem(
+                DraggableColumnItem(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(10.dp),
@@ -271,7 +437,7 @@ internal fun EditPageScreen(
                     selectedId,
                     currentPageItems,
                     pageItemsToDelete,
-                    editPageData.associate,
+                    Associate.Dock,
                 )
 
                 expanded = false
@@ -284,7 +450,7 @@ internal fun EditPageScreen(
 }
 
 @Composable
-private fun PageButtons(
+internal fun PageButtons(
     modifier: Modifier = Modifier,
     pageItem: PageItem,
     selectedId: Int,
@@ -324,7 +490,7 @@ private fun PageButtons(
 }
 
 @Composable
-private fun ExpandableFloatingActionButton(
+internal fun ExpandableFloatingActionButton(
     modifier: Modifier = Modifier,
     expanded: Boolean,
     onExpandedChange: (Boolean) -> Unit,
@@ -389,7 +555,7 @@ private fun ExpandableFloatingActionButton(
     }
 }
 
-private fun handleActionMainIntent(
+internal fun handleActionMainIntent(
     intent: Intent,
     onUpdateScreen: (Screen) -> Unit,
 ) {
