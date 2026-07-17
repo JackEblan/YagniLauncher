@@ -1,0 +1,2 @@
+- Edit Grid Pages feature is now in the row list
+- Bug fixes and stability improvements
