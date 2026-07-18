@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~
+  ~   Copyright 2023 Einstein Blanco
+  ~
+  ~   Licensed under the GNU General Public License v3.0 (the "License");
+  ~   you may not use this file except in compliance with the License.
+  ~   You may obtain a copy of the License at
+  ~
+  ~       https://www.gnu.org/licenses/gpl-3.0
+  ~
+  ~   Unless required by applicable law or agreed to in writing, software
+  ~   distributed under the License is distributed on an "AS IS" BASIS,
+  ~   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~   See the License for the specific language governing permissions and
+  ~   limitations under the License.
+  ~
+  -->
+<resources>
+    <string name="horizontal_grid">Horizontales Raster</string>
+    <string name="vertical_grid">Vertikales Gitter</string>
+    <string name="rows_height">Zeilenhöhe</string>
+    <string name="rows_height_is_not_valid">Zeilenhöhe ist ungültig</string>
+    <string name="hidden_applications">Versteckte Anwendungen</string>
+    <string name="no_hidden_applications">Keine versteckten Anwendungen</string>
+    <string name="app_drawer_type">App-Drawer-Typ</string>
+    <string name="custom_background_color">Eigene Hintergrundfarbe</string>
+    <string name="exclude_tagged_apps">Markierte Apps ausschließen</string>
+    <string name="hide_selected_apps_from_the_app_drawer">Ausgewählte Apps im App-Drawer ausblenden</string>
+    <string name="hide_apps_marked_with_selected_tags">Apps mit markierten Tags ausblenden</string>
+</resources>
