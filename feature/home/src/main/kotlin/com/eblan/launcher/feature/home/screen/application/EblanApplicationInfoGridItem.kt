@@ -82,10 +82,10 @@ import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
-import com.eblan.launcher.feature.home.util.getHorizontalAlignment
+import com.eblan.launcher.feature.home.screen.getHorizontalAlignment
+import com.eblan.launcher.feature.home.screen.getVerticalArrangement
+import com.eblan.launcher.feature.home.screen.onPress
 import com.eblan.launcher.feature.home.util.getSystemTextColor
-import com.eblan.launcher.feature.home.util.getVerticalArrangement
-import com.eblan.launcher.feature.home.util.onPress
 import com.eblan.launcher.framework.launcherapps.AndroidLauncherAppsWrapper
 import com.eblan.launcher.ui.local.LocalLauncherApps
 import kotlinx.coroutines.launch

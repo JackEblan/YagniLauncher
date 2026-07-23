@@ -119,8 +119,8 @@ import com.eblan.launcher.feature.home.screen.application.TagElevatedFilterChip
 import com.eblan.launcher.feature.home.screen.application.handleDragEblanApplicationInfoItem
 import com.eblan.launcher.feature.home.screen.application.handleOnLongPressEblanApplicationInfoItem
 import com.eblan.launcher.feature.home.screen.application.handleOnTapEblanApplicationInfoItem
+import com.eblan.launcher.feature.home.screen.onPress
 import com.eblan.launcher.feature.home.util.getSystemTextColor
-import com.eblan.launcher.feature.home.util.onPress
 import com.eblan.launcher.ui.local.LocalLauncherApps
 import com.eblan.launcher.ui.local.LocalPackageManager
 import com.eblan.launcher.ui.local.LocalUserManager

@@ -40,7 +40,7 @@ import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.PageDirection
 import com.eblan.launcher.feature.home.model.SharedElementKey
-import com.eblan.launcher.feature.home.util.PAGE_INDICATOR_HEIGHT
+import com.eblan.launcher.feature.home.screen.PAGE_INDICATOR_HEIGHT
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.milliseconds
 

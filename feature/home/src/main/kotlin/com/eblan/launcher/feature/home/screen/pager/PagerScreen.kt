@@ -94,6 +94,7 @@ import com.eblan.launcher.feature.home.component.GridPagerIndicator
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
+import com.eblan.launcher.feature.home.screen.PAGE_INDICATOR_HEIGHT
 import com.eblan.launcher.feature.home.screen.application.ApplicationScreen
 import com.eblan.launcher.feature.home.screen.folder.FolderGridItemPopup
 import com.eblan.launcher.feature.home.screen.folder.FolderScreen
@@ -101,10 +102,8 @@ import com.eblan.launcher.feature.home.screen.resize.ResizeScreen
 import com.eblan.launcher.feature.home.screen.shortcutconfig.ShortcutConfigScreen
 import com.eblan.launcher.feature.home.screen.widget.AppWidgetScreen
 import com.eblan.launcher.feature.home.screen.widget.WidgetScreen
-import com.eblan.launcher.feature.home.util.PAGE_INDICATOR_HEIGHT
 import com.eblan.launcher.feature.home.util.calculatePage
 import com.eblan.launcher.feature.home.util.getSystemTextColor
-import com.eblan.launcher.feature.home.util.handleWallpaperScrollEffect
 import com.eblan.launcher.ui.local.LocalAppWidgetHost
 import com.eblan.launcher.ui.local.LocalFileManager
 import com.eblan.launcher.ui.local.LocalIconKeyGenerator
@@ -467,12 +466,8 @@ internal fun PagerScreen(
     }
 
     LaunchedEffect(key1 = gridHorizontalPagerState) {
-        handleWallpaperScrollEffect(
+        pagerScreenState.handleWallpaperScrollEffect(
             horizontalPagerState = gridHorizontalPagerState,
-            infiniteScroll = homeSettings.infiniteScroll,
-            pageCount = homeSettings.pageCount,
-            wallpaperManagerWrapper = androidWallpaperManagerWrapper,
-            wallpaperScroll = homeSettings.wallpaperScroll,
             windowToken = view.windowToken,
         )
     }

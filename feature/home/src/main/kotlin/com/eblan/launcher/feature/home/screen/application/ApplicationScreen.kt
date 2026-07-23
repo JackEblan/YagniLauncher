@@ -55,6 +55,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
@@ -418,6 +419,8 @@ internal fun ApplicationScreenEffect(
     onGetEblanApplicationInfosByTagId: (Long?) -> Unit,
     onShowPopupApplicationMenu: (Boolean) -> Unit,
 ) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+
     LaunchedEffect(key1 = textFieldState) {
         snapshotFlow { textFieldState.text }.debounce(500L.milliseconds).onEach {
             onGetEblanApplicationInfosByLabel(it.toString())
@@ -433,6 +436,8 @@ internal fun ApplicationScreenEffect(
     LaunchedEffect(key1 = isPressHome) {
         if (isPressHome) {
             onDismiss()
+
+            keyboardController?.hide()
         }
     }
 

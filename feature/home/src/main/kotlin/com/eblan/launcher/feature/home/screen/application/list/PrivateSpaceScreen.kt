@@ -70,8 +70,8 @@ import com.eblan.launcher.domain.model.ManagedProfileResult
 import com.eblan.launcher.feature.home.screen.application.PrivateSpaceStickyHeader
 import com.eblan.launcher.feature.home.screen.application.handleOnLongPressPrivateSpaceEblanApplicationInfoItem
 import com.eblan.launcher.feature.home.screen.application.handleOnTapEblanApplicationInfoItem
+import com.eblan.launcher.feature.home.screen.onPress
 import com.eblan.launcher.feature.home.util.getSystemTextColor
-import com.eblan.launcher.feature.home.util.onPress
 import com.eblan.launcher.ui.local.LocalLauncherApps
 import kotlinx.coroutines.launch
 import kotlin.uuid.ExperimentalUuidApi
