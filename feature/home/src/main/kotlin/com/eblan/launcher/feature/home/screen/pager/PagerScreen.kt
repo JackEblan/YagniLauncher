@@ -467,12 +467,8 @@ internal fun PagerScreen(
     }
 
     LaunchedEffect(key1 = gridHorizontalPagerState) {
-        handleWallpaperScrollEffect(
+        pagerScreenState.handleWallpaperScrollEffect(
             horizontalPagerState = gridHorizontalPagerState,
-            infiniteScroll = homeSettings.infiniteScroll,
-            pageCount = homeSettings.pageCount,
-            wallpaperManagerWrapper = androidWallpaperManagerWrapper,
-            wallpaperScroll = homeSettings.wallpaperScroll,
             windowToken = view.windowToken,
         )
     }

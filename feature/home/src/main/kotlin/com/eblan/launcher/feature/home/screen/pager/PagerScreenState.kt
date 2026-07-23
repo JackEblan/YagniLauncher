@@ -44,6 +44,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.draganddrop.DragAndDropEvent
 import androidx.compose.ui.draganddrop.DragAndDropTarget
 import androidx.compose.ui.draganddrop.toAndroidDragEvent
@@ -94,9 +95,11 @@ import com.eblan.launcher.ui.local.LocalPinItemRequest
 import com.eblan.launcher.ui.local.LocalUserManager
 import com.eblan.launcher.ui.local.LocalWallpaperManager
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import java.io.File
+import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
 
 /**
@@ -1263,6 +1266,60 @@ internal class PagerScreenState(
                     targetValue = 0f,
                     animationSpec = tween(easing = FastOutSlowInEasing),
                 )
+            }
+        }
+    }
+
+    suspend fun handleWallpaperScrollEffect(
+        horizontalPagerState: PagerState,
+        windowToken: IBinder,
+    ) {
+        if (!homeSettings.wallpaperScroll) return
+
+        var reverseXOffset: Float
+
+        snapshotFlow { horizontalPagerState.currentPageOffsetFraction }.onStart {
+            androidWallpaperManagerWrapper.setWallpaperOffsetSteps(
+                xStep = 1f / (homeSettings.pageCount - 1),
+                yStep = 1f,
+            )
+        }.collect { offsetFraction ->
+            val page = calculatePage(
+                index = horizontalPagerState.currentPage,
+                infiniteScroll = homeSettings.infiniteScroll,
+                pageCount = homeSettings.pageCount,
+            )
+
+            val scrollProgress = page + offsetFraction
+
+            if (scrollProgress < 0f) {
+                reverseXOffset = offsetFraction.absoluteValue
+
+                androidWallpaperManagerWrapper.setWallpaperOffsets(
+                    windowToken = windowToken,
+                    xOffset = reverseXOffset,
+                    yOffset = 0f,
+                )
+            } else if (scrollProgress > homeSettings.pageCount - 1) {
+                reverseXOffset = 1f - offsetFraction
+
+                androidWallpaperManagerWrapper.setWallpaperOffsets(
+                    windowToken = windowToken,
+                    xOffset = reverseXOffset,
+                    yOffset = 0f,
+                )
+            } else {
+                val xOffset = scrollProgress / (homeSettings.pageCount - 1)
+
+                androidWallpaperManagerWrapper.setWallpaperOffsets(
+                    windowToken = windowToken,
+                    xOffset = xOffset,
+                    yOffset = 0f,
+                )
+            }
+
+            if (offsetFraction == 0f) {
+                reverseXOffset = offsetFraction
             }
         }
     }

@@ -17,7 +17,6 @@
  */
 package com.eblan.launcher.feature.home.screen.widget
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -44,12 +43,10 @@ import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
-import androidx.compose.material3.SearchBarValue
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
@@ -57,7 +54,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
@@ -91,12 +87,9 @@ import com.eblan.launcher.feature.home.component.OffsetNestedScrollConnection
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
+import com.eblan.launcher.feature.home.screen.ScreenEffect
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import kotlin.time.Duration.Companion.milliseconds
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -156,33 +149,17 @@ internal fun WidgetScreen(
 
     val textFieldState = rememberTextFieldState()
 
-    LaunchedEffect(key1 = isPressHome) {
-        if (isPressHome && swipeY < screenHeight.toFloat()) {
-            onDismiss()
-
-            keyboardController?.hide()
-        }
-
-        if (isPressHome && swipeY < screenHeight.toFloat() && searchBarState.currentValue == SearchBarValue.Expanded) {
-            searchBarState.animateToCollapsed()
-        }
-    }
-
-    LaunchedEffect(key1 = drag) {
-        if (drag == Drag.Start && searchBarState.currentValue == SearchBarValue.Expanded) {
-            searchBarState.animateToCollapsed()
-        }
-    }
-
-    LaunchedEffect(key1 = textFieldState) {
-        snapshotFlow { textFieldState.text }.debounce(500L.milliseconds).onEach {
-            onGetEblanAppWidgetProviderInfosByLabel(it.toString())
-        }.collect()
-    }
-
-    BackHandler(enabled = swipeY < screenHeight.toFloat()) {
-        onDismiss()
-    }
+    ScreenEffect(
+        isPressHome = isPressHome,
+        swipeY = swipeY,
+        screenHeight = screenHeight,
+        onDismiss = onDismiss,
+        keyboardController = keyboardController,
+        searchBarState = searchBarState,
+        drag = drag,
+        textFieldState = textFieldState,
+        onChangeLabel = onGetEblanAppWidgetProviderInfosByLabel,
+    )
 
     Surface(
         modifier = modifier

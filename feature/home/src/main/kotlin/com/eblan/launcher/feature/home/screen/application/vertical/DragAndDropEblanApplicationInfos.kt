@@ -77,9 +77,9 @@ import com.eblan.launcher.domain.model.EblanApplicationInfoWithIconPackInfo
 import com.eblan.launcher.domain.model.EblanUserPageKey
 import com.eblan.launcher.domain.model.GetEblanApplicationInfosByLabelAndTag
 import com.eblan.launcher.feature.home.R
-import com.eblan.launcher.feature.home.util.getHorizontalAlignment
+import com.eblan.launcher.feature.home.screen.getHorizontalAlignment
+import com.eblan.launcher.feature.home.screen.getVerticalArrangement
 import com.eblan.launcher.feature.home.util.getSystemTextColor
-import com.eblan.launcher.feature.home.util.getVerticalArrangement
 import kotlin.uuid.ExperimentalUuidApi
 import com.eblan.launcher.common.R as commonR
 
