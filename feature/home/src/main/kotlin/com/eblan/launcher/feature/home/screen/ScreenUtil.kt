@@ -70,9 +70,9 @@ internal suspend fun PressGestureScope.onPress(
 ) {
     if (isVisibleOverlay) return
 
-    awaitRelease()
+    if (tryAwaitRelease()) return
 
-    if (scale.isRunning) {
+    if (scale.value != 1f) {
         scale.stop()
 
         scale.animateTo(1f)
