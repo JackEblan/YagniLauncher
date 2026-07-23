@@ -27,4 +27,6 @@
     <string name="exclude_tagged_apps">Exclude Tagged Apps</string>
     <string name="hide_selected_apps_from_the_app_drawer">Hide selected apps from the app drawer</string>
     <string name="hide_apps_marked_with_selected_tags">Hide apps marked with selected tags</string>
+    <string name="show_keyboard">Show Keyboard</string>
+    <string name="show_keyboard_when_app_drawer_opens">Show keyboard when app drawer opens</string>
 </resources>

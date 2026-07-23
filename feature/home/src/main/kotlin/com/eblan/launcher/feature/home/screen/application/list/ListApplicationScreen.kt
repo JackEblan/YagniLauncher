@@ -67,6 +67,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.layer.drawLayer
@@ -208,6 +209,8 @@ internal fun ListApplicationScreen(
             getEblanApplicationInfosByLabelAndTag.eblanApplicationInfoWithIconPackInfos.keys.distinctBy { it.eblanUser.serialNumber }
         }
 
+    val focusRequester = remember { FocusRequester() }
+
     ApplicationScreenEffect(
         horizontalPagerState = horizontalPagerState,
         isPressHome = isPressHome,
@@ -216,6 +219,8 @@ internal fun ListApplicationScreen(
         showPopupApplicationMenu = showPopupApplicationMenu,
         swipeY = swipeY,
         textFieldState = textFieldState,
+        showKeyboard = appDrawerSettings.showKeyboard,
+        focusRequester = focusRequester,
         onDismiss = onDismiss,
         onGetEblanApplicationInfosByLabel = onGetEblanApplicationInfosByLabel,
         onGetEblanApplicationInfosByTagId = onGetEblanApplicationInfosByTagId,
@@ -234,6 +239,7 @@ internal fun ListApplicationScreen(
             ),
     ) {
         ApplicationSearchBarWithoutMenu(
+            focusRequester = focusRequester,
             searchBarState = searchBarState,
             textFieldState = textFieldState,
         )

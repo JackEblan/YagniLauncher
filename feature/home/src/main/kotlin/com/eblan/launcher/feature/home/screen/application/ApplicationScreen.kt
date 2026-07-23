@@ -51,10 +51,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -293,7 +295,10 @@ internal fun QuiteModeScreen(
             .padding(10.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text(text = stringResource(R.string.work_apps_are_paused), style = MaterialTheme.typography.titleLarge)
+        Text(
+            text = stringResource(R.string.work_apps_are_paused),
+            style = MaterialTheme.typography.titleLarge,
+        )
 
         Spacer(modifier = Modifier.height(10.dp))
 
@@ -414,12 +419,16 @@ internal fun ApplicationScreenEffect(
     showPopupApplicationMenu: Boolean,
     swipeY: Float,
     textFieldState: TextFieldState,
+    showKeyboard: Boolean,
+    focusRequester: FocusRequester,
     onDismiss: () -> Unit,
     onGetEblanApplicationInfosByLabel: (String) -> Unit,
     onGetEblanApplicationInfosByTagId: (Long?) -> Unit,
     onShowPopupApplicationMenu: (Boolean) -> Unit,
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
+
+    val focusManager = LocalFocusManager.current
 
     LaunchedEffect(key1 = textFieldState) {
         snapshotFlow { textFieldState.text }.debounce(500L.milliseconds).onEach {
@@ -446,12 +455,22 @@ internal fun ApplicationScreenEffect(
     }
 
     LaunchedEffect(key1 = swipeY) {
-        if (swipeY == screenHeight.toFloat()) {
-            textFieldState.clearText()
+        when (swipeY) {
+            screenHeight.toFloat() -> {
+                textFieldState.clearText()
 
-            horizontalPagerState.scrollToPage(0)
+                horizontalPagerState.scrollToPage(0)
 
-            keyboardController?.hide()
+                focusManager.clearFocus()
+
+                keyboardController?.hide()
+            }
+
+            0f if showKeyboard -> {
+                focusRequester.requestFocus()
+
+                keyboardController?.show()
+            }
         }
     }
 
