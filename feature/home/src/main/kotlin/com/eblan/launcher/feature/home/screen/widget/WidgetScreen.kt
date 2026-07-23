@@ -71,6 +71,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
@@ -132,6 +133,8 @@ internal fun WidgetScreen(
 ) {
     val layoutDirection = LocalLayoutDirection.current
 
+    val keyboardController = LocalSoftwareKeyboardController.current
+
     val scope = rememberCoroutineScope()
 
     val lazyListState = rememberLazyListState()
@@ -156,6 +159,8 @@ internal fun WidgetScreen(
     LaunchedEffect(key1 = isPressHome) {
         if (isPressHome && swipeY < screenHeight.toFloat()) {
             onDismiss()
+
+            keyboardController?.hide()
         }
 
         if (isPressHome && swipeY < screenHeight.toFloat() && searchBarState.currentValue == SearchBarValue.Expanded) {

@@ -75,6 +75,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
@@ -139,6 +140,8 @@ internal fun ShortcutConfigScreen(
 ) {
     val layoutDirection = LocalLayoutDirection.current
 
+    val keyboardController = LocalSoftwareKeyboardController.current
+
     val horizontalPagerState = rememberPagerState(
         pageCount = {
             eblanShortcutConfigs.keys.size
@@ -160,6 +163,8 @@ internal fun ShortcutConfigScreen(
     LaunchedEffect(key1 = isPressHome) {
         if (isPressHome) {
             onDismiss()
+
+            keyboardController?.hide()
         }
 
         if (isPressHome && searchBarState.currentValue == SearchBarValue.Expanded) {
