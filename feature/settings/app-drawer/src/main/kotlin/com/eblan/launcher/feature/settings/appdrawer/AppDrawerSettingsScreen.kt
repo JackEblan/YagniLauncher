@@ -213,6 +213,17 @@ private fun Success(
                     onUpdateAppDrawerSettings(appDrawerSettings.copy(excludeTaggedApps = it))
                 },
             )
+
+            HorizontalDivider(modifier = Modifier.fillMaxWidth())
+
+            SettingsSwitch(
+                checked = appDrawerSettings.showKeyboard,
+                title = stringResource(R.string.show_keyboard),
+                subtitle = stringResource(R.string.show_keyboard_when_app_drawer_opens),
+                onCheckedChange = {
+                    onUpdateAppDrawerSettings(appDrawerSettings.copy(showKeyboard = it))
+                },
+            )
         }
 
         GridItemSettings(

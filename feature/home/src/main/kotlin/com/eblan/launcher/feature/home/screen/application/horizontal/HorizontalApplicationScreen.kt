@@ -46,6 +46,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
@@ -165,6 +166,8 @@ internal fun HorizontalApplicationScreen(
             getEblanApplicationInfosByLabelAndTag.eblanApplicationInfoWithIconPackInfos.keys.distinctBy { it.eblanUser.serialNumber }
         }
 
+    val focusRequester = remember { FocusRequester() }
+
     ApplicationScreenEffect(
         horizontalPagerState = horizontalPagerState,
         isPressHome = isPressHome,
@@ -173,6 +176,8 @@ internal fun HorizontalApplicationScreen(
         showPopupApplicationMenu = showPopupApplicationMenu,
         swipeY = swipeY,
         textFieldState = textFieldState,
+        showKeyboard = appDrawerSettings.showKeyboard,
+        focusRequester = focusRequester,
         onDismiss = onDismiss,
         onGetEblanApplicationInfosByLabel = onGetEblanApplicationInfosByLabel,
         onGetEblanApplicationInfosByTagId = onGetEblanApplicationInfosByTagId,
@@ -187,6 +192,7 @@ internal fun HorizontalApplicationScreen(
             .padding(paddingValues),
     ) {
         ApplicationSearchBarWithoutMenu(
+            focusRequester = focusRequester,
             searchBarState = searchBarState,
             textFieldState = textFieldState,
         )

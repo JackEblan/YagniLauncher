@@ -19,4 +19,5 @@ message AppDrawerSettingsProto {
   int32 horizontalAppDrawerColumns = 9;
   int32 horizontalAppDrawerRows = 10;
   bool excludeTaggedApps = 11;
+  bool showKeyboard = 12;
 }

@@ -56,6 +56,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
@@ -183,6 +184,8 @@ internal fun VerticalApplicationScreen(
             getEblanApplicationInfosByLabelAndTag.eblanApplicationInfoWithIconPackInfos.keys.distinctBy { it.eblanUser.serialNumber }
         }
 
+    val focusRequester = remember { FocusRequester() }
+
     ApplicationScreenEffect(
         horizontalPagerState = horizontalPagerState,
         isPressHome = isPressHome,
@@ -191,6 +194,8 @@ internal fun VerticalApplicationScreen(
         showPopupApplicationMenu = showPopupApplicationMenu,
         swipeY = swipeY,
         textFieldState = textFieldState,
+        showKeyboard = appDrawerSettings.showKeyboard,
+        focusRequester = focusRequester,
         onDismiss = onDismiss,
         onGetEblanApplicationInfosByLabel = onGetEblanApplicationInfosByLabel,
         onGetEblanApplicationInfosByTagId = onGetEblanApplicationInfosByTagId,
@@ -209,6 +214,7 @@ internal fun VerticalApplicationScreen(
             ),
     ) {
         ApplicationSearchBar(
+            focusRequester = focusRequester,
             searchBarState = searchBarState,
             textFieldState = textFieldState,
             onUpdateShowEblanApplicationInfoOrderDialog = {

@@ -32,6 +32,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
@@ -42,6 +44,7 @@ import com.eblan.launcher.common.R as commonR
 @Composable
 internal fun ApplicationSearchBar(
     modifier: Modifier = Modifier,
+    focusRequester: FocusRequester,
     searchBarState: SearchBarState,
     textFieldState: TextFieldState,
     onUpdateShowEblanApplicationInfoOrderDialog: (Boolean) -> Unit,
@@ -55,6 +58,7 @@ internal fun ApplicationSearchBar(
             .padding(10.dp),
         inputField = {
             SearchBarDefaults.InputField(
+                modifier = Modifier.focusRequester(focusRequester),
                 textFieldState = textFieldState,
                 searchBarState = searchBarState,
                 leadingIcon = {
@@ -105,6 +109,7 @@ internal fun ApplicationSearchBar(
 @Composable
 internal fun ApplicationSearchBarWithoutMenu(
     modifier: Modifier = Modifier,
+    focusRequester: FocusRequester,
     searchBarState: SearchBarState,
     textFieldState: TextFieldState,
 ) {
@@ -117,6 +122,7 @@ internal fun ApplicationSearchBarWithoutMenu(
             .padding(10.dp),
         inputField = {
             SearchBarDefaults.InputField(
+                modifier = Modifier.focusRequester(focusRequester),
                 textFieldState = textFieldState,
                 searchBarState = searchBarState,
                 leadingIcon = {
