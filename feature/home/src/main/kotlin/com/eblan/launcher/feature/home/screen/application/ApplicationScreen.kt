@@ -434,10 +434,8 @@ internal fun ApplicationScreenEffect(
     }
 
     LaunchedEffect(key1 = isPressHome) {
-        if (isPressHome) {
+        if (isPressHome && swipeY < screenHeight.toFloat()) {
             onDismiss()
-
-            keyboardController?.hide()
         }
     }
 
@@ -448,10 +446,12 @@ internal fun ApplicationScreenEffect(
     }
 
     LaunchedEffect(key1 = swipeY) {
-        if (swipeY.toInt() == screenHeight) {
+        if (swipeY == screenHeight.toFloat()) {
             textFieldState.clearText()
 
             horizontalPagerState.scrollToPage(0)
+
+            keyboardController?.hide()
         }
     }
 

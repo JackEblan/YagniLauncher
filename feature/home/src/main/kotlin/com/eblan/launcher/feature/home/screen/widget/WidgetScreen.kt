@@ -155,8 +155,6 @@ internal fun WidgetScreen(
         screenHeight = screenHeight,
         onDismiss = onDismiss,
         keyboardController = keyboardController,
-        searchBarState = searchBarState,
-        drag = drag,
         textFieldState = textFieldState,
         onChangeLabel = onGetEblanAppWidgetProviderInfosByLabel,
     )
@@ -348,6 +346,8 @@ private fun EblanAppWidgetProviderInfoItem(
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+
     val scope = rememberCoroutineScope()
 
     var intOffset by remember { mutableStateOf(IntOffset.Zero) }
@@ -358,14 +358,14 @@ private fun EblanAppWidgetProviderInfoItem(
 
     val graphicsLayer = rememberGraphicsLayer()
 
-    val id = remember { Uuid.random().toHexString() }
-
     Column(
         modifier = modifier
             .pointerInput(key1 = drag) {
                 detectTapGestures(
                     onLongPress = {
                         scope.launch {
+                            val id = Uuid.random().toHexString()
+
                             val gridItem = getWidgetGridItem(
                                 componentName = eblanAppWidgetProviderInfo.componentName,
                                 configure = eblanAppWidgetProviderInfo.configure,
@@ -411,6 +411,8 @@ private fun EblanAppWidgetProviderInfoItem(
                                     parent = SharedElementKey.Parent.Grid,
                                 ),
                             )
+
+                            keyboardController?.hide()
 
                             onUpdateIsVisibleOverlay(true)
 

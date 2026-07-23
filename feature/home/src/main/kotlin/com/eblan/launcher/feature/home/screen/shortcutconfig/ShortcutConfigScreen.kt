@@ -153,8 +153,6 @@ internal fun ShortcutConfigScreen(
         screenHeight = screenHeight,
         onDismiss = onDismiss,
         keyboardController = keyboardController,
-        searchBarState = searchBarState,
-        drag = drag,
         textFieldState = textFieldState,
         onChangeLabel = onGetEblanShortcutConfigsByLabel,
     )
@@ -462,6 +460,8 @@ private fun EblanShortcutConfigItem(
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+
     val scope = rememberCoroutineScope()
 
     var intOffset by remember { mutableStateOf(IntOffset.Zero) }
@@ -475,46 +475,13 @@ private fun EblanShortcutConfigItem(
             .pointerInput(key1 = drag) {
                 detectTapGestures(
                     onLongPress = {
-                        val id = Uuid.random().toHexString()
-
                         scope.launch {
-                            val data = GridItemData.ShortcutConfig(
-                                serialNumber = eblanShortcutConfig.serialNumber,
-                                componentName = eblanShortcutConfig.componentName,
-                                packageName = eblanShortcutConfig.packageName,
-                                activityLabel = eblanShortcutConfig.activityLabel,
-                                activityIcon = eblanShortcutConfig.activityIcon,
-                                applicationIcon = eblanShortcutConfig.activityIcon,
-                                applicationLabel = eblanShortcutConfig.activityLabel,
-                                shortcutIntentName = null,
-                                shortcutIntentIcon = null,
-                                shortcutIntentUri = null,
-                                customIcon = null,
-                                customLabel = null,
-                                index = -1,
-                                folderId = null,
-                            )
+                            val id = Uuid.random().toHexString()
 
-                            val eblanAction = EblanAction(
-                                eblanActionType = EblanActionType.None,
-                                serialNumber = 0L,
-                                componentName = "",
-                            )
-
-                            val gridItem = GridItem(
-                                id = id,
-                                page = 0,
-                                startColumn = -1,
-                                startRow = -1,
-                                columnSpan = 1,
-                                rowSpan = 1,
-                                data = data,
-                                associate = Associate.Grid,
-                                override = false,
+                            val gridItem = getShortcutConfigGridItem(
+                                eblanShortcutConfig = eblanShortcutConfig,
                                 gridItemSettings = gridItemSettings,
-                                doubleTap = eblanAction,
-                                swipeUp = eblanAction,
-                                swipeDown = eblanAction,
+                                id = id,
                             )
 
                             onUpdateGridItemSource(GridItemSource.New)
@@ -540,6 +507,8 @@ private fun EblanShortcutConfigItem(
                                     parent = SharedElementKey.Parent.Grid,
                                 ),
                             )
+
+                            keyboardController?.hide()
 
                             onUpdateIsVisibleOverlay(true)
 
@@ -582,4 +551,50 @@ private fun EblanShortcutConfigItem(
             style = MaterialTheme.typography.bodySmall,
         )
     }
+}
+
+private fun getShortcutConfigGridItem(
+    eblanShortcutConfig: EblanShortcutConfig,
+    gridItemSettings: GridItemSettings,
+    id: String,
+): GridItem {
+    val data = GridItemData.ShortcutConfig(
+        serialNumber = eblanShortcutConfig.serialNumber,
+        componentName = eblanShortcutConfig.componentName,
+        packageName = eblanShortcutConfig.packageName,
+        activityLabel = eblanShortcutConfig.activityLabel,
+        activityIcon = eblanShortcutConfig.activityIcon,
+        applicationIcon = eblanShortcutConfig.activityIcon,
+        applicationLabel = eblanShortcutConfig.activityLabel,
+        shortcutIntentName = null,
+        shortcutIntentIcon = null,
+        shortcutIntentUri = null,
+        customIcon = null,
+        customLabel = null,
+        index = -1,
+        folderId = null,
+    )
+
+    val eblanAction = EblanAction(
+        eblanActionType = EblanActionType.None,
+        serialNumber = 0L,
+        componentName = "",
+    )
+
+    val gridItem = GridItem(
+        id = id,
+        page = 0,
+        startColumn = -1,
+        startRow = -1,
+        columnSpan = 1,
+        rowSpan = 1,
+        data = data,
+        associate = Associate.Grid,
+        override = false,
+        gridItemSettings = gridItemSettings,
+        doubleTap = eblanAction,
+        swipeUp = eblanAction,
+        swipeDown = eblanAction,
+    )
+    return gridItem
 }

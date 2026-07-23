@@ -20,13 +20,10 @@ package com.eblan.launcher.feature.home.screen
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.SearchBarState
-import androidx.compose.material3.SearchBarValue
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.platform.SoftwareKeyboardController
-import com.eblan.launcher.feature.home.model.Drag
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.debounce
@@ -41,26 +38,12 @@ internal fun ScreenEffect(
     screenHeight: Int,
     onDismiss: () -> Unit,
     keyboardController: SoftwareKeyboardController?,
-    searchBarState: SearchBarState,
-    drag: Drag,
     textFieldState: TextFieldState,
     onChangeLabel: (String) -> Unit,
 ) {
     LaunchedEffect(key1 = isPressHome) {
         if (isPressHome && swipeY < screenHeight.toFloat()) {
             onDismiss()
-
-            keyboardController?.hide()
-        }
-
-        if (isPressHome && swipeY < screenHeight.toFloat() && searchBarState.currentValue == SearchBarValue.Expanded) {
-            searchBarState.animateToCollapsed()
-        }
-    }
-
-    LaunchedEffect(key1 = drag) {
-        if (drag == Drag.Start && searchBarState.currentValue == SearchBarValue.Expanded) {
-            searchBarState.animateToCollapsed()
         }
     }
 
@@ -68,6 +51,12 @@ internal fun ScreenEffect(
         snapshotFlow { textFieldState.text }.debounce(500L.milliseconds).onEach {
             onChangeLabel(it.toString())
         }.collect()
+    }
+
+    LaunchedEffect(key1 = swipeY) {
+        if (swipeY == screenHeight.toFloat()) {
+            keyboardController?.hide()
+        }
     }
 
     BackHandler(enabled = swipeY < screenHeight.toFloat()) {

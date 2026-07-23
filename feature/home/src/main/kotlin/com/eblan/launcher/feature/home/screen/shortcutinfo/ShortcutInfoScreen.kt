@@ -202,41 +202,11 @@ private fun ShortcutInfoMenuItem(
                                 scope.launch {
                                     val id = Uuid.random().toHexString()
 
-                                    val data = GridItemData.ShortcutInfo(
-                                        shortcutId = eblanShortcutInfo.shortcutId,
-                                        packageName = eblanShortcutInfo.packageName,
-                                        serialNumber = eblanShortcutInfo.serialNumber,
-                                        shortLabel = eblanShortcutInfo.shortLabel,
-                                        longLabel = eblanShortcutInfo.longLabel,
-                                        icon = eblanShortcutInfo.icon,
-                                        isEnabled = eblanShortcutInfo.isEnabled,
-                                        eblanApplicationInfoIcon = icon,
-                                        customIcon = null,
-                                        customShortLabel = null,
-                                        index = -1,
-                                        folderId = null,
-                                    )
-
-                                    val eblanAction = EblanAction(
-                                        eblanActionType = EblanActionType.None,
-                                        serialNumber = 0L,
-                                        componentName = "",
-                                    )
-
-                                    val gridItem = GridItem(
-                                        id = id,
-                                        page = 0,
-                                        startColumn = -1,
-                                        startRow = -1,
-                                        columnSpan = 1,
-                                        rowSpan = 1,
-                                        data = data,
-                                        associate = Associate.Grid,
-                                        override = false,
+                                    val gridItem = getShortcutInfoGridItem(
+                                        eblanShortcutInfo = eblanShortcutInfo,
                                         gridItemSettings = gridItemSettings,
-                                        doubleTap = eblanAction,
-                                        swipeUp = eblanAction,
-                                        swipeDown = eblanAction,
+                                        icon = icon,
+                                        id = id,
                                     )
 
                                     onUpdateGridItemSource(GridItemSource.New)
@@ -289,6 +259,51 @@ private fun ShortcutInfoMenuItem(
             }
         },
     )
+}
+
+private fun getShortcutInfoGridItem(
+    eblanShortcutInfo: EblanShortcutInfo,
+    gridItemSettings: GridItemSettings,
+    icon: String?,
+    id: String,
+): GridItem {
+    val data = GridItemData.ShortcutInfo(
+        shortcutId = eblanShortcutInfo.shortcutId,
+        packageName = eblanShortcutInfo.packageName,
+        serialNumber = eblanShortcutInfo.serialNumber,
+        shortLabel = eblanShortcutInfo.shortLabel,
+        longLabel = eblanShortcutInfo.longLabel,
+        icon = eblanShortcutInfo.icon,
+        isEnabled = eblanShortcutInfo.isEnabled,
+        eblanApplicationInfoIcon = icon,
+        customIcon = null,
+        customShortLabel = null,
+        index = -1,
+        folderId = null,
+    )
+
+    val eblanAction = EblanAction(
+        eblanActionType = EblanActionType.None,
+        serialNumber = 0L,
+        componentName = "",
+    )
+
+    val gridItem = GridItem(
+        id = id,
+        page = 0,
+        startColumn = -1,
+        startRow = -1,
+        columnSpan = 1,
+        rowSpan = 1,
+        data = data,
+        associate = Associate.Grid,
+        override = false,
+        gridItemSettings = gridItemSettings,
+        doubleTap = eblanAction,
+        swipeUp = eblanAction,
+        swipeDown = eblanAction,
+    )
+    return gridItem
 }
 
 @OptIn(ExperimentalUuidApi::class)
