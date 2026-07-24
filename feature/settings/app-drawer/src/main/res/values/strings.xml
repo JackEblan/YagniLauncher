@@ -29,4 +29,6 @@
     <string name="hide_apps_marked_with_selected_tags">Hide apps marked with selected tags</string>
     <string name="show_keyboard">Show Keyboard</string>
     <string name="show_keyboard_when_app_drawer_opens">Show keyboard when app drawer opens</string>
+    <string name="fuzzy_search">Fuzzy Search</string>
+    <string name="find_apps_even_with_typos_or_accented_characters">Find apps even with typos or accented characters</string>
 </resources>

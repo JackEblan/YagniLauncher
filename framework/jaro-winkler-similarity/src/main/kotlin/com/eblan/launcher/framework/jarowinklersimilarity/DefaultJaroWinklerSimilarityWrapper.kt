@@ -17,13 +17,21 @@
  */
 package com.eblan.launcher.framework.jarowinklersimilarity
 
+import com.eblan.launcher.domain.common.Dispatcher
+import com.eblan.launcher.domain.common.EblanDispatchers
 import com.eblan.launcher.domain.framework.JaroWinklerSimilarityWrapper
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.withContext
 import org.apache.commons.text.similarity.JaroWinklerSimilarity
 import javax.inject.Inject
 
-internal class DefaultJaroWinklerSimilarityWrapper @Inject constructor() : JaroWinklerSimilarityWrapper {
+internal class DefaultJaroWinklerSimilarityWrapper @Inject constructor(
+    @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
+) : JaroWinklerSimilarityWrapper {
     override suspend fun apply(
         left: CharSequence,
         right: CharSequence,
-    ): Double = JaroWinklerSimilarity().apply(left, right)
+    ): Double = withContext(defaultDispatcher) {
+        JaroWinklerSimilarity().apply(left, right)
+    }
 }

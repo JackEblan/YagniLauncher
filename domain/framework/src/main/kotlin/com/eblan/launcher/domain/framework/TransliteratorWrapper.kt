@@ -18,5 +18,5 @@
 package com.eblan.launcher.domain.framework
 
 interface TransliteratorWrapper {
-    fun normalize(text: String): String
+    suspend fun normalize(text: String): String
 }

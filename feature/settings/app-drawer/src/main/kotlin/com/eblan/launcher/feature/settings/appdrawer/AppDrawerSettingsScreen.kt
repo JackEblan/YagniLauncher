@@ -229,8 +229,8 @@ private fun Success(
 
             SettingsSwitch(
                 checked = appDrawerSettings.fuzzySearch,
-                title = "Fuzzy Search",
-                subtitle = "Find apps even with typos or accented characters",
+                title = stringResource(R.string.fuzzy_search),
+                subtitle = stringResource(R.string.find_apps_even_with_typos_or_accented_characters),
                 onCheckedChange = {
                     onUpdateAppDrawerSettings(appDrawerSettings.copy(fuzzySearch = it))
                 },

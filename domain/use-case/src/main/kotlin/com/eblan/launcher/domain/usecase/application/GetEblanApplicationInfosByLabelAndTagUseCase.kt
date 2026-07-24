@@ -178,45 +178,53 @@ class GetEblanApplicationInfosByLabelAndTagUseCase @Inject constructor(
         fuzzySearch: Boolean,
         eblanApplicationInfos: List<EblanApplicationInfo>,
     ): MutableList<EblanApplicationInfoWithIconPackInfo> {
-        val normalizedText = transliteratorWrapper.normalize(label)
-
-        val fastFilterEblanApplicationInfos = eblanApplicationInfos.filter {
-            it.label.startsWith(normalizedText) ||
-                it.label.contains(normalizedText)
+        val fastMatchesEblanApplicationInfos = eblanApplicationInfos.filter {
+            it.label.startsWith(
+                prefix = label,
+                ignoreCase = true,
+            ) || it.label.contains(
+                other = label,
+                ignoreCase = true,
+            )
         }
 
-        val newEblanApplicationInfos = if (fastFilterEblanApplicationInfos.isNotEmpty()) {
-            fastFilterEblanApplicationInfos
-        } else if (!fuzzySearch) {
-            emptyList()
-        } else {
-            eblanApplicationInfos
-                .map {
-                    it to jaroWinklerSimilarityWrapper.apply(
-                        left = normalizedText,
-                        right = it.label,
-                    )
-                }
-                .filter { (_, score) -> score >= FUZZY_MATCH_THRESHOLD }
-                .sortedByDescending { (_, score) -> score }
-                .map { (application, _) -> application }
+        val filterEblanApplicationInfos = when {
+            fastMatchesEblanApplicationInfos.isNotEmpty() -> {
+                fastMatchesEblanApplicationInfos.sortedBy { it.label.lowercase() }
+            }
+
+            !fuzzySearch -> {
+                emptyList()
+            }
+
+            else -> {
+                eblanApplicationInfos
+                    .map {
+                        it to jaroWinklerSimilarityWrapper.apply(
+                            left = transliteratorWrapper.normalize(text = label),
+                            right = transliteratorWrapper.normalize(text = it.label),
+                        )
+                    }
+                    .filter { (_, score) -> score >= FUZZY_MATCH_THRESHOLD }
+                    .sortedByDescending { (_, score) -> score }
+                    .map { (eblanApplicationInfo, _) -> eblanApplicationInfo }
+            }
         }
 
-        return newEblanApplicationInfos
-            .map { application ->
+        return filterEblanApplicationInfos
+            .map { eblanApplicationInfo ->
                 val iconPackInfoFilePath = File(
                     iconPackDirectory,
-                    iconKeyGenerator.getHashedName(application.componentName),
+                    iconKeyGenerator.getHashedName(name = eblanApplicationInfo.componentName),
                 )
 
                 EblanApplicationInfoWithIconPackInfo(
-                    eblanApplicationInfo = application,
+                    eblanApplicationInfo = eblanApplicationInfo,
                     iconPackInfoFilePath = iconPackInfoFilePath
                         .takeIf(File::exists)
                         ?.absolutePath,
                 )
             }
-            .sortedBy { it.eblanApplicationInfo.label.lowercase() }
             .toMutableList()
     }
 }
