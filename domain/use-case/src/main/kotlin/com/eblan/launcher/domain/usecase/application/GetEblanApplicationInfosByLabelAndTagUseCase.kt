@@ -189,25 +189,27 @@ class GetEblanApplicationInfosByLabelAndTagUseCase @Inject constructor(
         }
 
         val filterEblanApplicationInfos = when {
-            fastMatchesEblanApplicationInfos.isNotEmpty() -> {
-                fastMatchesEblanApplicationInfos.sortedBy { it.label.lowercase() }
-            }
-
-            !fuzzySearch -> {
+            !fuzzySearch && fastMatchesEblanApplicationInfos.isEmpty() -> {
                 emptyList()
             }
 
             else -> {
-                eblanApplicationInfos
-                    .map {
-                        it to jaroWinklerSimilarityWrapper.apply(
-                            left = transliteratorWrapper.normalize(text = label),
-                            right = transliteratorWrapper.normalize(text = it.label),
-                        )
-                    }
-                    .filter { (_, score) -> score >= FUZZY_MATCH_THRESHOLD }
-                    .sortedByDescending { (_, score) -> score }
-                    .map { (eblanApplicationInfo, _) -> eblanApplicationInfo }
+                val fuzzyMatches = if (fuzzySearch) {
+                    (eblanApplicationInfos - fastMatchesEblanApplicationInfos.toSet())
+                        .map {
+                            it to jaroWinklerSimilarityWrapper.apply(
+                                left = transliteratorWrapper.normalize(text = label),
+                                right = transliteratorWrapper.normalize(text = it.label),
+                            )
+                        }
+                        .filter { (_, score) -> score >= FUZZY_MATCH_THRESHOLD }
+                        .sortedByDescending { (_, score) -> score }
+                        .map { (eblanApplicationInfo, _) -> eblanApplicationInfo }
+                } else {
+                    emptyList()
+                }
+
+                fastMatchesEblanApplicationInfos.sortedBy { it.label.lowercase() } + fuzzyMatches
             }
         }
 

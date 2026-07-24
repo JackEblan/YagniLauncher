@@ -28,10 +28,12 @@ import javax.inject.Inject
 internal class DefaultJaroWinklerSimilarityWrapper @Inject constructor(
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) : JaroWinklerSimilarityWrapper {
+    private val jaroWinklerSimilarity = JaroWinklerSimilarity()
+
     override suspend fun apply(
         left: CharSequence,
         right: CharSequence,
     ): Double = withContext(defaultDispatcher) {
-        JaroWinklerSimilarity().apply(left, right)
+        jaroWinklerSimilarity.apply(left, right)
     }
 }
