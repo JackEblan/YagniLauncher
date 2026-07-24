@@ -25,4 +25,5 @@ message HomeSettingsProto {
   int32 folderCellHeight = 19;
   int32 maxFolderColumns = 20;
   int32 maxFolderRows = 21;
+  bool showPageIndicator = 22;
 }

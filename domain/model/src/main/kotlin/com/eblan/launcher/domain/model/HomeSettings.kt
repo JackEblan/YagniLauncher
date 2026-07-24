@@ -37,4 +37,5 @@ data class HomeSettings(
     val folderCellHeight: Int,
     val maxFolderColumns: Int,
     val maxFolderRows: Int,
+    val showPageIndicator: Boolean,
 )

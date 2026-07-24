@@ -30,8 +30,6 @@ import com.eblan.launcher.domain.model.HorizontalAlignment
 import com.eblan.launcher.domain.model.VerticalArrangement
 import com.eblan.launcher.feature.home.util.handleEblanAction
 import com.eblan.launcher.framework.launcherapps.AndroidLauncherAppsWrapper
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
 internal fun getHorizontalAlignment(horizontalAlignment: HorizontalAlignment): Alignment.Horizontal = when (horizontalAlignment) {
     HorizontalAlignment.Start -> Alignment.Start
@@ -49,19 +47,16 @@ internal fun onDoubleTap(
     context: Context,
     doubleTap: EblanAction,
     launcherApps: AndroidLauncherAppsWrapper,
-    scope: CoroutineScope,
     onOpenAppDrawer: () -> Unit,
 ) {
     if (doubleTap.eblanActionType == EblanActionType.None) return
 
-    scope.launch {
-        handleEblanAction(
-            context = context,
-            eblanAction = doubleTap,
-            launcherApps = launcherApps,
-            onOpenAppDrawer = onOpenAppDrawer,
-        )
-    }
+    handleEblanAction(
+        context = context,
+        eblanAction = doubleTap,
+        launcherApps = launcherApps,
+        onOpenAppDrawer = onOpenAppDrawer,
+    )
 }
 
 internal suspend fun PressGestureScope.onPress(

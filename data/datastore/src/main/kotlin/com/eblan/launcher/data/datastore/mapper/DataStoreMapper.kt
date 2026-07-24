@@ -66,6 +66,7 @@ internal fun HomeSettingsProto.toHomeSettings(): HomeSettings = HomeSettings(
     folderCellHeight = folderCellHeight,
     maxFolderColumns = maxFolderColumns,
     maxFolderRows = maxFolderRows,
+    showPageIndicator = showPageIndicator,
 )
 
 internal fun AppDrawerSettingsProto.toAppDrawerSettings(): AppDrawerSettings = AppDrawerSettings(

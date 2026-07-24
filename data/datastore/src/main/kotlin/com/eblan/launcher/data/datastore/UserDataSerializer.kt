@@ -81,6 +81,7 @@ class UserDataSerializer @Inject constructor() : Serializer<UserDataProto> {
         folderCellHeight = 96
         maxFolderColumns = 5
         maxFolderRows = 4
+        showPageIndicator = false
     }.build()
 
     private val defaultAppDrawerSettingsProto = AppDrawerSettingsProto.newBuilder().apply {

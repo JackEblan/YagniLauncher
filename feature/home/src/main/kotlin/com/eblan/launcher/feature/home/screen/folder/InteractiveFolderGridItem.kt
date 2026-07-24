@@ -337,7 +337,6 @@ private fun InteractiveFolderApplicationInfoGridItem(
                                 context = context,
                                 doubleTap = gridItem.doubleTap,
                                 launcherApps = launcherApps,
-                                scope = scope,
                                 onOpenAppDrawer = onOpenAppDrawer,
                             )
                         }
@@ -540,13 +539,14 @@ private fun InteractiveFolderShortcutInfoGridItem(
                 detectTapGestures(
                     onDoubleTap = if (!isVisibleOverlay) {
                         {
-                            onDoubleTap(
-                                context = context,
-                                doubleTap = gridItem.doubleTap,
-                                launcherApps = launcherApps,
-                                scope = scope,
-                                onOpenAppDrawer = onOpenAppDrawer,
-                            )
+                            scope.launch {
+                                onDoubleTap(
+                                    context = context,
+                                    doubleTap = gridItem.doubleTap,
+                                    launcherApps = launcherApps,
+                                    onOpenAppDrawer = onOpenAppDrawer,
+                                )
+                            }
                         }
                     } else {
                         null
@@ -779,7 +779,6 @@ private fun InteractiveFolderShortcutConfigGridItem(
                                 context = context,
                                 doubleTap = gridItem.doubleTap,
                                 launcherApps = launcherApps,
-                                scope = scope,
                                 onOpenAppDrawer = onOpenAppDrawer,
                             )
                         }
@@ -980,7 +979,6 @@ private fun InteractiveNestedFolderGridItem(
                                 context = context,
                                 doubleTap = gridItem.doubleTap,
                                 launcherApps = launcherApps,
-                                scope = scope,
                                 onOpenAppDrawer = onOpenAppDrawer,
                             )
                         }

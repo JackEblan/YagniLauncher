@@ -190,6 +190,17 @@ private fun Success(
                     onUpdateHomeSettings(homeSettings.copy(addNewAppsToHomeScreen = it))
                 },
             )
+
+            HorizontalDivider(modifier = Modifier.fillMaxWidth())
+
+            SettingsSwitch(
+                checked = homeSettings.showPageIndicator,
+                title = stringResource(R.string.show_page_indicator),
+                subtitle = stringResource(R.string.show_an_indicator_for_the_current_page),
+                onCheckedChange = {
+                    onUpdateHomeSettings(homeSettings.copy(showPageIndicator = it))
+                },
+            )
         }
 
         Text(

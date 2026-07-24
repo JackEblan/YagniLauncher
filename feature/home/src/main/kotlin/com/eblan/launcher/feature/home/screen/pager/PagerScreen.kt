@@ -750,6 +750,9 @@ internal fun PagerScreen(
                 gridHorizontalPagerState = gridHorizontalPagerState,
                 infiniteScroll = homeSettings.infiniteScroll,
                 pageCount = homeSettings.pageCount,
+                swipeUp = gestureSettings.swipeUp,
+                swipeDown = gestureSettings.swipeDown,
+                showPageIndicator = homeSettings.showPageIndicator,
             )
 
             HorizontalPager(

@@ -403,7 +403,6 @@ private fun InteractiveApplicationInfoGridItem(
                                 context = context,
                                 doubleTap = gridItem.doubleTap,
                                 launcherApps = launcherApps,
-                                scope = scope,
                                 onOpenAppDrawer = onOpenAppDrawer,
                             )
                         }
@@ -767,7 +766,6 @@ private fun InteractiveShortcutInfoGridItem(
                                 context = context,
                                 doubleTap = gridItem.doubleTap,
                                 launcherApps = launcherApps,
-                                scope = scope,
                                 onOpenAppDrawer = onOpenAppDrawer,
                             )
                         }
@@ -1009,7 +1007,6 @@ private fun InteractiveFolderGridItem(
                                 context = context,
                                 doubleTap = gridItem.doubleTap,
                                 launcherApps = launcherApps,
-                                scope = scope,
                                 onOpenAppDrawer = onOpenAppDrawer,
                             )
                         }
@@ -1267,7 +1264,6 @@ private fun InteractiveShortcutConfigGridItem(
                                 context = context,
                                 doubleTap = gridItem.doubleTap,
                                 launcherApps = launcherApps,
-                                scope = scope,
                                 onOpenAppDrawer = onOpenAppDrawer,
                             )
                         }

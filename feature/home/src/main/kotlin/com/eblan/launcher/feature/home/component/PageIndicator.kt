@@ -43,6 +43,8 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.unit.dp
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
+import com.eblan.launcher.domain.model.EblanAction
+import com.eblan.launcher.domain.model.EblanActionType
 import com.eblan.launcher.feature.home.util.calculatePage
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.collect
@@ -59,6 +61,9 @@ internal fun GridPagerIndicator(
     gridHorizontalPagerState: PagerState,
     infiniteScroll: Boolean,
     pageCount: Int,
+    swipeUp: EblanAction,
+    swipeDown: EblanAction,
+    showPageIndicator: Boolean,
 ) {
     var isScrollInProgress by remember { mutableStateOf(false) }
 
@@ -73,20 +78,16 @@ internal fun GridPagerIndicator(
         modifier = modifier,
         contentAlignment = Alignment.Center,
     ) {
-        if (isScrollInProgress) {
-            PageIndicator(
-                color = color,
-                gridHorizontalPagerState = gridHorizontalPagerState,
-                infiniteScroll = infiniteScroll,
-                pageCount = pageCount,
-            )
-        } else {
-            Image(
-                imageVector = EblanLauncherIcons.KeyboardArrowUp,
-                contentDescription = null,
-                colorFilter = ColorFilter.tint(color = color),
-            )
-        }
+        GridPageIndicatorContent(
+            color = color,
+            gridHorizontalPagerState = gridHorizontalPagerState,
+            infiniteScroll = infiniteScroll,
+            isScrollInProgress = isScrollInProgress,
+            pageCount = pageCount,
+            showPageIndicator = showPageIndicator,
+            swipeDown = swipeDown,
+            swipeUp = swipeUp,
+        )
     }
 }
 
@@ -151,5 +152,44 @@ internal fun PageIndicator(
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun GridPageIndicatorContent(
+    modifier: Modifier = Modifier,
+    color: Color,
+    gridHorizontalPagerState: PagerState,
+    infiniteScroll: Boolean,
+    isScrollInProgress: Boolean,
+    pageCount: Int,
+    showPageIndicator: Boolean,
+    swipeDown: EblanAction,
+    swipeUp: EblanAction,
+) {
+    if (!showPageIndicator) return
+
+    if (isScrollInProgress) {
+        PageIndicator(
+            modifier = modifier,
+            color = color,
+            gridHorizontalPagerState = gridHorizontalPagerState,
+            infiniteScroll = infiniteScroll,
+            pageCount = pageCount,
+        )
+    } else if (swipeUp.eblanActionType == EblanActionType.OpenAppDrawer) {
+        Image(
+            modifier = modifier,
+            imageVector = EblanLauncherIcons.KeyboardArrowUp,
+            contentDescription = null,
+            colorFilter = ColorFilter.tint(color = color),
+        )
+    } else if (swipeDown.eblanActionType == EblanActionType.OpenAppDrawer) {
+        Image(
+            modifier = modifier,
+            imageVector = EblanLauncherIcons.KeyboardArrowDown,
+            contentDescription = null,
+            colorFilter = ColorFilter.tint(color = color),
+        )
     }
 }
