@@ -15,19 +15,20 @@
  *   limitations under the License.
  *
  */
-package com.eblan.launcher.domain.model
+package com.eblan.launcher.framework.transliterator
 
-data class AppDrawerSettings(
-    val appDrawerColumns: Int,
-    val appDrawerRowsHeight: Int,
-    val gridItemSettings: GridItemSettings,
-    val eblanApplicationInfoOrder: EblanApplicationInfoOrder,
-    val backgroundColor: TextColor,
-    val customBackgroundColor: Int,
-    val appDrawerType: AppDrawerType,
-    val horizontalAppDrawerColumns: Int,
-    val horizontalAppDrawerRows: Int,
-    val excludeTaggedApps: Boolean,
-    val showKeyboard: Boolean,
-    val fuzzySearch: Boolean,
-)
+import com.eblan.launcher.domain.framework.TransliteratorWrapper
+import dagger.Binds
+import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
+
+@Module
+@InstallIn(SingletonComponent::class)
+internal interface TransliteratorModule {
+
+    @Binds
+    @Singleton
+    fun TransliteratorWrapper(impl: DefaultTransliteratorWrapper): TransliteratorWrapper
+}

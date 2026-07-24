@@ -15,19 +15,11 @@
  *   limitations under the License.
  *
  */
-package com.eblan.launcher.domain.model
+package com.eblan.launcher.domain.framework
 
-data class AppDrawerSettings(
-    val appDrawerColumns: Int,
-    val appDrawerRowsHeight: Int,
-    val gridItemSettings: GridItemSettings,
-    val eblanApplicationInfoOrder: EblanApplicationInfoOrder,
-    val backgroundColor: TextColor,
-    val customBackgroundColor: Int,
-    val appDrawerType: AppDrawerType,
-    val horizontalAppDrawerColumns: Int,
-    val horizontalAppDrawerRows: Int,
-    val excludeTaggedApps: Boolean,
-    val showKeyboard: Boolean,
-    val fuzzySearch: Boolean,
-)
+interface JaroWinklerSimilarityWrapper {
+    suspend fun apply(
+        left: CharSequence,
+        right: CharSequence,
+    ): Double
+}

@@ -15,19 +15,18 @@
  *   limitations under the License.
  *
  */
-package com.eblan.launcher.domain.model
 
-data class AppDrawerSettings(
-    val appDrawerColumns: Int,
-    val appDrawerRowsHeight: Int,
-    val gridItemSettings: GridItemSettings,
-    val eblanApplicationInfoOrder: EblanApplicationInfoOrder,
-    val backgroundColor: TextColor,
-    val customBackgroundColor: Int,
-    val appDrawerType: AppDrawerType,
-    val horizontalAppDrawerColumns: Int,
-    val horizontalAppDrawerRows: Int,
-    val excludeTaggedApps: Boolean,
-    val showKeyboard: Boolean,
-    val fuzzySearch: Boolean,
-)
+plugins {
+    alias(libs.plugins.com.eblan.launcher.library)
+    alias(libs.plugins.com.eblan.launcher.hilt)
+}
+
+android {
+    namespace = "com.eblan.launcher.framework.transliterator"
+}
+
+dependencies {
+    implementation(libs.icu4j)
+    implementation(projects.domain.common)
+    implementation(projects.domain.framework)
+}

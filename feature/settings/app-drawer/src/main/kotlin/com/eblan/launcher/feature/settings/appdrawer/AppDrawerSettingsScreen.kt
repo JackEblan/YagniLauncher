@@ -224,6 +224,17 @@ private fun Success(
                     onUpdateAppDrawerSettings(appDrawerSettings.copy(showKeyboard = it))
                 },
             )
+
+            HorizontalDivider(modifier = Modifier.fillMaxWidth())
+
+            SettingsSwitch(
+                checked = appDrawerSettings.fuzzySearch,
+                title = stringResource(R.string.fuzzy_search),
+                subtitle = stringResource(R.string.find_apps_even_with_typos_or_accented_characters),
+                onCheckedChange = {
+                    onUpdateAppDrawerSettings(appDrawerSettings.copy(fuzzySearch = it))
+                },
+            )
         }
 
         GridItemSettings(

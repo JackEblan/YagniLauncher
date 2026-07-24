@@ -80,6 +80,7 @@ internal fun AppDrawerSettingsProto.toAppDrawerSettings(): AppDrawerSettings = A
     horizontalAppDrawerRows = horizontalAppDrawerRows,
     excludeTaggedApps = excludeTaggedApps,
     showKeyboard = showKeyboard,
+    fuzzySearch = fuzzySearch,
 )
 
 internal fun GridItemSettingsProto.toGridItemSettings(): GridItemSettings = GridItemSettings(
@@ -134,6 +135,7 @@ internal fun AppDrawerSettings.toAppDrawerSettingsProto(): AppDrawerSettingsProt
     .setHorizontalAppDrawerRows(horizontalAppDrawerRows)
     .setExcludeTaggedApps(excludeTaggedApps)
     .setShowKeyboard(showKeyboard)
+    .setFuzzySearch(fuzzySearch)
     .build()
 
 internal fun GeneralSettings.toGeneralSettingsProto(): GeneralSettingsProto = GeneralSettingsProto.newBuilder().setThemeProto(theme.toThemeProto())
