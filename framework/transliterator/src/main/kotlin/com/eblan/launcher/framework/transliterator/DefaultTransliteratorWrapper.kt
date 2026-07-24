@@ -15,11 +15,19 @@
  *   limitations under the License.
  *
  */
-package com.eblan.launcher.domain.framework
+package com.eblan.launcher.framework.transliterator
 
-interface JaroWinklerSimilarityWrapper {
-    suspend fun apply(
-        left: CharSequence,
-        right: CharSequence,
-    ): Double
+import com.eblan.launcher.domain.framework.TransliteratorWrapper
+import com.ibm.icu.text.Transliterator
+import java.util.Locale
+import javax.inject.Inject
+
+internal class DefaultTransliteratorWrapper @Inject constructor() : TransliteratorWrapper {
+    private val transliterator =
+        Transliterator.getInstance("Any-Latin; Latin-ASCII")
+
+    override fun normalize(text: String): String = transliterator
+        .transliterate(text)
+        .trim()
+        .lowercase(Locale.ROOT)
 }

@@ -224,6 +224,17 @@ private fun Success(
                     onUpdateAppDrawerSettings(appDrawerSettings.copy(showKeyboard = it))
                 },
             )
+
+            HorizontalDivider(modifier = Modifier.fillMaxWidth())
+
+            SettingsSwitch(
+                checked = appDrawerSettings.fuzzySearch,
+                title = "Fuzzy Search",
+                subtitle = "Find apps even with typos or accented characters",
+                onCheckedChange = {
+                    onUpdateAppDrawerSettings(appDrawerSettings.copy(fuzzySearch = it))
+                },
+            )
         }
 
         GridItemSettings(

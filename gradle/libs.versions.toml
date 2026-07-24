@@ -12,8 +12,10 @@ androidxLifecycleViewModelCompose = "2.10.0"
 androidxNavigationCompose = "2.9.7"
 androidxTest = "1.7.0"
 androidxTestExt = "1.3.0"
+apacheCommonsText = "1.15.0"
 coil = "3.4.0"
 hilt = "2.59.2"
+icu4j = "78.3"
 javaxInject = "1"
 kotlin = "2.3.20"
 kotlinxCoroutines = "1.10.2"
@@ -47,11 +49,13 @@ androidx-test-core-ktx = { group = "androidx.test", name = "core-ktx", version.r
 androidx-test-runner = { group = "androidx.test", name = "runner", version.ref = "androidxTest" }
 androidx-test-rules = { group = "androidx.test", name = "rules", version.ref = "androidxTest" }
 androidx-test-ext-junit-ktx = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "androidxTestExt" }
+apache-commons-text = { group = "org.apache.commons", name = "commons-text", version.ref = "apacheCommonsText" }
 coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-android-gradle-plugin = { group = "com.google.dagger", name = "hilt-android-gradle-plugin", version.ref = "hilt" }
 hilt-android-testing = { group = "com.google.dagger", name = "hilt-android-testing", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
+icu4j = { group = "com.ibm.icu", name = "icu4j", version.ref = "icu4j" }
 javax-inject = { group = "javax.inject", name = "javax.inject", version.ref = "javaxInject" }
 kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinxCoroutines" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }

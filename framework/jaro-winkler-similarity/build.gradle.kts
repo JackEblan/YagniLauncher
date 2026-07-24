@@ -15,11 +15,18 @@
  *   limitations under the License.
  *
  */
-package com.eblan.launcher.domain.framework
 
-interface JaroWinklerSimilarityWrapper {
-    suspend fun apply(
-        left: CharSequence,
-        right: CharSequence,
-    ): Double
+plugins {
+    alias(libs.plugins.com.eblan.launcher.library)
+    alias(libs.plugins.com.eblan.launcher.hilt)
+}
+
+android {
+    namespace = "com.eblan.launcher.framework.jarowinklersimilarity"
+}
+
+dependencies {
+    implementation(libs.apache.commons.text)
+    implementation(projects.domain.common)
+    implementation(projects.domain.framework)
 }

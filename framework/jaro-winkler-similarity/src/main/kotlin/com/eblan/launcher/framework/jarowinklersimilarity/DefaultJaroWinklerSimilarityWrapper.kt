@@ -15,11 +15,15 @@
  *   limitations under the License.
  *
  */
-package com.eblan.launcher.domain.framework
+package com.eblan.launcher.framework.jarowinklersimilarity
 
-interface JaroWinklerSimilarityWrapper {
-    suspend fun apply(
+import com.eblan.launcher.domain.framework.JaroWinklerSimilarityWrapper
+import org.apache.commons.text.similarity.JaroWinklerSimilarity
+import javax.inject.Inject
+
+internal class DefaultJaroWinklerSimilarityWrapper @Inject constructor() : JaroWinklerSimilarityWrapper {
+    override suspend fun apply(
         left: CharSequence,
         right: CharSequence,
-    ): Double
+    ): Double = JaroWinklerSimilarity().apply(left, right)
 }

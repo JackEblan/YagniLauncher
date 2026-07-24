@@ -15,11 +15,20 @@
  *   limitations under the License.
  *
  */
-package com.eblan.launcher.domain.framework
+package com.eblan.launcher.framework.transliterator
 
-interface JaroWinklerSimilarityWrapper {
-    suspend fun apply(
-        left: CharSequence,
-        right: CharSequence,
-    ): Double
+import com.eblan.launcher.domain.framework.TransliteratorWrapper
+import dagger.Binds
+import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
+
+@Module
+@InstallIn(SingletonComponent::class)
+internal interface TransliteratorModule {
+
+    @Binds
+    @Singleton
+    fun TransliteratorWrapper(impl: DefaultTransliteratorWrapper): TransliteratorWrapper
 }
