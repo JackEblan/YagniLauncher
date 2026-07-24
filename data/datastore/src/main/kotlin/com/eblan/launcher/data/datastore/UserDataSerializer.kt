@@ -94,6 +94,7 @@ class UserDataSerializer @Inject constructor() : Serializer<UserDataProto> {
         horizontalAppDrawerRows = 5
         excludeTaggedApps = false
         showKeyboard = false
+        fuzzySearch = false
     }.build()
 
     private val defaultGestureSettingsProto = GestureSettingsProto.newBuilder().apply {
