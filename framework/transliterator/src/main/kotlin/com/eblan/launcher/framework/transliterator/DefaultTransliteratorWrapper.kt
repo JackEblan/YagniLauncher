@@ -20,22 +20,17 @@ package com.eblan.launcher.framework.transliterator
 import com.eblan.launcher.domain.common.Dispatcher
 import com.eblan.launcher.domain.common.EblanDispatchers
 import com.eblan.launcher.domain.framework.TransliteratorWrapper
-import com.ibm.icu.text.Transliterator
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
-import java.util.Locale
+import java.text.Normalizer
 import javax.inject.Inject
 
 internal class DefaultTransliteratorWrapper @Inject constructor(
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) : TransliteratorWrapper {
-    private val transliterator =
-        Transliterator.getInstance("Any-Latin; Latin-ASCII")
-
     override suspend fun normalize(text: String): String = withContext(defaultDispatcher) {
-        transliterator
-            .transliterate(text)
-            .trim()
-            .lowercase(Locale.ROOT)
+        Normalizer.normalize(text, Normalizer.Form.NFD)
+            .replace("\\p{M}+".toRegex(), "")
+            .lowercase()
     }
 }

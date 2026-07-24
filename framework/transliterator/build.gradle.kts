@@ -26,7 +26,6 @@ android {
 }
 
 dependencies {
-    implementation(libs.icu4j)
     implementation(projects.domain.common)
     implementation(projects.domain.framework)
 }
