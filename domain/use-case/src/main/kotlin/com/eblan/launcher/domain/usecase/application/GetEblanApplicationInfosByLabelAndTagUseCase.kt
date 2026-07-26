@@ -76,13 +76,9 @@ class GetEblanApplicationInfosByLabelAndTagUseCase @Inject constructor(
             iconPackDirectory = iconPackDirectory,
             label = label,
             fuzzySearch = userData.appDrawerSettings.fuzzySearch,
-            eblanApplicationInfos = if (tagId != null) {
-                eblanApplicationInfoRepository.getEblanApplicationInfosByTagId(id = tagId)
-            } else if (userData.appDrawerSettings.excludeTaggedApps) {
-                eblanApplicationInfoRepository.getEblanApplicationInfosWithoutTag()
-            } else {
-                eblanApplicationInfos
-            },
+            excludeTaggedApps = userData.appDrawerSettings.excludeTaggedApps,
+            tagId = tagId,
+            eblanApplicationInfos = eblanApplicationInfos,
         )
 
         updateEblanApplicationInfoIndexes(
@@ -176,9 +172,19 @@ class GetEblanApplicationInfosByLabelAndTagUseCase @Inject constructor(
         iconPackDirectory: File,
         label: String,
         fuzzySearch: Boolean,
+        excludeTaggedApps: Boolean,
+        tagId: Long?,
         eblanApplicationInfos: List<EblanApplicationInfo>,
     ): MutableList<EblanApplicationInfoWithIconPackInfo> {
-        val fastMatchesEblanApplicationInfos = eblanApplicationInfos.filter {
+        val currentEblanApplicationInfos = if (tagId != null) {
+            eblanApplicationInfoRepository.getEblanApplicationInfosByTagId(id = tagId)
+        } else if (excludeTaggedApps) {
+            eblanApplicationInfoRepository.getEblanApplicationInfosWithoutTag()
+        } else {
+            eblanApplicationInfos
+        }
+
+        val fastMatchesEblanApplicationInfos = currentEblanApplicationInfos.filter {
             it.label.startsWith(
                 prefix = label,
                 ignoreCase = true,
@@ -195,7 +201,7 @@ class GetEblanApplicationInfosByLabelAndTagUseCase @Inject constructor(
 
             else -> {
                 val fuzzyMatches = if (fuzzySearch) {
-                    (eblanApplicationInfos - fastMatchesEblanApplicationInfos.toSet())
+                    (currentEblanApplicationInfos - fastMatchesEblanApplicationInfos.toSet())
                         .map {
                             it to jaroWinklerSimilarityWrapper.apply(
                                 left = transliteratorWrapper.normalize(text = label),
@@ -214,14 +220,14 @@ class GetEblanApplicationInfosByLabelAndTagUseCase @Inject constructor(
         }
 
         return filterEblanApplicationInfos
-            .map { eblanApplicationInfo ->
+            .map {
                 val iconPackInfoFilePath = File(
                     iconPackDirectory,
-                    iconKeyGenerator.getHashedName(name = eblanApplicationInfo.componentName),
+                    iconKeyGenerator.getHashedName(name = it.componentName),
                 )
 
                 EblanApplicationInfoWithIconPackInfo(
-                    eblanApplicationInfo = eblanApplicationInfo,
+                    eblanApplicationInfo = it,
                     iconPackInfoFilePath = iconPackInfoFilePath
                         .takeIf(File::exists)
                         ?.absolutePath,
