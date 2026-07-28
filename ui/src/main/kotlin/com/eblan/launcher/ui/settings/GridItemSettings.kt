@@ -28,8 +28,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -45,6 +44,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.eblan.launcher.domain.model.GridItemSettings
 import com.eblan.launcher.domain.model.HorizontalAlignment
+import com.eblan.launcher.domain.model.SettingsItem
 import com.eblan.launcher.domain.model.TextColor
 import com.eblan.launcher.domain.model.VerticalArrangement
 import com.eblan.launcher.ui.R
@@ -56,6 +56,129 @@ import com.eblan.launcher.ui.dialog.EditTextSizeDialog
 import com.eblan.launcher.ui.dialog.RadioOptionsDialog
 import com.eblan.launcher.ui.dialog.TextColorDialog
 import com.eblan.launcher.common.R as commonR
+
+@Composable
+fun buildGridItemSettingsItems(
+    gridItemSettings: GridItemSettings,
+    onIconSizeClick: () -> Unit,
+    onTextColorClick: () -> Unit,
+    onTextSizeClick: () -> Unit,
+    onBackgroundColorClick: () -> Unit,
+    onPaddingClick: () -> Unit,
+    onCornerRadiusClick: () -> Unit,
+    onHorizontalAlignmentClick: () -> Unit,
+    onVerticalArrangementClick: () -> Unit,
+    onUpdateGridItemSettings: (GridItemSettings) -> Unit,
+): List<SettingsItem> = buildList {
+    add(
+        SettingsItem.Category(
+            title = stringResource(R.string.grid_item),
+        ),
+    )
+
+    add(
+        SettingsItem.Column(
+            title = stringResource(R.string.icon_size),
+            subtitle = "${gridItemSettings.iconSize}",
+            onClick = onIconSizeClick,
+        ),
+    )
+
+    add(
+        SettingsItem.Column(
+            title = stringResource(R.string.text_color),
+            subtitle = stringResource(R.string.custom_text_color),
+            onClick = onTextColorClick,
+        ),
+    )
+
+    add(
+        SettingsItem.Column(
+            title = stringResource(R.string.text_size),
+            subtitle = "${gridItemSettings.textSize}",
+            onClick = onTextSizeClick,
+        ),
+    )
+
+    add(
+        SettingsItem.CustomBackgroundColor(
+            title = stringResource(commonR.string.background_color),
+            customBackgroundColor = gridItemSettings.customBackgroundColor,
+            onClick = onBackgroundColorClick,
+        ),
+    )
+
+    add(
+        SettingsItem.Column(
+            title = stringResource(R.string.padding),
+            subtitle = "${gridItemSettings.padding}",
+            onClick = onPaddingClick,
+        ),
+    )
+
+    add(
+        SettingsItem.Column(
+            title = stringResource(R.string.corner_radius),
+            subtitle = "${gridItemSettings.cornerRadius}",
+            onClick = onCornerRadiusClick,
+        ),
+    )
+
+    add(
+        SettingsItem.Switch(
+            checked = gridItemSettings.showLabel,
+            title = stringResource(R.string.show_label),
+            subtitle = stringResource(R.string.display_app_names_below_icons),
+            onClick = {
+                onUpdateGridItemSettings(
+                    gridItemSettings.copy(showLabel = !gridItemSettings.showLabel),
+                )
+            },
+            onCheckedChange = {
+                onUpdateGridItemSettings(
+                    gridItemSettings.copy(showLabel = it),
+                )
+            },
+        ),
+    )
+
+    add(
+        SettingsItem.Switch(
+            checked = gridItemSettings.singleLineLabel,
+            title = stringResource(R.string.single_line_label),
+            subtitle = stringResource(R.string.limit_app_names_to_one_line),
+            onClick = {
+                onUpdateGridItemSettings(
+                    gridItemSettings.copy(singleLineLabel = !gridItemSettings.singleLineLabel),
+                )
+            },
+            onCheckedChange = {
+                onUpdateGridItemSettings(
+                    gridItemSettings.copy(singleLineLabel = it),
+                )
+            },
+        ),
+    )
+
+    add(
+        SettingsItem.Column(
+            title = stringResource(R.string.horizontal_alignment),
+            subtitle = gridItemSettings.horizontalAlignment.name.replace(
+                Regex("([a-z])([A-Z])"),
+                "$1 $2",
+            ),
+            onClick = onHorizontalAlignmentClick,
+        ),
+    )
+
+    add(
+        SettingsItem.Column(
+            title = stringResource(R.string.vertical_arrangement),
+            subtitle = gridItemSettings.verticalArrangement.name,
+            onClick = onVerticalArrangementClick,
+        ),
+    )
+}
 
 @Composable
 fun GridItemSettings(
@@ -81,122 +204,78 @@ fun GridItemSettings(
 
     var showVerticalArrangement by remember { mutableStateOf(false) }
 
+    val items = buildGridItemSettingsItems(
+        gridItemSettings = gridItemSettings,
+        onIconSizeClick = {
+            showIconSizeDialog = true
+        },
+        onTextColorClick = {
+            showTextColorDialog = true
+        },
+        onTextSizeClick = {
+            showTextSizeDialog = true
+        },
+        onBackgroundColorClick = {
+            showBackgroundColorDialog = true
+        },
+        onPaddingClick = {
+            showPaddingDialog = true
+        },
+        onCornerRadiusClick = {
+            showCornerRadiusDialog = true
+        },
+        onHorizontalAlignmentClick = {
+            showHorizontalAlignment = true
+        },
+        onVerticalArrangementClick = {
+            showVerticalArrangement = true
+        },
+        onUpdateGridItemSettings = onUpdateGridItemSettings,
+    )
+
     Column(modifier = modifier) {
-        Text(
-            modifier = Modifier.padding(15.dp),
-            text = stringResource(R.string.grid_item),
-            style = MaterialTheme.typography.bodySmall,
-        )
+        items.forEachIndexed { index, settingsItem ->
+            when (settingsItem) {
+                is SettingsItem.Column -> {
+                    SettingsColumn(
+                        index = index,
+                        size = items.size,
+                        title = settingsItem.title,
+                        subtitle = settingsItem.subtitle,
+                        onClick = settingsItem.onClick,
+                    )
+                }
 
-        ElevatedCard(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 15.dp),
-        ) {
-            SettingsColumn(
-                title = stringResource(R.string.icon_size),
-                subtitle = "${gridItemSettings.iconSize}",
-                onClick = {
-                    showIconSizeDialog = true
-                },
-            )
+                is SettingsItem.Switch -> {
+                    SettingsSwitch(
+                        index = index,
+                        size = items.size,
+                        checked = settingsItem.checked,
+                        title = settingsItem.title,
+                        subtitle = settingsItem.subtitle,
+                        onClick = settingsItem.onClick,
+                        onCheckedChange = settingsItem.onCheckedChange,
+                    )
+                }
 
-            HorizontalDivider(modifier = Modifier.fillMaxWidth())
+                is SettingsItem.CustomBackgroundColor -> {
+                    CustomBackgroundColor(
+                        index = index,
+                        size = items.size,
+                        title = settingsItem.title,
+                        customBackgroundColor = settingsItem.customBackgroundColor,
+                        onClick = settingsItem.onClick,
+                    )
+                }
 
-            TextColorSettingsRow(
-                textColorTitle = stringResource(R.string.text_color),
-                customColorTitle = stringResource(R.string.custom_text_color),
-                textColor = gridItemSettings.textColor,
-                customColor = gridItemSettings.customTextColor,
-                onClick = {
-                    showTextColorDialog = true
-                },
-            )
-
-            HorizontalDivider(modifier = Modifier.fillMaxWidth())
-
-            SettingsColumn(
-                title = stringResource(R.string.text_size),
-                subtitle = "${gridItemSettings.textSize}",
-                onClick = {
-                    showTextSizeDialog = true
-                },
-            )
-
-            HorizontalDivider(modifier = Modifier.fillMaxWidth())
-
-            CustomColorSettingsRow(
-                title = stringResource(commonR.string.background_color),
-                customColor = gridItemSettings.customBackgroundColor,
-                onClick = {
-                    showBackgroundColorDialog = true
-                },
-            )
-
-            HorizontalDivider(modifier = Modifier.fillMaxWidth())
-
-            SettingsColumn(
-                title = stringResource(R.string.padding),
-                subtitle = "${gridItemSettings.padding}",
-                onClick = {
-                    showPaddingDialog = true
-                },
-            )
-
-            HorizontalDivider(modifier = Modifier.fillMaxWidth())
-
-            SettingsColumn(
-                title = stringResource(R.string.corner_radius),
-                subtitle = "${gridItemSettings.cornerRadius}",
-                onClick = {
-                    showCornerRadiusDialog = true
-                },
-            )
-
-            HorizontalDivider(modifier = Modifier.fillMaxWidth())
-
-            SettingsSwitch(
-                checked = gridItemSettings.showLabel,
-                title = stringResource(R.string.show_label),
-                subtitle = stringResource(R.string.display_app_names_below_icons),
-                onCheckedChange = {
-                    onUpdateGridItemSettings(gridItemSettings.copy(showLabel = it))
-                },
-            )
-
-            HorizontalDivider(modifier = Modifier.fillMaxWidth())
-
-            SettingsSwitch(
-                checked = gridItemSettings.singleLineLabel,
-                title = stringResource(R.string.single_line_label),
-                subtitle = stringResource(R.string.limit_app_names_to_one_line),
-                onCheckedChange = {
-                    onUpdateGridItemSettings(gridItemSettings.copy(singleLineLabel = it))
-                },
-            )
-
-            HorizontalDivider(modifier = Modifier.fillMaxWidth())
-
-            SettingsColumn(
-                title = stringResource(R.string.horizontal_alignment),
-                subtitle = gridItemSettings.horizontalAlignment.name.replace(
-                    regex = Regex(pattern = "([a-z])([A-Z])"),
-                    replacement = "$1 $2",
-                ),
-                onClick = {
-                    showHorizontalAlignment = true
-                },
-            )
-
-            HorizontalDivider(modifier = Modifier.fillMaxWidth())
-
-            SettingsColumn(
-                title = stringResource(R.string.vertical_arrangement),
-                subtitle = gridItemSettings.verticalArrangement.name,
-                onClick = {
-                    showVerticalArrangement = true
-                },
-            )
+                is SettingsItem.Category -> {
+                    Text(
+                        modifier = Modifier.padding(15.dp),
+                        text = settingsItem.title,
+                        style = MaterialTheme.typography.bodySmall,
+                    )
+                }
+            }
         }
     }
 
@@ -360,7 +439,7 @@ fun TextColorSettingsRow(
         TextColor.System,
         TextColor.Light,
         TextColor.Dark,
-        -> {
+            -> {
             SettingsColumn(
                 modifier = modifier,
                 title = textColorTitle,
@@ -370,7 +449,7 @@ fun TextColorSettingsRow(
         }
 
         TextColor.Custom -> {
-            CustomColorSettingsRow(
+            CustomBackgroundColor(
                 modifier = modifier,
                 title = customColorTitle,
                 customColor = customColor,
@@ -381,7 +460,7 @@ fun TextColorSettingsRow(
 }
 
 @Composable
-private fun CustomColorSettingsRow(
+private fun CustomBackgroundColor(
     modifier: Modifier = Modifier,
     title: String,
     customColor: Int,
@@ -411,14 +490,60 @@ private fun CustomColorSettingsRow(
     }
 }
 
-private fun HorizontalAlignment.getHorizontalAlignmentTitle(context: Context): String = when (this) {
-    HorizontalAlignment.Start -> context.getString(R.string.start)
-    HorizontalAlignment.CenterHorizontally -> context.getString(R.string.center_horizontally)
-    HorizontalAlignment.End -> context.getString(R.string.end)
+@Composable
+private fun CustomBackgroundColor(
+    modifier: Modifier = Modifier,
+    index: Int,
+    size: Int,
+    title: String,
+    customBackgroundColor: Int,
+    onClick: () -> Unit,
+) {
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 2.dp),
+        shape = settingsItemShape(
+            index = index,
+            size = size,
+        ),
+        onClick = onClick,
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(15.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleMedium,
+            )
+
+            Box(
+                modifier = Modifier
+                    .size(40.dp)
+                    .background(
+                        color = Color(customBackgroundColor),
+                        shape = CircleShape,
+                    ),
+            )
+        }
+    }
 }
 
-private fun VerticalArrangement.getVerticalArrangementTitle(context: Context): String = when (this) {
-    VerticalArrangement.Top -> context.getString(R.string.top)
-    VerticalArrangement.Center -> context.getString(R.string.center)
-    VerticalArrangement.Bottom -> context.getString(R.string.bottom)
-}
+
+private fun HorizontalAlignment.getHorizontalAlignmentTitle(context: Context): String =
+    when (this) {
+        HorizontalAlignment.Start -> context.getString(R.string.start)
+        HorizontalAlignment.CenterHorizontally -> context.getString(R.string.center_horizontally)
+        HorizontalAlignment.End -> context.getString(R.string.end)
+    }
+
+private fun VerticalArrangement.getVerticalArrangementTitle(context: Context): String =
+    when (this) {
+        VerticalArrangement.Top -> context.getString(R.string.top)
+        VerticalArrangement.Center -> context.getString(R.string.center)
+        VerticalArrangement.Bottom -> context.getString(R.string.bottom)
+    }

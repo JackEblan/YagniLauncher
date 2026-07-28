@@ -257,6 +257,9 @@ private fun Success(
                         onCheckedChange = settingsItem.onCheckedChange,
                     )
                 }
+
+                is SettingsItem.Category,
+                is SettingsItem.CustomBackgroundColor -> Unit
             }
         }
     }
