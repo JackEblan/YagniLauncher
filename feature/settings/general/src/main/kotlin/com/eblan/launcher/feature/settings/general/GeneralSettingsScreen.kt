@@ -56,8 +56,7 @@ import com.eblan.launcher.service.IconPackInfoService
 import com.eblan.launcher.ui.dialog.RadioOptionsDialog
 import com.eblan.launcher.ui.local.LocalSettings
 import com.eblan.launcher.ui.model.SettingsItem
-import com.eblan.launcher.ui.settings.SettingsColumn
-import com.eblan.launcher.ui.settings.SettingsSwitch
+import com.eblan.launcher.ui.settings.SettingsItemContent
 import com.eblan.launcher.common.R as commonR
 
 @Composable
@@ -234,34 +233,11 @@ private fun Success(
             .padding(10.dp),
     ) {
         items.forEachIndexed { index, settingsItem ->
-            when (settingsItem) {
-                is SettingsItem.Column -> {
-                    SettingsColumn(
-                        index = index,
-                        size = items.size,
-                        title = settingsItem.title,
-                        subtitle = settingsItem.subtitle,
-                        onClick = settingsItem.onClick,
-                    )
-                }
-
-                is SettingsItem.Switch -> {
-                    SettingsSwitch(
-                        index = index,
-                        size = items.size,
-                        checked = settingsItem.checked,
-                        title = settingsItem.title,
-                        subtitle = settingsItem.subtitle,
-                        onClick = settingsItem.onClick,
-                        onCheckedChange = settingsItem.onCheckedChange,
-                    )
-                }
-
-                is SettingsItem.Category,
-                is SettingsItem.CustomBackgroundColor,
-                is SettingsItem.Row,
-                -> Unit
-            }
+            SettingsItemContent(
+                settingsItem = settingsItem,
+                index = index,
+                size = items.size,
+            )
         }
     }
 

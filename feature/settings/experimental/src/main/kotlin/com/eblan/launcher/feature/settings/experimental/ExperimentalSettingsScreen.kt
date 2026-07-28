@@ -17,6 +17,7 @@
  */
 package com.eblan.launcher.feature.settings.experimental
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -44,8 +45,7 @@ import com.eblan.launcher.domain.model.ExperimentalSettings
 import com.eblan.launcher.feature.settings.experimental.dialog.SyncDataDialog
 import com.eblan.launcher.feature.settings.experimental.model.ExperimentalSettingsUiState
 import com.eblan.launcher.ui.model.SettingsItem
-import com.eblan.launcher.ui.settings.SettingsColumn
-import com.eblan.launcher.ui.settings.SettingsSwitch
+import com.eblan.launcher.ui.settings.SettingsItemContent
 import com.eblan.launcher.common.R as commonR
 
 @Composable
@@ -163,33 +163,14 @@ private fun Success(
             .verticalScroll(rememberScrollState())
             .fillMaxSize()
             .padding(10.dp),
+        verticalArrangement = Arrangement.spacedBy(2.dp),
     ) {
         items.forEachIndexed { index, settingsItem ->
-            when (settingsItem) {
-                is SettingsItem.Column -> {
-                    SettingsColumn(
-                        index = index,
-                        size = items.size,
-                        title = settingsItem.title,
-                        subtitle = settingsItem.subtitle,
-                        onClick = settingsItem.onClick,
-                    )
-                }
-
-                is SettingsItem.Switch -> {
-                    SettingsSwitch(
-                        index = index,
-                        size = items.size,
-                        checked = settingsItem.checked,
-                        title = settingsItem.title,
-                        subtitle = settingsItem.subtitle,
-                        onClick = settingsItem.onClick,
-                        onCheckedChange = settingsItem.onCheckedChange,
-                    )
-                }
-
-                else -> Unit
-            }
+            SettingsItemContent(
+                settingsItem = settingsItem,
+                index = index,
+                size = items.size,
+            )
         }
     }
 

@@ -24,16 +24,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -46,7 +42,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
@@ -55,7 +50,7 @@ import androidx.compose.ui.unit.dp
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.ui.local.LocalPackageManager
 import com.eblan.launcher.ui.model.SettingsItem
-import com.eblan.launcher.ui.settings.settingsItemShape
+import com.eblan.launcher.ui.settings.SettingsItemContent
 import com.eblan.launcher.common.R as commonR
 
 @Composable
@@ -205,75 +200,17 @@ internal fun SettingsScreen(
                     .verticalScroll(rememberScrollState())
                     .matchParentSize()
                     .padding(10.dp),
+                verticalArrangement = Arrangement.spacedBy(2.dp),
             ) {
                 AlphaWarningCard()
 
                 items.forEachIndexed { index, settingsItem ->
-                    when (settingsItem) {
-                        is SettingsItem.Row -> {
-                            SettingsRow(
-                                index = index,
-                                size = items.size,
-                                imageVector = settingsItem.imageVector,
-                                title = settingsItem.title,
-                                subtitle = settingsItem.subtitle,
-                                onClick = settingsItem.onClick,
-                            )
-                        }
-
-                        else -> Unit
-                    }
+                    SettingsItemContent(
+                        settingsItem = settingsItem,
+                        index = index,
+                        size = items.size,
+                    )
                 }
-            }
-        }
-    }
-}
-
-@Composable
-private fun SettingsRow(
-    modifier: Modifier = Modifier,
-    index: Int,
-    size: Int,
-    imageVector: ImageVector,
-    subtitle: String,
-    title: String,
-    onClick: () -> Unit,
-) {
-    Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(vertical = 2.dp),
-        shape = settingsItemShape(
-            index = index,
-            size = size,
-        ),
-        onClick = onClick,
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(15.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Icon(
-                imageVector = imageVector,
-                contentDescription = null,
-            )
-
-            Spacer(modifier = Modifier.width(20.dp))
-
-            Column {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.titleMedium,
-                )
-
-                Spacer(modifier = Modifier.height(5.dp))
-
-                Text(
-                    text = subtitle,
-                    style = MaterialTheme.typography.bodyMedium,
-                )
             }
         }
     }

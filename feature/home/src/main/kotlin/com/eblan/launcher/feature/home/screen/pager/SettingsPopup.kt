@@ -25,6 +25,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -143,7 +144,10 @@ internal fun SettingsPopup(
             enter = fadeIn(tween()) + scaleIn(initialScale = 0.8f, animationSpec = tween()),
             exit = fadeOut(tween()) + scaleOut(targetScale = 0.8f, animationSpec = tween()),
         ) {
-            Column(modifier = Modifier.width(IntrinsicSize.Max)) {
+            Column(
+                modifier = Modifier.width(IntrinsicSize.Max),
+                verticalArrangement = Arrangement.spacedBy(2.dp),
+            ) {
                 items.forEachIndexed { index, settingsMenuItem ->
                     PopupMenuRow(
                         index = index,
@@ -168,7 +172,7 @@ private fun PopupMenuRow(
     onClick: () -> Unit,
 ) {
     Card(
-        modifier = modifier.padding(vertical = 1.dp),
+        modifier = modifier,
         shape = settingsItemShape(
             index = index,
             size = size,
@@ -194,7 +198,7 @@ private fun PopupMenuRow(
 }
 
 @Composable
-fun buildSettingsMenuItems(
+private fun buildSettingsMenuItems(
     hasSystemFeatureAppWidgets: Boolean,
     onSettingsClick: () -> Unit,
     onEditPageClick: () -> Unit,

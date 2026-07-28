@@ -24,8 +24,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -33,8 +35,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.eblan.launcher.ui.model.SettingsItem
 
 @Composable
 fun SettingsSwitch(
@@ -88,9 +92,7 @@ fun SettingsSwitch(
     onCheckedChange: (Boolean) -> Unit,
 ) {
     Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(vertical = 2.dp),
+        modifier = modifier.fillMaxWidth(),
         shape = settingsItemShape(
             index = index,
             size = size,
@@ -162,9 +164,7 @@ fun SettingsColumn(
     onClick: () -> Unit,
 ) {
     Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(vertical = 2.dp),
+        modifier = modifier.fillMaxWidth(),
         shape = settingsItemShape(
             index = index,
             size = size,
@@ -187,6 +187,119 @@ fun SettingsColumn(
                 text = subtitle,
                 style = MaterialTheme.typography.bodyMedium,
             )
+        }
+    }
+}
+
+@Composable
+fun SettingsItemContent(
+    settingsItem: SettingsItem,
+    index: Int,
+    size: Int,
+) {
+    when (settingsItem) {
+        is SettingsItem.Column -> {
+            SettingsColumn(
+                index = index,
+                size = size,
+                title = settingsItem.title,
+                subtitle = settingsItem.subtitle,
+                onClick = settingsItem.onClick,
+            )
+        }
+
+        is SettingsItem.Switch -> {
+            SettingsSwitch(
+                index = index,
+                size = size,
+                checked = settingsItem.checked,
+                title = settingsItem.title,
+                subtitle = settingsItem.subtitle,
+                onClick = settingsItem.onClick,
+                onCheckedChange = settingsItem.onCheckedChange,
+            )
+        }
+
+        is SettingsItem.CustomBackgroundColor,
+        -> {
+            CustomBackgroundColor(
+                index = index,
+                size = size,
+                title = settingsItem.title,
+                customBackgroundColor = settingsItem.customBackgroundColor,
+                onClick = settingsItem.onClick,
+            )
+        }
+
+        is SettingsItem.Row -> {
+            SettingsRow(
+                index = index,
+                size = size,
+                imageVector = settingsItem.imageVector,
+                title = settingsItem.title,
+                subtitle = settingsItem.subtitle,
+                onClick = settingsItem.onClick,
+            )
+        }
+    }
+}
+
+@Composable
+fun SettingsCategoryText(
+    modifier: Modifier = Modifier,
+    text: String,
+) {
+    Text(
+        modifier = modifier.padding(15.dp),
+        text = text,
+        style = MaterialTheme.typography.bodySmall,
+    )
+}
+
+@Composable
+private fun SettingsRow(
+    modifier: Modifier = Modifier,
+    index: Int,
+    size: Int,
+    imageVector: ImageVector,
+    subtitle: String,
+    title: String,
+    onClick: () -> Unit,
+) {
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        shape = settingsItemShape(
+            index = index,
+            size = size,
+        ),
+        onClick = onClick,
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(15.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(
+                imageVector = imageVector,
+                contentDescription = null,
+            )
+
+            Spacer(modifier = Modifier.width(20.dp))
+
+            Column {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleMedium,
+                )
+
+                Spacer(modifier = Modifier.height(5.dp))
+
+                Text(
+                    text = subtitle,
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
         }
     }
 }

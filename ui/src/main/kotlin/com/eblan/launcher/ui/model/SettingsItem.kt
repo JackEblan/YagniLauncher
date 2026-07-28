@@ -20,10 +20,6 @@ package com.eblan.launcher.ui.model
 import androidx.compose.ui.graphics.vector.ImageVector
 
 sealed interface SettingsItem {
-    data class Category(
-        val title: String,
-    ) : SettingsItem
-
     data class Column(
         val title: String,
         val subtitle: String,

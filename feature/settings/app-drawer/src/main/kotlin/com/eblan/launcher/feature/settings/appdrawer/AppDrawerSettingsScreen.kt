@@ -17,6 +17,7 @@
  */
 package com.eblan.launcher.feature.settings.appdrawer
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,7 +27,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -51,10 +51,8 @@ import com.eblan.launcher.feature.settings.appdrawer.model.AppDrawerSettingsUiSt
 import com.eblan.launcher.ui.dialog.RadioOptionsDialog
 import com.eblan.launcher.ui.dialog.TextColorDialog
 import com.eblan.launcher.ui.model.SettingsItem
-import com.eblan.launcher.ui.settings.CustomBackgroundColor
 import com.eblan.launcher.ui.settings.GridItemSettings
-import com.eblan.launcher.ui.settings.SettingsColumn
-import com.eblan.launcher.ui.settings.SettingsSwitch
+import com.eblan.launcher.ui.settings.SettingsItemContent
 import com.eblan.launcher.ui.settings.getTitle
 import com.eblan.launcher.common.R as commonR
 
@@ -137,29 +135,25 @@ fun buildAppDrawerSettingsItems(
         ),
     )
 
-    add(
-        SettingsItem.Column(
-            title = stringResource(commonR.string.grid),
-            subtitle = when (appDrawerSettings.appDrawerType) {
-                AppDrawerType.Vertical ->
-                    "${appDrawerSettings.appDrawerColumns}x${appDrawerSettings.appDrawerRowsHeight}"
+    when (appDrawerSettings.appDrawerType) {
+        AppDrawerType.Vertical -> add(
+            SettingsItem.Column(
+                title = stringResource(commonR.string.grid),
+                subtitle = "${appDrawerSettings.appDrawerColumns}x${appDrawerSettings.appDrawerRowsHeight}",
+                onClick = onVerticalGridClick,
+            ),
+        )
 
-                AppDrawerType.Horizontal ->
-                    "${appDrawerSettings.horizontalAppDrawerColumns}x${appDrawerSettings.horizontalAppDrawerRows}"
+        AppDrawerType.Horizontal -> add(
+            SettingsItem.Column(
+                title = stringResource(commonR.string.grid),
+                subtitle = "${appDrawerSettings.horizontalAppDrawerColumns}x${appDrawerSettings.horizontalAppDrawerRows}",
+                onClick = onHorizontalGridClick,
+            ),
+        )
 
-                AppDrawerType.List -> ""
-            },
-            onClick = when (appDrawerSettings.appDrawerType) {
-                AppDrawerType.Vertical -> onVerticalGridClick
-
-                AppDrawerType.Horizontal -> onHorizontalGridClick
-
-                AppDrawerType.List -> {
-                    {}
-                }
-            },
-        ),
-    )
+        AppDrawerType.List -> Unit
+    }
 
     add(
         SettingsItem.Column(
@@ -287,51 +281,14 @@ private fun Success(
             .verticalScroll(rememberScrollState())
             .fillMaxSize()
             .padding(10.dp),
+        verticalArrangement = Arrangement.spacedBy(2.dp),
     ) {
         items.forEachIndexed { index, settingsItem ->
-            when (settingsItem) {
-                is SettingsItem.Category -> {
-                    Text(
-                        modifier = Modifier.padding(15.dp),
-                        text = settingsItem.title,
-                        style = MaterialTheme.typography.bodySmall,
-                    )
-                }
-
-                is SettingsItem.Column -> {
-                    SettingsColumn(
-                        index = index,
-                        size = items.size,
-                        title = settingsItem.title,
-                        subtitle = settingsItem.subtitle,
-                        onClick = settingsItem.onClick,
-                    )
-                }
-
-                is SettingsItem.Switch -> {
-                    SettingsSwitch(
-                        index = index,
-                        size = items.size,
-                        checked = settingsItem.checked,
-                        title = settingsItem.title,
-                        subtitle = settingsItem.subtitle,
-                        onClick = settingsItem.onClick,
-                        onCheckedChange = settingsItem.onCheckedChange,
-                    )
-                }
-
-                is SettingsItem.CustomBackgroundColor -> {
-                    CustomBackgroundColor(
-                        index = index,
-                        size = items.size,
-                        title = settingsItem.title,
-                        customBackgroundColor = settingsItem.customBackgroundColor,
-                        onClick = settingsItem.onClick,
-                    )
-                }
-
-                is SettingsItem.Row -> Unit
-            }
+            SettingsItemContent(
+                settingsItem = settingsItem,
+                index = index,
+                size = items.size,
+            )
         }
 
         GridItemSettings(

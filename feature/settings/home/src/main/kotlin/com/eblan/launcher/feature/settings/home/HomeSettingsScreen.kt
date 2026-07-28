@@ -17,6 +17,7 @@
  */
 package com.eblan.launcher.feature.settings.home
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,7 +27,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -50,8 +50,8 @@ import com.eblan.launcher.feature.settings.home.dialog.EditGridDialog
 import com.eblan.launcher.feature.settings.home.model.HomeSettingsUiState
 import com.eblan.launcher.ui.model.SettingsItem
 import com.eblan.launcher.ui.settings.GridItemSettings
-import com.eblan.launcher.ui.settings.SettingsColumn
-import com.eblan.launcher.ui.settings.SettingsSwitch
+import com.eblan.launcher.ui.settings.SettingsCategoryText
+import com.eblan.launcher.ui.settings.SettingsItemContent
 import com.eblan.launcher.common.R as commonR
 
 @Composable
@@ -115,10 +115,6 @@ internal fun HomeSettingsScreen(
 fun buildHomeSettingsItems(
     homeSettings: HomeSettings,
     onGridClick: () -> Unit,
-    onDockGridClick: () -> Unit,
-    onDockHeightClick: () -> Unit,
-    onFolderCellDimensionClick: () -> Unit,
-    onFolderMaxGridClick: () -> Unit,
     onUpdateHomeSettings: (HomeSettings) -> Unit,
 ): List<SettingsItem> = buildList {
     add(
@@ -218,13 +214,15 @@ fun buildHomeSettingsItems(
             },
         ),
     )
+}
 
-    add(
-        SettingsItem.Category(
-            title = stringResource(R.string.dock),
-        ),
-    )
-
+@Composable
+fun buildDockHomeSettingsItems(
+    homeSettings: HomeSettings,
+    onDockGridClick: () -> Unit,
+    onDockHeightClick: () -> Unit,
+    onUpdateHomeSettings: (HomeSettings) -> Unit,
+): List<SettingsItem> = buildList {
     add(
         SettingsItem.Column(
             title = stringResource(R.string.dock_grid),
@@ -258,13 +256,14 @@ fun buildHomeSettingsItems(
             },
         ),
     )
+}
 
-    add(
-        SettingsItem.Category(
-            title = stringResource(R.string.folder),
-        ),
-    )
-
+@Composable
+fun buildFolderHomeSettingsItems(
+    homeSettings: HomeSettings,
+    onFolderCellDimensionClick: () -> Unit,
+    onFolderMaxGridClick: () -> Unit,
+): List<SettingsItem> = buildList {
     add(
         SettingsItem.Column(
             title = stringResource(R.string.folder_cell_dimension),
@@ -298,24 +297,33 @@ private fun Success(
 
     var showFolderMaxGridDialog by remember { mutableStateOf(false) }
 
-    val items = buildHomeSettingsItems(
+    val homeSettingsItems = buildHomeSettingsItems(
         homeSettings = homeSettings,
         onGridClick = {
             showGridDialog = true
         },
+        onUpdateHomeSettings = onUpdateHomeSettings,
+    )
+
+    val dockHomeSettingsItems = buildDockHomeSettingsItems(
+        homeSettings = homeSettings,
         onDockGridClick = {
             showDockGridDialog = true
         },
         onDockHeightClick = {
             showDockHeightDialog = true
         },
+        onUpdateHomeSettings = onUpdateHomeSettings,
+    )
+
+    val folderHomeSettingsItems = buildFolderHomeSettingsItems(
+        homeSettings = homeSettings,
         onFolderCellDimensionClick = {
             showFolderCellDimensionDialog = true
         },
         onFolderMaxGridClick = {
             showFolderMaxGridDialog = true
         },
-        onUpdateHomeSettings = onUpdateHomeSettings,
     )
 
     Column(
@@ -323,43 +331,34 @@ private fun Success(
             .verticalScroll(rememberScrollState())
             .fillMaxSize()
             .padding(10.dp),
+        verticalArrangement = Arrangement.spacedBy(2.dp),
     ) {
-        items.forEachIndexed { index, settingsItem ->
-            when (settingsItem) {
-                is SettingsItem.Category -> {
-                    Text(
-                        modifier = Modifier.padding(15.dp),
-                        text = settingsItem.title,
-                        style = MaterialTheme.typography.bodySmall,
-                    )
-                }
+        homeSettingsItems.forEachIndexed { index, settingsItem ->
+            SettingsItemContent(
+                settingsItem = settingsItem,
+                index = index,
+                size = homeSettingsItems.size,
+            )
+        }
 
-                is SettingsItem.Column -> {
-                    SettingsColumn(
-                        index = index,
-                        size = items.size,
-                        title = settingsItem.title,
-                        subtitle = settingsItem.subtitle,
-                        onClick = settingsItem.onClick,
-                    )
-                }
+        SettingsCategoryText(text = stringResource(R.string.dock))
 
-                is SettingsItem.Switch -> {
-                    SettingsSwitch(
-                        index = index,
-                        size = items.size,
-                        checked = settingsItem.checked,
-                        title = settingsItem.title,
-                        subtitle = settingsItem.subtitle,
-                        onClick = settingsItem.onClick,
-                        onCheckedChange = settingsItem.onCheckedChange,
-                    )
-                }
+        dockHomeSettingsItems.forEachIndexed { index, settingsItem ->
+            SettingsItemContent(
+                settingsItem = settingsItem,
+                index = index,
+                size = homeSettingsItems.size,
+            )
+        }
 
-                is SettingsItem.Row,
-                is SettingsItem.CustomBackgroundColor,
-                -> Unit
-            }
+        SettingsCategoryText(text = stringResource(R.string.folder))
+
+        folderHomeSettingsItems.forEachIndexed { index, settingsItem ->
+            SettingsItemContent(
+                settingsItem = settingsItem,
+                index = index,
+                size = homeSettingsItems.size,
+            )
         }
 
         GridItemSettings(

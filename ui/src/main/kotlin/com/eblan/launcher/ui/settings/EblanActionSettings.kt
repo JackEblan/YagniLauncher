@@ -18,11 +18,10 @@
 package com.eblan.launcher.ui.settings
 
 import android.content.Context
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -123,43 +122,14 @@ fun EblanActionSettings(
         modifier = modifier
             .fillMaxWidth()
             .padding(10.dp),
+        verticalArrangement = Arrangement.spacedBy(2.dp),
     ) {
         items.forEachIndexed { index, settingsItem ->
-            when (settingsItem) {
-                is SettingsItem.Category -> {
-                    Text(
-                        modifier = Modifier.padding(15.dp),
-                        text = settingsItem.title,
-                        style = MaterialTheme.typography.bodySmall,
-                    )
-                }
-
-                is SettingsItem.Column -> {
-                    SettingsColumn(
-                        index = index,
-                        size = items.size,
-                        title = settingsItem.title,
-                        subtitle = settingsItem.subtitle,
-                        onClick = settingsItem.onClick,
-                    )
-                }
-
-                is SettingsItem.Switch -> {
-                    SettingsSwitch(
-                        index = index,
-                        size = items.size,
-                        checked = settingsItem.checked,
-                        title = settingsItem.title,
-                        subtitle = settingsItem.subtitle,
-                        onClick = settingsItem.onClick,
-                        onCheckedChange = settingsItem.onCheckedChange,
-                    )
-                }
-
-                is SettingsItem.Row,
-                is SettingsItem.CustomBackgroundColor,
-                -> Unit
-            }
+            SettingsItemContent(
+                settingsItem = settingsItem,
+                index = index,
+                size = items.size,
+            )
         }
     }
 
