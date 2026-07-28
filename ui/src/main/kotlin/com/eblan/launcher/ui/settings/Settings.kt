@@ -24,12 +24,16 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -42,9 +46,11 @@ fun SettingsSwitch(
 ) {
     Row(
         modifier = modifier
-            .clickable(onClick = {
-                onCheckedChange(!checked)
-            })
+            .clickable(
+                onClick = {
+                    onCheckedChange(!checked)
+                },
+            )
             .fillMaxWidth()
             .padding(15.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -67,6 +73,55 @@ fun SettingsSwitch(
             checked = checked,
             onCheckedChange = onCheckedChange,
         )
+    }
+}
+
+@Composable
+fun SettingsSwitch(
+    modifier: Modifier = Modifier,
+    index: Int,
+    size: Int,
+    checked: Boolean,
+    title: String,
+    subtitle: String,
+    onClick: () -> Unit,
+    onCheckedChange: (Boolean) -> Unit,
+) {
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 2.dp),
+        shape = settingsItemShape(
+            index = index,
+            size = size,
+        ),
+        onClick = onClick,
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(15.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleMedium,
+                )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Text(
+                    text = subtitle,
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
+
+            Switch(
+                checked = checked,
+                onCheckedChange = onCheckedChange,
+            )
+        }
     }
 }
 
@@ -95,4 +150,67 @@ fun SettingsColumn(
             style = MaterialTheme.typography.bodyMedium,
         )
     }
+}
+
+@Composable
+fun SettingsColumn(
+    modifier: Modifier = Modifier,
+    index: Int,
+    size: Int,
+    title: String,
+    subtitle: String,
+    onClick: () -> Unit,
+) {
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 2.dp),
+        shape = settingsItemShape(
+            index = index,
+            size = size,
+        ),
+        onClick = onClick,
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(15.dp),
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleMedium,
+            )
+
+            Spacer(modifier = Modifier.height(5.dp))
+
+            Text(
+                text = subtitle,
+                style = MaterialTheme.typography.bodyMedium,
+            )
+        }
+    }
+}
+
+private fun settingsItemShape(
+    index: Int,
+    size: Int,
+    radius: Dp = 16.dp,
+): Shape = when {
+    size == 1 -> RoundedCornerShape(size = radius)
+
+    index == 0 -> RoundedCornerShape(
+        topStart = radius,
+        topEnd = radius,
+        bottomStart = radius / 2,
+        bottomEnd = radius / 2,
+    )
+
+    index == size - 1 -> RoundedCornerShape(
+        topStart = radius / 2,
+        topEnd = radius / 2,
+        bottomStart = radius,
+        bottomEnd = radius,
+    )
+
+    else -> RoundedCornerShape(size = radius / 2)
 }
