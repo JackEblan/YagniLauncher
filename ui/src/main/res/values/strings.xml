@@ -39,7 +39,6 @@
     <string name="reset_custom_icon">Reset Custom Icon</string>
     <string name="grid_item">Grid Item</string>
     <string name="text_color">Text Color</string>
-    <string name="custom_text_color">Custom Text Color</string>
     <string name="show_label">Show Label</string>
     <string name="single_line_label">Single Line Label</string>
     <string name="horizontal_alignment">Horizontal Alignment</string>

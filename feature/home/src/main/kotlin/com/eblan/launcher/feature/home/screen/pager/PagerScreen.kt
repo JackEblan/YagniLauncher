@@ -220,8 +220,6 @@ internal fun PagerScreen(
 
     val androidLauncherAppsWrapper = LocalLauncherApps.current
 
-    val androidWallpaperManagerWrapper = LocalWallpaperManager.current
-
     val view = LocalView.current
 
     val activity = LocalActivity.current as ComponentActivity
