@@ -87,7 +87,7 @@ fun buildGridItemSettingsItems(
     add(
         SettingsItem.Column(
             title = stringResource(R.string.text_color),
-            subtitle = stringResource(R.string.custom_text_color),
+            subtitle = gridItemSettings.textColor.getTitle(),
             onClick = onTextColorClick,
         ),
     )
@@ -460,6 +460,15 @@ fun TextColorSettingsRow(
 }
 
 @Composable
+fun TextColor.getTitle(): String =
+    when (this) {
+        TextColor.System -> stringResource(commonR.string.system)
+        TextColor.Light -> stringResource(commonR.string.light)
+        TextColor.Dark -> stringResource(commonR.string.dark)
+        TextColor.Custom -> stringResource(R.string.custom)
+    }
+
+@Composable
 private fun CustomBackgroundColor(
     modifier: Modifier = Modifier,
     title: String,
@@ -491,7 +500,7 @@ private fun CustomBackgroundColor(
 }
 
 @Composable
-private fun CustomBackgroundColor(
+fun CustomBackgroundColor(
     modifier: Modifier = Modifier,
     index: Int,
     size: Int,

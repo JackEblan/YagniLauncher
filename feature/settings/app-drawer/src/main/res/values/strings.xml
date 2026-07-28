@@ -23,7 +23,6 @@
     <string name="hidden_applications">Hidden Applications</string>
     <string name="no_hidden_applications">No hidden Applications</string>
     <string name="app_drawer_type">App Drawer Type</string>
-    <string name="custom_background_color">Custom Background Color</string>
     <string name="exclude_tagged_apps">Exclude Tagged Apps</string>
     <string name="hide_selected_apps_from_the_app_drawer">Hide selected apps from the app drawer</string>
     <string name="hide_apps_marked_with_selected_tags">Hide apps marked with selected tags</string>
