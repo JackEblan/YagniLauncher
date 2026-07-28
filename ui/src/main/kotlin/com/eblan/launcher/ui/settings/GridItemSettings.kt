@@ -227,7 +227,10 @@ fun GridItemSettings(
         onUpdateGridItemSettings = onUpdateGridItemSettings,
     )
 
-    Column(modifier = modifier) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(2.dp),
+    ) {
         SettingsCategoryText(text = stringResource(R.string.grid_item))
 
         items.forEachIndexed { index, settingsItem ->
@@ -404,9 +407,7 @@ fun CustomBackgroundColor(
     onClick: () -> Unit,
 ) {
     Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(vertical = 2.dp),
+        modifier = modifier.fillMaxWidth(),
         shape = settingsItemShape(
             index = index,
             size = size,

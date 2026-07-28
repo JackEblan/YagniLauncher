@@ -21,7 +21,6 @@ import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -119,9 +118,7 @@ fun EblanActionSettings(
     )
 
     Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(10.dp),
+        modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(2.dp),
     ) {
         items.forEachIndexed { index, settingsItem ->

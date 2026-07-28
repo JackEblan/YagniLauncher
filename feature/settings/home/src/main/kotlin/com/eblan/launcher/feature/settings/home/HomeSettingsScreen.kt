@@ -347,7 +347,7 @@ private fun Success(
             SettingsItemContent(
                 settingsItem = settingsItem,
                 index = index,
-                size = homeSettingsItems.size,
+                size = dockHomeSettingsItems.size,
             )
         }
 
@@ -357,7 +357,7 @@ private fun Success(
             SettingsItemContent(
                 settingsItem = settingsItem,
                 index = index,
-                size = homeSettingsItems.size,
+                size = folderHomeSettingsItems.size,
             )
         }
 

@@ -241,6 +241,8 @@ fun SettingsItemContent(
         is SettingsItem.CustomIcon -> {
             CustomIcon(
                 modifier = modifier,
+                index = index,
+                size = size,
                 customIcon = settingsItem.customIcon,
                 packageManagerIconPackInfos = settingsItem.packageManagerIconPackInfos,
                 onUpdateIconPackInfoPackageName = settingsItem.onUpdateIconPackInfoPackageName,
@@ -290,6 +292,8 @@ fun settingsItemShape(
 @Composable
 private fun CustomIcon(
     modifier: Modifier = Modifier,
+    index: Int,
+    size: Int,
     customIcon: String?,
     packageManagerIconPackInfos: List<PackageManagerIconPackInfo>,
     onUpdateIconPackInfoPackageName: (
@@ -314,83 +318,91 @@ private fun CustomIcon(
             }
         }
 
-    Column(modifier = modifier.fillMaxWidth()) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(15.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            if (customIcon != null) {
-                AsyncImage(
-                    modifier = Modifier.size(40.dp),
-                    model = customIcon,
-                    contentDescription = null,
-                )
-            } else {
-                Icon(
-                    modifier = Modifier.size(40.dp),
-                    imageVector = EblanLauncherIcons.BrokenImage,
-                    contentDescription = null,
-                )
-            }
-
-            Spacer(modifier = Modifier.width(10.dp))
-
-            Column(modifier = Modifier.weight(1f)) {
-                Text(text = stringResource(R.string.custom_icon))
-
-                Spacer(modifier = Modifier.height(10.dp))
-
-                Text(text = customIcon ?: stringResource(commonR.string.none))
-            }
-
-            IconButton(
-                onClick = {
-                    expanded = !expanded
-                },
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        shape = settingsItemShape(
+            index = index,
+            size = size,
+        ),
+    ) {
+        Column(modifier = modifier.fillMaxWidth()) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(15.dp),
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                Icon(
-                    imageVector = if (expanded) {
-                        EblanLauncherIcons.ArrowDropUp
-                    } else {
-                        EblanLauncherIcons.ArrowDropDown
-                    },
-                    contentDescription = null,
-                )
-            }
-        }
-
-        VerticalSlideReveal(visible = expanded) {
-            Column(modifier = Modifier.fillMaxWidth()) {
-                SettingsColumn(
-                    title = stringResource(R.string.gallery),
-                    subtitle = stringResource(R.string.pick_icons_from_your_gallery),
-                    onClick = {
-                        pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-                    },
-                )
-
-                packageManagerIconPackInfos.forEach { packageManagerIconPackInfo ->
-                    IconPackItem(
-                        icon = packageManagerIconPackInfo.icon,
-                        label = packageManagerIconPackInfo.label,
-                        packageName = packageManagerIconPackInfo.packageName,
-                        onClick = {
-                            onUpdateIconPackInfoPackageName(
-                                packageManagerIconPackInfo.packageName,
-                                packageManagerIconPackInfo.label,
-                            )
-                        },
+                if (customIcon != null) {
+                    AsyncImage(
+                        modifier = Modifier.size(40.dp),
+                        model = customIcon,
+                        contentDescription = null,
+                    )
+                } else {
+                    Icon(
+                        modifier = Modifier.size(40.dp),
+                        imageVector = EblanLauncherIcons.BrokenImage,
+                        contentDescription = null,
                     )
                 }
 
-                if (customIcon != null) {
-                    SettingsColumn(
-                        title = stringResource(R.string.reset_custom_icon),
-                        subtitle = stringResource(R.string.reset_custom_icon),
-                        onClick = onResetCustomIcon,
+                Spacer(modifier = Modifier.width(10.dp))
+
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(text = stringResource(R.string.custom_icon))
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    Text(text = customIcon ?: stringResource(commonR.string.none))
+                }
+
+                IconButton(
+                    onClick = {
+                        expanded = !expanded
+                    },
+                ) {
+                    Icon(
+                        imageVector = if (expanded) {
+                            EblanLauncherIcons.ArrowDropUp
+                        } else {
+                            EblanLauncherIcons.ArrowDropDown
+                        },
+                        contentDescription = null,
                     )
+                }
+            }
+
+            VerticalSlideReveal(visible = expanded) {
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    SettingsColumn(
+                        title = stringResource(R.string.gallery),
+                        subtitle = stringResource(R.string.pick_icons_from_your_gallery),
+                        onClick = {
+                            pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                        },
+                    )
+
+                    packageManagerIconPackInfos.forEach { packageManagerIconPackInfo ->
+                        IconPackItem(
+                            icon = packageManagerIconPackInfo.icon,
+                            label = packageManagerIconPackInfo.label,
+                            packageName = packageManagerIconPackInfo.packageName,
+                            onClick = {
+                                onUpdateIconPackInfoPackageName(
+                                    packageManagerIconPackInfo.packageName,
+                                    packageManagerIconPackInfo.label,
+                                )
+                            },
+                        )
+                    }
+
+                    if (customIcon != null) {
+                        SettingsColumn(
+                            title = stringResource(R.string.reset_custom_icon),
+                            subtitle = stringResource(R.string.reset_custom_icon),
+                            onClick = onResetCustomIcon,
+                        )
+                    }
                 }
             }
         }

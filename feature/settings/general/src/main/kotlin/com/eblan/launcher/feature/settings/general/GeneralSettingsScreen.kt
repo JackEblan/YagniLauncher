@@ -21,6 +21,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.provider.Settings
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -231,6 +232,7 @@ private fun Success(
             .verticalScroll(rememberScrollState())
             .fillMaxSize()
             .padding(10.dp),
+        verticalArrangement = Arrangement.spacedBy(2.dp),
     ) {
         items.forEachIndexed { index, settingsItem ->
             SettingsItemContent(
