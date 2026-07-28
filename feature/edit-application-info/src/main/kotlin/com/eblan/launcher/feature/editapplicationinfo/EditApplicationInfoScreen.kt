@@ -250,34 +250,34 @@ private fun Success(
                 onUpdateEblanApplicationInfo(eblanApplicationInfo.copy(isHidden = it))
             },
         )
+    }
 
-        if (showCustomIconDialog) {
-            IconPackInfoFilesDialog(
-                iconPackInfoComponents = iconPackInfoComponents,
-                iconPackInfoPackageName = iconPackInfoPackageName,
-                iconPackInfoLabel = iconPackInfoLabel,
-                iconName = eblanApplicationInfo.packageName,
-                onDismissRequest = {
-                    onResetIconPackInfoPackageName()
+    if (showCustomIconDialog) {
+        IconPackInfoFilesDialog(
+            iconPackInfoComponents = iconPackInfoComponents,
+            iconPackInfoPackageName = iconPackInfoPackageName,
+            iconPackInfoLabel = iconPackInfoLabel,
+            iconName = eblanApplicationInfo.packageName,
+            onDismissRequest = {
+                onResetIconPackInfoPackageName()
 
-                    showCustomIconDialog = false
-                },
-                onUpdateIcon = {
-                    onUpdateEblanApplicationInfo(eblanApplicationInfo.copy(customIcon = it))
-                },
-                onSearchIconPackInfoComponent = onSearchIconPackInfoComponent,
-            )
-        }
+                showCustomIconDialog = false
+            },
+            onUpdateIcon = {
+                onUpdateEblanApplicationInfo(eblanApplicationInfo.copy(customIcon = it))
+            },
+            onSearchIconPackInfoComponent = onSearchIconPackInfoComponent,
+        )
+    }
 
-        if (showCustomLabelDialog) {
-            EditEblanApplicationInfoCustomLabelDialog(
-                eblanApplicationInfo = eblanApplicationInfo,
-                onDismissRequest = {
-                    showCustomLabelDialog = false
-                },
-                onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
-            )
-        }
+    if (showCustomLabelDialog) {
+        EditEblanApplicationInfoCustomLabelDialog(
+            eblanApplicationInfo = eblanApplicationInfo,
+            onDismissRequest = {
+                showCustomLabelDialog = false
+            },
+            onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
+        )
     }
 }
 
