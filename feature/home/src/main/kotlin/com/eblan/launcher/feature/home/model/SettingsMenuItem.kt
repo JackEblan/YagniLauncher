@@ -15,18 +15,12 @@
  *   limitations under the License.
  *
  */
+package com.eblan.launcher.feature.home.model
 
-plugins {
-    alias(libs.plugins.com.eblan.launcher.feature)
-    alias(libs.plugins.com.eblan.launcher.libraryCompose)
-}
+import androidx.compose.ui.graphics.vector.ImageVector
 
-android {
-    namespace = "com.eblan.launcher.feature.settings.settings"
-}
-
-dependencies {
-    implementation(projects.common)
-    implementation(projects.domain.repository)
-    implementation(projects.ui)
-}
+data class SettingsMenuItem(
+    val imageVector: ImageVector,
+    val title: String,
+    val onClick: () -> Unit,
+)

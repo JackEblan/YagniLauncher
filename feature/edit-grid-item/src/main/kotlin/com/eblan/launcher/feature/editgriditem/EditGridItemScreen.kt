@@ -17,16 +17,14 @@
  */
 package com.eblan.launcher.feature.editgriditem
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -56,11 +54,10 @@ import com.eblan.launcher.feature.editgriditem.dialog.EditShortcutConfigCustomLa
 import com.eblan.launcher.feature.editgriditem.dialog.EditShortcutInfoCustomShortLabelDialog
 import com.eblan.launcher.feature.editgriditem.model.EditGridItemUiState
 import com.eblan.launcher.ui.dialog.IconPackInfoFilesDialog
-import com.eblan.launcher.ui.edit.CustomIcon
+import com.eblan.launcher.ui.model.SettingsItem
 import com.eblan.launcher.ui.settings.EblanActionSettings
 import com.eblan.launcher.ui.settings.GridItemSettings
-import com.eblan.launcher.ui.settings.SettingsColumn
-import com.eblan.launcher.ui.settings.SettingsSwitch
+import com.eblan.launcher.ui.settings.SettingsItemContent
 import com.eblan.launcher.common.R as commonR
 
 @Composable
@@ -107,9 +104,7 @@ internal fun EditGridItemScreen(
     onUpdateGridItem: (GridItem) -> Unit,
     onUpdateIconPackInfoPackageName: (String) -> Unit,
 ) {
-    if (editGridItemUiState is EditGridItemUiState.Success &&
-        editGridItemUiState.gridItem != null
-    ) {
+    if (editGridItemUiState is EditGridItemUiState.Success && editGridItemUiState.gridItem != null) {
         Scaffold(
             topBar = {
                 TopAppBar(
@@ -172,72 +167,68 @@ private fun Success(
     Column(
         modifier = modifier
             .verticalScroll(rememberScrollState())
-            .fillMaxSize(),
+            .fillMaxSize()
+            .padding(10.dp),
+        verticalArrangement = Arrangement.spacedBy(2.dp),
     ) {
-        ElevatedCard(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 15.dp),
-        ) {
-            when (val data = gridItem.data) {
-                is GridItemData.ApplicationInfo -> {
-                    EditApplicationInfo(
-                        data = data,
-                        gridItem = gridItem,
-                        iconPackInfoComponents = iconPackInfoComponents,
-                        packageManagerIconPackInfos = packageManagerIconPackInfos,
-                        onResetIconPackInfoPackageName = onResetIconPackInfoPackageName,
-                        onSearchIconPackInfoComponent = onSearchIconPackInfoComponent,
-                        onUpdateGridItem = onUpdateGridItem,
-                        onUpdateIconPackInfoPackageName = onUpdateIconPackInfoPackageName,
-                        onResetGridItemCustomIcon = onResetGridItemCustomIcon,
-                    )
-                }
-
-                is GridItemData.Folder -> {
-                    EditFolder(
-                        data = data,
-                        gridItem = gridItem,
-                        iconPackInfoComponents = iconPackInfoComponents,
-                        packageManagerIconPackInfos = packageManagerIconPackInfos,
-                        onResetIconPackInfoPackageName = onResetIconPackInfoPackageName,
-                        onSearchIconPackInfoComponent = onSearchIconPackInfoComponent,
-                        onUpdateGridItem = onUpdateGridItem,
-                        onUpdateIconPackInfoPackageName = onUpdateIconPackInfoPackageName,
-                        onResetGridItemCustomIcon = onResetGridItemCustomIcon,
-                    )
-                }
-
-                is GridItemData.ShortcutInfo -> {
-                    EditShortcutInfo(
-                        data = data,
-                        gridItem = gridItem,
-                        iconPackInfoComponents = iconPackInfoComponents,
-                        packageManagerIconPackInfos = packageManagerIconPackInfos,
-                        onResetIconPackInfoPackageName = onResetIconPackInfoPackageName,
-                        onSearchIconPackInfoComponent = onSearchIconPackInfoComponent,
-                        onUpdateGridItem = onUpdateGridItem,
-                        onUpdateIconPackInfoPackageName = onUpdateIconPackInfoPackageName,
-                        onResetGridItemCustomIcon = onResetGridItemCustomIcon,
-                    )
-                }
-
-                is GridItemData.ShortcutConfig -> {
-                    EditShortcutConfig(
-                        data = data,
-                        gridItem = gridItem,
-                        iconPackInfoComponents = iconPackInfoComponents,
-                        packageManagerIconPackInfos = packageManagerIconPackInfos,
-                        onResetIconPackInfoPackageName = onResetIconPackInfoPackageName,
-                        onSearchIconPackInfoComponent = onSearchIconPackInfoComponent,
-                        onUpdateGridItem = onUpdateGridItem,
-                        onUpdateIconPackInfoPackageName = onUpdateIconPackInfoPackageName,
-                        onResetGridItemCustomIcon = onResetGridItemCustomIcon,
-                    )
-                }
-
-                else -> Unit
+        when (val data = gridItem.data) {
+            is GridItemData.ApplicationInfo -> {
+                EditApplicationInfo(
+                    data = data,
+                    gridItem = gridItem,
+                    iconPackInfoComponents = iconPackInfoComponents,
+                    packageManagerIconPackInfos = packageManagerIconPackInfos,
+                    onResetIconPackInfoPackageName = onResetIconPackInfoPackageName,
+                    onSearchIconPackInfoComponent = onSearchIconPackInfoComponent,
+                    onUpdateGridItem = onUpdateGridItem,
+                    onUpdateIconPackInfoPackageName = onUpdateIconPackInfoPackageName,
+                    onResetGridItemCustomIcon = onResetGridItemCustomIcon,
+                )
             }
+
+            is GridItemData.Folder -> {
+                EditFolder(
+                    data = data,
+                    gridItem = gridItem,
+                    iconPackInfoComponents = iconPackInfoComponents,
+                    packageManagerIconPackInfos = packageManagerIconPackInfos,
+                    onResetIconPackInfoPackageName = onResetIconPackInfoPackageName,
+                    onSearchIconPackInfoComponent = onSearchIconPackInfoComponent,
+                    onUpdateGridItem = onUpdateGridItem,
+                    onUpdateIconPackInfoPackageName = onUpdateIconPackInfoPackageName,
+                    onResetGridItemCustomIcon = onResetGridItemCustomIcon,
+                )
+            }
+
+            is GridItemData.ShortcutInfo -> {
+                EditShortcutInfo(
+                    data = data,
+                    gridItem = gridItem,
+                    iconPackInfoComponents = iconPackInfoComponents,
+                    packageManagerIconPackInfos = packageManagerIconPackInfos,
+                    onResetIconPackInfoPackageName = onResetIconPackInfoPackageName,
+                    onSearchIconPackInfoComponent = onSearchIconPackInfoComponent,
+                    onUpdateGridItem = onUpdateGridItem,
+                    onUpdateIconPackInfoPackageName = onUpdateIconPackInfoPackageName,
+                    onResetGridItemCustomIcon = onResetGridItemCustomIcon,
+                )
+            }
+
+            is GridItemData.ShortcutConfig -> {
+                EditShortcutConfig(
+                    data = data,
+                    gridItem = gridItem,
+                    iconPackInfoComponents = iconPackInfoComponents,
+                    packageManagerIconPackInfos = packageManagerIconPackInfos,
+                    onResetIconPackInfoPackageName = onResetIconPackInfoPackageName,
+                    onSearchIconPackInfoComponent = onSearchIconPackInfoComponent,
+                    onUpdateGridItem = onUpdateGridItem,
+                    onUpdateIconPackInfoPackageName = onUpdateIconPackInfoPackageName,
+                    onResetGridItemCustomIcon = onResetGridItemCustomIcon,
+                )
+            }
+
+            else -> Unit
         }
 
         VerticalSlideReveal(visible = gridItem.override) {
@@ -275,6 +266,7 @@ private fun Success(
 
 @Composable
 private fun EditApplicationInfo(
+    modifier: Modifier = Modifier,
     data: GridItemData.ApplicationInfo,
     gridItem: GridItem,
     iconPackInfoComponents: List<IconPackInfoComponent>,
@@ -293,48 +285,72 @@ private fun EditApplicationInfo(
 
     var iconPackInfoLabel by remember { mutableStateOf<String?>(null) }
 
-    CustomIcon(
-        customIcon = data.customIcon,
-        packageManagerIconPackInfos = packageManagerIconPackInfos,
-        onUpdateIconPackInfoPackageName = { packageName, label ->
-            iconPackInfoPackageName = packageName
+    val items = buildList {
+        add(
+            SettingsItem.CustomIcon(
+                customIcon = data.customIcon,
+                packageManagerIconPackInfos = packageManagerIconPackInfos,
+                onUpdateIconPackInfoPackageName = { packageName, label ->
+                    iconPackInfoPackageName = packageName
+                    iconPackInfoLabel = label
+                    showCustomIconDialog = true
 
-            iconPackInfoLabel = label
+                    onUpdateIconPackInfoPackageName(packageName)
+                },
+                onUpdateUri = {
+                    val newData = data.copy(customIcon = it)
 
-            showCustomIconDialog = true
+                    onUpdateGridItem(
+                        gridItem.copy(data = newData),
+                    )
+                },
+                onResetCustomIcon = {
+                    onResetGridItemCustomIcon(gridItem)
+                },
+            ),
+        )
 
-            onUpdateIconPackInfoPackageName(packageName)
-        },
-        onUpdateUri = {
-            val newData = data.copy(customIcon = it)
+        add(
+            SettingsItem.Column(
+                title = stringResource(commonR.string.custom_label),
+                subtitle = data.customLabel ?: stringResource(commonR.string.none),
+                onClick = {
+                    showCustomLabelDialog = true
+                },
+            ),
+        )
 
-            onUpdateGridItem(gridItem.copy(data = newData))
-        },
-        onResetCustomIcon = {
-            onResetGridItemCustomIcon(gridItem)
-        },
-    )
+        add(
+            SettingsItem.Switch(
+                checked = gridItem.override,
+                title = stringResource(R.string.override),
+                subtitle = stringResource(R.string.override_the_grid_item_settings),
+                onClick = {
+                    onUpdateGridItem(
+                        gridItem.copy(
+                            override = !gridItem.override,
+                        ),
+                    )
+                },
+                onCheckedChange = {
+                    onUpdateGridItem(
+                        gridItem.copy(
+                            override = it,
+                        ),
+                    )
+                },
+            ),
+        )
+    }
 
-    HorizontalDivider(modifier = Modifier.fillMaxWidth())
-
-    SettingsColumn(
-        title = stringResource(commonR.string.custom_label),
-        subtitle = data.customLabel ?: stringResource(commonR.string.none),
-        onClick = {
-            showCustomLabelDialog = true
-        },
-    )
-
-    HorizontalDivider(modifier = Modifier.fillMaxWidth())
-
-    SettingsSwitch(
-        checked = gridItem.override,
-        title = stringResource(R.string.override),
-        subtitle = stringResource(R.string.override_the_grid_item_settings),
-        onCheckedChange = {
-            onUpdateGridItem(gridItem.copy(override = it))
-        },
-    )
+    items.forEachIndexed { index, settingsItem ->
+        SettingsItemContent(
+            modifier = modifier,
+            settingsItem = settingsItem,
+            index = index,
+            size = items.size,
+        )
+    }
 
     if (showCustomIconDialog) {
         IconPackInfoFilesDialog(
@@ -373,6 +389,7 @@ private fun EditApplicationInfo(
 
 @Composable
 private fun EditFolder(
+    modifier: Modifier = Modifier,
     data: GridItemData.Folder,
     gridItem: GridItem,
     iconPackInfoComponents: List<IconPackInfoComponent>,
@@ -391,48 +408,72 @@ private fun EditFolder(
 
     var iconPackInfoLabel by remember { mutableStateOf<String?>(null) }
 
-    CustomIcon(
-        customIcon = data.icon,
-        packageManagerIconPackInfos = packageManagerIconPackInfos,
-        onUpdateIconPackInfoPackageName = { packageName, label ->
-            iconPackInfoPackageName = packageName
+    val items = buildList {
+        add(
+            SettingsItem.CustomIcon(
+                customIcon = data.icon,
+                packageManagerIconPackInfos = packageManagerIconPackInfos,
+                onUpdateIconPackInfoPackageName = { packageName, label ->
+                    iconPackInfoPackageName = packageName
+                    iconPackInfoLabel = label
+                    showCustomIconDialog = true
 
-            iconPackInfoLabel = label
+                    onUpdateIconPackInfoPackageName(packageName)
+                },
+                onUpdateUri = {
+                    val newData = data.copy(icon = it)
 
-            showCustomIconDialog = true
+                    onUpdateGridItem(
+                        gridItem.copy(data = newData),
+                    )
+                },
+                onResetCustomIcon = {
+                    onResetGridItemCustomIcon(gridItem)
+                },
+            ),
+        )
 
-            onUpdateIconPackInfoPackageName(packageName)
-        },
-        onUpdateUri = {
-            val newData = data.copy(icon = it)
+        add(
+            SettingsItem.Column(
+                title = stringResource(R.string.edit_label),
+                subtitle = data.label,
+                onClick = {
+                    showEditLabelDialog = true
+                },
+            ),
+        )
 
-            onUpdateGridItem(gridItem.copy(data = newData))
-        },
-        onResetCustomIcon = {
-            onResetGridItemCustomIcon(gridItem)
-        },
-    )
+        add(
+            SettingsItem.Switch(
+                checked = gridItem.override,
+                title = stringResource(R.string.override),
+                subtitle = stringResource(R.string.override_the_grid_item_settings),
+                onClick = {
+                    onUpdateGridItem(
+                        gridItem.copy(
+                            override = !gridItem.override,
+                        ),
+                    )
+                },
+                onCheckedChange = {
+                    onUpdateGridItem(
+                        gridItem.copy(
+                            override = it,
+                        ),
+                    )
+                },
+            ),
+        )
+    }
 
-    HorizontalDivider(modifier = Modifier.fillMaxWidth())
-
-    SettingsColumn(
-        title = stringResource(R.string.edit_label),
-        subtitle = data.label,
-        onClick = {
-            showEditLabelDialog = true
-        },
-    )
-
-    HorizontalDivider(modifier = Modifier.fillMaxWidth())
-
-    SettingsSwitch(
-        checked = gridItem.override,
-        title = stringResource(R.string.override),
-        subtitle = stringResource(R.string.override_the_grid_item_settings),
-        onCheckedChange = {
-            onUpdateGridItem(gridItem.copy(override = it))
-        },
-    )
+    items.forEachIndexed { index, settingsItem ->
+        SettingsItemContent(
+            modifier = modifier,
+            settingsItem = settingsItem,
+            index = index,
+            size = items.size,
+        )
+    }
 
     if (showCustomIconDialog) {
         IconPackInfoFilesDialog(
@@ -471,6 +512,7 @@ private fun EditFolder(
 
 @Composable
 private fun EditShortcutInfo(
+    modifier: Modifier = Modifier,
     data: GridItemData.ShortcutInfo,
     gridItem: GridItem,
     iconPackInfoComponents: List<IconPackInfoComponent>,
@@ -489,48 +531,72 @@ private fun EditShortcutInfo(
 
     var iconPackInfoLabel by remember { mutableStateOf<String?>(null) }
 
-    CustomIcon(
-        customIcon = data.customIcon,
-        packageManagerIconPackInfos = packageManagerIconPackInfos,
-        onUpdateIconPackInfoPackageName = { packageName, label ->
-            iconPackInfoPackageName = packageName
+    val items = buildList {
+        add(
+            SettingsItem.CustomIcon(
+                customIcon = data.customIcon,
+                packageManagerIconPackInfos = packageManagerIconPackInfos,
+                onUpdateIconPackInfoPackageName = { packageName, label ->
+                    iconPackInfoPackageName = packageName
+                    iconPackInfoLabel = label
+                    showCustomIconDialog = true
 
-            iconPackInfoLabel = label
+                    onUpdateIconPackInfoPackageName(packageName)
+                },
+                onUpdateUri = {
+                    val newData = data.copy(customIcon = it)
 
-            showCustomIconDialog = true
+                    onUpdateGridItem(
+                        gridItem.copy(data = newData),
+                    )
+                },
+                onResetCustomIcon = {
+                    onResetGridItemCustomIcon(gridItem)
+                },
+            ),
+        )
 
-            onUpdateIconPackInfoPackageName(packageName)
-        },
-        onUpdateUri = {
-            val newData = data.copy(customIcon = it)
+        add(
+            SettingsItem.Column(
+                title = stringResource(R.string.custom_short_label),
+                subtitle = data.customShortLabel ?: stringResource(commonR.string.none),
+                onClick = {
+                    showCustomShortLabelDialog = true
+                },
+            ),
+        )
 
-            onUpdateGridItem(gridItem.copy(data = newData))
-        },
-        onResetCustomIcon = {
-            onResetGridItemCustomIcon(gridItem)
-        },
-    )
+        add(
+            SettingsItem.Switch(
+                checked = gridItem.override,
+                title = stringResource(R.string.override),
+                subtitle = stringResource(R.string.override_the_grid_item_settings),
+                onClick = {
+                    onUpdateGridItem(
+                        gridItem.copy(
+                            override = !gridItem.override,
+                        ),
+                    )
+                },
+                onCheckedChange = {
+                    onUpdateGridItem(
+                        gridItem.copy(
+                            override = it,
+                        ),
+                    )
+                },
+            ),
+        )
+    }
 
-    HorizontalDivider(modifier = Modifier.fillMaxWidth())
-
-    SettingsColumn(
-        title = stringResource(R.string.custom_short_label),
-        subtitle = data.customShortLabel ?: stringResource(commonR.string.none),
-        onClick = {
-            showCustomShortLabelDialog = true
-        },
-    )
-
-    HorizontalDivider(modifier = Modifier.fillMaxWidth())
-
-    SettingsSwitch(
-        checked = gridItem.override,
-        title = stringResource(R.string.override),
-        subtitle = stringResource(R.string.override_the_grid_item_settings),
-        onCheckedChange = {
-            onUpdateGridItem(gridItem.copy(override = it))
-        },
-    )
+    items.forEachIndexed { index, settingsItem ->
+        SettingsItemContent(
+            modifier = modifier,
+            settingsItem = settingsItem,
+            index = index,
+            size = items.size,
+        )
+    }
 
     if (showCustomIconDialog) {
         IconPackInfoFilesDialog(
@@ -569,6 +635,7 @@ private fun EditShortcutInfo(
 
 @Composable
 private fun EditShortcutConfig(
+    modifier: Modifier = Modifier,
     data: GridItemData.ShortcutConfig,
     gridItem: GridItem,
     iconPackInfoComponents: List<IconPackInfoComponent>,
@@ -587,48 +654,72 @@ private fun EditShortcutConfig(
 
     var iconPackInfoLabel by remember { mutableStateOf<String?>(null) }
 
-    CustomIcon(
-        customIcon = data.customIcon,
-        packageManagerIconPackInfos = packageManagerIconPackInfos,
-        onUpdateIconPackInfoPackageName = { packageName, label ->
-            iconPackInfoPackageName = packageName
+    val items = buildList {
+        add(
+            SettingsItem.CustomIcon(
+                customIcon = data.customIcon,
+                packageManagerIconPackInfos = packageManagerIconPackInfos,
+                onUpdateIconPackInfoPackageName = { packageName, label ->
+                    iconPackInfoPackageName = packageName
+                    iconPackInfoLabel = label
+                    showCustomIconDialog = true
 
-            iconPackInfoLabel = label
+                    onUpdateIconPackInfoPackageName(packageName)
+                },
+                onUpdateUri = {
+                    val newData = data.copy(customIcon = it)
 
-            showCustomIconDialog = true
+                    onUpdateGridItem(
+                        gridItem.copy(data = newData),
+                    )
+                },
+                onResetCustomIcon = {
+                    onResetGridItemCustomIcon(gridItem)
+                },
+            ),
+        )
 
-            onUpdateIconPackInfoPackageName(packageName)
-        },
-        onUpdateUri = {
-            val newData = data.copy(customIcon = it)
+        add(
+            SettingsItem.Column(
+                title = stringResource(commonR.string.custom_label),
+                subtitle = data.customLabel ?: stringResource(commonR.string.none),
+                onClick = {
+                    showCustomLabelDialog = true
+                },
+            ),
+        )
 
-            onUpdateGridItem(gridItem.copy(data = newData))
-        },
-        onResetCustomIcon = {
-            onResetGridItemCustomIcon(gridItem)
-        },
-    )
+        add(
+            SettingsItem.Switch(
+                checked = gridItem.override,
+                title = stringResource(R.string.override),
+                subtitle = stringResource(R.string.override_the_grid_item_settings),
+                onClick = {
+                    onUpdateGridItem(
+                        gridItem.copy(
+                            override = !gridItem.override,
+                        ),
+                    )
+                },
+                onCheckedChange = {
+                    onUpdateGridItem(
+                        gridItem.copy(
+                            override = it,
+                        ),
+                    )
+                },
+            ),
+        )
+    }
 
-    HorizontalDivider(modifier = Modifier.fillMaxWidth())
-
-    SettingsColumn(
-        title = stringResource(commonR.string.custom_label),
-        subtitle = data.customLabel ?: stringResource(commonR.string.none),
-        onClick = {
-            showCustomLabelDialog = true
-        },
-    )
-
-    HorizontalDivider(modifier = Modifier.fillMaxWidth())
-
-    SettingsSwitch(
-        checked = gridItem.override,
-        title = stringResource(R.string.override),
-        subtitle = stringResource(R.string.override_the_grid_item_settings),
-        onCheckedChange = {
-            onUpdateGridItem(gridItem.copy(override = it))
-        },
-    )
+    items.forEachIndexed { index, settingsItem ->
+        SettingsItemContent(
+            modifier = modifier,
+            settingsItem = settingsItem,
+            index = index,
+            size = items.size,
+        )
+    }
 
     if (showCustomIconDialog) {
         IconPackInfoFilesDialog(

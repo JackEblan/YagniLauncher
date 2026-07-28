@@ -17,16 +17,14 @@
  */
 package com.eblan.launcher.feature.settings.appdrawer
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -52,10 +50,10 @@ import com.eblan.launcher.feature.settings.appdrawer.dialog.HiddenEblanApplicati
 import com.eblan.launcher.feature.settings.appdrawer.model.AppDrawerSettingsUiState
 import com.eblan.launcher.ui.dialog.RadioOptionsDialog
 import com.eblan.launcher.ui.dialog.TextColorDialog
+import com.eblan.launcher.ui.model.SettingsItem
 import com.eblan.launcher.ui.settings.GridItemSettings
-import com.eblan.launcher.ui.settings.SettingsColumn
-import com.eblan.launcher.ui.settings.SettingsSwitch
-import com.eblan.launcher.ui.settings.TextColorSettingsRow
+import com.eblan.launcher.ui.settings.SettingsItemContent
+import com.eblan.launcher.ui.settings.getTitle
 import com.eblan.launcher.common.R as commonR
 
 @Composable
@@ -102,12 +100,12 @@ internal fun AppDrawerSettingsScreen(
             )
         },
     ) { paddingValues ->
-        if (appDrawerSettingsUiState is AppDrawerSettingsUiState.Success) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues),
-            ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
+        ) {
+            if (appDrawerSettingsUiState is AppDrawerSettingsUiState.Success) {
                 Success(
                     appDrawerSettings = appDrawerSettingsUiState.appDrawerSettings,
                     eblanApplicationInfos = appDrawerSettingsUiState.eblanApplicationInfos,
@@ -117,6 +115,127 @@ internal fun AppDrawerSettingsScreen(
             }
         }
     }
+}
+
+@Composable
+fun buildAppDrawerSettingsItems(
+    appDrawerSettings: AppDrawerSettings,
+    onAppDrawerTypeClick: () -> Unit,
+    onVerticalGridClick: () -> Unit,
+    onHorizontalGridClick: () -> Unit,
+    onBackgroundColorClick: () -> Unit,
+    onHiddenApplicationsClick: () -> Unit,
+    onUpdateAppDrawerSettings: (AppDrawerSettings) -> Unit,
+): List<SettingsItem> = buildList {
+    add(
+        SettingsItem.Column(
+            title = stringResource(R.string.app_drawer_type),
+            subtitle = appDrawerSettings.appDrawerType.name,
+            onClick = onAppDrawerTypeClick,
+        ),
+    )
+
+    when (appDrawerSettings.appDrawerType) {
+        AppDrawerType.Vertical -> add(
+            SettingsItem.Column(
+                title = stringResource(commonR.string.grid),
+                subtitle = "${appDrawerSettings.appDrawerColumns}x${appDrawerSettings.appDrawerRowsHeight}",
+                onClick = onVerticalGridClick,
+            ),
+        )
+
+        AppDrawerType.Horizontal -> add(
+            SettingsItem.Column(
+                title = stringResource(commonR.string.grid),
+                subtitle = "${appDrawerSettings.horizontalAppDrawerColumns}x${appDrawerSettings.horizontalAppDrawerRows}",
+                onClick = onHorizontalGridClick,
+            ),
+        )
+
+        AppDrawerType.List -> Unit
+    }
+
+    add(
+        SettingsItem.Column(
+            title = stringResource(commonR.string.background_color),
+            subtitle = appDrawerSettings.backgroundColor.getTitle(),
+            onClick = onBackgroundColorClick,
+        ),
+    )
+
+    add(
+        SettingsItem.Column(
+            title = stringResource(R.string.hidden_applications),
+            subtitle = stringResource(R.string.hide_selected_apps_from_the_app_drawer),
+            onClick = onHiddenApplicationsClick,
+        ),
+    )
+
+    add(
+        SettingsItem.Switch(
+            checked = appDrawerSettings.excludeTaggedApps,
+            title = stringResource(R.string.exclude_tagged_apps),
+            subtitle = stringResource(R.string.hide_apps_marked_with_selected_tags),
+            onClick = {
+                onUpdateAppDrawerSettings(
+                    appDrawerSettings.copy(
+                        excludeTaggedApps = !appDrawerSettings.excludeTaggedApps,
+                    ),
+                )
+            },
+            onCheckedChange = {
+                onUpdateAppDrawerSettings(
+                    appDrawerSettings.copy(
+                        excludeTaggedApps = it,
+                    ),
+                )
+            },
+        ),
+    )
+
+    add(
+        SettingsItem.Switch(
+            checked = appDrawerSettings.showKeyboard,
+            title = stringResource(R.string.show_keyboard),
+            subtitle = stringResource(R.string.show_keyboard_when_app_drawer_opens),
+            onClick = {
+                onUpdateAppDrawerSettings(
+                    appDrawerSettings.copy(
+                        showKeyboard = !appDrawerSettings.showKeyboard,
+                    ),
+                )
+            },
+            onCheckedChange = {
+                onUpdateAppDrawerSettings(
+                    appDrawerSettings.copy(
+                        showKeyboard = it,
+                    ),
+                )
+            },
+        ),
+    )
+
+    add(
+        SettingsItem.Switch(
+            checked = appDrawerSettings.fuzzySearch,
+            title = stringResource(R.string.fuzzy_search),
+            subtitle = stringResource(R.string.find_apps_even_with_typos_or_accented_characters),
+            onClick = {
+                onUpdateAppDrawerSettings(
+                    appDrawerSettings.copy(
+                        fuzzySearch = !appDrawerSettings.fuzzySearch,
+                    ),
+                )
+            },
+            onCheckedChange = {
+                onUpdateAppDrawerSettings(
+                    appDrawerSettings.copy(
+                        fuzzySearch = it,
+                    ),
+                )
+            },
+        ),
+    )
 }
 
 @Composable
@@ -137,110 +256,49 @@ private fun Success(
 
     var showTextColorDialog by remember { mutableStateOf(false) }
 
+    val items = buildAppDrawerSettingsItems(
+        appDrawerSettings = appDrawerSettings,
+        onAppDrawerTypeClick = {
+            showAppDrawerTypeDialog = true
+        },
+        onVerticalGridClick = {
+            showVerticalGridDialog = true
+        },
+        onHorizontalGridClick = {
+            showHorizontalGridDialog = true
+        },
+        onBackgroundColorClick = {
+            showTextColorDialog = true
+        },
+        onHiddenApplicationsClick = {
+            showHiddenEblanApplicationInfosDialog = true
+        },
+        onUpdateAppDrawerSettings = onUpdateAppDrawerSettings,
+    )
+
     Column(
         modifier = modifier
             .verticalScroll(rememberScrollState())
-            .fillMaxSize(),
+            .fillMaxSize()
+            .padding(10.dp),
+        verticalArrangement = Arrangement.spacedBy(2.dp),
     ) {
-        ElevatedCard(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 15.dp),
-        ) {
-            SettingsColumn(
-                title = stringResource(R.string.app_drawer_type),
-                subtitle = appDrawerSettings.appDrawerType.name,
-                onClick = {
-                    showAppDrawerTypeDialog = true
-                },
-            )
-
-            HorizontalDivider(modifier = Modifier.fillMaxWidth())
-
-            when (appDrawerSettings.appDrawerType) {
-                AppDrawerType.Vertical -> {
-                    SettingsColumn(
-                        title = stringResource(commonR.string.grid),
-                        subtitle = "${appDrawerSettings.appDrawerColumns}x${appDrawerSettings.appDrawerRowsHeight}",
-                        onClick = {
-                            showVerticalGridDialog = true
-                        },
-                    )
-                }
-
-                AppDrawerType.Horizontal -> {
-                    SettingsColumn(
-                        title = stringResource(commonR.string.grid),
-                        subtitle = "${appDrawerSettings.horizontalAppDrawerColumns}x${appDrawerSettings.horizontalAppDrawerRows}",
-                        onClick = {
-                            showHorizontalGridDialog = true
-                        },
-                    )
-                }
-
-                AppDrawerType.List -> Unit
-            }
-
-            HorizontalDivider(modifier = Modifier.fillMaxWidth())
-
-            TextColorSettingsRow(
-                textColorTitle = stringResource(commonR.string.background_color),
-                customColorTitle = stringResource(R.string.custom_background_color),
-                textColor = appDrawerSettings.backgroundColor,
-                customColor = appDrawerSettings.customBackgroundColor,
-                onClick = {
-                    showTextColorDialog = true
-                },
-            )
-
-            HorizontalDivider(modifier = Modifier.fillMaxWidth())
-
-            SettingsColumn(
-                title = stringResource(R.string.hidden_applications),
-                subtitle = stringResource(R.string.hide_selected_apps_from_the_app_drawer),
-                onClick = {
-                    showHiddenEblanApplicationInfosDialog = true
-                },
-            )
-
-            HorizontalDivider(modifier = Modifier.fillMaxWidth())
-
-            SettingsSwitch(
-                checked = appDrawerSettings.excludeTaggedApps,
-                title = stringResource(R.string.exclude_tagged_apps),
-                subtitle = stringResource(R.string.hide_apps_marked_with_selected_tags),
-                onCheckedChange = {
-                    onUpdateAppDrawerSettings(appDrawerSettings.copy(excludeTaggedApps = it))
-                },
-            )
-
-            HorizontalDivider(modifier = Modifier.fillMaxWidth())
-
-            SettingsSwitch(
-                checked = appDrawerSettings.showKeyboard,
-                title = stringResource(R.string.show_keyboard),
-                subtitle = stringResource(R.string.show_keyboard_when_app_drawer_opens),
-                onCheckedChange = {
-                    onUpdateAppDrawerSettings(appDrawerSettings.copy(showKeyboard = it))
-                },
-            )
-
-            HorizontalDivider(modifier = Modifier.fillMaxWidth())
-
-            SettingsSwitch(
-                checked = appDrawerSettings.fuzzySearch,
-                title = stringResource(R.string.fuzzy_search),
-                subtitle = stringResource(R.string.find_apps_even_with_typos_or_accented_characters),
-                onCheckedChange = {
-                    onUpdateAppDrawerSettings(appDrawerSettings.copy(fuzzySearch = it))
-                },
+        items.forEachIndexed { index, settingsItem ->
+            SettingsItemContent(
+                settingsItem = settingsItem,
+                index = index,
+                size = items.size,
             )
         }
 
         GridItemSettings(
             gridItemSettings = appDrawerSettings.gridItemSettings,
             onUpdateGridItemSettings = {
-                onUpdateAppDrawerSettings(appDrawerSettings.copy(gridItemSettings = it))
+                onUpdateAppDrawerSettings(
+                    appDrawerSettings.copy(
+                        gridItemSettings = it,
+                    ),
+                )
             },
         )
     }

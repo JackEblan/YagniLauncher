@@ -21,15 +21,14 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.provider.Settings
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -57,8 +56,8 @@ import com.eblan.launcher.feature.settings.general.model.GeneralSettingsUiState
 import com.eblan.launcher.service.IconPackInfoService
 import com.eblan.launcher.ui.dialog.RadioOptionsDialog
 import com.eblan.launcher.ui.local.LocalSettings
-import com.eblan.launcher.ui.settings.SettingsColumn
-import com.eblan.launcher.ui.settings.SettingsSwitch
+import com.eblan.launcher.ui.model.SettingsItem
+import com.eblan.launcher.ui.settings.SettingsItemContent
 import com.eblan.launcher.common.R as commonR
 
 @Composable
@@ -113,14 +112,13 @@ internal fun GeneralSettingsScreen(
             )
         },
     ) { paddingValues ->
-        if (generalSettingsUiState is GeneralSettingsUiState.Success) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues),
-            ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
+        ) {
+            if (generalSettingsUiState is GeneralSettingsUiState.Success) {
                 Success(
-                    modifier = modifier,
                     eblanIconPackInfos = eblanIconPackInfos,
                     generalSettings = generalSettingsUiState.generalSettings,
                     packageManagerIconPackInfos = packageManagerIconPackInfos,
@@ -129,6 +127,67 @@ internal fun GeneralSettingsScreen(
                 )
             }
         }
+    }
+}
+
+@Composable
+fun buildGeneralSettingsItems(
+    generalSettings: GeneralSettings,
+    isNotificationAccessGranted: Boolean,
+    onImportIconPackClick: () -> Unit,
+    onSelectIconPackClick: () -> Unit,
+    onThemeClick: () -> Unit,
+    onDynamicThemeChange: (Boolean) -> Unit,
+    onNotificationDotsClick: () -> Unit,
+): List<SettingsItem> = buildList {
+    add(
+        SettingsItem.Column(
+            title = stringResource(R.string.import_icon_pack),
+            subtitle = stringResource(R.string.apply_icons_from_supported_icon_packs),
+            onClick = onImportIconPackClick,
+        ),
+    )
+
+    add(
+        SettingsItem.Column(
+            title = stringResource(R.string.select_icon_pack),
+            subtitle = generalSettings.iconPackInfoPackageName.ifEmpty {
+                stringResource(R.string.default_icon_pack)
+            },
+            onClick = onSelectIconPackClick,
+        ),
+    )
+
+    add(
+        SettingsItem.Column(
+            title = stringResource(R.string.theme),
+            subtitle = generalSettings.theme.name,
+            onClick = onThemeClick,
+        ),
+    )
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        add(
+            SettingsItem.Switch(
+                checked = generalSettings.dynamicTheme,
+                title = stringResource(R.string.dynamic_theme),
+                subtitle = stringResource(R.string.adapt_colors_to_your_wallpaper_automatically),
+                onClick = {
+                    onDynamicThemeChange(!generalSettings.dynamicTheme)
+                },
+                onCheckedChange = onDynamicThemeChange,
+            ),
+        )
+    }
+
+    if (!isNotificationAccessGranted) {
+        add(
+            SettingsItem.Column(
+                title = stringResource(R.string.notification_dots),
+                subtitle = stringResource(R.string.show_notification_dots),
+                onClick = onNotificationDotsClick,
+            ),
+        )
     }
 }
 
@@ -151,72 +210,36 @@ private fun Success(
 
     var selectIconPackDialog by remember { mutableStateOf(false) }
 
-    Box(
+    val items = buildGeneralSettingsItems(
+        generalSettings = generalSettings,
+        isNotificationAccessGranted = settings.isNotificationAccessGranted(),
+        onImportIconPackClick = { showImportIconPackDialog = true },
+        onSelectIconPackClick = { selectIconPackDialog = true },
+        onThemeClick = { showDarkThemeConfigDialog = true },
+        onDynamicThemeChange = {
+            onUpdateGeneralSettings(generalSettings.copy(dynamicTheme = it))
+        },
+        onNotificationDotsClick = {
+            context.startActivity(
+                Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+            )
+        },
+    )
+
+    Column(
         modifier = modifier
             .verticalScroll(rememberScrollState())
-            .fillMaxSize(),
+            .fillMaxSize()
+            .padding(10.dp),
+        verticalArrangement = Arrangement.spacedBy(2.dp),
     ) {
-        ElevatedCard(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 15.dp),
-        ) {
-            SettingsColumn(
-                title = stringResource(R.string.import_icon_pack),
-                subtitle = stringResource(R.string.apply_icons_from_supported_icon_packs),
-                onClick = {
-                    showImportIconPackDialog = true
-                },
+        items.forEachIndexed { index, settingsItem ->
+            SettingsItemContent(
+                settingsItem = settingsItem,
+                index = index,
+                size = items.size,
             )
-
-            HorizontalDivider(modifier = Modifier.fillMaxWidth())
-
-            SettingsColumn(
-                title = stringResource(R.string.select_icon_pack),
-                subtitle = generalSettings.iconPackInfoPackageName.ifEmpty { stringResource(R.string.default_icon_pack) },
-                onClick = {
-                    selectIconPackDialog = true
-                },
-            )
-
-            HorizontalDivider(modifier = Modifier.fillMaxWidth())
-
-            SettingsColumn(
-                title = stringResource(R.string.theme),
-                subtitle = generalSettings.theme.name,
-                onClick = {
-                    showDarkThemeConfigDialog = true
-                },
-            )
-
-            HorizontalDivider(modifier = Modifier.fillMaxWidth())
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                SettingsSwitch(
-                    checked = generalSettings.dynamicTheme,
-                    title = stringResource(R.string.dynamic_theme),
-                    subtitle = stringResource(R.string.adapt_colors_to_your_wallpaper_automatically),
-                    onCheckedChange = {
-                        onUpdateGeneralSettings(generalSettings.copy(dynamicTheme = it))
-                    },
-                )
-
-                HorizontalDivider(modifier = Modifier.fillMaxWidth())
-            }
-
-            if (!settings.isNotificationAccessGranted()) {
-                SettingsColumn(
-                    title = stringResource(R.string.notification_dots),
-                    subtitle = stringResource(R.string.show_notification_dots),
-                    onClick = {
-                        val intent = Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)
-
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-
-                        context.startActivity(intent)
-                    },
-                )
-            }
         }
     }
 
