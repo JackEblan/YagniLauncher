@@ -188,25 +188,27 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
         }
     }
 
-    override suspend fun getFastActivityList(): List<FastLauncherAppsActivityInfo> = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        launcherApps.profiles.filterNot { userHandle ->
-            currentCoroutineContext().ensureActive()
+    override suspend fun getFastActivityList(): List<FastLauncherAppsActivityInfo> = withContext(defaultDispatcher) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            launcherApps.profiles.filterNot { userHandle ->
+                currentCoroutineContext().ensureActive()
 
-            isPrivateSpaceEntryPointHidden(userHandle = userHandle)
-        }.flatMap { userHandle ->
-            currentCoroutineContext().ensureActive()
+                isPrivateSpaceEntryPointHidden(userHandle = userHandle)
+            }.flatMap { userHandle ->
+                currentCoroutineContext().ensureActive()
 
-            launcherApps.getActivityList(null, userHandle).map { launcherActivityInfo ->
+                launcherApps.getActivityList(null, userHandle).map { launcherActivityInfo ->
+                    currentCoroutineContext().ensureActive()
+
+                    launcherActivityInfo.toFastLauncherAppsActivityInfo()
+                }
+            }
+        } else {
+            launcherApps.getActivityList(null, myUserHandle()).map { launcherActivityInfo ->
                 currentCoroutineContext().ensureActive()
 
                 launcherActivityInfo.toFastLauncherAppsActivityInfo()
             }
-        }
-    } else {
-        launcherApps.getActivityList(null, myUserHandle()).map { launcherActivityInfo ->
-            currentCoroutineContext().ensureActive()
-
-            launcherActivityInfo.toFastLauncherAppsActivityInfo()
         }
     }
 
@@ -282,36 +284,38 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
         }
     }
 
-    override suspend fun getFastShortcuts(): List<FastLauncherAppsShortcutInfo>? = if (hasShortcutHostPermission) {
-        val shortcutQuery = LauncherApps.ShortcutQuery().apply {
-            setQueryFlags(
-                LauncherApps.ShortcutQuery.FLAG_MATCH_DYNAMIC or LauncherApps.ShortcutQuery.FLAG_MATCH_MANIFEST or LauncherApps.ShortcutQuery.FLAG_MATCH_PINNED,
-            )
-        }
+    override suspend fun getFastShortcuts(): List<FastLauncherAppsShortcutInfo>? = withContext(defaultDispatcher) {
+        if (hasShortcutHostPermission) {
+            val shortcutQuery = LauncherApps.ShortcutQuery().apply {
+                setQueryFlags(
+                    LauncherApps.ShortcutQuery.FLAG_MATCH_DYNAMIC or LauncherApps.ShortcutQuery.FLAG_MATCH_MANIFEST or LauncherApps.ShortcutQuery.FLAG_MATCH_PINNED,
+                )
+            }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            launcherApps.profiles.filter { userHandle ->
-                currentCoroutineContext().ensureActive()
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                launcherApps.profiles.filter { userHandle ->
+                    currentCoroutineContext().ensureActive()
 
-                isUserAvailable(userHandle = userHandle)
-            }.flatMap { userHandle ->
-                currentCoroutineContext().ensureActive()
+                    isUserAvailable(userHandle = userHandle)
+                }.flatMap { userHandle ->
+                    currentCoroutineContext().ensureActive()
 
-                launcherApps.getShortcuts(shortcutQuery, userHandle)?.map { shortcutInfo ->
+                    launcherApps.getShortcuts(shortcutQuery, userHandle)?.map { shortcutInfo ->
+                        currentCoroutineContext().ensureActive()
+
+                        shortcutInfo.toFastLauncherAppsShortcutInfo()
+                    } ?: emptyList()
+                }
+            } else {
+                launcherApps.getShortcuts(shortcutQuery, myUserHandle())?.map { shortcutInfo ->
                     currentCoroutineContext().ensureActive()
 
                     shortcutInfo.toFastLauncherAppsShortcutInfo()
-                } ?: emptyList()
+                }
             }
         } else {
-            launcherApps.getShortcuts(shortcutQuery, myUserHandle())?.map { shortcutInfo ->
-                currentCoroutineContext().ensureActive()
-
-                shortcutInfo.toFastLauncherAppsShortcutInfo()
-            }
+            null
         }
-    } else {
-        null
     }
 
     override suspend fun getShortcutsByPackageName(
