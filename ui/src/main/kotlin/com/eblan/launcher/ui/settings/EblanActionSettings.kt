@@ -18,10 +18,11 @@
 package com.eblan.launcher.ui.settings
 
 import android.content.Context
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -36,7 +37,52 @@ import com.eblan.launcher.domain.model.EblanActionType
 import com.eblan.launcher.domain.model.EblanApplicationInfo
 import com.eblan.launcher.ui.R
 import com.eblan.launcher.ui.dialog.EblanActionDialog
+import com.eblan.launcher.ui.model.SettingsItem
 import com.eblan.launcher.common.R as commonR
+
+@Composable
+fun buildEblanActionSettingsItems(
+    context: Context,
+    doubleTap: EblanAction,
+    swipeUp: EblanAction,
+    swipeDown: EblanAction,
+    onDoubleTapClick: () -> Unit,
+    onSwipeUpClick: () -> Unit,
+    onSwipeDownClick: () -> Unit,
+): List<SettingsItem> = buildList {
+    add(
+        SettingsItem.Column(
+            title = stringResource(R.string.double_tap),
+            subtitle = doubleTap.eblanActionType.getEblanActionTypeSubtitle(
+                context = context,
+                componentName = doubleTap.componentName,
+            ),
+            onClick = onDoubleTapClick,
+        ),
+    )
+
+    add(
+        SettingsItem.Column(
+            title = stringResource(R.string.swipe_up),
+            subtitle = swipeUp.eblanActionType.getEblanActionTypeSubtitle(
+                context = context,
+                componentName = swipeUp.componentName,
+            ),
+            onClick = onSwipeUpClick,
+        ),
+    )
+
+    add(
+        SettingsItem.Column(
+            title = stringResource(R.string.swipe_down),
+            subtitle = swipeDown.eblanActionType.getEblanActionTypeSubtitle(
+                context = context,
+                componentName = swipeDown.componentName,
+            ),
+            onClick = onSwipeDownClick,
+        ),
+    )
+}
 
 @Composable
 fun EblanActionSettings(
@@ -57,47 +103,64 @@ fun EblanActionSettings(
 
     var showSwipeDownDialog by remember { mutableStateOf(false) }
 
-    ElevatedCard(
+    val items = buildEblanActionSettingsItems(
+        context = context,
+        doubleTap = doubleTap,
+        swipeUp = swipeUp,
+        swipeDown = swipeDown,
+        onDoubleTapClick = {
+            showDoubleTapDialog = true
+        },
+        onSwipeUpClick = {
+            showSwipeUpDialog = true
+        },
+        onSwipeDownClick = {
+            showSwipeDownDialog = true
+        },
+    )
+
+    Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 15.dp),
+            .padding(10.dp),
     ) {
-        SettingsColumn(
-            title = stringResource(R.string.double_tap),
-            subtitle = doubleTap.eblanActionType.getEblanActionTypeSubtitle(
-                context = context,
-                componentName = doubleTap.componentName,
-            ),
-            onClick = {
-                showDoubleTapDialog = true
-            },
-        )
+        items.forEachIndexed { index, settingsItem ->
+            when (settingsItem) {
+                is SettingsItem.Category -> {
+                    Text(
+                        modifier = Modifier.padding(15.dp),
+                        text = settingsItem.title,
+                        style = MaterialTheme.typography.bodySmall,
+                    )
+                }
 
-        HorizontalDivider(modifier = Modifier.fillMaxWidth())
+                is SettingsItem.Column -> {
+                    SettingsColumn(
+                        index = index,
+                        size = items.size,
+                        title = settingsItem.title,
+                        subtitle = settingsItem.subtitle,
+                        onClick = settingsItem.onClick,
+                    )
+                }
 
-        SettingsColumn(
-            title = stringResource(R.string.swipe_up),
-            subtitle = swipeUp.eblanActionType.getEblanActionTypeSubtitle(
-                context = context,
-                componentName = swipeUp.componentName,
-            ),
-            onClick = {
-                showSwipeUpDialog = true
-            },
-        )
+                is SettingsItem.Switch -> {
+                    SettingsSwitch(
+                        index = index,
+                        size = items.size,
+                        checked = settingsItem.checked,
+                        title = settingsItem.title,
+                        subtitle = settingsItem.subtitle,
+                        onClick = settingsItem.onClick,
+                        onCheckedChange = settingsItem.onCheckedChange,
+                    )
+                }
 
-        HorizontalDivider(modifier = Modifier.fillMaxWidth())
-
-        SettingsColumn(
-            title = stringResource(R.string.swipe_down),
-            subtitle = swipeDown.eblanActionType.getEblanActionTypeSubtitle(
-                context = context,
-                componentName = swipeDown.componentName,
-            ),
-            onClick = {
-                showSwipeDownDialog = true
-            },
-        )
+                is SettingsItem.Row,
+                is SettingsItem.CustomBackgroundColor,
+                -> Unit
+            }
+        }
     }
 
     if (showDoubleTapDialog) {

@@ -48,7 +48,6 @@ import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.EblanIconPackInfo
 import com.eblan.launcher.domain.model.GeneralSettings
 import com.eblan.launcher.domain.model.PackageManagerIconPackInfo
-import com.eblan.launcher.domain.model.SettingsItem
 import com.eblan.launcher.domain.model.Theme
 import com.eblan.launcher.feature.settings.general.dialog.ImportIconPackInfoDialog
 import com.eblan.launcher.feature.settings.general.dialog.SelectIconPackInfoDialog
@@ -56,6 +55,7 @@ import com.eblan.launcher.feature.settings.general.model.GeneralSettingsUiState
 import com.eblan.launcher.service.IconPackInfoService
 import com.eblan.launcher.ui.dialog.RadioOptionsDialog
 import com.eblan.launcher.ui.local.LocalSettings
+import com.eblan.launcher.ui.model.SettingsItem
 import com.eblan.launcher.ui.settings.SettingsColumn
 import com.eblan.launcher.ui.settings.SettingsSwitch
 import com.eblan.launcher.common.R as commonR
@@ -112,14 +112,13 @@ internal fun GeneralSettingsScreen(
             )
         },
     ) { paddingValues ->
-        if (generalSettingsUiState is GeneralSettingsUiState.Success) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues),
-            ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
+        ) {
+            if (generalSettingsUiState is GeneralSettingsUiState.Success) {
                 Success(
-                    modifier = modifier,
                     eblanIconPackInfos = eblanIconPackInfos,
                     generalSettings = generalSettingsUiState.generalSettings,
                     packageManagerIconPackInfos = packageManagerIconPackInfos,
@@ -259,7 +258,9 @@ private fun Success(
                 }
 
                 is SettingsItem.Category,
-                is SettingsItem.CustomBackgroundColor -> Unit
+                is SettingsItem.CustomBackgroundColor,
+                is SettingsItem.Row,
+                -> Unit
             }
         }
     }

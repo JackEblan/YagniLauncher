@@ -44,13 +44,13 @@ import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.AppDrawerSettings
 import com.eblan.launcher.domain.model.AppDrawerType
 import com.eblan.launcher.domain.model.EblanApplicationInfo
-import com.eblan.launcher.domain.model.SettingsItem
 import com.eblan.launcher.feature.settings.appdrawer.dialog.EditHorizontalGridDialog
 import com.eblan.launcher.feature.settings.appdrawer.dialog.EditVerticalGridDialog
 import com.eblan.launcher.feature.settings.appdrawer.dialog.HiddenEblanApplicationInfosDialog
 import com.eblan.launcher.feature.settings.appdrawer.model.AppDrawerSettingsUiState
 import com.eblan.launcher.ui.dialog.RadioOptionsDialog
 import com.eblan.launcher.ui.dialog.TextColorDialog
+import com.eblan.launcher.ui.model.SettingsItem
 import com.eblan.launcher.ui.settings.CustomBackgroundColor
 import com.eblan.launcher.ui.settings.GridItemSettings
 import com.eblan.launcher.ui.settings.SettingsColumn
@@ -102,12 +102,12 @@ internal fun AppDrawerSettingsScreen(
             )
         },
     ) { paddingValues ->
-        if (appDrawerSettingsUiState is AppDrawerSettingsUiState.Success) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues),
-            ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
+        ) {
+            if (appDrawerSettingsUiState is AppDrawerSettingsUiState.Success) {
                 Success(
                     appDrawerSettings = appDrawerSettingsUiState.appDrawerSettings,
                     eblanApplicationInfos = appDrawerSettingsUiState.eblanApplicationInfos,
@@ -151,7 +151,9 @@ fun buildAppDrawerSettingsItems(
             },
             onClick = when (appDrawerSettings.appDrawerType) {
                 AppDrawerType.Vertical -> onVerticalGridClick
+
                 AppDrawerType.Horizontal -> onHorizontalGridClick
+
                 AppDrawerType.List -> {
                     {}
                 }
@@ -327,6 +329,8 @@ private fun Success(
                         onClick = settingsItem.onClick,
                     )
                 }
+
+                is SettingsItem.Row -> Unit
             }
         }
 

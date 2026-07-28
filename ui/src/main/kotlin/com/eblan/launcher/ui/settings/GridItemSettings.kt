@@ -44,7 +44,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.eblan.launcher.domain.model.GridItemSettings
 import com.eblan.launcher.domain.model.HorizontalAlignment
-import com.eblan.launcher.domain.model.SettingsItem
 import com.eblan.launcher.domain.model.TextColor
 import com.eblan.launcher.domain.model.VerticalArrangement
 import com.eblan.launcher.ui.R
@@ -55,6 +54,7 @@ import com.eblan.launcher.ui.dialog.EditPaddingDialog
 import com.eblan.launcher.ui.dialog.EditTextSizeDialog
 import com.eblan.launcher.ui.dialog.RadioOptionsDialog
 import com.eblan.launcher.ui.dialog.TextColorDialog
+import com.eblan.launcher.ui.model.SettingsItem
 import com.eblan.launcher.common.R as commonR
 
 @Composable
@@ -275,6 +275,8 @@ fun GridItemSettings(
                         style = MaterialTheme.typography.bodySmall,
                     )
                 }
+
+                is SettingsItem.Row -> Unit
             }
         }
     }
@@ -439,7 +441,7 @@ fun TextColorSettingsRow(
         TextColor.System,
         TextColor.Light,
         TextColor.Dark,
-            -> {
+        -> {
             SettingsColumn(
                 modifier = modifier,
                 title = textColorTitle,
@@ -460,13 +462,12 @@ fun TextColorSettingsRow(
 }
 
 @Composable
-fun TextColor.getTitle(): String =
-    when (this) {
-        TextColor.System -> stringResource(commonR.string.system)
-        TextColor.Light -> stringResource(commonR.string.light)
-        TextColor.Dark -> stringResource(commonR.string.dark)
-        TextColor.Custom -> stringResource(R.string.custom)
-    }
+fun TextColor.getTitle(): String = when (this) {
+    TextColor.System -> stringResource(commonR.string.system)
+    TextColor.Light -> stringResource(commonR.string.light)
+    TextColor.Dark -> stringResource(commonR.string.dark)
+    TextColor.Custom -> stringResource(R.string.custom)
+}
 
 @Composable
 private fun CustomBackgroundColor(
@@ -542,17 +543,14 @@ fun CustomBackgroundColor(
     }
 }
 
+private fun HorizontalAlignment.getHorizontalAlignmentTitle(context: Context): String = when (this) {
+    HorizontalAlignment.Start -> context.getString(R.string.start)
+    HorizontalAlignment.CenterHorizontally -> context.getString(R.string.center_horizontally)
+    HorizontalAlignment.End -> context.getString(R.string.end)
+}
 
-private fun HorizontalAlignment.getHorizontalAlignmentTitle(context: Context): String =
-    when (this) {
-        HorizontalAlignment.Start -> context.getString(R.string.start)
-        HorizontalAlignment.CenterHorizontally -> context.getString(R.string.center_horizontally)
-        HorizontalAlignment.End -> context.getString(R.string.end)
-    }
-
-private fun VerticalArrangement.getVerticalArrangementTitle(context: Context): String =
-    when (this) {
-        VerticalArrangement.Top -> context.getString(R.string.top)
-        VerticalArrangement.Center -> context.getString(R.string.center)
-        VerticalArrangement.Bottom -> context.getString(R.string.bottom)
-    }
+private fun VerticalArrangement.getVerticalArrangementTitle(context: Context): String = when (this) {
+    VerticalArrangement.Top -> context.getString(R.string.top)
+    VerticalArrangement.Center -> context.getString(R.string.center)
+    VerticalArrangement.Bottom -> context.getString(R.string.bottom)
+}

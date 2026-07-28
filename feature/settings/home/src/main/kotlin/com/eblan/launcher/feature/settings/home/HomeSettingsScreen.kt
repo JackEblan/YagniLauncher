@@ -42,13 +42,13 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.HomeSettings
-import com.eblan.launcher.domain.model.SettingsItem
 import com.eblan.launcher.feature.settings.home.dialog.EditDockGridDialog
 import com.eblan.launcher.feature.settings.home.dialog.EditDockHeightDialog
 import com.eblan.launcher.feature.settings.home.dialog.EditFolderCellDimensionDialog
 import com.eblan.launcher.feature.settings.home.dialog.EditFolderMaxGridDialog
 import com.eblan.launcher.feature.settings.home.dialog.EditGridDialog
 import com.eblan.launcher.feature.settings.home.model.HomeSettingsUiState
+import com.eblan.launcher.ui.model.SettingsItem
 import com.eblan.launcher.ui.settings.GridItemSettings
 import com.eblan.launcher.ui.settings.SettingsColumn
 import com.eblan.launcher.ui.settings.SettingsSwitch
@@ -96,12 +96,12 @@ internal fun HomeSettingsScreen(
             )
         },
     ) { paddingValues ->
-        if (homeSettingsUiState is HomeSettingsUiState.Success) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues),
-            ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
+        ) {
+            if (homeSettingsUiState is HomeSettingsUiState.Success) {
                 Success(
                     homeSettings = homeSettingsUiState.homeSettings,
                     onUpdateHomeSettings = onUpdateHomeSettings,
@@ -356,7 +356,9 @@ private fun Success(
                     )
                 }
 
-                is SettingsItem.CustomBackgroundColor -> Unit
+                is SettingsItem.Row,
+                is SettingsItem.CustomBackgroundColor,
+                -> Unit
             }
         }
 

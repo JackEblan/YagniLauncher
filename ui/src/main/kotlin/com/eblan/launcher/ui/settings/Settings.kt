@@ -191,7 +191,7 @@ fun SettingsColumn(
     }
 }
 
-internal fun settingsItemShape(
+fun settingsItemShape(
     index: Int,
     size: Int,
     radius: Dp = 16.dp,

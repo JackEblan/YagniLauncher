@@ -80,14 +80,13 @@ private fun GestureSettingsScreen(
             )
         },
     ) { paddingValues ->
-        if (gesturesSettingsUiState is GesturesSettingsUiState.Success) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues),
-            ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
+        ) {
+            if (gesturesSettingsUiState is GesturesSettingsUiState.Success) {
                 EblanActionSettings(
-                    modifier = modifier,
                     doubleTap = gesturesSettingsUiState.gestureSettings.doubleTap,
                     swipeUp = gesturesSettingsUiState.gestureSettings.swipeUp,
                     swipeDown = gesturesSettingsUiState.gestureSettings.swipeDown,
