@@ -118,127 +118,6 @@ internal fun AppDrawerSettingsScreen(
 }
 
 @Composable
-fun buildAppDrawerSettingsItems(
-    appDrawerSettings: AppDrawerSettings,
-    onAppDrawerTypeClick: () -> Unit,
-    onVerticalGridClick: () -> Unit,
-    onHorizontalGridClick: () -> Unit,
-    onBackgroundColorClick: () -> Unit,
-    onHiddenApplicationsClick: () -> Unit,
-    onUpdateAppDrawerSettings: (AppDrawerSettings) -> Unit,
-): List<SettingsItem> = buildList {
-    add(
-        SettingsItem.Column(
-            title = stringResource(R.string.app_drawer_type),
-            subtitle = appDrawerSettings.appDrawerType.name,
-            onClick = onAppDrawerTypeClick,
-        ),
-    )
-
-    when (appDrawerSettings.appDrawerType) {
-        AppDrawerType.Vertical -> add(
-            SettingsItem.Column(
-                title = stringResource(commonR.string.grid),
-                subtitle = "${appDrawerSettings.appDrawerColumns}x${appDrawerSettings.appDrawerRowsHeight}",
-                onClick = onVerticalGridClick,
-            ),
-        )
-
-        AppDrawerType.Horizontal -> add(
-            SettingsItem.Column(
-                title = stringResource(commonR.string.grid),
-                subtitle = "${appDrawerSettings.horizontalAppDrawerColumns}x${appDrawerSettings.horizontalAppDrawerRows}",
-                onClick = onHorizontalGridClick,
-            ),
-        )
-
-        AppDrawerType.List -> Unit
-    }
-
-    add(
-        SettingsItem.Column(
-            title = stringResource(commonR.string.background_color),
-            subtitle = appDrawerSettings.backgroundColor.getTitle(),
-            onClick = onBackgroundColorClick,
-        ),
-    )
-
-    add(
-        SettingsItem.Column(
-            title = stringResource(R.string.hidden_applications),
-            subtitle = stringResource(R.string.hide_selected_apps_from_the_app_drawer),
-            onClick = onHiddenApplicationsClick,
-        ),
-    )
-
-    add(
-        SettingsItem.Switch(
-            checked = appDrawerSettings.excludeTaggedApps,
-            title = stringResource(R.string.exclude_tagged_apps),
-            subtitle = stringResource(R.string.hide_apps_marked_with_selected_tags),
-            onClick = {
-                onUpdateAppDrawerSettings(
-                    appDrawerSettings.copy(
-                        excludeTaggedApps = !appDrawerSettings.excludeTaggedApps,
-                    ),
-                )
-            },
-            onCheckedChange = {
-                onUpdateAppDrawerSettings(
-                    appDrawerSettings.copy(
-                        excludeTaggedApps = it,
-                    ),
-                )
-            },
-        ),
-    )
-
-    add(
-        SettingsItem.Switch(
-            checked = appDrawerSettings.showKeyboard,
-            title = stringResource(R.string.show_keyboard),
-            subtitle = stringResource(R.string.show_keyboard_when_app_drawer_opens),
-            onClick = {
-                onUpdateAppDrawerSettings(
-                    appDrawerSettings.copy(
-                        showKeyboard = !appDrawerSettings.showKeyboard,
-                    ),
-                )
-            },
-            onCheckedChange = {
-                onUpdateAppDrawerSettings(
-                    appDrawerSettings.copy(
-                        showKeyboard = it,
-                    ),
-                )
-            },
-        ),
-    )
-
-    add(
-        SettingsItem.Switch(
-            checked = appDrawerSettings.fuzzySearch,
-            title = stringResource(R.string.fuzzy_search),
-            subtitle = stringResource(R.string.find_apps_even_with_typos_or_accented_characters),
-            onClick = {
-                onUpdateAppDrawerSettings(
-                    appDrawerSettings.copy(
-                        fuzzySearch = !appDrawerSettings.fuzzySearch,
-                    ),
-                )
-            },
-            onCheckedChange = {
-                onUpdateAppDrawerSettings(
-                    appDrawerSettings.copy(
-                        fuzzySearch = it,
-                    ),
-                )
-            },
-        ),
-    )
-}
-
-@Composable
 private fun Success(
     modifier: Modifier = Modifier,
     appDrawerSettings: AppDrawerSettings,
@@ -372,4 +251,125 @@ private fun Success(
             },
         )
     }
+}
+
+@Composable
+private fun buildAppDrawerSettingsItems(
+    appDrawerSettings: AppDrawerSettings,
+    onAppDrawerTypeClick: () -> Unit,
+    onVerticalGridClick: () -> Unit,
+    onHorizontalGridClick: () -> Unit,
+    onBackgroundColorClick: () -> Unit,
+    onHiddenApplicationsClick: () -> Unit,
+    onUpdateAppDrawerSettings: (AppDrawerSettings) -> Unit,
+): List<SettingsItem> = buildList {
+    add(
+        SettingsItem.Column(
+            title = stringResource(R.string.app_drawer_type),
+            subtitle = appDrawerSettings.appDrawerType.name,
+            onClick = onAppDrawerTypeClick,
+        ),
+    )
+
+    when (appDrawerSettings.appDrawerType) {
+        AppDrawerType.Vertical -> add(
+            SettingsItem.Column(
+                title = stringResource(commonR.string.grid),
+                subtitle = "${appDrawerSettings.appDrawerColumns}x${appDrawerSettings.appDrawerRowsHeight}",
+                onClick = onVerticalGridClick,
+            ),
+        )
+
+        AppDrawerType.Horizontal -> add(
+            SettingsItem.Column(
+                title = stringResource(commonR.string.grid),
+                subtitle = "${appDrawerSettings.horizontalAppDrawerColumns}x${appDrawerSettings.horizontalAppDrawerRows}",
+                onClick = onHorizontalGridClick,
+            ),
+        )
+
+        AppDrawerType.List -> Unit
+    }
+
+    add(
+        SettingsItem.Column(
+            title = stringResource(commonR.string.background_color),
+            subtitle = appDrawerSettings.backgroundColor.getTitle(),
+            onClick = onBackgroundColorClick,
+        ),
+    )
+
+    add(
+        SettingsItem.Column(
+            title = stringResource(R.string.hidden_applications),
+            subtitle = stringResource(R.string.hide_selected_apps_from_the_app_drawer),
+            onClick = onHiddenApplicationsClick,
+        ),
+    )
+
+    add(
+        SettingsItem.Switch(
+            checked = appDrawerSettings.excludeTaggedApps,
+            title = stringResource(R.string.exclude_tagged_apps),
+            subtitle = stringResource(R.string.hide_apps_marked_with_selected_tags),
+            onClick = {
+                onUpdateAppDrawerSettings(
+                    appDrawerSettings.copy(
+                        excludeTaggedApps = !appDrawerSettings.excludeTaggedApps,
+                    ),
+                )
+            },
+            onCheckedChange = {
+                onUpdateAppDrawerSettings(
+                    appDrawerSettings.copy(
+                        excludeTaggedApps = it,
+                    ),
+                )
+            },
+        ),
+    )
+
+    add(
+        SettingsItem.Switch(
+            checked = appDrawerSettings.showKeyboard,
+            title = stringResource(R.string.show_keyboard),
+            subtitle = stringResource(R.string.show_keyboard_when_app_drawer_opens),
+            onClick = {
+                onUpdateAppDrawerSettings(
+                    appDrawerSettings.copy(
+                        showKeyboard = !appDrawerSettings.showKeyboard,
+                    ),
+                )
+            },
+            onCheckedChange = {
+                onUpdateAppDrawerSettings(
+                    appDrawerSettings.copy(
+                        showKeyboard = it,
+                    ),
+                )
+            },
+        ),
+    )
+
+    add(
+        SettingsItem.Switch(
+            checked = appDrawerSettings.fuzzySearch,
+            title = stringResource(R.string.fuzzy_search),
+            subtitle = stringResource(R.string.find_apps_even_with_typos_or_accented_characters),
+            onClick = {
+                onUpdateAppDrawerSettings(
+                    appDrawerSettings.copy(
+                        fuzzySearch = !appDrawerSettings.fuzzySearch,
+                    ),
+                )
+            },
+            onCheckedChange = {
+                onUpdateAppDrawerSettings(
+                    appDrawerSettings.copy(
+                        fuzzySearch = it,
+                    ),
+                )
+            },
+        ),
+    )
 }

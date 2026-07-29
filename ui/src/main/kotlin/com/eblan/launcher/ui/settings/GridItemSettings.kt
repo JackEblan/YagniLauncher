@@ -57,124 +57,6 @@ import com.eblan.launcher.ui.model.SettingsItem
 import com.eblan.launcher.common.R as commonR
 
 @Composable
-fun buildGridItemSettingsItems(
-    gridItemSettings: GridItemSettings,
-    onIconSizeClick: () -> Unit,
-    onTextColorClick: () -> Unit,
-    onTextSizeClick: () -> Unit,
-    onBackgroundColorClick: () -> Unit,
-    onPaddingClick: () -> Unit,
-    onCornerRadiusClick: () -> Unit,
-    onHorizontalAlignmentClick: () -> Unit,
-    onVerticalArrangementClick: () -> Unit,
-    onUpdateGridItemSettings: (GridItemSettings) -> Unit,
-): List<SettingsItem> {
-    val context = LocalContext.current
-
-    return buildList {
-        add(
-            SettingsItem.Column(
-                title = stringResource(R.string.icon_size),
-                subtitle = "${gridItemSettings.iconSize}",
-                onClick = onIconSizeClick,
-            ),
-        )
-
-        add(
-            SettingsItem.Column(
-                title = stringResource(R.string.text_color),
-                subtitle = gridItemSettings.textColor.getTitle(),
-                onClick = onTextColorClick,
-            ),
-        )
-
-        add(
-            SettingsItem.Column(
-                title = stringResource(R.string.text_size),
-                subtitle = "${gridItemSettings.textSize}",
-                onClick = onTextSizeClick,
-            ),
-        )
-
-        add(
-            SettingsItem.CustomBackgroundColor(
-                title = stringResource(commonR.string.background_color),
-                customBackgroundColor = gridItemSettings.customBackgroundColor,
-                onClick = onBackgroundColorClick,
-            ),
-        )
-
-        add(
-            SettingsItem.Column(
-                title = stringResource(R.string.padding),
-                subtitle = "${gridItemSettings.padding}",
-                onClick = onPaddingClick,
-            ),
-        )
-
-        add(
-            SettingsItem.Column(
-                title = stringResource(R.string.corner_radius),
-                subtitle = "${gridItemSettings.cornerRadius}",
-                onClick = onCornerRadiusClick,
-            ),
-        )
-
-        add(
-            SettingsItem.Switch(
-                checked = gridItemSettings.showLabel,
-                title = stringResource(R.string.show_label),
-                subtitle = stringResource(R.string.display_app_names_below_icons),
-                onClick = {
-                    onUpdateGridItemSettings(
-                        gridItemSettings.copy(showLabel = !gridItemSettings.showLabel),
-                    )
-                },
-                onCheckedChange = {
-                    onUpdateGridItemSettings(
-                        gridItemSettings.copy(showLabel = it),
-                    )
-                },
-            ),
-        )
-
-        add(
-            SettingsItem.Switch(
-                checked = gridItemSettings.singleLineLabel,
-                title = stringResource(R.string.single_line_label),
-                subtitle = stringResource(R.string.limit_app_names_to_one_line),
-                onClick = {
-                    onUpdateGridItemSettings(
-                        gridItemSettings.copy(singleLineLabel = !gridItemSettings.singleLineLabel),
-                    )
-                },
-                onCheckedChange = {
-                    onUpdateGridItemSettings(
-                        gridItemSettings.copy(singleLineLabel = it),
-                    )
-                },
-            ),
-        )
-
-        add(
-            SettingsItem.Column(
-                title = stringResource(R.string.horizontal_alignment),
-                subtitle = gridItemSettings.horizontalAlignment.getHorizontalAlignmentTitle(context = context),
-                onClick = onHorizontalAlignmentClick,
-            ),
-        )
-
-        add(
-            SettingsItem.Column(
-                title = stringResource(R.string.vertical_arrangement),
-                subtitle = gridItemSettings.verticalArrangement.getVerticalArrangementTitle(context = context),
-                onClick = onVerticalArrangementClick,
-            ),
-        )
-    }
-}
-
-@Composable
 fun GridItemSettings(
     modifier: Modifier = Modifier,
     gridItemSettings: GridItemSettings,
@@ -398,7 +280,7 @@ fun TextColor.getTitle(): String = when (this) {
 }
 
 @Composable
-fun CustomBackgroundColor(
+internal fun CustomBackgroundColor(
     modifier: Modifier = Modifier,
     index: Int,
     size: Int,
@@ -435,6 +317,124 @@ fun CustomBackgroundColor(
                     ),
             )
         }
+    }
+}
+
+@Composable
+private fun buildGridItemSettingsItems(
+    gridItemSettings: GridItemSettings,
+    onIconSizeClick: () -> Unit,
+    onTextColorClick: () -> Unit,
+    onTextSizeClick: () -> Unit,
+    onBackgroundColorClick: () -> Unit,
+    onPaddingClick: () -> Unit,
+    onCornerRadiusClick: () -> Unit,
+    onHorizontalAlignmentClick: () -> Unit,
+    onVerticalArrangementClick: () -> Unit,
+    onUpdateGridItemSettings: (GridItemSettings) -> Unit,
+): List<SettingsItem> {
+    val context = LocalContext.current
+
+    return buildList {
+        add(
+            SettingsItem.Column(
+                title = stringResource(R.string.icon_size),
+                subtitle = "${gridItemSettings.iconSize}",
+                onClick = onIconSizeClick,
+            ),
+        )
+
+        add(
+            SettingsItem.Column(
+                title = stringResource(R.string.text_color),
+                subtitle = gridItemSettings.textColor.getTitle(),
+                onClick = onTextColorClick,
+            ),
+        )
+
+        add(
+            SettingsItem.Column(
+                title = stringResource(R.string.text_size),
+                subtitle = "${gridItemSettings.textSize}",
+                onClick = onTextSizeClick,
+            ),
+        )
+
+        add(
+            SettingsItem.CustomBackgroundColor(
+                title = stringResource(commonR.string.background_color),
+                customBackgroundColor = gridItemSettings.customBackgroundColor,
+                onClick = onBackgroundColorClick,
+            ),
+        )
+
+        add(
+            SettingsItem.Column(
+                title = stringResource(R.string.padding),
+                subtitle = "${gridItemSettings.padding}",
+                onClick = onPaddingClick,
+            ),
+        )
+
+        add(
+            SettingsItem.Column(
+                title = stringResource(R.string.corner_radius),
+                subtitle = "${gridItemSettings.cornerRadius}",
+                onClick = onCornerRadiusClick,
+            ),
+        )
+
+        add(
+            SettingsItem.Switch(
+                checked = gridItemSettings.showLabel,
+                title = stringResource(R.string.show_label),
+                subtitle = stringResource(R.string.display_app_names_below_icons),
+                onClick = {
+                    onUpdateGridItemSettings(
+                        gridItemSettings.copy(showLabel = !gridItemSettings.showLabel),
+                    )
+                },
+                onCheckedChange = {
+                    onUpdateGridItemSettings(
+                        gridItemSettings.copy(showLabel = it),
+                    )
+                },
+            ),
+        )
+
+        add(
+            SettingsItem.Switch(
+                checked = gridItemSettings.singleLineLabel,
+                title = stringResource(R.string.single_line_label),
+                subtitle = stringResource(R.string.limit_app_names_to_one_line),
+                onClick = {
+                    onUpdateGridItemSettings(
+                        gridItemSettings.copy(singleLineLabel = !gridItemSettings.singleLineLabel),
+                    )
+                },
+                onCheckedChange = {
+                    onUpdateGridItemSettings(
+                        gridItemSettings.copy(singleLineLabel = it),
+                    )
+                },
+            ),
+        )
+
+        add(
+            SettingsItem.Column(
+                title = stringResource(R.string.horizontal_alignment),
+                subtitle = gridItemSettings.horizontalAlignment.getHorizontalAlignmentTitle(context = context),
+                onClick = onHorizontalAlignmentClick,
+            ),
+        )
+
+        add(
+            SettingsItem.Column(
+                title = stringResource(R.string.vertical_arrangement),
+                subtitle = gridItemSettings.verticalArrangement.getVerticalArrangementTitle(context = context),
+                onClick = onVerticalArrangementClick,
+            ),
+        )
     }
 }
 

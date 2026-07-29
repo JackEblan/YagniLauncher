@@ -74,73 +74,6 @@ internal fun SettingsRoute(
     )
 }
 
-@Composable
-fun buildSettingsItems(
-    isDefaultLauncher: Boolean,
-    onDefaultLauncherClick: () -> Unit,
-    onGeneralClick: () -> Unit,
-    onHomeClick: () -> Unit,
-    onAppDrawerClick: () -> Unit,
-    onGesturesClick: () -> Unit,
-    onExperimentalClick: () -> Unit,
-): List<SettingsItem> = buildList {
-    if (!isDefaultLauncher) {
-        add(
-            SettingsItem.Row(
-                imageVector = EblanLauncherIcons.Info,
-                title = stringResource(R.string.default_launcher),
-                subtitle = stringResource(R.string.choose_yagni_launcher),
-                onClick = onDefaultLauncherClick,
-            ),
-        )
-    }
-
-    add(
-        SettingsItem.Row(
-            imageVector = EblanLauncherIcons.Settings,
-            title = stringResource(commonR.string.general),
-            subtitle = stringResource(R.string.themes_icon_packs),
-            onClick = onGeneralClick,
-        ),
-    )
-
-    add(
-        SettingsItem.Row(
-            imageVector = EblanLauncherIcons.Home,
-            title = stringResource(commonR.string.home),
-            subtitle = stringResource(R.string.grid_icon_dock_and_more),
-            onClick = onHomeClick,
-        ),
-    )
-
-    add(
-        SettingsItem.Row(
-            imageVector = EblanLauncherIcons.Apps,
-            title = stringResource(commonR.string.app_drawer),
-            subtitle = stringResource(R.string.columns_and_rows_count),
-            onClick = onAppDrawerClick,
-        ),
-    )
-
-    add(
-        SettingsItem.Row(
-            imageVector = EblanLauncherIcons.Gesture,
-            title = stringResource(commonR.string.gestures),
-            subtitle = stringResource(R.string.swipe_gesture_actions),
-            onClick = onGesturesClick,
-        ),
-    )
-
-    add(
-        SettingsItem.Row(
-            imageVector = EblanLauncherIcons.DeveloperMode,
-            title = stringResource(commonR.string.experimental),
-            subtitle = stringResource(R.string.advanced_options_for_power_users),
-            onClick = onExperimentalClick,
-        ),
-    )
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun SettingsScreen(
@@ -284,4 +217,71 @@ private fun AlphaWarningCard(modifier: Modifier = Modifier) {
             )
         }
     }
+}
+
+@Composable
+private fun buildSettingsItems(
+    isDefaultLauncher: Boolean,
+    onDefaultLauncherClick: () -> Unit,
+    onGeneralClick: () -> Unit,
+    onHomeClick: () -> Unit,
+    onAppDrawerClick: () -> Unit,
+    onGesturesClick: () -> Unit,
+    onExperimentalClick: () -> Unit,
+): List<SettingsItem> = buildList {
+    if (!isDefaultLauncher) {
+        add(
+            SettingsItem.Row(
+                imageVector = EblanLauncherIcons.Info,
+                title = stringResource(R.string.default_launcher),
+                subtitle = stringResource(R.string.choose_yagni_launcher),
+                onClick = onDefaultLauncherClick,
+            ),
+        )
+    }
+
+    add(
+        SettingsItem.Row(
+            imageVector = EblanLauncherIcons.Settings,
+            title = stringResource(commonR.string.general),
+            subtitle = stringResource(R.string.themes_icon_packs),
+            onClick = onGeneralClick,
+        ),
+    )
+
+    add(
+        SettingsItem.Row(
+            imageVector = EblanLauncherIcons.Home,
+            title = stringResource(commonR.string.home),
+            subtitle = stringResource(R.string.grid_icon_dock_and_more),
+            onClick = onHomeClick,
+        ),
+    )
+
+    add(
+        SettingsItem.Row(
+            imageVector = EblanLauncherIcons.Apps,
+            title = stringResource(commonR.string.app_drawer),
+            subtitle = stringResource(R.string.columns_and_rows_count),
+            onClick = onAppDrawerClick,
+        ),
+    )
+
+    add(
+        SettingsItem.Row(
+            imageVector = EblanLauncherIcons.Gesture,
+            title = stringResource(commonR.string.gestures),
+            subtitle = stringResource(R.string.swipe_gesture_actions),
+            onClick = onGesturesClick,
+        ),
+    )
+
+    add(
+        SettingsItem.Row(
+            imageVector = EblanLauncherIcons.DeveloperMode,
+            title = stringResource(commonR.string.experimental),
+            subtitle = stringResource(R.string.advanced_options_for_power_users),
+            onClick = onExperimentalClick,
+        ),
+    )
 }

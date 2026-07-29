@@ -39,50 +39,6 @@ import com.eblan.launcher.ui.model.SettingsItem
 import com.eblan.launcher.common.R as commonR
 
 @Composable
-fun buildEblanActionSettingsItems(
-    context: Context,
-    doubleTap: EblanAction,
-    swipeUp: EblanAction,
-    swipeDown: EblanAction,
-    onDoubleTapClick: () -> Unit,
-    onSwipeUpClick: () -> Unit,
-    onSwipeDownClick: () -> Unit,
-): List<SettingsItem> = buildList {
-    add(
-        SettingsItem.Column(
-            title = stringResource(R.string.double_tap),
-            subtitle = doubleTap.eblanActionType.getEblanActionTypeSubtitle(
-                context = context,
-                componentName = doubleTap.componentName,
-            ),
-            onClick = onDoubleTapClick,
-        ),
-    )
-
-    add(
-        SettingsItem.Column(
-            title = stringResource(R.string.swipe_up),
-            subtitle = swipeUp.eblanActionType.getEblanActionTypeSubtitle(
-                context = context,
-                componentName = swipeUp.componentName,
-            ),
-            onClick = onSwipeUpClick,
-        ),
-    )
-
-    add(
-        SettingsItem.Column(
-            title = stringResource(R.string.swipe_down),
-            subtitle = swipeDown.eblanActionType.getEblanActionTypeSubtitle(
-                context = context,
-                componentName = swipeDown.componentName,
-            ),
-            onClick = onSwipeDownClick,
-        ),
-    )
-}
-
-@Composable
 fun EblanActionSettings(
     modifier: Modifier = Modifier,
     doubleTap: EblanAction,
@@ -177,6 +133,50 @@ fun EblanActionSettings(
             },
         )
     }
+}
+
+@Composable
+private fun buildEblanActionSettingsItems(
+    context: Context,
+    doubleTap: EblanAction,
+    swipeUp: EblanAction,
+    swipeDown: EblanAction,
+    onDoubleTapClick: () -> Unit,
+    onSwipeUpClick: () -> Unit,
+    onSwipeDownClick: () -> Unit,
+): List<SettingsItem> = buildList {
+    add(
+        SettingsItem.Column(
+            title = stringResource(R.string.double_tap),
+            subtitle = doubleTap.eblanActionType.getEblanActionTypeSubtitle(
+                context = context,
+                componentName = doubleTap.componentName,
+            ),
+            onClick = onDoubleTapClick,
+        ),
+    )
+
+    add(
+        SettingsItem.Column(
+            title = stringResource(R.string.swipe_up),
+            subtitle = swipeUp.eblanActionType.getEblanActionTypeSubtitle(
+                context = context,
+                componentName = swipeUp.componentName,
+            ),
+            onClick = onSwipeUpClick,
+        ),
+    )
+
+    add(
+        SettingsItem.Column(
+            title = stringResource(R.string.swipe_down),
+            subtitle = swipeDown.eblanActionType.getEblanActionTypeSubtitle(
+                context = context,
+                componentName = swipeDown.componentName,
+            ),
+            onClick = onSwipeDownClick,
+        ),
+    )
 }
 
 fun EblanActionType.getEblanActionTypeSubtitle(

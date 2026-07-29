@@ -146,43 +146,6 @@ fun SettingsSwitch(
 }
 
 @Composable
-fun SettingsColumn(
-    modifier: Modifier = Modifier,
-    index: Int,
-    size: Int,
-    title: String,
-    subtitle: String,
-    onClick: () -> Unit,
-) {
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        shape = settingsItemShape(
-            index = index,
-            size = size,
-        ),
-        onClick = onClick,
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(15.dp),
-        ) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleMedium,
-            )
-
-            Spacer(modifier = Modifier.height(5.dp))
-
-            Text(
-                text = subtitle,
-                style = MaterialTheme.typography.bodyMedium,
-            )
-        }
-    }
-}
-
-@Composable
 fun SettingsItemContent(
     modifier: Modifier = Modifier,
     settingsItem: SettingsItem,
@@ -287,6 +250,43 @@ fun settingsItemShape(
     )
 
     else -> RoundedCornerShape(size = radius / 2)
+}
+
+@Composable
+private fun SettingsColumn(
+    modifier: Modifier = Modifier,
+    index: Int,
+    size: Int,
+    title: String,
+    subtitle: String,
+    onClick: () -> Unit,
+) {
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        shape = settingsItemShape(
+            index = index,
+            size = size,
+        ),
+        onClick = onClick,
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(15.dp),
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleMedium,
+            )
+
+            Spacer(modifier = Modifier.height(5.dp))
+
+            Text(
+                text = subtitle,
+                style = MaterialTheme.typography.bodyMedium,
+            )
+        }
+    }
 }
 
 @Composable

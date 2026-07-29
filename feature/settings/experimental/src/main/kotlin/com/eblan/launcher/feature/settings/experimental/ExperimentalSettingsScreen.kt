@@ -106,43 +106,6 @@ internal fun ExperimentalSettingsScreen(
 }
 
 @Composable
-fun buildExperimentalSettingsItems(
-    experimentalSettings: ExperimentalSettings,
-    onSyncDataClick: () -> Unit,
-    onUpdateExperimentalSettings: (ExperimentalSettings) -> Unit,
-): List<SettingsItem> = buildList {
-    add(
-        SettingsItem.Column(
-            title = stringResource(R.string.sync_data),
-            subtitle = stringResource(R.string.enable_or_disable_sync_data),
-            onClick = onSyncDataClick,
-        ),
-    )
-
-    add(
-        SettingsItem.Switch(
-            checked = experimentalSettings.lockMovement,
-            title = stringResource(R.string.lock_movement),
-            subtitle = stringResource(R.string.prevent_other_grid_items_from_moving),
-            onClick = {
-                onUpdateExperimentalSettings(
-                    experimentalSettings.copy(
-                        lockMovement = !experimentalSettings.lockMovement,
-                    ),
-                )
-            },
-            onCheckedChange = {
-                onUpdateExperimentalSettings(
-                    experimentalSettings.copy(
-                        lockMovement = it,
-                    ),
-                )
-            },
-        ),
-    )
-}
-
-@Composable
 private fun Success(
     modifier: Modifier = Modifier,
     experimentalSettings: ExperimentalSettings,
@@ -185,4 +148,41 @@ private fun Success(
             },
         )
     }
+}
+
+@Composable
+private fun buildExperimentalSettingsItems(
+    experimentalSettings: ExperimentalSettings,
+    onSyncDataClick: () -> Unit,
+    onUpdateExperimentalSettings: (ExperimentalSettings) -> Unit,
+): List<SettingsItem> = buildList {
+    add(
+        SettingsItem.Column(
+            title = stringResource(R.string.sync_data),
+            subtitle = stringResource(R.string.enable_or_disable_sync_data),
+            onClick = onSyncDataClick,
+        ),
+    )
+
+    add(
+        SettingsItem.Switch(
+            checked = experimentalSettings.lockMovement,
+            title = stringResource(R.string.lock_movement),
+            subtitle = stringResource(R.string.prevent_other_grid_items_from_moving),
+            onClick = {
+                onUpdateExperimentalSettings(
+                    experimentalSettings.copy(
+                        lockMovement = !experimentalSettings.lockMovement,
+                    ),
+                )
+            },
+            onCheckedChange = {
+                onUpdateExperimentalSettings(
+                    experimentalSettings.copy(
+                        lockMovement = it,
+                    ),
+                )
+            },
+        ),
+    )
 }

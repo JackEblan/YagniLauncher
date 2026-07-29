@@ -112,176 +112,6 @@ internal fun HomeSettingsScreen(
 }
 
 @Composable
-fun buildHomeSettingsItems(
-    homeSettings: HomeSettings,
-    onGridClick: () -> Unit,
-    onUpdateHomeSettings: (HomeSettings) -> Unit,
-): List<SettingsItem> = buildList {
-    add(
-        SettingsItem.Column(
-            title = stringResource(commonR.string.grid),
-            subtitle = "${homeSettings.columns}x${homeSettings.rows}",
-            onClick = onGridClick,
-        ),
-    )
-
-    add(
-        SettingsItem.Switch(
-            checked = homeSettings.infiniteScroll,
-            title = stringResource(R.string.infinite_scrolling),
-            subtitle = stringResource(R.string.seamless_loop_page_scroll),
-            onClick = {
-                onUpdateHomeSettings(
-                    homeSettings.copy(infiniteScroll = !homeSettings.infiniteScroll),
-                )
-            },
-            onCheckedChange = {
-                onUpdateHomeSettings(
-                    homeSettings.copy(infiniteScroll = it),
-                )
-            },
-        ),
-    )
-
-    add(
-        SettingsItem.Switch(
-            checked = homeSettings.wallpaperScroll,
-            title = stringResource(R.string.wallpaper_scrolling),
-            subtitle = stringResource(R.string.scroll_wallpaper_across_pages),
-            onClick = {
-                onUpdateHomeSettings(
-                    homeSettings.copy(wallpaperScroll = !homeSettings.wallpaperScroll),
-                )
-            },
-            onCheckedChange = {
-                onUpdateHomeSettings(
-                    homeSettings.copy(wallpaperScroll = it),
-                )
-            },
-        ),
-    )
-
-    add(
-        SettingsItem.Switch(
-            checked = homeSettings.lockScreenOrientation,
-            title = stringResource(R.string.lock_screen_orientation),
-            subtitle = stringResource(R.string.prevent_rotation_when_device_orientation_changes),
-            onClick = {
-                onUpdateHomeSettings(
-                    homeSettings.copy(lockScreenOrientation = !homeSettings.lockScreenOrientation),
-                )
-            },
-            onCheckedChange = {
-                onUpdateHomeSettings(
-                    homeSettings.copy(lockScreenOrientation = it),
-                )
-            },
-        ),
-    )
-
-    add(
-        SettingsItem.Switch(
-            checked = homeSettings.addNewAppsToHomeScreen,
-            title = stringResource(R.string.add_new_apps),
-            subtitle = stringResource(R.string.add_new_apps_to_home_screen),
-            onClick = {
-                onUpdateHomeSettings(
-                    homeSettings.copy(addNewAppsToHomeScreen = !homeSettings.addNewAppsToHomeScreen),
-                )
-            },
-            onCheckedChange = {
-                onUpdateHomeSettings(
-                    homeSettings.copy(addNewAppsToHomeScreen = it),
-                )
-            },
-        ),
-    )
-
-    add(
-        SettingsItem.Switch(
-            checked = homeSettings.showPageIndicator,
-            title = stringResource(R.string.show_page_indicator),
-            subtitle = stringResource(R.string.show_an_indicator_for_the_current_page),
-            onClick = {
-                onUpdateHomeSettings(
-                    homeSettings.copy(showPageIndicator = !homeSettings.showPageIndicator),
-                )
-            },
-            onCheckedChange = {
-                onUpdateHomeSettings(
-                    homeSettings.copy(showPageIndicator = it),
-                )
-            },
-        ),
-    )
-}
-
-@Composable
-fun buildDockHomeSettingsItems(
-    homeSettings: HomeSettings,
-    onDockGridClick: () -> Unit,
-    onDockHeightClick: () -> Unit,
-    onUpdateHomeSettings: (HomeSettings) -> Unit,
-): List<SettingsItem> = buildList {
-    add(
-        SettingsItem.Column(
-            title = stringResource(R.string.dock_grid),
-            subtitle = "${homeSettings.dockColumns}x${homeSettings.dockRows}",
-            onClick = onDockGridClick,
-        ),
-    )
-
-    add(
-        SettingsItem.Column(
-            title = stringResource(R.string.dock_height),
-            subtitle = "${homeSettings.dockHeight}",
-            onClick = onDockHeightClick,
-        ),
-    )
-
-    add(
-        SettingsItem.Switch(
-            checked = homeSettings.dockInfiniteScroll,
-            title = stringResource(R.string.dock_infinite_scroll),
-            subtitle = stringResource(R.string.seamless_loop_page_scroll),
-            onClick = {
-                onUpdateHomeSettings(
-                    homeSettings.copy(dockInfiniteScroll = !homeSettings.dockInfiniteScroll),
-                )
-            },
-            onCheckedChange = {
-                onUpdateHomeSettings(
-                    homeSettings.copy(dockInfiniteScroll = it),
-                )
-            },
-        ),
-    )
-}
-
-@Composable
-fun buildFolderHomeSettingsItems(
-    homeSettings: HomeSettings,
-    onFolderCellDimensionClick: () -> Unit,
-    onFolderMaxGridClick: () -> Unit,
-): List<SettingsItem> = buildList {
-    add(
-        SettingsItem.Column(
-            title = stringResource(R.string.folder_cell_dimension),
-            subtitle = "${homeSettings.folderCellWidth}x${homeSettings.folderCellHeight}",
-            onClick = onFolderCellDimensionClick,
-        ),
-    )
-
-    add(
-        SettingsItem.Column(
-            title = stringResource(R.string.folder_max_grid),
-            subtitle = "${homeSettings.maxFolderColumns}x${homeSettings.maxFolderRows}",
-            onClick = onFolderMaxGridClick,
-        ),
-    )
-}
-
-@Composable
 private fun Success(
     modifier: Modifier = Modifier,
     homeSettings: HomeSettings,
@@ -428,4 +258,174 @@ private fun Success(
             onUpdateHomeSettings = onUpdateHomeSettings,
         )
     }
+}
+
+@Composable
+private fun buildHomeSettingsItems(
+    homeSettings: HomeSettings,
+    onGridClick: () -> Unit,
+    onUpdateHomeSettings: (HomeSettings) -> Unit,
+): List<SettingsItem> = buildList {
+    add(
+        SettingsItem.Column(
+            title = stringResource(commonR.string.grid),
+            subtitle = "${homeSettings.columns}x${homeSettings.rows}",
+            onClick = onGridClick,
+        ),
+    )
+
+    add(
+        SettingsItem.Switch(
+            checked = homeSettings.infiniteScroll,
+            title = stringResource(R.string.infinite_scrolling),
+            subtitle = stringResource(R.string.seamless_loop_page_scroll),
+            onClick = {
+                onUpdateHomeSettings(
+                    homeSettings.copy(infiniteScroll = !homeSettings.infiniteScroll),
+                )
+            },
+            onCheckedChange = {
+                onUpdateHomeSettings(
+                    homeSettings.copy(infiniteScroll = it),
+                )
+            },
+        ),
+    )
+
+    add(
+        SettingsItem.Switch(
+            checked = homeSettings.wallpaperScroll,
+            title = stringResource(R.string.wallpaper_scrolling),
+            subtitle = stringResource(R.string.scroll_wallpaper_across_pages),
+            onClick = {
+                onUpdateHomeSettings(
+                    homeSettings.copy(wallpaperScroll = !homeSettings.wallpaperScroll),
+                )
+            },
+            onCheckedChange = {
+                onUpdateHomeSettings(
+                    homeSettings.copy(wallpaperScroll = it),
+                )
+            },
+        ),
+    )
+
+    add(
+        SettingsItem.Switch(
+            checked = homeSettings.lockScreenOrientation,
+            title = stringResource(R.string.lock_screen_orientation),
+            subtitle = stringResource(R.string.prevent_rotation_when_device_orientation_changes),
+            onClick = {
+                onUpdateHomeSettings(
+                    homeSettings.copy(lockScreenOrientation = !homeSettings.lockScreenOrientation),
+                )
+            },
+            onCheckedChange = {
+                onUpdateHomeSettings(
+                    homeSettings.copy(lockScreenOrientation = it),
+                )
+            },
+        ),
+    )
+
+    add(
+        SettingsItem.Switch(
+            checked = homeSettings.addNewAppsToHomeScreen,
+            title = stringResource(R.string.add_new_apps),
+            subtitle = stringResource(R.string.add_new_apps_to_home_screen),
+            onClick = {
+                onUpdateHomeSettings(
+                    homeSettings.copy(addNewAppsToHomeScreen = !homeSettings.addNewAppsToHomeScreen),
+                )
+            },
+            onCheckedChange = {
+                onUpdateHomeSettings(
+                    homeSettings.copy(addNewAppsToHomeScreen = it),
+                )
+            },
+        ),
+    )
+
+    add(
+        SettingsItem.Switch(
+            checked = homeSettings.showPageIndicator,
+            title = stringResource(R.string.show_page_indicator),
+            subtitle = stringResource(R.string.show_an_indicator_for_the_current_page),
+            onClick = {
+                onUpdateHomeSettings(
+                    homeSettings.copy(showPageIndicator = !homeSettings.showPageIndicator),
+                )
+            },
+            onCheckedChange = {
+                onUpdateHomeSettings(
+                    homeSettings.copy(showPageIndicator = it),
+                )
+            },
+        ),
+    )
+}
+
+@Composable
+private fun buildDockHomeSettingsItems(
+    homeSettings: HomeSettings,
+    onDockGridClick: () -> Unit,
+    onDockHeightClick: () -> Unit,
+    onUpdateHomeSettings: (HomeSettings) -> Unit,
+): List<SettingsItem> = buildList {
+    add(
+        SettingsItem.Column(
+            title = stringResource(R.string.dock_grid),
+            subtitle = "${homeSettings.dockColumns}x${homeSettings.dockRows}",
+            onClick = onDockGridClick,
+        ),
+    )
+
+    add(
+        SettingsItem.Column(
+            title = stringResource(R.string.dock_height),
+            subtitle = "${homeSettings.dockHeight}",
+            onClick = onDockHeightClick,
+        ),
+    )
+
+    add(
+        SettingsItem.Switch(
+            checked = homeSettings.dockInfiniteScroll,
+            title = stringResource(R.string.dock_infinite_scroll),
+            subtitle = stringResource(R.string.seamless_loop_page_scroll),
+            onClick = {
+                onUpdateHomeSettings(
+                    homeSettings.copy(dockInfiniteScroll = !homeSettings.dockInfiniteScroll),
+                )
+            },
+            onCheckedChange = {
+                onUpdateHomeSettings(
+                    homeSettings.copy(dockInfiniteScroll = it),
+                )
+            },
+        ),
+    )
+}
+
+@Composable
+private fun buildFolderHomeSettingsItems(
+    homeSettings: HomeSettings,
+    onFolderCellDimensionClick: () -> Unit,
+    onFolderMaxGridClick: () -> Unit,
+): List<SettingsItem> = buildList {
+    add(
+        SettingsItem.Column(
+            title = stringResource(R.string.folder_cell_dimension),
+            subtitle = "${homeSettings.folderCellWidth}x${homeSettings.folderCellHeight}",
+            onClick = onFolderCellDimensionClick,
+        ),
+    )
+
+    add(
+        SettingsItem.Column(
+            title = stringResource(R.string.folder_max_grid),
+            subtitle = "${homeSettings.maxFolderColumns}x${homeSettings.maxFolderRows}",
+            onClick = onFolderMaxGridClick,
+        ),
+    )
 }
