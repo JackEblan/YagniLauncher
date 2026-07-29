@@ -21,7 +21,6 @@ import android.graphics.Rect
 import android.os.Build
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
@@ -66,7 +65,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
@@ -120,7 +118,6 @@ import com.eblan.launcher.feature.home.screen.application.TagElevatedFilterChip
 import com.eblan.launcher.feature.home.screen.application.handleDragEblanApplicationInfoItem
 import com.eblan.launcher.feature.home.screen.application.handleOnLongPressEblanApplicationInfoItem
 import com.eblan.launcher.feature.home.screen.application.handleOnTapEblanApplicationInfoItem
-import com.eblan.launcher.feature.home.screen.onPress
 import com.eblan.launcher.feature.home.util.getSystemTextColor
 import com.eblan.launcher.ui.local.LocalLauncherApps
 import com.eblan.launcher.ui.local.LocalPackageManager
@@ -781,8 +778,6 @@ private fun EblanApplicationInfoListItem(
 
     val alpha = if (isLongPress) 0f else 1f
 
-    val scale = remember { Animatable(1f) }
-
     var intOffset by remember { mutableStateOf(IntOffset.Zero) }
 
     var intSize by remember { mutableStateOf(IntSize.Zero) }
@@ -833,7 +828,6 @@ private fun EblanApplicationInfoListItem(
                                     launcherApps = launcherApps,
                                     leftPadding = leftPadding,
                                     topPadding = topPadding,
-                                    scale = scale,
                                 )
                             }
                         }
@@ -863,12 +857,6 @@ private fun EblanApplicationInfoListItem(
                     } else {
                         null
                     },
-                    onPress = {
-                        onPress(
-                            isVisibleOverlay = isVisibleOverlay,
-                            scale = scale,
-                        )
-                    },
                 )
             }
             .fillMaxWidth()
@@ -889,7 +877,6 @@ private fun EblanApplicationInfoListItem(
             contentDescription = null,
             modifier = Modifier
                 .size(appDrawerSettings.gridItemSettings.iconSize.dp)
-                .scale(scale.value)
                 .alpha(alpha)
                 .drawWithContent {
                     graphicsLayer.record {

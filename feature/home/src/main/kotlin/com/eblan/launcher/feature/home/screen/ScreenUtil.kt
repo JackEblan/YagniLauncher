@@ -18,9 +18,6 @@
 package com.eblan.launcher.feature.home.screen
 
 import android.content.Context
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.AnimationVector1D
-import androidx.compose.foundation.gestures.PressGestureScope
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.dp
@@ -57,21 +54,6 @@ internal fun onDoubleTap(
         launcherApps = launcherApps,
         onOpenAppDrawer = onOpenAppDrawer,
     )
-}
-
-internal suspend fun PressGestureScope.onPress(
-    isVisibleOverlay: Boolean,
-    scale: Animatable<Float, AnimationVector1D>,
-) {
-    if (isVisibleOverlay) return
-
-    if (tryAwaitRelease()) return
-
-    if (scale.value != 1f) {
-        scale.stop()
-
-        scale.animateTo(1f)
-    }
 }
 
 internal val PAGE_INDICATOR_HEIGHT = 30.dp

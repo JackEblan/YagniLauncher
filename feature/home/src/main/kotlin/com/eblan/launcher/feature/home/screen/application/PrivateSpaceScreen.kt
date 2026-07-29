@@ -22,8 +22,6 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -51,7 +49,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.input.pointer.pointerInput
@@ -83,7 +80,6 @@ import com.eblan.launcher.domain.model.ManagedProfileResult
 import com.eblan.launcher.feature.home.R
 import com.eblan.launcher.feature.home.screen.getHorizontalAlignment
 import com.eblan.launcher.feature.home.screen.getVerticalArrangement
-import com.eblan.launcher.feature.home.screen.onPress
 import com.eblan.launcher.feature.home.util.getSystemTextColor
 import com.eblan.launcher.ui.local.LocalLauncherApps
 import com.eblan.launcher.ui.local.LocalPackageManager
@@ -277,8 +273,6 @@ internal fun PrivateSpaceEblanApplicationInfoItem(
         paddingValues.calculateTopPadding().roundToPx()
     }
 
-    val scale = remember { Animatable(1f) }
-
     var intOffset by remember { mutableStateOf(IntOffset.Zero) }
 
     var intSize by remember { mutableStateOf(IntSize.Zero) }
@@ -302,7 +296,6 @@ internal fun PrivateSpaceEblanApplicationInfoItem(
                                     launcherApps = launcherApps,
                                     leftPadding = leftPadding,
                                     topPadding = topPadding,
-                                    scale = scale,
                                 )
                             }
                         }
@@ -320,18 +313,11 @@ internal fun PrivateSpaceEblanApplicationInfoItem(
                                     intSize = intSize,
                                     onUpdatePopupMenu = onUpdatePopupMenu,
                                     keyboardController = keyboardController,
-                                    scale = scale,
                                 )
                             }
                         }
                     } else {
                         null
-                    },
-                    onPress = {
-                        onPress(
-                            isVisibleOverlay = isVisibleOverlay,
-                            scale = scale,
-                        )
                     },
                 )
             }
@@ -358,8 +344,7 @@ internal fun PrivateSpaceEblanApplicationInfoItem(
 
                     intSize = layoutCoordinates.size
                 }
-                .size(appDrawerSettings.gridItemSettings.iconSize.dp)
-                .scale(scale.value),
+                .size(appDrawerSettings.gridItemSettings.iconSize.dp),
             placeholder = ColorPainter(Color.Transparent),
             error = ColorPainter(Color.Transparent),
         )
@@ -378,20 +363,15 @@ internal fun PrivateSpaceEblanApplicationInfoItem(
     }
 }
 
-internal suspend fun handleOnLongPressPrivateSpaceEblanApplicationInfoItem(
+internal fun handleOnLongPressPrivateSpaceEblanApplicationInfoItem(
     onUpdateEblanApplicationInfo: (EblanApplicationInfo) -> Unit,
     eblanApplicationInfo: EblanApplicationInfo,
     onUpdateOverlayBounds: (IntOffset, IntSize) -> Unit,
     intOffset: IntOffset,
     intSize: IntSize,
-    scale: Animatable<Float, AnimationVector1D>,
     onUpdatePopupMenu: (Boolean) -> Unit,
     keyboardController: SoftwareKeyboardController?,
 ) {
-    scale.animateTo(0.5f)
-
-    scale.animateTo(1f)
-
     onUpdateEblanApplicationInfo(eblanApplicationInfo)
 
     onUpdateOverlayBounds(

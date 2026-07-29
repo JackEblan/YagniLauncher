@@ -19,7 +19,6 @@ package com.eblan.launcher.feature.home.screen.folder
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
@@ -44,7 +43,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.layer.drawLayer
@@ -79,7 +77,6 @@ import com.eblan.launcher.feature.home.model.SharedElementKey
 import com.eblan.launcher.feature.home.screen.getHorizontalAlignment
 import com.eblan.launcher.feature.home.screen.getVerticalArrangement
 import com.eblan.launcher.feature.home.screen.onDoubleTap
-import com.eblan.launcher.feature.home.screen.onPress
 import com.eblan.launcher.feature.home.util.FOLDER_PREVIEW_COLUMNS
 import com.eblan.launcher.feature.home.util.FOLDER_PREVIEW_ROWS
 import com.eblan.launcher.ui.local.LocalLauncherApps
@@ -325,8 +322,6 @@ private fun InteractiveFolderApplicationInfoGridItem(
 
     val alpha = if (hasInteraction) 0f else 1f
 
-    val scale = remember { Animatable(1f) }
-
     Column(
         modifier = modifier
             .pointerInput(key1 = isVisibleOverlay) {
@@ -366,25 +361,13 @@ private fun InteractiveFolderApplicationInfoGridItem(
                     },
                     onTap = if (!isVisibleOverlay) {
                         {
-                            scope.launch {
-                                scale.animateTo(0.8f)
-
-                                scale.animateTo(1f)
-
-                                onTapApplicationInfo(
-                                    data.serialNumber,
-                                    data.componentName,
-                                )
-                            }
+                            onTapApplicationInfo(
+                                data.serialNumber,
+                                data.componentName,
+                            )
                         }
                     } else {
                         null
-                    },
-                    onPress = {
-                        onPress(
-                            isVisibleOverlay = isVisibleOverlay,
-                            scale = scale,
-                        )
                     },
                 )
             }
@@ -405,7 +388,6 @@ private fun InteractiveFolderApplicationInfoGridItem(
         Box(
             modifier = Modifier
                 .size(gridItemSettings.iconSize.dp)
-                .scale(scale.value)
                 .alpha(alpha),
         ) {
             AsyncImage(
@@ -531,8 +513,6 @@ private fun InteractiveFolderShortcutInfoGridItem(
 
     val alpha = if (hasInteraction) 0f else 1f
 
-    val scale = remember { Animatable(1f) }
-
     Column(
         modifier = modifier
             .pointerInput(key1 = isVisibleOverlay) {
@@ -575,27 +555,15 @@ private fun InteractiveFolderShortcutInfoGridItem(
                     onTap = if (!isVisibleOverlay) {
                         {
                             if (hasShortcutHostPermission && data.isEnabled) {
-                                scope.launch {
-                                    scale.animateTo(0.8f)
-
-                                    scale.animateTo(1f)
-
-                                    onTapShortcutInfo(
-                                        data.serialNumber,
-                                        data.packageName,
-                                        data.shortcutId,
-                                    )
-                                }
+                                onTapShortcutInfo(
+                                    data.serialNumber,
+                                    data.packageName,
+                                    data.shortcutId,
+                                )
                             }
                         }
                     } else {
                         null
-                    },
-                    onPress = {
-                        onPress(
-                            isVisibleOverlay = isVisibleOverlay,
-                            scale = scale,
-                        )
                     },
                 )
             }
@@ -616,7 +584,6 @@ private fun InteractiveFolderShortcutInfoGridItem(
         Box(
             modifier = Modifier
                 .size(gridItemSettings.iconSize.dp)
-                .scale(scale.value)
                 .alpha(alpha),
         ) {
             AsyncImage(
@@ -767,8 +734,6 @@ private fun InteractiveFolderShortcutConfigGridItem(
 
     val alpha = if (hasInteraction) 0f else 1f
 
-    val scale = remember { Animatable(1f) }
-
     Column(
         modifier = modifier
             .pointerInput(key1 = isVisibleOverlay) {
@@ -808,22 +773,10 @@ private fun InteractiveFolderShortcutConfigGridItem(
                     },
                     onTap = if (!isVisibleOverlay) {
                         {
-                            scope.launch {
-                                scale.animateTo(0.8f)
-
-                                scale.animateTo(1f)
-
-                                data.shortcutIntentUri?.let(onTapShortcutConfig)
-                            }
+                            data.shortcutIntentUri?.let(onTapShortcutConfig)
                         }
                     } else {
                         null
-                    },
-                    onPress = {
-                        onPress(
-                            isVisibleOverlay = isVisibleOverlay,
-                            scale = scale,
-                        )
                     },
                 )
             }
@@ -849,7 +802,6 @@ private fun InteractiveFolderShortcutConfigGridItem(
             contentDescription = null,
             modifier = Modifier
                 .size(gridItemSettings.iconSize.dp)
-                .scale(scale.value)
                 .alpha(alpha)
                 .drawWithContent {
                     graphicsLayer.record {
@@ -947,8 +899,6 @@ private fun InteractiveNestedFolderGridItem(
 
     val alpha = if (hasInteraction) 0f else 1f
 
-    val scale = remember { Animatable(1f) }
-
     val previewFolderGridItems = remember(key1 = data.gridItemsByPage) {
         data.gridItemsByPage.values.firstOrNull()
             ?.take(FOLDER_PREVIEW_COLUMNS * FOLDER_PREVIEW_ROWS)
@@ -1008,31 +958,19 @@ private fun InteractiveNestedFolderGridItem(
                     },
                     onTap = if (!isVisibleOverlay) {
                         {
-                            scope.launch {
-                                scale.animateTo(0.8f)
-
-                                scale.animateTo(1f)
-
-                                onUpsertFolderPopupEntry(
-                                    FolderPopupEntry(
-                                        id = gridItem.id,
-                                        x = intOffset.x,
-                                        y = intOffset.y,
-                                        width = intSize.width,
-                                        height = intSize.height,
-                                        isCloseFolder = false,
-                                    ),
-                                )
-                            }
+                            onUpsertFolderPopupEntry(
+                                FolderPopupEntry(
+                                    id = gridItem.id,
+                                    x = intOffset.x,
+                                    y = intOffset.y,
+                                    width = intSize.width,
+                                    height = intSize.height,
+                                    isCloseFolder = false,
+                                ),
+                            )
                         }
                     } else {
                         null
-                    },
-                    onPress = {
-                        onPress(
-                            isVisibleOverlay = isVisibleOverlay,
-                            scale = scale,
-                        )
                     },
                 )
             }
@@ -1052,7 +990,6 @@ private fun InteractiveNestedFolderGridItem(
     ) {
         val commonModifier = Modifier
             .size(gridItemSettings.iconSize.dp)
-            .scale(scale.value)
             .alpha(alpha)
             .drawWithContent {
                 graphicsLayer.record {

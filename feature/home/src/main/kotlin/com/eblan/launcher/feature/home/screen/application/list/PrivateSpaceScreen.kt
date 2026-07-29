@@ -18,7 +18,6 @@
 package com.eblan.launcher.feature.home.screen.application.list
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -41,7 +40,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.input.pointer.pointerInput
@@ -70,7 +68,6 @@ import com.eblan.launcher.domain.model.ManagedProfileResult
 import com.eblan.launcher.feature.home.screen.application.PrivateSpaceStickyHeader
 import com.eblan.launcher.feature.home.screen.application.handleOnLongPressPrivateSpaceEblanApplicationInfoItem
 import com.eblan.launcher.feature.home.screen.application.handleOnTapEblanApplicationInfoItem
-import com.eblan.launcher.feature.home.screen.onPress
 import com.eblan.launcher.feature.home.util.getSystemTextColor
 import com.eblan.launcher.ui.local.LocalLauncherApps
 import kotlinx.coroutines.launch
@@ -166,8 +163,6 @@ private fun PrivateSpaceEblanApplicationInfoItem(
         paddingValues.calculateTopPadding().roundToPx()
     }
 
-    val scale = remember { Animatable(1f) }
-
     var intOffset by remember { mutableStateOf(IntOffset.Zero) }
 
     var intSize by remember { mutableStateOf(IntSize.Zero) }
@@ -191,7 +186,6 @@ private fun PrivateSpaceEblanApplicationInfoItem(
                                     launcherApps = launcherApps,
                                     leftPadding = leftPadding,
                                     topPadding = topPadding,
-                                    scale = scale,
                                 )
                             }
                         }
@@ -207,7 +201,6 @@ private fun PrivateSpaceEblanApplicationInfoItem(
                                     onUpdateOverlayBounds = onUpdateOverlayBounds,
                                     intOffset = intOffset,
                                     intSize = intSize,
-                                    scale = scale,
                                     onUpdatePopupMenu = onUpdatePopupMenu,
                                     keyboardController = keyboardController,
                                 )
@@ -215,12 +208,6 @@ private fun PrivateSpaceEblanApplicationInfoItem(
                         }
                     } else {
                         null
-                    },
-                    onPress = {
-                        onPress(
-                            isVisibleOverlay = isVisibleOverlay,
-                            scale = scale,
-                        )
                     },
                 )
             }
@@ -246,8 +233,7 @@ private fun PrivateSpaceEblanApplicationInfoItem(
 
                     intSize = layoutCoordinates.size
                 }
-                .size(appDrawerSettings.gridItemSettings.iconSize.dp)
-                .scale(scale.value),
+                .size(appDrawerSettings.gridItemSettings.iconSize.dp),
             placeholder = ColorPainter(Color.Transparent),
             error = ColorPainter(Color.Transparent),
         )

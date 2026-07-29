@@ -20,8 +20,6 @@ package com.eblan.launcher.feature.home.screen.application
 import android.graphics.Rect
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Column
@@ -44,7 +42,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.layer.GraphicsLayer
@@ -84,7 +81,6 @@ import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
 import com.eblan.launcher.feature.home.screen.getHorizontalAlignment
 import com.eblan.launcher.feature.home.screen.getVerticalArrangement
-import com.eblan.launcher.feature.home.screen.onPress
 import com.eblan.launcher.feature.home.util.getSystemTextColor
 import com.eblan.launcher.framework.launcherapps.AndroidLauncherAppsWrapper
 import com.eblan.launcher.ui.local.LocalLauncherApps
@@ -165,8 +161,6 @@ internal fun EblanApplicationInfoGridItem(
 
     val alpha = if (isLongPress) 0f else 1f
 
-    val scale = remember { Animatable(1f) }
-
     var intOffset by remember { mutableStateOf(IntOffset.Zero) }
 
     var intSize by remember { mutableStateOf(IntSize.Zero) }
@@ -217,7 +211,6 @@ internal fun EblanApplicationInfoGridItem(
                                     launcherApps = launcherApps,
                                     leftPadding = leftPadding,
                                     topPadding = topPadding,
-                                    scale = scale,
                                 )
                             }
                         }
@@ -247,12 +240,6 @@ internal fun EblanApplicationInfoGridItem(
                     } else {
                         null
                     },
-                    onPress = {
-                        onPress(
-                            isVisibleOverlay = isVisibleOverlay,
-                            scale = scale,
-                        )
-                    },
                 )
             }
             .run {
@@ -279,7 +266,6 @@ internal fun EblanApplicationInfoGridItem(
                 .build(),
             contentDescription = null,
             modifier = Modifier.size(appDrawerSettings.gridItemSettings.iconSize.dp)
-                .scale(scale.value)
                 .alpha(alpha)
                 .drawWithContent {
                     graphicsLayer.record {
@@ -329,7 +315,7 @@ internal fun EblanApplicationInfoGridItem(
     }
 }
 
-internal suspend fun handleOnTapEblanApplicationInfoItem(
+internal fun handleOnTapEblanApplicationInfoItem(
     eblanApplicationInfoWithIconPackInfo: EblanApplicationInfoWithIconPackInfo,
     intOffset: IntOffset,
     intSize: IntSize,
@@ -337,15 +323,10 @@ internal suspend fun handleOnTapEblanApplicationInfoItem(
     launcherApps: AndroidLauncherAppsWrapper,
     leftPadding: Int,
     topPadding: Int,
-    scale: Animatable<Float, AnimationVector1D>,
 ) {
     val left = intOffset.x + leftPadding
 
     val top = intOffset.y + topPadding
-
-    scale.animateTo(0.8f)
-
-    scale.animateTo(1f)
 
     launcherApps.startMainActivity(
         serialNumber = eblanApplicationInfoWithIconPackInfo.eblanApplicationInfo.serialNumber,
