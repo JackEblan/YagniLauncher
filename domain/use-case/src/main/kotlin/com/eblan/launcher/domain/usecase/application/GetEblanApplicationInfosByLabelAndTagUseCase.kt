@@ -176,15 +176,21 @@ class GetEblanApplicationInfosByLabelAndTagUseCase @Inject constructor(
         tagId: Long?,
         eblanApplicationInfos: List<EblanApplicationInfo>,
     ): MutableList<EblanApplicationInfoWithIconPackInfo> {
-        val currentEblanApplicationInfos = if (tagId != null) {
-            eblanApplicationInfoRepository.getEblanApplicationInfosByTagId(id = tagId)
-        } else if (excludeTaggedApps) {
-            eblanApplicationInfoRepository.getEblanApplicationInfosWithoutTag()
-        } else {
-            eblanApplicationInfos
-        }
+        val eblanApplicationInfosByTag = when {
+            tagId != null -> {
+                eblanApplicationInfoRepository.getEblanApplicationInfosByTagId(id = tagId)
+            }
 
-        val fastMatchesEblanApplicationInfos = currentEblanApplicationInfos.filter {
+            excludeTaggedApps -> {
+                eblanApplicationInfoRepository.getEblanApplicationInfosWithoutTag()
+            }
+
+            else -> {
+                eblanApplicationInfos
+            }
+        }.filterNot { it.isHidden }
+
+        val eblanApplicationInfosByLabel = eblanApplicationInfosByTag.filter {
             it.label.startsWith(
                 prefix = label,
                 ignoreCase = true,
@@ -195,13 +201,13 @@ class GetEblanApplicationInfosByLabelAndTagUseCase @Inject constructor(
         }
 
         val filterEblanApplicationInfos = when {
-            !fuzzySearch && fastMatchesEblanApplicationInfos.isEmpty() -> {
+            !fuzzySearch && eblanApplicationInfosByLabel.isEmpty() -> {
                 emptyList()
             }
 
             else -> {
                 val fuzzyMatches = if (fuzzySearch) {
-                    (currentEblanApplicationInfos - fastMatchesEblanApplicationInfos.toSet())
+                    (eblanApplicationInfosByTag - eblanApplicationInfosByLabel.toSet())
                         .map {
                             it to jaroWinklerSimilarityWrapper.apply(
                                 left = transliteratorWrapper.normalize(text = label),
@@ -215,7 +221,7 @@ class GetEblanApplicationInfosByLabelAndTagUseCase @Inject constructor(
                     emptyList()
                 }
 
-                fastMatchesEblanApplicationInfos.sortedBy { it.label.lowercase() } + fuzzyMatches
+                eblanApplicationInfosByLabel.sortedBy { it.label.lowercase() } + fuzzyMatches
             }
         }
 
