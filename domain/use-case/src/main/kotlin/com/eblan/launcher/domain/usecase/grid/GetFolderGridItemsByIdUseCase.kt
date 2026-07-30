@@ -43,7 +43,7 @@ class GetFolderGridItemsByIdUseCase @Inject constructor(
     ): Flow<List<FolderPopup>> = combine(
         userDataRepository.userDataFlow,
         folderPopupEntriesFlow,
-        folderGridItemRepository.folderGridItemWrappersWithFolderIdFlow,
+        folderGridItemRepository.folderGridItemWrappersFlow,
     ) { userData, folderPopupEntries, folderGridItemWrappers ->
         folderPopupEntries.mapNotNull { folderPopupEntry ->
             folderGridItemWrappers.firstOrNull {

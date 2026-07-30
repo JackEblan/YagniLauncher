@@ -28,7 +28,6 @@ import com.eblan.launcher.domain.repository.FolderGridItemRepository
 import com.eblan.launcher.domain.repository.GridRepository
 import com.eblan.launcher.domain.repository.UserDataRepository
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import kotlin.uuid.ExperimentalUuidApi
@@ -53,23 +52,8 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
             if (conflictingGridItem != null) {
                 when (conflictingGridItem.data) {
                     is GridItemData.Folder -> {
-                        val userData = userDataRepository.userDataFlow.first()
-
-                        val conflictingFolderGridItem =
-                            requireNotNull(
-                                folderGridItemRepository.getFolderGridItemWrapper(id = conflictingGridItem.id)
-                                    ?.asFolderGridItem(
-                                        folderGridItemRepository = folderGridItemRepository,
-                                        maxFolderColumns = userData.homeSettings.maxFolderColumns,
-                                        maxFolderRows = userData.homeSettings.maxFolderRows,
-                                        fileManager = fileManager,
-                                        iconKeyGenerator = iconKeyGenerator,
-                                        iconPackInfoPackageName = userData.generalSettings.iconPackInfoPackageName,
-                                    ),
-                            )
-
                         addMovingGridItemIntoFolder(
-                            conflictingFolderGridItem = conflictingFolderGridItem,
+                            conflictingFolderGridItem = conflictingGridItem,
                             movingGridItem = movingGridItem,
                         )
                     }
