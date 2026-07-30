@@ -248,6 +248,7 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
                         icon = null,
                         index = -1,
                         folderId = null,
+                        maxIndex = 0,
                     ),
                 ),
             ),

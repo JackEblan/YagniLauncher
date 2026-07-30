@@ -74,6 +74,8 @@ sealed interface GridItemData {
         val index: Int
         val folderId: String?
 
+        val maxIndex: Int
+
         data class Preview(
             override val id: String,
             override val label: String,
@@ -81,6 +83,7 @@ sealed interface GridItemData {
             override val icon: String?,
             override val index: Int,
             override val folderId: String?,
+            override val maxIndex: Int,
         ) : Folder
 
         data class Full(
@@ -90,10 +93,10 @@ sealed interface GridItemData {
             override val icon: String?,
             override val index: Int,
             override val folderId: String?,
+            override val maxIndex: Int,
             val gridItemsByPage: Map<Int, List<GridItem>>,
             val columns: Int,
             val rows: Int,
-            val maxIndex: Int,
         ) : Folder
     }
 

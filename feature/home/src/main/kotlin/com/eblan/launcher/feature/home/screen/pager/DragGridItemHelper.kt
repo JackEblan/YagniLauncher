@@ -452,7 +452,7 @@ internal suspend fun handleConflictingGridItem(
 
     val conflictingGridItem = moveGridItemResult?.conflictingGridItem ?: return
 
-    val conflictingData = conflictingGridItem.data as? GridItemData.Folder.Full ?: return
+    val conflictingData = conflictingGridItem.data as? GridItemData.Folder ?: return
 
     if (drag.value != Drag.Dragging ||
         !moveGridItemResult.isSuccess ||

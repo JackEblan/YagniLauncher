@@ -215,6 +215,7 @@ internal fun FolderGridItem.asEmptyFolderGridItem(): GridItem = GridItem(
         icon = icon,
         index = index,
         folderId = folderId,
+        maxIndex = 0,
     ),
     associate = associate,
     override = override,
@@ -383,14 +384,15 @@ internal suspend fun FolderGridItemWrapper.asPreviewFolderGridItem(
             }
         }
 
-    val data = GridItemData.Folder.Preview(
-        id = folderGridItem.id,
-        label = folderGridItem.label,
-        gridItems = gridItems,
-        icon = folderGridItem.icon,
-        index = folderGridItem.index,
-        folderId = folderGridItem.folderId,
-    )
+    val maxIndex = gridItems.maxOfOrNull {
+        when (val data = it.data) {
+            is GridItemData.ApplicationInfo -> data.index + 1
+            is GridItemData.ShortcutInfo -> data.index + 1
+            is GridItemData.ShortcutConfig -> data.index + 1
+            is GridItemData.Folder -> data.index + 1
+            else -> error("Unsupported folder grid item")
+        }
+    } ?: 0
 
     return GridItem(
         id = folderGridItem.id,
@@ -399,7 +401,15 @@ internal suspend fun FolderGridItemWrapper.asPreviewFolderGridItem(
         startRow = folderGridItem.startRow,
         columnSpan = folderGridItem.columnSpan,
         rowSpan = folderGridItem.rowSpan,
-        data = data,
+        data = GridItemData.Folder.Preview(
+            id = folderGridItem.id,
+            label = folderGridItem.label,
+            gridItems = gridItems,
+            icon = folderGridItem.icon,
+            index = folderGridItem.index,
+            folderId = folderGridItem.folderId,
+            maxIndex = maxIndex,
+        ),
         associate = folderGridItem.associate,
         override = folderGridItem.override,
         gridItemSettings = folderGridItem.gridItemSettings,
