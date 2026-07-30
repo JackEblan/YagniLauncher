@@ -208,15 +208,11 @@ internal fun FolderGridItem.asEmptyFolderGridItem(): GridItem = GridItem(
     startRow = startRow,
     columnSpan = columnSpan,
     rowSpan = rowSpan,
-    data = GridItemData.Folder(
+    data = GridItemData.Folder.Preview(
         id = id,
         label = label,
         gridItems = emptyList(),
-        gridItemsByPage = emptyMap(),
         icon = icon,
-        columns = 0,
-        rows = 0,
-        maxIndex = 0,
         index = index,
         folderId = folderId,
     ),
@@ -240,9 +236,7 @@ internal suspend fun FolderGridItemWrapper.asFolderGridItem(
         folderGridItems.map {
             folderGridItemRepository.getFolderGridItemWrapper(
                 id = it.id,
-            )?.asGridItem(
-                maxFolderColumns = maxFolderColumns,
-                maxFolderRows = maxFolderRows,
+            )?.asPreviewFolderGridItem(
                 fileManager = fileManager,
                 iconKeyGenerator = iconKeyGenerator,
                 iconPackInfoPackageName = iconPackInfoPackageName,
@@ -302,7 +296,7 @@ internal suspend fun FolderGridItemWrapper.asFolderGridItem(
         startRow = folderGridItem.startRow,
         columnSpan = folderGridItem.columnSpan,
         rowSpan = folderGridItem.rowSpan,
-        data = GridItemData.Folder(
+        data = GridItemData.Folder.Full(
             id = folderGridItem.id,
             label = folderGridItem.label,
             gridItems = gridItems,
@@ -359,9 +353,7 @@ internal suspend fun cleanupGridItemRecursively(
     }
 }
 
-internal suspend fun FolderGridItemWrapper.asGridItem(
-    maxFolderColumns: Int,
-    maxFolderRows: Int,
+internal suspend fun FolderGridItemWrapper.asPreviewFolderGridItem(
     fileManager: FileManager,
     iconKeyGenerator: IconKeyGenerator,
     iconPackInfoPackageName: String,
@@ -391,38 +383,11 @@ internal suspend fun FolderGridItemWrapper.asGridItem(
             }
         }
 
-    val gridItemsByPage = gridItems.getGridItemsByPage(
-        maxFolderColumns = maxFolderColumns,
-        maxFolderRows = maxFolderRows,
-    )
-
-    val firstPageGridItems = gridItemsByPage.values.firstOrNull() ?: emptyList()
-
-    val (columns, rows) = getGridDimension(
-        count = firstPageGridItems.size,
-        maxFolderColumns = maxFolderColumns,
-        maxFolderRows = maxFolderRows,
-    )
-
-    val maxIndex = gridItems.maxOfOrNull {
-        when (val data = it.data) {
-            is GridItemData.ApplicationInfo -> data.index + 1
-            is GridItemData.ShortcutConfig -> data.index + 1
-            is GridItemData.ShortcutInfo -> data.index + 1
-            is GridItemData.Folder -> data.index + 1
-            else -> error("Unsupported folder grid item")
-        }
-    } ?: 0
-
-    val data = GridItemData.Folder(
+    val data = GridItemData.Folder.Preview(
         id = folderGridItem.id,
         label = folderGridItem.label,
         gridItems = gridItems,
-        gridItemsByPage = gridItemsByPage,
         icon = folderGridItem.icon,
-        columns = columns,
-        rows = rows,
-        maxIndex = maxIndex,
         index = folderGridItem.index,
         folderId = folderGridItem.folderId,
     )

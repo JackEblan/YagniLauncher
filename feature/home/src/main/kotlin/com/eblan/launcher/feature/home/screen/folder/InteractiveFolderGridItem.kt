@@ -227,29 +227,35 @@ internal fun InteractiveFolderGridItem(
         }
 
         is GridItemData.Folder -> {
-            InteractiveNestedFolderGridItem(
-                modifier = modifier,
-                sharedTransitionScope = sharedTransitionScope,
-                data = data,
-                drag = drag,
-                gridItem = gridItem,
-                gridItemSettings = currentGridItemSettings,
-                isScrollInProgress = isScrollInProgress,
-                isSelected = isSelected,
-                isVisibleOverlay = isVisibleOverlay,
-                sharedElementKey = sharedElementKey,
-                showFolderGridItemPopup = showFolderGridItemPopup,
-                onUpdateIsCloseFolderGridItemPopup = onUpdateIsCloseFolderGridItemPopup,
-                onOpenAppDrawer = onOpenAppDrawer,
-                onShowGridItemPopup = onShowGridItemPopup,
-                onUpsertFolderPopupEntry = onUpsertFolderPopupEntry,
-                onUpdateImageBitmap = onUpdateImageBitmap,
-                onUpdateIsDragging = onUpdateIsDragging,
-                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                onUpdateOverlayBounds = onUpdateOverlayBounds,
-                onUpdateSharedElementKey = onUpdateSharedElementKey,
-                onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
-            )
+            when (data) {
+                is GridItemData.Folder.Preview -> {
+                    InteractiveNestedFolderGridItem(
+                        modifier = modifier,
+                        sharedTransitionScope = sharedTransitionScope,
+                        data = data,
+                        drag = drag,
+                        gridItem = gridItem,
+                        gridItemSettings = currentGridItemSettings,
+                        isScrollInProgress = isScrollInProgress,
+                        isSelected = isSelected,
+                        isVisibleOverlay = isVisibleOverlay,
+                        sharedElementKey = sharedElementKey,
+                        showFolderGridItemPopup = showFolderGridItemPopup,
+                        onUpdateIsCloseFolderGridItemPopup = onUpdateIsCloseFolderGridItemPopup,
+                        onOpenAppDrawer = onOpenAppDrawer,
+                        onShowGridItemPopup = onShowGridItemPopup,
+                        onUpsertFolderPopupEntry = onUpsertFolderPopupEntry,
+                        onUpdateImageBitmap = onUpdateImageBitmap,
+                        onUpdateIsDragging = onUpdateIsDragging,
+                        onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                        onUpdateOverlayBounds = onUpdateOverlayBounds,
+                        onUpdateSharedElementKey = onUpdateSharedElementKey,
+                        onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                    )
+                }
+
+                is GridItemData.Folder.Full -> Unit
+            }
         }
 
         else -> error("Unsupported Folder Grid Item")
@@ -849,7 +855,7 @@ private fun InteractiveFolderShortcutConfigGridItem(
 private fun InteractiveNestedFolderGridItem(
     modifier: Modifier = Modifier,
     sharedTransitionScope: SharedTransitionScope,
-    data: GridItemData.Folder,
+    data: GridItemData.Folder.Preview,
     drag: Drag,
     gridItem: GridItem,
     gridItemSettings: GridItemSettings,
@@ -898,11 +904,6 @@ private fun InteractiveNestedFolderGridItem(
     val hasInteraction = isSelected && isVisibleOverlay
 
     val alpha = if (hasInteraction) 0f else 1f
-
-    val previewFolderGridItems = remember(key1 = data.gridItemsByPage) {
-        data.gridItemsByPage.values.firstOrNull()
-            ?.take(FOLDER_PREVIEW_COLUMNS * FOLDER_PREVIEW_ROWS)
-    }
 
     LaunchedEffect(
         key1 = drag,
@@ -1033,7 +1034,7 @@ private fun InteractiveNestedFolderGridItem(
             ) {
                 PreviewFolderGridLayout(
                     modifier = Modifier.matchParentSize(),
-                    gridItems = previewFolderGridItems,
+                    gridItems = data.gridItems.take(FOLDER_PREVIEW_COLUMNS * FOLDER_PREVIEW_ROWS),
                     content = {
                         PreviewNestedFolderGridItem(
                             alpha = alpha,

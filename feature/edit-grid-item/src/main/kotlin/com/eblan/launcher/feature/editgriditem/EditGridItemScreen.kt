@@ -421,7 +421,10 @@ private fun EditFolder(
                     onUpdateIconPackInfoPackageName(packageName)
                 },
                 onUpdateUri = {
-                    val newData = data.copy(icon = it)
+                    val newData = when (data) {
+                        is GridItemData.Folder.Full -> data.copy(icon = it)
+                        is GridItemData.Folder.Preview -> data.copy(icon = it)
+                    }
 
                     onUpdateGridItem(
                         gridItem.copy(data = newData),

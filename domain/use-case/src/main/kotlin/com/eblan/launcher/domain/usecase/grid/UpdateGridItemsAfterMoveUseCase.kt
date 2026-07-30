@@ -19,14 +19,10 @@ package com.eblan.launcher.domain.usecase.grid
 
 import com.eblan.launcher.domain.common.Dispatcher
 import com.eblan.launcher.domain.common.EblanDispatchers
-import com.eblan.launcher.domain.common.IconKeyGenerator
-import com.eblan.launcher.domain.framework.FileManager
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.MoveGridItemResult
-import com.eblan.launcher.domain.repository.FolderGridItemRepository
 import com.eblan.launcher.domain.repository.GridRepository
-import com.eblan.launcher.domain.repository.UserDataRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -34,11 +30,7 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 class UpdateGridItemsAfterMoveUseCase @Inject constructor(
-    private val userDataRepository: UserDataRepository,
     private val gridRepository: GridRepository,
-    private val folderGridItemRepository: FolderGridItemRepository,
-    private val fileManager: FileManager,
-    private val iconKeyGenerator: IconKeyGenerator,
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke(moveGridItemResult: MoveGridItemResult) {
@@ -106,10 +98,19 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
                 folderId = data.id,
             )
 
-            is GridItemData.Folder -> folderData.copy(
-                index = index,
-                folderId = data.id,
-            )
+            is GridItemData.Folder -> {
+                when (folderData) {
+                    is GridItemData.Folder.Full -> folderData.copy(
+                        index = index,
+                        folderId = data.id,
+                    )
+
+                    is GridItemData.Folder.Preview -> folderData.copy(
+                        index = index,
+                        folderId = data.id,
+                    )
+                }
+            }
 
             else -> error("Unsupported addMovingGridItemIntoFolder")
         }
@@ -153,10 +154,17 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
             }
 
             is GridItemData.Folder -> {
-                data.copy(
-                    folderId = id,
-                    index = 0,
-                )
+                when (data) {
+                    is GridItemData.Folder.Full -> data.copy(
+                        folderId = id,
+                        index = 0,
+                    )
+
+                    is GridItemData.Folder.Preview -> data.copy(
+                        folderId = id,
+                        index = 0,
+                    )
+                }
             }
 
             else -> error("Unsupported createNewFolder")
@@ -185,10 +193,17 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
             }
 
             is GridItemData.Folder -> {
-                data.copy(
-                    folderId = id,
-                    index = 1,
-                )
+                when (data) {
+                    is GridItemData.Folder.Full -> data.copy(
+                        folderId = id,
+                        index = 1,
+                    )
+
+                    is GridItemData.Folder.Preview -> data.copy(
+                        folderId = id,
+                        index = 1,
+                    )
+                }
             }
 
             else -> error("Unsupported createNewFolder")
@@ -200,15 +215,11 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
                 movingGridItem.copy(data = movingData),
                 conflictingGridItem.copy(
                     id = id,
-                    data = GridItemData.Folder(
+                    data = GridItemData.Folder.Preview(
                         id = id,
                         label = "New Folder",
                         gridItems = emptyList(),
-                        gridItemsByPage = emptyMap(),
                         icon = null,
-                        columns = 1,
-                        rows = 2,
-                        maxIndex = 1,
                         index = -1,
                         folderId = null,
                     ),

@@ -452,7 +452,7 @@ internal suspend fun handleConflictingGridItem(
 
     val conflictingGridItem = moveGridItemResult?.conflictingGridItem ?: return
 
-    val conflictingData = conflictingGridItem.data as? GridItemData.Folder ?: return
+    val conflictingData = conflictingGridItem.data as? GridItemData.Folder.Full ?: return
 
     if (drag.value != Drag.Dragging ||
         !moveGridItemResult.isSuccess ||
@@ -482,10 +482,19 @@ internal suspend fun handleConflictingGridItem(
             folderId = conflictingData.id,
         )
 
-        is GridItemData.Folder -> data.copy(
-            index = conflictingData.maxIndex,
-            folderId = conflictingData.id,
-        )
+        is GridItemData.Folder -> {
+            when (data) {
+                is GridItemData.Folder.Full -> data.copy(
+                    index = conflictingData.maxIndex,
+                    folderId = conflictingData.id,
+                )
+
+                is GridItemData.Folder.Preview -> data.copy(
+                    index = conflictingData.maxIndex,
+                    folderId = conflictingData.id,
+                )
+            }
+        }
 
         else -> error("Unsupported Folder GridItem ")
     }
