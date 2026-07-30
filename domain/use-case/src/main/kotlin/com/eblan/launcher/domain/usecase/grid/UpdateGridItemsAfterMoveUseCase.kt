@@ -55,10 +55,12 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
                     is GridItemData.Folder -> {
                         val userData = userDataRepository.userDataFlow.first()
 
+                        // Current Conflicting Folder Grid Item doesn't have grid items. It is just a shallow folder
+                        // so we have to get its real data
                         val conflictingFolderGridItem =
                             requireNotNull(
                                 folderGridItemRepository.getFolderGridItemWrapper(id = conflictingGridItem.id)
-                                    ?.asGridItem(
+                                    ?.asFolderGridItem(
                                         folderGridItemRepository = folderGridItemRepository,
                                         maxFolderColumns = userData.homeSettings.maxFolderColumns,
                                         maxFolderRows = userData.homeSettings.maxFolderRows,
@@ -122,15 +124,30 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
                 folderId = data.id,
             )
 
-            is GridItemData.Folder -> folderData.copy(
-                index = index,
-                folderId = data.id,
-            )
+            is GridItemData.Folder -> {
+                when (folderData) {
+                    is GridItemData.Folder.Full -> folderData.copy(
+                        index = index,
+                        folderId = data.id,
+                    )
+
+                    is GridItemData.Folder.Preview -> folderData.copy(
+                        index = index,
+                        folderId = data.id,
+                    )
+                }
+            }
 
             else -> error("Unsupported addMovingGridItemIntoFolder")
         }
 
-        gridRepository.updateGridItem(gridItem = movingGridItem.copy(data = newData))
+        gridRepository.updateGridItem(
+            gridItem = movingGridItem.copy(
+                startColumn = conflictingFolderGridItem.startColumn,
+                startRow = conflictingFolderGridItem.startRow,
+                data = newData,
+            ),
+        )
     }
 
     @OptIn(ExperimentalUuidApi::class)
@@ -163,10 +180,17 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
             }
 
             is GridItemData.Folder -> {
-                data.copy(
-                    folderId = id,
-                    index = 0,
-                )
+                when (data) {
+                    is GridItemData.Folder.Full -> data.copy(
+                        folderId = id,
+                        index = 0,
+                    )
+
+                    is GridItemData.Folder.Preview -> data.copy(
+                        folderId = id,
+                        index = 0,
+                    )
+                }
             }
 
             else -> error("Unsupported createNewFolder")
@@ -195,10 +219,17 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
             }
 
             is GridItemData.Folder -> {
-                data.copy(
-                    folderId = id,
-                    index = 1,
-                )
+                when (data) {
+                    is GridItemData.Folder.Full -> data.copy(
+                        folderId = id,
+                        index = 1,
+                    )
+
+                    is GridItemData.Folder.Preview -> data.copy(
+                        folderId = id,
+                        index = 1,
+                    )
+                }
             }
 
             else -> error("Unsupported createNewFolder")
@@ -210,17 +241,14 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
                 movingGridItem.copy(data = movingData),
                 conflictingGridItem.copy(
                     id = id,
-                    data = GridItemData.Folder(
+                    data = GridItemData.Folder.Preview(
                         id = id,
                         label = "New Folder",
                         gridItems = emptyList(),
-                        gridItemsByPage = emptyMap(),
                         icon = null,
-                        columns = 1,
-                        rows = 2,
-                        maxIndex = 1,
                         index = -1,
                         folderId = null,
+                        maxIndex = 0,
                     ),
                 ),
             ),

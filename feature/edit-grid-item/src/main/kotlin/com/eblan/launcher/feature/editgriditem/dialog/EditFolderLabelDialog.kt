@@ -91,11 +91,19 @@ internal fun EditFolderLabelDialog(
             TextButton(
                 onClick = {
                     if (value.isNotBlank()) {
-                        onUpdateGridItem(
-                            gridItem.copy(
-                                data = data.copy(label = value),
-                            ),
-                        )
+                        when (data) {
+                            is GridItemData.Folder.Full -> onUpdateGridItem(
+                                gridItem.copy(
+                                    data = data.copy(label = value),
+                                ),
+                            )
+
+                            is GridItemData.Folder.Preview -> onUpdateGridItem(
+                                gridItem.copy(
+                                    data = data.copy(label = value),
+                                ),
+                            )
+                        }
 
                         onDismissRequest()
                     } else {

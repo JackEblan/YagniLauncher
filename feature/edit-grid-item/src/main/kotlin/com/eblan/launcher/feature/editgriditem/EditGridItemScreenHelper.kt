@@ -28,7 +28,10 @@ internal fun getGridItem(gridItem: GridItem, customIcon: String?): GridItem = wh
     }
 
     is GridItemData.Folder -> {
-        val newData = data.copy(icon = customIcon)
+        val newData = when (data) {
+            is GridItemData.Folder.Full -> data.copy(icon = customIcon)
+            is GridItemData.Folder.Preview -> data.copy(icon = customIcon)
+        }
 
         gridItem.copy(data = newData)
     }

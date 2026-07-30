@@ -24,23 +24,22 @@ import com.eblan.launcher.data.room.dao.FolderGridItemDao
 import com.eblan.launcher.domain.model.FolderGridItem
 import com.eblan.launcher.domain.model.FolderGridItemWrapper
 import com.eblan.launcher.domain.repository.FolderGridItemRepository
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 internal class DefaultFolderGridItemRepository @Inject constructor(private val folderGridItemDao: FolderGridItemDao) : FolderGridItemRepository {
     override val folderGridItemWrappersFlow =
         folderGridItemDao.getFolderGridItemWrapperEntitiesFlow().map { entities ->
-            entities.filter {
-                it.folderGridItemEntity.folderId == null
-            }.map {
+            entities.map {
                 it.asFolderGridItemWrapper()
             }
         }
 
-    override val folderGridItemWrappersWithFolderIdFlow =
-        folderGridItemDao.getFolderGridItemWrapperEntitiesFlow().map { entities ->
+    override val folderGridItems: Flow<List<FolderGridItem>> =
+        folderGridItemDao.getFolderGridItemEntitiesFlow().map { entities ->
             entities.map {
-                it.asFolderGridItemWrapper()
+                it.asModel()
             }
         }
 

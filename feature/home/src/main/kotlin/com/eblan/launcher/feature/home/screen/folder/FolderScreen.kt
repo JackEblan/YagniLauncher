@@ -152,7 +152,7 @@ internal fun FolderScreen(
 
     val folderGridItem = folderPopup.gridItem
 
-    val data = folderGridItem.data as GridItemData.Folder
+    val data = folderGridItem.data as GridItemData.Folder.Full
 
     val density = LocalDensity.current
 
@@ -537,7 +537,7 @@ internal fun FolderScreen(
 @Composable
 internal fun FolderTitle(
     modifier: Modifier = Modifier,
-    data: GridItemData.Folder,
+    data: GridItemData.Folder.Full,
     folderGridHorizontalPagerState: PagerState,
 ) {
     Row(
@@ -614,14 +614,25 @@ private suspend fun handleFolderPopup(
                 }
 
                 is GridItemData.Folder -> {
-                    onMoveFolderGridItemOutsideFolder(
-                        gridItem.copy(
-                            data = data.copy(
-                                index = -1,
-                                folderId = null,
+                    when (data) {
+                        is GridItemData.Folder.Full -> onMoveFolderGridItemOutsideFolder(
+                            gridItem.copy(
+                                data = data.copy(
+                                    index = -1,
+                                    folderId = null,
+                                ),
                             ),
-                        ),
-                    )
+                        )
+
+                        is GridItemData.Folder.Preview -> onMoveFolderGridItemOutsideFolder(
+                            gridItem.copy(
+                                data = data.copy(
+                                    index = -1,
+                                    folderId = null,
+                                ),
+                            ),
+                        )
+                    }
                 }
 
                 is GridItemData.ShortcutConfig -> {

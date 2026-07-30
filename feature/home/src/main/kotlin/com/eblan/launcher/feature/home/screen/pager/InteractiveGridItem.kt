@@ -262,35 +262,41 @@ internal fun InteractiveGridItem(
         }
 
         is GridItemData.Folder -> {
-            InteractiveFolderGridItem(
-                modifier = modifier,
-                sharedTransitionScope = sharedTransitionScope,
-                data = data,
-                drag = drag,
-                gridItem = gridItem,
-                gridItemSettings = currentGridItemSettings,
-                isScrollInProgress = isScrollInProgress,
-                isVisibleFolder = isVisibleFolder,
-                isVisibleOverlay = isVisibleOverlay,
-                sharedElementKey = sharedElementKey,
-                textColor = currentTextColor,
-                moveGridItemResult = moveGridItemResult,
-                lockMovement = lockMovement,
-                isDragging = isDragging,
-                hasInteraction = hasInteraction,
-                isVisibleWhiteBox = isVisibleWhiteBox,
-                onOpenAppDrawer = onOpenAppDrawer,
-                onShowGridItemPopup = onShowGridItemPopup,
-                onUpsertFolderPopupEntry = onUpsertFolderPopupEntry,
-                onUpdateGridItemSource = onUpdateGridItemSource,
-                onUpdateImageBitmap = onUpdateImageBitmap,
-                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                onUpdateOverlayBounds = onUpdateOverlayBounds,
-                onUpdateSharedElementKey = onUpdateSharedElementKey,
-                onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
-                onShowFolderWhenDragging = onShowFolderWhenDragging,
-                onResetGrid = onResetGrid,
-            )
+            when (data) {
+                is GridItemData.Folder.Preview -> {
+                    InteractiveFolderGridItem(
+                        modifier = modifier,
+                        sharedTransitionScope = sharedTransitionScope,
+                        data = data,
+                        drag = drag,
+                        gridItem = gridItem,
+                        gridItemSettings = currentGridItemSettings,
+                        isScrollInProgress = isScrollInProgress,
+                        isVisibleFolder = isVisibleFolder,
+                        isVisibleOverlay = isVisibleOverlay,
+                        sharedElementKey = sharedElementKey,
+                        textColor = currentTextColor,
+                        moveGridItemResult = moveGridItemResult,
+                        lockMovement = lockMovement,
+                        isDragging = isDragging,
+                        hasInteraction = hasInteraction,
+                        isVisibleWhiteBox = isVisibleWhiteBox,
+                        onOpenAppDrawer = onOpenAppDrawer,
+                        onShowGridItemPopup = onShowGridItemPopup,
+                        onUpsertFolderPopupEntry = onUpsertFolderPopupEntry,
+                        onUpdateGridItemSource = onUpdateGridItemSource,
+                        onUpdateImageBitmap = onUpdateImageBitmap,
+                        onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                        onUpdateOverlayBounds = onUpdateOverlayBounds,
+                        onUpdateSharedElementKey = onUpdateSharedElementKey,
+                        onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                        onShowFolderWhenDragging = onShowFolderWhenDragging,
+                        onResetGrid = onResetGrid,
+                    )
+                }
+
+                is GridItemData.Folder.Full -> Unit
+            }
         }
 
         is GridItemData.ShortcutConfig -> {
@@ -876,7 +882,7 @@ private fun InteractiveShortcutInfoGridItem(
 private fun InteractiveFolderGridItem(
     modifier: Modifier = Modifier,
     sharedTransitionScope: SharedTransitionScope,
-    data: GridItemData.Folder,
+    data: GridItemData.Folder.Preview,
     drag: Drag,
     gridItem: GridItem,
     gridItemSettings: GridItemSettings,
@@ -938,11 +944,6 @@ private fun InteractiveFolderGridItem(
     val currentIsVisibleOverlay = rememberUpdatedState(isVisibleOverlay)
     val currentGridItem = rememberUpdatedState(gridItem)
     val currentLockMovement = rememberUpdatedState(lockMovement)
-
-    val previewFolderGridItems = remember(key1 = data.gridItemsByPage) {
-        data.gridItemsByPage.values.firstOrNull()
-            ?.take(FOLDER_PREVIEW_COLUMNS * FOLDER_PREVIEW_ROWS)
-    }
 
     LaunchedEffect(key1 = moveGridItemResult) {
         handleConflictingGridItem(
@@ -1078,7 +1079,7 @@ private fun InteractiveFolderGridItem(
             ) {
                 PreviewFolderGridLayout(
                     modifier = Modifier.matchParentSize(),
-                    gridItems = previewFolderGridItems,
+                    gridItems = data.gridItems.take(FOLDER_PREVIEW_COLUMNS * FOLDER_PREVIEW_ROWS),
                     content = {
                         PreviewFolderGridItem(
                             sharedTransitionScope = sharedTransitionScope,

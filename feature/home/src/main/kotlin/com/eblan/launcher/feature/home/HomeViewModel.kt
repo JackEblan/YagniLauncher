@@ -122,7 +122,8 @@ internal class HomeViewModel @Inject constructor(
 
     val movedGridItemResult = _moveGridItemResult.asStateFlow()
 
-    private val defaultDelay = 500L
+    private val defaultDelay = 500L.milliseconds
+    private val moveDelay = 50L.milliseconds
 
     private val _pageItems = MutableStateFlow<List<PageItem>?>(null)
 
@@ -231,6 +232,8 @@ internal class HomeViewModel @Inject constructor(
         moveGridItemJob?.cancel()
 
         moveGridItemJob = viewModelScope.launch {
+            delay(50L.milliseconds)
+
             _moveGridItemResult.update {
                 moveGridItemUseCase(
                     movingGridItem = movingGridItem,
@@ -253,6 +256,8 @@ internal class HomeViewModel @Inject constructor(
         moveGridItemJob?.cancel()
 
         moveGridItemJob = viewModelScope.launch {
+            delay(50L.milliseconds)
+
             _resizeGridItem.update {
                 resizeGridItemUseCase(
                     resizingGridItem = resizingGridItem,
@@ -279,7 +284,7 @@ internal class HomeViewModel @Inject constructor(
                 )
             }
 
-            delay(defaultDelay.milliseconds)
+            delay(defaultDelay)
 
             _screen.update {
                 when (associate) {
@@ -308,7 +313,7 @@ internal class HomeViewModel @Inject constructor(
                 associate = associate,
             )
 
-            delay(defaultDelay.milliseconds)
+            delay(defaultDelay)
 
             _screen.update {
                 Screen.Pager
@@ -560,6 +565,8 @@ internal class HomeViewModel @Inject constructor(
         moveGridItemJob?.cancel()
 
         moveGridItemJob = viewModelScope.launch {
+            delay(50L.milliseconds)
+
             _moveGridItemResult.update {
                 moveFolderGridItemUseCase(
                     conflictingGridItem = conflictingGridItem,
