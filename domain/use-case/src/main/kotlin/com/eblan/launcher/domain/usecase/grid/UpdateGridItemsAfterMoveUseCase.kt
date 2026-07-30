@@ -62,7 +62,7 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
                     is GridItemData.ShortcutConfig,
                     is GridItemData.ShortcutInfo,
                     is GridItemData.Widget,
-                        -> {
+                    -> {
                         createNewFolder(
                             conflictingGridItem = conflictingGridItem,
                             movingGridItem = movingGridItem,

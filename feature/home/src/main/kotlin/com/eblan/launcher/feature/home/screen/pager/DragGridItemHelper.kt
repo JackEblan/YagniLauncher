@@ -160,7 +160,7 @@ internal fun handleAnimateScrollToPage(
     }
 }
 
-internal suspend fun handleDragGridItem(
+internal fun handleDragGridItem(
     columns: Int,
     gridCurrentPage: Int,
     dockGridCurrentPage: Int,
@@ -194,8 +194,6 @@ internal suspend fun handleDragGridItem(
     onUpdateAssociate: (Associate) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
 ) {
-    delay(50L.milliseconds)
-
     if (drag != Drag.Dragging ||
         isGridScrollInProgress ||
         isDockScrollInProgress ||
