@@ -33,6 +33,9 @@ interface FolderGridItemDao {
     @Query("SELECT * FROM FolderGridItemEntity")
     fun getFolderGridItemEntities(): List<FolderGridItemEntity>
 
+    @Query("SELECT * FROM FolderGridItemEntity")
+    fun getFolderGridItemEntitiesFlow(): Flow<List<FolderGridItemEntity>>
+
     @Transaction
     @Query("SELECT * FROM FolderGridItemEntity")
     fun getFolderGridItemWrapperEntitiesFlow(): Flow<List<FolderGridItemWrapperEntity>>

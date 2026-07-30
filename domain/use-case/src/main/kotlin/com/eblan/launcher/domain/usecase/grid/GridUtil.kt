@@ -199,9 +199,9 @@ internal fun ShortcutConfigGridItem.asGridItem(): GridItem = GridItem(
 )
 
 /**
- * Folder Grid Item without grid items
+ * Folder Grid Item without grid items for faster processing
  */
-internal fun FolderGridItem.asIconGridItem(): GridItem = GridItem(
+internal fun FolderGridItem.asEmptyFolderGridItem(): GridItem = GridItem(
     id = id,
     page = page,
     startColumn = startColumn,
@@ -228,7 +228,7 @@ internal fun FolderGridItem.asIconGridItem(): GridItem = GridItem(
     swipeDown = swipeDown,
 )
 
-internal suspend fun FolderGridItemWrapper.asGridItem(
+internal suspend fun FolderGridItemWrapper.asFolderGridItem(
     folderGridItemRepository: FolderGridItemRepository,
     maxFolderColumns: Int,
     maxFolderRows: Int,
@@ -240,13 +240,13 @@ internal suspend fun FolderGridItemWrapper.asGridItem(
         folderGridItems.map {
             folderGridItemRepository.getFolderGridItemWrapper(
                 id = it.id,
-            )?.asPreviewGridItem(
+            )?.asGridItem(
                 maxFolderColumns = maxFolderColumns,
                 maxFolderRows = maxFolderRows,
                 fileManager = fileManager,
                 iconKeyGenerator = iconKeyGenerator,
                 iconPackInfoPackageName = iconPackInfoPackageName,
-            ) ?: it.asIconGridItem()
+            ) ?: it.asEmptyFolderGridItem()
         }
 
     val gridItems =
@@ -359,30 +359,7 @@ internal suspend fun cleanupGridItemRecursively(
     }
 }
 
-private suspend fun updatePinShortcutsByPackageName(
-    launcherAppsWrapper: LauncherAppsWrapper,
-    data: GridItemData.ShortcutInfo,
-) {
-    if (!launcherAppsWrapper.hasShortcutHostPermission) return
-
-    val shortcutIds = launcherAppsWrapper.getShortcuts(
-        shortcutQuery = ShortcutQuery(
-            packageName = data.packageName,
-            shortcutQueryFlag = ShortcutQueryFlag.Pinned,
-        ),
-    )
-        ?.map { it.shortcutId } ?: return
-
-    if (data.shortcutId !in shortcutIds) return
-
-    launcherAppsWrapper.pinShortcuts(
-        packageName = data.packageName,
-        shortcutIds = shortcutIds - data.shortcutId,
-        serialNumber = data.serialNumber,
-    )
-}
-
-private suspend fun FolderGridItemWrapper.asPreviewGridItem(
+internal suspend fun FolderGridItemWrapper.asGridItem(
     maxFolderColumns: Int,
     maxFolderRows: Int,
     fileManager: FileManager,
@@ -402,7 +379,7 @@ private suspend fun FolderGridItemWrapper.asPreviewGridItem(
             } + shortcutConfigGridItems.map {
                 it.asGridItem()
             } + folderGridItems.map {
-                it.asIconGridItem()
+                it.asEmptyFolderGridItem()
             }
             ).sortedBy {
             when (val data = it.data) {
@@ -464,6 +441,29 @@ private suspend fun FolderGridItemWrapper.asPreviewGridItem(
         doubleTap = folderGridItem.doubleTap,
         swipeUp = folderGridItem.swipeUp,
         swipeDown = folderGridItem.swipeDown,
+    )
+}
+
+private suspend fun updatePinShortcutsByPackageName(
+    launcherAppsWrapper: LauncherAppsWrapper,
+    data: GridItemData.ShortcutInfo,
+) {
+    if (!launcherAppsWrapper.hasShortcutHostPermission) return
+
+    val shortcutIds = launcherAppsWrapper.getShortcuts(
+        shortcutQuery = ShortcutQuery(
+            packageName = data.packageName,
+            shortcutQueryFlag = ShortcutQueryFlag.Pinned,
+        ),
+    )
+        ?.map { it.shortcutId } ?: return
+
+    if (data.shortcutId !in shortcutIds) return
+
+    launcherAppsWrapper.pinShortcuts(
+        packageName = data.packageName,
+        shortcutIds = shortcutIds - data.shortcutId,
+        serialNumber = data.serialNumber,
     )
 }
 

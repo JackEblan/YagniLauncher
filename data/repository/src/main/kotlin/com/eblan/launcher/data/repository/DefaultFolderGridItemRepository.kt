@@ -24,6 +24,7 @@ import com.eblan.launcher.data.room.dao.FolderGridItemDao
 import com.eblan.launcher.domain.model.FolderGridItem
 import com.eblan.launcher.domain.model.FolderGridItemWrapper
 import com.eblan.launcher.domain.repository.FolderGridItemRepository
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
@@ -41,6 +42,13 @@ internal class DefaultFolderGridItemRepository @Inject constructor(private val f
         folderGridItemDao.getFolderGridItemWrapperEntitiesFlow().map { entities ->
             entities.map {
                 it.asFolderGridItemWrapper()
+            }
+        }
+
+    override val folderGridItems: Flow<List<FolderGridItem>> =
+        folderGridItemDao.getFolderGridItemEntitiesFlow().map { entities ->
+            entities.map {
+                it.asModel()
             }
         }
 

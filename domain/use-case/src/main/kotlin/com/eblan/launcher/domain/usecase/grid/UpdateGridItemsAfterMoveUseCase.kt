@@ -58,7 +58,7 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
                         val conflictingFolderGridItem =
                             requireNotNull(
                                 folderGridItemRepository.getFolderGridItemWrapper(id = conflictingGridItem.id)
-                                    ?.asGridItem(
+                                    ?.asFolderGridItem(
                                         folderGridItemRepository = folderGridItemRepository,
                                         maxFolderColumns = userData.homeSettings.maxFolderColumns,
                                         maxFolderRows = userData.homeSettings.maxFolderRows,

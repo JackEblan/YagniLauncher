@@ -51,7 +51,7 @@ class GetFolderGridItemsByIdUseCase @Inject constructor(
             }?.let {
                 FolderPopup(
                     folderPopupEntry = folderPopupEntry,
-                    gridItem = it.asGridItem(
+                    gridItem = it.asFolderGridItem(
                         folderGridItemRepository = folderGridItemRepository,
                         maxFolderColumns = userData.homeSettings.maxFolderColumns,
                         maxFolderRows = userData.homeSettings.maxFolderRows,

@@ -66,7 +66,7 @@ class GetGridItemsUseCase @Inject constructor(
             }
 
         val currentFolderGridItems = folderGridItemRepository.getFolderGridItems().map {
-            it.asIconGridItem()
+            it.asEmptyFolderGridItem()
         }
 
         return buildList {
