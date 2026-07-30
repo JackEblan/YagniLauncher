@@ -78,7 +78,7 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
                     is GridItemData.ShortcutConfig,
                     is GridItemData.ShortcutInfo,
                     is GridItemData.Widget,
-                    -> {
+                        -> {
                         createNewFolder(
                             conflictingGridItem = conflictingGridItem,
                             movingGridItem = movingGridItem,
@@ -130,7 +130,13 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
             else -> error("Unsupported addMovingGridItemIntoFolder")
         }
 
-        gridRepository.updateGridItem(gridItem = movingGridItem.copy(data = newData))
+        gridRepository.updateGridItem(
+            gridItem = movingGridItem.copy(
+                startColumn = conflictingFolderGridItem.startColumn,
+                startRow = conflictingFolderGridItem.startRow,
+                data = newData,
+            ),
+        )
     }
 
     @OptIn(ExperimentalUuidApi::class)
