@@ -299,6 +299,7 @@ internal fun FolderScreen(
             moveGridItemResult = currentMoveGridItemResult,
             folderPopup = folderPopup,
             progress = progress,
+            folderGridItem = folderGridItem,
             onAnimateToScrollToPage = folderGridHorizontalPagerState::animateScrollToPage,
             onDeleteFolderPopupEntry = onDeleteFolderPopupEntry,
             onMoveFolderGridItemOutsideFolder = onMoveFolderGridItemOutsideFolder,
@@ -577,6 +578,7 @@ private suspend fun handleFolderPopup(
     moveGridItemResult: State<MoveGridItemResult?>,
     folderPopup: FolderPopup,
     progress: Animatable<Float, AnimationVector1D>,
+    folderGridItem: GridItem,
     onAnimateToScrollToPage: suspend (Int) -> Unit,
     onDeleteFolderPopupEntry: (FolderPopupEntry) -> Unit,
     onMoveFolderGridItemOutsideFolder: (GridItem) -> Unit,
@@ -601,55 +603,59 @@ private suspend fun handleFolderPopup(
                 ),
             )
 
-            when (val data = gridItem.data) {
+            val newGridItem = when (val data = gridItem.data) {
                 is GridItemData.ApplicationInfo -> {
-                    onMoveFolderGridItemOutsideFolder(
-                        gridItem.copy(
-                            data = data.copy(
-                                index = -1,
-                                folderId = null,
-                            ),
+                    gridItem.copy(
+                        page = folderGridItem.page,
+                        startColumn = folderGridItem.startColumn,
+                        startRow = folderGridItem.startRow,
+                        data = data.copy(
+                            index = -1,
+                            folderId = null,
                         ),
                     )
                 }
 
                 is GridItemData.Folder -> {
-                    onMoveFolderGridItemOutsideFolder(
-                        gridItem.copy(
-                            data = data.copy(
-                                index = -1,
-                                folderId = null,
-                            ),
+                    gridItem.copy(
+                        page = folderGridItem.page,
+                        startColumn = folderGridItem.startColumn,
+                        startRow = folderGridItem.startRow,
+                        data = data.copy(
+                            index = -1,
+                            folderId = null,
                         ),
                     )
                 }
 
                 is GridItemData.ShortcutConfig -> {
-                    onMoveFolderGridItemOutsideFolder(
-                        gridItem.copy(
-                            data = data.copy(
-                                index = -1,
-                                folderId = null,
-                            ),
+                    gridItem.copy(
+                        page = folderGridItem.page,
+                        startColumn = folderGridItem.startColumn,
+                        startRow = folderGridItem.startRow,
+                        data = data.copy(
+                            index = -1,
+                            folderId = null,
                         ),
                     )
                 }
 
                 is GridItemData.ShortcutInfo -> {
-                    onMoveFolderGridItemOutsideFolder(
-                        gridItem.copy(
-                            data = data.copy(
-                                index = -1,
-                                folderId = null,
-                            ),
+                    gridItem.copy(
+                        page = folderGridItem.page,
+                        startColumn = folderGridItem.startColumn,
+                        startRow = folderGridItem.startRow,
+                        data = data.copy(
+                            index = -1,
+                            folderId = null,
                         ),
                     )
                 }
 
-                is GridItemData.Widget -> {
-                    onMoveFolderGridItemOutsideFolder(gridItem)
-                }
+                is GridItemData.Widget -> error("Unsupported Folder Grid Item")
             }
+
+            onMoveFolderGridItemOutsideFolder(newGridItem)
         }
 
         onDeleteFolderPopupEntry(folderPopup.folderPopupEntry)

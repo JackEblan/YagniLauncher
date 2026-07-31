@@ -317,16 +317,7 @@ private fun dragGridItem(
     onUpdateAssociate: (Associate) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
 ) {
-    val gridItem = moveGridItemResult.value?.movingGridItem ?: return
-
-    onUpdateAssociate(Associate.Grid)
-
-    onUpdateSharedElementKey(
-        SharedElementKey(
-            id = gridItem.id,
-            parent = SharedElementKey.Parent.Grid,
-        ),
-    )
+    val movingGridItem = moveGridItemResult.value?.movingGridItem ?: return
 
     val gridHeightWithPadding = safeDrawingHeight - dockHeightPx - pageIndicatorHeightPx
 
@@ -334,13 +325,13 @@ private fun dragGridItem(
 
     val cellHeight = gridHeightWithPadding / rows
 
-    val moveGridItem = getMoveGridItem(
+    val newMovingGridItem = getMoveGridItem(
         associate = Associate.Grid,
         cellHeight = cellHeight,
         cellWidth = cellWidth,
         columns = columns,
         gridHeight = gridHeightWithPadding,
-        gridItem = gridItem,
+        gridItem = movingGridItem,
         gridItemSource = gridItemSource,
         gridWidth = safeDrawingWidth,
         gridX = dragX,
@@ -349,16 +340,24 @@ private fun dragGridItem(
         currentPage = currentPage,
     )
 
-    val isGridItemSpanWithinBounds = isGridItemSpanWithinBounds(
-        gridItem = moveGridItem,
-        columns = columns,
-        rows = rows,
-    )
+    if (isGridItemSpanWithinBounds(
+            gridItem = newMovingGridItem,
+            columns = columns,
+            rows = rows,
+        )
+    ) {
+        onUpdateAssociate(Associate.Grid)
 
-    if (isGridItemSpanWithinBounds) {
+        onUpdateSharedElementKey(
+            SharedElementKey(
+                id = newMovingGridItem.id,
+                parent = SharedElementKey.Parent.Grid,
+            ),
+        )
+
         onMoveGridItem(
             gridItems.value,
-            moveGridItem,
+            newMovingGridItem,
             dragX,
             dragY,
             columns,
@@ -394,16 +393,7 @@ private fun dragDockGridItem(
     onUpdateAssociate: (Associate) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
 ) {
-    val gridItem = moveGridItemResult.value?.movingGridItem ?: return
-
-    onUpdateAssociate(Associate.Dock)
-
-    onUpdateSharedElementKey(
-        SharedElementKey(
-            id = gridItem.id,
-            parent = SharedElementKey.Parent.Dock,
-        ),
-    )
+    val movingGridItem = moveGridItemResult.value?.movingGridItem ?: return
 
     val cellWidth = safeDrawingWidth / dockColumns
 
@@ -411,13 +401,13 @@ private fun dragDockGridItem(
 
     val dockY = dragY - (safeDrawingHeight - dockHeightPx)
 
-    val moveGridItem = getMoveGridItem(
+    val newMovingGridItem = getMoveGridItem(
         associate = Associate.Dock,
         cellHeight = cellHeight,
         cellWidth = cellWidth,
         columns = dockColumns,
         gridHeight = dockHeightPx,
-        gridItem = gridItem,
+        gridItem = movingGridItem,
         gridItemSource = gridItemSource,
         gridWidth = safeDrawingWidth,
         gridX = dragX,
@@ -427,14 +417,23 @@ private fun dragDockGridItem(
     )
 
     if (isGridItemSpanWithinBounds(
-            gridItem = moveGridItem,
+            gridItem = newMovingGridItem,
             columns = dockColumns,
             rows = dockRows,
         )
     ) {
+        onUpdateAssociate(Associate.Dock)
+
+        onUpdateSharedElementKey(
+            SharedElementKey(
+                id = newMovingGridItem.id,
+                parent = SharedElementKey.Parent.Dock,
+            ),
+        )
+
         onMoveGridItem(
             gridItems.value,
-            moveGridItem,
+            newMovingGridItem,
             dragX,
             dockY,
             dockColumns,

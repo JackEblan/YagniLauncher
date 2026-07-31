@@ -107,11 +107,7 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
         }
 
         gridRepository.updateGridItem(
-            gridItem = movingGridItem.copy(
-                startColumn = conflictingFolderGridItem.startColumn,
-                startRow = conflictingFolderGridItem.startRow,
-                data = newData,
-            ),
+            gridItem = movingGridItem.copy(data = newData),
         )
     }
 
