@@ -31,33 +31,33 @@ import javax.inject.Inject
 
 class ResizeGridItemUseCase @Inject constructor(
     private val gridRepository: GridRepository,
+    private val getGridItemsUseCase: GetGridItemsUseCase,
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke(
-        gridItems: List<GridItem>,
         resizingGridItem: GridItem,
         columns: Int,
         rows: Int,
     ): GridItem = withContext(defaultDispatcher) {
-        val currentGridItems =
-            gridItems.filter {
+        val gridItems =
+            getGridItemsUseCase().filter {
                 ensureActive()
 
-                it.page == resizingGridItem.page &&
+                it.isTopLevel() && it.page == resizingGridItem.page &&
                     it.associate == resizingGridItem.associate
             }.toMutableList()
 
         val index =
-            currentGridItems.indexOfFirst {
+            gridItems.indexOfFirst {
                 ensureActive()
                 it.id == resizingGridItem.id
             }
 
-        val oldGridItem = currentGridItems[index]
+        val oldGridItem = gridItems[index]
 
-        currentGridItems[index] = resizingGridItem
+        gridItems[index] = resizingGridItem
 
-        val gridItemBySpan = currentGridItems.find {
+        val gridItemBySpan = gridItems.find {
             ensureActive()
 
             it.id != resizingGridItem.id && rectanglesOverlap(
@@ -70,13 +70,13 @@ class ResizeGridItemUseCase @Inject constructor(
             handleConflictsOfGridItemSpan(
                 oldGridItem = oldGridItem,
                 conflictingGridItem = gridItemBySpan,
-                gridItems = currentGridItems,
+                gridItems = gridItems,
                 resizingGridItem = resizingGridItem,
                 columns = columns,
                 rows = rows,
             )
         } else {
-            gridRepository.upsertGridItems(gridItems = currentGridItems)
+            gridRepository.upsertGridItems(gridItems = gridItems)
 
             resizingGridItem
         }

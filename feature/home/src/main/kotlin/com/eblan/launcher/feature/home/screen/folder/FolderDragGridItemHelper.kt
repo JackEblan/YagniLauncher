@@ -170,7 +170,7 @@ internal fun handleAnimateScrollToPage(
     }
 }
 
-internal suspend fun handleDragFolderGridItem(
+internal fun handleDragFolderGridItem(
     density: Density,
     drag: Drag,
     dragIntOffset: IntOffset,
@@ -205,8 +205,6 @@ internal suspend fun handleDragFolderGridItem(
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onUpsertFolderPopupEntry: (FolderPopupEntry) -> Unit,
 ) {
-    delay(50L.milliseconds)
-
     if (drag != Drag.Dragging ||
         isScrollInProgress ||
         !isVisibleOverlay.value ||

@@ -249,26 +249,26 @@ internal suspend fun FolderGridItemWrapper.asFolderGridItem(
 
     val gridItems =
         (
-                applicationInfoGridItems.map {
-                    it.asGridItem(
-                        fileManager = fileManager,
-                        iconKeyGenerator = iconKeyGenerator,
-                        iconPackInfoPackageName = iconPackInfoPackageName,
-                    )
-                } + shortcutInfoGridItems.map {
-                    it.asGridItem()
-                } + shortcutConfigGridItems.map {
-                    it.asGridItem()
-                } + childFolderGridItems
-                ).sortedBy {
-                when (val data = it.data) {
-                    is GridItemData.ApplicationInfo -> data.index
-                    is GridItemData.ShortcutInfo -> data.index
-                    is GridItemData.ShortcutConfig -> data.index
-                    is GridItemData.Folder -> data.index
-                    else -> error("Unsupported folder grid item")
-                }
+            applicationInfoGridItems.map {
+                it.asGridItem(
+                    fileManager = fileManager,
+                    iconKeyGenerator = iconKeyGenerator,
+                    iconPackInfoPackageName = iconPackInfoPackageName,
+                )
+            } + shortcutInfoGridItems.map {
+                it.asGridItem()
+            } + shortcutConfigGridItems.map {
+                it.asGridItem()
+            } + childFolderGridItems
+            ).sortedBy {
+            when (val data = it.data) {
+                is GridItemData.ApplicationInfo -> data.index
+                is GridItemData.ShortcutInfo -> data.index
+                is GridItemData.ShortcutConfig -> data.index
+                is GridItemData.Folder -> data.index
+                else -> error("Unsupported folder grid item")
             }
+        }
 
     val gridItemsByPage = gridItems.getGridItemsByPage(
         maxFolderColumns = maxFolderColumns,
@@ -361,27 +361,25 @@ internal suspend fun FolderGridItemWrapper.asPreviewFolderGridItem(
     fileManager: FileManager,
     iconKeyGenerator: IconKeyGenerator,
     iconPackInfoPackageName: String,
-): GridItem {
-    return GridItem(
-        id = folderGridItem.id,
-        page = folderGridItem.page,
-        startColumn = folderGridItem.startColumn,
-        startRow = folderGridItem.startRow,
-        columnSpan = folderGridItem.columnSpan,
-        rowSpan = folderGridItem.rowSpan,
-        data = asFolder(
-            fileManager = fileManager,
-            iconKeyGenerator = iconKeyGenerator,
-            iconPackInfoPackageName = iconPackInfoPackageName,
-        ),
-        associate = folderGridItem.associate,
-        override = folderGridItem.override,
-        gridItemSettings = folderGridItem.gridItemSettings,
-        doubleTap = folderGridItem.doubleTap,
-        swipeUp = folderGridItem.swipeUp,
-        swipeDown = folderGridItem.swipeDown,
-    )
-}
+): GridItem = GridItem(
+    id = folderGridItem.id,
+    page = folderGridItem.page,
+    startColumn = folderGridItem.startColumn,
+    startRow = folderGridItem.startRow,
+    columnSpan = folderGridItem.columnSpan,
+    rowSpan = folderGridItem.rowSpan,
+    data = asFolder(
+        fileManager = fileManager,
+        iconKeyGenerator = iconKeyGenerator,
+        iconPackInfoPackageName = iconPackInfoPackageName,
+    ),
+    associate = folderGridItem.associate,
+    override = folderGridItem.override,
+    gridItemSettings = folderGridItem.gridItemSettings,
+    doubleTap = folderGridItem.doubleTap,
+    swipeUp = folderGridItem.swipeUp,
+    swipeDown = folderGridItem.swipeDown,
+)
 
 internal suspend fun FolderGridItemWrapper.asFolder(
     fileManager: FileManager,
@@ -390,28 +388,28 @@ internal suspend fun FolderGridItemWrapper.asFolder(
 ): GridItemData.Folder {
     val gridItems =
         (
-                applicationInfoGridItems.map {
-                    it.asGridItem(
-                        fileManager = fileManager,
-                        iconKeyGenerator = iconKeyGenerator,
-                        iconPackInfoPackageName = iconPackInfoPackageName,
-                    )
-                } + shortcutInfoGridItems.map {
-                    it.asGridItem()
-                } + shortcutConfigGridItems.map {
-                    it.asGridItem()
-                } + folderGridItems.map {
-                    it.asEmptyFolderGridItem()
-                }
-                ).sortedBy {
-                when (val data = it.data) {
-                    is GridItemData.ApplicationInfo -> data.index
-                    is GridItemData.ShortcutInfo -> data.index
-                    is GridItemData.ShortcutConfig -> data.index
-                    is GridItemData.Folder -> data.index
-                    else -> error("Unsupported folder grid item")
-                }
+            applicationInfoGridItems.map {
+                it.asGridItem(
+                    fileManager = fileManager,
+                    iconKeyGenerator = iconKeyGenerator,
+                    iconPackInfoPackageName = iconPackInfoPackageName,
+                )
+            } + shortcutInfoGridItems.map {
+                it.asGridItem()
+            } + shortcutConfigGridItems.map {
+                it.asGridItem()
+            } + folderGridItems.map {
+                it.asEmptyFolderGridItem()
             }
+            ).sortedBy {
+            when (val data = it.data) {
+                is GridItemData.ApplicationInfo -> data.index
+                is GridItemData.ShortcutInfo -> data.index
+                is GridItemData.ShortcutConfig -> data.index
+                is GridItemData.Folder -> data.index
+                else -> error("Unsupported folder grid item")
+            }
+        }
 
     val maxIndex = gridItems.maxOfOrNull {
         when (val data = it.data) {

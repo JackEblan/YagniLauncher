@@ -176,7 +176,6 @@ internal fun PagerScreen(
     ) -> Unit,
     onMoveFolderGridItemOutsideFolder: (GridItem) -> Unit,
     onMoveGridItem: (
-        gridItems: List<GridItem>,
         movingGridItem: GridItem,
         x: Int,
         y: Int,
@@ -190,7 +189,6 @@ internal fun PagerScreen(
     onResizeCancel: () -> Unit,
     onResizeEnd: () -> Unit,
     onResizeGridItem: (
-        gridItems: List<GridItem>,
         gridItem: GridItem,
         columns: Int,
         rows: Int,
@@ -393,7 +391,6 @@ internal fun PagerScreen(
     val currentIsVisibleOverlay = rememberUpdatedState(isVisibleOverlay)
     val currentMoveGridItemResult = rememberUpdatedState(moveGridItemResult)
     val currentFolderPopups = rememberUpdatedState(folderPopups)
-    val currentGridItems = rememberUpdatedState(gridItems)
 
     LaunchedEffect(key1 = pinGridItem) {
         pagerScreenState.handlePinGridItemEffect(
@@ -415,7 +412,6 @@ internal fun PagerScreen(
 
     LaunchedEffect(key1 = pagerScreenState.dragIntOffset) {
         pagerScreenState.handleDragGridItemEffect(
-            gridItems = currentGridItems,
             gridCurrentPage = gridCurrentPage,
             dockGridCurrentPage = dockGridCurrentPage,
             density = density,
@@ -1169,7 +1165,6 @@ internal fun PagerScreen(
                 resizeGridItem = resizeGridItem,
                 paddingValues = paddingValues,
                 textColor = textColor,
-                gridItems = gridItems,
                 onResizeCancel = onResizeCancel,
                 onResizeEnd = onResizeEnd,
                 onResizeGridItem = onResizeGridItem,

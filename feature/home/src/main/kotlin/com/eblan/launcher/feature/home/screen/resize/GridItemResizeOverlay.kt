@@ -66,9 +66,7 @@ internal fun GridItemResizeOverlay(
     width: Int,
     x: Int,
     y: Int,
-    gridItems: List<GridItem>,
     onResizeGridItem: (
-        gridItems: List<GridItem>,
         gridItem: GridItem,
         columns: Int,
         rows: Int,
@@ -267,7 +265,6 @@ internal fun GridItemResizeOverlay(
             delay(50L.milliseconds)
 
             onResizeGridItem(
-                gridItems,
                 resizingGridItem,
                 columns,
                 rows,
