@@ -77,24 +77,15 @@ class MoveFolderGridItemUseCase @Inject constructor(
             ensureActive()
 
             when (val data = gridItem.data) {
-                is GridItemData.ApplicationInfo -> {
-                    gridItem.copy(data = data.copy(index = index))
-                }
+                is GridItemData.ApplicationInfo -> gridItem.copy(data = data.copy(index = index))
 
-                is GridItemData.ShortcutConfig -> {
-                    gridItem.copy(data = data.copy(index = index))
-                }
+                is GridItemData.ShortcutConfig -> gridItem.copy(data = data.copy(index = index))
 
-                is GridItemData.ShortcutInfo -> {
+                is GridItemData.ShortcutInfo ->
                     gridItem.copy(data = data.copy(index = index))
-                }
 
-                is GridItemData.Folder -> {
-                    when (data) {
-                        is GridItemData.Folder.Full -> gridItem.copy(data = data.copy(index = index))
-                        is GridItemData.Folder.Preview -> gridItem.copy(data = data.copy(index = index))
-                    }
-                }
+                is GridItemData.Folder ->
+                    gridItem.copy(data = data.copy(index = index))
 
                 else -> error("Unsupported move Folder GridItem ")
             }

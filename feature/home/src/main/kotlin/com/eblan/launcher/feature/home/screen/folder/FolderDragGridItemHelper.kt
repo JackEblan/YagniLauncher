@@ -128,7 +128,7 @@ internal fun handleAnimateScrollToPage(
         return
     }
 
-    val data = folderGridItem.data as GridItemData.Folder.Full
+    val data = folderGridItem.data as GridItemData.Folder
 
     val leftPadding = with(density) {
         paddingValues.calculateLeftPadding(layoutDirection).roundToPx()
@@ -247,7 +247,7 @@ internal suspend fun handleDragFolderGridItem(
 
     val localDragY = dragIntOffset.y - topPadding
 
-    val data = folderGridItem.data as GridItemData.Folder.Full
+    val data = folderGridItem.data as GridItemData.Folder
 
     val minCellWidthPx = with(receiver = density) {
         folderCellWidth.dp.roundToPx()

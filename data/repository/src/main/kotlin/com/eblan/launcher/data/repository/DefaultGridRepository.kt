@@ -186,12 +186,7 @@ internal class DefaultGridRepository @Inject constructor(
                         }
                     }
 
-                    val newData = when (data) {
-                        is GridItemData.Folder.Full -> data.copy(icon = null)
-                        is GridItemData.Folder.Preview -> data.copy(icon = null)
-                    }
-
-                    gridItem.copy(data = newData)
+                    gridItem.copy(data = data.copy(icon = null))
                 }
 
                 else -> gridItem

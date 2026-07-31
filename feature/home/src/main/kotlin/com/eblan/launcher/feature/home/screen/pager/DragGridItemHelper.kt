@@ -495,17 +495,10 @@ internal suspend fun handleConflictingGridItem(
         )
 
         is GridItemData.Folder -> {
-            when (data) {
-                is GridItemData.Folder.Full -> data.copy(
-                    index = conflictingData.maxIndex,
-                    folderId = conflictingData.id,
-                )
-
-                is GridItemData.Folder.Preview -> data.copy(
-                    index = conflictingData.maxIndex,
-                    folderId = conflictingData.id,
-                )
-            }
+            data.copy(
+                index = conflictingData.maxIndex,
+                folderId = conflictingData.id,
+            )
         }
 
         else -> error("Unsupported Folder GridItem ")
