@@ -89,34 +89,33 @@ class GetHomeDataUseCase @Inject constructor(
     private fun getGridItemsFlow(): Flow<List<GridItem>> {
         val gridItemsFlow = combine(
             userDataRepository.userDataFlow,
-            applicationInfoGridItemRepository.applicationInfoGridItems,
-            shortcutInfoGridItemRepository.shortcutInfoGridItemsFlow,
-            shortcutConfigGridItemRepository.shortcutConfigGridItemsFlow,
-            folderGridItemRepository.folderGridItemsFlow,
-        ) { userData, applicationInfoGridItems, shortcutInfoGridItems, shortcutConfigGridItems, folderGridItems ->
-            val currentApplicationInfoGridItems = applicationInfoGridItems.map {
-                it.asGridItem(
-                    fileManager = fileManager,
-                    iconKeyGenerator = iconKeyGenerator,
-                    iconPackInfoPackageName = userData.generalSettings.iconPackInfoPackageName,
-                )
-            }
-
-            val currentShortcutInfoGridItems = shortcutInfoGridItems.map {
-                it.asGridItem()
-            }
-
-            val currentShortcutConfigGridItems = shortcutConfigGridItems.map {
-                it.asGridItem()
-            }
-
-            val currentFolderGridItems = folderGridItems.mapNotNull {
-                folderGridItemRepository.getFolderGridItemWrapper(id = it.id)
-                    ?.asPreviewFolderGridItem(
+            folderGridItemRepository.folderGridItemWrappersFlow,
+        ) { userData, folderGridItemWrappers ->
+            val currentApplicationInfoGridItems =
+                applicationInfoGridItemRepository.getApplicationInfoGridItems().map {
+                    it.asGridItem(
                         fileManager = fileManager,
                         iconKeyGenerator = iconKeyGenerator,
                         iconPackInfoPackageName = userData.generalSettings.iconPackInfoPackageName,
                     )
+                }
+
+            val currentShortcutInfoGridItems =
+                shortcutInfoGridItemRepository.getShortcutInfoGridItems().map {
+                    it.asGridItem()
+                }
+
+            val currentShortcutConfigGridItems =
+                shortcutConfigGridItemRepository.getShortcutConfigGridItems().map {
+                    it.asGridItem()
+                }
+
+            val currentFolderGridItems = folderGridItemWrappers.map {
+                it.asPreviewFolderGridItem(
+                    fileManager = fileManager,
+                    iconKeyGenerator = iconKeyGenerator,
+                    iconPackInfoPackageName = userData.generalSettings.iconPackInfoPackageName,
+                )
             }
 
             buildList {
