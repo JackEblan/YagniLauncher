@@ -31,7 +31,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
-class GetFolderGridItemsByIdUseCase @Inject constructor(
+class GetFolderGridItemsUseCase @Inject constructor(
     private val folderGridItemRepository: FolderGridItemRepository,
     private val userDataRepository: UserDataRepository,
     private val fileManager: FileManager,
@@ -42,25 +42,8 @@ class GetFolderGridItemsByIdUseCase @Inject constructor(
         folderPopupEntriesFlow: Flow<List<FolderPopupEntry>>,
     ): Flow<List<FolderPopup>> = combine(
         userDataRepository.userDataFlow,
-        folderPopupEntriesFlow,
         folderGridItemRepository.folderGridItemWrappersFlow,
-    ) { userData, folderPopupEntries, folderGridItemWrappers ->
-        folderPopupEntries.mapNotNull { folderPopupEntry ->
-            folderGridItemWrappers.firstOrNull {
-                it.folderGridItem.id == folderPopupEntry.id
-            }?.let {
-                FolderPopup(
-                    folderPopupEntry = folderPopupEntry,
-                    gridItem = it.asFolderGridItem(
-                        folderGridItemRepository = folderGridItemRepository,
-                        maxFolderColumns = userData.homeSettings.maxFolderColumns,
-                        maxFolderRows = userData.homeSettings.maxFolderRows,
-                        fileManager = fileManager,
-                        iconKeyGenerator = iconKeyGenerator,
-                        iconPackInfoPackageName = userData.generalSettings.iconPackInfoPackageName,
-                    ),
-                )
-            }
-        }
+    ) { userData, folderGridItemWrappers ->
+
     }.flowOn(ioDispatcher)
 }

@@ -62,13 +62,13 @@ class AddPackageUseCase @Inject constructor(
     private val iconKeyGenerator: IconKeyGenerator,
     private val applicationInfoGridItemRepository: ApplicationInfoGridItemRepository,
     private val getGridItemsUseCase: GetGridItemsUseCase,
-    @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
+    @param:Dispatcher(EblanDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke(
         serialNumber: Long,
         packageName: String,
     ) {
-        withContext(defaultDispatcher) {
+        withContext(ioDispatcher) {
             val userData = userDataRepository.userDataFlow.first()
 
             if (!userData.experimentalSettings.syncData) return@withContext
