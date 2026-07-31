@@ -36,7 +36,7 @@ internal class DefaultFolderGridItemRepository @Inject constructor(private val f
             }
         }
 
-    override val folderGridItems: Flow<List<FolderGridItem>> =
+    override val folderGridItemsFlow: Flow<List<FolderGridItem>> =
         folderGridItemDao.getFolderGridItemEntitiesFlow().map { entities ->
             entities.map {
                 it.asModel()

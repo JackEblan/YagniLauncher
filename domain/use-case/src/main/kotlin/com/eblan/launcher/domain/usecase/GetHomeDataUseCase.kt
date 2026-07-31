@@ -92,7 +92,8 @@ class GetHomeDataUseCase @Inject constructor(
             applicationInfoGridItemRepository.applicationInfoGridItems,
             shortcutInfoGridItemRepository.shortcutInfoGridItemsFlow,
             shortcutConfigGridItemRepository.shortcutConfigGridItemsFlow,
-        ) { userData, applicationInfoGridItems, shortcutInfoGridItems, shortcutConfigGridItems ->
+            folderGridItemRepository.folderGridItemsFlow,
+        ) { userData, applicationInfoGridItems, shortcutInfoGridItems, shortcutConfigGridItems, folderGridItems ->
             val currentApplicationInfoGridItems = applicationInfoGridItems.map {
                 it.asGridItem(
                     fileManager = fileManager,
@@ -109,12 +110,13 @@ class GetHomeDataUseCase @Inject constructor(
                 it.asGridItem()
             }
 
-            val currentFolderGridItems = folderGridItemRepository.getFolderGridItemWrappers().map {
-                it.asPreviewFolderGridItem(
-                    fileManager = fileManager,
-                    iconKeyGenerator = iconKeyGenerator,
-                    iconPackInfoPackageName = userData.generalSettings.iconPackInfoPackageName,
-                )
+            val currentFolderGridItems = folderGridItems.mapNotNull {
+                folderGridItemRepository.getFolderGridItemWrapper(id = it.id)
+                    ?.asPreviewFolderGridItem(
+                        fileManager = fileManager,
+                        iconKeyGenerator = iconKeyGenerator,
+                        iconPackInfoPackageName = userData.generalSettings.iconPackInfoPackageName,
+                    )
             }
 
             buildList {
