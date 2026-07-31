@@ -33,14 +33,13 @@ import com.eblan.launcher.domain.repository.ShortcutConfigGridItemRepository
 import com.eblan.launcher.domain.repository.ShortcutInfoGridItemRepository
 import com.eblan.launcher.domain.repository.UserDataRepository
 import com.eblan.launcher.domain.repository.WidgetGridItemRepository
+import com.eblan.launcher.domain.usecase.grid.asEmptyFolderGridItem
 import com.eblan.launcher.domain.usecase.grid.asGridItem
-import com.eblan.launcher.domain.usecase.grid.asPreviewFolderGridItem
 import com.eblan.launcher.domain.usecase.grid.isTopLevel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class GetHomeDataUseCase @Inject constructor(
@@ -54,7 +53,7 @@ class GetHomeDataUseCase @Inject constructor(
     private val shortcutInfoGridItemRepository: ShortcutInfoGridItemRepository,
     private val folderGridItemRepository: FolderGridItemRepository,
     private val shortcutConfigGridItemRepository: ShortcutConfigGridItemRepository,
-    @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
+    @param:Dispatcher(EblanDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) {
     operator fun invoke(): Flow<HomeData> = combine(
         userDataRepository.userDataFlow,
@@ -84,59 +83,57 @@ class GetHomeDataUseCase @Inject constructor(
             hasShortcutHostPermission = launcherAppsWrapper.hasShortcutHostPermission,
             hasSystemFeatureAppWidgets = packageManagerWrapper.hasSystemFeatureAppWidgets,
         )
-    }.flowOn(defaultDispatcher)
+    }.flowOn(ioDispatcher)
 
     private fun getGridItemsFlow(): Flow<List<GridItem>> {
-        val gridItemsFlow = combine(
+        val applicationInfoGridItemsFlow = combine(
             userDataRepository.userDataFlow,
-            folderGridItemRepository.folderGridItemWrappersFlow,
-        ) { userData, folderGridItemWrappers ->
-            val currentApplicationInfoGridItems =
-                applicationInfoGridItemRepository.getApplicationInfoGridItems().map {
-                    it.asGridItem(
-                        fileManager = fileManager,
-                        iconKeyGenerator = iconKeyGenerator,
-                        iconPackInfoPackageName = userData.generalSettings.iconPackInfoPackageName,
-                    )
-                }
-
-            val currentShortcutInfoGridItems =
-                shortcutInfoGridItemRepository.getShortcutInfoGridItems().map {
-                    it.asGridItem()
-                }
-
-            val currentShortcutConfigGridItems =
-                shortcutConfigGridItemRepository.getShortcutConfigGridItems().map {
-                    it.asGridItem()
-                }
-
-            val currentFolderGridItems = folderGridItemWrappers.map {
-                it.asPreviewFolderGridItem(
+            applicationInfoGridItemRepository.applicationInfoGridItems,
+        ) { userData, applicationInfoGridItems ->
+            applicationInfoGridItems.map {
+                it.asGridItem(
                     fileManager = fileManager,
                     iconKeyGenerator = iconKeyGenerator,
                     iconPackInfoPackageName = userData.generalSettings.iconPackInfoPackageName,
                 )
             }
+        }
+
+        val gridItemsFlow = combine(
+            widgetGridItemRepository.widgetGridItemsFlow,
+            shortcutInfoGridItemRepository.shortcutInfoGridItemsFlow,
+            shortcutConfigGridItemRepository.shortcutConfigGridItemsFlow,
+            folderGridItemRepository.folderGridItemsFlow,
+        ) { widgetGridItems, shortcutInfoGridItems, shortcutConfigGridItems, folderGridItems ->
+            val currentWidgetGridItems = widgetGridItems.map {
+                it.asGridItem()
+            }
+
+            val currentShortcutInfoGridItems = shortcutInfoGridItems.map {
+                it.asGridItem()
+            }
+
+            val currentShortcutConfigGridItems = shortcutConfigGridItems.map {
+                it.asGridItem()
+            }
+
+            val currentFolderGridItems = folderGridItems.map {
+                it.asEmptyFolderGridItem()
+            }
 
             buildList {
-                addAll(currentApplicationInfoGridItems)
+                addAll(currentWidgetGridItems)
                 addAll(currentShortcutInfoGridItems)
                 addAll(currentShortcutConfigGridItems)
                 addAll(currentFolderGridItems)
             }
         }
 
-        val widgetGridItems = widgetGridItemRepository.widgetGridItemsFlow.map { widgetGridItems ->
-            widgetGridItems.map {
-                it.asGridItem()
-            }
-        }
-
         return combine(
+            applicationInfoGridItemsFlow,
             gridItemsFlow,
-            widgetGridItems,
-        ) { gridItems, widgetGridItems ->
-            (gridItems + widgetGridItems).filter { it.isTopLevel() }
+        ) { applicationInfoGridItems, gridItems ->
+            (applicationInfoGridItems + gridItems).filter { it.isTopLevel() }
         }
     }
 }
