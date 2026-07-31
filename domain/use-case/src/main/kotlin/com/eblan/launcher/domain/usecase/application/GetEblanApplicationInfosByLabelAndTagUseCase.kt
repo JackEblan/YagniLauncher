@@ -23,7 +23,6 @@ import com.eblan.launcher.domain.common.IconKeyGenerator
 import com.eblan.launcher.domain.framework.FileManager
 import com.eblan.launcher.domain.framework.JaroWinklerSimilarityWrapper
 import com.eblan.launcher.domain.framework.LauncherAppsWrapper
-import com.eblan.launcher.domain.framework.TransliteratorWrapper
 import com.eblan.launcher.domain.model.AppDrawerType
 import com.eblan.launcher.domain.model.EblanApplicationInfo
 import com.eblan.launcher.domain.model.EblanApplicationInfoOrder
@@ -38,7 +37,9 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.withContext
 import java.io.File
+import java.text.Normalizer
 import javax.inject.Inject
 
 class GetEblanApplicationInfosByLabelAndTagUseCase @Inject constructor(
@@ -48,7 +49,6 @@ class GetEblanApplicationInfosByLabelAndTagUseCase @Inject constructor(
     private val fileManager: FileManager,
     private val iconKeyGenerator: IconKeyGenerator,
     private val jaroWinklerSimilarityWrapper: JaroWinklerSimilarityWrapper,
-    private val transliteratorWrapper: TransliteratorWrapper,
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) {
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -210,8 +210,8 @@ class GetEblanApplicationInfosByLabelAndTagUseCase @Inject constructor(
                     (eblanApplicationInfosByTag - eblanApplicationInfosByLabel.toSet())
                         .map {
                             it to jaroWinklerSimilarityWrapper.apply(
-                                left = transliteratorWrapper.normalize(text = label),
-                                right = transliteratorWrapper.normalize(text = it.label),
+                                left = normalize(text = label),
+                                right = normalize(text = it.label),
                             )
                         }
                         .filter { (_, score) -> score >= FUZZY_MATCH_THRESHOLD }
@@ -240,6 +240,12 @@ class GetEblanApplicationInfosByLabelAndTagUseCase @Inject constructor(
                 )
             }
             .toMutableList()
+    }
+
+    private suspend fun normalize(text: String): String = withContext(defaultDispatcher) {
+        Normalizer.normalize(text, Normalizer.Form.NFD)
+            .replace("\\p{M}+".toRegex(), "")
+            .lowercase()
     }
 }
 

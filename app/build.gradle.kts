@@ -70,7 +70,6 @@ dependencies {
     implementation(projects.framework.jaroWinklerSimilarity)
     implementation(projects.framework.notificationManager)
     implementation(projects.framework.resources)
-    implementation(projects.framework.transliterator)
     implementation(projects.service)
     implementation(projects.ui)
 
