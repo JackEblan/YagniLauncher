@@ -239,7 +239,7 @@ internal suspend fun FolderGridItemWrapper.asFolderPopup(
         folderGridItems.map {
             folderGridItemRepository.getFolderGridItemWrapper(
                 id = it.id,
-            )?.asPreviewFolderGridItem(
+            )?.asGridItem(
                 fileManager = fileManager,
                 iconKeyGenerator = iconKeyGenerator,
                 iconPackInfoPackageName = iconPackInfoPackageName,
@@ -340,35 +340,11 @@ internal suspend fun cleanupGridItemRecursively(
     }
 }
 
-internal suspend fun FolderGridItemWrapper.asPreviewFolderGridItem(
+internal suspend fun FolderGridItemWrapper.asGridItem(
     fileManager: FileManager,
     iconKeyGenerator: IconKeyGenerator,
     iconPackInfoPackageName: String,
-): GridItem = GridItem(
-    id = folderGridItem.id,
-    page = folderGridItem.page,
-    startColumn = folderGridItem.startColumn,
-    startRow = folderGridItem.startRow,
-    columnSpan = folderGridItem.columnSpan,
-    rowSpan = folderGridItem.rowSpan,
-    data = asPreviewFolder(
-        fileManager = fileManager,
-        iconKeyGenerator = iconKeyGenerator,
-        iconPackInfoPackageName = iconPackInfoPackageName,
-    ),
-    associate = folderGridItem.associate,
-    override = folderGridItem.override,
-    gridItemSettings = folderGridItem.gridItemSettings,
-    doubleTap = folderGridItem.doubleTap,
-    swipeUp = folderGridItem.swipeUp,
-    swipeDown = folderGridItem.swipeDown,
-)
-
-internal suspend fun FolderGridItemWrapper.asPreviewFolder(
-    fileManager: FileManager,
-    iconKeyGenerator: IconKeyGenerator,
-    iconPackInfoPackageName: String,
-): GridItemData.Folder {
+): GridItem {
     val gridItems =
         (
             applicationInfoGridItems.map {
@@ -394,13 +370,27 @@ internal suspend fun FolderGridItemWrapper.asPreviewFolder(
             }
         }
 
-    return GridItemData.Folder(
+    return GridItem(
         id = folderGridItem.id,
-        label = folderGridItem.label,
-        gridItems = gridItems,
-        icon = folderGridItem.icon,
-        index = folderGridItem.index,
-        folderId = folderGridItem.folderId,
+        page = folderGridItem.page,
+        startColumn = folderGridItem.startColumn,
+        startRow = folderGridItem.startRow,
+        columnSpan = folderGridItem.columnSpan,
+        rowSpan = folderGridItem.rowSpan,
+        data = GridItemData.Folder(
+            id = folderGridItem.id,
+            label = folderGridItem.label,
+            gridItems = gridItems,
+            icon = folderGridItem.icon,
+            index = folderGridItem.index,
+            folderId = folderGridItem.folderId,
+        ),
+        associate = folderGridItem.associate,
+        override = folderGridItem.override,
+        gridItemSettings = folderGridItem.gridItemSettings,
+        doubleTap = folderGridItem.doubleTap,
+        swipeUp = folderGridItem.swipeUp,
+        swipeDown = folderGridItem.swipeDown,
     )
 }
 

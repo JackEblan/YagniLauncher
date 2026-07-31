@@ -34,7 +34,6 @@ import com.eblan.launcher.domain.repository.ShortcutInfoGridItemRepository
 import com.eblan.launcher.domain.repository.UserDataRepository
 import com.eblan.launcher.domain.repository.WidgetGridItemRepository
 import com.eblan.launcher.domain.usecase.grid.asGridItem
-import com.eblan.launcher.domain.usecase.grid.asPreviewFolderGridItem
 import com.eblan.launcher.domain.usecase.grid.isTopLevel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
@@ -111,7 +110,7 @@ class GetHomeDataUseCase @Inject constructor(
             }
 
             val currentFolderGridItems = folderGridItemWrappers.map {
-                it.asPreviewFolderGridItem(
+                it.asGridItem(
                     fileManager = fileManager,
                     iconKeyGenerator = iconKeyGenerator,
                     iconPackInfoPackageName = userData.generalSettings.iconPackInfoPackageName,
