@@ -73,7 +73,6 @@ sealed interface GridItemData {
         val icon: String?
         val index: Int
         val folderId: String?
-
         val maxIndex: Int
 
         data class Preview(

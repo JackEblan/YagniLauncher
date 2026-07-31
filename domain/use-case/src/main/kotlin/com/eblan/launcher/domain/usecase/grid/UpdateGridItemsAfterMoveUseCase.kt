@@ -19,27 +19,18 @@ package com.eblan.launcher.domain.usecase.grid
 
 import com.eblan.launcher.domain.common.Dispatcher
 import com.eblan.launcher.domain.common.EblanDispatchers
-import com.eblan.launcher.domain.common.IconKeyGenerator
-import com.eblan.launcher.domain.framework.FileManager
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.MoveGridItemResult
-import com.eblan.launcher.domain.repository.FolderGridItemRepository
 import com.eblan.launcher.domain.repository.GridRepository
-import com.eblan.launcher.domain.repository.UserDataRepository
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 class UpdateGridItemsAfterMoveUseCase @Inject constructor(
-    private val userDataRepository: UserDataRepository,
     private val gridRepository: GridRepository,
-    private val folderGridItemRepository: FolderGridItemRepository,
-    private val fileManager: FileManager,
-    private val iconKeyGenerator: IconKeyGenerator,
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke(moveGridItemResult: MoveGridItemResult) {
@@ -53,25 +44,8 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
             if (conflictingGridItem != null) {
                 when (conflictingGridItem.data) {
                     is GridItemData.Folder -> {
-                        val userData = userDataRepository.userDataFlow.first()
-
-                        // Current Conflicting Folder Grid Item doesn't have grid items. It is just a shallow folder
-                        // so we have to get its real data
-                        val conflictingFolderGridItem =
-                            requireNotNull(
-                                folderGridItemRepository.getFolderGridItemWrapper(id = conflictingGridItem.id)
-                                    ?.asFolderGridItem(
-                                        folderGridItemRepository = folderGridItemRepository,
-                                        maxFolderColumns = userData.homeSettings.maxFolderColumns,
-                                        maxFolderRows = userData.homeSettings.maxFolderRows,
-                                        fileManager = fileManager,
-                                        iconKeyGenerator = iconKeyGenerator,
-                                        iconPackInfoPackageName = userData.generalSettings.iconPackInfoPackageName,
-                                    ),
-                            )
-
                         addMovingGridItemIntoFolder(
-                            conflictingFolderGridItem = conflictingFolderGridItem,
+                            conflictingFolderGridItem = conflictingGridItem,
                             movingGridItem = movingGridItem,
                         )
                     }

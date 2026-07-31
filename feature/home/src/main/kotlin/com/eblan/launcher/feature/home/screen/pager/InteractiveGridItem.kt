@@ -262,41 +262,35 @@ internal fun InteractiveGridItem(
         }
 
         is GridItemData.Folder -> {
-            when (data) {
-                is GridItemData.Folder.Preview -> {
-                    InteractiveFolderGridItem(
-                        modifier = modifier,
-                        sharedTransitionScope = sharedTransitionScope,
-                        data = data,
-                        drag = drag,
-                        gridItem = gridItem,
-                        gridItemSettings = currentGridItemSettings,
-                        isScrollInProgress = isScrollInProgress,
-                        isVisibleFolder = isVisibleFolder,
-                        isVisibleOverlay = isVisibleOverlay,
-                        sharedElementKey = sharedElementKey,
-                        textColor = currentTextColor,
-                        moveGridItemResult = moveGridItemResult,
-                        lockMovement = lockMovement,
-                        isDragging = isDragging,
-                        hasInteraction = hasInteraction,
-                        isVisibleWhiteBox = isVisibleWhiteBox,
-                        onOpenAppDrawer = onOpenAppDrawer,
-                        onShowGridItemPopup = onShowGridItemPopup,
-                        onUpsertFolderPopupEntry = onUpsertFolderPopupEntry,
-                        onUpdateGridItemSource = onUpdateGridItemSource,
-                        onUpdateImageBitmap = onUpdateImageBitmap,
-                        onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                        onUpdateOverlayBounds = onUpdateOverlayBounds,
-                        onUpdateSharedElementKey = onUpdateSharedElementKey,
-                        onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
-                        onShowFolderWhenDragging = onShowFolderWhenDragging,
-                        onResetGrid = onResetGrid,
-                    )
-                }
-
-                is GridItemData.Folder.Full -> Unit
-            }
+            InteractiveFolderGridItem(
+                modifier = modifier,
+                sharedTransitionScope = sharedTransitionScope,
+                data = data,
+                drag = drag,
+                gridItem = gridItem,
+                gridItemSettings = currentGridItemSettings,
+                isScrollInProgress = isScrollInProgress,
+                isVisibleFolder = isVisibleFolder,
+                isVisibleOverlay = isVisibleOverlay,
+                sharedElementKey = sharedElementKey,
+                textColor = currentTextColor,
+                moveGridItemResult = moveGridItemResult,
+                lockMovement = lockMovement,
+                isDragging = isDragging,
+                hasInteraction = hasInteraction,
+                isVisibleWhiteBox = isVisibleWhiteBox,
+                onOpenAppDrawer = onOpenAppDrawer,
+                onShowGridItemPopup = onShowGridItemPopup,
+                onUpsertFolderPopupEntry = onUpsertFolderPopupEntry,
+                onUpdateGridItemSource = onUpdateGridItemSource,
+                onUpdateImageBitmap = onUpdateImageBitmap,
+                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                onUpdateOverlayBounds = onUpdateOverlayBounds,
+                onUpdateSharedElementKey = onUpdateSharedElementKey,
+                onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                onShowFolderWhenDragging = onShowFolderWhenDragging,
+                onResetGrid = onResetGrid,
+            )
         }
 
         is GridItemData.ShortcutConfig -> {
@@ -882,7 +876,7 @@ private fun InteractiveShortcutInfoGridItem(
 private fun InteractiveFolderGridItem(
     modifier: Modifier = Modifier,
     sharedTransitionScope: SharedTransitionScope,
-    data: GridItemData.Folder.Preview,
+    data: GridItemData.Folder,
     drag: Drag,
     gridItem: GridItem,
     gridItemSettings: GridItemSettings,

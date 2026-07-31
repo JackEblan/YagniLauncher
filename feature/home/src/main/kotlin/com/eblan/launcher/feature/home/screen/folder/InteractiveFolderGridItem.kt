@@ -227,35 +227,29 @@ internal fun InteractiveFolderGridItem(
         }
 
         is GridItemData.Folder -> {
-            when (data) {
-                is GridItemData.Folder.Preview -> {
-                    InteractiveNestedFolderGridItem(
-                        modifier = modifier,
-                        sharedTransitionScope = sharedTransitionScope,
-                        data = data,
-                        drag = drag,
-                        gridItem = gridItem,
-                        gridItemSettings = currentGridItemSettings,
-                        isScrollInProgress = isScrollInProgress,
-                        isSelected = isSelected,
-                        isVisibleOverlay = isVisibleOverlay,
-                        sharedElementKey = sharedElementKey,
-                        showFolderGridItemPopup = showFolderGridItemPopup,
-                        onUpdateIsCloseFolderGridItemPopup = onUpdateIsCloseFolderGridItemPopup,
-                        onOpenAppDrawer = onOpenAppDrawer,
-                        onShowGridItemPopup = onShowGridItemPopup,
-                        onUpsertFolderPopupEntry = onUpsertFolderPopupEntry,
-                        onUpdateImageBitmap = onUpdateImageBitmap,
-                        onUpdateIsDragging = onUpdateIsDragging,
-                        onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                        onUpdateOverlayBounds = onUpdateOverlayBounds,
-                        onUpdateSharedElementKey = onUpdateSharedElementKey,
-                        onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
-                    )
-                }
-
-                is GridItemData.Folder.Full -> Unit
-            }
+            InteractiveNestedFolderGridItem(
+                modifier = modifier,
+                sharedTransitionScope = sharedTransitionScope,
+                data = data,
+                drag = drag,
+                gridItem = gridItem,
+                gridItemSettings = currentGridItemSettings,
+                isScrollInProgress = isScrollInProgress,
+                isSelected = isSelected,
+                isVisibleOverlay = isVisibleOverlay,
+                sharedElementKey = sharedElementKey,
+                showFolderGridItemPopup = showFolderGridItemPopup,
+                onUpdateIsCloseFolderGridItemPopup = onUpdateIsCloseFolderGridItemPopup,
+                onOpenAppDrawer = onOpenAppDrawer,
+                onShowGridItemPopup = onShowGridItemPopup,
+                onUpsertFolderPopupEntry = onUpsertFolderPopupEntry,
+                onUpdateImageBitmap = onUpdateImageBitmap,
+                onUpdateIsDragging = onUpdateIsDragging,
+                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                onUpdateOverlayBounds = onUpdateOverlayBounds,
+                onUpdateSharedElementKey = onUpdateSharedElementKey,
+                onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+            )
         }
 
         else -> error("Unsupported Folder Grid Item")
@@ -855,7 +849,7 @@ private fun InteractiveFolderShortcutConfigGridItem(
 private fun InteractiveNestedFolderGridItem(
     modifier: Modifier = Modifier,
     sharedTransitionScope: SharedTransitionScope,
-    data: GridItemData.Folder.Preview,
+    data: GridItemData.Folder,
     drag: Drag,
     gridItem: GridItem,
     gridItemSettings: GridItemSettings,
