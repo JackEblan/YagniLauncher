@@ -84,7 +84,6 @@ import com.eblan.launcher.domain.model.FolderPopupEntry
 import com.eblan.launcher.domain.model.GestureSettings
 import com.eblan.launcher.domain.model.GetEblanApplicationInfosByLabelAndTag
 import com.eblan.launcher.domain.model.GridItem
-import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.HomeSettings
 import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.domain.model.PinItemRequestType
@@ -143,7 +142,6 @@ internal fun PagerScreen(
     resizeGridItem: GridItem?,
     gridItemSource: GridItemSource?,
     isVisibleOverlay: Boolean,
-    previewFolderGridItems: Map<String, GridItemData.Folder>,
     onDeleteGridItem: (GridItem) -> Unit,
     onResetGridAfterDeleteGridItem: (GridItem) -> Unit,
     onUpdateGridItemsAfterMove: (MoveGridItemResult) -> Unit,
@@ -163,13 +161,10 @@ internal fun PagerScreen(
     onGetEblanShortcutConfigsByLabel: (String) -> Unit,
     onGetPinGridItem: (PinItemRequestType) -> Unit,
     onMoveFolderGridItem: (
-        conflictingGridItem: GridItem,
+        folderPopup: FolderPopup,
         movingGridItem: GridItem,
-        data: GridItemData.Folder,
         dragX: Int,
         dragY: Int,
-        columns: Int,
-        rows: Int,
         gridWidth: Int,
         gridHeight: Int,
         currentPage: Int,
@@ -681,7 +676,6 @@ internal fun PagerScreen(
                             lockMovement = lockMovement,
                             isDragging = pagerScreenState.isDragging,
                             showGridItemPopup = pagerScreenState.showGridItemPopup,
-                            previewFolderGridItems = previewFolderGridItems,
                             onOpenAppDrawer = pagerScreenState::openApplicationScreen,
                             onTapApplicationInfo = { serialNumber, componentName ->
                                 val sourceBoundsX = x + leftPadding
@@ -808,7 +802,6 @@ internal fun PagerScreen(
                             lockMovement = lockMovement,
                             isDragging = pagerScreenState.isDragging,
                             showGridItemPopup = pagerScreenState.showGridItemPopup,
-                            previewFolderGridItems = previewFolderGridItems,
                             onOpenAppDrawer = pagerScreenState::openApplicationScreen,
                             onTapApplicationInfo = { serialNumber, componentName ->
                                 val left = x + leftPadding

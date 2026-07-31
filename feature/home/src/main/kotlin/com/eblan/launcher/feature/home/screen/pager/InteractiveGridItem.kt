@@ -109,7 +109,6 @@ internal fun InteractiveGridItem(
     lockMovement: Boolean,
     isDragging: Boolean,
     showGridItemPopup: Boolean,
-    previewFolderGridItems: Map<String, GridItemData.Folder>,
     onOpenAppDrawer: () -> Unit,
     onTapApplicationInfo: (
         serialNumber: Long,
@@ -280,7 +279,6 @@ internal fun InteractiveGridItem(
                 isDragging = isDragging,
                 hasInteraction = hasInteraction,
                 isVisibleWhiteBox = isVisibleWhiteBox,
-                previewFolderGridItems = previewFolderGridItems,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
                 onUpsertFolderPopupEntry = onUpsertFolderPopupEntry,
@@ -384,9 +382,9 @@ private fun InteractiveApplicationInfoGridItem(
 
     val hasNotifications =
         statusBarNotifications[data.packageName] != null && (
-                statusBarNotifications[data.packageName]
-                    ?: 0
-                ) > 0
+            statusBarNotifications[data.packageName]
+                ?: 0
+            ) > 0
 
     val alpha = if (hasInteraction) 0f else 1f
 
@@ -892,7 +890,6 @@ private fun InteractiveFolderGridItem(
     isDragging: Boolean,
     hasInteraction: Boolean,
     isVisibleWhiteBox: Boolean,
-    previewFolderGridItems: Map<String, GridItemData.Folder>,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
         intOffset: IntOffset,
@@ -1076,9 +1073,7 @@ private fun InteractiveFolderGridItem(
             ) {
                 PreviewFolderGridLayout(
                     modifier = Modifier.matchParentSize(),
-                    gridItems = previewFolderGridItems[gridItem.id]?.gridItems?.take(
-                        FOLDER_PREVIEW_COLUMNS * FOLDER_PREVIEW_ROWS,
-                    ),
+                    gridItems = data.gridItems.take(FOLDER_PREVIEW_COLUMNS * FOLDER_PREVIEW_ROWS),
                     content = {
                         PreviewFolderGridItem(
                             sharedTransitionScope = sharedTransitionScope,
@@ -1089,7 +1084,7 @@ private fun InteractiveFolderGridItem(
                             moveGridItemResult = moveGridItemResult,
                             textColor = textColor,
                             drag = drag,
-                            folderGridItems = previewFolderGridItems[gridItem.id]?.gridItems,
+                            folderGridItems = data.gridItems,
                             isVisibleFolder = isVisibleFolder,
                             onResetGrid = onResetGrid,
                         )

@@ -26,6 +26,8 @@ import com.eblan.launcher.domain.model.EblanAction
 import com.eblan.launcher.domain.model.EblanActionType
 import com.eblan.launcher.domain.model.FolderGridItem
 import com.eblan.launcher.domain.model.FolderGridItemWrapper
+import com.eblan.launcher.domain.model.FolderPopup
+import com.eblan.launcher.domain.model.FolderPopupEntry
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.ShortcutConfigGridItem
@@ -212,12 +214,8 @@ internal fun FolderGridItem.asEmptyFolderGridItem(): GridItem = GridItem(
         id = id,
         label = label,
         gridItems = emptyList(),
-        gridItemsByPage = emptyMap(),
         icon = icon,
-        columns = 0,
-        rows = 0,
         index = index,
-        maxIndex = 0,
         folderId = folderId,
     ),
     associate = associate,
@@ -228,14 +226,15 @@ internal fun FolderGridItem.asEmptyFolderGridItem(): GridItem = GridItem(
     swipeDown = swipeDown,
 )
 
-internal suspend fun FolderGridItemWrapper.asFolderGridItem(
+internal suspend fun FolderGridItemWrapper.asFolderPopup(
     folderGridItemRepository: FolderGridItemRepository,
+    folderPopupEntry: FolderPopupEntry,
     maxFolderColumns: Int,
     maxFolderRows: Int,
     fileManager: FileManager,
     iconKeyGenerator: IconKeyGenerator,
     iconPackInfoPackageName: String,
-): GridItem {
+): FolderPopup {
     val childFolderGridItems =
         folderGridItems.map {
             folderGridItemRepository.getFolderGridItemWrapper(
@@ -293,31 +292,15 @@ internal suspend fun FolderGridItemWrapper.asFolderGridItem(
         }
     } ?: 0
 
-    return GridItem(
-        id = folderGridItem.id,
-        page = folderGridItem.page,
-        startColumn = folderGridItem.startColumn,
-        startRow = folderGridItem.startRow,
-        columnSpan = folderGridItem.columnSpan,
-        rowSpan = folderGridItem.rowSpan,
-        data = GridItemData.Folder(
-            id = folderGridItem.id,
-            label = folderGridItem.label,
-            gridItems = gridItems,
-            gridItemsByPage = gridItemsByPage,
-            icon = folderGridItem.icon,
-            columns = columns,
-            rows = rows,
-            maxIndex = maxIndex,
-            index = folderGridItem.index,
-            folderId = folderGridItem.folderId,
-        ),
-        associate = folderGridItem.associate,
-        override = folderGridItem.override,
-        gridItemSettings = folderGridItem.gridItemSettings,
-        doubleTap = folderGridItem.doubleTap,
-        swipeUp = folderGridItem.swipeUp,
-        swipeDown = folderGridItem.swipeDown,
+    return FolderPopup(
+        folderPopupEntry = folderPopupEntry,
+        gridItem = folderGridItem.asEmptyFolderGridItem(),
+        gridItems = gridItems,
+        gridItemsByPage = gridItemsByPage,
+        label = folderGridItem.label,
+        columns = columns,
+        rows = rows,
+        maxIndex = maxIndex,
     )
 }
 
@@ -415,12 +398,8 @@ internal suspend fun FolderGridItemWrapper.asPreviewFolder(
         id = folderGridItem.id,
         label = folderGridItem.label,
         gridItems = gridItems,
-        gridItemsByPage = emptyMap(),
         icon = folderGridItem.icon,
-        columns = 0,
-        rows = 0,
         index = folderGridItem.index,
-        maxIndex = 0,
         folderId = folderGridItem.folderId,
     )
 }

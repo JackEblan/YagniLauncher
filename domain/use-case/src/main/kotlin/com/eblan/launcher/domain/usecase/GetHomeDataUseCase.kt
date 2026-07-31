@@ -33,8 +33,8 @@ import com.eblan.launcher.domain.repository.ShortcutConfigGridItemRepository
 import com.eblan.launcher.domain.repository.ShortcutInfoGridItemRepository
 import com.eblan.launcher.domain.repository.UserDataRepository
 import com.eblan.launcher.domain.repository.WidgetGridItemRepository
-import com.eblan.launcher.domain.usecase.grid.asEmptyFolderGridItem
 import com.eblan.launcher.domain.usecase.grid.asGridItem
+import com.eblan.launcher.domain.usecase.grid.asPreviewFolderGridItem
 import com.eblan.launcher.domain.usecase.grid.isTopLevel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
@@ -92,8 +92,8 @@ class GetHomeDataUseCase @Inject constructor(
             applicationInfoGridItemRepository.applicationInfoGridItems,
             shortcutInfoGridItemRepository.shortcutInfoGridItemsFlow,
             shortcutConfigGridItemRepository.shortcutConfigGridItemsFlow,
-            folderGridItemRepository.folderGridItemsFlow,
-        ) { userData, applicationInfoGridItems, shortcutInfoGridItems, shortcutConfigGridItems, folderGridItems ->
+            folderGridItemRepository.folderGridItemWrappersFlow,
+        ) { userData, applicationInfoGridItems, shortcutInfoGridItems, shortcutConfigGridItems, folderGridItemWrappers ->
             val currentApplicationInfoGridItems = applicationInfoGridItems.map {
                 it.asGridItem(
                     fileManager = fileManager,
@@ -110,8 +110,12 @@ class GetHomeDataUseCase @Inject constructor(
                 it.asGridItem()
             }
 
-            val currentFolderGridItems = folderGridItems.map {
-                it.asEmptyFolderGridItem()
+            val currentFolderGridItems = folderGridItemWrappers.map {
+                it.asPreviewFolderGridItem(
+                    fileManager = fileManager,
+                    iconKeyGenerator = iconKeyGenerator,
+                    iconPackInfoPackageName = userData.generalSettings.iconPackInfoPackageName,
+                )
             }
 
             buildList {

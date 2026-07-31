@@ -124,13 +124,10 @@ internal fun FolderScreen(
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
     onMoveFolderGridItem: (
-        conflictingGridItem: GridItem,
+        folderPopup: FolderPopup,
         movingFolderGridItem: GridItem,
-        data: GridItemData.Folder,
         dragX: Int,
         dragY: Int,
-        columns: Int,
-        rows: Int,
         gridWidth: Int,
         gridHeight: Int,
         currentPage: Int,
@@ -149,10 +146,6 @@ internal fun FolderScreen(
         width = folderPopup.folderPopupEntry.width,
         height = folderPopup.folderPopupEntry.height,
     )
-
-    val folderGridItem = folderPopup.gridItem
-
-    val data = folderGridItem.data as GridItemData.Folder
 
     val density = LocalDensity.current
 
@@ -183,9 +176,9 @@ internal fun FolderScreen(
         PAGE_INDICATOR_HEIGHT.roundToPx()
     }
 
-    val folderGridWidthPx = (minCellWidthPx * data.columns).coerceAtMost(availableWidth)
+    val folderGridWidthPx = (minCellWidthPx * folderPopup.columns).coerceAtMost(availableWidth)
 
-    val folderGridHeightPx = (minCellHeightPx * data.rows).coerceAtMost(
+    val folderGridHeightPx = (minCellHeightPx * folderPopup.rows).coerceAtMost(
         (availableHeight - folderTitleHeightPx).coerceAtLeast(0),
     )
 
@@ -267,13 +260,13 @@ internal fun FolderScreen(
 
     val folderGridHorizontalPagerState = rememberPagerState(
         pageCount = {
-            data.gridItemsByPage.size
+            folderPopup.gridItemsByPage.size
         },
     )
 
     var pageDirection by remember { mutableStateOf<PageDirection?>(null) }
 
-    val isLastFolderGridItem = lastFolderPopup?.gridItem == folderGridItem
+    val isLastFolderGridItem = lastFolderPopup?.gridItem == folderPopup.gridItem
 
     val currentDrag = rememberUpdatedState(drag)
     val currentIsDragging = rememberUpdatedState(isDragging)
@@ -299,7 +292,7 @@ internal fun FolderScreen(
             moveGridItemResult = currentMoveGridItemResult,
             folderPopup = folderPopup,
             progress = progress,
-            folderGridItem = folderGridItem,
+            folderGridItem = folderPopup.gridItem,
             onAnimateToScrollToPage = folderGridHorizontalPagerState::animateScrollToPage,
             onDeleteFolderPopupEntry = onDeleteFolderPopupEntry,
             onMoveFolderGridItemOutsideFolder = onMoveFolderGridItemOutsideFolder,
@@ -310,7 +303,7 @@ internal fun FolderScreen(
     LaunchedEffect(
         drag,
         dragIntOffset,
-        folderGridItem,
+        folderPopup.gridItem,
         moveGridItemResult,
         isLastFolderGridItem,
     ) {
@@ -319,7 +312,7 @@ internal fun FolderScreen(
             drag = drag,
             dragIntOffset = dragIntOffset,
             currentPage = folderGridHorizontalPagerState.currentPage,
-            folderGridItem = folderGridItem,
+            folderPopup = folderPopup,
             folderPopupIntOffset = currentFolderPopupIntOffset,
             isDragging = currentIsDragging,
             isVisibleOverlay = currentIsVisibleOverlay,
@@ -375,7 +368,7 @@ internal fun FolderScreen(
         drag,
         dragIntOffset,
         moveGridItemResult,
-        folderGridItem,
+        folderPopup.gridItem,
         isLastFolderGridItem,
     ) {
         handleAnimateScrollToPage(
@@ -385,7 +378,7 @@ internal fun FolderScreen(
             lockMovement = currentLockMovement,
             moveGridItemResult = moveGridItemResult,
             dragIntOffset = dragIntOffset,
-            folderGridItem = folderGridItem,
+            folderPopup = folderPopup,
             folderPopupIntOffset = folderPopupIntOffset,
             isDragging = currentIsDragging,
             paddingValues = paddingValues,
@@ -441,9 +434,9 @@ internal fun FolderScreen(
                 ) { index ->
                     FolderGridLayout(
                         modifier = Modifier.fillMaxSize(),
-                        columns = data.columns,
-                        gridItems = data.gridItemsByPage[index],
-                        rows = data.rows,
+                        columns = folderPopup.columns,
+                        gridItems = folderPopup.gridItemsByPage[index],
+                        rows = folderPopup.rows,
                         layoutWidth = folderGridWidthPx,
                         layoutHeight = folderGridHeightPx,
                         previewEnabled = true,
@@ -526,7 +519,8 @@ internal fun FolderScreen(
 
                 if (progress.value > 0.5f) {
                     FolderTitle(
-                        data = data,
+                        label = folderPopup.label,
+                        gridItemsByPage = folderPopup.gridItemsByPage,
                         folderGridHorizontalPagerState = folderGridHorizontalPagerState,
                     )
                 }
@@ -538,7 +532,8 @@ internal fun FolderScreen(
 @Composable
 internal fun FolderTitle(
     modifier: Modifier = Modifier,
-    data: GridItemData.Folder,
+    label: String,
+    gridItemsByPage: Map<Int, List<GridItem>>,
     folderGridHorizontalPagerState: PagerState,
 ) {
     Row(
@@ -547,24 +542,24 @@ internal fun FolderTitle(
             .height(PAGE_INDICATOR_HEIGHT)
             .padding(horizontal = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = if (data.gridItemsByPage.size > 1) {
+        horizontalArrangement = if (gridItemsByPage.size > 1) {
             Arrangement.SpaceBetween
         } else {
             Arrangement.Center
         },
     ) {
         Text(
-            text = data.label,
+            text = label,
             style = MaterialTheme.typography.bodySmall,
         )
 
-        if (data.gridItemsByPage.size > 1) {
+        if (gridItemsByPage.size > 1) {
             Box(contentAlignment = Alignment.Center) {
                 PageIndicator(
                     color = MaterialTheme.colorScheme.onSurface,
                     gridHorizontalPagerState = folderGridHorizontalPagerState,
                     infiniteScroll = false,
-                    pageCount = data.gridItemsByPage.size,
+                    pageCount = gridItemsByPage.size,
                 )
             }
         }

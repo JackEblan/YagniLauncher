@@ -48,19 +48,15 @@ class GetFolderGridItemsByIdUseCase @Inject constructor(
         folderPopupEntries.mapNotNull { folderPopupEntry ->
             folderGridItemWrappers.firstOrNull {
                 it.folderGridItem.id == folderPopupEntry.id
-            }?.let {
-                FolderPopup(
-                    folderPopupEntry = folderPopupEntry,
-                    gridItem = it.asFolderGridItem(
-                        folderGridItemRepository = folderGridItemRepository,
-                        maxFolderColumns = userData.homeSettings.maxFolderColumns,
-                        maxFolderRows = userData.homeSettings.maxFolderRows,
-                        fileManager = fileManager,
-                        iconKeyGenerator = iconKeyGenerator,
-                        iconPackInfoPackageName = userData.generalSettings.iconPackInfoPackageName,
-                    ),
-                )
-            }
+            }?.asFolderPopup(
+                folderGridItemRepository = folderGridItemRepository,
+                folderPopupEntry = folderPopupEntry,
+                maxFolderColumns = userData.homeSettings.maxFolderColumns,
+                maxFolderRows = userData.homeSettings.maxFolderRows,
+                fileManager = fileManager,
+                iconKeyGenerator = iconKeyGenerator,
+                iconPackInfoPackageName = userData.generalSettings.iconPackInfoPackageName,
+            )
         }
     }.flowOn(ioDispatcher)
 }
