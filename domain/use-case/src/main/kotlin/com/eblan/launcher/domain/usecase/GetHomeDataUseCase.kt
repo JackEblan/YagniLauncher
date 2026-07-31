@@ -106,63 +106,50 @@ class GetHomeDataUseCase @Inject constructor(
         )
     }.flowOn(defaultDispatcher)
 
-    private fun getGridItemsFlow(): Flow<List<GridItem>> {
-        val gridItemsFlow = combine(
-            userDataRepository.userDataFlow,
-            applicationInfoGridItemRepository.applicationInfoGridItems,
-            widgetGridItemRepository.widgetGridItemsFlow,
-            shortcutInfoGridItemRepository.shortcutInfoGridItemsFlow,
-            shortcutConfigGridItemRepository.shortcutConfigGridItemsFlow,
-        ) { userData, applicationInfoGridItems, widgetGridItems, shortcutInfoGridItems, shortcutConfigGridItems ->
-            val currentApplicationGridItems = applicationInfoGridItems.map {
-                it.asGridItem(
-                    fileManager = fileManager,
-                    iconKeyGenerator = iconKeyGenerator,
-                    iconPackInfoPackageName = userData.generalSettings.iconPackInfoPackageName,
-                )
-            }
-
-            val currentWidgetGridItems = widgetGridItems.map {
-                it.asGridItem()
-            }
-
-            val currentShortcutInfoGridItems = shortcutInfoGridItems.map {
-                it.asGridItem()
-            }
-
-            val currentShortcutConfigGridItems = shortcutConfigGridItems.map {
-                it.asGridItem()
-            }
-
-            buildList {
-                addAll(currentApplicationGridItems)
-                addAll(currentWidgetGridItems)
-                addAll(currentShortcutInfoGridItems)
-                addAll(currentShortcutConfigGridItems)
-            }
-        }.flowOn(defaultDispatcher)
-
-        val folderGridItemsFlow =
-            combine(
-                userDataRepository.userDataFlow,
-                folderGridItemRepository.folderGridItemWrappersFlow,
-            ) { userData, folderGridItemWrappers ->
-                folderGridItemWrappers.map {
-                    it.asPreviewFolderGridItem(
-                        fileManager = fileManager,
-                        iconKeyGenerator = iconKeyGenerator,
-                        iconPackInfoPackageName = userData.generalSettings.iconPackInfoPackageName,
-                    )
-                }
-            }.flowOn(defaultDispatcher)
-
-        return combine(
-            gridItemsFlow,
-            folderGridItemsFlow,
-        ) { gridItems, folderGridItems ->
-            (gridItems + folderGridItems).filter { it.isTopLevel() }
+    private fun getGridItemsFlow(): Flow<List<GridItem>> = combine(
+        userDataRepository.userDataFlow,
+        applicationInfoGridItemRepository.applicationInfoGridItems,
+        widgetGridItemRepository.widgetGridItemsFlow,
+        shortcutInfoGridItemRepository.shortcutInfoGridItemsFlow,
+        shortcutConfigGridItemRepository.shortcutConfigGridItemsFlow,
+    ) { userData, applicationInfoGridItems, widgetGridItems, shortcutInfoGridItems, shortcutConfigGridItems ->
+        val currentApplicationGridItems = applicationInfoGridItems.map {
+            it.asGridItem(
+                fileManager = fileManager,
+                iconKeyGenerator = iconKeyGenerator,
+                iconPackInfoPackageName = userData.generalSettings.iconPackInfoPackageName,
+            )
         }
-    }
+
+        val currentWidgetGridItems = widgetGridItems.map {
+            it.asGridItem()
+        }
+
+        val currentShortcutInfoGridItems = shortcutInfoGridItems.map {
+            it.asGridItem()
+        }
+
+        val currentShortcutConfigGridItems = shortcutConfigGridItems.map {
+            it.asGridItem()
+        }
+
+        userData to buildList {
+            addAll(currentApplicationGridItems)
+            addAll(currentWidgetGridItems)
+            addAll(currentShortcutInfoGridItems)
+            addAll(currentShortcutConfigGridItems)
+        }
+    }.combine(folderGridItemRepository.folderGridItemWrappersFlow) { (userData, gridItems), folderGridItemWrappers ->
+        val folderGridItems = folderGridItemWrappers.map {
+            it.asPreviewFolderGridItem(
+                fileManager = fileManager,
+                iconKeyGenerator = iconKeyGenerator,
+                iconPackInfoPackageName = userData.generalSettings.iconPackInfoPackageName,
+            )
+        }
+
+        (gridItems + folderGridItems).filter { it.isTopLevel() }
+    }.flowOn(defaultDispatcher)
 
     private fun getTextColorFromWallpaperColors(
         theme: Theme,
