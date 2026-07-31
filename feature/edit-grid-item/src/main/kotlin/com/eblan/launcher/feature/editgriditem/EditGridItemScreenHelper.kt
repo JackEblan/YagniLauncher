@@ -28,12 +28,7 @@ internal fun getGridItem(gridItem: GridItem, customIcon: String?): GridItem = wh
     }
 
     is GridItemData.Folder -> {
-        val newData = when (data) {
-            is GridItemData.Folder.Full -> data.copy(icon = customIcon)
-            is GridItemData.Folder.Preview -> data.copy(icon = customIcon)
-        }
-
-        gridItem.copy(data = newData)
+        gridItem.copy(data = data.copy(icon = customIcon))
     }
 
     is GridItemData.ShortcutConfig -> {

@@ -39,8 +39,6 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
 
             val movingGridItem = moveGridItemResult.movingGridItem
 
-            gridRepository.updateGridItem(gridItem = movingGridItem)
-
             if (conflictingGridItem != null) {
                 when (conflictingGridItem.data) {
                     is GridItemData.Folder -> {
@@ -61,6 +59,8 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
                         )
                     }
                 }
+            } else {
+                gridRepository.updateGridItem(gridItem = movingGridItem)
             }
         }
     }
@@ -98,19 +98,10 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
                 folderId = data.id,
             )
 
-            is GridItemData.Folder -> {
-                when (folderData) {
-                    is GridItemData.Folder.Full -> folderData.copy(
-                        index = index,
-                        folderId = data.id,
-                    )
-
-                    is GridItemData.Folder.Preview -> folderData.copy(
-                        index = index,
-                        folderId = data.id,
-                    )
-                }
-            }
+            is GridItemData.Folder -> folderData.copy(
+                index = index,
+                folderId = data.id,
+            )
 
             else -> error("Unsupported addMovingGridItemIntoFolder")
         }
@@ -153,58 +144,34 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
                 )
             }
 
-            is GridItemData.Folder -> {
-                when (data) {
-                    is GridItemData.Folder.Full -> data.copy(
-                        folderId = id,
-                        index = 0,
-                    )
-
-                    is GridItemData.Folder.Preview -> data.copy(
-                        folderId = id,
-                        index = 0,
-                    )
-                }
-            }
+            is GridItemData.Folder -> data.copy(
+                folderId = id,
+                index = 0,
+            )
 
             else -> error("Unsupported createNewFolder")
         }
 
         val movingData = when (val data = movingGridItem.data) {
-            is GridItemData.ApplicationInfo -> {
-                data.copy(
-                    folderId = id,
-                    index = 1,
-                )
-            }
+            is GridItemData.ApplicationInfo -> data.copy(
+                folderId = id,
+                index = 1,
+            )
 
-            is GridItemData.ShortcutInfo -> {
-                data.copy(
-                    folderId = id,
-                    index = 1,
-                )
-            }
+            is GridItemData.ShortcutInfo -> data.copy(
+                folderId = id,
+                index = 1,
+            )
 
-            is GridItemData.ShortcutConfig -> {
-                data.copy(
-                    folderId = id,
-                    index = 1,
-                )
-            }
+            is GridItemData.ShortcutConfig -> data.copy(
+                folderId = id,
+                index = 1,
+            )
 
-            is GridItemData.Folder -> {
-                when (data) {
-                    is GridItemData.Folder.Full -> data.copy(
-                        folderId = id,
-                        index = 1,
-                    )
-
-                    is GridItemData.Folder.Preview -> data.copy(
-                        folderId = id,
-                        index = 1,
-                    )
-                }
-            }
+            is GridItemData.Folder -> data.copy(
+                folderId = id,
+                index = 1,
+            )
 
             else -> error("Unsupported createNewFolder")
         }
@@ -215,14 +182,17 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
                 movingGridItem.copy(data = movingData),
                 conflictingGridItem.copy(
                     id = id,
-                    data = GridItemData.Folder.Preview(
+                    data = GridItemData.Folder(
                         id = id,
                         label = "New Folder",
                         gridItems = emptyList(),
+                        gridItemsByPage = emptyMap(),
                         icon = null,
+                        columns = 0,
+                        rows = 0,
                         index = -1,
-                        folderId = null,
                         maxIndex = 0,
+                        folderId = null,
                     ),
                 ),
             ),

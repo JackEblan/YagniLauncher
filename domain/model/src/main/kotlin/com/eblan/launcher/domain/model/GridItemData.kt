@@ -66,38 +66,18 @@ sealed interface GridItemData {
         val folderId: String?,
     ) : GridItemData
 
-    sealed interface Folder : GridItemData {
-        val id: String
-        val label: String
-        val gridItems: List<GridItem>
-        val icon: String?
-        val index: Int
-        val folderId: String?
-        val maxIndex: Int
-
-        data class Preview(
-            override val id: String,
-            override val label: String,
-            override val gridItems: List<GridItem>,
-            override val icon: String?,
-            override val index: Int,
-            override val folderId: String?,
-            override val maxIndex: Int,
-        ) : Folder
-
-        data class Full(
-            override val id: String,
-            override val label: String,
-            override val gridItems: List<GridItem>,
-            override val icon: String?,
-            override val index: Int,
-            override val folderId: String?,
-            override val maxIndex: Int,
-            val gridItemsByPage: Map<Int, List<GridItem>>,
-            val columns: Int,
-            val rows: Int,
-        ) : Folder
-    }
+    data class Folder(
+        val id: String,
+        val label: String,
+        val gridItems: List<GridItem>,
+        val gridItemsByPage: Map<Int, List<GridItem>>,
+        val icon: String?,
+        val columns: Int,
+        val rows: Int,
+        val index: Int,
+        val maxIndex: Int,
+        val folderId: String?,
+    ) : GridItemData
 
     data class ShortcutConfig(
         val serialNumber: Long,

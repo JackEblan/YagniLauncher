@@ -35,11 +35,13 @@ import com.eblan.launcher.domain.model.LauncherAppsEvent
 import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.domain.model.PageItem
 import com.eblan.launcher.domain.model.PinItemRequestType
+import com.eblan.launcher.domain.model.TextColor
 import com.eblan.launcher.domain.repository.EblanAppWidgetProviderInfoRepository
 import com.eblan.launcher.domain.repository.EblanApplicationInfoTagRepository
 import com.eblan.launcher.domain.repository.GridRepository
 import com.eblan.launcher.domain.repository.UserDataRepository
 import com.eblan.launcher.domain.usecase.GetHomeDataUseCase
+import com.eblan.launcher.domain.usecase.GetTextColorUseCase
 import com.eblan.launcher.domain.usecase.application.GetEblanAppWidgetProviderInfosByLabelUseCase
 import com.eblan.launcher.domain.usecase.application.GetEblanApplicationInfosByLabelAndTagUseCase
 import com.eblan.launcher.domain.usecase.application.GetEblanShortcutConfigsByLabelUseCase
@@ -107,6 +109,7 @@ internal class HomeViewModel @Inject constructor(
     private val moveFolderGridItemUseCase: MoveFolderGridItemUseCase,
     private val iconKeyGenerator: IconKeyGenerator,
     private val deleteGridItemUseCase: DeleteGridItemUseCase,
+    getTextColorUseCase: GetTextColorUseCase,
 ) : ViewModel() {
     val homeUiState = getHomeDataUseCase().map(HomeUiState::Success).stateIn(
         scope = viewModelScope,
@@ -123,7 +126,6 @@ internal class HomeViewModel @Inject constructor(
     val movedGridItemResult = _moveGridItemResult.asStateFlow()
 
     private val defaultDelay = 500L.milliseconds
-    private val moveDelay = 50L.milliseconds
 
     private val _pageItems = MutableStateFlow<List<PageItem>?>(null)
 
@@ -220,7 +222,14 @@ internal class HomeViewModel @Inject constructor(
 
     val isVisibleOverlay = _isVisibleOverlay.asStateFlow()
 
+    val textColor = getTextColorUseCase().stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = TextColor.System,
+    )
+
     fun moveGridItem(
+        gridItems: List<GridItem>,
         movingGridItem: GridItem,
         x: Int,
         y: Int,
@@ -232,10 +241,9 @@ internal class HomeViewModel @Inject constructor(
         moveGridItemJob?.cancel()
 
         moveGridItemJob = viewModelScope.launch {
-            delay(50L.milliseconds)
-
             _moveGridItemResult.update {
                 moveGridItemUseCase(
+                    gridItems = gridItems,
                     movingGridItem = movingGridItem,
                     x = x,
                     y = y,
@@ -249,6 +257,7 @@ internal class HomeViewModel @Inject constructor(
     }
 
     fun resizeGridItem(
+        gridItems: List<GridItem>,
         resizingGridItem: GridItem,
         columns: Int,
         rows: Int,
@@ -256,10 +265,9 @@ internal class HomeViewModel @Inject constructor(
         moveGridItemJob?.cancel()
 
         moveGridItemJob = viewModelScope.launch {
-            delay(50L.milliseconds)
-
             _resizeGridItem.update {
                 resizeGridItemUseCase(
+                    gridItems = gridItems,
                     resizingGridItem = resizingGridItem,
                     columns = columns,
                     rows = rows,
@@ -565,8 +573,6 @@ internal class HomeViewModel @Inject constructor(
         moveGridItemJob?.cancel()
 
         moveGridItemJob = viewModelScope.launch {
-            delay(50L.milliseconds)
-
             _moveGridItemResult.update {
                 moveFolderGridItemUseCase(
                     conflictingGridItem = conflictingGridItem,

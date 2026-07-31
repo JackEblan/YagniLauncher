@@ -17,6 +17,8 @@
  */
 package com.eblan.launcher.domain.usecase.grid
 
+import com.eblan.launcher.domain.common.Dispatcher
+import com.eblan.launcher.domain.common.EblanDispatchers
 import com.eblan.launcher.domain.common.IconKeyGenerator
 import com.eblan.launcher.domain.framework.FileManager
 import com.eblan.launcher.domain.model.GridItem
@@ -26,7 +28,9 @@ import com.eblan.launcher.domain.repository.ShortcutConfigGridItemRepository
 import com.eblan.launcher.domain.repository.ShortcutInfoGridItemRepository
 import com.eblan.launcher.domain.repository.UserDataRepository
 import com.eblan.launcher.domain.repository.WidgetGridItemRepository
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class GetGridItemsUseCase @Inject constructor(
@@ -38,8 +42,9 @@ class GetGridItemsUseCase @Inject constructor(
     private val shortcutConfigGridItemRepository: ShortcutConfigGridItemRepository,
     private val fileManager: FileManager,
     private val iconKeyGenerator: IconKeyGenerator,
+    @param:Dispatcher(EblanDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) {
-    suspend operator fun invoke(): List<GridItem> {
+    suspend operator fun invoke(): List<GridItem> = withContext(ioDispatcher) {
         val userData = userDataRepository.userDataFlow.first()
 
         val currentApplicationGridItems =
@@ -69,7 +74,7 @@ class GetGridItemsUseCase @Inject constructor(
             it.asEmptyFolderGridItem()
         }
 
-        return buildList {
+        buildList {
             addAll(currentApplicationGridItems)
             addAll(currentWidgetGridItems)
             addAll(currentShortcutInfoGridItems)

@@ -421,13 +421,8 @@ private fun EditFolder(
                     onUpdateIconPackInfoPackageName(packageName)
                 },
                 onUpdateUri = {
-                    val newData = when (data) {
-                        is GridItemData.Folder.Full -> data.copy(icon = it)
-                        is GridItemData.Folder.Preview -> data.copy(icon = it)
-                    }
-
                     onUpdateGridItem(
-                        gridItem.copy(data = newData),
+                        gridItem.copy(data = data.copy(icon = it)),
                     )
                 },
                 onResetCustomIcon = {

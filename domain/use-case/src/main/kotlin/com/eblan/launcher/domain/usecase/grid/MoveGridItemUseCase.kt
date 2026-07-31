@@ -19,37 +19,27 @@ package com.eblan.launcher.domain.usecase.grid
 
 import com.eblan.launcher.domain.common.Dispatcher
 import com.eblan.launcher.domain.common.EblanDispatchers
-import com.eblan.launcher.domain.common.IconKeyGenerator
-import com.eblan.launcher.domain.framework.FileManager
 import com.eblan.launcher.domain.grid.getGridItemByCoordinates
 import com.eblan.launcher.domain.grid.getRelativeResolveDirection
 import com.eblan.launcher.domain.grid.getResolveDirectionByX
-import com.eblan.launcher.domain.grid.isGridItemSpanWithinBounds
 import com.eblan.launcher.domain.grid.rectanglesOverlap
 import com.eblan.launcher.domain.grid.resolveConflicts
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.domain.model.ResolveDirection
-import com.eblan.launcher.domain.repository.FolderGridItemRepository
 import com.eblan.launcher.domain.repository.GridRepository
-import com.eblan.launcher.domain.repository.UserDataRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ensureActive
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class MoveGridItemUseCase @Inject constructor(
-    private val userDataRepository: UserDataRepository,
     private val gridRepository: GridRepository,
-    private val getGridItemsUseCase: GetGridItemsUseCase,
-    private val folderGridItemRepository: FolderGridItemRepository,
-    private val fileManager: FileManager,
-    private val iconKeyGenerator: IconKeyGenerator,
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke(
+        gridItems: List<GridItem>,
         movingGridItem: GridItem,
         x: Int,
         y: Int,
@@ -59,16 +49,10 @@ class MoveGridItemUseCase @Inject constructor(
         gridHeight: Int,
     ): MoveGridItemResult {
         return withContext(defaultDispatcher) {
-            val userData = userDataRepository.userDataFlow.first()
-
-            val gridItemsByPage = getGridItemsUseCase().filter {
+            val gridItemsByPage = gridItems.filter {
                 ensureActive()
 
-                it.isTopLevel() && isGridItemSpanWithinBounds(
-                    gridItem = it,
-                    columns = columns,
-                    rows = rows,
-                ) && it.page == movingGridItem.page &&
+                it.page == movingGridItem.page &&
                     it.associate == movingGridItem.associate
             }.toMutableList()
 
@@ -105,9 +89,6 @@ class MoveGridItemUseCase @Inject constructor(
                     columns = columns,
                     rows = rows,
                     gridWidth = gridWidth,
-                    maxFolderColumns = userData.homeSettings.maxFolderColumns,
-                    maxFolderRows = userData.homeSettings.maxFolderRows,
-                    iconPackInfoPackageName = userData.generalSettings.iconPackInfoPackageName,
                 )
             }
 
@@ -148,9 +129,6 @@ class MoveGridItemUseCase @Inject constructor(
         columns: Int,
         rows: Int,
         gridWidth: Int,
-        maxFolderColumns: Int,
-        maxFolderRows: Int,
-        iconPackInfoPackageName: String,
     ): MoveGridItemResult {
         val resolveDirection = getResolveDirectionByX(
             gridItem = conflictingGridItem,
@@ -181,28 +159,8 @@ class MoveGridItemUseCase @Inject constructor(
             }
 
             ResolveDirection.Center -> {
-                val currentConflictingGridItem = when (conflictingGridItem.data) {
-                    is GridItemData.Folder.Preview -> {
-                        requireNotNull(
-                            folderGridItemRepository.getFolderGridItemWrapper(id = conflictingGridItem.id)
-                                ?.asFolderGridItem(
-                                    folderGridItemRepository = folderGridItemRepository,
-                                    maxFolderColumns = maxFolderColumns,
-                                    maxFolderRows = maxFolderRows,
-                                    fileManager = fileManager,
-                                    iconKeyGenerator = iconKeyGenerator,
-                                    iconPackInfoPackageName = iconPackInfoPackageName,
-                                ),
-                        )
-                    }
-
-                    else -> {
-                        conflictingGridItem
-                    }
-                }
-
                 if (movingGridItem.data is GridItemData.Widget ||
-                    currentConflictingGridItem.data is GridItemData.Widget
+                    conflictingGridItem.data is GridItemData.Widget
                 ) {
                     return MoveGridItemResult(
                         isSuccess = false,
@@ -216,7 +174,7 @@ class MoveGridItemUseCase @Inject constructor(
                 MoveGridItemResult(
                     isSuccess = true,
                     movingGridItem = movingGridItem,
-                    conflictingGridItem = currentConflictingGridItem,
+                    conflictingGridItem = conflictingGridItem,
                 )
             }
         }

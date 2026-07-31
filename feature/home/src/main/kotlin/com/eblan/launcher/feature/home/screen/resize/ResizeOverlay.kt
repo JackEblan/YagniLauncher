@@ -41,7 +41,9 @@ internal fun ResizeOverlay(
     width: Int,
     x: Int,
     y: Int,
+    gridItems: List<GridItem>,
     onResizeGridItem: (
+        gridItems: List<GridItem>,
         gridItem: GridItem,
         columns: Int,
         rows: Int,
@@ -81,6 +83,7 @@ internal fun ResizeOverlay(
                 width = width,
                 x = x,
                 y = y,
+                gridItems = gridItems,
                 onResizeGridItem = onResizeGridItem,
             )
         }
@@ -99,6 +102,7 @@ internal fun ResizeOverlay(
                 width = width,
                 x = x,
                 y = y,
+                gridItems = gridItems,
                 onResizeWidgetGridItem = onResizeGridItem,
             )
         }

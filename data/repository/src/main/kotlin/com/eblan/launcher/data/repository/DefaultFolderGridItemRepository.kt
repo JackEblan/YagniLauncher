@@ -36,7 +36,7 @@ internal class DefaultFolderGridItemRepository @Inject constructor(private val f
             }
         }
 
-    override val folderGridItems: Flow<List<FolderGridItem>> =
+    override val folderGridItemsFlow: Flow<List<FolderGridItem>> =
         folderGridItemDao.getFolderGridItemEntitiesFlow().map { entities ->
             entities.map {
                 it.asModel()
@@ -55,10 +55,6 @@ internal class DefaultFolderGridItemRepository @Inject constructor(private val f
         it.folderId == null
     }.map {
         it.asModel()
-    }
-
-    override suspend fun getFolderGridItemWrappersWithFolderId(): List<FolderGridItemWrapper> = folderGridItemDao.getFolderGridItemWrapperEntities().map {
-        it.asFolderGridItemWrapper()
     }
 
     override suspend fun upsertFolderGridItems(folderGridItems: List<FolderGridItem>) {
