@@ -368,7 +368,7 @@ internal suspend fun FolderGridItemWrapper.asPreviewFolderGridItem(
     startRow = folderGridItem.startRow,
     columnSpan = folderGridItem.columnSpan,
     rowSpan = folderGridItem.rowSpan,
-    data = asFolder(
+    data = asPreviewFolder(
         fileManager = fileManager,
         iconKeyGenerator = iconKeyGenerator,
         iconPackInfoPackageName = iconPackInfoPackageName,
@@ -381,7 +381,7 @@ internal suspend fun FolderGridItemWrapper.asPreviewFolderGridItem(
     swipeDown = folderGridItem.swipeDown,
 )
 
-internal suspend fun FolderGridItemWrapper.asFolder(
+internal suspend fun FolderGridItemWrapper.asPreviewFolder(
     fileManager: FileManager,
     iconKeyGenerator: IconKeyGenerator,
     iconPackInfoPackageName: String,
@@ -411,16 +411,6 @@ internal suspend fun FolderGridItemWrapper.asFolder(
             }
         }
 
-    val maxIndex = gridItems.maxOfOrNull {
-        when (val data = it.data) {
-            is GridItemData.ApplicationInfo -> data.index + 1
-            is GridItemData.ShortcutInfo -> data.index + 1
-            is GridItemData.ShortcutConfig -> data.index + 1
-            is GridItemData.Folder -> data.index + 1
-            else -> error("Unsupported folder grid item")
-        }
-    } ?: 0
-
     return GridItemData.Folder(
         id = folderGridItem.id,
         label = folderGridItem.label,
@@ -430,7 +420,7 @@ internal suspend fun FolderGridItemWrapper.asFolder(
         columns = 0,
         rows = 0,
         index = folderGridItem.index,
-        maxIndex = maxIndex,
+        maxIndex = 0,
         folderId = folderGridItem.folderId,
     )
 }

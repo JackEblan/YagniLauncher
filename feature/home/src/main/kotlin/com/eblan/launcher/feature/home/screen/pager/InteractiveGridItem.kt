@@ -80,6 +80,8 @@ import com.eblan.launcher.feature.home.model.SharedElementKey
 import com.eblan.launcher.feature.home.screen.getHorizontalAlignment
 import com.eblan.launcher.feature.home.screen.getVerticalArrangement
 import com.eblan.launcher.feature.home.screen.onDoubleTap
+import com.eblan.launcher.feature.home.util.FOLDER_PREVIEW_COLUMNS
+import com.eblan.launcher.feature.home.util.FOLDER_PREVIEW_ROWS
 import com.eblan.launcher.feature.home.util.getGridItemTextColor
 import com.eblan.launcher.feature.home.util.getSystemTextColor
 import com.eblan.launcher.ui.local.LocalAppWidgetHost
@@ -382,9 +384,9 @@ private fun InteractiveApplicationInfoGridItem(
 
     val hasNotifications =
         statusBarNotifications[data.packageName] != null && (
-            statusBarNotifications[data.packageName]
-                ?: 0
-            ) > 0
+                statusBarNotifications[data.packageName]
+                    ?: 0
+                ) > 0
 
     val alpha = if (hasInteraction) 0f else 1f
 
@@ -1074,7 +1076,9 @@ private fun InteractiveFolderGridItem(
             ) {
                 PreviewFolderGridLayout(
                     modifier = Modifier.matchParentSize(),
-                    gridItems = emptyList(),
+                    gridItems = previewFolderGridItems[gridItem.id]?.gridItems?.take(
+                        FOLDER_PREVIEW_COLUMNS * FOLDER_PREVIEW_ROWS,
+                    ),
                     content = {
                         PreviewFolderGridItem(
                             sharedTransitionScope = sharedTransitionScope,
@@ -1085,7 +1089,7 @@ private fun InteractiveFolderGridItem(
                             moveGridItemResult = moveGridItemResult,
                             textColor = textColor,
                             drag = drag,
-                            folderGridItems = emptyList(),
+                            folderGridItems = previewFolderGridItems[gridItem.id]?.gridItems,
                             isVisibleFolder = isVisibleFolder,
                             onResetGrid = onResetGrid,
                         )
@@ -1321,7 +1325,7 @@ private fun PreviewFolderGridItem(
     moveGridItemResult: MoveGridItemResult?,
     textColor: Color,
     drag: Drag,
-    folderGridItems: List<GridItem>,
+    folderGridItems: List<GridItem>?,
     isVisibleFolder: Boolean,
     onResetGrid: () -> Unit,
 ) {
@@ -1366,6 +1370,7 @@ private fun PreviewFolderGridItem(
 
             if ((drag == Drag.Cancel || drag == Drag.End) &&
                 id != null &&
+                folderGridItems != null &&
                 folderGridItems.any { it.id == id } &&
                 !isVisibleFolder
             ) {

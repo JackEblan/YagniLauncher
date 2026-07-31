@@ -42,7 +42,7 @@ class GetPreviewFolderGridItemsUseCase @Inject constructor(
         folderGridItemRepository.folderGridItemWrappersFlow,
     ) { userData, folderGridItemWrappers ->
         folderGridItemWrappers.map {
-            it.asFolder(
+            it.asPreviewFolder(
                 fileManager = fileManager,
                 iconKeyGenerator = iconKeyGenerator,
                 iconPackInfoPackageName = userData.generalSettings.iconPackInfoPackageName,
