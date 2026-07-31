@@ -24,7 +24,6 @@ import com.eblan.launcher.domain.framework.FileManager
 import com.eblan.launcher.domain.grid.getGridItemByCoordinates
 import com.eblan.launcher.domain.grid.getRelativeResolveDirection
 import com.eblan.launcher.domain.grid.getResolveDirectionByX
-import com.eblan.launcher.domain.grid.isGridItemSpanWithinBounds
 import com.eblan.launcher.domain.grid.rectanglesOverlap
 import com.eblan.launcher.domain.grid.resolveConflicts
 import com.eblan.launcher.domain.model.GridItem
@@ -43,13 +42,13 @@ import javax.inject.Inject
 class MoveGridItemUseCase @Inject constructor(
     private val userDataRepository: UserDataRepository,
     private val gridRepository: GridRepository,
-    private val getGridItemsUseCase: GetGridItemsUseCase,
     private val folderGridItemRepository: FolderGridItemRepository,
     private val fileManager: FileManager,
     private val iconKeyGenerator: IconKeyGenerator,
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke(
+        gridItems: List<GridItem>,
         movingGridItem: GridItem,
         x: Int,
         y: Int,
@@ -61,14 +60,10 @@ class MoveGridItemUseCase @Inject constructor(
         return withContext(defaultDispatcher) {
             val userData = userDataRepository.userDataFlow.first()
 
-            val gridItemsByPage = getGridItemsUseCase().filter {
+            val gridItemsByPage = gridItems.filter {
                 ensureActive()
 
-                it.isTopLevel() && isGridItemSpanWithinBounds(
-                    gridItem = it,
-                    columns = columns,
-                    rows = rows,
-                ) && it.page == movingGridItem.page &&
+                it.page == movingGridItem.page &&
                     it.associate == movingGridItem.associate
             }.toMutableList()
 

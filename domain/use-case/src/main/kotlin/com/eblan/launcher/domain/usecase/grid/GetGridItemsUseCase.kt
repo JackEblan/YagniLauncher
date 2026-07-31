@@ -29,7 +29,6 @@ import com.eblan.launcher.domain.repository.ShortcutInfoGridItemRepository
 import com.eblan.launcher.domain.repository.UserDataRepository
 import com.eblan.launcher.domain.repository.WidgetGridItemRepository
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -43,15 +42,13 @@ class GetGridItemsUseCase @Inject constructor(
     private val shortcutConfigGridItemRepository: ShortcutConfigGridItemRepository,
     private val fileManager: FileManager,
     private val iconKeyGenerator: IconKeyGenerator,
-    @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
+    @param:Dispatcher(EblanDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) {
-    suspend operator fun invoke(): List<GridItem> = withContext(defaultDispatcher) {
+    suspend operator fun invoke(): List<GridItem> = withContext(ioDispatcher) {
         val userData = userDataRepository.userDataFlow.first()
 
         val currentApplicationGridItems =
             applicationInfoGridItemRepository.getApplicationInfoGridItems().map {
-                ensureActive()
-
                 it.asGridItem(
                     fileManager = fileManager,
                     iconKeyGenerator = iconKeyGenerator,
@@ -60,28 +57,20 @@ class GetGridItemsUseCase @Inject constructor(
             }
 
         val currentWidgetGridItems = widgetGridItemRepository.getWidgetGridItems().map {
-            ensureActive()
-
             it.asGridItem()
         }
 
         val currentShortcutInfoGridItems =
             shortcutInfoGridItemRepository.getShortcutInfoGridItems().map {
-                ensureActive()
-
                 it.asGridItem()
             }
 
         val currentShortcutConfigGridItems =
             shortcutConfigGridItemRepository.getShortcutConfigGridItems().map {
-                ensureActive()
-
                 it.asGridItem()
             }
 
         val currentFolderGridItems = folderGridItemRepository.getFolderGridItems().map {
-            ensureActive()
-
             it.asEmptyFolderGridItem()
         }
 

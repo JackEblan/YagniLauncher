@@ -20,7 +20,6 @@ package com.eblan.launcher.domain.usecase.grid
 import com.eblan.launcher.domain.common.Dispatcher
 import com.eblan.launcher.domain.common.EblanDispatchers
 import com.eblan.launcher.domain.grid.getRelativeResolveDirection
-import com.eblan.launcher.domain.grid.isGridItemSpanWithinBounds
 import com.eblan.launcher.domain.grid.rectanglesOverlap
 import com.eblan.launcher.domain.grid.resolveConflicts
 import com.eblan.launcher.domain.model.GridItem
@@ -32,37 +31,33 @@ import javax.inject.Inject
 
 class ResizeGridItemUseCase @Inject constructor(
     private val gridRepository: GridRepository,
-    private val getGridItemsUseCase: GetGridItemsUseCase,
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke(
+        gridItems: List<GridItem>,
         resizingGridItem: GridItem,
         columns: Int,
         rows: Int,
     ): GridItem = withContext(defaultDispatcher) {
-        val gridItems =
-            getGridItemsUseCase().filter {
+        val currentGridItems =
+            gridItems.filter {
                 ensureActive()
 
-                it.isTopLevel() && isGridItemSpanWithinBounds(
-                    gridItem = it,
-                    columns = columns,
-                    rows = rows,
-                ) && it.page == resizingGridItem.page &&
+                it.page == resizingGridItem.page &&
                     it.associate == resizingGridItem.associate
             }.toMutableList()
 
         val index =
-            gridItems.indexOfFirst {
+            currentGridItems.indexOfFirst {
                 ensureActive()
                 it.id == resizingGridItem.id
             }
 
-        val oldGridItem = gridItems[index]
+        val oldGridItem = currentGridItems[index]
 
-        gridItems[index] = resizingGridItem
+        currentGridItems[index] = resizingGridItem
 
-        val gridItemBySpan = gridItems.find {
+        val gridItemBySpan = currentGridItems.find {
             ensureActive()
 
             it.id != resizingGridItem.id && rectanglesOverlap(
@@ -75,13 +70,13 @@ class ResizeGridItemUseCase @Inject constructor(
             handleConflictsOfGridItemSpan(
                 oldGridItem = oldGridItem,
                 conflictingGridItem = gridItemBySpan,
-                gridItems = gridItems,
+                gridItems = currentGridItems,
                 resizingGridItem = resizingGridItem,
                 columns = columns,
                 rows = rows,
             )
         } else {
-            gridRepository.upsertGridItems(gridItems = gridItems)
+            gridRepository.upsertGridItems(gridItems = currentGridItems)
 
             resizingGridItem
         }

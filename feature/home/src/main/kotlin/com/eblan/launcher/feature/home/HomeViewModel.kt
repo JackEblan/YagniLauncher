@@ -123,7 +123,6 @@ internal class HomeViewModel @Inject constructor(
     val movedGridItemResult = _moveGridItemResult.asStateFlow()
 
     private val defaultDelay = 500L.milliseconds
-    private val moveDelay = 50L.milliseconds
 
     private val _pageItems = MutableStateFlow<List<PageItem>?>(null)
 
@@ -221,6 +220,7 @@ internal class HomeViewModel @Inject constructor(
     val isVisibleOverlay = _isVisibleOverlay.asStateFlow()
 
     fun moveGridItem(
+        gridItems: List<GridItem>,
         movingGridItem: GridItem,
         x: Int,
         y: Int,
@@ -232,10 +232,9 @@ internal class HomeViewModel @Inject constructor(
         moveGridItemJob?.cancel()
 
         moveGridItemJob = viewModelScope.launch {
-            delay(moveDelay)
-
             _moveGridItemResult.update {
                 moveGridItemUseCase(
+                    gridItems = gridItems,
                     movingGridItem = movingGridItem,
                     x = x,
                     y = y,
@@ -249,6 +248,7 @@ internal class HomeViewModel @Inject constructor(
     }
 
     fun resizeGridItem(
+        gridItems: List<GridItem>,
         resizingGridItem: GridItem,
         columns: Int,
         rows: Int,
@@ -256,10 +256,9 @@ internal class HomeViewModel @Inject constructor(
         moveGridItemJob?.cancel()
 
         moveGridItemJob = viewModelScope.launch {
-            delay(moveDelay)
-
             _resizeGridItem.update {
                 resizeGridItemUseCase(
+                    gridItems = gridItems,
                     resizingGridItem = resizingGridItem,
                     columns = columns,
                     rows = rows,
@@ -565,8 +564,6 @@ internal class HomeViewModel @Inject constructor(
         moveGridItemJob?.cancel()
 
         moveGridItemJob = viewModelScope.launch {
-            delay(moveDelay)
-
             _moveGridItemResult.update {
                 moveFolderGridItemUseCase(
                     conflictingGridItem = conflictingGridItem,
