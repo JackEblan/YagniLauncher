@@ -23,14 +23,10 @@ import com.eblan.launcher.domain.common.IconKeyGenerator
 import com.eblan.launcher.domain.framework.FileManager
 import com.eblan.launcher.domain.framework.LauncherAppsWrapper
 import com.eblan.launcher.domain.framework.PackageManagerWrapper
-import com.eblan.launcher.domain.framework.ResourcesWrapper
-import com.eblan.launcher.domain.framework.WallpaperManagerWrapper
 import com.eblan.launcher.domain.grid.isGridItemSpanWithinBounds
 import com.eblan.launcher.domain.model.Associate
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.HomeData
-import com.eblan.launcher.domain.model.TextColor
-import com.eblan.launcher.domain.model.Theme
 import com.eblan.launcher.domain.repository.ApplicationInfoGridItemRepository
 import com.eblan.launcher.domain.repository.FolderGridItemRepository
 import com.eblan.launcher.domain.repository.ShortcutConfigGridItemRepository
@@ -44,13 +40,12 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class GetHomeDataUseCase @Inject constructor(
     private val userDataRepository: UserDataRepository,
     private val launcherAppsWrapper: LauncherAppsWrapper,
-    private val wallpaperManagerWrapper: WallpaperManagerWrapper,
-    private val resourcesWrapper: ResourcesWrapper,
     private val packageManagerWrapper: PackageManagerWrapper,
     private val fileManager: FileManager,
     private val iconKeyGenerator: IconKeyGenerator,
@@ -64,8 +59,7 @@ class GetHomeDataUseCase @Inject constructor(
     operator fun invoke(): Flow<HomeData> = combine(
         userDataRepository.userDataFlow,
         getGridItemsFlow(),
-        wallpaperManagerWrapper.getColorsChanged(),
-    ) { userData, gridItems, colorHints ->
+    ) { userData, gridItems ->
         val gridItemsByPage = gridItems.filter {
             isGridItemSpanWithinBounds(
                 gridItem = it,
@@ -82,19 +76,6 @@ class GetHomeDataUseCase @Inject constructor(
             ) && it.associate == Associate.Dock
         }.groupBy { it.page }
 
-        val gridItemSettings = userData.homeSettings.gridItemSettings
-
-        val textColor = when (gridItemSettings.textColor) {
-            TextColor.System -> {
-                getTextColorFromWallpaperColors(
-                    theme = userData.generalSettings.theme,
-                    colorHints = colorHints,
-                )
-            }
-
-            else -> gridItemSettings.textColor
-        }
-
         HomeData(
             userData = userData,
             gridItems = gridItems,
@@ -102,81 +83,59 @@ class GetHomeDataUseCase @Inject constructor(
             dockGridItemsByPage = dockGridItemsByPage,
             hasShortcutHostPermission = launcherAppsWrapper.hasShortcutHostPermission,
             hasSystemFeatureAppWidgets = packageManagerWrapper.hasSystemFeatureAppWidgets,
-            textColor = textColor,
         )
     }.flowOn(defaultDispatcher)
 
-    private fun getGridItemsFlow(): Flow<List<GridItem>> = combine(
-        userDataRepository.userDataFlow,
-        applicationInfoGridItemRepository.applicationInfoGridItems,
-        widgetGridItemRepository.widgetGridItemsFlow,
-        shortcutInfoGridItemRepository.shortcutInfoGridItemsFlow,
-        shortcutConfigGridItemRepository.shortcutConfigGridItemsFlow,
-    ) { userData, applicationInfoGridItems, widgetGridItems, shortcutInfoGridItems, shortcutConfigGridItems ->
-        val currentApplicationGridItems = applicationInfoGridItems.map {
-            it.asGridItem(
-                fileManager = fileManager,
-                iconKeyGenerator = iconKeyGenerator,
-                iconPackInfoPackageName = userData.generalSettings.iconPackInfoPackageName,
-            )
+    private fun getGridItemsFlow(): Flow<List<GridItem>> {
+        val gridItemsFlow = combine(
+            userDataRepository.userDataFlow,
+            applicationInfoGridItemRepository.applicationInfoGridItems,
+            shortcutInfoGridItemRepository.shortcutInfoGridItemsFlow,
+            shortcutConfigGridItemRepository.shortcutConfigGridItemsFlow,
+        ) { userData, applicationInfoGridItems, shortcutInfoGridItems, shortcutConfigGridItems ->
+            val currentApplicationInfoGridItems = applicationInfoGridItems.map {
+                it.asGridItem(
+                    fileManager = fileManager,
+                    iconKeyGenerator = iconKeyGenerator,
+                    iconPackInfoPackageName = userData.generalSettings.iconPackInfoPackageName,
+                )
+            }
+
+            val currentShortcutInfoGridItems = shortcutInfoGridItems.map {
+                it.asGridItem()
+            }
+
+            val currentShortcutConfigGridItems = shortcutConfigGridItems.map {
+                it.asGridItem()
+            }
+
+            val currentFolderGridItems = folderGridItemRepository.getFolderGridItemWrappers().map {
+                it.asPreviewFolderGridItem(
+                    fileManager = fileManager,
+                    iconKeyGenerator = iconKeyGenerator,
+                    iconPackInfoPackageName = userData.generalSettings.iconPackInfoPackageName,
+                )
+            }
+
+            buildList {
+                addAll(currentApplicationInfoGridItems)
+                addAll(currentShortcutInfoGridItems)
+                addAll(currentShortcutConfigGridItems)
+                addAll(currentFolderGridItems)
+            }
         }
 
-        val currentWidgetGridItems = widgetGridItems.map {
-            it.asGridItem()
+        val widgetGridItems = widgetGridItemRepository.widgetGridItemsFlow.map { widgetGridItems ->
+            widgetGridItems.map {
+                it.asGridItem()
+            }
         }
 
-        val currentShortcutInfoGridItems = shortcutInfoGridItems.map {
-            it.asGridItem()
-        }
-
-        val currentShortcutConfigGridItems = shortcutConfigGridItems.map {
-            it.asGridItem()
-        }
-
-        userData to buildList {
-            addAll(currentApplicationGridItems)
-            addAll(currentWidgetGridItems)
-            addAll(currentShortcutInfoGridItems)
-            addAll(currentShortcutConfigGridItems)
-        }
-    }.combine(folderGridItemRepository.folderGridItemWrappersFlow) { (userData, gridItems), folderGridItemWrappers ->
-        val folderGridItems = folderGridItemWrappers.map {
-            it.asPreviewFolderGridItem(
-                fileManager = fileManager,
-                iconKeyGenerator = iconKeyGenerator,
-                iconPackInfoPackageName = userData.generalSettings.iconPackInfoPackageName,
-            )
-        }
-
-        (gridItems + folderGridItems).filter { it.isTopLevel() }
-    }.flowOn(defaultDispatcher)
-
-    private fun getTextColorFromWallpaperColors(
-        theme: Theme,
-        colorHints: Int?,
-    ): TextColor = if (colorHints != null) {
-        val hintSupportsDarkText = colorHints and wallpaperManagerWrapper.hintSupportsDarkText != 0
-
-        if (hintSupportsDarkText) {
-            TextColor.Dark
-        } else {
-            TextColor.Light
-        }
-    } else {
-        getTextColorFromSystemTheme(theme = theme)
-    }
-
-    private fun getTextColorFromSystemTheme(theme: Theme): TextColor = when (theme) {
-        Theme.System -> {
-            getTextColorFromSystemTheme(theme = resourcesWrapper.getSystemTheme())
-        }
-
-        Theme.Light -> {
-            TextColor.Light
-        }
-
-        Theme.Dark -> {
-            TextColor.Dark
+        return combine(
+            gridItemsFlow,
+            widgetGridItems,
+        ) { gridItems, widgetGridItems ->
+            (gridItems + widgetGridItems).filter { it.isTopLevel() }
         }
     }
 }

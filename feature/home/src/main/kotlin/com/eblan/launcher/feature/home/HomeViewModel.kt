@@ -35,11 +35,13 @@ import com.eblan.launcher.domain.model.LauncherAppsEvent
 import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.domain.model.PageItem
 import com.eblan.launcher.domain.model.PinItemRequestType
+import com.eblan.launcher.domain.model.TextColor
 import com.eblan.launcher.domain.repository.EblanAppWidgetProviderInfoRepository
 import com.eblan.launcher.domain.repository.EblanApplicationInfoTagRepository
 import com.eblan.launcher.domain.repository.GridRepository
 import com.eblan.launcher.domain.repository.UserDataRepository
 import com.eblan.launcher.domain.usecase.GetHomeDataUseCase
+import com.eblan.launcher.domain.usecase.GetTextColorUseCase
 import com.eblan.launcher.domain.usecase.application.GetEblanAppWidgetProviderInfosByLabelUseCase
 import com.eblan.launcher.domain.usecase.application.GetEblanApplicationInfosByLabelAndTagUseCase
 import com.eblan.launcher.domain.usecase.application.GetEblanShortcutConfigsByLabelUseCase
@@ -107,6 +109,7 @@ internal class HomeViewModel @Inject constructor(
     private val moveFolderGridItemUseCase: MoveFolderGridItemUseCase,
     private val iconKeyGenerator: IconKeyGenerator,
     private val deleteGridItemUseCase: DeleteGridItemUseCase,
+    getTextColorUseCase: GetTextColorUseCase,
 ) : ViewModel() {
     val homeUiState = getHomeDataUseCase().map(HomeUiState::Success).stateIn(
         scope = viewModelScope,
@@ -218,6 +221,12 @@ internal class HomeViewModel @Inject constructor(
     private val _isVisibleOverlay = MutableStateFlow(false)
 
     val isVisibleOverlay = _isVisibleOverlay.asStateFlow()
+
+    val textColor = getTextColorUseCase().stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = TextColor.System,
+    )
 
     fun moveGridItem(
         gridItems: List<GridItem>,

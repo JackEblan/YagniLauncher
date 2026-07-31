@@ -60,6 +60,7 @@ import com.eblan.launcher.domain.model.HomeData
 import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.domain.model.PageItem
 import com.eblan.launcher.domain.model.PinItemRequestType
+import com.eblan.launcher.domain.model.TextColor
 import com.eblan.launcher.feature.home.dialog.TextDialog
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.HomeUiState
@@ -114,6 +115,8 @@ internal fun HomeRoute(
 
     val isVisibleOverlay by viewModel.isVisibleOverlay.collectAsStateWithLifecycle()
 
+    val textColor by viewModel.textColor.collectAsStateWithLifecycle()
+
     HomeScreen(
         modifier = modifier,
         configureResultCode = configureResultCode,
@@ -132,6 +135,7 @@ internal fun HomeRoute(
         resizeGridItem = resizeGridItem,
         gridItemSource = gridItemSource,
         isVisibleOverlay = isVisibleOverlay,
+        textColor = textColor,
         onResetGrid = viewModel::resetGrid,
         onDeleteGridItem = viewModel::deleteGridItem,
         onResetGridAfterDeleteGridItem = viewModel::resetGridAfterDeleteGridItem,
@@ -190,6 +194,7 @@ internal fun HomeScreen(
     resizeGridItem: GridItem?,
     gridItemSource: GridItemSource?,
     isVisibleOverlay: Boolean,
+    textColor: TextColor,
     onResetGrid: () -> Unit,
     onDeleteGridItem: (GridItem) -> Unit,
     onResetGridAfterDeleteGridItem: (GridItem) -> Unit,
@@ -300,6 +305,7 @@ internal fun HomeScreen(
                 resizeGridItem = resizeGridItem,
                 gridItemSource = gridItemSource,
                 isVisibleOverlay = isVisibleOverlay,
+                textColor = textColor,
                 onResetGrid = onResetGrid,
                 onDeleteGridItem = onDeleteGridItem,
                 onResetGridAfterDeleteGridItem = onResetGridAfterDeleteGridItem,
@@ -363,6 +369,7 @@ private fun Success(
     resizeGridItem: GridItem?,
     gridItemSource: GridItemSource?,
     isVisibleOverlay: Boolean,
+    textColor: TextColor,
     onResetGrid: () -> Unit,
     onDeleteGridItem: (GridItem) -> Unit,
     onResetGridAfterDeleteGridItem: (GridItem) -> Unit,
@@ -479,7 +486,7 @@ private fun Success(
                     pinGridItem = pinGridItem,
                     screenHeight = screenHeight,
                     screenWidth = screenWidth,
-                    textColor = homeData.textColor,
+                    textColor = textColor,
                     resizeGridItem = resizeGridItem,
                     gridItemSource = gridItemSource,
                     isVisibleOverlay = isVisibleOverlay,
@@ -532,7 +539,7 @@ private fun Success(
                     paddingValues = paddingValues,
                     screenWidth = screenWidth,
                     screenHeight = screenHeight,
-                    textColor = homeData.textColor,
+                    textColor = textColor,
                     onSaveEditPage = onSaveEditPage,
                     onUpdateScreen = onUpdateScreen,
                 )
@@ -544,7 +551,7 @@ private fun Success(
                     hasShortcutHostPermission = homeData.hasShortcutHostPermission,
                     homeSettings = homeData.userData.homeSettings,
                     paddingValues = paddingValues,
-                    textColor = homeData.textColor,
+                    textColor = textColor,
                     onSaveEditPage = onSaveEditPage,
                     onUpdateScreen = onUpdateScreen,
                 )
