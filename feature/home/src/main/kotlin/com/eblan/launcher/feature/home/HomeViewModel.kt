@@ -49,6 +49,7 @@ import com.eblan.launcher.domain.usecase.application.GetEblanShortcutInfosUseCas
 import com.eblan.launcher.domain.usecase.application.UpdateEblanApplicationInfosIndexesUseCase
 import com.eblan.launcher.domain.usecase.grid.DeleteGridItemUseCase
 import com.eblan.launcher.domain.usecase.grid.GetFolderGridItemsByIdUseCase
+import com.eblan.launcher.domain.usecase.grid.GetPreviewFolderGridItemsUseCase
 import com.eblan.launcher.domain.usecase.grid.MoveFolderGridItemUseCase
 import com.eblan.launcher.domain.usecase.grid.MoveGridItemUseCase
 import com.eblan.launcher.domain.usecase.grid.ResizeGridItemUseCase
@@ -110,6 +111,7 @@ internal class HomeViewModel @Inject constructor(
     private val iconKeyGenerator: IconKeyGenerator,
     private val deleteGridItemUseCase: DeleteGridItemUseCase,
     getTextColorUseCase: GetTextColorUseCase,
+    getPreviewFolderGridItemsUseCase: GetPreviewFolderGridItemsUseCase,
 ) : ViewModel() {
     val homeUiState = getHomeDataUseCase().map(HomeUiState::Success).stateIn(
         scope = viewModelScope,
@@ -226,6 +228,12 @@ internal class HomeViewModel @Inject constructor(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
         initialValue = TextColor.System,
+    )
+
+    val previewFolderGridItems = getPreviewFolderGridItemsUseCase().stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = emptyMap(),
     )
 
     fun moveGridItem(

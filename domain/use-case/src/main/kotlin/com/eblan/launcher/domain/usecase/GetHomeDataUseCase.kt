@@ -40,6 +40,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class GetHomeDataUseCase @Inject constructor(
@@ -86,27 +87,19 @@ class GetHomeDataUseCase @Inject constructor(
     }.flowOn(ioDispatcher)
 
     private fun getGridItemsFlow(): Flow<List<GridItem>> {
-        val applicationInfoGridItemsFlow = combine(
+        val gridItemsFlow = combine(
             userDataRepository.userDataFlow,
             applicationInfoGridItemRepository.applicationInfoGridItems,
-        ) { userData, applicationInfoGridItems ->
-            applicationInfoGridItems.map {
+            shortcutInfoGridItemRepository.shortcutInfoGridItemsFlow,
+            shortcutConfigGridItemRepository.shortcutConfigGridItemsFlow,
+            folderGridItemRepository.folderGridItemsFlow,
+        ) { userData, applicationInfoGridItems, shortcutInfoGridItems, shortcutConfigGridItems, folderGridItems ->
+            val currentApplicationInfoGridItems = applicationInfoGridItems.map {
                 it.asGridItem(
                     fileManager = fileManager,
                     iconKeyGenerator = iconKeyGenerator,
                     iconPackInfoPackageName = userData.generalSettings.iconPackInfoPackageName,
                 )
-            }
-        }
-
-        val gridItemsFlow = combine(
-            widgetGridItemRepository.widgetGridItemsFlow,
-            shortcutInfoGridItemRepository.shortcutInfoGridItemsFlow,
-            shortcutConfigGridItemRepository.shortcutConfigGridItemsFlow,
-            folderGridItemRepository.folderGridItemsFlow,
-        ) { widgetGridItems, shortcutInfoGridItems, shortcutConfigGridItems, folderGridItems ->
-            val currentWidgetGridItems = widgetGridItems.map {
-                it.asGridItem()
             }
 
             val currentShortcutInfoGridItems = shortcutInfoGridItems.map {
@@ -122,18 +115,25 @@ class GetHomeDataUseCase @Inject constructor(
             }
 
             buildList {
-                addAll(currentWidgetGridItems)
+                addAll(currentApplicationInfoGridItems)
                 addAll(currentShortcutInfoGridItems)
                 addAll(currentShortcutConfigGridItems)
                 addAll(currentFolderGridItems)
             }
         }
 
+        val widgetGridItemsFlow =
+            widgetGridItemRepository.widgetGridItemsFlow.map { widgetGridItems ->
+                widgetGridItems.map {
+                    it.asGridItem()
+                }
+            }
+
         return combine(
-            applicationInfoGridItemsFlow,
             gridItemsFlow,
-        ) { applicationInfoGridItems, gridItems ->
-            (applicationInfoGridItems + gridItems).filter { it.isTopLevel() }
+            widgetGridItemsFlow,
+        ) { gridItems, widgetGridItems ->
+            (gridItems + widgetGridItems).filter { it.isTopLevel() }
         }
     }
 }

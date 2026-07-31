@@ -28,8 +28,6 @@ interface FolderGridItemRepository {
 
     suspend fun getFolderGridItemWrapper(id: String): FolderGridItemWrapper?
 
-    suspend fun getFolderGridItemWrappers(): List<FolderGridItemWrapper>
-
     suspend fun getFolderGridItems(): List<FolderGridItem>
 
     suspend fun upsertFolderGridItems(folderGridItems: List<FolderGridItem>)

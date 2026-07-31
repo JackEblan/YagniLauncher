@@ -21,8 +21,7 @@ import com.eblan.launcher.domain.common.Dispatcher
 import com.eblan.launcher.domain.common.EblanDispatchers
 import com.eblan.launcher.domain.common.IconKeyGenerator
 import com.eblan.launcher.domain.framework.FileManager
-import com.eblan.launcher.domain.model.FolderPopup
-import com.eblan.launcher.domain.model.FolderPopupEntry
+import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.repository.FolderGridItemRepository
 import com.eblan.launcher.domain.repository.UserDataRepository
 import kotlinx.coroutines.CoroutineDispatcher
@@ -31,19 +30,23 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
-class GetFolderGridItemsUseCase @Inject constructor(
+class GetPreviewFolderGridItemsUseCase @Inject constructor(
     private val folderGridItemRepository: FolderGridItemRepository,
     private val userDataRepository: UserDataRepository,
     private val fileManager: FileManager,
     private val iconKeyGenerator: IconKeyGenerator,
     @param:Dispatcher(EblanDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) {
-    operator fun invoke(
-        folderPopupEntriesFlow: Flow<List<FolderPopupEntry>>,
-    ): Flow<List<FolderPopup>> = combine(
+    operator fun invoke(): Flow<Map<String, GridItemData.Folder>> = combine(
         userDataRepository.userDataFlow,
         folderGridItemRepository.folderGridItemWrappersFlow,
     ) { userData, folderGridItemWrappers ->
-
+        folderGridItemWrappers.map {
+            it.asFolder(
+                fileManager = fileManager,
+                iconKeyGenerator = iconKeyGenerator,
+                iconPackInfoPackageName = userData.generalSettings.iconPackInfoPackageName,
+            )
+        }.associateBy { it.id }
     }.flowOn(ioDispatcher)
 }

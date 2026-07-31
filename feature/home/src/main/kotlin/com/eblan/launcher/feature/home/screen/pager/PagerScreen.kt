@@ -143,6 +143,7 @@ internal fun PagerScreen(
     resizeGridItem: GridItem?,
     gridItemSource: GridItemSource?,
     isVisibleOverlay: Boolean,
+    previewFolderGridItems: Map<String, GridItemData.Folder>,
     onDeleteGridItem: (GridItem) -> Unit,
     onResetGridAfterDeleteGridItem: (GridItem) -> Unit,
     onUpdateGridItemsAfterMove: (MoveGridItemResult) -> Unit,
@@ -684,6 +685,7 @@ internal fun PagerScreen(
                             lockMovement = lockMovement,
                             isDragging = pagerScreenState.isDragging,
                             showGridItemPopup = pagerScreenState.showGridItemPopup,
+                            previewFolderGridItems = previewFolderGridItems,
                             onOpenAppDrawer = pagerScreenState::openApplicationScreen,
                             onTapApplicationInfo = { serialNumber, componentName ->
                                 val sourceBoundsX = x + leftPadding
@@ -810,6 +812,7 @@ internal fun PagerScreen(
                             lockMovement = lockMovement,
                             isDragging = pagerScreenState.isDragging,
                             showGridItemPopup = pagerScreenState.showGridItemPopup,
+                            previewFolderGridItems = previewFolderGridItems,
                             onOpenAppDrawer = pagerScreenState::openApplicationScreen,
                             onTapApplicationInfo = { serialNumber, componentName ->
                                 val left = x + leftPadding

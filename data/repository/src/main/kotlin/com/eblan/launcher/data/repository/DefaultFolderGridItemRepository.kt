@@ -45,12 +45,6 @@ internal class DefaultFolderGridItemRepository @Inject constructor(private val f
 
     override suspend fun getFolderGridItemWrapper(id: String): FolderGridItemWrapper? = folderGridItemDao.getFolderGridItemWrapperEntity(id = id)?.asFolderGridItemWrapper()
 
-    override suspend fun getFolderGridItemWrappers(): List<FolderGridItemWrapper> = folderGridItemDao.getFolderGridItemWrapperEntities().filter {
-        it.folderGridItemEntity.folderId == null
-    }.map {
-        it.asFolderGridItemWrapper()
-    }
-
     override suspend fun getFolderGridItems(): List<FolderGridItem> = folderGridItemDao.getFolderGridItemEntities().filter {
         it.folderId == null
     }.map {
