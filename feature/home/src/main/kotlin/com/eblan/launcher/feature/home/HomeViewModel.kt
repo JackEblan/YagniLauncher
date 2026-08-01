@@ -618,8 +618,8 @@ internal class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             moveGridItemJob?.cancelAndJoin()
 
-            _folderPopupEntries.update { folderGridItemIds ->
-                folderGridItemIds.map { folderGridItemId ->
+            _folderPopupEntries.update { folderPopupEntries ->
+                folderPopupEntries.map { folderGridItemId ->
                     folderGridItemId.copy(isCloseFolder = true)
                 }
             }
