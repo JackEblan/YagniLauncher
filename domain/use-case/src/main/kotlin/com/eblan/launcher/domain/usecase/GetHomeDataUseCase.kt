@@ -26,6 +26,7 @@ import com.eblan.launcher.domain.framework.PackageManagerWrapper
 import com.eblan.launcher.domain.grid.isGridItemSpanWithinBounds
 import com.eblan.launcher.domain.model.Associate
 import com.eblan.launcher.domain.model.GridItem
+import com.eblan.launcher.domain.model.GridItems
 import com.eblan.launcher.domain.model.HomeData
 import com.eblan.launcher.domain.repository.GridRepository
 import com.eblan.launcher.domain.repository.UserDataRepository
@@ -49,9 +50,13 @@ class GetHomeDataUseCase @Inject constructor(
 ) {
     operator fun invoke(): Flow<HomeData> = combine(
         userDataRepository.userDataFlow,
-        getGridItemsFlow(),
+        gridRepository.gridItemsFlow,
     ) { userData, gridItems ->
-        val gridItemsByPage = gridItems.filter {
+        val currentGridItems = gridItems.toGridItems(
+            iconPackInfoPackageName = userData.generalSettings.iconPackInfoPackageName,
+        )
+
+        val gridItemsByPage = currentGridItems.filter {
             isGridItemSpanWithinBounds(
                 gridItem = it,
                 columns = userData.homeSettings.columns,
@@ -59,7 +64,7 @@ class GetHomeDataUseCase @Inject constructor(
             ) && it.associate == Associate.Grid
         }.groupBy { it.page }
 
-        val dockGridItemsByPage = gridItems.filter {
+        val dockGridItemsByPage = currentGridItems.filter {
             isGridItemSpanWithinBounds(
                 gridItem = it,
                 columns = userData.homeSettings.dockColumns,
@@ -69,7 +74,7 @@ class GetHomeDataUseCase @Inject constructor(
 
         HomeData(
             userData = userData,
-            gridItems = gridItems,
+            gridItems = currentGridItems,
             gridItemsByPage = gridItemsByPage,
             dockGridItemsByPage = dockGridItemsByPage,
             hasShortcutHostPermission = launcherAppsWrapper.hasShortcutHostPermission,
@@ -77,40 +82,19 @@ class GetHomeDataUseCase @Inject constructor(
         )
     }.flowOn(ioDispatcher)
 
-    private fun getGridItemsFlow(): Flow<List<GridItem>> = combine(
-        userDataRepository.userDataFlow,
-        gridRepository.gridItemsFlow,
-    ) { userData, gridItems ->
-        val currentApplicationInfoGridItems = gridItems.applicationInfoGridItems.map {
-            it.asGridItem(
-                fileManager = fileManager,
-                iconKeyGenerator = iconKeyGenerator,
-                iconPackInfoPackageName = userData.generalSettings.iconPackInfoPackageName,
-            )
-        }
-
-        val currentWidgetGridItems = gridItems.widgetGridItems.map {
-            it.asGridItem()
-        }
-
-        val currentShortcutInfoGridItems = gridItems.shortcutInfoGridItems.map {
-            it.asGridItem()
-        }
-
-        val currentShortcutConfigGridItems = gridItems.shortcutConfigGridItems.map {
-            it.asGridItem()
-        }
-
-        val currentFolderGridItems = gridItems.folderGridItems.map {
-            it.asEmptyFolderGridItem()
-        }
-
-        buildList {
-            addAll(currentApplicationInfoGridItems)
-            addAll(currentWidgetGridItems)
-            addAll(currentShortcutInfoGridItems)
-            addAll(currentShortcutConfigGridItems)
-            addAll(currentFolderGridItems)
-        }.filter { it.isTopLevel() }
-    }
+    private suspend fun GridItems.toGridItems(iconPackInfoPackageName: String): List<GridItem> = buildList {
+        addAll(
+            applicationInfoGridItems.map {
+                it.asGridItem(
+                    fileManager = fileManager,
+                    iconKeyGenerator = iconKeyGenerator,
+                    iconPackInfoPackageName = iconPackInfoPackageName,
+                )
+            },
+        )
+        addAll(widgetGridItems.map { it.asGridItem() })
+        addAll(shortcutInfoGridItems.map { it.asGridItem() })
+        addAll(shortcutConfigGridItems.map { it.asGridItem() })
+        addAll(folderGridItems.map { it.asEmptyFolderGridItem() })
+    }.filter { it.isTopLevel() }
 }

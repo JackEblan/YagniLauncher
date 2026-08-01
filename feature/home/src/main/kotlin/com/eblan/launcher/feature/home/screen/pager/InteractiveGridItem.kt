@@ -1070,9 +1070,6 @@ private fun InteractiveFolderGridItem(
                 modifier = commonModifier,
             )
         } else {
-            val folderGridItems =
-                previewFolderGridItems[gridItem.id]?.take(FOLDER_PREVIEW_COLUMNS * FOLDER_PREVIEW_ROWS)
-
             Box(
                 modifier = commonModifier.background(
                     color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
@@ -1081,7 +1078,7 @@ private fun InteractiveFolderGridItem(
             ) {
                 PreviewFolderGridLayout(
                     modifier = Modifier.matchParentSize(),
-                    gridItems = folderGridItems,
+                    gridItems = previewFolderGridItems[gridItem.id]?.take(FOLDER_PREVIEW_COLUMNS * FOLDER_PREVIEW_ROWS),
                     content = {
                         PreviewFolderGridItem(
                             sharedTransitionScope = sharedTransitionScope,
@@ -1092,7 +1089,7 @@ private fun InteractiveFolderGridItem(
                             moveGridItemResult = moveGridItemResult,
                             textColor = textColor,
                             drag = drag,
-                            folderGridItems = folderGridItems,
+                            folderGridItems = previewFolderGridItems[gridItem.id],
                             isVisibleFolder = isVisibleFolder,
                             onResetGrid = onResetGrid,
                         )

@@ -82,18 +82,22 @@ internal class DefaultGridItemTransaction @Inject constructor(
         shortcutConfigGridItemEntities: List<ShortcutConfigGridItemEntity>,
     ) {
         eblanDatabase.withTransaction {
-            applicationInfoGridItemDao.upsertApplicationInfoGridItemEntities(
-                entities = applicationInfoGridItemEntities,
-            )
-            widgetGridItemDao.upsertWidgetGridItemEntities(
-                entities = widgetGridItemEntities,
-            )
-            shortcutInfoGridItemDao.upsertShortcutInfoGridItemEntities(
-                entities = shortcutInfoGridItemEntities,
-            )
             folderGridItemDao.upsertFolderGridItemEntities(
                 entities = folderGridItemEntities,
             )
+
+            applicationInfoGridItemDao.upsertApplicationInfoGridItemEntities(
+                entities = applicationInfoGridItemEntities,
+            )
+
+            widgetGridItemDao.upsertWidgetGridItemEntities(
+                entities = widgetGridItemEntities,
+            )
+
+            shortcutInfoGridItemDao.upsertShortcutInfoGridItemEntities(
+                entities = shortcutInfoGridItemEntities,
+            )
+
             shortcutConfigGridItemDao.upsertShortcutConfigGridItemEntities(
                 entities = shortcutConfigGridItemEntities,
             )
