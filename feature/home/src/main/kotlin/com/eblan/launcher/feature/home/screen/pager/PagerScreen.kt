@@ -940,11 +940,11 @@ internal fun PagerScreen(
             )
         }
 
-        folderPopups.forEach { popupFolderGridItem ->
+        folderPopups.forEach { folderPopup ->
             FolderScreen(
                 sharedTransitionScope = this@SharedTransitionLayout,
                 drag = pagerScreenState.drag,
-                folderPopup = popupFolderGridItem,
+                folderPopup = folderPopup,
                 gridItemSettings = homeSettings.gridItemSettings,
                 paddingValues = paddingValues,
                 safeDrawingHeight = safeDrawingHeight,

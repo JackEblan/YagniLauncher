@@ -274,8 +274,6 @@ internal fun FolderScreen(
     val currentIsVisibleOverlay = rememberUpdatedState(isVisibleOverlay)
     val currentMoveGridItemResult = rememberUpdatedState(moveGridItemResult)
     val currentLockMovement = rememberUpdatedState(lockMovement)
-    val currentFolderPopupEntry = rememberUpdatedState(folderPopup.folderPopupEntry)
-    val currentFolderPopupIntOffset = rememberUpdatedState(folderPopupIntOffset)
 
     LaunchedEffect(key1 = Unit) {
         progress.animateTo(targetValue = 1f)
@@ -293,7 +291,6 @@ internal fun FolderScreen(
             moveGridItemResult = currentMoveGridItemResult,
             folderPopup = folderPopup,
             progress = progress,
-            folderGridItem = folderPopup.gridItem,
             onAnimateToScrollToPage = folderGridHorizontalPagerState::animateScrollToPage,
             onDeleteFolderPopupEntry = onDeleteFolderPopupEntry,
             onMoveFolderGridItemOutsideFolder = onMoveFolderGridItemOutsideFolder,
@@ -304,7 +301,7 @@ internal fun FolderScreen(
     LaunchedEffect(
         drag,
         dragIntOffset,
-        folderPopup.gridItem,
+        folderPopup,
         moveGridItemResult,
         isLastFolderGridItem,
     ) {
@@ -314,7 +311,7 @@ internal fun FolderScreen(
             dragIntOffset = dragIntOffset,
             currentPage = folderGridHorizontalPagerState.currentPage,
             folderPopup = folderPopup,
-            folderPopupIntOffset = currentFolderPopupIntOffset,
+            folderPopupIntOffset = folderPopupIntOffset,
             isDragging = currentIsDragging,
             isVisibleOverlay = currentIsVisibleOverlay,
             isScrollInProgress = folderGridHorizontalPagerState.isScrollInProgress,
@@ -326,7 +323,6 @@ internal fun FolderScreen(
             layoutDirection = layoutDirection,
             folderCellWidth = folderCellWidth,
             folderCellHeight = folderCellHeight,
-            folderPopupEntry = currentFolderPopupEntry,
             isLastFolderGridItem = isLastFolderGridItem,
             onMoveFolderGridItem = onMoveFolderGridItem,
             onUpdateSharedElementKey = onUpdateSharedElementKey,
@@ -369,7 +365,7 @@ internal fun FolderScreen(
         drag,
         dragIntOffset,
         moveGridItemResult,
-        folderPopup.gridItem,
+        folderPopup,
         isLastFolderGridItem,
     ) {
         handleAnimateScrollToPage(
@@ -575,7 +571,6 @@ private suspend fun handleFolderPopup(
     moveGridItemResult: State<MoveGridItemResult?>,
     folderPopup: FolderPopup,
     progress: Animatable<Float, AnimationVector1D>,
-    folderGridItem: GridItem,
     onAnimateToScrollToPage: suspend (Int) -> Unit,
     onDeleteFolderPopupEntry: (FolderPopupEntry) -> Unit,
     onMoveFolderGridItemOutsideFolder: (GridItem) -> Unit,
@@ -603,9 +598,9 @@ private suspend fun handleFolderPopup(
             val newGridItem = when (val data = gridItem.data) {
                 is GridItemData.ApplicationInfo -> {
                     gridItem.copy(
-                        page = folderGridItem.page,
-                        startColumn = folderGridItem.startColumn,
-                        startRow = folderGridItem.startRow,
+                        page = folderPopup.gridItem.page,
+                        startColumn = folderPopup.gridItem.startColumn,
+                        startRow = folderPopup.gridItem.startRow,
                         data = data.copy(
                             index = -1,
                             folderId = null,
@@ -615,9 +610,9 @@ private suspend fun handleFolderPopup(
 
                 is GridItemData.Folder -> {
                     gridItem.copy(
-                        page = folderGridItem.page,
-                        startColumn = folderGridItem.startColumn,
-                        startRow = folderGridItem.startRow,
+                        page = folderPopup.gridItem.page,
+                        startColumn = folderPopup.gridItem.startColumn,
+                        startRow = folderPopup.gridItem.startRow,
                         data = data.copy(
                             index = -1,
                             folderId = null,
@@ -627,9 +622,9 @@ private suspend fun handleFolderPopup(
 
                 is GridItemData.ShortcutConfig -> {
                     gridItem.copy(
-                        page = folderGridItem.page,
-                        startColumn = folderGridItem.startColumn,
-                        startRow = folderGridItem.startRow,
+                        page = folderPopup.gridItem.page,
+                        startColumn = folderPopup.gridItem.startColumn,
+                        startRow = folderPopup.gridItem.startRow,
                         data = data.copy(
                             index = -1,
                             folderId = null,
@@ -639,9 +634,9 @@ private suspend fun handleFolderPopup(
 
                 is GridItemData.ShortcutInfo -> {
                     gridItem.copy(
-                        page = folderGridItem.page,
-                        startColumn = folderGridItem.startColumn,
-                        startRow = folderGridItem.startRow,
+                        page = folderPopup.gridItem.page,
+                        startColumn = folderPopup.gridItem.startColumn,
+                        startRow = folderPopup.gridItem.startRow,
                         data = data.copy(
                             index = -1,
                             folderId = null,

@@ -174,7 +174,7 @@ internal fun handleDragFolderGridItem(
     dragIntOffset: IntOffset,
     currentPage: Int,
     folderPopup: FolderPopup,
-    folderPopupIntOffset: State<IntOffset>,
+    folderPopupIntOffset: IntOffset,
     isDragging: State<Boolean>,
     isVisibleOverlay: State<Boolean>,
     isScrollInProgress: Boolean,
@@ -186,7 +186,6 @@ internal fun handleDragFolderGridItem(
     layoutDirection: LayoutDirection,
     folderCellWidth: Int,
     folderCellHeight: Int,
-    folderPopupEntry: State<FolderPopupEntry>,
     isLastFolderGridItem: Boolean,
     onMoveFolderGridItem: (
         folderPopup: FolderPopup,
@@ -274,11 +273,11 @@ internal fun handleDragFolderGridItem(
         ).coerceAtLeast(minimumValue = topPadding)
 
     val endIntOffset = IntOffset(
-        x = folderPopupIntOffset.value.x.coerceIn(
+        x = folderPopupIntOffset.x.coerceIn(
             minimumValue = leftPadding,
             maximumValue = maximumX,
         ),
-        y = folderPopupIntOffset.value.y.coerceIn(
+        y = folderPopupIntOffset.y.coerceIn(
             minimumValue = topPadding,
             maximumValue = maximumY,
         ),
@@ -308,7 +307,7 @@ internal fun handleDragFolderGridItem(
             folderGridHeightPx,
             currentPage,
         )
-    } else {
-        onUpsertFolderPopupEntry(folderPopupEntry.value.copy(isCloseFolder = true))
+    } else if (!folderPopup.folderPopupEntry.isCloseFolder) {
+        onUpsertFolderPopupEntry(folderPopup.folderPopupEntry.copy(isCloseFolder = true))
     }
 }
