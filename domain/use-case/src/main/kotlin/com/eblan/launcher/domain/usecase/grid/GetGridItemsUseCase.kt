@@ -41,39 +41,36 @@ class GetGridItemsUseCase @Inject constructor(
 
         val gridItems = gridRepository.getGridItems()
 
-        val currentApplicationGridItems =
-            gridItems.applicationInfoGridItems.map {
-                it.asGridItem(
-                    fileManager = fileManager,
-                    iconKeyGenerator = iconKeyGenerator,
-                    iconPackInfoPackageName = userData.generalSettings.iconPackInfoPackageName,
-                )
-            }
-
-        val currentWidgetGridItems = gridItems.widgetGridItems.map {
-            it.asGridItem()
-        }
-
-        val currentShortcutInfoGridItems =
-            gridItems.shortcutInfoGridItems.map {
-                it.asGridItem()
-            }
-
-        val currentShortcutConfigGridItems =
-            gridItems.shortcutConfigGridItems.map {
-                it.asGridItem()
-            }
-
-        val currentFolderGridItems = gridItems.folderGridItems.map {
-            it.asEmptyFolderGridItem()
-        }
-
         buildList {
-            addAll(currentApplicationGridItems)
-            addAll(currentWidgetGridItems)
-            addAll(currentShortcutInfoGridItems)
-            addAll(currentShortcutConfigGridItems)
-            addAll(currentFolderGridItems)
+            addAll(
+                gridItems.applicationInfoGridItems.map {
+                    it.asGridItem(
+                        fileManager = fileManager,
+                        iconKeyGenerator = iconKeyGenerator,
+                        iconPackInfoPackageName = userData.generalSettings.iconPackInfoPackageName,
+                    )
+                },
+            )
+            addAll(
+                gridItems.widgetGridItems.map {
+                    it.asGridItem()
+                },
+            )
+            addAll(
+                gridItems.shortcutInfoGridItems.map {
+                    it.asGridItem()
+                },
+            )
+            addAll(
+                gridItems.shortcutConfigGridItems.map {
+                    it.asGridItem()
+                },
+            )
+            addAll(
+                gridItems.folderGridItems.map {
+                    it.asEmptyFolderGridItem()
+                },
+            )
         }
     }
 }
