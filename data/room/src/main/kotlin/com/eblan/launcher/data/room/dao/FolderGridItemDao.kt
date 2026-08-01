@@ -32,6 +32,10 @@ import kotlinx.coroutines.flow.Flow
 interface FolderGridItemDao {
     @Transaction
     @Query("SELECT * FROM FolderGridItemEntity")
+    fun getFolderGridItemEntities(): List<FolderGridItemEntity>
+
+    @Transaction
+    @Query("SELECT * FROM FolderGridItemEntity")
     fun getFolderGridItemWrapperEntitiesFlow(): Flow<List<FolderGridItemWrapperEntity>>
 
     @Transaction

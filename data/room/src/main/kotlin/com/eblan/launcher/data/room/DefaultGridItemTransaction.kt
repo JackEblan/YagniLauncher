@@ -58,7 +58,7 @@ internal class DefaultGridItemTransaction @Inject constructor(
                         widgetGridItemEntities = widgetGridItemDao.getWidgetGridItemEntities(),
                         shortcutInfoGridItemEntities = shortcutInfoGridItemDao.getShortcutInfoGridItemEntities(),
                         shortcutConfigGridItemEntities = shortcutConfigGridItemDao.getShortcutConfigGridItemEntities(),
-                        folderGridItemWrapperEntities = folderGridItemDao.getFolderGridItemWrapperEntities(),
+                        folderGridItemEntities = folderGridItemDao.getFolderGridItemEntities(),
                     )
                 }
             }
@@ -70,7 +70,7 @@ internal class DefaultGridItemTransaction @Inject constructor(
             widgetGridItemEntities = widgetGridItemDao.getWidgetGridItemEntities(),
             shortcutInfoGridItemEntities = shortcutInfoGridItemDao.getShortcutInfoGridItemEntities(),
             shortcutConfigGridItemEntities = shortcutConfigGridItemDao.getShortcutConfigGridItemEntities(),
-            folderGridItemWrapperEntities = folderGridItemDao.getFolderGridItemWrapperEntities(),
+            folderGridItemEntities = folderGridItemDao.getFolderGridItemEntities(),
         )
     }
 

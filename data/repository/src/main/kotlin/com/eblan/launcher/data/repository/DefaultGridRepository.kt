@@ -20,7 +20,6 @@ package com.eblan.launcher.data.repository
 import com.eblan.launcher.data.repository.mapper.asApplicationInfoGridItem
 import com.eblan.launcher.data.repository.mapper.asEntity
 import com.eblan.launcher.data.repository.mapper.asFolderGridItem
-import com.eblan.launcher.data.repository.mapper.asFolderGridItemWrapper
 import com.eblan.launcher.data.repository.mapper.asModel
 import com.eblan.launcher.data.repository.mapper.asShortcutConfigGridItem
 import com.eblan.launcher.data.repository.mapper.asShortcutInfoGridItem
@@ -433,8 +432,8 @@ internal class DefaultGridRepository @Inject constructor(
             it.asModel()
         }
 
-        val folderGridItemWrappers = folderGridItemWrapperEntities.map {
-            it.asFolderGridItemWrapper()
+        val folderGridItems = folderGridItemEntities.map {
+            it.asModel()
         }
 
         return GridItems(
@@ -442,7 +441,7 @@ internal class DefaultGridRepository @Inject constructor(
             widgetGridItems = widgetGridItems,
             shortcutInfoGridItems = shortcutInfoGridItems,
             shortcutConfigGridItems = shortcutConfigGridItems,
-            folderGridItemWrappers = folderGridItemWrappers,
+            folderGridItems = folderGridItems,
         )
     }
 }

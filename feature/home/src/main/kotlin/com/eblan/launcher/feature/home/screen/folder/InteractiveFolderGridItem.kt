@@ -99,6 +99,7 @@ internal fun InteractiveFolderGridItem(
     moveGridItemResult: MoveGridItemResult?,
     progress: Float,
     showFolderGridItemPopup: Boolean,
+    gridItems: List<GridItem>,
     onOpenAppDrawer: () -> Unit,
     onTapApplicationInfo: (
         serialNumber: Long,
@@ -239,6 +240,7 @@ internal fun InteractiveFolderGridItem(
                 isVisibleOverlay = isVisibleOverlay,
                 sharedElementKey = sharedElementKey,
                 showFolderGridItemPopup = showFolderGridItemPopup,
+                gridItems = gridItems,
                 onUpdateIsCloseFolderGridItemPopup = onUpdateIsCloseFolderGridItemPopup,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
@@ -858,6 +860,7 @@ private fun InteractiveNestedFolderGridItem(
     isVisibleOverlay: Boolean,
     sharedElementKey: SharedElementKey,
     showFolderGridItemPopup: Boolean,
+    gridItems: List<GridItem>,
     onUpdateIsCloseFolderGridItemPopup: (Boolean) -> Unit,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
@@ -1028,7 +1031,7 @@ private fun InteractiveNestedFolderGridItem(
             ) {
                 PreviewFolderGridLayout(
                     modifier = Modifier.matchParentSize(),
-                    gridItems = data.gridItems.take(FOLDER_PREVIEW_COLUMNS * FOLDER_PREVIEW_ROWS),
+                    gridItems = gridItems.take(FOLDER_PREVIEW_COLUMNS * FOLDER_PREVIEW_ROWS),
                     content = {
                         PreviewNestedFolderGridItem(
                             alpha = alpha,

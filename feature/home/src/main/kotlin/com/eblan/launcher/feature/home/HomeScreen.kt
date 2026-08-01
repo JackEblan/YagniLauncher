@@ -116,6 +116,8 @@ internal fun HomeRoute(
 
     val textColor by viewModel.textColor.collectAsStateWithLifecycle()
 
+    val previewFolderGridItems by viewModel.previewFolderGridItems.collectAsStateWithLifecycle()
+
     HomeScreen(
         modifier = modifier,
         configureResultCode = configureResultCode,
@@ -135,6 +137,7 @@ internal fun HomeRoute(
         gridItemSource = gridItemSource,
         isVisibleOverlay = isVisibleOverlay,
         textColor = textColor,
+        previewFolderGridItems = previewFolderGridItems,
         onResetGrid = viewModel::resetGrid,
         onDeleteGridItem = viewModel::deleteGridItem,
         onResetGridAfterDeleteGridItem = viewModel::resetGridAfterDeleteGridItem,
@@ -194,6 +197,7 @@ internal fun HomeScreen(
     gridItemSource: GridItemSource?,
     isVisibleOverlay: Boolean,
     textColor: TextColor,
+    previewFolderGridItems: Map<String, List<GridItem>>,
     onResetGrid: () -> Unit,
     onDeleteGridItem: (GridItem) -> Unit,
     onResetGridAfterDeleteGridItem: (GridItem) -> Unit,
@@ -300,6 +304,7 @@ internal fun HomeScreen(
                 gridItemSource = gridItemSource,
                 isVisibleOverlay = isVisibleOverlay,
                 textColor = textColor,
+                previewFolderGridItems = previewFolderGridItems,
                 onResetGrid = onResetGrid,
                 onDeleteGridItem = onDeleteGridItem,
                 onResetGridAfterDeleteGridItem = onResetGridAfterDeleteGridItem,
@@ -364,6 +369,7 @@ private fun Success(
     gridItemSource: GridItemSource?,
     isVisibleOverlay: Boolean,
     textColor: TextColor,
+    previewFolderGridItems: Map<String, List<GridItem>>,
     onResetGrid: () -> Unit,
     onDeleteGridItem: (GridItem) -> Unit,
     onResetGridAfterDeleteGridItem: (GridItem) -> Unit,
@@ -479,6 +485,7 @@ private fun Success(
                     resizeGridItem = resizeGridItem,
                     gridItemSource = gridItemSource,
                     isVisibleOverlay = isVisibleOverlay,
+                    previewFolderGridItems = previewFolderGridItems,
                     onDeleteGridItem = onDeleteGridItem,
                     onResetGridAfterDeleteGridItem = onResetGridAfterDeleteGridItem,
                     onUpdateGridItemsAfterMove = onUpdateGridItemsAfterMove,
@@ -529,6 +536,7 @@ private fun Success(
                     screenWidth = screenWidth,
                     screenHeight = screenHeight,
                     textColor = textColor,
+                    previewFolderGridItems = previewFolderGridItems,
                     onSaveEditPage = onSaveEditPage,
                     onUpdateScreen = onUpdateScreen,
                 )
@@ -541,6 +549,7 @@ private fun Success(
                     homeSettings = homeData.userData.homeSettings,
                     paddingValues = paddingValues,
                     textColor = textColor,
+                    previewFolderGridItems = previewFolderGridItems,
                     onSaveEditPage = onSaveEditPage,
                     onUpdateScreen = onUpdateScreen,
                 )

@@ -441,6 +441,7 @@ internal suspend fun handleConflictingGridItem(
     intOffset: IntOffset,
     intSize: IntSize,
     gridItem: State<GridItem>,
+    folderGridItems: State<List<GridItem>?>,
     onShowFolderWhenDragging: (
         folderPopupEntry: FolderPopupEntry,
         movingGridItem: GridItem,
@@ -465,7 +466,7 @@ internal suspend fun handleConflictingGridItem(
 
     val movingGridItem = moveGridItemResult.movingGridItem
 
-    val maxIndex = conflictingData.gridItems.maxOfOrNull {
+    val maxIndex = folderGridItems.value?.maxOfOrNull {
         when (val data = it.data) {
             is GridItemData.ApplicationInfo -> data.index + 1
             is GridItemData.ShortcutInfo -> data.index + 1

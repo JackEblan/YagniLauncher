@@ -29,6 +29,7 @@ import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.HomeData
 import com.eblan.launcher.domain.repository.GridRepository
 import com.eblan.launcher.domain.repository.UserDataRepository
+import com.eblan.launcher.domain.usecase.grid.asEmptyFolderGridItem
 import com.eblan.launcher.domain.usecase.grid.asGridItem
 import com.eblan.launcher.domain.usecase.grid.isTopLevel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -100,12 +101,8 @@ class GetHomeDataUseCase @Inject constructor(
             it.asGridItem()
         }
 
-        val currentFolderGridItems = gridItems.folderGridItemWrappers.map {
-            it.asGridItem(
-                fileManager = fileManager,
-                iconKeyGenerator = iconKeyGenerator,
-                iconPackInfoPackageName = userData.generalSettings.iconPackInfoPackageName,
-            )
+        val currentFolderGridItems = gridItems.folderGridItems.map {
+            it.asEmptyFolderGridItem()
         }
 
         buildList {

@@ -464,6 +464,7 @@ internal fun FolderScreen(
                                 moveGridItemResult = moveGridItemResult,
                                 progress = progress.value,
                                 showFolderGridItemPopup = showFolderGridItemPopup,
+                                gridItems = folderPopup.gridItems,
                                 onOpenAppDrawer = onOpenAppDrawer,
                                 onTapApplicationInfo = { serialNumber, componentName ->
                                     val sourceBoundsX = x + leftPadding

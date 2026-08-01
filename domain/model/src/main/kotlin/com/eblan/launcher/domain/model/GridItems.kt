@@ -22,5 +22,5 @@ data class GridItems(
     val widgetGridItems: List<WidgetGridItem>,
     val shortcutInfoGridItems: List<ShortcutInfoGridItem>,
     val shortcutConfigGridItems: List<ShortcutConfigGridItem>,
-    val folderGridItemWrappers: List<FolderGridItemWrapper>,
+    val folderGridItems: List<FolderGridItem>,
 )
