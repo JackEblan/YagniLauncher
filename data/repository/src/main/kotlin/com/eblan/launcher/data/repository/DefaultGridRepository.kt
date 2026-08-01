@@ -66,8 +66,7 @@ internal class DefaultGridRepository @Inject constructor(
             gridItemEntities.asGridItems()
         }
 
-    override suspend fun getGridItems(): GridItems =
-        gridItemTransaction.getGridItemEntities().asGridItems()
+    override suspend fun getGridItems(): GridItems = gridItemTransaction.getGridItemEntities().asGridItems()
 
     override suspend fun insertGridItem(gridItem: GridItem) {
         when (val data = gridItem.data) {

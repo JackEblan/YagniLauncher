@@ -64,16 +64,14 @@ internal class DefaultGridItemTransaction @Inject constructor(
             }
             .distinctUntilChanged()
 
-    override suspend fun getGridItemEntities(): GridItemEntities {
-        return eblanDatabase.withTransaction {
-            GridItemEntities(
-                applicationInfoGridItemEntities = applicationInfoGridItemDao.getApplicationInfoGridItemEntities(),
-                widgetGridItemEntities = widgetGridItemDao.getWidgetGridItemEntities(),
-                shortcutInfoGridItemEntities = shortcutInfoGridItemDao.getShortcutInfoGridItemEntities(),
-                shortcutConfigGridItemEntities = shortcutConfigGridItemDao.getShortcutConfigGridItemEntities(),
-                folderGridItemWrapperEntities = folderGridItemDao.getFolderGridItemWrapperEntities(),
-            )
-        }
+    override suspend fun getGridItemEntities(): GridItemEntities = eblanDatabase.withTransaction {
+        GridItemEntities(
+            applicationInfoGridItemEntities = applicationInfoGridItemDao.getApplicationInfoGridItemEntities(),
+            widgetGridItemEntities = widgetGridItemDao.getWidgetGridItemEntities(),
+            shortcutInfoGridItemEntities = shortcutInfoGridItemDao.getShortcutInfoGridItemEntities(),
+            shortcutConfigGridItemEntities = shortcutConfigGridItemDao.getShortcutConfigGridItemEntities(),
+            folderGridItemWrapperEntities = folderGridItemDao.getFolderGridItemWrapperEntities(),
+        )
     }
 
     override suspend fun upsertGridItemEntitiesTransaction(
