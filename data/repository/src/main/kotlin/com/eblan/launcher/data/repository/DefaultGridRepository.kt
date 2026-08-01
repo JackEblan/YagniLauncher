@@ -18,19 +18,21 @@
 package com.eblan.launcher.data.repository
 
 import com.eblan.launcher.data.repository.mapper.asApplicationInfoGridItem
+import com.eblan.launcher.data.repository.mapper.asEntity
 import com.eblan.launcher.data.repository.mapper.asFolderGridItem
 import com.eblan.launcher.data.repository.mapper.asShortcutConfigGridItem
 import com.eblan.launcher.data.repository.mapper.asShortcutInfoGridItem
 import com.eblan.launcher.data.repository.mapper.asWidgetGridItem
+import com.eblan.launcher.data.room.GridItemTransaction
+import com.eblan.launcher.data.room.entity.ApplicationInfoGridItemEntity
+import com.eblan.launcher.data.room.entity.FolderGridItemEntity
+import com.eblan.launcher.data.room.entity.ShortcutConfigGridItemEntity
+import com.eblan.launcher.data.room.entity.ShortcutInfoGridItemEntity
+import com.eblan.launcher.data.room.entity.WidgetGridItemEntity
 import com.eblan.launcher.domain.common.Dispatcher
 import com.eblan.launcher.domain.common.EblanDispatchers
-import com.eblan.launcher.domain.model.ApplicationInfoGridItem
-import com.eblan.launcher.domain.model.FolderGridItem
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
-import com.eblan.launcher.domain.model.ShortcutConfigGridItem
-import com.eblan.launcher.domain.model.ShortcutInfoGridItem
-import com.eblan.launcher.domain.model.WidgetGridItem
 import com.eblan.launcher.domain.repository.ApplicationInfoGridItemRepository
 import com.eblan.launcher.domain.repository.EblanApplicationInfoRepository
 import com.eblan.launcher.domain.repository.FolderGridItemRepository
@@ -50,6 +52,7 @@ internal class DefaultGridRepository @Inject constructor(
     private val shortcutInfoGridItemRepository: ShortcutInfoGridItemRepository,
     private val folderGridItemRepository: FolderGridItemRepository,
     private val shortcutConfigGridItemRepository: ShortcutConfigGridItemRepository,
+    private val gridItemTransaction: GridItemTransaction,
     @param:Dispatcher(EblanDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) : GridRepository {
     override suspend fun insertGridItem(gridItem: GridItem) {
@@ -197,124 +200,112 @@ internal class DefaultGridRepository @Inject constructor(
     }
 
     override suspend fun upsertGridItems(gridItems: List<GridItem>) {
-        val applicationInfoGridItems = mutableListOf<ApplicationInfoGridItem>()
+        val applicationInfoGridItemEntities = mutableListOf<ApplicationInfoGridItemEntity>()
 
-        val widgetGridItems = mutableListOf<WidgetGridItem>()
+        val widgetGridItemEntities = mutableListOf<WidgetGridItemEntity>()
 
-        val shortcutInfoGridItems = mutableListOf<ShortcutInfoGridItem>()
+        val shortcutInfoGridItemEntities = mutableListOf<ShortcutInfoGridItemEntity>()
 
-        val folderGridItems = mutableListOf<FolderGridItem>()
+        val folderGridItemEntities = mutableListOf<FolderGridItemEntity>()
 
-        val shortcutConfigGridItems = mutableListOf<ShortcutConfigGridItem>()
+        val shortcutConfigGridItemEntities = mutableListOf<ShortcutConfigGridItemEntity>()
 
         gridItems.forEach { gridItem ->
             when (val data = gridItem.data) {
                 is GridItemData.ApplicationInfo -> {
-                    applicationInfoGridItems.add(
-                        gridItem.asApplicationInfoGridItem(data = data),
+                    applicationInfoGridItemEntities.add(
+                        gridItem.asApplicationInfoGridItem(data = data).asEntity(),
                     )
                 }
 
                 is GridItemData.Folder -> {
-                    folderGridItems.add(
-                        gridItem.asFolderGridItem(data = data),
+                    folderGridItemEntities.add(
+                        gridItem.asFolderGridItem(data = data).asEntity(),
                     )
                 }
 
                 is GridItemData.Widget -> {
-                    widgetGridItems.add(
-                        gridItem.asWidgetGridItem(data = data),
+                    widgetGridItemEntities.add(
+                        gridItem.asWidgetGridItem(data = data).asEntity(),
                     )
                 }
 
                 is GridItemData.ShortcutInfo -> {
-                    shortcutInfoGridItems.add(
-                        gridItem.asShortcutInfoGridItem(data = data),
+                    shortcutInfoGridItemEntities.add(
+                        gridItem.asShortcutInfoGridItem(data = data).asEntity(),
                     )
                 }
 
                 is GridItemData.ShortcutConfig -> {
-                    shortcutConfigGridItems.add(
-                        gridItem.asShortcutConfigGridItem(data = data),
+                    shortcutConfigGridItemEntities.add(
+                        gridItem.asShortcutConfigGridItem(data = data).asEntity(),
                     )
                 }
             }
         }
 
-        applicationInfoGridItemRepository.upsertApplicationInfoGridItems(
-            applicationInfoGridItems = applicationInfoGridItems,
-        )
-
-        widgetGridItemRepository.upsertWidgetGridItems(widgetGridItems = widgetGridItems)
-
-        shortcutInfoGridItemRepository.upsertShortcutInfoGridItems(shortcutInfoGridItems = shortcutInfoGridItems)
-
-        folderGridItemRepository.upsertFolderGridItems(folderGridItems = folderGridItems)
-
-        shortcutConfigGridItemRepository.upsertShortcutConfigGridItems(
-            shortcutConfigGridItems = shortcutConfigGridItems,
+        gridItemTransaction.upsertGridItemEntitiesTransaction(
+            applicationInfoGridItemEntities = applicationInfoGridItemEntities,
+            widgetGridItemEntities = widgetGridItemEntities,
+            shortcutInfoGridItemEntities = shortcutInfoGridItemEntities,
+            folderGridItemEntities = folderGridItemEntities,
+            shortcutConfigGridItemEntities = shortcutConfigGridItemEntities,
         )
     }
 
     override suspend fun deleteGridItemsRecursively(gridItems: List<GridItem>) {
-        val applicationInfoGridItems = mutableListOf<ApplicationInfoGridItem>()
+        val applicationInfoGridItemEntities = mutableListOf<ApplicationInfoGridItemEntity>()
 
-        val widgetGridItems = mutableListOf<WidgetGridItem>()
+        val widgetGridItemEntities = mutableListOf<WidgetGridItemEntity>()
 
-        val shortcutInfoGridItems = mutableListOf<ShortcutInfoGridItem>()
+        val shortcutInfoGridItemEntities = mutableListOf<ShortcutInfoGridItemEntity>()
 
-        val folderGridItems = mutableListOf<FolderGridItem>()
+        val folderGridItemEntities = mutableListOf<FolderGridItemEntity>()
 
-        val shortcutConfigGridItems = mutableListOf<ShortcutConfigGridItem>()
+        val shortcutConfigGridItemEntities = mutableListOf<ShortcutConfigGridItemEntity>()
 
         gridItems.forEach { gridItem ->
             when (val data = gridItem.data) {
                 is GridItemData.ApplicationInfo -> {
-                    applicationInfoGridItems.add(
-                        gridItem.asApplicationInfoGridItem(data = data),
+                    applicationInfoGridItemEntities.add(
+                        gridItem.asApplicationInfoGridItem(data = data).asEntity(),
                     )
                 }
 
                 is GridItemData.Folder -> {
-                    folderGridItems.add(
-                        gridItem.asFolderGridItem(data = data),
+                    folderGridItemEntities.add(
+                        gridItem.asFolderGridItem(data = data).asEntity(),
                     )
 
                     deleteGridItemsRecursively(gridItems = data.gridItems)
                 }
 
                 is GridItemData.Widget -> {
-                    widgetGridItems.add(
-                        gridItem.asWidgetGridItem(data = data),
+                    widgetGridItemEntities.add(
+                        gridItem.asWidgetGridItem(data = data).asEntity(),
                     )
                 }
 
                 is GridItemData.ShortcutInfo -> {
-                    shortcutInfoGridItems.add(
-                        gridItem.asShortcutInfoGridItem(data = data),
+                    shortcutInfoGridItemEntities.add(
+                        gridItem.asShortcutInfoGridItem(data = data).asEntity(),
                     )
                 }
 
                 is GridItemData.ShortcutConfig -> {
-                    shortcutConfigGridItems.add(
-                        gridItem.asShortcutConfigGridItem(data = data),
+                    shortcutConfigGridItemEntities.add(
+                        gridItem.asShortcutConfigGridItem(data = data).asEntity(),
                     )
                 }
             }
         }
 
-        applicationInfoGridItemRepository.deleteApplicationInfoGridItems(
-            applicationInfoGridItems = applicationInfoGridItems,
-        )
-
-        widgetGridItemRepository.deleteWidgetGridItemsByPackageName(widgetGridItems = widgetGridItems)
-
-        shortcutInfoGridItemRepository.deleteShortcutInfoGridItems(shortcutInfoGridItems = shortcutInfoGridItems)
-
-        folderGridItemRepository.deleteFolderGridItems(folderGridItems = folderGridItems)
-
-        shortcutConfigGridItemRepository.deleteShortcutConfigGridItems(
-            shortcutConfigGridItems = shortcutConfigGridItems,
+        gridItemTransaction.deleteGridItemEntitiesTransaction(
+            applicationInfoGridItemEntities = applicationInfoGridItemEntities,
+            widgetGridItemEntities = widgetGridItemEntities,
+            shortcutInfoGridItemEntities = shortcutInfoGridItemEntities,
+            folderGridItemEntities = folderGridItemEntities,
+            shortcutConfigGridItemEntities = shortcutConfigGridItemEntities,
         )
     }
 
