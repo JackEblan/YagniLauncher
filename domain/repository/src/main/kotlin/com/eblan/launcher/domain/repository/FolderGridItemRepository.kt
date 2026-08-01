@@ -26,6 +26,8 @@ interface FolderGridItemRepository {
 
     val folderGridItemsFlow: Flow<List<FolderGridItem>>
 
+    suspend fun getFolderGridItemWrappers(): List<FolderGridItemWrapper>
+
     suspend fun getFolderGridItemWrapper(id: String): FolderGridItemWrapper?
 
     suspend fun getFolderGridItems(): List<FolderGridItem>
