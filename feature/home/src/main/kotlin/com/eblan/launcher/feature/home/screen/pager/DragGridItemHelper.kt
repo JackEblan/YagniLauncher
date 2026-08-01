@@ -452,8 +452,6 @@ internal suspend fun handleConflictingGridItem(
 
     val conflictingGridItem = moveGridItemResult?.conflictingGridItem ?: return
 
-    val conflictingData = conflictingGridItem.data as? GridItemData.Folder ?: return
-
     if (drag.value != Drag.Dragging ||
         !moveGridItemResult.isSuccess ||
         !isVisibleOverlay.value ||
@@ -479,23 +477,23 @@ internal suspend fun handleConflictingGridItem(
     val movingData = when (val data = movingGridItem.data) {
         is GridItemData.ApplicationInfo -> data.copy(
             index = maxIndex,
-            folderId = conflictingData.id,
+            folderId = conflictingGridItem.id,
         )
 
         is GridItemData.ShortcutConfig -> data.copy(
             index = maxIndex,
-            folderId = conflictingData.id,
+            folderId = conflictingGridItem.id,
         )
 
         is GridItemData.ShortcutInfo -> data.copy(
             index = maxIndex,
-            folderId = conflictingData.id,
+            folderId = conflictingGridItem.id,
         )
 
         is GridItemData.Folder -> {
             data.copy(
                 index = maxIndex,
-                folderId = conflictingData.id,
+                folderId = conflictingGridItem.id,
             )
         }
 

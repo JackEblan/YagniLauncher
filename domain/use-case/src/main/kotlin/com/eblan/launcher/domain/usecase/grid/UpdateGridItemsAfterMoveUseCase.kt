@@ -19,22 +19,33 @@ package com.eblan.launcher.domain.usecase.grid
 
 import com.eblan.launcher.domain.common.Dispatcher
 import com.eblan.launcher.domain.common.EblanDispatchers
+import com.eblan.launcher.domain.common.IconKeyGenerator
+import com.eblan.launcher.domain.framework.FileManager
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.MoveGridItemResult
+import com.eblan.launcher.domain.repository.FolderGridItemRepository
 import com.eblan.launcher.domain.repository.GridRepository
+import com.eblan.launcher.domain.repository.UserDataRepository
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 class UpdateGridItemsAfterMoveUseCase @Inject constructor(
+    private val userDataRepository: UserDataRepository,
     private val gridRepository: GridRepository,
+    private val folderGridItemRepository: FolderGridItemRepository,
+    private val fileManager: FileManager,
+    private val iconKeyGenerator: IconKeyGenerator,
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke(moveGridItemResult: MoveGridItemResult) {
         withContext(defaultDispatcher) {
+            val userData = userDataRepository.userDataFlow.first()
+
             val conflictingGridItem = moveGridItemResult.conflictingGridItem
 
             val movingGridItem = moveGridItemResult.movingGridItem
@@ -42,9 +53,18 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
             if (conflictingGridItem != null) {
                 when (conflictingGridItem.data) {
                     is GridItemData.Folder -> {
+                        val folderGridItems = getFolderGridItemsById(
+                            folderGridItemRepository = folderGridItemRepository,
+                            fileManager = fileManager,
+                            iconKeyGenerator = iconKeyGenerator,
+                            iconPackInfoPackageName = userData.generalSettings.iconPackInfoPackageName,
+                            folderId = conflictingGridItem.id,
+                        )
+
                         addMovingGridItemIntoFolder(
                             conflictingFolderGridItem = conflictingGridItem,
                             movingGridItem = movingGridItem,
+                            folderGridItems = folderGridItems,
                         )
                     }
 
@@ -68,11 +88,9 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
     private suspend fun addMovingGridItemIntoFolder(
         conflictingFolderGridItem: GridItem,
         movingGridItem: GridItem,
+        folderGridItems: List<GridItem>,
     ) {
-        val data = conflictingFolderGridItem.data as? GridItemData.Folder
-            ?: error("Unsupported addMovingGridItemIntoFolder")
-
-        val index = data.gridItems.maxOfOrNull {
+        val index = folderGridItems.maxOfOrNull {
             when (val folderData = it.data) {
                 is GridItemData.ApplicationInfo -> folderData.index + 1
                 is GridItemData.ShortcutConfig -> folderData.index + 1
@@ -85,22 +103,22 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
         val newData = when (val folderData = movingGridItem.data) {
             is GridItemData.ApplicationInfo -> folderData.copy(
                 index = index,
-                folderId = data.id,
+                folderId = conflictingFolderGridItem.id,
             )
 
             is GridItemData.ShortcutInfo -> folderData.copy(
                 index = index,
-                folderId = data.id,
+                folderId = conflictingFolderGridItem.id,
             )
 
             is GridItemData.ShortcutConfig -> folderData.copy(
                 index = index,
-                folderId = data.id,
+                folderId = conflictingFolderGridItem.id,
             )
 
             is GridItemData.Folder -> folderData.copy(
                 index = index,
-                folderId = data.id,
+                folderId = conflictingFolderGridItem.id,
             )
 
             else -> error("Unsupported addMovingGridItemIntoFolder")
@@ -179,9 +197,7 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
                 conflictingGridItem.copy(
                     id = id,
                     data = GridItemData.Folder(
-                        id = id,
                         label = "New Folder",
-                        gridItems = emptyList(),
                         icon = null,
                         index = -1,
                         folderId = null,

@@ -265,7 +265,7 @@ internal class DefaultGridRepository @Inject constructor(
         )
     }
 
-    override suspend fun deleteGridItemsRecursively(gridItems: List<GridItem>) {
+    override suspend fun deleteGridItems(gridItems: List<GridItem>) {
         val applicationInfoGridItemEntities = mutableListOf<ApplicationInfoGridItemEntity>()
 
         val widgetGridItemEntities = mutableListOf<WidgetGridItemEntity>()
@@ -288,8 +288,6 @@ internal class DefaultGridRepository @Inject constructor(
                     folderGridItemEntities.add(
                         gridItem.asFolderGridItem(data = data).asEntity(),
                     )
-
-                    deleteGridItemsRecursively(gridItems = data.gridItems)
                 }
 
                 is GridItemData.Widget -> {
@@ -333,8 +331,6 @@ internal class DefaultGridRepository @Inject constructor(
                 folderGridItemRepository.deleteFolderGridItem(
                     folderGridItem = gridItem.asFolderGridItem(data = data),
                 )
-
-                deleteGridItemsRecursively(gridItems = data.gridItems)
             }
 
             is GridItemData.ShortcutInfo -> {

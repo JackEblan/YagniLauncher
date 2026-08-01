@@ -67,9 +67,7 @@ sealed interface GridItemData {
     ) : GridItemData
 
     data class Folder(
-        val id: String,
         val label: String,
-        val gridItems: List<GridItem>,
         val icon: String?,
         val index: Int,
         val folderId: String?,

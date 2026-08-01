@@ -35,6 +35,7 @@ import com.eblan.launcher.domain.repository.EblanAppWidgetProviderInfoRepository
 import com.eblan.launcher.domain.repository.EblanApplicationInfoRepository
 import com.eblan.launcher.domain.repository.EblanShortcutConfigRepository
 import com.eblan.launcher.domain.repository.EblanShortcutInfoRepository
+import com.eblan.launcher.domain.repository.FolderGridItemRepository
 import com.eblan.launcher.domain.repository.UserDataRepository
 import com.eblan.launcher.domain.usecase.grid.GetGridItemsUseCase
 import com.eblan.launcher.domain.usecase.grid.isTopLevel
@@ -62,6 +63,7 @@ class AddPackageUseCase @Inject constructor(
     private val iconKeyGenerator: IconKeyGenerator,
     private val applicationInfoGridItemRepository: ApplicationInfoGridItemRepository,
     private val getGridItemsUseCase: GetGridItemsUseCase,
+    private val folderGridItemRepository: FolderGridItemRepository,
     @param:Dispatcher(EblanDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke(
@@ -91,6 +93,7 @@ class AddPackageUseCase @Inject constructor(
                     lastUpdateTime = it.lastUpdateTime,
                     flags = it.flags,
                     applicationInfoGridItems = newApplicationInfoGridItems,
+                    iconPackInfoPackageName = userData.generalSettings.iconPackInfoPackageName,
                 )
             }
 
@@ -131,6 +134,7 @@ class AddPackageUseCase @Inject constructor(
         lastUpdateTime: Long,
         flags: Int,
         applicationInfoGridItems: MutableList<ApplicationInfoGridItem>,
+        iconPackInfoPackageName: String,
     ) {
         eblanApplicationInfoRepository.upsertEblanApplicationInfo(
             eblanApplicationInfo = EblanApplicationInfo(
@@ -164,6 +168,10 @@ class AddPackageUseCase @Inject constructor(
             label = activityLabel.toString(),
             homeSettings = homeSettings,
             applicationInfoGridItems = applicationInfoGridItems,
+            folderGridItemRepository = folderGridItemRepository,
+            fileManager = fileManager,
+            iconKeyGenerator = iconKeyGenerator,
+            iconPackInfoPackageName = iconPackInfoPackageName,
         )
     }
 
