@@ -619,8 +619,8 @@ internal class HomeViewModel @Inject constructor(
             moveGridItemJob?.cancelAndJoin()
 
             _folderPopupEntries.update { folderPopupEntries ->
-                folderPopupEntries.map { folderGridItemId ->
-                    folderGridItemId.copy(isCloseFolder = true)
+                folderPopupEntries.map { folderPopupEntry ->
+                    folderPopupEntry.copy(isCloseFolder = true)
                 }
             }
 
@@ -692,8 +692,8 @@ internal class HomeViewModel @Inject constructor(
     }
 
     fun deleteFolderPopupEntry(folderPopupEntry: FolderPopupEntry) {
-        _folderPopupEntries.update {
-            it - folderPopupEntry
+        _folderPopupEntries.update { folderPopupEntries ->
+            folderPopupEntries.filterNot { it.id == folderPopupEntry.id }
         }
     }
 }

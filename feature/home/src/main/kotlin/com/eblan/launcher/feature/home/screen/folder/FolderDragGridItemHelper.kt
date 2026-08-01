@@ -307,7 +307,7 @@ internal fun handleDragFolderGridItem(
             folderGridHeightPx,
             currentPage,
         )
-    } else {
+    } else if (!folderPopup.folderPopupEntry.isCloseFolder) {
         onUpsertFolderPopupEntry(folderPopup.folderPopupEntry.copy(isCloseFolder = true))
     }
 }
