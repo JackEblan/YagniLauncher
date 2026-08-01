@@ -74,7 +74,7 @@ class GetGridItemsUseCase @Inject constructor(
             it.asGridItem(
                 fileManager = fileManager,
                 iconKeyGenerator = iconKeyGenerator,
-                iconPackInfoPackageName = userData.generalSettings.iconPackInfoPackageName
+                iconPackInfoPackageName = userData.generalSettings.iconPackInfoPackageName,
             )
         }
 

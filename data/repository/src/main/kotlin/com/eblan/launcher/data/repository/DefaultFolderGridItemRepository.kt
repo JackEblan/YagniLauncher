@@ -28,8 +28,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-internal class DefaultFolderGridItemRepository @Inject constructor(private val folderGridItemDao: FolderGridItemDao) :
-    FolderGridItemRepository {
+internal class DefaultFolderGridItemRepository @Inject constructor(private val folderGridItemDao: FolderGridItemDao) : FolderGridItemRepository {
     override val folderGridItemWrappersFlow =
         folderGridItemDao.getFolderGridItemWrapperEntitiesFlow().map { entities ->
             entities.map {
@@ -44,20 +43,17 @@ internal class DefaultFolderGridItemRepository @Inject constructor(private val f
             }
         }
 
-    override suspend fun getFolderGridItemWrappers(): List<FolderGridItemWrapper> =
-        folderGridItemDao.getFolderGridItemWrapperEntities().map {
-            it.asFolderGridItemWrapper()
-        }
+    override suspend fun getFolderGridItemWrappers(): List<FolderGridItemWrapper> = folderGridItemDao.getFolderGridItemWrapperEntities().map {
+        it.asFolderGridItemWrapper()
+    }
 
-    override suspend fun getFolderGridItemWrapper(id: String): FolderGridItemWrapper? =
-        folderGridItemDao.getFolderGridItemWrapperEntity(id = id)?.asFolderGridItemWrapper()
+    override suspend fun getFolderGridItemWrapper(id: String): FolderGridItemWrapper? = folderGridItemDao.getFolderGridItemWrapperEntity(id = id)?.asFolderGridItemWrapper()
 
-    override suspend fun getFolderGridItems(): List<FolderGridItem> =
-        folderGridItemDao.getFolderGridItemEntities().filter {
-            it.folderId == null
-        }.map {
-            it.asModel()
-        }
+    override suspend fun getFolderGridItems(): List<FolderGridItem> = folderGridItemDao.getFolderGridItemEntities().filter {
+        it.folderId == null
+    }.map {
+        it.asModel()
+    }
 
     override suspend fun upsertFolderGridItems(folderGridItems: List<FolderGridItem>) {
         val entities = folderGridItems.map {

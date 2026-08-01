@@ -336,7 +336,7 @@ private fun dragGridItem(
             gridItem = newMovingGridItem,
             columns = columns,
             rows = rows,
-        )
+        ) && newMovingGridItem != movingGridItem
     ) {
         onUpdateAssociate(Associate.Grid)
 
@@ -409,7 +409,7 @@ private fun dragDockGridItem(
             gridItem = newMovingGridItem,
             columns = dockColumns,
             rows = dockRows,
-        )
+        ) && newMovingGridItem != movingGridItem
     ) {
         onUpdateAssociate(Associate.Dock)
 
