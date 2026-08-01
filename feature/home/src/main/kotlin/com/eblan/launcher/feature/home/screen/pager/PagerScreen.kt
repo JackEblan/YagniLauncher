@@ -963,6 +963,7 @@ internal fun PagerScreen(
                 screenHeight = screenHeight,
                 lastFolderPopup = lastPopupFolderGridItem,
                 showFolderGridItemPopup = pagerScreenState.showFolderGridItemPopup,
+                previewFolderGridItems = previewFolderGridItems,
                 onDeleteFolderPopupEntry = onDeleteFolderPopupEntry,
                 onMoveFolderGridItemOutsideFolder = onMoveFolderGridItemOutsideFolder,
                 onOpenAppDrawer = pagerScreenState::openApplicationScreen,
