@@ -19,14 +19,9 @@ package com.eblan.launcher.domain.repository
 
 import com.eblan.launcher.domain.model.PartialShortcutConfigGridItem
 import com.eblan.launcher.domain.model.ShortcutConfigGridItem
-import kotlinx.coroutines.flow.Flow
 
 interface ShortcutConfigGridItemRepository {
-    val shortcutConfigGridItemsFlow: Flow<List<ShortcutConfigGridItem>>
-
     suspend fun getShortcutConfigGridItems(): List<ShortcutConfigGridItem>
-
-    suspend fun upsertShortcutConfigGridItems(shortcutConfigGridItems: List<ShortcutConfigGridItem>)
 
     suspend fun updateShortcutConfigGridItem(shortcutConfigGridItem: ShortcutConfigGridItem)
 
@@ -47,8 +42,6 @@ interface ShortcutConfigGridItemRepository {
     suspend fun updatePartialShortcutConfigGridItems(partialShortcutConfigGridItems: List<PartialShortcutConfigGridItem>)
 
     suspend fun insertShortcutConfigGridItem(shortcutConfigGridItem: ShortcutConfigGridItem)
-
-    suspend fun insertShortcutConfigGridItems(shortcutConfigGridItems: List<ShortcutConfigGridItem>)
 
     suspend fun upsertShortcutConfigGridItem(shortcutConfigGridItem: ShortcutConfigGridItem)
 

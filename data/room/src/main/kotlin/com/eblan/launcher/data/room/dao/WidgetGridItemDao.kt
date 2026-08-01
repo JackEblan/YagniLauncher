@@ -25,13 +25,9 @@ import androidx.room.Update
 import androidx.room.Upsert
 import com.eblan.launcher.data.room.entity.WidgetGridItemEntity
 import com.eblan.launcher.domain.model.PartialUpdateWidgetGridItem
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface WidgetGridItemDao {
-    @Query("SELECT * FROM WidgetGridItemEntity")
-    fun getWidgetGridItemEntitiesFlow(): Flow<List<WidgetGridItemEntity>>
-
     @Query("SELECT * FROM WidgetGridItemEntity")
     suspend fun getWidgetGridItemEntities(): List<WidgetGridItemEntity>
 
@@ -58,9 +54,6 @@ interface WidgetGridItemDao {
 
     @Insert
     suspend fun insertWidgetGridItemEntity(entity: WidgetGridItemEntity)
-
-    @Insert
-    suspend fun insertWidgetGridItemEntities(entities: List<WidgetGridItemEntity>)
 
     @Upsert
     suspend fun upsertWidgetGridItemEntity(entity: WidgetGridItemEntity)

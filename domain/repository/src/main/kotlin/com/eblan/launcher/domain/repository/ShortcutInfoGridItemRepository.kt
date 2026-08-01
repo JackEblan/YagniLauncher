@@ -19,14 +19,9 @@ package com.eblan.launcher.domain.repository
 
 import com.eblan.launcher.domain.model.PartialShortcutInfoGridItem
 import com.eblan.launcher.domain.model.ShortcutInfoGridItem
-import kotlinx.coroutines.flow.Flow
 
 interface ShortcutInfoGridItemRepository {
-    val shortcutInfoGridItemsFlow: Flow<List<ShortcutInfoGridItem>>
-
     suspend fun getShortcutInfoGridItems(): List<ShortcutInfoGridItem>
-
-    suspend fun upsertShortcutInfoGridItems(shortcutInfoGridItems: List<ShortcutInfoGridItem>)
 
     suspend fun updateShortcutInfoGridItem(shortcutInfoGridItem: ShortcutInfoGridItem)
 
@@ -47,8 +42,6 @@ interface ShortcutInfoGridItemRepository {
     suspend fun updatePartialShortcutInfoGridItems(partialShortcutInfoGridItems: List<PartialShortcutInfoGridItem>)
 
     suspend fun insertShortcutInfoGridItem(shortcutInfoGridItem: ShortcutInfoGridItem)
-
-    suspend fun insertShortcutInfoGridItems(shortcutInfoGridItems: List<ShortcutInfoGridItem>)
 
     suspend fun upsertShortcutInfoGridItem(shortcutInfoGridItem: ShortcutInfoGridItem)
 

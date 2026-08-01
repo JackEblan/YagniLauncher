@@ -22,12 +22,8 @@ import com.eblan.launcher.domain.common.EblanDispatchers
 import com.eblan.launcher.domain.common.IconKeyGenerator
 import com.eblan.launcher.domain.framework.FileManager
 import com.eblan.launcher.domain.model.GridItem
-import com.eblan.launcher.domain.repository.ApplicationInfoGridItemRepository
-import com.eblan.launcher.domain.repository.FolderGridItemRepository
-import com.eblan.launcher.domain.repository.ShortcutConfigGridItemRepository
-import com.eblan.launcher.domain.repository.ShortcutInfoGridItemRepository
+import com.eblan.launcher.domain.repository.GridRepository
 import com.eblan.launcher.domain.repository.UserDataRepository
-import com.eblan.launcher.domain.repository.WidgetGridItemRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
@@ -35,20 +31,18 @@ import javax.inject.Inject
 
 class GetGridItemsUseCase @Inject constructor(
     private val userDataRepository: UserDataRepository,
-    private val applicationInfoGridItemRepository: ApplicationInfoGridItemRepository,
-    private val widgetGridItemRepository: WidgetGridItemRepository,
-    private val shortcutInfoGridItemRepository: ShortcutInfoGridItemRepository,
-    private val folderGridItemRepository: FolderGridItemRepository,
-    private val shortcutConfigGridItemRepository: ShortcutConfigGridItemRepository,
     private val fileManager: FileManager,
     private val iconKeyGenerator: IconKeyGenerator,
+    private val gridRepository: GridRepository,
     @param:Dispatcher(EblanDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke(): List<GridItem> = withContext(ioDispatcher) {
         val userData = userDataRepository.userDataFlow.first()
 
+        val gridItems = gridRepository.getGridItems()
+
         val currentApplicationGridItems =
-            applicationInfoGridItemRepository.getApplicationInfoGridItems().map {
+            gridItems.applicationInfoGridItems.map {
                 it.asGridItem(
                     fileManager = fileManager,
                     iconKeyGenerator = iconKeyGenerator,
@@ -56,21 +50,21 @@ class GetGridItemsUseCase @Inject constructor(
                 )
             }
 
-        val currentWidgetGridItems = widgetGridItemRepository.getWidgetGridItems().map {
+        val currentWidgetGridItems = gridItems.widgetGridItems.map {
             it.asGridItem()
         }
 
         val currentShortcutInfoGridItems =
-            shortcutInfoGridItemRepository.getShortcutInfoGridItems().map {
+            gridItems.shortcutInfoGridItems.map {
                 it.asGridItem()
             }
 
         val currentShortcutConfigGridItems =
-            shortcutConfigGridItemRepository.getShortcutConfigGridItems().map {
+            gridItems.shortcutConfigGridItems.map {
                 it.asGridItem()
             }
 
-        val currentFolderGridItems = folderGridItemRepository.getFolderGridItemWrappers().map {
+        val currentFolderGridItems = gridItems.folderGridItemWrappers.map {
             it.asGridItem(
                 fileManager = fileManager,
                 iconKeyGenerator = iconKeyGenerator,

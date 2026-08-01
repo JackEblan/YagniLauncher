@@ -18,8 +18,14 @@
 package com.eblan.launcher.domain.repository
 
 import com.eblan.launcher.domain.model.GridItem
+import com.eblan.launcher.domain.model.GridItems
+import kotlinx.coroutines.flow.Flow
 
 interface GridRepository {
+    val gridItemsFlow: Flow<GridItems>
+
+    suspend fun getGridItems(): GridItems
+
     suspend fun insertGridItem(gridItem: GridItem)
 
     suspend fun updateGridItem(gridItem: GridItem)

@@ -22,8 +22,14 @@ import com.eblan.launcher.data.room.entity.FolderGridItemEntity
 import com.eblan.launcher.data.room.entity.ShortcutConfigGridItemEntity
 import com.eblan.launcher.data.room.entity.ShortcutInfoGridItemEntity
 import com.eblan.launcher.data.room.entity.WidgetGridItemEntity
+import com.eblan.launcher.data.room.model.GridItemEntities
+import kotlinx.coroutines.flow.Flow
 
 interface GridItemTransaction {
+    val gridItemEntitiesFlow: Flow<GridItemEntities>
+
+    suspend fun getGridItemEntities(): GridItemEntities
+
     suspend fun upsertGridItemEntitiesTransaction(
         applicationInfoGridItemEntities: List<ApplicationInfoGridItemEntity>,
         widgetGridItemEntities: List<WidgetGridItemEntity>,

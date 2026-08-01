@@ -19,12 +19,10 @@ package com.eblan.launcher.data.repository
 
 import com.eblan.launcher.data.repository.mapper.asEntity
 import com.eblan.launcher.data.repository.mapper.asFolderGridItemWrapper
-import com.eblan.launcher.data.repository.mapper.asModel
 import com.eblan.launcher.data.room.dao.FolderGridItemDao
 import com.eblan.launcher.domain.model.FolderGridItem
 import com.eblan.launcher.domain.model.FolderGridItemWrapper
 import com.eblan.launcher.domain.repository.FolderGridItemRepository
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
@@ -36,32 +34,7 @@ internal class DefaultFolderGridItemRepository @Inject constructor(private val f
             }
         }
 
-    override val folderGridItemsFlow: Flow<List<FolderGridItem>> =
-        folderGridItemDao.getFolderGridItemEntitiesFlow().map { entities ->
-            entities.map {
-                it.asModel()
-            }
-        }
-
-    override suspend fun getFolderGridItemWrappers(): List<FolderGridItemWrapper> = folderGridItemDao.getFolderGridItemWrapperEntities().map {
-        it.asFolderGridItemWrapper()
-    }
-
     override suspend fun getFolderGridItemWrapper(id: String): FolderGridItemWrapper? = folderGridItemDao.getFolderGridItemWrapperEntity(id = id)?.asFolderGridItemWrapper()
-
-    override suspend fun getFolderGridItems(): List<FolderGridItem> = folderGridItemDao.getFolderGridItemEntities().filter {
-        it.folderId == null
-    }.map {
-        it.asModel()
-    }
-
-    override suspend fun upsertFolderGridItems(folderGridItems: List<FolderGridItem>) {
-        val entities = folderGridItems.map {
-            it.asEntity()
-        }
-
-        folderGridItemDao.upsertFolderGridItemEntities(entities = entities)
-    }
 
     override suspend fun updateFolderGridItem(folderGridItem: FolderGridItem) {
         folderGridItemDao.updateFolderGridItemEntity(entity = folderGridItem.asEntity())
@@ -71,24 +44,8 @@ internal class DefaultFolderGridItemRepository @Inject constructor(private val f
         folderGridItemDao.deleteFolderGridItemEntity(entity = folderGridItem.asEntity())
     }
 
-    override suspend fun deleteFolderGridItems(folderGridItems: List<FolderGridItem>) {
-        val entities = folderGridItems.map {
-            it.asEntity()
-        }
-
-        folderGridItemDao.deleteFolderGridItemEntities(entities = entities)
-    }
-
     override suspend fun insertFolderGridItem(folderGridItem: FolderGridItem) {
         folderGridItemDao.insertFolderGridItemEntity(entity = folderGridItem.asEntity())
-    }
-
-    override suspend fun insertFolderGridItems(folderGridItems: List<FolderGridItem>) {
-        val entities = folderGridItems.map {
-            it.asEntity()
-        }
-
-        folderGridItemDao.insertFolderGridItemEntities(entities = entities)
     }
 
     override suspend fun upsertFolderGridItem(folderGridItem: FolderGridItem) {

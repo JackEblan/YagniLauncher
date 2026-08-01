@@ -23,27 +23,11 @@ import com.eblan.launcher.data.room.dao.ShortcutConfigGridItemDao
 import com.eblan.launcher.domain.model.PartialShortcutConfigGridItem
 import com.eblan.launcher.domain.model.ShortcutConfigGridItem
 import com.eblan.launcher.domain.repository.ShortcutConfigGridItemRepository
-import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 internal class DefaultShortcutConfigGridItemRepository @Inject constructor(private val shortcutConfigGridItemDao: ShortcutConfigGridItemDao) : ShortcutConfigGridItemRepository {
-    override val shortcutConfigGridItemsFlow =
-        shortcutConfigGridItemDao.getShortcutConfigGridItemEntitiesFlow().map { entities ->
-            entities.map { entity ->
-                entity.asModel()
-            }
-        }
-
     override suspend fun getShortcutConfigGridItems(): List<ShortcutConfigGridItem> = shortcutConfigGridItemDao.getShortcutConfigGridItemEntities().map {
         it.asModel()
-    }
-
-    override suspend fun upsertShortcutConfigGridItems(shortcutConfigGridItems: List<ShortcutConfigGridItem>) {
-        val entities = shortcutConfigGridItems.map {
-            it.asEntity()
-        }
-
-        shortcutConfigGridItemDao.upsertShortcutConfigGridItemEntities(entities = entities)
     }
 
     override suspend fun updateShortcutConfigGridItem(shortcutConfigGridItem: ShortcutConfigGridItem) {
@@ -94,14 +78,6 @@ internal class DefaultShortcutConfigGridItemRepository @Inject constructor(priva
 
     override suspend fun insertShortcutConfigGridItem(shortcutConfigGridItem: ShortcutConfigGridItem) {
         shortcutConfigGridItemDao.insertShortcutConfigGridItemEntity(entity = shortcutConfigGridItem.asEntity())
-    }
-
-    override suspend fun insertShortcutConfigGridItems(shortcutConfigGridItems: List<ShortcutConfigGridItem>) {
-        val entities = shortcutConfigGridItems.map {
-            it.asEntity()
-        }
-
-        shortcutConfigGridItemDao.insertShortcutConfigGridItemEntities(entities = entities)
     }
 
     override suspend fun upsertShortcutConfigGridItem(shortcutConfigGridItem: ShortcutConfigGridItem) {

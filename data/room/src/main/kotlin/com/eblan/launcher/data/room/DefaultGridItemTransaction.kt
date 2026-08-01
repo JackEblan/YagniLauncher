@@ -28,6 +28,11 @@ import com.eblan.launcher.data.room.entity.FolderGridItemEntity
 import com.eblan.launcher.data.room.entity.ShortcutConfigGridItemEntity
 import com.eblan.launcher.data.room.entity.ShortcutInfoGridItemEntity
 import com.eblan.launcher.data.room.entity.WidgetGridItemEntity
+import com.eblan.launcher.data.room.model.GridItemEntities
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.conflate
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 internal class DefaultGridItemTransaction @Inject constructor(
@@ -38,6 +43,39 @@ internal class DefaultGridItemTransaction @Inject constructor(
     private val shortcutConfigGridItemDao: ShortcutConfigGridItemDao,
     private val folderGridItemDao: FolderGridItemDao,
 ) : GridItemTransaction {
+    override val gridItemEntitiesFlow: Flow<GridItemEntities> =
+        eblanDatabase.invalidationTracker.createFlow(
+            "ApplicationInfoGridItemEntity",
+            "WidgetGridItemEntity",
+            "ShortcutInfoGridItemEntity",
+            "ShortcutConfigGridItemEntity",
+            "FolderGridItemEntity",
+        ).conflate()
+            .map {
+                eblanDatabase.withTransaction {
+                    GridItemEntities(
+                        applicationInfoGridItemEntities = applicationInfoGridItemDao.getApplicationInfoGridItemEntities(),
+                        widgetGridItemEntities = widgetGridItemDao.getWidgetGridItemEntities(),
+                        shortcutInfoGridItemEntities = shortcutInfoGridItemDao.getShortcutInfoGridItemEntities(),
+                        shortcutConfigGridItemEntities = shortcutConfigGridItemDao.getShortcutConfigGridItemEntities(),
+                        folderGridItemWrapperEntities = folderGridItemDao.getFolderGridItemWrapperEntities(),
+                    )
+                }
+            }
+            .distinctUntilChanged()
+
+    override suspend fun getGridItemEntities(): GridItemEntities {
+        return eblanDatabase.withTransaction {
+            GridItemEntities(
+                applicationInfoGridItemEntities = applicationInfoGridItemDao.getApplicationInfoGridItemEntities(),
+                widgetGridItemEntities = widgetGridItemDao.getWidgetGridItemEntities(),
+                shortcutInfoGridItemEntities = shortcutInfoGridItemDao.getShortcutInfoGridItemEntities(),
+                shortcutConfigGridItemEntities = shortcutConfigGridItemDao.getShortcutConfigGridItemEntities(),
+                folderGridItemWrapperEntities = folderGridItemDao.getFolderGridItemWrapperEntities(),
+            )
+        }
+    }
+
     override suspend fun upsertGridItemEntitiesTransaction(
         applicationInfoGridItemEntities: List<ApplicationInfoGridItemEntity>,
         widgetGridItemEntities: List<WidgetGridItemEntity>,
