@@ -42,17 +42,17 @@ class GetPreviewFolderGridItemsUseCase @Inject constructor(
         userDataRepository.userDataFlow,
         folderGridItemRepository.folderGridItemWrappersFlow,
     ) { userData, folderGridItemWrappers ->
-        folderGridItemWrappers.associate { wrapper ->
+        folderGridItemWrappers.associate { folderGridItemWrapper ->
             val gridItems = (
-                wrapper.applicationInfoGridItems.map { appInfo ->
-                    appInfo.asGridItem(
+                folderGridItemWrapper.applicationInfoGridItems.map {
+                    it.asGridItem(
                         fileManager = fileManager,
                         iconKeyGenerator = iconKeyGenerator,
                         iconPackInfoPackageName = userData.generalSettings.iconPackInfoPackageName,
                     )
-                } + wrapper.shortcutInfoGridItems.map { it.asGridItem() } +
-                    wrapper.shortcutConfigGridItems.map { it.asGridItem() } +
-                    wrapper.folderGridItems.map { it.asEmptyFolderGridItem() }
+                } + folderGridItemWrapper.shortcutInfoGridItems.map { it.asGridItem() } +
+                    folderGridItemWrapper.shortcutConfigGridItems.map { it.asGridItem() } +
+                    folderGridItemWrapper.folderGridItems.map { it.asEmptyFolderGridItem() }
                 ).sortedBy { gridItem ->
                 when (val data = gridItem.data) {
                     is GridItemData.ApplicationInfo -> data.index
@@ -63,7 +63,7 @@ class GetPreviewFolderGridItemsUseCase @Inject constructor(
                 }
             }
 
-            wrapper.folderGridItem.id to gridItems
+            folderGridItemWrapper.folderGridItem.id to gridItems
         }
     }.flowOn(ioDispatcher)
 }
