@@ -26,10 +26,10 @@ import com.eblan.launcher.domain.framework.PackageManagerWrapper
 import com.eblan.launcher.domain.model.AppDrawerSettings
 import com.eblan.launcher.domain.model.Associate
 import com.eblan.launcher.domain.model.EblanApplicationInfo
+import com.eblan.launcher.domain.model.FolderPopup
 import com.eblan.launcher.domain.model.FolderPopupEntry
 import com.eblan.launcher.domain.model.GetEblanApplicationInfosByLabelAndTag
 import com.eblan.launcher.domain.model.GridItem
-import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.GridItemData.ShortcutInfo
 import com.eblan.launcher.domain.model.LauncherAppsEvent
 import com.eblan.launcher.domain.model.MoveGridItemResult
@@ -49,6 +49,7 @@ import com.eblan.launcher.domain.usecase.application.GetEblanShortcutInfosUseCas
 import com.eblan.launcher.domain.usecase.application.UpdateEblanApplicationInfosIndexesUseCase
 import com.eblan.launcher.domain.usecase.grid.DeleteGridItemUseCase
 import com.eblan.launcher.domain.usecase.grid.GetFolderGridItemsByIdUseCase
+import com.eblan.launcher.domain.usecase.grid.GetPreviewFolderGridItemsUseCase
 import com.eblan.launcher.domain.usecase.grid.MoveFolderGridItemUseCase
 import com.eblan.launcher.domain.usecase.grid.MoveGridItemUseCase
 import com.eblan.launcher.domain.usecase.grid.ResizeGridItemUseCase
@@ -110,6 +111,7 @@ internal class HomeViewModel @Inject constructor(
     private val iconKeyGenerator: IconKeyGenerator,
     private val deleteGridItemUseCase: DeleteGridItemUseCase,
     getTextColorUseCase: GetTextColorUseCase,
+    getPreviewFolderGridItemsUseCase: GetPreviewFolderGridItemsUseCase,
 ) : ViewModel() {
     val homeUiState = getHomeDataUseCase().map(HomeUiState::Success).stateIn(
         scope = viewModelScope,
@@ -126,6 +128,8 @@ internal class HomeViewModel @Inject constructor(
     val movedGridItemResult = _moveGridItemResult.asStateFlow()
 
     private val defaultDelay = 500L.milliseconds
+
+    private val moveDelay = 50L.milliseconds
 
     private val _pageItems = MutableStateFlow<List<PageItem>?>(null)
 
@@ -228,8 +232,13 @@ internal class HomeViewModel @Inject constructor(
         initialValue = TextColor.System,
     )
 
+    val previewFolderGridItems = getPreviewFolderGridItemsUseCase().stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = emptyMap(),
+    )
+
     fun moveGridItem(
-        gridItems: List<GridItem>,
         movingGridItem: GridItem,
         x: Int,
         y: Int,
@@ -241,9 +250,10 @@ internal class HomeViewModel @Inject constructor(
         moveGridItemJob?.cancel()
 
         moveGridItemJob = viewModelScope.launch {
+            delay(moveDelay)
+
             _moveGridItemResult.update {
                 moveGridItemUseCase(
-                    gridItems = gridItems,
                     movingGridItem = movingGridItem,
                     x = x,
                     y = y,
@@ -257,7 +267,6 @@ internal class HomeViewModel @Inject constructor(
     }
 
     fun resizeGridItem(
-        gridItems: List<GridItem>,
         resizingGridItem: GridItem,
         columns: Int,
         rows: Int,
@@ -265,9 +274,10 @@ internal class HomeViewModel @Inject constructor(
         moveGridItemJob?.cancel()
 
         moveGridItemJob = viewModelScope.launch {
+            delay(moveDelay)
+
             _resizeGridItem.update {
                 resizeGridItemUseCase(
-                    gridItems = gridItems,
                     resizingGridItem = resizingGridItem,
                     columns = columns,
                     rows = rows,
@@ -559,13 +569,10 @@ internal class HomeViewModel @Inject constructor(
     }
 
     fun moveFolderGridItem(
-        conflictingGridItem: GridItem,
+        folderPopup: FolderPopup,
         movingGridItem: GridItem,
-        data: GridItemData.Folder,
         dragX: Int,
         dragY: Int,
-        columns: Int,
-        rows: Int,
         gridWidth: Int,
         gridHeight: Int,
         currentPage: Int,
@@ -573,15 +580,14 @@ internal class HomeViewModel @Inject constructor(
         moveGridItemJob?.cancel()
 
         moveGridItemJob = viewModelScope.launch {
+            delay(moveDelay)
+
             _moveGridItemResult.update {
                 moveFolderGridItemUseCase(
-                    conflictingGridItem = conflictingGridItem,
+                    folderPopup = folderPopup,
                     movingGridItem = movingGridItem,
-                    data = data,
                     dragX = dragX,
                     dragY = dragY,
-                    columns = columns,
-                    rows = rows,
                     gridWidth = gridWidth,
                     gridHeight = gridHeight,
                     currentPage = currentPage,

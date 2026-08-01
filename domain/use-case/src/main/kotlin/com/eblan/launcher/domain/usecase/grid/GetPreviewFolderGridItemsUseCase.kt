@@ -21,8 +21,8 @@ import com.eblan.launcher.domain.common.Dispatcher
 import com.eblan.launcher.domain.common.EblanDispatchers
 import com.eblan.launcher.domain.common.IconKeyGenerator
 import com.eblan.launcher.domain.framework.FileManager
-import com.eblan.launcher.domain.model.FolderPopup
-import com.eblan.launcher.domain.model.FolderPopupEntry
+import com.eblan.launcher.domain.model.GridItem
+import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.repository.FolderGridItemRepository
 import com.eblan.launcher.domain.repository.UserDataRepository
 import kotlinx.coroutines.CoroutineDispatcher
@@ -31,32 +31,39 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
-class GetFolderGridItemsByIdUseCase @Inject constructor(
+class GetPreviewFolderGridItemsUseCase @Inject constructor(
     private val folderGridItemRepository: FolderGridItemRepository,
     private val userDataRepository: UserDataRepository,
     private val fileManager: FileManager,
     private val iconKeyGenerator: IconKeyGenerator,
     @param:Dispatcher(EblanDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) {
-    operator fun invoke(
-        folderPopupEntriesFlow: Flow<List<FolderPopupEntry>>,
-    ): Flow<List<FolderPopup>> = combine(
+    operator fun invoke(): Flow<Map<String, List<GridItem>>> = combine(
         userDataRepository.userDataFlow,
-        folderPopupEntriesFlow,
         folderGridItemRepository.folderGridItemWrappersFlow,
-    ) { userData, folderPopupEntries, folderGridItemWrappers ->
-        folderPopupEntries.mapNotNull { folderPopupEntry ->
-            folderGridItemWrappers.firstOrNull {
-                it.folderGridItem.id == folderPopupEntry.id
-            }?.asFolderPopup(
-                folderGridItemRepository = folderGridItemRepository,
-                folderPopupEntry = folderPopupEntry,
-                maxFolderColumns = userData.homeSettings.maxFolderColumns,
-                maxFolderRows = userData.homeSettings.maxFolderRows,
-                fileManager = fileManager,
-                iconKeyGenerator = iconKeyGenerator,
-                iconPackInfoPackageName = userData.generalSettings.iconPackInfoPackageName,
-            )
+    ) { userData, folderGridItemWrappers ->
+        folderGridItemWrappers.associate { folderGridItemWrapper ->
+            val gridItems = (
+                folderGridItemWrapper.applicationInfoGridItems.map {
+                    it.asGridItem(
+                        fileManager = fileManager,
+                        iconKeyGenerator = iconKeyGenerator,
+                        iconPackInfoPackageName = userData.generalSettings.iconPackInfoPackageName,
+                    )
+                } + folderGridItemWrapper.shortcutInfoGridItems.map { it.asGridItem() } +
+                    folderGridItemWrapper.shortcutConfigGridItems.map { it.asGridItem() } +
+                    folderGridItemWrapper.folderGridItems.map { it.asEmptyFolderGridItem() }
+                ).sortedBy { gridItem ->
+                when (val data = gridItem.data) {
+                    is GridItemData.ApplicationInfo -> data.index
+                    is GridItemData.ShortcutInfo -> data.index
+                    is GridItemData.ShortcutConfig -> data.index
+                    is GridItemData.Folder -> data.index
+                    else -> error("Unsupported folder grid item")
+                }
+            }
+
+            folderGridItemWrapper.folderGridItem.id to gridItems
         }
     }.flowOn(ioDispatcher)
 }

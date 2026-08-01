@@ -44,11 +44,9 @@ internal fun ResizeScreen(
     paddingValues: PaddingValues,
     textColor: TextColor,
     resizeGridItem: GridItem,
-    gridItems: List<GridItem>,
     onResizeCancel: () -> Unit,
     onResizeEnd: () -> Unit,
     onResizeGridItem: (
-        gridItems: List<GridItem>,
         gridItem: GridItem,
         columns: Int,
         rows: Int,
@@ -116,7 +114,6 @@ internal fun ResizeScreen(
                     width = width,
                     x = x,
                     y = y,
-                    gridItems = gridItems,
                     onResizeGridItem = onResizeGridItem,
                 )
             }
@@ -151,7 +148,6 @@ internal fun ResizeScreen(
                     width = width,
                     x = x,
                     y = dockY,
-                    gridItems = gridItems,
                     onResizeGridItem = onResizeGridItem,
                 )
             }

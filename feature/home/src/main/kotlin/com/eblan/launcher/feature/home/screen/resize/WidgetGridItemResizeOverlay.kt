@@ -70,9 +70,7 @@ internal fun WidgetGridItemResizeOverlay(
     width: Int,
     x: Int,
     y: Int,
-    gridItems: List<GridItem>,
     onResizeWidgetGridItem: (
-        gridItems: List<GridItem>,
         gridItem: GridItem,
         columns: Int,
         rows: Int,
@@ -250,7 +248,6 @@ internal fun WidgetGridItemResizeOverlay(
             )
 
             onResizeWidgetGridItem(
-                gridItems,
                 resizingGridItem,
                 columns,
                 rows,

@@ -23,27 +23,11 @@ import com.eblan.launcher.data.room.dao.WidgetGridItemDao
 import com.eblan.launcher.domain.model.PartialUpdateWidgetGridItem
 import com.eblan.launcher.domain.model.WidgetGridItem
 import com.eblan.launcher.domain.repository.WidgetGridItemRepository
-import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 internal class DefaultWidgetGridItemRepository @Inject constructor(private val widgetGridItemDao: WidgetGridItemDao) : WidgetGridItemRepository {
-    override val widgetGridItemsFlow =
-        widgetGridItemDao.getWidgetGridItemEntitiesFlow().map { entities ->
-            entities.map { entity ->
-                entity.asModel()
-            }
-        }
-
     override suspend fun getWidgetGridItems(): List<WidgetGridItem> = widgetGridItemDao.getWidgetGridItemEntities().map {
         it.asModel()
-    }
-
-    override suspend fun upsertWidgetGridItems(widgetGridItems: List<WidgetGridItem>) {
-        val entities = widgetGridItems.map {
-            it.asEntity()
-        }
-
-        widgetGridItemDao.upsertWidgetGridItemEntities(entities = entities)
     }
 
     override suspend fun updateWidgetGridItem(widgetGridItem: WidgetGridItem) {
@@ -80,14 +64,6 @@ internal class DefaultWidgetGridItemRepository @Inject constructor(private val w
 
     override suspend fun insertWidgetGridItem(widgetGridItem: WidgetGridItem) {
         widgetGridItemDao.insertWidgetGridItemEntity(entity = widgetGridItem.asEntity())
-    }
-
-    override suspend fun insertWidgetGridItems(widgetGridItems: List<WidgetGridItem>) {
-        val entities = widgetGridItems.map {
-            it.asEntity()
-        }
-
-        widgetGridItemDao.insertWidgetGridItemEntities(entities = entities)
     }
 
     override suspend fun upsertWidgetGridItem(widgetGridItem: WidgetGridItem) {

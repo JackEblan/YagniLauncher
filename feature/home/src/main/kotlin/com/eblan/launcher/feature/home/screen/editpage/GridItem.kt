@@ -68,6 +68,7 @@ internal fun GridItemContent(
     hasShortcutHostPermission: Boolean,
     statusBarNotifications: Map<String, Int>,
     textColor: TextColor,
+    previewFolderGridItems: Map<String, List<GridItem>>,
 ) {
     val currentGridItemSettings = if (gridItem.override) {
         gridItem.gridItemSettings
@@ -117,9 +118,11 @@ internal fun GridItemContent(
         is GridItemData.Folder -> {
             FolderGridItem(
                 modifier = modifier,
+                gridItem = gridItem,
                 data = data,
                 gridItemSettings = currentGridItemSettings,
                 textColor = currentTextColor,
+                previewFolderGridItems = previewFolderGridItems,
             )
         }
 
@@ -291,9 +294,11 @@ private fun ShortcutInfoGridItem(
 @Composable
 private fun FolderGridItem(
     modifier: Modifier = Modifier,
+    gridItem: GridItem,
     data: GridItemData.Folder,
     gridItemSettings: GridItemSettings,
     textColor: Color,
+    previewFolderGridItems: Map<String, List<GridItem>>,
 ) {
     val horizontalAlignment =
         getHorizontalAlignment(horizontalAlignment = gridItemSettings.horizontalAlignment)
@@ -331,7 +336,7 @@ private fun FolderGridItem(
             ) {
                 PreviewFolderGridLayout(
                     modifier = Modifier.matchParentSize(),
-                    gridItems = data.gridItems.take(FOLDER_PREVIEW_COLUMNS * FOLDER_PREVIEW_ROWS),
+                    gridItems = previewFolderGridItems[gridItem.id]?.take(FOLDER_PREVIEW_COLUMNS * FOLDER_PREVIEW_ROWS),
                     content = {
                         PreviewFolderGridItemContent(
                             gridItem = it,

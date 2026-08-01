@@ -47,7 +47,7 @@ class AddPinShortcutToHomeScreenUseCase @Inject constructor(
     private val packageManagerWrapper: PackageManagerWrapper,
     private val iconKeyGenerator: IconKeyGenerator,
     private val getGridItemsUseCase: GetGridItemsUseCase,
-    @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
+    @param:Dispatcher(EblanDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) {
     @OptIn(ExperimentalUuidApi::class)
     suspend operator fun invoke(
@@ -58,7 +58,7 @@ class AddPinShortcutToHomeScreenUseCase @Inject constructor(
         longLabel: String,
         isEnabled: Boolean,
         icon: String?,
-    ): GridItem? = withContext(defaultDispatcher) {
+    ): GridItem? = withContext(ioDispatcher) {
         val homeSettings = userDataRepository.userDataFlow.first().homeSettings
 
         val columns = homeSettings.columns

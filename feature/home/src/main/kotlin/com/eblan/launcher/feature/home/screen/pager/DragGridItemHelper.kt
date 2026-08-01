@@ -160,8 +160,7 @@ internal fun handleAnimateScrollToPage(
     }
 }
 
-internal suspend fun handleDragGridItem(
-    gridItems: State<List<GridItem>>,
+internal fun handleDragGridItem(
     columns: Int,
     gridCurrentPage: Int,
     dockGridCurrentPage: Int,
@@ -184,7 +183,6 @@ internal suspend fun handleDragGridItem(
     moveGridItemResult: State<MoveGridItemResult?>,
     layoutDirection: LayoutDirection,
     onMoveGridItem: (
-        gridItems: List<GridItem>,
         movingGridItem: GridItem,
         x: Int,
         y: Int,
@@ -196,8 +194,6 @@ internal suspend fun handleDragGridItem(
     onUpdateAssociate: (Associate) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
 ) {
-    delay(50L.milliseconds)
-
     if (drag != Drag.Dragging ||
         isGridScrollInProgress ||
         isDockScrollInProgress ||
@@ -253,7 +249,6 @@ internal suspend fun handleDragGridItem(
         -> {
             if (isOnDock) {
                 dragDockGridItem(
-                    gridItems = gridItems,
                     currentPage = dockGridCurrentPage,
                     dockColumns = dockColumns,
                     dockHeightPx = dockHeightPx,
@@ -270,7 +265,6 @@ internal suspend fun handleDragGridItem(
                 )
             } else {
                 dragGridItem(
-                    gridItems = gridItems,
                     columns = columns,
                     currentPage = gridCurrentPage,
                     dockHeightPx = dockHeightPx,
@@ -292,7 +286,6 @@ internal suspend fun handleDragGridItem(
 }
 
 private fun dragGridItem(
-    gridItems: State<List<GridItem>>,
     columns: Int,
     currentPage: Int,
     dockHeightPx: Int,
@@ -305,7 +298,6 @@ private fun dragGridItem(
     safeDrawingWidth: Int,
     moveGridItemResult: State<MoveGridItemResult?>,
     onMoveGridItem: (
-        gridItems: List<GridItem>,
         movingGridItem: GridItem,
         x: Int,
         y: Int,
@@ -344,7 +336,7 @@ private fun dragGridItem(
             gridItem = newMovingGridItem,
             columns = columns,
             rows = rows,
-        )
+        ) && newMovingGridItem != movingGridItem
     ) {
         onUpdateAssociate(Associate.Grid)
 
@@ -356,7 +348,6 @@ private fun dragGridItem(
         )
 
         onMoveGridItem(
-            gridItems.value,
             newMovingGridItem,
             dragX,
             dragY,
@@ -369,7 +360,6 @@ private fun dragGridItem(
 }
 
 private fun dragDockGridItem(
-    gridItems: State<List<GridItem>>,
     currentPage: Int,
     dockColumns: Int,
     dockHeightPx: Int,
@@ -381,7 +371,6 @@ private fun dragDockGridItem(
     safeDrawingWidth: Int,
     moveGridItemResult: State<MoveGridItemResult?>,
     onMoveGridItem: (
-        gridItems: List<GridItem>,
         movingGridItem: GridItem,
         x: Int,
         y: Int,
@@ -420,7 +409,7 @@ private fun dragDockGridItem(
             gridItem = newMovingGridItem,
             columns = dockColumns,
             rows = dockRows,
-        )
+        ) && newMovingGridItem != movingGridItem
     ) {
         onUpdateAssociate(Associate.Dock)
 
@@ -432,7 +421,6 @@ private fun dragDockGridItem(
         )
 
         onMoveGridItem(
-            gridItems.value,
             newMovingGridItem,
             dragX,
             dockY,
@@ -453,6 +441,7 @@ internal suspend fun handleConflictingGridItem(
     intOffset: IntOffset,
     intSize: IntSize,
     gridItem: State<GridItem>,
+    folderGridItems: State<List<GridItem>?>,
     onShowFolderWhenDragging: (
         folderPopupEntry: FolderPopupEntry,
         movingGridItem: GridItem,
@@ -462,8 +451,6 @@ internal suspend fun handleConflictingGridItem(
     delay(1000L.milliseconds)
 
     val conflictingGridItem = moveGridItemResult?.conflictingGridItem ?: return
-
-    val conflictingData = conflictingGridItem.data as? GridItemData.Folder ?: return
 
     if (drag.value != Drag.Dragging ||
         !moveGridItemResult.isSuccess ||
@@ -477,26 +464,36 @@ internal suspend fun handleConflictingGridItem(
 
     val movingGridItem = moveGridItemResult.movingGridItem
 
+    val maxIndex = folderGridItems.value?.maxOfOrNull {
+        when (val data = it.data) {
+            is GridItemData.ApplicationInfo -> data.index + 1
+            is GridItemData.ShortcutInfo -> data.index + 1
+            is GridItemData.ShortcutConfig -> data.index + 1
+            is GridItemData.Folder -> data.index + 1
+            else -> error("Unsupported folder grid item")
+        }
+    } ?: 0
+
     val movingData = when (val data = movingGridItem.data) {
         is GridItemData.ApplicationInfo -> data.copy(
-            index = conflictingData.maxIndex,
-            folderId = conflictingData.id,
+            index = maxIndex,
+            folderId = conflictingGridItem.id,
         )
 
         is GridItemData.ShortcutConfig -> data.copy(
-            index = conflictingData.maxIndex,
-            folderId = conflictingData.id,
+            index = maxIndex,
+            folderId = conflictingGridItem.id,
         )
 
         is GridItemData.ShortcutInfo -> data.copy(
-            index = conflictingData.maxIndex,
-            folderId = conflictingData.id,
+            index = maxIndex,
+            folderId = conflictingGridItem.id,
         )
 
         is GridItemData.Folder -> {
             data.copy(
-                index = conflictingData.maxIndex,
-                folderId = conflictingData.id,
+                index = maxIndex,
+                folderId = conflictingGridItem.id,
             )
         }
 

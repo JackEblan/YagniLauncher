@@ -99,6 +99,7 @@ internal fun InteractiveFolderGridItem(
     moveGridItemResult: MoveGridItemResult?,
     progress: Float,
     showFolderGridItemPopup: Boolean,
+    previewFolderGridItems: Map<String, List<GridItem>>,
     onOpenAppDrawer: () -> Unit,
     onTapApplicationInfo: (
         serialNumber: Long,
@@ -144,10 +145,7 @@ internal fun InteractiveFolderGridItem(
         key2 = hasInteraction,
         key3 = showFolderGridItemPopup,
     ) {
-        if (drag == Drag.Dragging &&
-            hasInteraction &&
-            showFolderGridItemPopup
-        ) {
+        if (drag == Drag.Dragging && hasInteraction && showFolderGridItemPopup) {
             onUpdateIsDragging(true)
 
             onUpdateIsCloseFolderGridItemPopup(true)
@@ -239,6 +237,7 @@ internal fun InteractiveFolderGridItem(
                 isVisibleOverlay = isVisibleOverlay,
                 sharedElementKey = sharedElementKey,
                 showFolderGridItemPopup = showFolderGridItemPopup,
+                previewFolderGridItems = previewFolderGridItems,
                 onUpdateIsCloseFolderGridItemPopup = onUpdateIsCloseFolderGridItemPopup,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
@@ -392,38 +391,32 @@ private fun InteractiveFolderApplicationInfoGridItem(
         ) {
             AsyncImage(
                 model = Builder(context).data(data.customIcon ?: icon)
-                    .addLastModifiedToFileCacheKey(true)
-                    .size(Size.ORIGINAL)
-                    .build(),
+                    .addLastModifiedToFileCacheKey(true).size(Size.ORIGINAL).build(),
                 contentDescription = null,
-                modifier = Modifier
-                    .matchParentSize()
-                    .drawWithContent {
-                        graphicsLayer.record {
-                            this@drawWithContent.drawContent()
-                        }
-
-                        drawLayer(graphicsLayer)
+                modifier = Modifier.matchParentSize().drawWithContent {
+                    graphicsLayer.record {
+                        this@drawWithContent.drawContent()
                     }
-                    .onGloballyPositioned { layoutCoordinates ->
-                        intOffset = layoutCoordinates.positionInRoot().round()
 
-                        intSize = layoutCoordinates.size
-                    }
-                    .run {
-                        if (!isScrollInProgress && !hasInteraction) {
-                            with(sharedTransitionScope) {
-                                sharedElementWithCallerManagedVisibility(
-                                    rememberSharedContentState(
-                                        key = sharedElementKey,
-                                    ),
-                                    visible = true,
-                                )
-                            }
-                        } else {
-                            this
+                    drawLayer(graphicsLayer)
+                }.onGloballyPositioned { layoutCoordinates ->
+                    intOffset = layoutCoordinates.positionInRoot().round()
+
+                    intSize = layoutCoordinates.size
+                }.run {
+                    if (!isScrollInProgress && !hasInteraction) {
+                        with(sharedTransitionScope) {
+                            sharedElementWithCallerManagedVisibility(
+                                rememberSharedContentState(
+                                    key = sharedElementKey,
+                                ),
+                                visible = true,
+                            )
                         }
-                    },
+                    } else {
+                        this
+                    }
+                },
             )
 
             if (settings.isNotificationAccessGranted() && hasNotifications) {
@@ -587,44 +580,37 @@ private fun InteractiveFolderShortcutInfoGridItem(
                 .alpha(alpha),
         ) {
             AsyncImage(
-                model = Builder(context).data(customIcon)
-                    .addLastModifiedToFileCacheKey(true)
-                    .size(Size.ORIGINAL)
-                    .build(),
-                modifier = Modifier
-                    .matchParentSize()
-                    .drawWithContent {
-                        graphicsLayer.record {
-                            this@drawWithContent.drawContent()
-                        }
-
-                        drawLayer(graphicsLayer)
+                model = Builder(context).data(customIcon).addLastModifiedToFileCacheKey(true)
+                    .size(Size.ORIGINAL).build(),
+                modifier = Modifier.matchParentSize().drawWithContent {
+                    graphicsLayer.record {
+                        this@drawWithContent.drawContent()
                     }
-                    .onGloballyPositioned { layoutCoordinates ->
-                        intOffset = layoutCoordinates.positionInRoot().round()
 
-                        intSize = layoutCoordinates.size
-                    }
-                    .run {
-                        if (!isScrollInProgress && !hasInteraction) {
-                            with(sharedTransitionScope) {
-                                sharedElementWithCallerManagedVisibility(
-                                    rememberSharedContentState(
-                                        key = sharedElementKey,
-                                    ),
-                                    visible = true,
-                                )
-                            }
-                        } else {
-                            this
+                    drawLayer(graphicsLayer)
+                }.onGloballyPositioned { layoutCoordinates ->
+                    intOffset = layoutCoordinates.positionInRoot().round()
+
+                    intSize = layoutCoordinates.size
+                }.run {
+                    if (!isScrollInProgress && !hasInteraction) {
+                        with(sharedTransitionScope) {
+                            sharedElementWithCallerManagedVisibility(
+                                rememberSharedContentState(
+                                    key = sharedElementKey,
+                                ),
+                                visible = true,
+                            )
                         }
-                    },
+                    } else {
+                        this
+                    }
+                },
                 contentDescription = null,
             )
 
             AsyncImage(
-                model = Builder(context).data(data.eblanApplicationInfoIcon)
-                    .size(Size.ORIGINAL)
+                model = Builder(context).data(data.eblanApplicationInfoIcon).size(Size.ORIGINAL)
                     .build(),
                 modifier = Modifier
                     .size((gridItemSettings.iconSize * 0.25).dp)
@@ -795,40 +781,33 @@ private fun InteractiveFolderShortcutConfigGridItem(
         verticalArrangement = verticalArrangement,
     ) {
         AsyncImage(
-            model = Builder(context).data(icon)
-                .addLastModifiedToFileCacheKey(true)
-                .size(Size.ORIGINAL)
-                .build(),
+            model = Builder(context).data(icon).addLastModifiedToFileCacheKey(true)
+                .size(Size.ORIGINAL).build(),
             contentDescription = null,
-            modifier = Modifier
-                .size(gridItemSettings.iconSize.dp)
-                .alpha(alpha)
-                .drawWithContent {
-                    graphicsLayer.record {
-                        this@drawWithContent.drawContent()
-                    }
-
-                    drawLayer(graphicsLayer)
+            modifier = Modifier.size(gridItemSettings.iconSize.dp).alpha(alpha).drawWithContent {
+                graphicsLayer.record {
+                    this@drawWithContent.drawContent()
                 }
-                .onGloballyPositioned { layoutCoordinates ->
-                    intOffset = layoutCoordinates.positionInRoot().round()
 
-                    intSize = layoutCoordinates.size
-                }
-                .run {
-                    if (!isScrollInProgress && !hasInteraction) {
-                        with(sharedTransitionScope) {
-                            sharedElementWithCallerManagedVisibility(
-                                rememberSharedContentState(
-                                    key = sharedElementKey,
-                                ),
-                                visible = true,
-                            )
-                        }
-                    } else {
-                        this
+                drawLayer(graphicsLayer)
+            }.onGloballyPositioned { layoutCoordinates ->
+                intOffset = layoutCoordinates.positionInRoot().round()
+
+                intSize = layoutCoordinates.size
+            }.run {
+                if (!isScrollInProgress && !hasInteraction) {
+                    with(sharedTransitionScope) {
+                        sharedElementWithCallerManagedVisibility(
+                            rememberSharedContentState(
+                                key = sharedElementKey,
+                            ),
+                            visible = true,
+                        )
                     }
-                },
+                } else {
+                    this
+                }
+            },
         )
 
         if (gridItemSettings.showLabel) {
@@ -858,6 +837,7 @@ private fun InteractiveNestedFolderGridItem(
     isVisibleOverlay: Boolean,
     sharedElementKey: SharedElementKey,
     showFolderGridItemPopup: Boolean,
+    previewFolderGridItems: Map<String, List<GridItem>>,
     onUpdateIsCloseFolderGridItemPopup: (Boolean) -> Unit,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
@@ -904,10 +884,7 @@ private fun InteractiveNestedFolderGridItem(
         key2 = hasInteraction,
         key3 = showFolderGridItemPopup,
     ) {
-        if (drag == Drag.Dragging &&
-            hasInteraction &&
-            showFolderGridItemPopup
-        ) {
+        if (drag == Drag.Dragging && hasInteraction && showFolderGridItemPopup) {
             onUpdateIsDragging(true)
 
             onUpdateIsCloseFolderGridItemPopup(true)
@@ -983,22 +960,18 @@ private fun InteractiveNestedFolderGridItem(
         horizontalAlignment = horizontalAlignment,
         verticalArrangement = verticalArrangement,
     ) {
-        val commonModifier = Modifier
-            .size(gridItemSettings.iconSize.dp)
-            .alpha(alpha)
-            .drawWithContent {
+        val commonModifier =
+            Modifier.size(gridItemSettings.iconSize.dp).alpha(alpha).drawWithContent {
                 graphicsLayer.record {
                     this@drawWithContent.drawContent()
                 }
 
                 drawLayer(graphicsLayer)
-            }
-            .onGloballyPositioned { layoutCoordinates ->
+            }.onGloballyPositioned { layoutCoordinates ->
                 intOffset = layoutCoordinates.positionInRoot().round()
 
                 intSize = layoutCoordinates.size
-            }
-            .run {
+            }.run {
                 if (!isScrollInProgress && !hasInteraction) {
                     with(sharedTransitionScope) {
                         sharedElementWithCallerManagedVisibility(
@@ -1028,7 +1001,7 @@ private fun InteractiveNestedFolderGridItem(
             ) {
                 PreviewFolderGridLayout(
                     modifier = Modifier.matchParentSize(),
-                    gridItems = data.gridItems.take(FOLDER_PREVIEW_COLUMNS * FOLDER_PREVIEW_ROWS),
+                    gridItems = previewFolderGridItems[gridItem.id]?.take(FOLDER_PREVIEW_COLUMNS * FOLDER_PREVIEW_ROWS),
                     content = {
                         PreviewNestedFolderGridItem(
                             alpha = alpha,
@@ -1070,11 +1043,8 @@ private fun PreviewNestedFolderGridItem(
                 val icon = data.iconPackInfoFilePath ?: data.icon
 
                 AsyncImage(
-                    model = Builder(context)
-                        .data(data.customIcon ?: icon)
-                        .addLastModifiedToFileCacheKey(true)
-                        .size(Size.ORIGINAL)
-                        .build(),
+                    model = Builder(context).data(data.customIcon ?: icon)
+                        .addLastModifiedToFileCacheKey(true).size(Size.ORIGINAL).build(),
                     contentDescription = null,
                     modifier = commonModifier,
                 )
@@ -1100,11 +1070,8 @@ private fun PreviewNestedFolderGridItem(
                 }
 
                 AsyncImage(
-                    model = Builder(context)
-                        .data(icon)
-                        .addLastModifiedToFileCacheKey(true)
-                        .size(Size.ORIGINAL)
-                        .build(),
+                    model = Builder(context).data(icon).addLastModifiedToFileCacheKey(true)
+                        .size(Size.ORIGINAL).build(),
                     contentDescription = null,
                     modifier = commonModifier,
                 )
@@ -1112,11 +1079,8 @@ private fun PreviewNestedFolderGridItem(
 
             is GridItemData.ShortcutInfo -> {
                 AsyncImage(
-                    model = Builder(context)
-                        .data(data.customIcon ?: data.icon)
-                        .addLastModifiedToFileCacheKey(true)
-                        .size(Size.ORIGINAL)
-                        .build(),
+                    model = Builder(context).data(data.customIcon ?: data.icon)
+                        .addLastModifiedToFileCacheKey(true).size(Size.ORIGINAL).build(),
                     contentDescription = null,
                     modifier = commonModifier,
                 )
@@ -1125,11 +1089,8 @@ private fun PreviewNestedFolderGridItem(
             is GridItemData.Folder -> {
                 if (data.icon != null) {
                     AsyncImage(
-                        model = Builder(context)
-                            .data(data.icon)
-                            .addLastModifiedToFileCacheKey(true)
-                            .size(Size.ORIGINAL)
-                            .build(),
+                        model = Builder(context).data(data.icon).addLastModifiedToFileCacheKey(true)
+                            .size(Size.ORIGINAL).build(),
                         contentDescription = null,
                         modifier = commonModifier,
                     )

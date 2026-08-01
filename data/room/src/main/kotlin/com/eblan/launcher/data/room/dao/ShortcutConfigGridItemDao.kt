@@ -25,13 +25,9 @@ import androidx.room.Update
 import androidx.room.Upsert
 import com.eblan.launcher.data.room.entity.ShortcutConfigGridItemEntity
 import com.eblan.launcher.domain.model.PartialShortcutConfigGridItem
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ShortcutConfigGridItemDao {
-    @Query("SELECT * FROM ShortcutConfigGridItemEntity")
-    fun getShortcutConfigGridItemEntitiesFlow(): Flow<List<ShortcutConfigGridItemEntity>>
-
     @Query("SELECT * FROM ShortcutConfigGridItemEntity")
     suspend fun getShortcutConfigGridItemEntities(): List<ShortcutConfigGridItemEntity>
 
@@ -64,9 +60,6 @@ interface ShortcutConfigGridItemDao {
 
     @Insert
     suspend fun insertShortcutConfigGridItemEntity(entity: ShortcutConfigGridItemEntity)
-
-    @Insert
-    suspend fun insertShortcutConfigGridItemEntities(entities: List<ShortcutConfigGridItemEntity>)
 
     @Upsert
     suspend fun upsertShortcutConfigGridItemEntity(entity: ShortcutConfigGridItemEntity)

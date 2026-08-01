@@ -35,6 +35,7 @@ import com.eblan.launcher.domain.model.ExperimentalSettings
 import com.eblan.launcher.domain.model.FastAppWidgetManagerAppWidgetProviderInfo
 import com.eblan.launcher.domain.model.FastLauncherAppsActivityInfo
 import com.eblan.launcher.domain.model.FastLauncherAppsShortcutInfo
+import com.eblan.launcher.domain.model.GeneralSettings
 import com.eblan.launcher.domain.model.HomeSettings
 import com.eblan.launcher.domain.model.SyncEblanApplicationInfo
 import com.eblan.launcher.domain.repository.ApplicationInfoGridItemRepository
@@ -42,6 +43,7 @@ import com.eblan.launcher.domain.repository.EblanAppWidgetProviderInfoRepository
 import com.eblan.launcher.domain.repository.EblanApplicationInfoRepository
 import com.eblan.launcher.domain.repository.EblanShortcutConfigRepository
 import com.eblan.launcher.domain.repository.EblanShortcutInfoRepository
+import com.eblan.launcher.domain.repository.FolderGridItemRepository
 import com.eblan.launcher.domain.repository.ShortcutConfigGridItemRepository
 import com.eblan.launcher.domain.repository.ShortcutInfoGridItemRepository
 import com.eblan.launcher.domain.repository.UserDataRepository
@@ -76,6 +78,7 @@ class SyncDataUseCase @Inject constructor(
     private val shortcutConfigGridItemRepository: ShortcutConfigGridItemRepository,
     private val iconKeyGenerator: IconKeyGenerator,
     private val getGridItemsUseCase: GetGridItemsUseCase,
+    private val folderGridItemRepository: FolderGridItemRepository,
     @param:Dispatcher(EblanDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke() {
@@ -88,6 +91,7 @@ class SyncDataUseCase @Inject constructor(
                 updateEblanApplicationInfos(
                     experimentalSettings = userData.experimentalSettings,
                     homeSettings = userData.homeSettings,
+                    generalSettings = userData.generalSettings,
                     fastLauncherAppsActivityInfos = fastLauncherAppsActivityInfos,
                 )
             }
@@ -116,6 +120,7 @@ class SyncDataUseCase @Inject constructor(
     private suspend fun updateEblanApplicationInfos(
         experimentalSettings: ExperimentalSettings,
         homeSettings: HomeSettings,
+        generalSettings: GeneralSettings,
         fastLauncherAppsActivityInfos: List<FastLauncherAppsActivityInfo>,
     ) {
         val oldFastEblanLauncherAppsActivityInfo =
@@ -164,6 +169,7 @@ class SyncDataUseCase @Inject constructor(
         addNewApplicationsToHomeScreen(
             homeSettings = homeSettings,
             experimentalSettings = experimentalSettings,
+            generalSettings = generalSettings,
             newSyncEblanApplicationInfos = newSyncEblanApplicationInfos,
             oldSyncEblanApplicationInfos = oldSyncEblanApplicationInfos,
             applicationInfoGridItems = newApplicationInfoGridItems,
@@ -221,6 +227,7 @@ class SyncDataUseCase @Inject constructor(
     private suspend fun addNewApplicationsToHomeScreen(
         homeSettings: HomeSettings,
         experimentalSettings: ExperimentalSettings,
+        generalSettings: GeneralSettings,
         newSyncEblanApplicationInfos: List<SyncEblanApplicationInfo>,
         oldSyncEblanApplicationInfos: List<SyncEblanApplicationInfo>,
         applicationInfoGridItems: MutableList<ApplicationInfoGridItem>,
@@ -267,6 +274,10 @@ class SyncDataUseCase @Inject constructor(
                 label = it.label,
                 homeSettings = homeSettings,
                 applicationInfoGridItems = applicationInfoGridItems,
+                folderGridItemRepository = folderGridItemRepository,
+                fileManager = fileManager,
+                iconKeyGenerator = iconKeyGenerator,
+                iconPackInfoPackageName = generalSettings.iconPackInfoPackageName,
             )
         }
     }
@@ -379,7 +390,8 @@ class SyncDataUseCase @Inject constructor(
 
         if (oldFastLauncherAppsShortcutInfos.toSet() == newFastLauncherAppsShortcutInfos?.toSet()) return
 
-        val launcherAppsShortcutInfos = launcherAppsWrapper.getShortcuts(shortcutQuery = null) ?: return
+        val launcherAppsShortcutInfos =
+            launcherAppsWrapper.getShortcuts(shortcutQuery = null) ?: return
 
         val oldEblanShortcutInfos = eblanShortcutInfoRepository.getEblanShortcutInfos()
 

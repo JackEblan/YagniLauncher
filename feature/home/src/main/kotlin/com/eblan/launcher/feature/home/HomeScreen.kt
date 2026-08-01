@@ -55,7 +55,6 @@ import com.eblan.launcher.domain.model.FolderPopup
 import com.eblan.launcher.domain.model.FolderPopupEntry
 import com.eblan.launcher.domain.model.GetEblanApplicationInfosByLabelAndTag
 import com.eblan.launcher.domain.model.GridItem
-import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.HomeData
 import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.domain.model.PageItem
@@ -117,6 +116,8 @@ internal fun HomeRoute(
 
     val textColor by viewModel.textColor.collectAsStateWithLifecycle()
 
+    val previewFolderGridItems by viewModel.previewFolderGridItems.collectAsStateWithLifecycle()
+
     HomeScreen(
         modifier = modifier,
         configureResultCode = configureResultCode,
@@ -136,6 +137,7 @@ internal fun HomeRoute(
         gridItemSource = gridItemSource,
         isVisibleOverlay = isVisibleOverlay,
         textColor = textColor,
+        previewFolderGridItems = previewFolderGridItems,
         onResetGrid = viewModel::resetGrid,
         onDeleteGridItem = viewModel::deleteGridItem,
         onResetGridAfterDeleteGridItem = viewModel::resetGridAfterDeleteGridItem,
@@ -195,6 +197,7 @@ internal fun HomeScreen(
     gridItemSource: GridItemSource?,
     isVisibleOverlay: Boolean,
     textColor: TextColor,
+    previewFolderGridItems: Map<String, List<GridItem>>,
     onResetGrid: () -> Unit,
     onDeleteGridItem: (GridItem) -> Unit,
     onResetGridAfterDeleteGridItem: (GridItem) -> Unit,
@@ -213,20 +216,16 @@ internal fun HomeScreen(
     onGetEblanShortcutConfigsByLabel: (String) -> Unit,
     onGetPinGridItem: (PinItemRequestType) -> Unit,
     onMoveFolderGridItem: (
-        conflictingGridItem: GridItem,
+        folderPopup: FolderPopup,
         movingGridItem: GridItem,
-        data: GridItemData.Folder,
         dragX: Int,
         dragY: Int,
-        columns: Int,
-        rows: Int,
         gridWidth: Int,
         gridHeight: Int,
         currentPage: Int,
     ) -> Unit,
     onMoveFolderGridItemOutsideFolder: (GridItem) -> Unit,
     onMoveGridItem: (
-        gridItems: List<GridItem>,
         movingGridItem: GridItem,
         x: Int,
         y: Int,
@@ -241,7 +240,6 @@ internal fun HomeScreen(
     onResetGridAfterResize: () -> Unit,
     onResetPinGridItem: () -> Unit,
     onResizeGridItem: (
-        gridItems: List<GridItem>,
         gridItem: GridItem,
         columns: Int,
         rows: Int,
@@ -306,6 +304,7 @@ internal fun HomeScreen(
                 gridItemSource = gridItemSource,
                 isVisibleOverlay = isVisibleOverlay,
                 textColor = textColor,
+                previewFolderGridItems = previewFolderGridItems,
                 onResetGrid = onResetGrid,
                 onDeleteGridItem = onDeleteGridItem,
                 onResetGridAfterDeleteGridItem = onResetGridAfterDeleteGridItem,
@@ -370,6 +369,7 @@ private fun Success(
     gridItemSource: GridItemSource?,
     isVisibleOverlay: Boolean,
     textColor: TextColor,
+    previewFolderGridItems: Map<String, List<GridItem>>,
     onResetGrid: () -> Unit,
     onDeleteGridItem: (GridItem) -> Unit,
     onResetGridAfterDeleteGridItem: (GridItem) -> Unit,
@@ -388,20 +388,16 @@ private fun Success(
     onGetEblanShortcutConfigsByLabel: (String) -> Unit,
     onGetPinGridItem: (PinItemRequestType) -> Unit,
     onMoveFolderGridItem: (
-        conflictingGridItem: GridItem,
+        folderPopup: FolderPopup,
         movingGridItem: GridItem,
-        data: GridItemData.Folder,
         dragX: Int,
         dragY: Int,
-        columns: Int,
-        rows: Int,
         gridWidth: Int,
         gridHeight: Int,
         currentPage: Int,
     ) -> Unit,
     onMoveFolderGridItemOutsideFolder: (GridItem) -> Unit,
     onMoveGridItem: (
-        gridItems: List<GridItem>,
         movingGridItem: GridItem,
         x: Int,
         y: Int,
@@ -416,7 +412,6 @@ private fun Success(
     onResetGridAfterResize: () -> Unit,
     onResetPinGridItem: () -> Unit,
     onResizeGridItem: (
-        gridItems: List<GridItem>,
         gridItem: GridItem,
         columns: Int,
         rows: Int,
@@ -490,6 +485,7 @@ private fun Success(
                     resizeGridItem = resizeGridItem,
                     gridItemSource = gridItemSource,
                     isVisibleOverlay = isVisibleOverlay,
+                    previewFolderGridItems = previewFolderGridItems,
                     onDeleteGridItem = onDeleteGridItem,
                     onResetGridAfterDeleteGridItem = onResetGridAfterDeleteGridItem,
                     onUpdateGridItemsAfterMove = onUpdateGridItemsAfterMove,
@@ -540,6 +536,7 @@ private fun Success(
                     screenWidth = screenWidth,
                     screenHeight = screenHeight,
                     textColor = textColor,
+                    previewFolderGridItems = previewFolderGridItems,
                     onSaveEditPage = onSaveEditPage,
                     onUpdateScreen = onUpdateScreen,
                 )
@@ -552,6 +549,7 @@ private fun Success(
                     homeSettings = homeData.userData.homeSettings,
                     paddingValues = paddingValues,
                     textColor = textColor,
+                    previewFolderGridItems = previewFolderGridItems,
                     onSaveEditPage = onSaveEditPage,
                     onUpdateScreen = onUpdateScreen,
                 )

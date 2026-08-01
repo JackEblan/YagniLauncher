@@ -30,7 +30,6 @@ import java.io.IOException
 
 @RunWith(AndroidJUnit4::class)
 class Migration14To15Test {
-
     private val testDatabase = "migration-test"
 
     @get:Rule
@@ -41,129 +40,26 @@ class Migration14To15Test {
 
     @Test
     @Throws(IOException::class)
-    fun migrate14To15() {
+    fun migrate14To15_eblanApplicationInfoEntity() {
         helper.createDatabase(testDatabase, 14).use { db ->
-            // ---------------------------
-            // EblanApplicationInfoEntity
-            // ---------------------------
             db.execSQL(
                 """
-            INSERT INTO EblanApplicationInfoEntity (
-                componentName,
-                serialNumber,
-                packageName,
-                icon,
-                label,
-                customIcon,
-                customLabel,
-                isHidden,
-                lastUpdateTime,
-                `index`
-            ) VALUES (
-                'com.example/.MainActivity',
-                1,
-                'com.example',
-                NULL,
-                'Example App',
-                NULL,
-                NULL,
-                0,
-                0,
-                -1
-            )
-                """.trimIndent(),
-            )
-
-            // ---------------------------
-            // ShortcutInfoGridItemEntity
-            // ---------------------------
-            db.execSQL(
-                """
-            INSERT INTO ShortcutInfoGridItemEntity (
-                id, page, startColumn, startRow, columnSpan, rowSpan,
-                associate, shortcutId, packageName, shortLabel, longLabel,
-                icon, `override`, serialNumber, isEnabled,
-                eblanApplicationInfoIcon, customIcon, customShortLabel,
-
-                iconSize, textColor, textSize, showLabel, singleLineLabel,
-                horizontalAlignment, verticalArrangement,
-                customTextColor, customBackgroundColor, padding, cornerRadius,
-
-                doubleTap_eblanActionType, doubleTap_serialNumber, doubleTap_componentName,
-                swipeUp_eblanActionType, swipeUp_serialNumber, swipeUp_componentName,
-                swipeDown_eblanActionType, swipeDown_serialNumber, swipeDown_componentName
-            ) VALUES (
-                'info_id_1', 0, 0, 0, 1, 1,
-                0, 'shortcut_1', 'pkg', 'short', 'long',
-                NULL, 0, 1, 1,
-                NULL, NULL, NULL,
-
-                48, 0, 12, 1, 1,
-                1, 1,
-                0, 0, 0, 0,
-
-                0, 1, '',
-                0, 2, '',
-                0, 3, ''
-            )
-                """.trimIndent(),
-            )
-
-            // ---------------------------
-            // ShortcutConfigGridItemEntity
-            // ---------------------------
-            db.execSQL(
-                """
-            INSERT INTO ShortcutConfigGridItemEntity (
-                id, page, startColumn, startRow, columnSpan, rowSpan,
-                associate, componentName, packageName,
-                activityIcon, activityLabel,
-                applicationIcon, applicationLabel,
-                `override`, serialNumber,
-                shortcutIntentName, shortcutIntentIcon, shortcutIntentUri,
-                customIcon, customLabel,
-
-                iconSize, textColor, textSize, showLabel, singleLineLabel,
-                horizontalAlignment, verticalArrangement,
-                customTextColor, customBackgroundColor, padding, cornerRadius,
-
-                doubleTap_eblanActionType, doubleTap_serialNumber, doubleTap_componentName,
-                swipeUp_eblanActionType, swipeUp_serialNumber, swipeUp_componentName,
-                swipeDown_eblanActionType, swipeDown_serialNumber, swipeDown_componentName
-            ) VALUES (
-                'config_id_1', 0, 0, 0, 1, 1,
-                0, 'component_1', 'pkg',
-                NULL, 'activity_label',
-                NULL, 'app_label',
-                0, 1,
-                NULL, NULL, NULL,
-                NULL, NULL,
-
-                48, 0, 12, 1, 1,
-                1, 1,
-                0, 0, 0, 0,
-
-                0, 1, '',
-                0, 2, '',
-                0, 3, ''
-            )
+                INSERT INTO EblanApplicationInfoEntity (
+                    componentName, serialNumber, packageName, icon, label,
+                    customIcon, customLabel, isHidden, lastUpdateTime, `index`
+                ) VALUES (
+                    'com.example/.MainActivity', 1, 'com.example', NULL, 'Example App',
+                    NULL, NULL, 0, 0, -1
+                )
                 """.trimIndent(),
             )
         }
 
-        helper.runMigrationsAndValidate(
-            testDatabase,
-            15,
-            true,
-            Migration14To15(),
-        ).use { db ->
-
-            // EblanApplicationInfoEntity
+        helper.runMigrationsAndValidate(testDatabase, 15, true, Migration14To15()).use { db ->
             db.query(
                 "SELECT * FROM EblanApplicationInfoEntity WHERE componentName = 'com.example/.MainActivity' AND serialNumber = 1",
             ).use { cursor ->
                 assertTrue(cursor.moveToFirst())
-
                 assertEquals(
                     "com.example/.MainActivity",
                     cursor.getString(cursor.getColumnIndexOrThrow("componentName")),
@@ -173,21 +69,52 @@ class Migration14To15Test {
                     "com.example",
                     cursor.getString(cursor.getColumnIndexOrThrow("packageName")),
                 )
-                assertEquals(null, cursor.getString(cursor.getColumnIndexOrThrow("icon")))
+                assertTrue(cursor.isNull(cursor.getColumnIndexOrThrow("icon")))
                 assertEquals("Example App", cursor.getString(cursor.getColumnIndexOrThrow("label")))
-                assertEquals(null, cursor.getString(cursor.getColumnIndexOrThrow("customIcon")))
-                assertEquals(null, cursor.getString(cursor.getColumnIndexOrThrow("customLabel")))
+                assertTrue(cursor.isNull(cursor.getColumnIndexOrThrow("customIcon")))
+                assertTrue(cursor.isNull(cursor.getColumnIndexOrThrow("customLabel")))
                 assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("isHidden")))
                 assertEquals(0L, cursor.getLong(cursor.getColumnIndexOrThrow("lastUpdateTime")))
                 assertEquals(-1, cursor.getInt(cursor.getColumnIndexOrThrow("index")))
                 assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("flags")))
             }
+        }
+    }
 
-            // ShortcutInfoGridItemEntity
+    @Test
+    @Throws(IOException::class)
+    fun migrate14To15_shortcutInfoGridItemEntity() {
+        helper.createDatabase(testDatabase, 14).use { db ->
+            db.execSQL(
+                """
+                INSERT INTO ShortcutInfoGridItemEntity (
+                    id, page, startColumn, startRow, columnSpan, rowSpan,
+                    associate, shortcutId, packageName, shortLabel, longLabel,
+                    icon, `override`, serialNumber, isEnabled,
+                    eblanApplicationInfoIcon, customIcon, customShortLabel,
+                    iconSize, textColor, textSize, showLabel, singleLineLabel,
+                    horizontalAlignment, verticalArrangement,
+                    customTextColor, customBackgroundColor, padding, cornerRadius,
+                    doubleTap_eblanActionType, doubleTap_serialNumber, doubleTap_componentName,
+                    swipeUp_eblanActionType, swipeUp_serialNumber, swipeUp_componentName,
+                    swipeDown_eblanActionType, swipeDown_serialNumber, swipeDown_componentName
+                ) VALUES (
+                    'info_id_1', 0, 0, 0, 1, 1,
+                    0, 'shortcut_1', 'pkg', 'short', 'long',
+                    NULL, 0, 1, 1,
+                    NULL, NULL, NULL,
+                    48, 0, 12, 1, 1,
+                    1, 1, 0, 0, 0, 0,
+                    0, 1, '', 0, 2, '', 0, 3, ''
+                )
+                """.trimIndent(),
+            )
+        }
+
+        helper.runMigrationsAndValidate(testDatabase, 15, true, Migration14To15()).use { db ->
             db.query("SELECT * FROM ShortcutInfoGridItemEntity WHERE id = 'info_id_1'")
                 .use { cursor ->
                     assertTrue(cursor.moveToFirst())
-
                     assertEquals("info_id_1", cursor.getString(cursor.getColumnIndexOrThrow("id")))
                     assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("page")))
                     assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("startColumn")))
@@ -277,12 +204,49 @@ class Migration14To15Test {
                     assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("index")))
                     assertTrue(cursor.isNull(cursor.getColumnIndexOrThrow("folderId")))
                 }
+        }
+    }
 
-            // ShortcutConfigGridItemEntity
+    @Test
+    @Throws(IOException::class)
+    fun migrate14To15_shortcutConfigGridItemEntity() {
+        helper.createDatabase(testDatabase, 14).use { db ->
+            db.execSQL(
+                """
+                INSERT INTO ShortcutConfigGridItemEntity (
+                    id, page, startColumn, startRow, columnSpan, rowSpan,
+                    associate, componentName, packageName,
+                    activityIcon, activityLabel,
+                    applicationIcon, applicationLabel,
+                    `override`, serialNumber,
+                    shortcutIntentName, shortcutIntentIcon, shortcutIntentUri,
+                    customIcon, customLabel,
+                    iconSize, textColor, textSize, showLabel, singleLineLabel,
+                    horizontalAlignment, verticalArrangement,
+                    customTextColor, customBackgroundColor, padding, cornerRadius,
+                    doubleTap_eblanActionType, doubleTap_serialNumber, doubleTap_componentName,
+                    swipeUp_eblanActionType, swipeUp_serialNumber, swipeUp_componentName,
+                    swipeDown_eblanActionType, swipeDown_serialNumber, swipeDown_componentName
+                ) VALUES (
+                    'config_id_1', 0, 0, 0, 1, 1,
+                    0, 'component_1', 'pkg',
+                    NULL, 'activity_label',
+                    NULL, 'app_label',
+                    0, 1,
+                    NULL, NULL, NULL,
+                    NULL, NULL,
+                    48, 0, 12, 1, 1,
+                    1, 1, 0, 0, 0, 0,
+                    0, 1, '', 0, 2, '', 0, 3, ''
+                )
+                """.trimIndent(),
+            )
+        }
+
+        helper.runMigrationsAndValidate(testDatabase, 15, true, Migration14To15()).use { db ->
             db.query("SELECT * FROM ShortcutConfigGridItemEntity WHERE id = 'config_id_1'")
                 .use { cursor ->
                     assertTrue(cursor.moveToFirst())
-
                     assertEquals(
                         "config_id_1",
                         cursor.getString(cursor.getColumnIndexOrThrow("id")),

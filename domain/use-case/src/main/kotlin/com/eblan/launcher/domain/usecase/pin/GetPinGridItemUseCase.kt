@@ -43,12 +43,12 @@ class GetPinGridItemUseCase @Inject constructor(
     private val userDataRepository: UserDataRepository,
     private val packageManagerWrapper: PackageManagerWrapper,
     private val iconKeyGenerator: IconKeyGenerator,
-    @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
+    @param:Dispatcher(EblanDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) {
     @OptIn(ExperimentalUuidApi::class)
     suspend operator fun invoke(
         pinItemRequestType: PinItemRequestType,
-    ): GridItem = withContext(defaultDispatcher) {
+    ): GridItem = withContext(ioDispatcher) {
         val homeSettings = userDataRepository.userDataFlow.first().homeSettings
 
         when (pinItemRequestType) {

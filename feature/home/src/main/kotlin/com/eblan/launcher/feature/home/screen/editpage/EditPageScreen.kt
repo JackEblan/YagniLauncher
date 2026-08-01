@@ -70,6 +70,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.util.Consumer
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.Associate
+import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.HomeSettings
 import com.eblan.launcher.domain.model.PageItem
 import com.eblan.launcher.domain.model.TextColor
@@ -89,6 +90,7 @@ internal fun EditGridPageScreen(
     screenWidth: Int,
     screenHeight: Int,
     textColor: TextColor,
+    previewFolderGridItems: Map<String, List<GridItem>>,
     onSaveEditPage: (
         id: Int,
         pageItems: List<PageItem>,
@@ -219,6 +221,7 @@ internal fun EditGridPageScreen(
                                 hasShortcutHostPermission = hasShortcutHostPermission,
                                 statusBarNotifications = emptyMap(),
                                 textColor = textColor,
+                                previewFolderGridItems = previewFolderGridItems,
                             )
                         },
                     )
@@ -286,6 +289,7 @@ internal fun EditDockGridPageScreen(
     homeSettings: HomeSettings,
     paddingValues: PaddingValues,
     textColor: TextColor,
+    previewFolderGridItems: Map<String, List<GridItem>>,
     onSaveEditPage: (
         id: Int,
         pageItems: List<PageItem>,
@@ -390,6 +394,7 @@ internal fun EditDockGridPageScreen(
                                     hasShortcutHostPermission = hasShortcutHostPermission,
                                     statusBarNotifications = emptyMap(),
                                     textColor = textColor,
+                                    previewFolderGridItems = previewFolderGridItems,
                                 )
                             },
                         )

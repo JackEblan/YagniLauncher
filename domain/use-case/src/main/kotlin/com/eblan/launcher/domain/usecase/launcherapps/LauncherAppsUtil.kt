@@ -51,9 +51,11 @@ import com.eblan.launcher.domain.model.ShortcutInfoGridItem
 import com.eblan.launcher.domain.model.SyncEblanApplicationInfo
 import com.eblan.launcher.domain.model.WidgetGridItem
 import com.eblan.launcher.domain.repository.ApplicationInfoGridItemRepository
+import com.eblan.launcher.domain.repository.FolderGridItemRepository
 import com.eblan.launcher.domain.repository.ShortcutConfigGridItemRepository
 import com.eblan.launcher.domain.repository.ShortcutInfoGridItemRepository
 import com.eblan.launcher.domain.repository.WidgetGridItemRepository
+import com.eblan.launcher.domain.usecase.grid.getFolderGridItemsById
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
 import java.io.File
@@ -528,6 +530,10 @@ internal suspend fun addNewApplicationToHomeScreen(
     label: String?,
     homeSettings: HomeSettings,
     applicationInfoGridItems: MutableList<ApplicationInfoGridItem>,
+    folderGridItemRepository: FolderGridItemRepository,
+    fileManager: FileManager,
+    iconKeyGenerator: IconKeyGenerator,
+    iconPackInfoPackageName: String,
 ) {
     val alreadyOnHome = gridItems.any {
         when (val data = it.data) {
@@ -535,8 +541,16 @@ internal suspend fun addNewApplicationToHomeScreen(
                 data.serialNumber == 0L &&
                     data.componentName == componentName
 
-            is GridItemData.Folder ->
-                data.gridItems.any { folderGridItem ->
+            is GridItemData.Folder -> {
+                val folderGridItems = getFolderGridItemsById(
+                    folderGridItemRepository = folderGridItemRepository,
+                    fileManager = fileManager,
+                    iconKeyGenerator = iconKeyGenerator,
+                    iconPackInfoPackageName = iconPackInfoPackageName,
+                    folderId = it.id,
+                )
+
+                folderGridItems.any { folderGridItem ->
                     when (val folderData = folderGridItem.data) {
                         is GridItemData.ApplicationInfo -> {
                             folderData.serialNumber == 0L &&
@@ -546,6 +560,7 @@ internal suspend fun addNewApplicationToHomeScreen(
                         else -> false
                     }
                 }
+            }
 
             else -> false
         }

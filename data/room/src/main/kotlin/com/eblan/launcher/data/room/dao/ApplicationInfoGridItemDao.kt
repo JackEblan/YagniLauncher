@@ -25,13 +25,9 @@ import androidx.room.Update
 import androidx.room.Upsert
 import com.eblan.launcher.data.room.entity.ApplicationInfoGridItemEntity
 import com.eblan.launcher.domain.model.PartialApplicationInfoGridItem
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ApplicationInfoGridItemDao {
-    @Query("SELECT * FROM ApplicationInfoGridItemEntity")
-    fun getApplicationInfoGridItemEntitiesFlow(): Flow<List<ApplicationInfoGridItemEntity>>
-
     @Query("SELECT * FROM ApplicationInfoGridItemEntity")
     suspend fun getApplicationInfoGridItemEntities(): List<ApplicationInfoGridItemEntity>
 
