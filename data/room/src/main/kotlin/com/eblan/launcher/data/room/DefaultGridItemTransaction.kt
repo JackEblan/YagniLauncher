@@ -115,15 +115,19 @@ internal class DefaultGridItemTransaction @Inject constructor(
             applicationInfoGridItemDao.deleteApplicationInfoGridItemEntities(
                 entities = applicationInfoGridItemEntities,
             )
+
             widgetGridItemDao.deleteWidgetGridItemEntities(
                 entities = widgetGridItemEntities,
             )
+
             shortcutInfoGridItemDao.deleteShortcutInfoGridItemEntities(
                 entities = shortcutInfoGridItemEntities,
             )
+
             folderGridItemDao.deleteFolderGridItemEntities(
                 entities = folderGridItemEntities,
             )
+
             shortcutConfigGridItemDao.deleteShortcutConfigGridItemEntities(
                 entities = shortcutConfigGridItemEntities,
             )

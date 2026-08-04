@@ -192,8 +192,6 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
 
         gridRepository.upsertGridItems(
             gridItems = listOf(
-                conflictingGridItem.copy(data = conflictingData),
-                movingGridItem.copy(data = movingData),
                 conflictingGridItem.copy(
                     id = id,
                     data = GridItemData.Folder(
@@ -203,6 +201,8 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
                         folderId = null,
                     ),
                 ),
+                conflictingGridItem.copy(data = conflictingData),
+                movingGridItem.copy(data = movingData),
             ),
         )
     }
