@@ -78,8 +78,8 @@ internal class DefaultGridItemTransaction @Inject constructor(
         applicationInfoGridItemEntities: List<ApplicationInfoGridItemEntity>,
         widgetGridItemEntities: List<WidgetGridItemEntity>,
         shortcutInfoGridItemEntities: List<ShortcutInfoGridItemEntity>,
-        folderGridItemEntities: List<FolderGridItemEntity>,
         shortcutConfigGridItemEntities: List<ShortcutConfigGridItemEntity>,
+        folderGridItemEntities: List<FolderGridItemEntity>,
     ) {
         eblanDatabase.withTransaction {
             folderGridItemDao.upsertFolderGridItemEntities(
@@ -108,8 +108,8 @@ internal class DefaultGridItemTransaction @Inject constructor(
         applicationInfoGridItemEntities: List<ApplicationInfoGridItemEntity>,
         widgetGridItemEntities: List<WidgetGridItemEntity>,
         shortcutInfoGridItemEntities: List<ShortcutInfoGridItemEntity>,
-        folderGridItemEntities: List<FolderGridItemEntity>,
         shortcutConfigGridItemEntities: List<ShortcutConfigGridItemEntity>,
+        folderGridItemEntities: List<FolderGridItemEntity>,
     ) {
         eblanDatabase.withTransaction {
             applicationInfoGridItemDao.deleteApplicationInfoGridItemEntities(
@@ -124,12 +124,12 @@ internal class DefaultGridItemTransaction @Inject constructor(
                 entities = shortcutInfoGridItemEntities,
             )
 
-            folderGridItemDao.deleteFolderGridItemEntities(
-                entities = folderGridItemEntities,
-            )
-
             shortcutConfigGridItemDao.deleteShortcutConfigGridItemEntities(
                 entities = shortcutConfigGridItemEntities,
+            )
+
+            folderGridItemDao.deleteFolderGridItemEntities(
+                entities = folderGridItemEntities,
             )
         }
     }

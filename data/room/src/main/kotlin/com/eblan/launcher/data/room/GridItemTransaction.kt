@@ -34,15 +34,15 @@ interface GridItemTransaction {
         applicationInfoGridItemEntities: List<ApplicationInfoGridItemEntity>,
         widgetGridItemEntities: List<WidgetGridItemEntity>,
         shortcutInfoGridItemEntities: List<ShortcutInfoGridItemEntity>,
-        folderGridItemEntities: List<FolderGridItemEntity>,
         shortcutConfigGridItemEntities: List<ShortcutConfigGridItemEntity>,
+        folderGridItemEntities: List<FolderGridItemEntity>,
     )
 
     suspend fun deleteGridItemEntitiesTransaction(
         applicationInfoGridItemEntities: List<ApplicationInfoGridItemEntity>,
         widgetGridItemEntities: List<WidgetGridItemEntity>,
         shortcutInfoGridItemEntities: List<ShortcutInfoGridItemEntity>,
-        folderGridItemEntities: List<FolderGridItemEntity>,
         shortcutConfigGridItemEntities: List<ShortcutConfigGridItemEntity>,
+        folderGridItemEntities: List<FolderGridItemEntity>,
     )
 }

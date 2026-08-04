@@ -218,9 +218,9 @@ internal class DefaultGridRepository @Inject constructor(
 
         val shortcutInfoGridItemEntities = mutableListOf<ShortcutInfoGridItemEntity>()
 
-        val folderGridItemEntities = mutableListOf<FolderGridItemEntity>()
-
         val shortcutConfigGridItemEntities = mutableListOf<ShortcutConfigGridItemEntity>()
+
+        val folderGridItemEntities = mutableListOf<FolderGridItemEntity>()
 
         gridItems.forEach { gridItem ->
             when (val data = gridItem.data) {
@@ -260,8 +260,8 @@ internal class DefaultGridRepository @Inject constructor(
             applicationInfoGridItemEntities = applicationInfoGridItemEntities,
             widgetGridItemEntities = widgetGridItemEntities,
             shortcutInfoGridItemEntities = shortcutInfoGridItemEntities,
-            folderGridItemEntities = folderGridItemEntities,
             shortcutConfigGridItemEntities = shortcutConfigGridItemEntities,
+            folderGridItemEntities = folderGridItemEntities,
         )
     }
 
@@ -272,9 +272,9 @@ internal class DefaultGridRepository @Inject constructor(
 
         val shortcutInfoGridItemEntities = mutableListOf<ShortcutInfoGridItemEntity>()
 
-        val folderGridItemEntities = mutableListOf<FolderGridItemEntity>()
-
         val shortcutConfigGridItemEntities = mutableListOf<ShortcutConfigGridItemEntity>()
+
+        val folderGridItemEntities = mutableListOf<FolderGridItemEntity>()
 
         gridItems.forEach { gridItem ->
             when (val data = gridItem.data) {
@@ -314,8 +314,8 @@ internal class DefaultGridRepository @Inject constructor(
             applicationInfoGridItemEntities = applicationInfoGridItemEntities,
             widgetGridItemEntities = widgetGridItemEntities,
             shortcutInfoGridItemEntities = shortcutInfoGridItemEntities,
-            folderGridItemEntities = folderGridItemEntities,
             shortcutConfigGridItemEntities = shortcutConfigGridItemEntities,
+            folderGridItemEntities = folderGridItemEntities,
         )
     }
 
