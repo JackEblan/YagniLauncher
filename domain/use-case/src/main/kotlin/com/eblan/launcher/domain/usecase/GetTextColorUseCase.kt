@@ -40,9 +40,7 @@ class GetTextColorUseCase @Inject constructor(
         userDataRepository.userDataFlow,
         wallpaperManagerWrapper.getColorsChanged(),
     ) { userData, colorHints ->
-        val gridItemSettings = userData.homeSettings.gridItemSettings
-
-        when (gridItemSettings.textColor) {
+        when (userData.homeSettings.gridItemSettings.textColor) {
             TextColor.System -> {
                 getTextColorFromWallpaperColors(
                     theme = userData.generalSettings.theme,
@@ -50,7 +48,7 @@ class GetTextColorUseCase @Inject constructor(
                 )
             }
 
-            else -> gridItemSettings.textColor
+            else -> userData.homeSettings.gridItemSettings.textColor
         }
     }.flowOn(defaultDispatcher)
 
