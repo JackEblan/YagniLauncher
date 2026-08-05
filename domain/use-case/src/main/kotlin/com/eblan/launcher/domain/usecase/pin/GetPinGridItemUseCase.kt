@@ -85,8 +85,7 @@ class GetPinGridItemUseCase @Inject constructor(
                     targetCellHeight = pinItemRequestType.targetCellHeight,
                     targetCellWidth = pinItemRequestType.targetCellWidth,
                     preview = pinItemRequestType.preview,
-                    label = packageManagerWrapper.getApplicationLabel(packageName = pinItemRequestType.packageName)
-                        .toString(),
+                    label = packageManagerWrapper.getApplicationLabel(packageName = pinItemRequestType.packageName),
                     icon = eblanApplicationInfoIcon,
                 )
 

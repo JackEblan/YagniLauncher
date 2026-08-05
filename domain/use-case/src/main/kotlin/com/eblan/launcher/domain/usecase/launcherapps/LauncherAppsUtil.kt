@@ -309,7 +309,7 @@ internal suspend fun updateShortcutConfigGridItems(
                     activityIcon = eblanShortcutConfig.activityIcon,
                     applicationLabel = packageManagerWrapper.getApplicationLabel(
                         packageName = eblanShortcutConfig.packageName,
-                    ).toString(),
+                    ),
                     applicationIcon = resolveApplicationIcon(
                         fileManager = fileManager,
                         packageManagerWrapper = packageManagerWrapper,
@@ -384,7 +384,7 @@ internal suspend fun updateWidgetGridItems(
                     ),
                     label = packageManagerWrapper.getApplicationLabel(
                         packageName = eblanAppWidgetProviderInfo.packageName,
-                    ).toString(),
+                    ),
                 ),
             )
         } else {
@@ -425,7 +425,7 @@ internal suspend fun AppWidgetManagerAppWidgetProviderInfo.toEblanAppWidgetProvi
     ),
     applicationLabel = packageManagerWrapper.getApplicationLabel(
         packageName = packageName,
-    ).toString(),
+    ),
     lastUpdateTime = lastUpdateTime,
     label = label,
     description = description,

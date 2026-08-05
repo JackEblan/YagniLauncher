@@ -30,7 +30,7 @@ internal fun getWidgetGridItem(
     gridItemSettings: GridItemSettings,
     icon: String?,
     id: String,
-    label: String,
+    label: String?,
     maxResizeHeight: Int,
     maxResizeWidth: Int,
     minHeight: Int,

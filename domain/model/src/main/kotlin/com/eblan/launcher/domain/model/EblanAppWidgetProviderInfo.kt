@@ -33,7 +33,7 @@ data class EblanAppWidgetProviderInfo(
     val maxResizeHeight: Int,
     val preview: String?,
     val applicationIcon: String?,
-    val applicationLabel: String,
+    val applicationLabel: String?,
     val lastUpdateTime: Long,
     val label: String?,
     val description: String?,

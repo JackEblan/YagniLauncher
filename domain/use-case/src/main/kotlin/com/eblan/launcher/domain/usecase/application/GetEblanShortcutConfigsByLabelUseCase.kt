@@ -40,11 +40,10 @@ class GetEblanShortcutConfigsByLabelUseCase @Inject constructor(
         labelFlow,
     ) { eblanShortcutConfigs, label ->
         eblanShortcutConfigs.filter {
-            it.applicationLabel.toString()
-                .contains(
-                    other = label,
-                    ignoreCase = true,
-                )
+            it.applicationLabel?.contains(
+                other = label,
+                ignoreCase = true,
+            ) == true
         }.sortedWith(
             compareBy(
                 { it.serialNumber },

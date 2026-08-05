@@ -43,7 +43,6 @@ class GetEblanApplicationInfoTagUseCase @Inject constructor(
         ),
         eblanApplicationInfoTagRepository.eblanApplicationInfoTagsFlow,
     ) { eblanApplicationInfoTagsByComponentName, eblanApplicationInfoTags ->
-
         eblanApplicationInfoTags.map {
             EblanApplicationInfoTagUi(
                 id = it.id,

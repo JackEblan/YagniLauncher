@@ -47,7 +47,7 @@ sealed interface GridItemData {
         val targetCellHeight: Int,
         val targetCellWidth: Int,
         val preview: String?,
-        val label: String,
+        val label: String?,
         val icon: String?,
     ) : GridItemData
 

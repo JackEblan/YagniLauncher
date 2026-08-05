@@ -125,13 +125,11 @@ class GetEblanApplicationInfosByLabelAndTagUseCase @Inject constructor(
         horizontalAppDrawerRows: Int,
         eblanApplicationInfosByLabel: MutableList<EblanApplicationInfoWithIconPackInfo>,
     ): GetEblanApplicationInfosByLabelAndTag {
-        val pageSize = horizontalAppDrawerColumns * horizontalAppDrawerRows
-
         val groupedEblanApplicationInfos = eblanApplicationInfosByLabel.groupBy {
             launcherAppsWrapper.getUser(serialNumber = it.eblanApplicationInfo.serialNumber)
         }.toSortedMap(nullsLast(compareBy { it.serialNumber }))
             .flatMap { (eblanUser, eblanApplicationInfos) ->
-                eblanApplicationInfos.chunked(pageSize).mapIndexed { index, eblanApplicationInfos ->
+                eblanApplicationInfos.chunked(horizontalAppDrawerColumns * horizontalAppDrawerRows).mapIndexed { index, eblanApplicationInfos ->
                     EblanUserPageKey(
                         eblanUser = eblanUser,
                         page = index,
@@ -152,10 +150,7 @@ class GetEblanApplicationInfosByLabelAndTagUseCase @Inject constructor(
     ) {
         if (eblanApplicationInfoOrder != EblanApplicationInfoOrder.Index) return
 
-        val indexedEblanApplicationInfos =
-            eblanApplicationInfos.filter { it.eblanApplicationInfo.index >= 0 }
-
-        indexedEblanApplicationInfos.forEach {
+        eblanApplicationInfos.filter { it.eblanApplicationInfo.index >= 0 }.forEach {
             val fromIndex = eblanApplicationInfos.indexOf(it)
 
             if (fromIndex > -1) {
@@ -200,29 +195,25 @@ class GetEblanApplicationInfosByLabelAndTagUseCase @Inject constructor(
             )
         }
 
-        val filterEblanApplicationInfos = when {
-            !fuzzySearch && eblanApplicationInfosByLabel.isEmpty() -> {
+        val filterEblanApplicationInfos = if (fuzzySearch || eblanApplicationInfosByLabel.isNotEmpty()) {
+            val fuzzyMatches = if (fuzzySearch) {
+                (eblanApplicationInfosByTag - eblanApplicationInfosByLabel.toSet())
+                    .map {
+                        it to jaroWinklerSimilarityWrapper.apply(
+                            left = normalize(text = label),
+                            right = normalize(text = it.label),
+                        )
+                    }
+                    .filter { (_, score) -> score >= FUZZY_MATCH_THRESHOLD }
+                    .sortedByDescending { (_, score) -> score }
+                    .map { (eblanApplicationInfo, _) -> eblanApplicationInfo }
+            } else {
                 emptyList()
             }
 
-            else -> {
-                val fuzzyMatches = if (fuzzySearch) {
-                    (eblanApplicationInfosByTag - eblanApplicationInfosByLabel.toSet())
-                        .map {
-                            it to jaroWinklerSimilarityWrapper.apply(
-                                left = normalize(text = label),
-                                right = normalize(text = it.label),
-                            )
-                        }
-                        .filter { (_, score) -> score >= FUZZY_MATCH_THRESHOLD }
-                        .sortedByDescending { (_, score) -> score }
-                        .map { (eblanApplicationInfo, _) -> eblanApplicationInfo }
-                } else {
-                    emptyList()
-                }
-
-                eblanApplicationInfosByLabel.sortedBy { it.label.lowercase() } + fuzzyMatches
-            }
+            eblanApplicationInfosByLabel.sortedBy { it.label.lowercase() } + fuzzyMatches
+        } else {
+            emptyList()
         }
 
         return filterEblanApplicationInfos

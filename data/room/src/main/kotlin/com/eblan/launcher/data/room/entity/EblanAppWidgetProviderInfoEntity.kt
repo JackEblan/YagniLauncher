@@ -37,7 +37,7 @@ data class EblanAppWidgetProviderInfoEntity(
     val maxResizeWidth: Int,
     val maxResizeHeight: Int,
     val preview: String?,
-    val applicationLabel: String,
+    val applicationLabel: String?,
     val applicationIcon: String?,
     @ColumnInfo(defaultValue = "0")
     val lastUpdateTime: Long,

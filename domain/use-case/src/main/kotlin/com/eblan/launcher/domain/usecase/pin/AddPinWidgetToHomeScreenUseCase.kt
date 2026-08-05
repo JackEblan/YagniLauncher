@@ -139,7 +139,7 @@ class AddPinWidgetToHomeScreenUseCase @Inject constructor(
             targetCellHeight = targetCellHeight,
             targetCellWidth = targetCellWidth,
             preview = preview,
-            label = packageManagerWrapper.getApplicationLabel(packageName = packageName).toString(),
+            label = packageManagerWrapper.getApplicationLabel(packageName = packageName),
             icon = eblanApplicationInfoIcon,
         )
 
