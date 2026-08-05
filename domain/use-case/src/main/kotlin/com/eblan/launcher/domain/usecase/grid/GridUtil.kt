@@ -200,10 +200,7 @@ internal fun ShortcutConfigGridItem.asGridItem(): GridItem = GridItem(
     swipeDown = swipeDown,
 )
 
-/**
- * Folder Grid Item without grid items for faster processing
- */
-internal fun FolderGridItem.asEmptyFolderGridItem(): GridItem = GridItem(
+internal fun FolderGridItem.asGridItem(): GridItem = GridItem(
     id = id,
     page = page,
     startColumn = startColumn,
@@ -236,11 +233,7 @@ internal suspend fun FolderGridItemWrapper.asFolderPopup(
     val childFolderGridItems = folderGridItems.map {
         folderGridItemRepository.getFolderGridItemWrapper(
             id = it.id,
-        )?.asGridItem(
-            fileManager = fileManager,
-            iconKeyGenerator = iconKeyGenerator,
-            iconPackInfoPackageName = iconPackInfoPackageName,
-        ) ?: it.asEmptyFolderGridItem()
+        )?.asGridItem() ?: it.asGridItem()
     }
 
     val gridItems = (
@@ -290,7 +283,7 @@ internal suspend fun FolderGridItemWrapper.asFolderPopup(
 
     return FolderPopup(
         folderPopupEntry = folderPopupEntry,
-        gridItem = folderGridItem.asEmptyFolderGridItem(),
+        gridItem = folderGridItem.asGridItem(),
         gridItems = gridItems,
         gridItemsByPage = gridItemsByPage,
         label = folderGridItem.label,
@@ -352,11 +345,7 @@ internal suspend fun cleanupGridItemRecursively(
     }
 }
 
-internal suspend fun FolderGridItemWrapper.asGridItem(
-    fileManager: FileManager,
-    iconKeyGenerator: IconKeyGenerator,
-    iconPackInfoPackageName: String,
-): GridItem = GridItem(
+internal fun FolderGridItemWrapper.asGridItem(): GridItem = GridItem(
     id = folderGridItem.id,
     page = folderGridItem.page,
     startColumn = folderGridItem.startColumn,
@@ -391,11 +380,7 @@ suspend fun getFolderGridItemsById(
     val childFolderGridItems = folderGridItemWrapper.folderGridItems.map { folderGridItem ->
         folderGridItemRepository.getFolderGridItemWrapper(
             id = folderGridItem.id,
-        )?.asGridItem(
-            fileManager = fileManager,
-            iconKeyGenerator = iconKeyGenerator,
-            iconPackInfoPackageName = iconPackInfoPackageName,
-        ) ?: folderGridItem.asEmptyFolderGridItem()
+        )?.asGridItem() ?: folderGridItem.asGridItem()
     }
 
     return (

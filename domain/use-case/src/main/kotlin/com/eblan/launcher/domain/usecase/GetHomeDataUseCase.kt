@@ -30,7 +30,6 @@ import com.eblan.launcher.domain.model.GridItems
 import com.eblan.launcher.domain.model.HomeData
 import com.eblan.launcher.domain.repository.GridRepository
 import com.eblan.launcher.domain.repository.UserDataRepository
-import com.eblan.launcher.domain.usecase.grid.asEmptyFolderGridItem
 import com.eblan.launcher.domain.usecase.grid.asGridItem
 import com.eblan.launcher.domain.usecase.grid.isTopLevel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -95,6 +94,6 @@ class GetHomeDataUseCase @Inject constructor(
         addAll(widgetGridItems.map { it.asGridItem() })
         addAll(shortcutInfoGridItems.map { it.asGridItem() })
         addAll(shortcutConfigGridItems.map { it.asGridItem() })
-        addAll(folderGridItems.map { it.asEmptyFolderGridItem() })
+        addAll(folderGridItems.map { it.asGridItem() })
     }.filter { it.isTopLevel() }
 }

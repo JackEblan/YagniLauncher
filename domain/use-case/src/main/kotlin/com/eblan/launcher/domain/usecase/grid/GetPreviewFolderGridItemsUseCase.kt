@@ -52,7 +52,7 @@ class GetPreviewFolderGridItemsUseCase @Inject constructor(
                     )
                 } + folderGridItemWrapper.shortcutInfoGridItems.map { it.asGridItem() } +
                     folderGridItemWrapper.shortcutConfigGridItems.map { it.asGridItem() } +
-                    folderGridItemWrapper.folderGridItems.map { it.asEmptyFolderGridItem() }
+                    folderGridItemWrapper.folderGridItems.map { it.asGridItem() }
                 ).sortedBy { gridItem ->
                 when (val data = gridItem.data) {
                     is GridItemData.ApplicationInfo -> data.index

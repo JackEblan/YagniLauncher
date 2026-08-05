@@ -68,7 +68,7 @@ class GetGridItemsUseCase @Inject constructor(
             )
             addAll(
                 gridItems.folderGridItems.map {
-                    it.asEmptyFolderGridItem()
+                    it.asGridItem()
                 },
             )
         }
