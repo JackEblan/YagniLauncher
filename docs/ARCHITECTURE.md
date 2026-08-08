@@ -166,5 +166,7 @@ These three module groups all sit in the Presentation layer, but each has a dist
 
 ## Further Reading
 
+Yagni Launcher uses its own Clean Architecture and module dependency rules, as described throughout this document. Now in Android influenced only selected tooling and Gradle module terminology — for example `build-logic`, `design-system`, and `ui` — and the link below does not mean that Yagni Launcher's architecture is based on that project.
+
 - [The Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
 - [Now in Android modularization guide](https://github.com/android/nowinandroid/blob/main/docs/ModularizationLearningJourney.md)
