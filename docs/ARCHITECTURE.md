@@ -160,9 +160,3 @@ These three module groups all sit in the Presentation layer, but each has a dist
 - **`design-system`** contains generic, reusable visual primitives — theming, icons, animations, dialogs, and other Compose building blocks that carry no knowledge of the launcher's domain models or features. It depends only on `domain:model` for the types it renders.
 - **`ui`** contains shared, *application-aware* UI: composites built from `design-system` primitives that are reused across multiple features (dialogs like `SelectApplicationDialog`, settings composables, etc.), and it exposes the `framework:*` modules as API dependencies so features can reach framework implementations through a single dependency on `:ui`. It depends on `design-system`.
 - **`feature:*`** modules contain screens, ViewModels, and UI state specific to one feature. They depend on both `design-system` and `ui` (added automatically by the `feature` Gradle convention plugin) plus whatever `domain:*` modules that feature's use cases require.
-
----
-
-## Further Reading
-
-For a deeper treatment of why modularization and this layering approach are useful, see the Now in Android [modularization learning journey](https://github.com/android/nowinandroid/blob/main/docs/ModularizationLearningJourney.md).
