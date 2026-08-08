@@ -17,9 +17,7 @@
  */
 package com.eblan.launcher.feature.home.screen.resize
 
-import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProviderInfo
-import android.os.Bundle
 import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -49,11 +47,10 @@ import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.SideAnchor
 import com.eblan.launcher.feature.home.screen.DRAG_HANDLE_SIZE
+import com.eblan.launcher.feature.home.screen.updateAppWidgetOptions
 import com.eblan.launcher.ui.local.LocalAppWidgetManager
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
-import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 internal fun WidgetGridItemResizeOverlay(
@@ -233,18 +230,17 @@ internal fun WidgetGridItemResizeOverlay(
                 rows = rows,
             ) && !lockMovement
         ) {
-            delay(50L.milliseconds)
-
-            val options = Bundle().apply {
-                putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, data.minWidth)
-                putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, data.minHeight)
-                putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH, data.minWidth)
-                putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT, data.minHeight)
-            }
-
-            appWidgetManager.updateAppWidgetOptions(
-                appWidgetId = data.appWidgetId,
-                options = options,
+            updateAppWidgetOptions(
+                allowedHeight = allowedHeight,
+                allowedWidth = allowedWidth,
+                androidAppWidgetManagerWrapper = appWidgetManager,
+                columns = columns,
+                data = data,
+                density = density,
+                gridHeight = gridHeight,
+                gridItem = gridItem,
+                gridWidth = gridWidth,
+                rows = rows,
             )
 
             onResizeWidgetGridItem(
