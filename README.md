@@ -61,10 +61,6 @@ We keep the APK size minimal and heavily cache icons and images, which improves 
 ## Documentation
 If you're interested in contributing to the project, I recommend reading the [Yagni Launcher Architecture](docs/ARCHITECTURE.md) first.
 
-## Links
-- [Android Launchers Memory Usage In The Cached Processes](https://youtu.be/-0cEKr-H5FU?si=RhaWvdf5ElBFoHnJ)
-- [Support Me On Ko-Fi](https://ko-fi.com/I3I01OJG21)
-
 ## License
 **Yagni Launcher** is licensed under the GNU General Public License v3.0. See the [license](LICENSE)
 for more
