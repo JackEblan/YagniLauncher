@@ -22,4 +22,5 @@ data class FolderGridItemWrapper(
     val applicationInfoGridItems: List<ApplicationInfoGridItem>,
     val shortcutInfoGridItems: List<ShortcutInfoGridItem>,
     val shortcutConfigGridItems: List<ShortcutConfigGridItem>,
+    val folderGridItems: List<FolderGridItem>,
 )

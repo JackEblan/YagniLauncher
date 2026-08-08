@@ -17,19 +17,16 @@
  */
 package com.eblan.launcher.feature.settings.home
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -39,18 +36,23 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.HomeSettings
+import com.eblan.launcher.feature.settings.home.dialog.EditDockGridDialog
+import com.eblan.launcher.feature.settings.home.dialog.EditDockHeightDialog
+import com.eblan.launcher.feature.settings.home.dialog.EditFolderCellDimensionDialog
+import com.eblan.launcher.feature.settings.home.dialog.EditFolderMaxGridDialog
+import com.eblan.launcher.feature.settings.home.dialog.EditGridDialog
 import com.eblan.launcher.feature.settings.home.model.HomeSettingsUiState
-import com.eblan.launcher.ui.dialog.SingleTextFieldDialog
-import com.eblan.launcher.ui.dialog.TwoTextFieldsDialog
+import com.eblan.launcher.ui.model.SettingsItem
 import com.eblan.launcher.ui.settings.GridItemSettings
-import com.eblan.launcher.ui.settings.SettingsColumn
-import com.eblan.launcher.ui.settings.SettingsSwitch
+import com.eblan.launcher.ui.settings.SettingsCategoryText
+import com.eblan.launcher.ui.settings.SettingsItemContent
+import com.eblan.launcher.common.R as commonR
 
 @Composable
 internal fun HomeSettingsRoute(
@@ -77,10 +79,11 @@ internal fun HomeSettingsScreen(
     onUpdateHomeSettings: (HomeSettings) -> Unit,
 ) {
     Scaffold(
+        modifier = modifier,
         topBar = {
             TopAppBar(
                 title = {
-                    Text(text = "Home")
+                    Text(text = stringResource(commonR.string.home))
                 },
                 navigationIcon = {
                     IconButton(onClick = onNavigateUp) {
@@ -94,20 +97,15 @@ internal fun HomeSettingsScreen(
         },
     ) { paddingValues ->
         Box(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues),
         ) {
-            when (homeSettingsUiState) {
-                HomeSettingsUiState.Loading -> {
-                }
-
-                is HomeSettingsUiState.Success -> {
-                    Success(
-                        homeSettings = homeSettingsUiState.homeSettings,
-                        onUpdateHomeSettings = onUpdateHomeSettings,
-                    )
-                }
+            if (homeSettingsUiState is HomeSettingsUiState.Success) {
+                Success(
+                    homeSettings = homeSettingsUiState.homeSettings,
+                    onUpdateHomeSettings = onUpdateHomeSettings,
+                )
             }
         }
     }
@@ -125,263 +123,309 @@ private fun Success(
 
     var showDockHeightDialog by remember { mutableStateOf(false) }
 
+    var showFolderCellDimensionDialog by remember { mutableStateOf(false) }
+
+    var showFolderMaxGridDialog by remember { mutableStateOf(false) }
+
+    val homeSettingsItems = buildHomeSettingsItems(
+        homeSettings = homeSettings,
+        onGridClick = {
+            showGridDialog = true
+        },
+        onUpdateHomeSettings = onUpdateHomeSettings,
+    )
+
+    val dockHomeSettingsItems = buildDockHomeSettingsItems(
+        homeSettings = homeSettings,
+        onDockGridClick = {
+            showDockGridDialog = true
+        },
+        onDockHeightClick = {
+            showDockHeightDialog = true
+        },
+        onUpdateHomeSettings = onUpdateHomeSettings,
+    )
+
+    val folderHomeSettingsItems = buildFolderHomeSettingsItems(
+        homeSettings = homeSettings,
+        onFolderCellDimensionClick = {
+            showFolderCellDimensionDialog = true
+        },
+        onFolderMaxGridClick = {
+            showFolderMaxGridDialog = true
+        },
+    )
+
     Column(
         modifier = modifier
             .verticalScroll(rememberScrollState())
-            .fillMaxSize(),
+            .fillMaxSize()
+            .padding(10.dp),
+        verticalArrangement = Arrangement.spacedBy(2.dp),
     ) {
-        ElevatedCard(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 15.dp),
-        ) {
-            SettingsColumn(
-                title = "Grid",
-                subtitle = "${homeSettings.columns}x${homeSettings.rows}",
-                onClick = {
-                    showGridDialog = true
-                },
-            )
-
-            HorizontalDivider(modifier = Modifier.fillMaxWidth())
-
-            SettingsSwitch(
-                checked = homeSettings.infiniteScroll,
-                title = "Infinite Scrolling",
-                subtitle = "Seamless loop page scroll",
-                onCheckedChange = { infiniteScroll ->
-                    onUpdateHomeSettings(homeSettings.copy(infiniteScroll = infiniteScroll))
-                },
-            )
-
-            HorizontalDivider(modifier = Modifier.fillMaxWidth())
-
-            SettingsSwitch(
-                checked = homeSettings.wallpaperScroll,
-                title = "Wallpaper Scrolling",
-                subtitle = "Scroll wallpaper across pages",
-                onCheckedChange = { wallpaperScroll ->
-                    onUpdateHomeSettings(homeSettings.copy(wallpaperScroll = wallpaperScroll))
-                },
-            )
-
-            HorizontalDivider(modifier = Modifier.fillMaxWidth())
-
-            SettingsSwitch(
-                checked = homeSettings.lockScreenOrientation,
-                title = "Lock Screen Orientation",
-                subtitle = "Lock screen orientation",
-                onCheckedChange = { lockScreenOrientation ->
-                    onUpdateHomeSettings(homeSettings.copy(lockScreenOrientation = lockScreenOrientation))
-                },
-            )
-
-            HorizontalDivider(modifier = Modifier.fillMaxWidth())
-
-            SettingsSwitch(
-                checked = homeSettings.addNewAppsToHomeScreen,
-                title = "Add New Apps",
-                subtitle = "Add new apps to home screen",
-                onCheckedChange = { addNewAppsToHomeScreen ->
-                    onUpdateHomeSettings(homeSettings.copy(addNewAppsToHomeScreen = addNewAppsToHomeScreen))
-                },
+        homeSettingsItems.forEachIndexed { index, settingsItem ->
+            SettingsItemContent(
+                settingsItem = settingsItem,
+                index = index,
+                size = homeSettingsItems.size,
             )
         }
 
-        Text(
-            modifier = Modifier.padding(15.dp),
-            text = "Dock",
-            style = MaterialTheme.typography.bodySmall,
-        )
+        SettingsCategoryText(text = stringResource(R.string.dock))
 
-        ElevatedCard(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 15.dp),
-        ) {
-            SettingsColumn(
-                title = "Dock Grid",
-                subtitle = "${homeSettings.dockColumns}x${homeSettings.dockRows}",
-                onClick = {
-                    showDockGridDialog = true
-                },
+        dockHomeSettingsItems.forEachIndexed { index, settingsItem ->
+            SettingsItemContent(
+                settingsItem = settingsItem,
+                index = index,
+                size = dockHomeSettingsItems.size,
             )
+        }
 
-            HorizontalDivider(modifier = Modifier.fillMaxWidth())
+        SettingsCategoryText(text = stringResource(R.string.folder))
 
-            SettingsColumn(
-                title = "Dock Height",
-                subtitle = "${homeSettings.dockHeight}",
-                onClick = {
-                    showDockHeightDialog = true
-                },
-            )
-
-            HorizontalDivider(modifier = Modifier.fillMaxWidth())
-
-            SettingsSwitch(
-                checked = homeSettings.dockInfiniteScroll,
-                title = "Dock Infinite Scroll",
-                subtitle = "Seamless loop page scroll",
-                onCheckedChange = { dockInfiniteScroll ->
-                    onUpdateHomeSettings(homeSettings.copy(dockInfiniteScroll = dockInfiniteScroll))
-                },
+        folderHomeSettingsItems.forEachIndexed { index, settingsItem ->
+            SettingsItemContent(
+                settingsItem = settingsItem,
+                index = index,
+                size = folderHomeSettingsItems.size,
             )
         }
 
         GridItemSettings(
             gridItemSettings = homeSettings.gridItemSettings,
-            onUpdateGridItemSettings = { gridItemSettings ->
-                onUpdateHomeSettings(homeSettings.copy(gridItemSettings = gridItemSettings))
+            onUpdateGridItemSettings = {
+                onUpdateHomeSettings(
+                    homeSettings.copy(gridItemSettings = it),
+                )
             },
         )
     }
 
     if (showGridDialog) {
-        var columns by remember { mutableStateOf("${homeSettings.columns}") }
-
-        var rows by remember { mutableStateOf("${homeSettings.rows}") }
-
-        var firstTextFieldIsError by remember { mutableStateOf(false) }
-
-        var secondTextFieldIsError by remember { mutableStateOf(false) }
-
-        TwoTextFieldsDialog(
-            title = "Grid",
-            firstTextFieldTitle = "Columns",
-            secondTextFieldTitle = "Rows",
-            firstTextFieldValue = columns,
-            secondTextFieldValue = rows,
-            firstTextFieldIsError = firstTextFieldIsError,
-            secondTextFieldIsError = secondTextFieldIsError,
-            keyboardType = KeyboardType.Number,
-            onFirstValueChange = {
-                columns = it
-            },
-            onSecondValueChange = {
-                rows = it
-            },
+        EditGridDialog(
+            homeSettings = homeSettings,
             onDismissRequest = {
                 showGridDialog = false
             },
-            onUpdateClick = {
-                val columns = try {
-                    columns.toInt()
-                } catch (_: NumberFormatException) {
-                    firstTextFieldIsError = true
-                    0
-                }
-
-                val rows = try {
-                    rows.toInt()
-                } catch (_: NumberFormatException) {
-                    secondTextFieldIsError = true
-                    0
-                }
-
-                if (columns > 0 && rows > 0) {
-                    onUpdateHomeSettings(
-                        homeSettings.copy(
-                            columns = columns,
-                            rows = rows,
-                        ),
-                    )
-
-                    showGridDialog = false
-                }
-            },
+            onUpdateHomeSettings = onUpdateHomeSettings,
         )
     }
 
     if (showDockGridDialog) {
-        var dockColumns by remember { mutableStateOf("${homeSettings.dockColumns}") }
-
-        var dockRows by remember { mutableStateOf("${homeSettings.dockRows}") }
-
-        var firstTextFieldIsError by remember { mutableStateOf(false) }
-
-        var secondTextFieldIsError by remember { mutableStateOf(false) }
-
-        TwoTextFieldsDialog(
-            title = "Dock Grid",
-            firstTextFieldTitle = "Columns",
-            secondTextFieldTitle = "Rows",
-            firstTextFieldValue = dockColumns,
-            secondTextFieldValue = dockRows,
-            firstTextFieldIsError = firstTextFieldIsError,
-            secondTextFieldIsError = secondTextFieldIsError,
-            keyboardType = KeyboardType.Number,
-            onFirstValueChange = {
-                dockColumns = it
-            },
-            onSecondValueChange = {
-                dockRows = it
-            },
+        EditDockGridDialog(
+            homeSettings = homeSettings,
             onDismissRequest = {
                 showDockGridDialog = false
             },
-            onUpdateClick = {
-                val dockColumns = try {
-                    dockColumns.toInt()
-                } catch (_: NumberFormatException) {
-                    firstTextFieldIsError = true
-                    0
-                }
-
-                val dockRows = try {
-                    dockRows.toInt()
-                } catch (_: NumberFormatException) {
-                    secondTextFieldIsError = true
-                    0
-                }
-
-                if (dockColumns > 0 && dockRows > 0) {
-                    onUpdateHomeSettings(
-                        homeSettings.copy(
-                            dockColumns = dockColumns,
-                            dockRows = dockRows,
-                        ),
-                    )
-
-                    showDockGridDialog = false
-                }
-            },
+            onUpdateHomeSettings = onUpdateHomeSettings,
         )
     }
 
     if (showDockHeightDialog) {
-        var value by remember { mutableStateOf("${homeSettings.dockHeight}") }
-
-        var isError by remember { mutableStateOf(false) }
-
-        SingleTextFieldDialog(
-            title = "Dock Height",
-            textFieldTitle = "Dock Height",
-            value = value,
-            isError = isError,
-            keyboardType = KeyboardType.Number,
-            onValueChange = {
-                value = it
-            },
+        EditDockHeightDialog(
+            dockHeight = homeSettings.dockHeight,
             onDismissRequest = {
                 showDockHeightDialog = false
             },
-            onUpdateClick = {
-                val dockHeight = try {
-                    value.toInt()
-                } catch (_: NumberFormatException) {
-                    isError = true
-                    0
-                }
+            onUpdateDockHeight = {
+                onUpdateHomeSettings(
+                    homeSettings.copy(
+                        dockHeight = it,
+                    ),
+                )
 
-                if (dockHeight > 0) {
-                    onUpdateHomeSettings(
-                        homeSettings.copy(dockHeight = dockHeight),
-                    )
-
-                    showDockHeightDialog = false
-                }
+                showDockHeightDialog = false
             },
         )
     }
+
+    if (showFolderCellDimensionDialog) {
+        EditFolderCellDimensionDialog(
+            homeSettings = homeSettings,
+            onDismissRequest = {
+                showFolderCellDimensionDialog = false
+            },
+            onUpdateHomeSettings = onUpdateHomeSettings,
+        )
+    }
+
+    if (showFolderMaxGridDialog) {
+        EditFolderMaxGridDialog(
+            homeSettings = homeSettings,
+            onDismissRequest = {
+                showFolderMaxGridDialog = false
+            },
+            onUpdateHomeSettings = onUpdateHomeSettings,
+        )
+    }
+}
+
+@Composable
+private fun buildHomeSettingsItems(
+    homeSettings: HomeSettings,
+    onGridClick: () -> Unit,
+    onUpdateHomeSettings: (HomeSettings) -> Unit,
+): List<SettingsItem> = buildList {
+    add(
+        SettingsItem.Column(
+            title = stringResource(commonR.string.grid),
+            subtitle = "${homeSettings.columns}x${homeSettings.rows}",
+            onClick = onGridClick,
+        ),
+    )
+
+    add(
+        SettingsItem.Switch(
+            checked = homeSettings.infiniteScroll,
+            title = stringResource(R.string.infinite_scrolling),
+            subtitle = stringResource(R.string.seamless_loop_page_scroll),
+            onClick = {
+                onUpdateHomeSettings(
+                    homeSettings.copy(infiniteScroll = !homeSettings.infiniteScroll),
+                )
+            },
+            onCheckedChange = {
+                onUpdateHomeSettings(
+                    homeSettings.copy(infiniteScroll = it),
+                )
+            },
+        ),
+    )
+
+    add(
+        SettingsItem.Switch(
+            checked = homeSettings.wallpaperScroll,
+            title = stringResource(R.string.wallpaper_scrolling),
+            subtitle = stringResource(R.string.scroll_wallpaper_across_pages),
+            onClick = {
+                onUpdateHomeSettings(
+                    homeSettings.copy(wallpaperScroll = !homeSettings.wallpaperScroll),
+                )
+            },
+            onCheckedChange = {
+                onUpdateHomeSettings(
+                    homeSettings.copy(wallpaperScroll = it),
+                )
+            },
+        ),
+    )
+
+    add(
+        SettingsItem.Switch(
+            checked = homeSettings.lockScreenOrientation,
+            title = stringResource(R.string.lock_screen_orientation),
+            subtitle = stringResource(R.string.prevent_rotation_when_device_orientation_changes),
+            onClick = {
+                onUpdateHomeSettings(
+                    homeSettings.copy(lockScreenOrientation = !homeSettings.lockScreenOrientation),
+                )
+            },
+            onCheckedChange = {
+                onUpdateHomeSettings(
+                    homeSettings.copy(lockScreenOrientation = it),
+                )
+            },
+        ),
+    )
+
+    add(
+        SettingsItem.Switch(
+            checked = homeSettings.addNewAppsToHomeScreen,
+            title = stringResource(R.string.add_new_apps),
+            subtitle = stringResource(R.string.add_new_apps_to_home_screen),
+            onClick = {
+                onUpdateHomeSettings(
+                    homeSettings.copy(addNewAppsToHomeScreen = !homeSettings.addNewAppsToHomeScreen),
+                )
+            },
+            onCheckedChange = {
+                onUpdateHomeSettings(
+                    homeSettings.copy(addNewAppsToHomeScreen = it),
+                )
+            },
+        ),
+    )
+
+    add(
+        SettingsItem.Switch(
+            checked = homeSettings.showPageIndicator,
+            title = stringResource(R.string.show_page_indicator),
+            subtitle = stringResource(R.string.show_an_indicator_for_the_current_page),
+            onClick = {
+                onUpdateHomeSettings(
+                    homeSettings.copy(showPageIndicator = !homeSettings.showPageIndicator),
+                )
+            },
+            onCheckedChange = {
+                onUpdateHomeSettings(
+                    homeSettings.copy(showPageIndicator = it),
+                )
+            },
+        ),
+    )
+}
+
+@Composable
+private fun buildDockHomeSettingsItems(
+    homeSettings: HomeSettings,
+    onDockGridClick: () -> Unit,
+    onDockHeightClick: () -> Unit,
+    onUpdateHomeSettings: (HomeSettings) -> Unit,
+): List<SettingsItem> = buildList {
+    add(
+        SettingsItem.Column(
+            title = stringResource(R.string.dock_grid),
+            subtitle = "${homeSettings.dockColumns}x${homeSettings.dockRows}",
+            onClick = onDockGridClick,
+        ),
+    )
+
+    add(
+        SettingsItem.Column(
+            title = stringResource(R.string.dock_height),
+            subtitle = "${homeSettings.dockHeight}",
+            onClick = onDockHeightClick,
+        ),
+    )
+
+    add(
+        SettingsItem.Switch(
+            checked = homeSettings.dockInfiniteScroll,
+            title = stringResource(R.string.dock_infinite_scroll),
+            subtitle = stringResource(R.string.seamless_loop_page_scroll),
+            onClick = {
+                onUpdateHomeSettings(
+                    homeSettings.copy(dockInfiniteScroll = !homeSettings.dockInfiniteScroll),
+                )
+            },
+            onCheckedChange = {
+                onUpdateHomeSettings(
+                    homeSettings.copy(dockInfiniteScroll = it),
+                )
+            },
+        ),
+    )
+}
+
+@Composable
+private fun buildFolderHomeSettingsItems(
+    homeSettings: HomeSettings,
+    onFolderCellDimensionClick: () -> Unit,
+    onFolderMaxGridClick: () -> Unit,
+): List<SettingsItem> = buildList {
+    add(
+        SettingsItem.Column(
+            title = stringResource(R.string.folder_cell_dimension),
+            subtitle = "${homeSettings.folderCellWidth}x${homeSettings.folderCellHeight}",
+            onClick = onFolderCellDimensionClick,
+        ),
+    )
+
+    add(
+        SettingsItem.Column(
+            title = stringResource(R.string.folder_max_grid),
+            subtitle = "${homeSettings.maxFolderColumns}x${homeSettings.maxFolderRows}",
+            onClick = onFolderMaxGridClick,
+        ),
+    )
 }

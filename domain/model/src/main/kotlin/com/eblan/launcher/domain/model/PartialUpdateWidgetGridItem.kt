@@ -31,5 +31,5 @@ data class PartialUpdateWidgetGridItem(
     val targetCellHeight: Int,
     val targetCellWidth: Int,
     val icon: String?,
-    val label: String,
+    val label: String?,
 )

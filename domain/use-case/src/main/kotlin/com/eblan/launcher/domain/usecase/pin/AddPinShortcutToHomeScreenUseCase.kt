@@ -30,12 +30,15 @@ import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.repository.GridRepository
 import com.eblan.launcher.domain.repository.UserDataRepository
-import com.eblan.launcher.domain.usecase.grid.GetFolderGridItemsUseCase
+import com.eblan.launcher.domain.usecase.grid.GetGridItemsUseCase
+import com.eblan.launcher.domain.usecase.grid.isTopLevel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import java.io.File
 import javax.inject.Inject
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 class AddPinShortcutToHomeScreenUseCase @Inject constructor(
     private val userDataRepository: UserDataRepository,
@@ -43,18 +46,19 @@ class AddPinShortcutToHomeScreenUseCase @Inject constructor(
     private val gridRepository: GridRepository,
     private val packageManagerWrapper: PackageManagerWrapper,
     private val iconKeyGenerator: IconKeyGenerator,
-    private val getFolderGridItemsUseCase: GetFolderGridItemsUseCase,
-    @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
+    private val getGridItemsUseCase: GetGridItemsUseCase,
+    @param:Dispatcher(EblanDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) {
+    @OptIn(ExperimentalUuidApi::class)
     suspend operator fun invoke(
         serialNumber: Long,
-        id: String,
+        shortcutId: String,
         packageName: String,
         shortLabel: String,
         longLabel: String,
         isEnabled: Boolean,
         icon: String?,
-    ): GridItem? = withContext(defaultDispatcher) {
+    ): GridItem? = withContext(ioDispatcher) {
         val homeSettings = userDataRepository.userDataFlow.first().homeSettings
 
         val columns = homeSettings.columns
@@ -67,14 +71,14 @@ class AddPinShortcutToHomeScreenUseCase @Inject constructor(
 
         val eblanApplicationInfoIcon =
             packageManagerWrapper.getComponentName(packageName = packageName)
-                ?.let { componentName ->
+                ?.let {
                     val directory = fileManager.getFilesDirectory(FileManager.ICONS_DIR)
 
                     val file = File(
                         directory,
                         iconKeyGenerator.getActivityIconKey(
                             serialNumber = serialNumber,
-                            componentName = componentName,
+                            componentName = it,
                         ),
                     )
 
@@ -82,7 +86,7 @@ class AddPinShortcutToHomeScreenUseCase @Inject constructor(
                 }
 
         val data = GridItemData.ShortcutInfo(
-            shortcutId = id,
+            shortcutId = shortcutId,
             packageName = packageName,
             serialNumber = serialNumber,
             shortLabel = shortLabel,
@@ -103,7 +107,7 @@ class AddPinShortcutToHomeScreenUseCase @Inject constructor(
         )
 
         val gridItem = GridItem(
-            id = id,
+            id = Uuid.random().toHexString(),
             page = initialPage,
             startColumn = 0,
             startRow = 0,
@@ -118,8 +122,13 @@ class AddPinShortcutToHomeScreenUseCase @Inject constructor(
             swipeDown = eblanAction,
         )
 
+        val gridItems = getGridItemsUseCase()
+            .filter {
+                it.isTopLevel() && it.associate == Associate.Grid
+            }
+
         val newGridItem = findAvailableRegionByPage(
-            gridItems = gridRepository.getGridItems().plus(getFolderGridItemsUseCase()),
+            gridItems = gridItems,
             gridItem = gridItem,
             pageCount = pageCount,
             columns = columns,

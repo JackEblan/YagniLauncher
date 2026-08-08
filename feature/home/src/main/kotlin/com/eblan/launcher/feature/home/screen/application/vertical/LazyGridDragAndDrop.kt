@@ -191,7 +191,7 @@ internal fun Modifier.dragContainer(gridDragDropState: GridDragDropState): Modif
             change.consume()
             gridDragDropState.onDrag(offset = offset)
         },
-        onDragStart = { offset -> gridDragDropState.onDragStart(offset) },
+        onDragStart = { gridDragDropState.onDragStart(it) },
         onDragEnd = { gridDragDropState.onDragInterrupted() },
         onDragCancel = { gridDragDropState.onDragInterrupted() },
     )

@@ -27,8 +27,8 @@ import javax.inject.Inject
 internal class DefaultEblanApplicationInfoTagRepository @Inject constructor(private val eblanApplicationInfoTagDao: EblanApplicationInfoTagDao) : EblanApplicationInfoTagRepository {
     override val eblanApplicationInfoTagsFlow =
         eblanApplicationInfoTagDao.getEblanApplicationInfoTagEntitiesFlow().map { entities ->
-            entities.map { entity ->
-                entity.asModel()
+            entities.map {
+                it.asModel()
             }
         }
 

@@ -30,18 +30,21 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface FolderGridItemDao {
+    @Transaction
+    @Query("SELECT * FROM FolderGridItemEntity")
+    fun getFolderGridItemEntities(): List<FolderGridItemEntity>
 
     @Transaction
     @Query("SELECT * FROM FolderGridItemEntity")
-    fun getFolderGridItemWrappersFlow(): Flow<List<FolderGridItemWrapperEntity>>
+    fun getFolderGridItemWrapperEntitiesFlow(): Flow<List<FolderGridItemWrapperEntity>>
+
+    @Transaction
+    @Query("SELECT * FROM FolderGridItemEntity")
+    fun getFolderGridItemWrapperEntities(): List<FolderGridItemWrapperEntity>
 
     @Transaction
     @Query("SELECT * FROM FolderGridItemEntity WHERE id = :id")
-    suspend fun getFolderGridItemWrapper(id: String): FolderGridItemWrapperEntity?
-
-    @Transaction
-    @Query("SELECT * FROM FolderGridItemEntity")
-    suspend fun getFolderGridItemWrappers(): List<FolderGridItemWrapperEntity>
+    suspend fun getFolderGridItemWrapperEntity(id: String): FolderGridItemWrapperEntity?
 
     @Upsert
     suspend fun upsertFolderGridItemEntities(entities: List<FolderGridItemEntity>)
@@ -58,12 +61,9 @@ interface FolderGridItemDao {
     @Insert
     suspend fun insertFolderGridItemEntity(entity: FolderGridItemEntity)
 
-    @Update
-    suspend fun updateFolderGridItemEntities(entities: List<FolderGridItemEntity>)
-
-    @Insert
-    suspend fun insertFolderGridItemEntities(entities: List<FolderGridItemEntity>)
-
     @Upsert
     suspend fun upsertFolderGridItemEntity(entity: FolderGridItemEntity)
+
+    @Query("DELETE FROM FolderGridItemEntity WHERE id = :id")
+    suspend fun deleteFolderGridItemEntityById(id: String)
 }

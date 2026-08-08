@@ -21,7 +21,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -32,9 +31,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import com.eblan.launcher.designsystem.component.EblanDialogContainer
+import androidx.compose.ui.res.stringResource
+import com.eblan.launcher.designsystem.component.EblanDialog
 import com.eblan.launcher.designsystem.component.EblanRadioButton
+import com.eblan.launcher.common.R as commonR
 
 @Composable
 fun <T> RadioOptionsDialog(
@@ -48,49 +48,46 @@ fun <T> RadioOptionsDialog(
 ) {
     var selectedOption by remember { mutableStateOf(selected) }
 
-    EblanDialogContainer(
-        content = {
-            Column(
-                modifier = modifier
-                    .selectableGroup()
-                    .fillMaxWidth(),
-            ) {
-                Text(
-                    modifier = Modifier.padding(10.dp),
-                    text = title,
-                    style = MaterialTheme.typography.titleLarge,
-                )
-
-                options.forEach { option ->
-                    EblanRadioButton(
-                        selected = selectedOption == option,
-                        text = label(option),
-                        onClick = { selectedOption = option },
-                    )
-                }
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(
-                            end = 10.dp,
-                            bottom = 10.dp,
-                        ),
-                    horizontalArrangement = Arrangement.End,
-                ) {
-                    TextButton(onClick = onDismissRequest) {
-                        Text(text = "Cancel")
-                    }
-                    TextButton(
-                        onClick = {
-                            onUpdateClick(selectedOption)
-                        },
-                    ) {
-                        Text(text = "Update")
-                    }
-                }
-            }
-        },
+    EblanDialog(
+        modifier = modifier,
         onDismissRequest = onDismissRequest,
-    )
+    ) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleLarge,
+        )
+
+        Column(
+            modifier = Modifier
+                .selectableGroup()
+                .fillMaxWidth(),
+        ) {
+            options.forEach { option ->
+                EblanRadioButton(
+                    selected = selectedOption == option,
+                    text = label(option),
+                    onClick = { selectedOption = option },
+                )
+            }
+        }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End,
+        ) {
+            TextButton(
+                onClick = onDismissRequest,
+            ) {
+                Text(text = stringResource(commonR.string.cancel))
+            }
+
+            TextButton(
+                onClick = {
+                    onUpdateClick(selectedOption)
+                },
+            ) {
+                Text(text = stringResource(commonR.string.update))
+            }
+        }
+    }
 }

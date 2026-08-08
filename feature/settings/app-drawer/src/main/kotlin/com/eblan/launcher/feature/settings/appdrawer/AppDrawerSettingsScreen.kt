@@ -17,16 +17,14 @@
  */
 package com.eblan.launcher.feature.settings.appdrawer
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -38,7 +36,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -46,15 +44,17 @@ import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.AppDrawerSettings
 import com.eblan.launcher.domain.model.AppDrawerType
 import com.eblan.launcher.domain.model.EblanApplicationInfo
+import com.eblan.launcher.feature.settings.appdrawer.dialog.EditHorizontalGridDialog
+import com.eblan.launcher.feature.settings.appdrawer.dialog.EditVerticalGridDialog
 import com.eblan.launcher.feature.settings.appdrawer.dialog.HiddenEblanApplicationInfosDialog
 import com.eblan.launcher.feature.settings.appdrawer.model.AppDrawerSettingsUiState
 import com.eblan.launcher.ui.dialog.RadioOptionsDialog
 import com.eblan.launcher.ui.dialog.TextColorDialog
-import com.eblan.launcher.ui.dialog.TwoTextFieldsDialog
+import com.eblan.launcher.ui.model.SettingsItem
 import com.eblan.launcher.ui.settings.GridItemSettings
-import com.eblan.launcher.ui.settings.SettingsColumn
-import com.eblan.launcher.ui.settings.SettingsSwitch
-import com.eblan.launcher.ui.settings.TextColorSettingsRow
+import com.eblan.launcher.ui.settings.SettingsItemContent
+import com.eblan.launcher.ui.settings.getTitle
+import com.eblan.launcher.common.R as commonR
 
 @Composable
 internal fun AppDrawerSettingsRoute(
@@ -83,10 +83,11 @@ internal fun AppDrawerSettingsScreen(
     onUpdateEblanApplicationInfo: (EblanApplicationInfo) -> Unit,
 ) {
     Scaffold(
+        modifier = modifier,
         topBar = {
             TopAppBar(
                 title = {
-                    Text(text = "App Drawer")
+                    Text(text = stringResource(commonR.string.app_drawer))
                 },
                 navigationIcon = {
                     IconButton(onClick = onNavigateUp) {
@@ -100,22 +101,17 @@ internal fun AppDrawerSettingsScreen(
         },
     ) { paddingValues ->
         Box(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues),
         ) {
-            when (appDrawerSettingsUiState) {
-                AppDrawerSettingsUiState.Loading -> {
-                }
-
-                is AppDrawerSettingsUiState.Success -> {
-                    Success(
-                        appDrawerSettings = appDrawerSettingsUiState.appDrawerSettings,
-                        eblanApplicationInfos = appDrawerSettingsUiState.eblanApplicationInfos,
-                        onUpdateAppDrawerSettings = onUpdateAppDrawerSettings,
-                        onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
-                    )
-                }
+            if (appDrawerSettingsUiState is AppDrawerSettingsUiState.Success) {
+                Success(
+                    appDrawerSettings = appDrawerSettingsUiState.appDrawerSettings,
+                    eblanApplicationInfos = appDrawerSettingsUiState.eblanApplicationInfos,
+                    onUpdateAppDrawerSettings = onUpdateAppDrawerSettings,
+                    onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
+                )
             }
         }
     }
@@ -139,95 +135,56 @@ private fun Success(
 
     var showTextColorDialog by remember { mutableStateOf(false) }
 
+    val items = buildAppDrawerSettingsItems(
+        appDrawerSettings = appDrawerSettings,
+        onAppDrawerTypeClick = {
+            showAppDrawerTypeDialog = true
+        },
+        onVerticalGridClick = {
+            showVerticalGridDialog = true
+        },
+        onHorizontalGridClick = {
+            showHorizontalGridDialog = true
+        },
+        onBackgroundColorClick = {
+            showTextColorDialog = true
+        },
+        onHiddenApplicationsClick = {
+            showHiddenEblanApplicationInfosDialog = true
+        },
+        onUpdateAppDrawerSettings = onUpdateAppDrawerSettings,
+    )
+
     Column(
         modifier = modifier
             .verticalScroll(rememberScrollState())
-            .fillMaxSize(),
+            .fillMaxSize()
+            .padding(10.dp),
+        verticalArrangement = Arrangement.spacedBy(2.dp),
     ) {
-        ElevatedCard(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 15.dp),
-        ) {
-            SettingsColumn(
-                title = "App Drawer Type",
-                subtitle = appDrawerSettings.appDrawerType.name,
-                onClick = {
-                    showAppDrawerTypeDialog = true
-                },
-            )
-
-            HorizontalDivider(modifier = Modifier.fillMaxWidth())
-
-            when (appDrawerSettings.appDrawerType) {
-                AppDrawerType.Vertical -> {
-                    SettingsColumn(
-                        title = "Grid",
-                        subtitle = "${appDrawerSettings.appDrawerColumns}x${appDrawerSettings.appDrawerRowsHeight}",
-                        onClick = {
-                            showVerticalGridDialog = true
-                        },
-                    )
-                }
-
-                AppDrawerType.Horizontal -> {
-                    SettingsColumn(
-                        title = "Grid",
-                        subtitle = "${appDrawerSettings.horizontalAppDrawerColumns}x${appDrawerSettings.horizontalAppDrawerRows}",
-                        onClick = {
-                            showHorizontalGridDialog = true
-                        },
-                    )
-                }
-
-                AppDrawerType.List -> Unit
-            }
-
-            HorizontalDivider(modifier = Modifier.fillMaxWidth())
-
-            TextColorSettingsRow(
-                textColorTitle = "Background Color",
-                customColorTitle = "Custom Background Color",
-                textColor = appDrawerSettings.backgroundColor,
-                customColor = appDrawerSettings.customBackgroundColor,
-                onClick = {
-                    showTextColorDialog = true
-                },
-            )
-
-            HorizontalDivider(modifier = Modifier.fillMaxWidth())
-
-            SettingsColumn(
-                title = "Hidden Applications",
-                subtitle = "Hidden Applications",
-                onClick = {
-                    showHiddenEblanApplicationInfosDialog = true
-                },
-            )
-
-            HorizontalDivider(modifier = Modifier.fillMaxWidth())
-
-            SettingsSwitch(
-                checked = appDrawerSettings.excludeTaggedApps,
-                title = "Exclude Tagged Apps",
-                subtitle = "Exclude tagged apps",
-                onCheckedChange = { excludeTaggedApps ->
-                    onUpdateAppDrawerSettings(appDrawerSettings.copy(excludeTaggedApps = excludeTaggedApps))
-                },
+        items.forEachIndexed { index, settingsItem ->
+            SettingsItemContent(
+                settingsItem = settingsItem,
+                index = index,
+                size = items.size,
             )
         }
 
         GridItemSettings(
             gridItemSettings = appDrawerSettings.gridItemSettings,
-            onUpdateGridItemSettings = { gridItemSettings ->
-                onUpdateAppDrawerSettings(appDrawerSettings.copy(gridItemSettings = gridItemSettings))
+            onUpdateGridItemSettings = {
+                onUpdateAppDrawerSettings(
+                    appDrawerSettings.copy(
+                        gridItemSettings = it,
+                    ),
+                )
             },
         )
     }
 
     if (showAppDrawerTypeDialog) {
         RadioOptionsDialog(
-            title = "App Drawer Type",
+            title = stringResource(R.string.app_drawer_type),
             options = AppDrawerType.entries,
             selected = appDrawerSettings.appDrawerType,
             label = {
@@ -236,8 +193,8 @@ private fun Success(
             onDismissRequest = {
                 showAppDrawerTypeDialog = false
             },
-            onUpdateClick = { appDrawerType ->
-                onUpdateAppDrawerSettings(appDrawerSettings.copy(appDrawerType = appDrawerType))
+            onUpdateClick = {
+                onUpdateAppDrawerSettings(appDrawerSettings.copy(appDrawerType = it))
 
                 showAppDrawerTypeDialog = false
             },
@@ -245,126 +202,22 @@ private fun Success(
     }
 
     if (showVerticalGridDialog) {
-        var appDrawerColumns by remember { mutableStateOf("${appDrawerSettings.appDrawerColumns}") }
-
-        var appDrawerRowsHeight by remember { mutableStateOf("${appDrawerSettings.appDrawerRowsHeight}") }
-
-        var firstTextFieldIsError by remember { mutableStateOf(false) }
-
-        var secondTextFieldIsError by remember { mutableStateOf(false) }
-
-        TwoTextFieldsDialog(
-            title = "Vertical Grid",
-            firstTextFieldTitle = "Columns",
-            secondTextFieldTitle = "Rows Height",
-            firstTextFieldValue = appDrawerColumns,
-            secondTextFieldValue = appDrawerRowsHeight,
-            firstTextFieldIsError = firstTextFieldIsError,
-            secondTextFieldIsError = secondTextFieldIsError,
-            keyboardType = KeyboardType.Number,
-            onFirstValueChange = {
-                appDrawerColumns = it
-            },
-            onSecondValueChange = {
-                appDrawerRowsHeight = it
-            },
+        EditVerticalGridDialog(
+            appDrawerSettings = appDrawerSettings,
             onDismissRequest = {
                 showVerticalGridDialog = false
             },
-            onUpdateClick = {
-                val newAppDrawerColumns = try {
-                    appDrawerColumns.toInt()
-                } catch (_: NumberFormatException) {
-                    firstTextFieldIsError = true
-                    0
-                }
-
-                val newAppDrawerRowsHeight = try {
-                    appDrawerRowsHeight.toInt()
-                } catch (_: NumberFormatException) {
-                    secondTextFieldIsError = true
-                    0
-                }
-
-                if (newAppDrawerColumns > 0 && newAppDrawerRowsHeight > 0) {
-                    onUpdateAppDrawerSettings(
-                        appDrawerSettings.copy(
-                            appDrawerColumns = newAppDrawerColumns,
-                            appDrawerRowsHeight = newAppDrawerRowsHeight,
-                        ),
-                    )
-
-                    showVerticalGridDialog = false
-                }
-            },
+            onUpdateAppDrawerSettings = onUpdateAppDrawerSettings,
         )
     }
 
     if (showHorizontalGridDialog) {
-        var horizontalAppDrawerColumns by remember { mutableStateOf("${appDrawerSettings.horizontalAppDrawerColumns}") }
-
-        var horizontalAppDrawerRows by remember { mutableStateOf("${appDrawerSettings.horizontalAppDrawerRows}") }
-
-        var firstTextFieldIsError by remember { mutableStateOf(false) }
-
-        var secondTextFieldIsError by remember { mutableStateOf(false) }
-
-        TwoTextFieldsDialog(
-            title = "Horizontal Grid",
-            firstTextFieldTitle = "Columns",
-            secondTextFieldTitle = "Rows",
-            firstTextFieldValue = horizontalAppDrawerColumns,
-            secondTextFieldValue = horizontalAppDrawerRows,
-            firstTextFieldIsError = firstTextFieldIsError,
-            secondTextFieldIsError = secondTextFieldIsError,
-            keyboardType = KeyboardType.Number,
-            onFirstValueChange = {
-                horizontalAppDrawerColumns = it
-            },
-            onSecondValueChange = {
-                horizontalAppDrawerRows = it
-            },
+        EditHorizontalGridDialog(
+            appDrawerSettings = appDrawerSettings,
             onDismissRequest = {
                 showHorizontalGridDialog = false
             },
-            onUpdateClick = {
-                val newHorizontalAppDrawerColumns = try {
-                    if (horizontalAppDrawerColumns.toInt() > 2) {
-                        firstTextFieldIsError = false
-                        horizontalAppDrawerColumns.toInt()
-                    } else {
-                        firstTextFieldIsError = true
-                        0
-                    }
-                } catch (_: NumberFormatException) {
-                    firstTextFieldIsError = true
-                    0
-                }
-
-                val newHorizontalAppDrawerRows = try {
-                    if (horizontalAppDrawerRows.toInt() > 2) {
-                        secondTextFieldIsError = false
-                        horizontalAppDrawerRows.toInt()
-                    } else {
-                        secondTextFieldIsError = true
-                        0
-                    }
-                } catch (_: NumberFormatException) {
-                    secondTextFieldIsError = true
-                    0
-                }
-
-                if (newHorizontalAppDrawerColumns > 0 && newHorizontalAppDrawerRows > 0) {
-                    onUpdateAppDrawerSettings(
-                        appDrawerSettings.copy(
-                            horizontalAppDrawerColumns = newHorizontalAppDrawerColumns,
-                            horizontalAppDrawerRows = newHorizontalAppDrawerRows,
-                        ),
-                    )
-
-                    showHorizontalGridDialog = false
-                }
-            },
+            onUpdateAppDrawerSettings = onUpdateAppDrawerSettings,
         )
     }
 
@@ -380,7 +233,7 @@ private fun Success(
 
     if (showTextColorDialog) {
         TextColorDialog(
-            title = "Background Color",
+            title = stringResource(commonR.string.background_color),
             textColor = appDrawerSettings.backgroundColor,
             customTextColor = appDrawerSettings.customBackgroundColor,
             onDismissRequest = {
@@ -398,4 +251,125 @@ private fun Success(
             },
         )
     }
+}
+
+@Composable
+private fun buildAppDrawerSettingsItems(
+    appDrawerSettings: AppDrawerSettings,
+    onAppDrawerTypeClick: () -> Unit,
+    onVerticalGridClick: () -> Unit,
+    onHorizontalGridClick: () -> Unit,
+    onBackgroundColorClick: () -> Unit,
+    onHiddenApplicationsClick: () -> Unit,
+    onUpdateAppDrawerSettings: (AppDrawerSettings) -> Unit,
+): List<SettingsItem> = buildList {
+    add(
+        SettingsItem.Column(
+            title = stringResource(R.string.app_drawer_type),
+            subtitle = appDrawerSettings.appDrawerType.name,
+            onClick = onAppDrawerTypeClick,
+        ),
+    )
+
+    when (appDrawerSettings.appDrawerType) {
+        AppDrawerType.Vertical -> add(
+            SettingsItem.Column(
+                title = stringResource(commonR.string.grid),
+                subtitle = "${appDrawerSettings.appDrawerColumns}x${appDrawerSettings.appDrawerRowsHeight}",
+                onClick = onVerticalGridClick,
+            ),
+        )
+
+        AppDrawerType.Horizontal -> add(
+            SettingsItem.Column(
+                title = stringResource(commonR.string.grid),
+                subtitle = "${appDrawerSettings.horizontalAppDrawerColumns}x${appDrawerSettings.horizontalAppDrawerRows}",
+                onClick = onHorizontalGridClick,
+            ),
+        )
+
+        AppDrawerType.List -> Unit
+    }
+
+    add(
+        SettingsItem.Column(
+            title = stringResource(commonR.string.background_color),
+            subtitle = appDrawerSettings.backgroundColor.getTitle(),
+            onClick = onBackgroundColorClick,
+        ),
+    )
+
+    add(
+        SettingsItem.Column(
+            title = stringResource(R.string.hidden_applications),
+            subtitle = stringResource(R.string.hide_selected_apps_from_the_app_drawer),
+            onClick = onHiddenApplicationsClick,
+        ),
+    )
+
+    add(
+        SettingsItem.Switch(
+            checked = appDrawerSettings.excludeTaggedApps,
+            title = stringResource(R.string.exclude_tagged_apps),
+            subtitle = stringResource(R.string.hide_apps_marked_with_selected_tags),
+            onClick = {
+                onUpdateAppDrawerSettings(
+                    appDrawerSettings.copy(
+                        excludeTaggedApps = !appDrawerSettings.excludeTaggedApps,
+                    ),
+                )
+            },
+            onCheckedChange = {
+                onUpdateAppDrawerSettings(
+                    appDrawerSettings.copy(
+                        excludeTaggedApps = it,
+                    ),
+                )
+            },
+        ),
+    )
+
+    add(
+        SettingsItem.Switch(
+            checked = appDrawerSettings.showKeyboard,
+            title = stringResource(R.string.show_keyboard),
+            subtitle = stringResource(R.string.show_keyboard_when_app_drawer_opens),
+            onClick = {
+                onUpdateAppDrawerSettings(
+                    appDrawerSettings.copy(
+                        showKeyboard = !appDrawerSettings.showKeyboard,
+                    ),
+                )
+            },
+            onCheckedChange = {
+                onUpdateAppDrawerSettings(
+                    appDrawerSettings.copy(
+                        showKeyboard = it,
+                    ),
+                )
+            },
+        ),
+    )
+
+    add(
+        SettingsItem.Switch(
+            checked = appDrawerSettings.fuzzySearch,
+            title = stringResource(R.string.fuzzy_search),
+            subtitle = stringResource(R.string.find_apps_even_with_typos_or_accented_characters),
+            onClick = {
+                onUpdateAppDrawerSettings(
+                    appDrawerSettings.copy(
+                        fuzzySearch = !appDrawerSettings.fuzzySearch,
+                    ),
+                )
+            },
+            onCheckedChange = {
+                onUpdateAppDrawerSettings(
+                    appDrawerSettings.copy(
+                        fuzzySearch = it,
+                    ),
+                )
+            },
+        ),
+    )
 }

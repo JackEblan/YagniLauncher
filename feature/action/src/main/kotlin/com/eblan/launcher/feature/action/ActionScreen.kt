@@ -40,6 +40,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -48,7 +50,6 @@ import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.EblanAction
 import com.eblan.launcher.domain.model.EblanActionType
 import com.eblan.launcher.domain.model.EblanApplicationInfo
-import com.eblan.launcher.domain.model.EblanUser
 import com.eblan.launcher.feature.action.model.ActionUiState
 import com.eblan.launcher.ui.dialog.SelectApplicationDialog
 import com.eblan.launcher.ui.settings.getEblanActionTypeSubtitle
@@ -89,7 +90,7 @@ internal fun ActionScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(text = "Yagni Launcher Action")
+                    Text(text = stringResource(R.string.yagni_launcher_action))
                 },
                 navigationIcon = {
                     IconButton(onClick = onFinish) {
@@ -126,12 +127,14 @@ internal fun ActionScreen(
 @Composable
 private fun Success(
     modifier: Modifier = Modifier,
-    eblanApplicationInfos: Map<EblanUser, List<EblanApplicationInfo>>,
+    eblanApplicationInfos: List<EblanApplicationInfo>,
     onUpdateEblanAction: suspend (
         resId: Int,
         eblanAction: EblanAction,
     ) -> Unit,
 ) {
+    val context = LocalContext.current
+
     val scope = rememberCoroutineScope()
 
     var showSelectApplicationDialog by remember { mutableStateOf(false) }
@@ -163,7 +166,12 @@ private fun Success(
                     .fillMaxWidth()
                     .padding(10.dp),
                 headlineContent = {
-                    Text(text = eblanActionType.getEblanActionTypeSubtitle(componentName = ""))
+                    Text(
+                        text = eblanActionType.getEblanActionTypeSubtitle(
+                            context = context,
+                            componentName = "",
+                        ),
+                    )
                 },
                 leadingContent = {
                     Icon(
@@ -181,7 +189,7 @@ private fun Success(
             onDismissRequest = {
                 showSelectApplicationDialog = false
             },
-            onClick = { eblanApplicationInfo ->
+            onClick = {
                 showSelectApplicationDialog = false
 
                 scope.launch {
@@ -189,8 +197,8 @@ private fun Success(
                         R.drawable.adb_24px,
                         EblanAction(
                             eblanActionType = EblanActionType.OpenApp,
-                            serialNumber = eblanApplicationInfo.serialNumber,
-                            componentName = eblanApplicationInfo.componentName,
+                            serialNumber = it.serialNumber,
+                            componentName = it.componentName,
                         ),
                     )
                 }

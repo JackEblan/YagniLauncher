@@ -42,9 +42,7 @@ internal fun handleGridItem(
     onUpdateAppWidgetId: (Int) -> Unit,
     onUpdateGridItemCache: (GridItem) -> Unit,
 ) {
-    if (gridItem == null) return
-
-    val data = gridItem.data
+    val data = gridItem?.data ?: return
 
     if (data is GridItemData.Widget) {
         val appWidgetId = appWidgetHostWrapper.allocateAppWidgetId()
@@ -109,7 +107,7 @@ internal fun handleAppWidgetLauncherResult(
     onDeleteAppWidgetId: () -> Unit,
     onUpdateGridItemCache: (GridItem) -> Unit,
 ) {
-    val data = (gridItem?.data as? GridItemData.Widget) ?: return
+    val data = gridItem?.data as? GridItemData.Widget ?: return
 
     if (result.resultCode == Activity.RESULT_OK) {
         val appWidgetId =
@@ -153,7 +151,7 @@ internal fun handleDeleteAppWidgetId(
     gridItem: GridItem?,
     onDeleteGridItem: (GridItem) -> Unit,
 ) {
-    val data = (gridItem?.data as? GridItemData.Widget) ?: return
+    val data = gridItem?.data as? GridItemData.Widget ?: return
 
     if (appWidgetId != AppWidgetManager.INVALID_APPWIDGET_ID && deleteAppWidgetId) {
         val newData = data.copy(appWidgetId = appWidgetId)

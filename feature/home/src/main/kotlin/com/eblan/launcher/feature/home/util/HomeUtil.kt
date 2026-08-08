@@ -20,41 +20,16 @@ package com.eblan.launcher.feature.home.util
 import android.content.Context
 import android.content.Intent
 import android.graphics.Rect
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.layer.GraphicsLayer
-import androidx.compose.ui.unit.IntOffset
-import androidx.compose.ui.unit.IntSize
-import androidx.compose.ui.unit.dp
 import com.eblan.launcher.domain.model.EblanAction
 import com.eblan.launcher.domain.model.EblanActionType
 import com.eblan.launcher.domain.model.GlobalAction
-import com.eblan.launcher.feature.home.model.Drag
-import com.eblan.launcher.feature.home.model.GridItemSource
-import com.eblan.launcher.feature.home.model.SharedElementKey
 import com.eblan.launcher.framework.launcherapps.AndroidLauncherAppsWrapper
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
-internal fun handleActionMainIntent(
-    intent: Intent,
-    onActionMainIntent: () -> Unit,
-) {
-    if (intent.action != Intent.ACTION_MAIN && !intent.hasCategory(Intent.CATEGORY_HOME)) {
-        return
-    }
-
-    if ((intent.flags and Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
-        return
-    }
-
-    onActionMainIntent()
-}
-
-internal suspend fun handleEblanAction(
+internal fun handleEblanAction(
     context: Context,
     eblanAction: EblanAction,
     launcherApps: AndroidLauncherAppsWrapper,
-    onOpenAppDrawer: suspend () -> Unit,
+    onOpenAppDrawer: () -> Unit,
 ) {
     when (eblanAction.eblanActionType) {
         EblanActionType.OpenApp -> {
@@ -109,80 +84,5 @@ internal suspend fun handleEblanAction(
     }
 }
 
-internal fun onDoubleTap(
-    context: Context,
-    doubleTap: EblanAction,
-    launcherApps: AndroidLauncherAppsWrapper,
-    scope: CoroutineScope,
-    onOpenAppDrawer: () -> Unit,
-) {
-    if (doubleTap.eblanActionType == EblanActionType.None) return
-
-    scope.launch {
-        handleEblanAction(
-            context = context,
-            eblanAction = doubleTap,
-            launcherApps = launcherApps,
-            onOpenAppDrawer = onOpenAppDrawer,
-        )
-    }
-}
-
-internal fun onLongPress(
-    scope: CoroutineScope,
-    graphicsLayer: GraphicsLayer,
-    intOffset: IntOffset,
-    intSize: IntSize,
-    gridItemSource: GridItemSource,
-    sharedElementKey: SharedElementKey,
-    onUpdateGridItemSource: (GridItemSource) -> Unit,
-    onUpdateImageBitmap: (ImageBitmap) -> Unit,
-    onUpdateOverlayBounds: (
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) -> Unit,
-    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onShowGridItemPopup: (
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) -> Unit,
-    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
-) {
-    scope.launch {
-        onUpdateGridItemSource(gridItemSource)
-
-        onUpdateImageBitmap(graphicsLayer.toImageBitmap())
-
-        onUpdateOverlayBounds(
-            intOffset,
-            intSize,
-        )
-
-        onUpdateSharedElementKey(sharedElementKey)
-
-        onUpdateIsVisibleOverlay(true)
-
-        onShowGridItemPopup(
-            intOffset,
-            intSize,
-        )
-    }
-}
-
-internal fun handleDrag(
-    drag: Drag,
-    isSelected: Boolean,
-    isVisibleOverlay: Boolean,
-    onUpdateIsDragging: (Boolean) -> Unit,
-    onDismissGridItemPopup: () -> Unit,
-) {
-    if (drag == Drag.Dragging && isSelected && isVisibleOverlay) {
-        onUpdateIsDragging(true)
-
-        onDismissGridItemPopup()
-    }
-}
-
-internal val PAGE_INDICATOR_HEIGHT = 30.dp
-internal val DRAG_HANDLE_SIZE = 30.dp
-internal val FOLDER_GRID_PADDING = 10.dp
+internal const val FOLDER_PREVIEW_COLUMNS = 2
+internal const val FOLDER_PREVIEW_ROWS = 2

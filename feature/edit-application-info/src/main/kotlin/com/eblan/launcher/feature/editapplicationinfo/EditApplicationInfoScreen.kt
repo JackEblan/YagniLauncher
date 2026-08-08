@@ -20,6 +20,7 @@ package com.eblan.launcher.feature.editapplicationinfo
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -30,9 +31,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -46,24 +45,30 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.eblan.launcher.common.R.string.custom_label
+import com.eblan.launcher.common.R.string.none
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.EblanApplicationInfo
 import com.eblan.launcher.domain.model.EblanApplicationInfoTag
 import com.eblan.launcher.domain.model.EblanApplicationInfoTagUi
 import com.eblan.launcher.domain.model.IconPackInfoComponent
 import com.eblan.launcher.domain.model.PackageManagerIconPackInfo
+import com.eblan.launcher.feature.editapplicationinfo.R.string.hide_from_drawer
+import com.eblan.launcher.feature.editapplicationinfo.R.string.view_hidden_apps_in_app_drawer_settings
+import com.eblan.launcher.feature.editapplicationinfo.dialog.AddTagDialog
+import com.eblan.launcher.feature.editapplicationinfo.dialog.EditEblanApplicationInfoCustomLabelDialog
 import com.eblan.launcher.feature.editapplicationinfo.dialog.UpdateTagDialog
 import com.eblan.launcher.feature.editapplicationinfo.model.EditApplicationInfoUiState
 import com.eblan.launcher.ui.dialog.IconPackInfoFilesDialog
-import com.eblan.launcher.ui.dialog.SingleTextFieldDialog
-import com.eblan.launcher.ui.edit.CustomIcon
-import com.eblan.launcher.ui.edit.CustomLabelDialog
-import com.eblan.launcher.ui.settings.SettingsColumn
-import com.eblan.launcher.ui.settings.SettingsSwitch
+import com.eblan.launcher.ui.model.SettingsItem.Column
+import com.eblan.launcher.ui.model.SettingsItem.CustomIcon
+import com.eblan.launcher.ui.model.SettingsItem.Switch
+import com.eblan.launcher.ui.settings.SettingsItemContent
+import com.eblan.launcher.common.R as commonR
 
 @Composable
 internal fun EditApplicationInfoRoute(
@@ -95,7 +100,6 @@ internal fun EditApplicationInfoRoute(
         onSearchIconPackInfoComponent = viewModel::searchIconPackInfoComponent,
         onUpdateEblanApplicationInfo = viewModel::updateEblanApplicationInfo,
         onUpdateEblanApplicationInfoTag = viewModel::updateEblanApplicationInfoTag,
-        onUpdateGridItemCustomIcon = viewModel::updateEblanApplicationInfoCustomIcon,
         onUpdateIconPackInfoPackageName = viewModel::updateIconPackInfoPackageName,
     )
 }
@@ -117,10 +121,6 @@ internal fun EditApplicationInfoScreen(
     onSearchIconPackInfoComponent: (String) -> Unit,
     onUpdateEblanApplicationInfo: (EblanApplicationInfo) -> Unit,
     onUpdateEblanApplicationInfoTag: (EblanApplicationInfoTag) -> Unit,
-    onUpdateGridItemCustomIcon: (
-        customIcon: String?,
-        eblanApplicationInfo: EblanApplicationInfo,
-    ) -> Unit,
     onUpdateIconPackInfoPackageName: (String) -> Unit,
     onResetEblanApplicationInfoCustomIcon: (EblanApplicationInfo) -> Unit,
 ) {
@@ -129,7 +129,12 @@ internal fun EditApplicationInfoScreen(
             topBar = {
                 TopAppBar(
                     title = {
-                        Text(text = "Edit ${editApplicationInfoUiState.eblanApplicationInfo.label}")
+                        Text(
+                            text = stringResource(
+                                commonR.string.edit,
+                                editApplicationInfoUiState.eblanApplicationInfo.label,
+                            ),
+                        )
                     },
                     navigationIcon = {
                         IconButton(onClick = onNavigateUp) {
@@ -160,7 +165,6 @@ internal fun EditApplicationInfoScreen(
                     onSearchIconPackInfoComponent = onSearchIconPackInfoComponent,
                     onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
                     onUpdateEblanApplicationInfoTag = onUpdateEblanApplicationInfoTag,
-                    onUpdateGridItemCustomIcon = onUpdateGridItemCustomIcon,
                     onUpdateIconPackInfoPackageName = onUpdateIconPackInfoPackageName,
                     onResetEblanApplicationInfoCustomIcon = onResetEblanApplicationInfoCustomIcon,
                 )
@@ -184,10 +188,6 @@ private fun Success(
     onSearchIconPackInfoComponent: (String) -> Unit,
     onUpdateEblanApplicationInfo: (EblanApplicationInfo) -> Unit,
     onUpdateEblanApplicationInfoTag: (EblanApplicationInfoTag) -> Unit,
-    onUpdateGridItemCustomIcon: (
-        customIcon: String?,
-        eblanApplicationInfo: EblanApplicationInfo,
-    ) -> Unit,
     onUpdateIconPackInfoPackageName: (String) -> Unit,
     onResetEblanApplicationInfoCustomIcon: (EblanApplicationInfo) -> Unit,
 ) {
@@ -199,11 +199,68 @@ private fun Success(
 
     var iconPackInfoLabel by remember { mutableStateOf<String?>(null) }
 
-    ElevatedCard(
+    val items = buildList {
+        add(
+            CustomIcon(
+                customIcon = eblanApplicationInfo.customIcon,
+                packageManagerIconPackInfos = packageManagerIconPackInfos,
+                onUpdateIconPackInfoPackageName = { packageName, label ->
+                    iconPackInfoPackageName = packageName
+                    iconPackInfoLabel = label
+                    showCustomIconDialog = true
+                    onUpdateIconPackInfoPackageName(packageName)
+                },
+                onUpdateUri = {
+                    onUpdateEblanApplicationInfo(
+                        eblanApplicationInfo.copy(customIcon = it),
+                    )
+                },
+                onResetCustomIcon = {
+                    onResetEblanApplicationInfoCustomIcon(eblanApplicationInfo)
+                },
+            ),
+        )
+
+        add(
+            Column(
+                title = stringResource(custom_label),
+                subtitle = eblanApplicationInfo.customLabel
+                    ?: stringResource(none),
+                onClick = {
+                    showCustomLabelDialog = true
+                },
+            ),
+        )
+
+        add(
+            Switch(
+                checked = eblanApplicationInfo.isHidden,
+                title = stringResource(hide_from_drawer),
+                subtitle = stringResource(view_hidden_apps_in_app_drawer_settings),
+                onClick = {
+                    onUpdateEblanApplicationInfo(
+                        eblanApplicationInfo.copy(
+                            isHidden = !eblanApplicationInfo.isHidden,
+                        ),
+                    )
+                },
+                onCheckedChange = {
+                    onUpdateEblanApplicationInfo(
+                        eblanApplicationInfo.copy(
+                            isHidden = it,
+                        ),
+                    )
+                },
+            ),
+        )
+    }
+
+    Column(
         modifier = modifier
             .verticalScroll(rememberScrollState())
-            .fillMaxWidth()
-            .padding(horizontal = 15.dp),
+            .fillMaxSize()
+            .padding(10.dp),
+        verticalArrangement = Arrangement.spacedBy(2.dp),
     ) {
         Tags(
             eblanApplicationInfoTagsUi = eblanApplicationInfoTagsUi,
@@ -214,101 +271,41 @@ private fun Success(
             onUpdateEblanApplicationInfoTag = onUpdateEblanApplicationInfoTag,
         )
 
-        CustomIcon(
-            customIcon = eblanApplicationInfo.customIcon,
-            packageManagerIconPackInfos = packageManagerIconPackInfos,
-            onUpdateIconPackInfoPackageName = { packageName, label ->
-                iconPackInfoPackageName = packageName
-
-                iconPackInfoLabel = label
-
-                showCustomIconDialog = true
-
-                onUpdateIconPackInfoPackageName(packageName)
-            },
-            onUpdateUri = { uri ->
-                onUpdateEblanApplicationInfo(eblanApplicationInfo.copy(customIcon = uri))
-            },
-            onResetCustomIcon = {
-                onResetEblanApplicationInfoCustomIcon(eblanApplicationInfo)
-            },
-        )
-
-        HorizontalDivider(modifier = Modifier.fillMaxWidth())
-
-        SettingsColumn(
-            title = "Custom Label",
-            subtitle = eblanApplicationInfo.customLabel ?: "None",
-            onClick = {
-                showCustomLabelDialog = true
-            },
-        )
-
-        HorizontalDivider(modifier = Modifier.fillMaxWidth())
-
-        SettingsSwitch(
-            checked = eblanApplicationInfo.isHidden,
-            title = "Hide From Drawer",
-            subtitle = "Hide from drawer",
-            onCheckedChange = { isHidden ->
-                onUpdateEblanApplicationInfo(eblanApplicationInfo.copy(isHidden = isHidden))
-            },
-        )
-
-        if (showCustomIconDialog) {
-            IconPackInfoFilesDialog(
-                iconPackInfoComponents = iconPackInfoComponents,
-                iconPackInfoPackageName = iconPackInfoPackageName,
-                iconPackInfoLabel = iconPackInfoLabel,
-                iconName = eblanApplicationInfo.packageName,
-                onDismissRequest = {
-                    onResetIconPackInfoPackageName()
-
-                    showCustomIconDialog = false
-                },
-                onUpdateIcon = { icon ->
-                    onUpdateGridItemCustomIcon(
-                        icon,
-                        eblanApplicationInfo,
-                    )
-                },
-                onSearchIconPackInfoComponent = onSearchIconPackInfoComponent,
+        items.forEachIndexed { index, settingsItem ->
+            SettingsItemContent(
+                settingsItem = settingsItem,
+                index = index,
+                size = items.size,
             )
         }
+    }
 
-        if (showCustomLabelDialog) {
-            var value by remember { mutableStateOf(eblanApplicationInfo.customLabel ?: "") }
+    if (showCustomIconDialog) {
+        IconPackInfoFilesDialog(
+            iconPackInfoComponents = iconPackInfoComponents,
+            iconPackInfoPackageName = iconPackInfoPackageName,
+            iconPackInfoLabel = iconPackInfoLabel,
+            iconName = eblanApplicationInfo.packageName,
+            onDismissRequest = {
+                onResetIconPackInfoPackageName()
 
-            var isError by remember { mutableStateOf(false) }
+                showCustomIconDialog = false
+            },
+            onUpdateIcon = {
+                onUpdateEblanApplicationInfo(eblanApplicationInfo.copy(customIcon = it))
+            },
+            onSearchIconPackInfoComponent = onSearchIconPackInfoComponent,
+        )
+    }
 
-            CustomLabelDialog(
-                title = "Custom Label",
-                textFieldTitle = "Custom Label",
-                value = value,
-                isError = isError,
-                keyboardType = KeyboardType.Text,
-                onValueChange = {
-                    value = it
-                },
-                onDismissRequest = {
-                    showCustomLabelDialog = false
-                },
-                onUpdateClick = {
-                    if (value.isNotBlank()) {
-                        onUpdateEblanApplicationInfo(eblanApplicationInfo.copy(customLabel = value))
-
-                        showCustomLabelDialog = false
-                    } else {
-                        isError = true
-                    }
-                },
-                onResetClick = {
-                    onUpdateEblanApplicationInfo(eblanApplicationInfo.copy(customLabel = null))
-
-                    showCustomLabelDialog = false
-                },
-            )
-        }
+    if (showCustomLabelDialog) {
+        EditEblanApplicationInfoCustomLabelDialog(
+            eblanApplicationInfo = eblanApplicationInfo,
+            onDismissRequest = {
+                showCustomLabelDialog = false
+            },
+            onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
+        )
     }
 }
 
@@ -336,10 +333,10 @@ private fun Tags(
                 eblanApplicationInfoTagUi = eblanApplicationInfoTagUi,
                 onAddEblanApplicationInfoCrossRef = onAddEblanApplicationInfoCrossRef,
                 onDeleteEblanApplicationInfoCrossRef = onDeleteEblanApplicationInfoCrossRef,
-                onShowUpdateTagDialog = { newEblanApplicationInfoTagUi ->
+                onShowUpdateTagDialog = {
                     showUpdateTagDialog = true
 
-                    selectedEblanApplicationInfoTagUi = newEblanApplicationInfoTagUi
+                    selectedEblanApplicationInfoTagUi = it
                 },
             )
         }
@@ -352,31 +349,11 @@ private fun Tags(
     }
 
     if (showAddTagDialog) {
-        var value by remember { mutableStateOf("") }
-
-        var isError by remember { mutableStateOf(false) }
-
-        SingleTextFieldDialog(
-            title = "Add Tag",
-            textFieldTitle = "Add Tag",
-            value = value,
-            isError = isError,
-            keyboardType = KeyboardType.Text,
-            onValueChange = {
-                value = it
-            },
+        AddTagDialog(
             onDismissRequest = {
                 showAddTagDialog = false
             },
-            onUpdateClick = {
-                if (value.isNotBlank()) {
-                    onAddEblanApplicationInfoTag(EblanApplicationInfoTag(name = value))
-
-                    showAddTagDialog = false
-                } else {
-                    isError = true
-                }
-            },
+            onAddEblanApplicationInfoTag = onAddEblanApplicationInfoTag,
         )
     }
 
@@ -461,7 +438,7 @@ private fun AddTag(
             )
 
             Text(
-                text = "Add",
+                text = stringResource(commonR.string.add),
                 style = MaterialTheme.typography.bodyMedium,
             )
         }

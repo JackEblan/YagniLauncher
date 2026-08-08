@@ -22,7 +22,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -32,61 +31,54 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.eblan.launcher.designsystem.component.EblanDialogContainer
+import com.eblan.launcher.designsystem.component.EblanDialog
+import com.eblan.launcher.feature.home.R
+import com.eblan.launcher.common.R as commonR
 
 @Composable
-fun TextDialog(
+internal fun TextDialog(
     modifier: Modifier = Modifier,
     title: String,
     text: String,
     onDismissRequest: () -> Unit,
     onClick: () -> Unit,
 ) {
-    EblanDialogContainer(
-        content = {
-            Column(
-                modifier = modifier
-                    .verticalScroll(rememberScrollState())
-                    .fillMaxWidth(),
-            ) {
-                Text(
-                    modifier = Modifier.padding(
-                        start = 15.dp,
-                        top = 10.dp,
-                    ),
-                    text = title,
-                    style = MaterialTheme.typography.titleLarge,
-                )
-
-                Text(
-                    modifier = Modifier.padding(15.dp),
-                    text = text,
-                )
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(
-                            end = 10.dp,
-                            bottom = 10.dp,
-                        ),
-                    horizontalArrangement = Arrangement.End,
-                ) {
-                    TextButton(onClick = onDismissRequest) {
-                        Text(text = "Later")
-                    }
-
-                    Spacer(modifier = Modifier.width(8.dp))
-
-                    Button(
-                        onClick = onClick,
-                    ) {
-                        Text(text = "Okay")
-                    }
-                }
-            }
-        },
+    EblanDialog(
+        modifier = modifier,
         onDismissRequest = onDismissRequest,
-    )
+    ) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleLarge,
+        )
+
+        Column(
+            modifier = Modifier.verticalScroll(rememberScrollState()),
+        ) {
+            Text(
+                text = text,
+            )
+        }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End,
+        ) {
+            TextButton(
+                onClick = onDismissRequest,
+            ) {
+                Text(text = stringResource(R.string.later))
+            }
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            Button(
+                onClick = onClick,
+            ) {
+                Text(text = stringResource(commonR.string.okay))
+            }
+        }
+    }
 }

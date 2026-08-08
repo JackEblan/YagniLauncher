@@ -32,12 +32,14 @@ import android.os.Process
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.IntentSenderRequest
+import androidx.compose.runtime.State
 import com.eblan.launcher.domain.common.IconKeyGenerator
 import com.eblan.launcher.domain.framework.FileManager
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.domain.model.PinItemRequestType
+import com.eblan.launcher.feature.home.R
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.framework.imageserializer.AndroidImageSerializer
@@ -54,15 +56,14 @@ internal suspend fun handleDropGridItem(
     androidUserManagerWrapper: AndroidUserManagerWrapper,
     context: Context,
     drag: Drag,
-    gridItemSource: GridItemSource?,
+    gridItemSource: State<GridItemSource?>,
     isDragging: Boolean,
-    moveGridItemResult: MoveGridItemResult?,
+    moveGridItemResult: State<MoveGridItemResult?>,
     lockMovement: Boolean,
-    isVisibleOverlay: Boolean,
+    isVisibleOverlay: State<Boolean>,
     onResetGridAfterDeleteGridItem: (GridItem) -> Unit,
-    onDragCancelAfterMove: () -> Unit,
-    onDragEndAfterMove: (MoveGridItemResult) -> Unit,
-    onDragEndAfterMoveFolder: () -> Unit,
+    onResetGrid: () -> Unit,
+    onUpdateGridItemsAfterMove: (MoveGridItemResult) -> Unit,
     onLaunchShortcutConfigIntent: (Intent) -> Unit,
     onLaunchShortcutConfigIntentSenderRequest: (IntentSenderRequest) -> Unit,
     onLaunchWidgetIntent: (Intent) -> Unit,
@@ -71,55 +72,89 @@ internal suspend fun handleDropGridItem(
     onUpdateWidgetGridItem: (GridItem) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
 ) {
-    if (drag == Drag.None || drag == Drag.Start || drag == Drag.Dragging || gridItemSource == null) {
+    val currentGridItemSource = gridItemSource.value ?: return
+
+    val currentMoveGridItemResult = moveGridItemResult.value ?: return
+
+    if (drag == Drag.None ||
+        drag == Drag.Start ||
+        drag == Drag.Dragging
+    ) {
         return
     }
 
-    fun cancelWithToast() {
+    fun cancelAndDeleteGridItem() {
         onUpdateIsVisibleOverlay(false)
 
         onUpdateIsDragging(false)
 
-        onDragCancelAfterMove()
+        onResetGridAfterDeleteGridItem(currentMoveGridItemResult.movingGridItem)
 
         Toast.makeText(
             context,
-            "Please wait for the white box indicator",
+            context.getString(R.string.please_wait_for_the_white_box_indicator),
             Toast.LENGTH_LONG,
         ).show()
     }
 
-    val isLongPress = isVisibleOverlay && !isDragging
+    val isLongPress = isVisibleOverlay.value && !isDragging
 
-    val isMoveGridItemResultFailed =
-        drag == Drag.Cancel || moveGridItemResult == null || !moveGridItemResult.isSuccess
+    val isMoveGridItemResultFailed = drag == Drag.Cancel ||
+        !currentMoveGridItemResult.isSuccess
 
-    when (gridItemSource) {
+    when (currentGridItemSource) {
         is GridItemSource.Existing -> {
+            fun cancel() {
+                onUpdateIsVisibleOverlay(false)
+
+                onUpdateIsDragging(false)
+
+                onResetGrid()
+
+                if (currentGridItemSource.isFolderGridItem) {
+                    onResetGridAfterDeleteGridItem(currentMoveGridItemResult.movingGridItem)
+                }
+            }
+
             if (isLongPress) {
                 onUpdateIsVisibleOverlay(false)
 
                 return
             }
 
-            if (isVisibleOverlay && isMoveGridItemResultFailed) return cancelWithToast()
+            if (isVisibleOverlay.value &&
+                isMoveGridItemResultFailed
+            ) {
+                return cancel()
+            }
 
-            if (lockMovement) return cancelWithToast()
+            if (lockMovement) return cancel()
 
-            if (isVisibleOverlay && moveGridItemResult != null) {
-                onDragEndAfterMove(moveGridItemResult)
+            if (isVisibleOverlay.value) {
+                onUpdateGridItemsAfterMove(currentMoveGridItemResult)
 
                 onUpdateIsDragging(false)
+
+                if (currentMoveGridItemResult.conflictingGridItem == null) {
+                    onResetGrid()
+                }
             }
         }
 
         is GridItemSource.New -> {
-            if (isVisibleOverlay && isDragging && isMoveGridItemResultFailed) return cancelWithToast()
+            if (isVisibleOverlay.value &&
+                isDragging &&
+                isMoveGridItemResultFailed
+            ) {
+                return cancelAndDeleteGridItem()
+            }
 
-            if (lockMovement) return cancelWithToast()
+            if (lockMovement) return cancelAndDeleteGridItem()
 
-            if (isVisibleOverlay && isDragging && moveGridItemResult != null) {
-                val movingGridItem = moveGridItemResult.movingGridItem
+            if (isVisibleOverlay.value &&
+                isDragging
+            ) {
+                val movingGridItem = currentMoveGridItemResult.movingGridItem
 
                 when (val data = movingGridItem.data) {
                     is GridItemData.Widget -> {
@@ -154,31 +189,43 @@ internal suspend fun handleDropGridItem(
                     is GridItemData.Folder,
                     is GridItemData.ShortcutInfo,
                     -> {
-                        onDragEndAfterMove(moveGridItemResult)
+                        onUpdateGridItemsAfterMove(currentMoveGridItemResult)
 
                         onUpdateIsDragging(false)
+
+                        if (currentMoveGridItemResult.conflictingGridItem == null) {
+                            onResetGrid()
+                        }
                     }
                 }
             }
         }
 
         is GridItemSource.Pin -> {
-            if (isVisibleOverlay && isDragging && isMoveGridItemResultFailed) return cancelWithToast()
+            if (isVisibleOverlay.value &&
+                isDragging &&
+                isMoveGridItemResultFailed
+            ) {
+                return cancelAndDeleteGridItem()
+            }
 
-            if (lockMovement) return cancelWithToast()
+            if (lockMovement) return cancelAndDeleteGridItem()
 
-            if (isVisibleOverlay && isDragging && moveGridItemResult != null) {
-                val movingGridItem = moveGridItemResult.movingGridItem
+            if (isVisibleOverlay.value &&
+                isDragging
+            ) {
+                val movingGridItem = currentMoveGridItemResult.movingGridItem
 
                 when (val data = movingGridItem.data) {
                     is GridItemData.ShortcutInfo -> onDragEndPinShortcut(
                         gridItem = movingGridItem,
-                        moveGridItemResult = moveGridItemResult,
-                        pinItemRequest = gridItemSource.pinItemRequest,
+                        moveGridItemResult = currentMoveGridItemResult,
+                        pinItemRequest = currentGridItemSource.pinItemRequest,
                         onDeleteGridItem = onResetGridAfterDeleteGridItem,
-                        onDragEndAfterMove = onDragEndAfterMove,
+                        onUpdateGridItemsAfterMove = onUpdateGridItemsAfterMove,
                         onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                         onUpdateIsDragging = onUpdateIsDragging,
+                        onResetGrid = onResetGrid,
                     )
 
                     is GridItemData.Widget -> onDragEndWidget(
@@ -197,22 +244,6 @@ internal suspend fun handleDropGridItem(
                 }
             }
         }
-
-        is GridItemSource.Folder -> {
-            if (isLongPress) {
-                onUpdateIsVisibleOverlay(false)
-
-                return
-            }
-
-            if (lockMovement) return cancelWithToast()
-
-            if (isVisibleOverlay) {
-                onDragEndAfterMoveFolder()
-
-                onUpdateIsDragging(false)
-            }
-        }
     }
 }
 
@@ -225,8 +256,7 @@ internal fun handleAppWidgetLauncherResult(
 ) {
     val movingGridItem = requireNotNull(moveGridItemResult?.movingGridItem)
 
-    val data = (movingGridItem.data as? GridItemData.Widget)
-        ?: error("Expected GridItemData.Widget")
+    val data = movingGridItem.data as GridItemData.Widget
 
     if (result.resultCode == Activity.RESULT_OK) {
         val appWidgetId = result.data?.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, -1) ?: -1
@@ -256,12 +286,11 @@ internal fun handleConfigureLauncherResultEffect(
     resultCode: Int?,
     updatedGridItem: GridItem?,
     onDeleteGridItem: (GridItem) -> Unit,
-    onDragEndAfterMove: (MoveGridItemResult) -> Unit,
+    onUpdateGridItemsAfterMove: (MoveGridItemResult) -> Unit,
     onResetConfigureResultCode: () -> Unit,
+    onResetGrid: () -> Unit,
 ) {
-    if (resultCode == null) {
-        return
-    }
+    if (resultCode == null) return
 
     requireNotNull(moveGridItemResult)
 
@@ -270,7 +299,9 @@ internal fun handleConfigureLauncherResultEffect(
     check(updatedGridItem.data is GridItemData.Widget)
 
     if (resultCode == Activity.RESULT_OK) {
-        onDragEndAfterMove(moveGridItemResult.copy(movingGridItem = updatedGridItem))
+        onUpdateGridItemsAfterMove(moveGridItemResult.copy(movingGridItem = updatedGridItem))
+
+        onResetGrid()
     } else {
         onDeleteGridItem(updatedGridItem)
     }
@@ -291,9 +322,7 @@ internal fun handleDeleteAppWidgetId(
         return
     }
 
-    requireNotNull(moveGridItemResult)
-
-    val movingGridItem = moveGridItemResult.movingGridItem
+    val movingGridItem = requireNotNull(moveGridItemResult?.movingGridItem)
 
     check(movingGridItem.data is GridItemData.Widget)
 
@@ -309,7 +338,8 @@ internal fun handleBoundWidgetEffect(
     moveGridItemResult: MoveGridItemResult?,
     updatedWidgetGridItem: GridItem?,
     onDeleteGridItem: (GridItem) -> Unit,
-    onDragEndAfterMove: (MoveGridItemResult) -> Unit,
+    onUpdateGridItemsAfterMove: (MoveGridItemResult) -> Unit,
+    onResetGrid: () -> Unit,
 ) {
     if (updatedWidgetGridItem == null) return
 
@@ -317,8 +347,7 @@ internal fun handleBoundWidgetEffect(
 
     requireNotNull(moveGridItemResult)
 
-    val data = (updatedWidgetGridItem.data as? GridItemData.Widget)
-        ?: error("Expected GridItemData.Widget")
+    val data = updatedWidgetGridItem.data as GridItemData.Widget
 
     when (gridItemSource) {
         is GridItemSource.New -> {
@@ -330,7 +359,8 @@ internal fun handleBoundWidgetEffect(
                 moveGridItemResult = moveGridItemResult,
                 updatedWidgetGridItem = updatedWidgetGridItem,
                 onDeleteGridItem = onDeleteGridItem,
-                onDragEndAfterMove = onDragEndAfterMove,
+                onUpdateGridItemsAfterMove = onUpdateGridItemsAfterMove,
+                onResetGrid = onResetGrid,
             )
         }
 
@@ -341,7 +371,8 @@ internal fun handleBoundWidgetEffect(
                 pinItemRequest = gridItemSource.pinItemRequest,
                 updatedWidgetGridItem = updatedWidgetGridItem,
                 onDeleteGridItem = onDeleteGridItem,
-                onDragEndAfterMove = onDragEndAfterMove,
+                onUpdateGridItemsAfterMove = onUpdateGridItemsAfterMove,
+                onResetGrid = onResetGrid,
             )
         }
 
@@ -356,7 +387,8 @@ internal suspend fun handleShortcutConfigLauncherResult(
     result: ActivityResult,
     fileManager: FileManager,
     onDeleteGridItem: (GridItem) -> Unit,
-    onDragEndAfterMove: (MoveGridItemResult) -> Unit,
+    onUpdateGridItemsAfterMove: (MoveGridItemResult) -> Unit,
+    onResetGrid: () -> Unit,
 ) {
     requireNotNull(moveGridItemResult)
 
@@ -394,8 +426,7 @@ internal suspend fun handleShortcutConfigLauncherResult(
         }
     }?.toUri(Intent.URI_INTENT_SCHEME)
 
-    val movingData = (movingGridItem.data as? GridItemData.ShortcutConfig)
-        ?: error("Expected GridItemData.ShortcutConfig")
+    val movingData = movingGridItem.data as GridItemData.ShortcutConfig
 
     val shortcutIntentIcon = icon?.let { currentByteArray ->
         fileManager.updateAndGetFilePath(
@@ -413,9 +444,9 @@ internal suspend fun handleShortcutConfigLauncherResult(
 
     val newMovingGridItem = moveGridItemResult.movingGridItem.copy(data = newData)
 
-    onDragEndAfterMove(
-        moveGridItemResult.copy(movingGridItem = newMovingGridItem),
-    )
+    onUpdateGridItemsAfterMove(moveGridItemResult.copy(movingGridItem = newMovingGridItem))
+
+    onResetGrid()
 }
 
 @Suppress("DEPRECATION")
@@ -456,7 +487,11 @@ internal suspend fun handleShortcutConfigIntentSenderLauncherResult(
 
     val shortcutInfo = pinItemRequest?.shortcutInfo
 
-    if (pinItemRequest != null && shortcutInfo != null && pinItemRequest.isValid && pinItemRequest.accept()) {
+    if (pinItemRequest != null &&
+        shortcutInfo != null &&
+        pinItemRequest.isValid &&
+        pinItemRequest.accept()
+    ) {
         val serialNumber =
             androidUserManagerWrapper.getSerialNumberForUser(userHandle = shortcutInfo.userHandle)
 
@@ -558,12 +593,21 @@ private fun onDragEndPinShortcut(
     moveGridItemResult: MoveGridItemResult,
     pinItemRequest: PinItemRequest?,
     onDeleteGridItem: (GridItem) -> Unit,
-    onDragEndAfterMove: (MoveGridItemResult) -> Unit,
+    onUpdateGridItemsAfterMove: (MoveGridItemResult) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
+    onResetGrid: () -> Unit,
 ) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && pinItemRequest != null && pinItemRequest.isValid && pinItemRequest.accept()) {
-        onDragEndAfterMove(moveGridItemResult)
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
+        pinItemRequest != null &&
+        pinItemRequest.isValid &&
+        pinItemRequest.accept()
+    ) {
+        onUpdateGridItemsAfterMove(moveGridItemResult)
+
+        if (moveGridItemResult.conflictingGridItem == null) {
+            onResetGrid()
+        }
     } else {
         onDeleteGridItem(gridItem)
     }
@@ -579,7 +623,8 @@ private fun bindPinWidget(
     pinItemRequest: PinItemRequest,
     updatedWidgetGridItem: GridItem,
     onDeleteGridItem: (GridItem) -> Unit,
-    onDragEndAfterMove: (MoveGridItemResult) -> Unit,
+    onUpdateGridItemsAfterMove: (MoveGridItemResult) -> Unit,
+    onResetGrid: () -> Unit,
 ) {
     val extras = Bundle().apply {
         putInt(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
@@ -589,7 +634,9 @@ private fun bindPinWidget(
             extras,
         )
     ) {
-        onDragEndAfterMove(moveGridItemResult.copy(movingGridItem = updatedWidgetGridItem))
+        onUpdateGridItemsAfterMove(moveGridItemResult.copy(movingGridItem = updatedWidgetGridItem))
+
+        onResetGrid()
     } else {
         onDeleteGridItem(updatedWidgetGridItem)
     }
@@ -648,7 +695,8 @@ private fun startAppWidgetConfigureActivityForResult(
     moveGridItemResult: MoveGridItemResult,
     updatedWidgetGridItem: GridItem,
     onDeleteGridItem: (GridItem) -> Unit,
-    onDragEndAfterMove: (MoveGridItemResult) -> Unit,
+    onUpdateGridItemsAfterMove: (MoveGridItemResult) -> Unit,
+    onResetGrid: () -> Unit,
 ) {
     val configureComponent = configure?.let(ComponentName::unflattenFromString)
 
@@ -662,7 +710,9 @@ private fun startAppWidgetConfigureActivityForResult(
                 null,
             )
         } else {
-            onDragEndAfterMove(moveGridItemResult.copy(movingGridItem = updatedWidgetGridItem))
+            onUpdateGridItemsAfterMove(moveGridItemResult.copy(movingGridItem = updatedWidgetGridItem))
+
+            onResetGrid()
         }
     } catch (_: ActivityNotFoundException) {
         onDeleteGridItem(updatedWidgetGridItem)

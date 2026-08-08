@@ -30,7 +30,6 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -51,33 +50,37 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.SoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.round
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.addLastModifiedToFileCacheKey
+import coil3.request.crossfade
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.AppDrawerSettings
 import com.eblan.launcher.domain.model.EblanApplicationInfo
+import com.eblan.launcher.domain.model.EblanApplicationInfoWithIconPackInfo
 import com.eblan.launcher.domain.model.EblanUser
 import com.eblan.launcher.domain.model.ManagedProfileResult
-import com.eblan.launcher.feature.home.model.Drag
-import com.eblan.launcher.feature.home.util.getHorizontalAlignment
+import com.eblan.launcher.feature.home.R
+import com.eblan.launcher.feature.home.screen.getHorizontalAlignment
+import com.eblan.launcher.feature.home.screen.getVerticalArrangement
 import com.eblan.launcher.feature.home.util.getSystemTextColor
-import com.eblan.launcher.feature.home.util.getVerticalArrangement
 import com.eblan.launcher.ui.local.LocalLauncherApps
 import com.eblan.launcher.ui.local.LocalPackageManager
 import com.eblan.launcher.ui.local.LocalUserManager
@@ -86,14 +89,12 @@ import kotlin.uuid.ExperimentalUuidApi
 
 internal fun LazyGridScope.privateSpace(
     appDrawerSettings: AppDrawerSettings,
-    drag: Drag,
-    iconPackFilePaths: Map<String, String>,
     isQuietModeEnabled: Boolean,
     managedProfileResult: ManagedProfileResult?,
     paddingValues: PaddingValues,
-    privateEblanApplicationInfos: List<EblanApplicationInfo>,
+    privateEblanApplicationInfoWithIconPackInfos: List<EblanApplicationInfoWithIconPackInfo>,
     privateEblanUser: EblanUser?,
-    onDismiss: () -> Unit,
+    isVisibleOverlay: Boolean,
     onUpdateIsQuietModeEnabled: (Boolean) -> Unit,
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
@@ -101,7 +102,6 @@ internal fun LazyGridScope.privateSpace(
     ) -> Unit,
     onUpdatePopupMenu: (Boolean) -> Unit,
     onUpdateEblanApplicationInfo: (EblanApplicationInfo) -> Unit,
-    onScrollToItem: suspend (Int) -> Unit,
 ) {
     if (privateEblanUser == null || privateEblanUser.isPrivateSpaceEntryPointHidden) return
 
@@ -115,18 +115,15 @@ internal fun LazyGridScope.privateSpace(
     }
 
     if (!isQuietModeEnabled) {
-        items(privateEblanApplicationInfos) { eblanApplicationInfo ->
+        items(privateEblanApplicationInfoWithIconPackInfos) { eblanApplicationInfo ->
             PrivateSpaceEblanApplicationInfoItem(
                 appDrawerSettings = appDrawerSettings,
-                drag = drag,
-                eblanApplicationInfo = eblanApplicationInfo,
-                iconPackFilePaths = iconPackFilePaths,
+                eblanApplicationInfoWithIconPackInfo = eblanApplicationInfo,
                 paddingValues = paddingValues,
-                onDismiss = onDismiss,
+                isVisibleOverlay = isVisibleOverlay,
                 onUpdateOverlayBounds = onUpdateOverlayBounds,
                 onUpdatePopupMenu = onUpdatePopupMenu,
                 onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
-                onScrollToItem = onScrollToItem,
             )
         }
     }
@@ -175,7 +172,7 @@ internal fun PrivateSpaceStickyHeader(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
-            text = "Private",
+            text = stringResource(R.string.private_space),
         )
 
         Row {
@@ -228,24 +225,21 @@ internal fun PrivateSpaceStickyHeader(
 internal fun PrivateSpaceEblanApplicationInfoItem(
     modifier: Modifier = Modifier,
     appDrawerSettings: AppDrawerSettings,
-    drag: Drag,
-    eblanApplicationInfo: EblanApplicationInfo,
-    iconPackFilePaths: Map<String, String>,
+    eblanApplicationInfoWithIconPackInfo: EblanApplicationInfoWithIconPackInfo,
     paddingValues: PaddingValues,
-    onDismiss: () -> Unit,
+    isVisibleOverlay: Boolean,
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
     ) -> Unit,
     onUpdatePopupMenu: (Boolean) -> Unit,
     onUpdateEblanApplicationInfo: (EblanApplicationInfo) -> Unit,
-    onScrollToItem: suspend (Int) -> Unit,
 ) {
-    var intOffset by remember { mutableStateOf(IntOffset.Zero) }
-
-    var intSize by remember { mutableStateOf(IntSize.Zero) }
+    val context = LocalContext.current
 
     val density = LocalDensity.current
+
+    val layoutDirection = LocalLayoutDirection.current
 
     val launcherApps = LocalLauncherApps.current
 
@@ -262,7 +256,8 @@ internal fun PrivateSpaceEblanApplicationInfoItem(
 
     val maxLines = if (appDrawerSettings.gridItemSettings.singleLineLabel) 1 else Int.MAX_VALUE
 
-    val icon = iconPackFilePaths[eblanApplicationInfo.componentName] ?: eblanApplicationInfo.icon
+    val icon = eblanApplicationInfoWithIconPackInfo.iconPackInfoFilePath
+        ?: eblanApplicationInfoWithIconPackInfo.eblanApplicationInfo.icon
 
     val horizontalAlignment =
         getHorizontalAlignment(horizontalAlignment = appDrawerSettings.gridItemSettings.horizontalAlignment)
@@ -271,51 +266,58 @@ internal fun PrivateSpaceEblanApplicationInfoItem(
         getVerticalArrangement(verticalArrangement = appDrawerSettings.gridItemSettings.verticalArrangement)
 
     val leftPadding = with(density) {
-        paddingValues.calculateStartPadding(LayoutDirection.Ltr).roundToPx()
+        paddingValues.calculateLeftPadding(layoutDirection).roundToPx()
     }
 
     val topPadding = with(density) {
         paddingValues.calculateTopPadding().roundToPx()
     }
 
-    var isLongPress by remember { mutableStateOf(false) }
+    var intOffset by remember { mutableStateOf(IntOffset.Zero) }
 
-    LaunchedEffect(key1 = drag) {
-        if (drag == Drag.Cancel && isLongPress) {
-            onUpdatePopupMenu(false)
-        }
+    var intSize by remember { mutableStateOf(IntSize.Zero) }
+
+    val iconSizePx = with(density) {
+        appDrawerSettings.gridItemSettings.iconSize.dp.roundToPx()
     }
 
     Column(
         modifier = modifier
-            .pointerInput(key1 = drag) {
+            .pointerInput(key1 = isVisibleOverlay) {
                 detectTapGestures(
-                    onTap = {
-                        scope.launch {
-                            handleOnTapEblanApplicationInfoItem(
-                                eblanApplicationInfo = eblanApplicationInfo,
-                                intOffset = intOffset,
-                                intSize = intSize,
-                                keyboardController = keyboardController,
-                                launcherApps = launcherApps,
-                                leftPadding = leftPadding,
-                                topPadding = topPadding,
-                            )
+                    onTap = if (!isVisibleOverlay) {
+                        {
+                            scope.launch {
+                                handleOnTapEblanApplicationInfoItem(
+                                    eblanApplicationInfoWithIconPackInfo = eblanApplicationInfoWithIconPackInfo,
+                                    intOffset = intOffset,
+                                    intSize = intSize,
+                                    keyboardController = keyboardController,
+                                    launcherApps = launcherApps,
+                                    leftPadding = leftPadding,
+                                    topPadding = topPadding,
+                                )
+                            }
                         }
+                    } else {
+                        null
                     },
-                    onLongPress = {
-                        handleOnLongPressPrivateSpaceEblanApplicationInfoItem(
-                            onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
-                            eblanApplicationInfo = eblanApplicationInfo,
-                            onUpdateOverlayBounds = onUpdateOverlayBounds,
-                            intOffset = intOffset,
-                            intSize = intSize,
-                            onUpdatePopupMenu = onUpdatePopupMenu,
-                            keyboardController = keyboardController,
-                            onUpdateIsLongPress = { newIsLongPress ->
-                                isLongPress = newIsLongPress
-                            },
-                        )
+                    onLongPress = if (!isVisibleOverlay) {
+                        {
+                            scope.launch {
+                                handleOnLongPressPrivateSpaceEblanApplicationInfoItem(
+                                    onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
+                                    eblanApplicationInfo = eblanApplicationInfoWithIconPackInfo.eblanApplicationInfo,
+                                    onUpdateOverlayBounds = onUpdateOverlayBounds,
+                                    intOffset = intOffset,
+                                    intSize = intSize,
+                                    onUpdatePopupMenu = onUpdatePopupMenu,
+                                    keyboardController = keyboardController,
+                                )
+                            }
+                        }
+                    } else {
+                        null
                     },
                 )
             }
@@ -329,9 +331,12 @@ internal fun PrivateSpaceEblanApplicationInfoItem(
         verticalArrangement = verticalArrangement,
     ) {
         AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(eblanApplicationInfo.customIcon ?: icon)
-                .addLastModifiedToFileCacheKey(true).build(),
+            model = ImageRequest.Builder(context)
+                .data(eblanApplicationInfoWithIconPackInfo.eblanApplicationInfo.customIcon ?: icon)
+                .addLastModifiedToFileCacheKey(true)
+                .size(iconSizePx)
+                .crossfade(false)
+                .build(),
             contentDescription = null,
             modifier = Modifier
                 .onGloballyPositioned { layoutCoordinates ->
@@ -340,12 +345,15 @@ internal fun PrivateSpaceEblanApplicationInfoItem(
                     intSize = layoutCoordinates.size
                 }
                 .size(appDrawerSettings.gridItemSettings.iconSize.dp),
+            placeholder = ColorPainter(Color.Transparent),
+            error = ColorPainter(Color.Transparent),
         )
 
         Spacer(modifier = Modifier.height(10.dp))
 
         Text(
-            text = eblanApplicationInfo.customLabel ?: eblanApplicationInfo.label,
+            text = eblanApplicationInfoWithIconPackInfo.eblanApplicationInfo.customLabel
+                ?: eblanApplicationInfoWithIconPackInfo.eblanApplicationInfo.label,
             color = textColor,
             textAlign = TextAlign.Center,
             maxLines = maxLines,
@@ -363,7 +371,6 @@ internal fun handleOnLongPressPrivateSpaceEblanApplicationInfoItem(
     intSize: IntSize,
     onUpdatePopupMenu: (Boolean) -> Unit,
     keyboardController: SoftwareKeyboardController?,
-    onUpdateIsLongPress: (Boolean) -> Unit,
 ) {
     onUpdateEblanApplicationInfo(eblanApplicationInfo)
 
@@ -373,8 +380,6 @@ internal fun handleOnLongPressPrivateSpaceEblanApplicationInfoItem(
     )
 
     onUpdatePopupMenu(true)
-
-    onUpdateIsLongPress(true)
 
     keyboardController?.hide()
 }

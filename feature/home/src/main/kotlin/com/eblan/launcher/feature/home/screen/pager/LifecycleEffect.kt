@@ -43,7 +43,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 internal fun LifecycleEffect(
-    syncDataEnabled: Boolean,
+    syncData: Boolean,
     userManagerWrapper: AndroidUserManagerWrapper,
     onManagedProfileResultChange: (ManagedProfileResult?) -> Unit,
     onStartSyncData: () -> Unit,
@@ -58,7 +58,10 @@ internal fun LifecycleEffect(
 
     val pinItemRequestWrapper = LocalPinItemRequest.current
 
-    DisposableEffect(key1 = lifecycleOwner) {
+    DisposableEffect(
+        key1 = lifecycleOwner,
+        key2 = syncData,
+    ) {
         val eblanNotificationListenerIntent =
             Intent(context, EblanNotificationListenerService::class.java)
 
@@ -110,7 +113,7 @@ internal fun LifecycleEffect(
             lifecycleOwner.lifecycleScope.launch {
                 when (event) {
                     Lifecycle.Event.ON_START -> {
-                        if (syncDataEnabled && pinItemRequestWrapper.getPinItemRequest() == null) {
+                        if (syncData && pinItemRequestWrapper.getPinItemRequest() == null) {
                             context.registerReceiver(
                                 managedProfileBroadcastReceiver,
                                 IntentFilter().apply {
@@ -139,7 +142,7 @@ internal fun LifecycleEffect(
                     }
 
                     Lifecycle.Event.ON_STOP -> {
-                        if (syncDataEnabled && pinItemRequestWrapper.getPinItemRequest() == null) {
+                        if (syncData && pinItemRequestWrapper.getPinItemRequest() == null) {
                             if (shouldUnbindEblanNotificationListenerService) {
                                 context.unregisterReceiver(managedProfileBroadcastReceiver)
 

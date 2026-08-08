@@ -51,9 +51,11 @@ import com.eblan.launcher.domain.model.ShortcutInfoGridItem
 import com.eblan.launcher.domain.model.SyncEblanApplicationInfo
 import com.eblan.launcher.domain.model.WidgetGridItem
 import com.eblan.launcher.domain.repository.ApplicationInfoGridItemRepository
+import com.eblan.launcher.domain.repository.FolderGridItemRepository
 import com.eblan.launcher.domain.repository.ShortcutConfigGridItemRepository
 import com.eblan.launcher.domain.repository.ShortcutInfoGridItemRepository
 import com.eblan.launcher.domain.repository.WidgetGridItemRepository
+import com.eblan.launcher.domain.usecase.grid.getFolderGridItemsById
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
 import java.io.File
@@ -71,14 +73,14 @@ internal suspend fun deleteEblanApplicationInfoIcons(
         val icon = oldDeleteEblanApplicationInfo.icon
 
         val hasNoIconReference =
-            icon != null && eblanApplicationInfos.none { eblanApplicationInfo ->
+            icon != null && eblanApplicationInfos.none {
                 currentCoroutineContext().ensureActive()
 
-                eblanApplicationInfo.icon == icon
-            } && eblanAppWidgetProviderInfos.none { eblanAppWidgetProviderInfo ->
+                it.icon == icon
+            } && eblanAppWidgetProviderInfos.none {
                 currentCoroutineContext().ensureActive()
 
-                eblanAppWidgetProviderInfo.applicationIcon == icon
+                it.applicationIcon == icon
             }
 
         if (hasNoIconReference) {
@@ -102,14 +104,14 @@ internal suspend fun deleteEblanAppWidgetProviderInfoIcons(
         val applicationIcon = deleteEblanAppWidgetProviderInfo.applicationIcon
 
         val hasNoIconReference =
-            applicationIcon != null && eblanAppWidgetProviderInfos.none { eblanAppWidgetProviderInfo ->
+            applicationIcon != null && eblanAppWidgetProviderInfos.none {
                 currentCoroutineContext().ensureActive()
 
-                eblanAppWidgetProviderInfo.applicationIcon == applicationIcon
-            } && eblanApplicationInfos.none { eblanApplicationInfo ->
+                it.applicationIcon == applicationIcon
+            } && eblanApplicationInfos.none {
                 currentCoroutineContext().ensureActive()
 
-                eblanApplicationInfo.icon == applicationIcon
+                it.icon == applicationIcon
             }
 
         if (hasNoIconReference) {
@@ -120,8 +122,8 @@ internal suspend fun deleteEblanAppWidgetProviderInfoIcons(
             }
         }
 
-        deleteEblanAppWidgetProviderInfo.preview?.let { preview ->
-            val previewFile = File(preview)
+        deleteEblanAppWidgetProviderInfo.preview?.let {
+            val previewFile = File(it)
 
             if (previewFile.exists()) {
                 previewFile.delete()
@@ -140,10 +142,10 @@ internal suspend fun deleteEblanShortInfoIcons(
         val icon = deleteEblanShortcutInfo.icon
 
         val hasNoIconReference =
-            icon != null && eblanShortcutInfos.none { eblanApplicationInfo ->
+            icon != null && eblanShortcutInfos.none {
                 currentCoroutineContext().ensureActive()
 
-                eblanApplicationInfo.icon == icon
+                it.icon == icon
             }
 
         if (hasNoIconReference) {
@@ -183,17 +185,17 @@ internal suspend fun updateApplicationInfoGridItems(
     val applicationInfoGridItems =
         applicationInfoGridItemRepository.getApplicationInfoGridItems()
 
-    applicationInfoGridItems.filterNot { applicationInfoGridItem ->
+    applicationInfoGridItems.filterNot {
         currentCoroutineContext().ensureActive()
 
-        applicationInfoGridItem.override
+        it.override
     }.forEach { applicationInfoGridItem ->
         currentCoroutineContext().ensureActive()
 
-        val eblanApplicationInfo = eblanApplicationInfos.find { eblanApplicationInfo ->
+        val eblanApplicationInfo = eblanApplicationInfos.find {
             currentCoroutineContext().ensureActive()
 
-            eblanApplicationInfo.serialNumber == applicationInfoGridItem.serialNumber && eblanApplicationInfo.componentName == applicationInfoGridItem.componentName
+            it.serialNumber == applicationInfoGridItem.serialNumber && it.componentName == applicationInfoGridItem.componentName
         }
 
         if (eblanApplicationInfo != null) {
@@ -233,15 +235,15 @@ internal suspend fun updateShortcutInfoGridItems(
     val shortcutInfoGridItems = shortcutInfoGridItemRepository.getShortcutInfoGridItems()
 
     if (eblanShortcutInfos != null) {
-        shortcutInfoGridItems.filterNot { shortcutInfoGridItem ->
-            shortcutInfoGridItem.override
+        shortcutInfoGridItems.filterNot {
+            it.override
         }.forEach { shortcutInfoGridItem ->
             currentCoroutineContext().ensureActive()
 
-            val eblanShortcutInfo = eblanShortcutInfos.find { eblanShortcutInfo ->
+            val eblanShortcutInfo = eblanShortcutInfos.find {
                 currentCoroutineContext().ensureActive()
 
-                eblanShortcutInfo.serialNumber == shortcutInfoGridItem.serialNumber && eblanShortcutInfo.shortcutId == shortcutInfoGridItem.shortcutId
+                it.serialNumber == shortcutInfoGridItem.serialNumber && it.shortcutId == shortcutInfoGridItem.shortcutId
             }
 
             if (eblanShortcutInfo != null) {
@@ -287,15 +289,15 @@ internal suspend fun updateShortcutConfigGridItems(
 
     val shortcutConfigGridItems = shortcutConfigGridItemRepository.getShortcutConfigGridItems()
 
-    shortcutConfigGridItems.filterNot { shortcutConfigGridItem ->
-        shortcutConfigGridItem.override
+    shortcutConfigGridItems.filterNot {
+        it.override
     }.forEach { shortcutConfigGridItem ->
         currentCoroutineContext().ensureActive()
 
-        val eblanShortcutConfig = eblanShortcutConfigs.find { eblanShortcutConfig ->
+        val eblanShortcutConfig = eblanShortcutConfigs.find {
             currentCoroutineContext().ensureActive()
 
-            eblanShortcutConfig.serialNumber == shortcutConfigGridItem.serialNumber && eblanShortcutConfig.componentName == shortcutConfigGridItem.componentName
+            it.serialNumber == shortcutConfigGridItem.serialNumber && it.componentName == shortcutConfigGridItem.componentName
         }
 
         if (eblanShortcutConfig != null) {
@@ -307,7 +309,7 @@ internal suspend fun updateShortcutConfigGridItems(
                     activityIcon = eblanShortcutConfig.activityIcon,
                     applicationLabel = packageManagerWrapper.getApplicationLabel(
                         packageName = eblanShortcutConfig.packageName,
-                    ).toString(),
+                    ),
                     applicationIcon = resolveApplicationIcon(
                         fileManager = fileManager,
                         packageManagerWrapper = packageManagerWrapper,
@@ -346,16 +348,16 @@ internal suspend fun updateWidgetGridItems(
 
     val widgetGridItems = widgetGridItemRepository.getWidgetGridItems()
 
-    widgetGridItems.filterNot { widgetGridItem ->
-        widgetGridItem.override
+    widgetGridItems.filterNot {
+        it.override
     }.forEach { widgetGridItem ->
         currentCoroutineContext().ensureActive()
 
         val eblanAppWidgetProviderInfo =
-            eblanAppWidgetProviderInfos.find { eblanAppWidgetProviderInfo ->
+            eblanAppWidgetProviderInfos.find {
                 currentCoroutineContext().ensureActive()
 
-                eblanAppWidgetProviderInfo.serialNumber == widgetGridItem.serialNumber && eblanAppWidgetProviderInfo.componentName == widgetGridItem.componentName
+                it.serialNumber == widgetGridItem.serialNumber && it.componentName == widgetGridItem.componentName
             }
 
         if (eblanAppWidgetProviderInfo != null) {
@@ -382,7 +384,7 @@ internal suspend fun updateWidgetGridItems(
                     ),
                     label = packageManagerWrapper.getApplicationLabel(
                         packageName = eblanAppWidgetProviderInfo.packageName,
-                    ).toString(),
+                    ),
                 ),
             )
         } else {
@@ -423,7 +425,7 @@ internal suspend fun AppWidgetManagerAppWidgetProviderInfo.toEblanAppWidgetProvi
     ),
     applicationLabel = packageManagerWrapper.getApplicationLabel(
         packageName = packageName,
-    ).toString(),
+    ),
     lastUpdateTime = lastUpdateTime,
     label = label,
     description = description,
@@ -528,15 +530,27 @@ internal suspend fun addNewApplicationToHomeScreen(
     label: String?,
     homeSettings: HomeSettings,
     applicationInfoGridItems: MutableList<ApplicationInfoGridItem>,
+    folderGridItemRepository: FolderGridItemRepository,
+    fileManager: FileManager,
+    iconKeyGenerator: IconKeyGenerator,
+    iconPackInfoPackageName: String,
 ) {
-    val alreadyOnHome = gridItems.any { gridItem ->
-        when (val data = gridItem.data) {
+    val alreadyOnHome = gridItems.any {
+        when (val data = it.data) {
             is GridItemData.ApplicationInfo ->
                 data.serialNumber == 0L &&
                     data.componentName == componentName
 
-            is GridItemData.Folder ->
-                data.gridItems.any { folderGridItem ->
+            is GridItemData.Folder -> {
+                val folderGridItems = getFolderGridItemsById(
+                    folderGridItemRepository = folderGridItemRepository,
+                    fileManager = fileManager,
+                    iconKeyGenerator = iconKeyGenerator,
+                    iconPackInfoPackageName = iconPackInfoPackageName,
+                    folderId = it.id,
+                )
+
+                folderGridItems.any { folderGridItem ->
                     when (val folderData = folderGridItem.data) {
                         is GridItemData.ApplicationInfo -> {
                             folderData.serialNumber == 0L &&
@@ -546,6 +560,7 @@ internal suspend fun addNewApplicationToHomeScreen(
                         else -> false
                     }
                 }
+            }
 
             else -> false
         }
@@ -569,6 +584,7 @@ internal suspend fun addNewApplicationToHomeScreen(
         customLabel = null,
         index = -1,
         folderId = null,
+        iconPackInfoFilePath = null,
     )
 
     val gridItem = GridItem(

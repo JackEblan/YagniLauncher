@@ -47,7 +47,7 @@ data class WidgetGridItemEntity(
     val targetCellHeight: Int,
     val targetCellWidth: Int,
     val preview: String?,
-    val label: String,
+    val label: String?,
     val icon: String?,
     val override: Boolean,
     val serialNumber: Long,

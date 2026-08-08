@@ -21,7 +21,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -33,10 +32,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import com.eblan.launcher.designsystem.component.EblanDialogContainer
+import androidx.compose.ui.res.stringResource
+import com.eblan.launcher.designsystem.component.EblanDialog
 import com.eblan.launcher.designsystem.component.EblanRadioButton
 import com.eblan.launcher.domain.model.TextColor
+import com.eblan.launcher.ui.R
+import com.eblan.launcher.common.R as commonR
 
 @Composable
 fun TextColorDialog(
@@ -56,60 +57,57 @@ fun TextColorDialog(
 
     var showColorPickerDialog by remember { mutableStateOf(false) }
 
-    EblanDialogContainer(
-        content = {
-            Column(
-                modifier = modifier
-                    .selectableGroup()
-                    .fillMaxWidth(),
-            ) {
-                Text(
-                    modifier = Modifier.padding(10.dp),
-                    text = title,
-                    style = MaterialTheme.typography.titleLarge,
-                )
-
-                TextColor.entries.forEach { textColor ->
-                    EblanRadioButton(
-                        selected = selectedTextColor == textColor,
-                        text = textColor.name,
-                        onClick = {
-                            if (textColor == TextColor.Custom) {
-                                showColorPickerDialog = true
-                            } else {
-                                selectedTextColor = textColor
-                            }
-                        },
-                    )
-                }
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(
-                            end = 10.dp,
-                            bottom = 10.dp,
-                        ),
-                    horizontalArrangement = Arrangement.End,
-                ) {
-                    TextButton(onClick = onDismissRequest) {
-                        Text(text = "Cancel")
-                    }
-                    TextButton(
-                        onClick = {
-                            onUpdateClick(
-                                selectedTextColor,
-                                selectedCustomTextColor,
-                            )
-                        },
-                    ) {
-                        Text(text = "Update")
-                    }
-                }
-            }
-        },
+    EblanDialog(
+        modifier = modifier,
         onDismissRequest = onDismissRequest,
-    )
+    ) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleLarge,
+        )
+
+        Column(
+            modifier = Modifier
+                .selectableGroup()
+                .fillMaxWidth(),
+        ) {
+            TextColor.entries.forEach { textColor ->
+                EblanRadioButton(
+                    selected = selectedTextColor == textColor,
+                    text = textColor.getTextColorTitle(),
+                    onClick = {
+                        if (textColor == TextColor.Custom) {
+                            showColorPickerDialog = true
+                        } else {
+                            selectedTextColor = textColor
+                        }
+                    },
+                )
+            }
+        }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End,
+        ) {
+            TextButton(
+                onClick = onDismissRequest,
+            ) {
+                Text(text = stringResource(commonR.string.cancel))
+            }
+
+            TextButton(
+                onClick = {
+                    onUpdateClick(
+                        selectedTextColor,
+                        selectedCustomTextColor,
+                    )
+                },
+            ) {
+                Text(text = stringResource(commonR.string.update))
+            }
+        }
+    }
 
     if (showColorPickerDialog) {
         ColorPickerDialog(
@@ -118,13 +116,21 @@ fun TextColorDialog(
             onDismissRequest = {
                 showColorPickerDialog = false
             },
-            onSelectColor = { newCustomColor ->
+            onSelectColor = {
                 selectedTextColor = TextColor.Custom
 
-                selectedCustomTextColor = newCustomColor
+                selectedCustomTextColor = it
 
                 showColorPickerDialog = false
             },
         )
     }
+}
+
+@Composable
+private fun TextColor.getTextColorTitle() = when (this) {
+    TextColor.System -> stringResource(commonR.string.system)
+    TextColor.Light -> stringResource(commonR.string.light)
+    TextColor.Dark -> stringResource(commonR.string.dark)
+    TextColor.Custom -> stringResource(R.string.custom)
 }

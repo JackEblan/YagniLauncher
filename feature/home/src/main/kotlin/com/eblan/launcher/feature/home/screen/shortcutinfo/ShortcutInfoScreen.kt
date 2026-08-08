@@ -1,0 +1,349 @@
+/*
+ *
+ *   Copyright 2023 Einstein Blanco
+ *
+ *   Licensed under the GNU General Public License v3.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
+ *
+ *       https://www.gnu.org/licenses/gpl-3.0
+ *
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
+ *
+ */
+package com.eblan.launcher.feature.home.screen.shortcutinfo
+
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.layer.drawLayer
+import androidx.compose.ui.graphics.rememberGraphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInRoot
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.round
+import coil3.compose.AsyncImage
+import com.eblan.launcher.domain.model.Associate
+import com.eblan.launcher.domain.model.EblanAction
+import com.eblan.launcher.domain.model.EblanActionType
+import com.eblan.launcher.domain.model.EblanShortcutInfo
+import com.eblan.launcher.domain.model.GridItem
+import com.eblan.launcher.domain.model.GridItemData
+import com.eblan.launcher.domain.model.GridItemSettings
+import com.eblan.launcher.domain.model.MoveGridItemResult
+import com.eblan.launcher.feature.home.model.Drag
+import com.eblan.launcher.feature.home.model.GridItemSource
+import com.eblan.launcher.feature.home.model.SharedElementKey
+import kotlinx.coroutines.launch
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
+
+@Composable
+internal fun ShortcutInfoScreen(
+    modifier: Modifier = Modifier,
+    eblanShortcutInfosGroup: List<EblanShortcutInfo>,
+    gridItemSettings: GridItemSettings,
+    icon: String?,
+    isVisibleOverlay: Boolean,
+    onUpdateIsDragging: (Boolean) -> Unit,
+    onTapShortcutInfo: (
+        serialNumber: Long,
+        packageName: String,
+        shortcutId: String,
+    ) -> Unit,
+    onUpdateGridItemSource: (GridItemSource) -> Unit,
+    onUpdateImageBitmap: (ImageBitmap) -> Unit,
+    onUpdateOverlayBounds: (
+        intOffset: IntOffset,
+        intSize: IntSize,
+    ) -> Unit,
+    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
+    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
+    onUpdateTransitionState: (Boolean) -> Unit,
+) {
+    Column(
+        modifier = modifier
+            .sizeIn(
+                maxWidth = 300.dp,
+                maxHeight = 150.dp,
+            )
+            .verticalScroll(rememberScrollState()),
+    ) {
+        eblanShortcutInfosGroup.forEach { eblanShortcutInfo ->
+            ShortcutInfoMenuItem(
+                eblanShortcutInfo = eblanShortcutInfo,
+                gridItemSettings = gridItemSettings,
+                icon = icon,
+                isVisibleOverlay = isVisibleOverlay,
+                onUpdateIsDragging = onUpdateIsDragging,
+                onTapShortcutInfo = onTapShortcutInfo,
+                onUpdateGridItemSource = onUpdateGridItemSource,
+                onUpdateImageBitmap = onUpdateImageBitmap,
+                onUpdateOverlayBounds = onUpdateOverlayBounds,
+                onUpdateSharedElementKey = onUpdateSharedElementKey,
+                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                onUpdateTransitionState = onUpdateTransitionState,
+            )
+        }
+    }
+}
+
+@Composable
+internal fun PrivateShortcutInfoMenu(
+    modifier: Modifier = Modifier,
+    drag: Drag,
+    eblanShortcutInfosGroup: List<EblanShortcutInfo>,
+    onTapShortcutInfo: (
+        serialNumber: Long,
+        packageName: String,
+        shortcutId: String,
+    ) -> Unit,
+) {
+    Column(
+        modifier = modifier
+            .sizeIn(
+                maxWidth = 300.dp,
+                maxHeight = 150.dp,
+            )
+            .verticalScroll(rememberScrollState()),
+    ) {
+        eblanShortcutInfosGroup.forEach { eblanShortcutInfo ->
+            PrivateShortcutInfoMenuItem(
+                drag = drag,
+                eblanShortcutInfo = eblanShortcutInfo,
+                onTapShortcutInfo = onTapShortcutInfo,
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalUuidApi::class)
+@Composable
+private fun ShortcutInfoMenuItem(
+    modifier: Modifier = Modifier,
+    eblanShortcutInfo: EblanShortcutInfo,
+    gridItemSettings: GridItemSettings,
+    icon: String?,
+    isVisibleOverlay: Boolean,
+    onUpdateIsDragging: (Boolean) -> Unit,
+    onTapShortcutInfo: (Long, String, String) -> Unit,
+    onUpdateGridItemSource: (GridItemSource) -> Unit,
+    onUpdateImageBitmap: (ImageBitmap) -> Unit,
+    onUpdateOverlayBounds: (
+        intOffset: IntOffset,
+        intSize: IntSize,
+    ) -> Unit,
+    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
+    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
+    onUpdateTransitionState: (Boolean) -> Unit,
+) {
+    val graphicsLayer = rememberGraphicsLayer()
+
+    val scope = rememberCoroutineScope()
+
+    var isLongPress by remember { mutableStateOf(false) }
+
+    var intOffset by remember { mutableStateOf(IntOffset.Zero) }
+
+    var intSize by remember { mutableStateOf(IntSize.Zero) }
+
+    ListItem(
+        modifier = modifier
+            .clickable {
+                onTapShortcutInfo(
+                    eblanShortcutInfo.serialNumber,
+                    eblanShortcutInfo.packageName,
+                    eblanShortcutInfo.shortcutId,
+                )
+            },
+        headlineContent = {
+            Text(text = eblanShortcutInfo.shortLabel)
+        },
+        leadingContent = {
+            Box(
+                modifier = Modifier
+                    .drawWithContent {
+                        graphicsLayer.record {
+                            this@drawWithContent.drawContent()
+                        }
+
+                        drawLayer(graphicsLayer)
+                    }
+                    .pointerInput(key1 = isVisibleOverlay) {
+                        detectTapGestures(
+                            onLongPress = {
+                                scope.launch {
+                                    val id = Uuid.random().toHexString()
+
+                                    val gridItem = getShortcutInfoGridItem(
+                                        eblanShortcutInfo = eblanShortcutInfo,
+                                        gridItemSettings = gridItemSettings,
+                                        icon = icon,
+                                        id = id,
+                                    )
+
+                                    onUpdateGridItemSource(GridItemSource.New)
+
+                                    onUpdateMoveGridItemResult(
+                                        MoveGridItemResult(
+                                            isSuccess = false,
+                                            movingGridItem = gridItem,
+                                            conflictingGridItem = null,
+                                        ),
+                                    )
+
+                                    onUpdateImageBitmap(graphicsLayer.toImageBitmap())
+
+                                    onUpdateOverlayBounds(
+                                        intOffset,
+                                        intSize,
+                                    )
+
+                                    onUpdateSharedElementKey(
+                                        SharedElementKey(
+                                            id = id,
+                                            parent = SharedElementKey.Parent.Grid,
+                                        ),
+                                    )
+
+                                    onUpdateIsVisibleOverlay(true)
+
+                                    onUpdateTransitionState(false)
+
+                                    onUpdateIsDragging(true)
+                                }
+                            },
+                        )
+                    }
+                    .onGloballyPositioned { layoutCoordinates ->
+                        intOffset = layoutCoordinates.positionInRoot().round()
+
+                        intSize = layoutCoordinates.size
+                    }
+                    .size(30.dp),
+            ) {
+                if (!isLongPress) {
+                    AsyncImage(
+                        model = eblanShortcutInfo.icon,
+                        contentDescription = null,
+                        modifier = Modifier.matchParentSize(),
+                    )
+                }
+            }
+        },
+    )
+}
+
+private fun getShortcutInfoGridItem(
+    eblanShortcutInfo: EblanShortcutInfo,
+    gridItemSettings: GridItemSettings,
+    icon: String?,
+    id: String,
+): GridItem {
+    val data = GridItemData.ShortcutInfo(
+        shortcutId = eblanShortcutInfo.shortcutId,
+        packageName = eblanShortcutInfo.packageName,
+        serialNumber = eblanShortcutInfo.serialNumber,
+        shortLabel = eblanShortcutInfo.shortLabel,
+        longLabel = eblanShortcutInfo.longLabel,
+        icon = eblanShortcutInfo.icon,
+        isEnabled = eblanShortcutInfo.isEnabled,
+        eblanApplicationInfoIcon = icon,
+        customIcon = null,
+        customShortLabel = null,
+        index = -1,
+        folderId = null,
+    )
+
+    val eblanAction = EblanAction(
+        eblanActionType = EblanActionType.None,
+        serialNumber = 0L,
+        componentName = "",
+    )
+
+    val gridItem = GridItem(
+        id = id,
+        page = 0,
+        startColumn = -1,
+        startRow = -1,
+        columnSpan = 1,
+        rowSpan = 1,
+        data = data,
+        associate = Associate.Grid,
+        override = false,
+        gridItemSettings = gridItemSettings,
+        doubleTap = eblanAction,
+        swipeUp = eblanAction,
+        swipeDown = eblanAction,
+    )
+    return gridItem
+}
+
+@OptIn(ExperimentalUuidApi::class)
+@Composable
+private fun PrivateShortcutInfoMenuItem(
+    modifier: Modifier = Modifier,
+    drag: Drag,
+    eblanShortcutInfo: EblanShortcutInfo,
+    onTapShortcutInfo: (Long, String, String) -> Unit,
+) {
+    var isLongPress by remember { mutableStateOf(false) }
+
+    LaunchedEffect(key1 = drag) {
+        if (drag == Drag.End || drag == Drag.Cancel) {
+            isLongPress = false
+        }
+    }
+
+    ListItem(
+        modifier = modifier
+            .clickable {
+                onTapShortcutInfo(
+                    eblanShortcutInfo.serialNumber,
+                    eblanShortcutInfo.packageName,
+                    eblanShortcutInfo.shortcutId,
+                )
+            },
+        headlineContent = {
+            Text(text = eblanShortcutInfo.shortLabel)
+        },
+        leadingContent = {
+            Box(modifier = Modifier.size(30.dp)) {
+                if (!isLongPress) {
+                    AsyncImage(
+                        model = eblanShortcutInfo.icon,
+                        contentDescription = null,
+                        modifier = Modifier.matchParentSize(),
+                    )
+                }
+            }
+        },
+    )
+}

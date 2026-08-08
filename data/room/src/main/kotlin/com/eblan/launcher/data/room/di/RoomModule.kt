@@ -19,10 +19,19 @@ package com.eblan.launcher.data.room.di
 
 import android.content.Context
 import androidx.room.Room
+import com.eblan.launcher.data.room.DefaultGridItemTransaction
 import com.eblan.launcher.data.room.EblanDatabase
+import com.eblan.launcher.data.room.GridItemTransaction
+import com.eblan.launcher.data.room.dao.ApplicationInfoGridItemDao
+import com.eblan.launcher.data.room.dao.FolderGridItemDao
+import com.eblan.launcher.data.room.dao.ShortcutConfigGridItemDao
+import com.eblan.launcher.data.room.dao.ShortcutInfoGridItemDao
+import com.eblan.launcher.data.room.dao.WidgetGridItemDao
 import com.eblan.launcher.data.room.migration.Migration12To13
 import com.eblan.launcher.data.room.migration.Migration13To14
 import com.eblan.launcher.data.room.migration.Migration14To15
+import com.eblan.launcher.data.room.migration.Migration15To16
+import com.eblan.launcher.data.room.migration.Migration18To19
 import com.eblan.launcher.data.room.migration.Migration3To4
 import com.eblan.launcher.data.room.migration.Migration7To8
 import dagger.Module
@@ -49,11 +58,32 @@ internal object RoomModule {
         Migration12To13(),
         Migration13To14(),
         Migration14To15(),
+        Migration15To16(),
+        Migration18To19(),
     )
         .fallbackToDestructiveMigrationFrom(
             dropAllTables = true,
             1,
             2,
             11,
+            17,
         ).build()
+
+    @Singleton
+    @Provides
+    fun gridItemTransaction(
+        eblanDatabase: EblanDatabase,
+        applicationInfoGridItemDao: ApplicationInfoGridItemDao,
+        widgetGridItemDao: WidgetGridItemDao,
+        shortcutInfoGridItemDao: ShortcutInfoGridItemDao,
+        shortcutConfigGridItemDao: ShortcutConfigGridItemDao,
+        folderGridItemDao: FolderGridItemDao,
+    ): GridItemTransaction = DefaultGridItemTransaction(
+        eblanDatabase = eblanDatabase,
+        applicationInfoGridItemDao = applicationInfoGridItemDao,
+        widgetGridItemDao = widgetGridItemDao,
+        shortcutInfoGridItemDao = shortcutInfoGridItemDao,
+        shortcutConfigGridItemDao = shortcutConfigGridItemDao,
+        folderGridItemDao = folderGridItemDao,
+    )
 }

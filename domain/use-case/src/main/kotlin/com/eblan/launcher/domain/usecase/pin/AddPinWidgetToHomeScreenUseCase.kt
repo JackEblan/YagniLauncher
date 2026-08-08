@@ -32,7 +32,8 @@ import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.repository.GridRepository
 import com.eblan.launcher.domain.repository.UserDataRepository
-import com.eblan.launcher.domain.usecase.grid.GetFolderGridItemsUseCase
+import com.eblan.launcher.domain.usecase.grid.GetGridItemsUseCase
+import com.eblan.launcher.domain.usecase.grid.isTopLevel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
@@ -47,8 +48,8 @@ class AddPinWidgetToHomeScreenUseCase @Inject constructor(
     private val packageManagerWrapper: PackageManagerWrapper,
     private val gridRepository: GridRepository,
     private val iconKeyGenerator: IconKeyGenerator,
-    private val getFolderGridItemsUseCase: GetFolderGridItemsUseCase,
-    @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
+    private val getGridItemsUseCase: GetGridItemsUseCase,
+    @param:Dispatcher(EblanDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) {
     @OptIn(ExperimentalUuidApi::class)
     suspend operator fun invoke(
@@ -68,7 +69,7 @@ class AddPinWidgetToHomeScreenUseCase @Inject constructor(
         rootWidth: Int,
         rootHeight: Int,
         preview: String?,
-    ): GridItem? = withContext(defaultDispatcher) {
+    ): GridItem? = withContext(ioDispatcher) {
         val homeSettings = userDataRepository.userDataFlow.first().homeSettings
 
         val columns = homeSettings.columns
@@ -82,20 +83,19 @@ class AddPinWidgetToHomeScreenUseCase @Inject constructor(
         val dockHeight = homeSettings.dockHeight
 
         val eblanApplicationInfoIcon =
-            packageManagerWrapper.getComponentName(packageName = packageName)
-                ?.let { componentName ->
-                    val directory = fileManager.getFilesDirectory(FileManager.ICONS_DIR)
+            packageManagerWrapper.getComponentName(packageName = packageName)?.let {
+                val directory = fileManager.getFilesDirectory(FileManager.ICONS_DIR)
 
-                    val file = File(
-                        directory,
-                        iconKeyGenerator.getActivityIconKey(
-                            serialNumber = serialNumber,
-                            componentName = componentName,
-                        ),
-                    )
+                val file = File(
+                    directory,
+                    iconKeyGenerator.getActivityIconKey(
+                        serialNumber = serialNumber,
+                        componentName = it,
+                    ),
+                )
 
-                    file.absolutePath
-                }
+                file.absolutePath
+            }
 
         val gridHeight = rootHeight - dockHeight
 
@@ -139,7 +139,7 @@ class AddPinWidgetToHomeScreenUseCase @Inject constructor(
             targetCellHeight = targetCellHeight,
             targetCellWidth = targetCellWidth,
             preview = preview,
-            label = packageManagerWrapper.getApplicationLabel(packageName = packageName).toString(),
+            label = packageManagerWrapper.getApplicationLabel(packageName = packageName),
             icon = eblanApplicationInfoIcon,
         )
 
@@ -165,8 +165,12 @@ class AddPinWidgetToHomeScreenUseCase @Inject constructor(
             swipeDown = eblanAction,
         )
 
+        val gridItems = getGridItemsUseCase().filter {
+            it.isTopLevel() && it.associate == Associate.Grid
+        }
+
         val newGridItem = findAvailableRegionByPage(
-            gridItems = gridRepository.getGridItems().plus(getFolderGridItemsUseCase()),
+            gridItems = gridItems,
             gridItem = gridItem,
             pageCount = pageCount,
             columns = columns,

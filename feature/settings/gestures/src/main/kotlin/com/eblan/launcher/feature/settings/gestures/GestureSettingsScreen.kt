@@ -29,12 +29,15 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.GestureSettings
 import com.eblan.launcher.feature.settings.gestures.model.GesturesSettingsUiState
 import com.eblan.launcher.ui.settings.EblanActionSettings
+import com.eblan.launcher.common.R as commonR
 
 @Composable
 internal fun GestureSettingsRoute(
@@ -61,10 +64,11 @@ private fun GestureSettingsScreen(
     onUpdateGestureSettings: (GestureSettings) -> Unit,
 ) {
     Scaffold(
+        modifier = modifier,
         topBar = {
             TopAppBar(
                 title = {
-                    Text(text = "Gestures")
+                    Text(text = stringResource(commonR.string.gestures))
                 },
                 navigationIcon = {
                     IconButton(onClick = onNavigateUp) {
@@ -78,44 +82,39 @@ private fun GestureSettingsScreen(
         },
     ) { paddingValues ->
         Box(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues),
         ) {
-            when (gesturesSettingsUiState) {
-                GesturesSettingsUiState.Loading -> {
-                }
-
-                is GesturesSettingsUiState.Success -> {
-                    EblanActionSettings(
-                        modifier = modifier,
-                        doubleTap = gesturesSettingsUiState.gestureSettings.doubleTap,
-                        swipeUp = gesturesSettingsUiState.gestureSettings.swipeUp,
-                        swipeDown = gesturesSettingsUiState.gestureSettings.swipeDown,
-                        eblanApplicationInfos = gesturesSettingsUiState.eblanApplicationInfos,
-                        onUpdateDoubleTap = { doubleTap ->
-                            onUpdateGestureSettings(
-                                gesturesSettingsUiState.gestureSettings.copy(
-                                    doubleTap = doubleTap,
-                                ),
-                            )
-                        },
-                        onUpdateSwipeUp = { swipeUp ->
-                            onUpdateGestureSettings(
-                                gesturesSettingsUiState.gestureSettings.copy(
-                                    swipeUp = swipeUp,
-                                ),
-                            )
-                        },
-                        onUpdateSwipeDown = { swipeDown ->
-                            onUpdateGestureSettings(
-                                gesturesSettingsUiState.gestureSettings.copy(
-                                    swipeDown = swipeDown,
-                                ),
-                            )
-                        },
-                    )
-                }
+            if (gesturesSettingsUiState is GesturesSettingsUiState.Success) {
+                EblanActionSettings(
+                    modifier = Modifier.padding(10.dp),
+                    doubleTap = gesturesSettingsUiState.gestureSettings.doubleTap,
+                    swipeUp = gesturesSettingsUiState.gestureSettings.swipeUp,
+                    swipeDown = gesturesSettingsUiState.gestureSettings.swipeDown,
+                    eblanApplicationInfos = gesturesSettingsUiState.eblanApplicationInfos,
+                    onUpdateDoubleTap = {
+                        onUpdateGestureSettings(
+                            gesturesSettingsUiState.gestureSettings.copy(
+                                doubleTap = it,
+                            ),
+                        )
+                    },
+                    onUpdateSwipeUp = {
+                        onUpdateGestureSettings(
+                            gesturesSettingsUiState.gestureSettings.copy(
+                                swipeUp = it,
+                            ),
+                        )
+                    },
+                    onUpdateSwipeDown = {
+                        onUpdateGestureSettings(
+                            gesturesSettingsUiState.gestureSettings.copy(
+                                swipeDown = it,
+                            ),
+                        )
+                    },
+                )
             }
         }
     }

@@ -35,14 +35,12 @@ import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.rememberOverscrollEffect
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -54,16 +52,17 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.AppDrawerSettings
@@ -79,8 +78,8 @@ import com.eblan.launcher.domain.model.EblanUserPageKey
 import com.eblan.launcher.domain.model.EblanUserType
 import com.eblan.launcher.domain.model.GetEblanApplicationInfosByLabelAndTag
 import com.eblan.launcher.domain.model.ManagedProfileResult
+import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.feature.home.component.OffsetNestedScrollConnection
-import com.eblan.launcher.feature.home.component.OffsetOverscrollEffect
 import com.eblan.launcher.feature.home.dialog.EblanApplicationInfoOrderDialog
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
@@ -88,7 +87,7 @@ import com.eblan.launcher.feature.home.model.SharedElementKey
 import com.eblan.launcher.feature.home.screen.application.ApplicationInfoPopup
 import com.eblan.launcher.feature.home.screen.application.ApplicationScreenEffect
 import com.eblan.launcher.feature.home.screen.application.ApplicationSearchBar
-import com.eblan.launcher.feature.home.screen.application.EblanApplicationInfoItem
+import com.eblan.launcher.feature.home.screen.application.EblanApplicationInfoGridItem
 import com.eblan.launcher.feature.home.screen.application.EblanApplicationInfoTabRow
 import com.eblan.launcher.feature.home.screen.application.PrivateApplicationInfoPopup
 import com.eblan.launcher.feature.home.screen.application.QuiteModeScreen
@@ -101,17 +100,16 @@ import kotlinx.coroutines.FlowPreview
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class, FlowPreview::class)
 @Composable
-internal fun SharedTransitionScope.VerticalApplicationScreen(
+internal fun VerticalApplicationScreen(
     modifier: Modifier = Modifier,
+    sharedTransitionScope: SharedTransitionScope,
     appDrawerSettings: AppDrawerSettings,
-    currentPage: Int,
     drag: Drag,
     eblanAppWidgetProviderInfosGroup: Map<String, List<EblanAppWidgetProviderInfo>>,
     eblanApplicationInfoTags: List<EblanApplicationInfoTag>,
     eblanShortcutInfosGroup: Map<EblanShortcutInfoByGroup, List<EblanShortcutInfo>>,
     getEblanApplicationInfosByLabelAndTag: GetEblanApplicationInfosByLabelAndTag,
     hasShortcutHostPermission: Boolean,
-    iconPackFilePaths: Map<String, String>,
     isPressHome: Boolean,
     managedProfileResult: ManagedProfileResult?,
     paddingValues: PaddingValues,
@@ -119,7 +117,7 @@ internal fun SharedTransitionScope.VerticalApplicationScreen(
     swipeY: Float,
     isVisibleOverlay: Boolean,
     onDismiss: () -> Unit,
-    onDragEnd: (Float) -> Unit,
+    onDragEnd: () -> Unit,
     onEditApplicationInfo: (
         serialNumber: Long,
         componentName: String,
@@ -138,10 +136,14 @@ internal fun SharedTransitionScope.VerticalApplicationScreen(
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onVerticalDrag: (Float) -> Unit,
     onWidgets: (EblanApplicationInfoGroup) -> Unit,
-    onDraggingShortcutInfoGridItem: () -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
     val density = LocalDensity.current
+
+    val layoutDirection = LocalLayoutDirection.current
+
+    val launcherApps = LocalLauncherApps.current
 
     var showPopupApplicationMenu by remember { mutableStateOf(false) }
 
@@ -151,10 +153,8 @@ internal fun SharedTransitionScope.VerticalApplicationScreen(
 
     var popupIntSize by remember { mutableStateOf(IntSize.Zero) }
 
-    val launcherApps = LocalLauncherApps.current
-
     val leftPadding = with(density) {
-        paddingValues.calculateStartPadding(LayoutDirection.Ltr).roundToPx()
+        paddingValues.calculateLeftPadding(layoutDirection).roundToPx()
     }
 
     val topPadding = with(density) {
@@ -163,7 +163,7 @@ internal fun SharedTransitionScope.VerticalApplicationScreen(
 
     val horizontalPagerState = rememberPagerState(
         pageCount = {
-            getEblanApplicationInfosByLabelAndTag.eblanApplicationInfos.keys.size
+            getEblanApplicationInfosByLabelAndTag.eblanApplicationInfoWithIconPackInfos.keys.size
         },
     )
 
@@ -179,12 +179,12 @@ internal fun SharedTransitionScope.VerticalApplicationScreen(
 
     var selectedEblanApplicationInfo by remember { mutableStateOf<EblanApplicationInfo?>(null) }
 
-    val lazyGridState = rememberLazyGridState()
-
     val eblanUserPageKeys =
-        remember(key1 = getEblanApplicationInfosByLabelAndTag.eblanApplicationInfos) {
-            getEblanApplicationInfosByLabelAndTag.eblanApplicationInfos.keys.distinctBy { it.eblanUser.serialNumber }
+        remember(key1 = getEblanApplicationInfosByLabelAndTag.eblanApplicationInfoWithIconPackInfos) {
+            getEblanApplicationInfosByLabelAndTag.eblanApplicationInfoWithIconPackInfos.keys.distinctBy { it.eblanUser.serialNumber }
         }
+
+    val focusRequester = remember { FocusRequester() }
 
     ApplicationScreenEffect(
         horizontalPagerState = horizontalPagerState,
@@ -194,11 +194,13 @@ internal fun SharedTransitionScope.VerticalApplicationScreen(
         showPopupApplicationMenu = showPopupApplicationMenu,
         swipeY = swipeY,
         textFieldState = textFieldState,
+        showKeyboard = appDrawerSettings.showKeyboard,
+        focusRequester = focusRequester,
         onDismiss = onDismiss,
         onGetEblanApplicationInfosByLabel = onGetEblanApplicationInfosByLabel,
         onGetEblanApplicationInfosByTagId = onGetEblanApplicationInfosByTagId,
-        onShowPopupApplicationMenu = { newShowPopupApplicationMenu ->
-            showPopupApplicationMenu = newShowPopupApplicationMenu
+        onShowPopupApplicationMenu = {
+            showPopupApplicationMenu = it
         },
     )
 
@@ -207,26 +209,27 @@ internal fun SharedTransitionScope.VerticalApplicationScreen(
             .fillMaxSize()
             .padding(
                 top = paddingValues.calculateTopPadding(),
-                start = paddingValues.calculateStartPadding(LayoutDirection.Ltr),
-                end = paddingValues.calculateEndPadding(LayoutDirection.Ltr),
+                start = paddingValues.calculateStartPadding(layoutDirection),
+                end = paddingValues.calculateEndPadding(layoutDirection),
             ),
     ) {
         ApplicationSearchBar(
+            focusRequester = focusRequester,
             searchBarState = searchBarState,
             textFieldState = textFieldState,
-            onUpdateShowEblanApplicationInfoOrderDialog = { newShowEblanApplicationInfoOrderDialog ->
-                showEblanApplicationInfoOrderDialog = newShowEblanApplicationInfoOrderDialog
+            onUpdateShowEblanApplicationInfoOrderDialog = {
+                showEblanApplicationInfoOrderDialog = it
             },
         )
 
         if (eblanApplicationInfoTags.isNotEmpty()) {
             LazyRow(modifier = Modifier.fillMaxWidth()) {
-                items(eblanApplicationInfoTags) { eblanApplicationInfoTag ->
+                items(eblanApplicationInfoTags) {
                     TagElevatedFilterChip(
-                        eblanApplicationInfoTag = eblanApplicationInfoTag,
+                        eblanApplicationInfoTag = it,
                         selectedEblanApplicationInfoTag = selectedEblanApplicationInfoTagId,
-                        onUpdateEblanApplicationInfoTag = { newEblanApplicationInfoTagId ->
-                            selectedEblanApplicationInfoTagId = newEblanApplicationInfoTagId
+                        onUpdateEblanApplicationInfoTag = { id ->
+                            selectedEblanApplicationInfoTagId = id
                         },
                     )
                 }
@@ -237,7 +240,7 @@ internal fun SharedTransitionScope.VerticalApplicationScreen(
             EblanApplicationInfoTabRow(
                 currentPage = horizontalPagerState.currentPage,
                 eblanUserPageKeys = eblanUserPageKeys,
-                eblanApplicationInfos = getEblanApplicationInfosByLabelAndTag.eblanApplicationInfos,
+                eblanApplicationInfos = getEblanApplicationInfosByLabelAndTag.eblanApplicationInfoWithIconPackInfos,
                 onAnimateScrollToPage = horizontalPagerState::animateScrollToPage,
             )
         }
@@ -248,19 +251,19 @@ internal fun SharedTransitionScope.VerticalApplicationScreen(
             userScrollEnabled = !isVisibleOverlay,
         ) { index ->
             EblanApplicationInfosPage(
+                sharedTransitionScope = sharedTransitionScope,
                 appDrawerSettings = appDrawerSettings,
-                currentPage = currentPage,
                 drag = drag,
                 eblanApplicationInfoOrder = appDrawerSettings.eblanApplicationInfoOrder,
                 getEblanApplicationInfosByLabelAndTag = getEblanApplicationInfosByLabelAndTag,
-                iconPackFilePaths = iconPackFilePaths,
                 index = index,
                 isRearrangeEblanApplicationInfo = isRearrangeEblanApplicationInfo,
                 managedProfileResult = managedProfileResult,
                 paddingValues = paddingValues,
                 isVisibleOverlay = isVisibleOverlay,
                 showPopupApplicationMenu = showPopupApplicationMenu,
-                lazyGridState = lazyGridState,
+                swipeY = swipeY,
+                screenHeight = screenHeight,
                 onDismiss = onDismiss,
                 onDismissDragAndDrop = {
                     isRearrangeEblanApplicationInfo = false
@@ -277,43 +280,43 @@ internal fun SharedTransitionScope.VerticalApplicationScreen(
 
                     popupIntSize = intSize
                 },
-                onUpdatePopupMenu = { newShowPopupApplicationMenu ->
-                    showPopupApplicationMenu = newShowPopupApplicationMenu
+                onUpdatePopupMenu = {
+                    showPopupApplicationMenu = it
                 },
-                onUpdatePrivatePopupMenu = { newShowPrivatePopupApplicationMenu ->
-                    showPrivatePopupApplicationMenu = newShowPrivatePopupApplicationMenu
+                onUpdatePrivatePopupMenu = {
+                    showPrivatePopupApplicationMenu = it
                 },
                 onUpdateSharedElementKey = onUpdateSharedElementKey,
                 onVerticalDrag = onVerticalDrag,
-                onUpdateEblanApplicationInfo = { eblanApplicationInfo ->
-                    selectedEblanApplicationInfo = eblanApplicationInfo
+                onUpdateEblanApplicationInfo = {
+                    selectedEblanApplicationInfo = it
                 },
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
             )
         }
     }
 
     if (showPopupApplicationMenu && selectedEblanApplicationInfo != null) {
         ApplicationInfoPopup(
-            currentPage = currentPage,
-            drag = drag,
             eblanAppWidgetProviderInfos = eblanAppWidgetProviderInfosGroup,
             eblanShortcutInfosGroup = eblanShortcutInfosGroup,
             eblanApplicationInfo = selectedEblanApplicationInfo,
             gridItemSettings = appDrawerSettings.gridItemSettings,
             hasShortcutHostPermission = hasShortcutHostPermission,
-            paddingValues = paddingValues,
             popupIntOffset = popupIntOffset,
             popupIntSize = popupIntSize,
+            isVisibleOverlay = isVisibleOverlay,
+            paddingValues = paddingValues,
             onDismissRequest = {
                 showPopupApplicationMenu = false
             },
-            onDraggingShortcutInfoGridItem = {
+            onUpdateIsDragging = {
                 showPopupApplicationMenu = false
 
                 onDismiss()
 
-                onDraggingShortcutInfoGridItem()
+                onUpdateIsDragging(it)
             },
             onEditApplicationInfo = onEditApplicationInfo,
             onTapShortcutInfo = { serialNumber, packageName, shortcutId ->
@@ -341,6 +344,7 @@ internal fun SharedTransitionScope.VerticalApplicationScreen(
             onUpdateSharedElementKey = onUpdateSharedElementKey,
             onWidgets = onWidgets,
             onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+            onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
         )
     }
 
@@ -366,9 +370,9 @@ internal fun SharedTransitionScope.VerticalApplicationScreen(
             eblanShortcutInfosGroup = eblanShortcutInfosGroup,
             eblanApplicationInfo = selectedEblanApplicationInfo,
             hasShortcutHostPermission = hasShortcutHostPermission,
-            paddingValues = paddingValues,
             popupIntOffset = popupIntOffset,
             popupIntSize = popupIntSize,
+            paddingValues = paddingValues,
             onDismissRequest = {
                 showPrivatePopupApplicationMenu = false
             },
@@ -398,24 +402,24 @@ internal fun SharedTransitionScope.VerticalApplicationScreen(
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalSharedTransitionApi::class)
 @Composable
-private fun SharedTransitionScope.EblanApplicationInfosPage(
+private fun EblanApplicationInfosPage(
     modifier: Modifier = Modifier,
+    sharedTransitionScope: SharedTransitionScope,
     appDrawerSettings: AppDrawerSettings,
-    currentPage: Int,
     drag: Drag,
     eblanApplicationInfoOrder: EblanApplicationInfoOrder,
     getEblanApplicationInfosByLabelAndTag: GetEblanApplicationInfosByLabelAndTag,
-    iconPackFilePaths: Map<String, String>,
     index: Int,
     isRearrangeEblanApplicationInfo: Boolean,
     managedProfileResult: ManagedProfileResult?,
     paddingValues: PaddingValues,
     showPopupApplicationMenu: Boolean,
     isVisibleOverlay: Boolean,
-    lazyGridState: LazyGridState,
+    swipeY: Float,
+    screenHeight: Int,
     onDismiss: () -> Unit,
     onDismissDragAndDrop: () -> Unit,
-    onDragEnd: (Float) -> Unit,
+    onDragEnd: () -> Unit,
     onUpdateEblanApplicationInfos: (List<EblanApplicationInfo>) -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
@@ -430,25 +434,27 @@ private fun SharedTransitionScope.EblanApplicationInfosPage(
     onVerticalDrag: (Float) -> Unit,
     onUpdateEblanApplicationInfo: (EblanApplicationInfo) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
     val userManager = LocalUserManager.current
 
     val packageManager = LocalPackageManager.current
 
     val eblanUserPageKey =
-        getEblanApplicationInfosByLabelAndTag.eblanApplicationInfos.keys.toList().getOrElse(
-            index = index,
-            defaultValue = {
-                EblanUserPageKey(
-                    eblanUser = EblanUser(
-                        serialNumber = 0L,
-                        eblanUserType = EblanUserType.Personal,
-                        isPrivateSpaceEntryPointHidden = false,
-                    ),
-                    page = 0,
-                )
-            },
-        )
+        getEblanApplicationInfosByLabelAndTag.eblanApplicationInfoWithIconPackInfos.keys.toList()
+            .getOrElse(
+                index = index,
+                defaultValue = {
+                    EblanUserPageKey(
+                        eblanUser = EblanUser(
+                            serialNumber = 0L,
+                            eblanUserType = EblanUserType.Personal,
+                            isPrivateSpaceEntryPointHidden = false,
+                        ),
+                        page = 0,
+                    )
+                },
+            )
 
     val userHandle =
         userManager.getUserForSerialNumber(serialNumber = eblanUserPageKey.eblanUser.serialNumber)
@@ -474,8 +480,8 @@ private fun SharedTransitionScope.EblanApplicationInfosPage(
                 userHandle = userHandle,
                 userManager = userManager,
                 onDragEnd = onDragEnd,
-                onUpdateRequestQuietModeEnabled = { newIsQuietModeEnabled ->
-                    isQuietModeEnabled = newIsQuietModeEnabled
+                onUpdateRequestQuietModeEnabled = {
+                    isQuietModeEnabled = it
                 },
                 onVerticalDrag = onVerticalDrag,
             )
@@ -484,24 +490,25 @@ private fun SharedTransitionScope.EblanApplicationInfosPage(
                 appDrawerSettings = appDrawerSettings,
                 eblanUserPageKey = eblanUserPageKey,
                 getEblanApplicationInfosByLabelAndTag = getEblanApplicationInfosByLabelAndTag,
-                iconPackFilePaths = iconPackFilePaths,
                 paddingValues = paddingValues,
+                swipeY = swipeY,
+                screenHeight = screenHeight,
                 onDismissDragAndDrop = onDismissDragAndDrop,
                 onUpdateEblanApplicationInfos = onUpdateEblanApplicationInfos,
             )
         } else {
             EblanApplicationInfos(
+                sharedTransitionScope = sharedTransitionScope,
                 appDrawerSettings = appDrawerSettings,
-                currentPage = currentPage,
                 drag = drag,
                 eblanUserPageKey = eblanUserPageKey,
                 getEblanApplicationInfosByLabelAndTag = getEblanApplicationInfosByLabelAndTag,
-                iconPackFilePaths = iconPackFilePaths,
                 managedProfileResult = managedProfileResult,
                 paddingValues = paddingValues,
                 showPopupApplicationMenu = showPopupApplicationMenu,
                 isVisibleOverlay = isVisibleOverlay,
-                lazyGridState = lazyGridState,
+                swipeY = swipeY,
+                screenHeight = screenHeight,
                 onDismiss = onDismiss,
                 onDragEnd = onDragEnd,
                 onUpdateGridItemSource = onUpdateGridItemSource,
@@ -514,6 +521,7 @@ private fun SharedTransitionScope.EblanApplicationInfosPage(
                 onVerticalDrag = onVerticalDrag,
                 onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
             )
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && packageManager.isDefaultLauncher() &&
@@ -547,21 +555,21 @@ private fun SharedTransitionScope.EblanApplicationInfosPage(
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalSharedTransitionApi::class)
 @Composable
-private fun SharedTransitionScope.EblanApplicationInfos(
+private fun EblanApplicationInfos(
     modifier: Modifier = Modifier,
+    sharedTransitionScope: SharedTransitionScope,
     appDrawerSettings: AppDrawerSettings,
-    currentPage: Int,
     drag: Drag,
     eblanUserPageKey: EblanUserPageKey,
     getEblanApplicationInfosByLabelAndTag: GetEblanApplicationInfosByLabelAndTag,
-    iconPackFilePaths: Map<String, String>,
     managedProfileResult: ManagedProfileResult?,
     paddingValues: PaddingValues,
     isVisibleOverlay: Boolean,
     showPopupApplicationMenu: Boolean,
-    lazyGridState: LazyGridState,
+    swipeY: Float,
+    screenHeight: Int,
     onDismiss: () -> Unit,
-    onDragEnd: (Float) -> Unit,
+    onDragEnd: () -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
@@ -575,16 +583,9 @@ private fun SharedTransitionScope.EblanApplicationInfos(
     onVerticalDrag: (Float) -> Unit,
     onUpdateEblanApplicationInfo: (EblanApplicationInfo) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
-    val scope = rememberCoroutineScope()
-
-    val overscrollEffect = remember(key1 = scope) {
-        OffsetOverscrollEffect(
-            scope = scope,
-            onVerticalDrag = onVerticalDrag,
-            onDragEnd = onDragEnd,
-        )
-    }
+    val lazyGridState = rememberLazyGridState()
 
     val canScroll by remember(key1 = lazyGridState) {
         derivedStateOf {
@@ -592,8 +593,17 @@ private fun SharedTransitionScope.EblanApplicationInfos(
         }
     }
 
-    val nestedScrollConnection = remember {
+    val currentSwipeY by rememberUpdatedState(swipeY)
+
+    val nestedScrollConnection = remember(
+        key1 = onVerticalDrag,
+        key2 = onDragEnd,
+    ) {
         OffsetNestedScrollConnection(
+            swipeY = { currentSwipeY },
+            isAtTop = {
+                !lazyGridState.canScrollBackward
+            },
             onVerticalDrag = onVerticalDrag,
             onDragEnd = onDragEnd,
         )
@@ -607,15 +617,15 @@ private fun SharedTransitionScope.EblanApplicationInfos(
         }
     }
 
+    LaunchedEffect(key1 = swipeY) {
+        if (swipeY.toInt() == screenHeight) {
+            lazyGridState.scrollToItem(0)
+        }
+    }
+
     Box(
         modifier = modifier
-            .run {
-                if (!canScroll) {
-                    nestedScroll(nestedScrollConnection)
-                } else {
-                    this
-                }
-            }
+            .nestedScroll(nestedScrollConnection)
             .fillMaxSize(),
     ) {
         LazyVerticalGrid(
@@ -625,28 +635,24 @@ private fun SharedTransitionScope.EblanApplicationInfos(
             contentPadding = PaddingValues(
                 bottom = paddingValues.calculateBottomPadding(),
             ),
-            overscrollEffect = if (canScroll) {
-                overscrollEffect
-            } else {
-                rememberOverscrollEffect()
-            },
             userScrollEnabled = !isVisibleOverlay,
         ) {
             when (eblanUserPageKey.eblanUser.eblanUserType) {
                 EblanUserType.Personal -> {
                     items(
-                        items = getEblanApplicationInfosByLabelAndTag.eblanApplicationInfos[eblanUserPageKey].orEmpty(),
-                        key = { eblanApplicationInfo -> eblanApplicationInfo.serialNumber to eblanApplicationInfo.componentName },
-                    ) { eblanApplicationInfo ->
-                        EblanApplicationInfoItem(
+                        items = getEblanApplicationInfosByLabelAndTag.eblanApplicationInfoWithIconPackInfos[eblanUserPageKey].orEmpty(),
+                        key = { it.eblanApplicationInfo.serialNumber to it.eblanApplicationInfo.componentName },
+                    ) {
+                        EblanApplicationInfoGridItem(
+                            sharedTransitionScope = sharedTransitionScope,
                             appDrawerSettings = appDrawerSettings,
-                            currentPage = currentPage,
                             drag = drag,
-                            eblanApplicationInfo = eblanApplicationInfo,
-                            iconPackFilePaths = iconPackFilePaths,
+                            eblanApplicationInfoWithIconPackInfo = it,
                             paddingValues = paddingValues,
                             isVisibleOverlay = isVisibleOverlay,
                             appDrawerType = appDrawerSettings.appDrawerType,
+                            isSwiping = swipeY > 0f,
+                            isScrollInProgress = lazyGridState.isScrollInProgress,
                             onDismiss = onDismiss,
                             onUpdateGridItemSource = onUpdateGridItemSource,
                             onUpdateImageBitmap = onUpdateImageBitmap,
@@ -656,43 +662,45 @@ private fun SharedTransitionScope.EblanApplicationInfos(
                             onUpdateSharedElementKey = onUpdateSharedElementKey,
                             onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
                             onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                            onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                         )
                     }
 
                     privateSpace(
                         appDrawerSettings = appDrawerSettings,
-                        drag = drag,
-                        iconPackFilePaths = iconPackFilePaths,
                         isQuietModeEnabled = isQuietModeEnabled,
                         managedProfileResult = managedProfileResult,
                         paddingValues = paddingValues,
-                        onDismiss = onDismiss,
-                        privateEblanApplicationInfos = getEblanApplicationInfosByLabelAndTag.privateEblanApplicationInfos,
+                        privateEblanApplicationInfoWithIconPackInfos = getEblanApplicationInfosByLabelAndTag.privateEblanApplicationInfoWithIconPackInfos,
                         privateEblanUser = getEblanApplicationInfosByLabelAndTag.privateEblanUser,
-                        onUpdateIsQuietModeEnabled = { newIsQuiteModeEnabled ->
-                            isQuietModeEnabled = newIsQuiteModeEnabled
+                        isVisibleOverlay = isVisibleOverlay,
+                        onUpdateIsQuietModeEnabled = {
+                            isQuietModeEnabled = it
                         },
                         onUpdateOverlayBounds = onUpdateOverlayBounds,
                         onUpdatePopupMenu = onUpdatePrivatePopupMenu,
                         onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
-                        onScrollToItem = lazyGridState::scrollToItem,
                     )
                 }
 
                 else -> {
                     items(
-                        items = getEblanApplicationInfosByLabelAndTag.eblanApplicationInfos[eblanUserPageKey].orEmpty(),
-                        key = { eblanApplicationInfo -> eblanApplicationInfo.serialNumber to eblanApplicationInfo.componentName },
-                    ) { eblanApplicationInfo ->
-                        EblanApplicationInfoItem(
+                        items = getEblanApplicationInfosByLabelAndTag.eblanApplicationInfoWithIconPackInfos[eblanUserPageKey].orEmpty(),
+                        key = {
+                            it.eblanApplicationInfo.serialNumber to
+                                it.eblanApplicationInfo.componentName
+                        },
+                    ) {
+                        EblanApplicationInfoGridItem(
+                            sharedTransitionScope = sharedTransitionScope,
                             appDrawerSettings = appDrawerSettings,
-                            currentPage = currentPage,
                             drag = drag,
-                            eblanApplicationInfo = eblanApplicationInfo,
-                            iconPackFilePaths = iconPackFilePaths,
+                            eblanApplicationInfoWithIconPackInfo = it,
                             paddingValues = paddingValues,
                             isVisibleOverlay = isVisibleOverlay,
                             appDrawerType = appDrawerSettings.appDrawerType,
+                            isScrollInProgress = lazyGridState.isScrollInProgress,
+                            isSwiping = swipeY > 0f,
                             onDismiss = onDismiss,
                             onUpdateGridItemSource = onUpdateGridItemSource,
                             onUpdateImageBitmap = onUpdateImageBitmap,
@@ -702,6 +710,7 @@ private fun SharedTransitionScope.EblanApplicationInfos(
                             onUpdateSharedElementKey = onUpdateSharedElementKey,
                             onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
                             onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                            onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                         )
                     }
                 }

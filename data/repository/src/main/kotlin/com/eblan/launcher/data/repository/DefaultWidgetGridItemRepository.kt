@@ -18,39 +18,16 @@
 package com.eblan.launcher.data.repository
 
 import com.eblan.launcher.data.repository.mapper.asEntity
-import com.eblan.launcher.data.repository.mapper.asGridItem
 import com.eblan.launcher.data.repository.mapper.asModel
 import com.eblan.launcher.data.room.dao.WidgetGridItemDao
-import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.PartialUpdateWidgetGridItem
 import com.eblan.launcher.domain.model.WidgetGridItem
 import com.eblan.launcher.domain.repository.WidgetGridItemRepository
-import kotlinx.coroutines.flow.map
 import javax.inject.Inject
-import kotlin.collections.map
 
 internal class DefaultWidgetGridItemRepository @Inject constructor(private val widgetGridItemDao: WidgetGridItemDao) : WidgetGridItemRepository {
-    override val gridItemsFlow =
-        widgetGridItemDao.getWidgetGridItemEntitiesFlow().map { entities ->
-            entities.map { entity ->
-                entity.asGridItem()
-            }
-        }
-
-    override suspend fun getGridItems(): List<GridItem> = widgetGridItemDao.getWidgetGridItemEntities().map { entity ->
-        entity.asGridItem()
-    }
-
-    override suspend fun getWidgetGridItems(): List<WidgetGridItem> = widgetGridItemDao.getWidgetGridItemEntities().map { entity ->
-        entity.asModel()
-    }
-
-    override suspend fun upsertWidgetGridItems(widgetGridItems: List<WidgetGridItem>) {
-        val entities = widgetGridItems.map { widgetGridItem ->
-            widgetGridItem.asEntity()
-        }
-
-        widgetGridItemDao.upsertWidgetGridItemEntities(entities = entities)
+    override suspend fun getWidgetGridItems(): List<WidgetGridItem> = widgetGridItemDao.getWidgetGridItemEntities().map {
+        it.asModel()
     }
 
     override suspend fun updateWidgetGridItem(widgetGridItem: WidgetGridItem) {
@@ -60,8 +37,8 @@ internal class DefaultWidgetGridItemRepository @Inject constructor(private val w
     }
 
     override suspend fun deleteWidgetGridItemsByPackageName(widgetGridItems: List<WidgetGridItem>) {
-        val entities = widgetGridItems.map { widgetGridItem ->
-            widgetGridItem.asEntity()
+        val entities = widgetGridItems.map {
+            it.asEntity()
         }
 
         widgetGridItemDao.deleteWidgetGridItemEntities(entities = entities)
@@ -89,23 +66,11 @@ internal class DefaultWidgetGridItemRepository @Inject constructor(private val w
         widgetGridItemDao.insertWidgetGridItemEntity(entity = widgetGridItem.asEntity())
     }
 
-    override suspend fun updateWidgetGridItems(widgetGridItems: List<WidgetGridItem>) {
-        val entities = widgetGridItems.map { widgetGridItem ->
-            widgetGridItem.asEntity()
-        }
-
-        widgetGridItemDao.updateWidgetGridItemEntities(entities = entities)
-    }
-
-    override suspend fun insertWidgetGridItems(widgetGridItems: List<WidgetGridItem>) {
-        val entities = widgetGridItems.map { widgetGridItem ->
-            widgetGridItem.asEntity()
-        }
-
-        widgetGridItemDao.insertWidgetGridItemEntities(entities = entities)
-    }
-
     override suspend fun upsertWidgetGridItem(widgetGridItem: WidgetGridItem) {
         widgetGridItemDao.upsertWidgetGridItemEntity(entity = widgetGridItem.asEntity())
+    }
+
+    override suspend fun deleteWidgetGridItemById(id: String) {
+        widgetGridItemDao.deleteWidgetGridItemEntityById(id = id)
     }
 }

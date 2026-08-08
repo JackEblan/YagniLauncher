@@ -20,18 +20,18 @@ package com.eblan.launcher.domain.usecase.grid
 import com.eblan.launcher.domain.common.Dispatcher
 import com.eblan.launcher.domain.common.EblanDispatchers
 import com.eblan.launcher.domain.grid.getRelativeResolveDirection
-import com.eblan.launcher.domain.grid.isGridItemSpanWithinBounds
 import com.eblan.launcher.domain.grid.rectanglesOverlap
 import com.eblan.launcher.domain.grid.resolveConflicts
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.repository.GridRepository
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class ResizeGridItemUseCase @Inject constructor(
     private val gridRepository: GridRepository,
-    private val getFolderGridItemsUseCase: GetFolderGridItemsUseCase,
+    private val getGridItemsUseCase: GetGridItemsUseCase,
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke(
@@ -40,26 +40,29 @@ class ResizeGridItemUseCase @Inject constructor(
         rows: Int,
     ): GridItem = withContext(defaultDispatcher) {
         val gridItems =
-            gridRepository.getGridItems().plus(getFolderGridItemsUseCase()).filter { gridItem ->
-                isGridItemSpanWithinBounds(
-                    gridItem = gridItem,
-                    columns = columns,
-                    rows = rows,
-                ) && gridItem.page == resizingGridItem.page &&
-                    gridItem.associate == resizingGridItem.associate
+            getGridItemsUseCase().filter {
+                ensureActive()
+
+                it.isTopLevel() && it.page == resizingGridItem.page &&
+                    it.associate == resizingGridItem.associate
             }.toMutableList()
 
         val index =
-            gridItems.indexOfFirst { gridItem -> gridItem.id == resizingGridItem.id }
+            gridItems.indexOfFirst {
+                ensureActive()
+                it.id == resizingGridItem.id
+            }
 
         val oldGridItem = gridItems[index]
 
         gridItems[index] = resizingGridItem
 
-        val gridItemBySpan = gridItems.find { gridItem ->
-            gridItem.id != resizingGridItem.id && rectanglesOverlap(
+        val gridItemBySpan = gridItems.find {
+            ensureActive()
+
+            it.id != resizingGridItem.id && rectanglesOverlap(
                 moving = resizingGridItem,
-                other = gridItem,
+                other = it,
             )
         }
 

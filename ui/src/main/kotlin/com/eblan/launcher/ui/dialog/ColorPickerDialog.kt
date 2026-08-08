@@ -23,16 +23,14 @@ import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -50,9 +48,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.eblan.launcher.designsystem.component.EblanDialogContainer
+import com.eblan.launcher.designsystem.component.EblanDialog
+import com.eblan.launcher.common.R as commonR
 
 @Composable
 fun ColorPickerDialog(
@@ -79,72 +79,62 @@ fun ColorPickerDialog(
 
     var alpha by remember { mutableFloatStateOf(Color(customColor).alpha) }
 
-    EblanDialogContainer(
-        content = {
-            Column(
-                modifier = modifier
-                    .verticalScroll(rememberScrollState())
-                    .fillMaxWidth(),
-            ) {
-                Text(
-                    modifier = Modifier.padding(10.dp),
-                    text = title,
-                    style = MaterialTheme.typography.titleLarge,
-                )
-
-                Spacer(modifier = Modifier.height(10.dp))
-
-                ColorPicker(
-                    modifier = Modifier.padding(10.dp),
-                    hue = hue,
-                    saturation = saturation,
-                    value = value,
-                    alpha = alpha,
-                    onSaturationSelected = { newSaturation ->
-                        saturation = newSaturation
-                    },
-                    onValueSelected = { newValue ->
-                        value = newValue
-                    },
-                    onHueSelected = { newHue ->
-                        hue = newHue
-                    },
-                    onAlphaSelected = { newAlpha ->
-                        alpha = newAlpha
-                    },
-                )
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(
-                            end = 10.dp,
-                            bottom = 10.dp,
-                        ),
-                    horizontalArrangement = Arrangement.End,
-                ) {
-                    TextButton(
-                        onClick = onDismissRequest,
-                    ) {
-                        Text("Cancel")
-                    }
-
-                    Spacer(modifier = Modifier.width(5.dp))
-
-                    TextButton(
-                        onClick = {
-                            onSelectColor(
-                                Color.hsv(hue, saturation, value).copy(alpha = alpha).toArgb(),
-                            )
-                        },
-                    ) {
-                        Text("Save")
-                    }
-                }
-            }
-        },
+    EblanDialog(
+        modifier = modifier,
         onDismissRequest = onDismissRequest,
-    )
+    ) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleLarge,
+        )
+
+        ColorPicker(
+            modifier = Modifier.fillMaxWidth(),
+            hue = hue,
+            saturation = saturation,
+            value = value,
+            alpha = alpha,
+            onSaturationSelected = {
+                saturation = it
+            },
+            onValueSelected = {
+                value = it
+            },
+            onHueSelected = {
+                hue = it
+            },
+            onAlphaSelected = {
+                alpha = it
+            },
+        )
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End,
+        ) {
+            TextButton(
+                onClick = onDismissRequest,
+            ) {
+                Text(text = stringResource(commonR.string.cancel))
+            }
+
+            Spacer(
+                modifier = Modifier.width(5.dp),
+            )
+
+            TextButton(
+                onClick = {
+                    onSelectColor(
+                        Color.hsv(hue, saturation, value)
+                            .copy(alpha = alpha)
+                            .toArgb(),
+                    )
+                },
+            ) {
+                Text(text = stringResource(commonR.string.save))
+            }
+        }
+    }
 }
 
 @Composable
@@ -159,28 +149,42 @@ private fun ColorPicker(
     onHueSelected: (Float) -> Unit,
     onAlphaSelected: (Float) -> Unit,
 ) {
-    Column(modifier = modifier) {
-        SaturationValueCanvas(
-            hue = hue,
-            saturation = saturation,
-            value = value,
-            onSaturationSelected = onSaturationSelected,
-            onValueSelected = onValueSelected,
-        )
+    BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
+        val saturationValueHeight = (maxHeight * 0.55f).coerceAtMost(260.dp)
+        val barHeight = (maxHeight * 0.06f).coerceIn(12.dp, 24.dp)
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Column {
+            SaturationValueCanvas(
+                hue = hue,
+                saturation = saturation,
+                value = value,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(saturationValueHeight),
+                onSaturationSelected = onSaturationSelected,
+                onValueSelected = onValueSelected,
+            )
 
-        HueCanvas(
-            hue = hue,
-            onHueSelected = onHueSelected,
-        )
+            Spacer(Modifier.height(16.dp))
 
-        Spacer(modifier = Modifier.height(24.dp))
+            HueCanvas(
+                hue = hue,
+                onHueSelected = onHueSelected,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(barHeight),
+            )
 
-        AlphaCanvas(
-            alpha = alpha,
-            onAlphaSelected = onAlphaSelected,
-        )
+            Spacer(Modifier.height(16.dp))
+
+            AlphaCanvas(
+                alpha = alpha,
+                onAlphaSelected = onAlphaSelected,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(barHeight),
+            )
+        }
     }
 }
 
@@ -202,10 +206,10 @@ private fun SaturationValueCanvas(
             modifier = Modifier
                 .pointerInput(key1 = Unit) {
                     detectTapGestures(
-                        onTap = { offset ->
-                            onSaturationSelected((offset.x / size.width).coerceIn(0f, 1f))
+                        onTap = {
+                            onSaturationSelected((it.x / size.width).coerceIn(0f, 1f))
 
-                            onValueSelected(1f - (offset.y / size.height).coerceIn(0f, 1f))
+                            onValueSelected(1f - (it.y / size.height).coerceIn(0f, 1f))
                         },
                     )
                 }
@@ -268,8 +272,8 @@ private fun HueCanvas(
         modifier = modifier
             .pointerInput(key1 = Unit) {
                 detectTapGestures(
-                    onTap = { offset ->
-                        onHueSelected((offset.x / size.width).coerceIn(0f, 1f) * 360f)
+                    onTap = {
+                        onHueSelected((it.x / size.width).coerceIn(0f, 1f) * 360f)
                     },
                 )
             }

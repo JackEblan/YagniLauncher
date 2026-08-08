@@ -25,13 +25,9 @@ import androidx.room.Update
 import androidx.room.Upsert
 import com.eblan.launcher.data.room.entity.ApplicationInfoGridItemEntity
 import com.eblan.launcher.domain.model.PartialApplicationInfoGridItem
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ApplicationInfoGridItemDao {
-    @Query("SELECT * FROM ApplicationInfoGridItemEntity")
-    fun getApplicationInfoGridItemEntitiesFlow(): Flow<List<ApplicationInfoGridItemEntity>>
-
     @Query("SELECT * FROM ApplicationInfoGridItemEntity")
     suspend fun getApplicationInfoGridItemEntities(): List<ApplicationInfoGridItemEntity>
 
@@ -68,9 +64,9 @@ interface ApplicationInfoGridItemDao {
     @Insert
     suspend fun insertApplicationInfoGridItemEntity(entity: ApplicationInfoGridItemEntity)
 
-    @Update
-    suspend fun updateApplicationInfoGridItemEntities(entities: List<ApplicationInfoGridItemEntity>)
-
     @Upsert
     suspend fun upsertApplicationInfoGridItemEntity(entity: ApplicationInfoGridItemEntity)
+
+    @Query("DELETE FROM ApplicationInfoGridItemEntity WHERE id = :id")
+    suspend fun deleteApplicationInfoGridItemEntityById(id: String)
 }

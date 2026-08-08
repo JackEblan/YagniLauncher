@@ -22,7 +22,5 @@ import com.eblan.launcher.domain.model.HomeData
 internal sealed interface HomeUiState {
     data object Loading : HomeUiState
 
-    data class Success(
-        val homeData: HomeData,
-    ) : HomeUiState
+    data class Success(val homeData: HomeData) : HomeUiState
 }

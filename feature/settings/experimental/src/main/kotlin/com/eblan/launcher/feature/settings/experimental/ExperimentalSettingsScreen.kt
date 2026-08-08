@@ -17,15 +17,14 @@
  */
 package com.eblan.launcher.feature.settings.experimental
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -37,6 +36,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -44,8 +44,9 @@ import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.ExperimentalSettings
 import com.eblan.launcher.feature.settings.experimental.dialog.SyncDataDialog
 import com.eblan.launcher.feature.settings.experimental.model.ExperimentalSettingsUiState
-import com.eblan.launcher.ui.settings.SettingsColumn
-import com.eblan.launcher.ui.settings.SettingsSwitch
+import com.eblan.launcher.ui.model.SettingsItem
+import com.eblan.launcher.ui.settings.SettingsItemContent
+import com.eblan.launcher.common.R as commonR
 
 @Composable
 internal fun ExperimentalSettingsRoute(
@@ -72,10 +73,11 @@ internal fun ExperimentalSettingsScreen(
     onUpdateExperimentalSettings: (ExperimentalSettings) -> Unit,
 ) {
     Scaffold(
+        modifier = modifier,
         topBar = {
             TopAppBar(
                 title = {
-                    Text(text = "Experimental")
+                    Text(text = stringResource(commonR.string.experimental))
                 },
                 navigationIcon = {
                     IconButton(onClick = onNavigateUp) {
@@ -89,21 +91,15 @@ internal fun ExperimentalSettingsScreen(
         },
     ) { paddingValues ->
         Box(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues),
         ) {
-            when (experimentalSettingsUiState) {
-                ExperimentalSettingsUiState.Loading -> {
-                }
-
-                is ExperimentalSettingsUiState.Success -> {
-                    Success(
-                        modifier = modifier,
-                        experimentalSettings = experimentalSettingsUiState.experimentalSettings,
-                        onUpdateExperimentalSettings = onUpdateExperimentalSettings,
-                    )
-                }
+            if (experimentalSettingsUiState is ExperimentalSettingsUiState.Success) {
+                Success(
+                    experimentalSettings = experimentalSettingsUiState.experimentalSettings,
+                    onUpdateExperimentalSettings = onUpdateExperimentalSettings,
+                )
             }
         }
     }
@@ -117,42 +113,76 @@ private fun Success(
 ) {
     var showSyncDataDialog by remember { mutableStateOf(false) }
 
-    Box(
+    val items = buildExperimentalSettingsItems(
+        experimentalSettings = experimentalSettings,
+        onSyncDataClick = {
+            showSyncDataDialog = true
+        },
+        onUpdateExperimentalSettings = onUpdateExperimentalSettings,
+    )
+
+    Column(
         modifier = modifier
             .verticalScroll(rememberScrollState())
-            .fillMaxSize(),
+            .fillMaxSize()
+            .padding(10.dp),
+        verticalArrangement = Arrangement.spacedBy(2.dp),
     ) {
-        ElevatedCard(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 15.dp),
-        ) {
-            SettingsColumn(
-                title = "Sync Data",
-                subtitle = "Enable or disable sync data",
-                onClick = {
-                    showSyncDataDialog = true
-                },
-            )
-
-            HorizontalDivider(modifier = Modifier.fillMaxWidth())
-
-            SettingsSwitch(
-                checked = experimentalSettings.lockMovement,
-                title = "Lock Movement",
-                subtitle = "Prevent other grid items from moving",
-                onCheckedChange = { lockMovement ->
-                    onUpdateExperimentalSettings(experimentalSettings.copy(lockMovement = lockMovement))
-                },
+        items.forEachIndexed { index, settingsItem ->
+            SettingsItemContent(
+                settingsItem = settingsItem,
+                index = index,
+                size = items.size,
             )
         }
     }
 
     if (showSyncDataDialog) {
-        SyncDataDialog(syncData = experimentalSettings.syncData, onDismissRequest = {
-            showSyncDataDialog = false
-        }, onUpdateSyncData = { newSyncData ->
-            onUpdateExperimentalSettings(experimentalSettings.copy(syncData = newSyncData))
-        })
+        SyncDataDialog(
+            syncData = experimentalSettings.syncData,
+            onDismissRequest = {
+                showSyncDataDialog = false
+            },
+            onUpdateSyncData = {
+                onUpdateExperimentalSettings(experimentalSettings.copy(syncData = it))
+            },
+        )
     }
+}
+
+@Composable
+private fun buildExperimentalSettingsItems(
+    experimentalSettings: ExperimentalSettings,
+    onSyncDataClick: () -> Unit,
+    onUpdateExperimentalSettings: (ExperimentalSettings) -> Unit,
+): List<SettingsItem> = buildList {
+    add(
+        SettingsItem.Column(
+            title = stringResource(R.string.sync_data),
+            subtitle = stringResource(R.string.enable_or_disable_sync_data),
+            onClick = onSyncDataClick,
+        ),
+    )
+
+    add(
+        SettingsItem.Switch(
+            checked = experimentalSettings.lockMovement,
+            title = stringResource(R.string.lock_movement),
+            subtitle = stringResource(R.string.prevent_other_grid_items_from_moving),
+            onClick = {
+                onUpdateExperimentalSettings(
+                    experimentalSettings.copy(
+                        lockMovement = !experimentalSettings.lockMovement,
+                    ),
+                )
+            },
+            onCheckedChange = {
+                onUpdateExperimentalSettings(
+                    experimentalSettings.copy(
+                        lockMovement = it,
+                    ),
+                )
+            },
+        ),
+    )
 }

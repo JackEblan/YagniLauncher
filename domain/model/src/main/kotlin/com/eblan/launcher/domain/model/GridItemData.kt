@@ -18,7 +18,6 @@
 package com.eblan.launcher.domain.model
 
 sealed interface GridItemData {
-
     data class ApplicationInfo(
         val serialNumber: Long,
         val componentName: String,
@@ -29,6 +28,7 @@ sealed interface GridItemData {
         val customLabel: String?,
         val index: Int,
         val folderId: String?,
+        val iconPackInfoFilePath: String?,
     ) : GridItemData
 
     data class Widget(
@@ -47,7 +47,7 @@ sealed interface GridItemData {
         val targetCellHeight: Int,
         val targetCellWidth: Int,
         val preview: String?,
-        val label: String,
+        val label: String?,
         val icon: String?,
     ) : GridItemData
 
@@ -67,15 +67,10 @@ sealed interface GridItemData {
     ) : GridItemData
 
     data class Folder(
-        val id: String,
         val label: String,
-        val gridItems: List<GridItem>,
-        val gridItemsByPage: Map<Int, List<GridItem>>,
-        val previewGridItemsByPage: List<GridItem>,
         val icon: String?,
-        val columns: Int,
-        val rows: Int,
-        val maxIndex: Int,
+        val index: Int,
+        val folderId: String?,
     ) : GridItemData
 
     data class ShortcutConfig(

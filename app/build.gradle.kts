@@ -26,8 +26,8 @@ android {
 
     defaultConfig {
         applicationId = "com.eblan.launcher"
-        versionCode = 65
-        versionName = "0.6.5-alpha"
+        versionCode = 89
+        versionName = "0.8.9-alpha"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -67,6 +67,7 @@ dependencies {
     implementation(projects.feature.settings.gestures)
     implementation(projects.feature.settings.home)
     implementation(projects.feature.settings.settings)
+    implementation(projects.framework.jaroWinklerSimilarity)
     implementation(projects.framework.notificationManager)
     implementation(projects.framework.resources)
     implementation(projects.service)

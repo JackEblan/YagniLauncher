@@ -63,6 +63,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draganddrop.DragAndDropTransferData
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -80,6 +81,7 @@ import com.eblan.launcher.ui.local.LocalPinItemRequest
 import com.eblan.launcher.ui.local.LocalUserManager
 import kotlinx.coroutines.launch
 import java.io.File
+import com.eblan.launcher.common.R as commonR
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -105,10 +107,10 @@ fun PinScreen(
                 isFinished = isFinished,
                 pinItemRequest = pinItemRequest,
                 onAddPinWidgetToHomeScreen = viewModel::addPinWidgetToHomeScreen,
-                onDeleteGridItemCache = viewModel::deleteGridItemCache,
+                onDeleteGridItemCache = viewModel::deleteGridItem,
                 onDragStart = onDragStart,
                 onFinish = onFinish,
-                onUpdateGridItemCache = viewModel::updateGridItemDataCache,
+                onUpdateGridItemCache = viewModel::updateGridItemData,
                 onUpdateGridItems = viewModel::updateGridItems,
             )
         }
@@ -120,7 +122,7 @@ fun PinScreen(
                 isFinished = isFinished,
                 pinItemRequest = pinItemRequest,
                 onAddPinShortcutToHomeScreen = viewModel::addPinShortcutToHomeScreen,
-                onDeleteShortcutGridItem = viewModel::deleteGridItemCache,
+                onDeleteShortcutGridItem = viewModel::deleteGridItem,
                 onDragStart = onDragStart,
                 onFinish = onFinish,
                 onUpdateGridItems = viewModel::updateGridItems,
@@ -138,7 +140,7 @@ private fun PinShortcutScreen(
     pinItemRequest: PinItemRequest,
     onAddPinShortcutToHomeScreen: (
         serialNumber: Long,
-        id: String,
+        shortcutId: String,
         packageName: String,
         shortLabel: String,
         longLabel: String,
@@ -342,16 +344,16 @@ private fun PinWidgetScreen(
                 appWidgetManager = appWidgetManager,
                 gridItem = gridItem,
                 userHandle = appWidgetProviderInfo.profile,
-                onAddedToHomeScreenToast = { message ->
+                onAddedToHomeScreenToast = {
                     Toast.makeText(
                         context,
-                        message,
+                        it,
                         Toast.LENGTH_LONG,
                     ).show()
                 },
                 onLaunch = appWidgetLauncher::launch,
-                onUpdateAppWidgetId = { newAppWidgetId ->
-                    appWidgetId = newAppWidgetId
+                onUpdateAppWidgetId = {
+                    appWidgetId = it
                 },
                 onUpdateGridItemCache = onUpdateGridItemCache,
             )
@@ -496,7 +498,7 @@ private fun PinBottomSheet(
 
                 Text(
                     modifier = Modifier.fillMaxWidth(),
-                    text = "Touch and hold the widget to move it around the home screen",
+                    text = stringResource(R.string.touch_and_hold_the_widget_to_move_it_around_the_home_screen),
                     textAlign = TextAlign.Center,
                 )
 
@@ -545,7 +547,7 @@ private fun PinBottomSheet(
                             }
                         },
                     ) {
-                        Text(text = "Cancel")
+                        Text(text = stringResource(commonR.string.cancel))
                     }
 
                     Button(
@@ -555,7 +557,7 @@ private fun PinBottomSheet(
                             }
                         },
                     ) {
-                        Text(text = "Add")
+                        Text(text = stringResource(commonR.string.add))
                     }
                 }
             }

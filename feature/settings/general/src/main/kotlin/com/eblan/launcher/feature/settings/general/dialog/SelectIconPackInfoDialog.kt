@@ -19,12 +19,8 @@ package com.eblan.launcher.feature.settings.general.dialog
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -36,11 +32,14 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import com.eblan.launcher.designsystem.component.EblanDialogContainer
+import com.eblan.launcher.designsystem.component.EblanDialog
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.EblanIconPackInfo
+import com.eblan.launcher.feature.settings.general.R
+import com.eblan.launcher.common.R as commonR
 
 @Composable
 internal fun SelectIconPackInfoDialog(
@@ -52,89 +51,84 @@ internal fun SelectIconPackInfoDialog(
     onReset: () -> Unit,
     onUpdateIconPackInfoPackageName: (String) -> Unit,
 ) {
-    EblanDialogContainer(
-        content = {
-            Column(modifier = modifier.fillMaxWidth()) {
+    EblanDialog(
+        modifier = modifier,
+        onDismissRequest = onDismissRequest,
+    ) {
+        Text(
+            text = stringResource(R.string.select_icon_pack),
+            style = MaterialTheme.typography.titleLarge,
+        )
+
+        when {
+            eblanIconPackInfos.isEmpty() -> {
                 Text(
-                    modifier = Modifier.padding(10.dp),
-                    text = "Select Icon Pack",
-                    style = MaterialTheme.typography.titleLarge,
+                    text = stringResource(R.string.please_import_an_icon_pack_first),
                 )
+            }
 
-                when {
-                    eblanIconPackInfos.isEmpty() -> {
-                        Text(
-                            modifier = Modifier.padding(horizontal = 10.dp),
-                            text = "Please import an icon pack first",
-                        )
-                    }
-
-                    else -> {
-                        Column(modifier = modifier.fillMaxWidth()) {
-                            Spacer(modifier = Modifier.height(10.dp))
-
-                            LazyColumn(
-                                modifier = Modifier.weight(
-                                    weight = 1f,
-                                    fill = false,
-                                ),
-                            ) {
-                                items(eblanIconPackInfos) { eblanIconPackInfo ->
-                                    ListItem(
-                                        headlineContent = { Text(text = eblanIconPackInfo.label.toString()) },
-                                        leadingContent = {
-                                            AsyncImage(
-                                                model = eblanIconPackInfo.icon,
-                                                contentDescription = null,
-                                                modifier = Modifier.size(40.dp),
-                                            )
-                                        },
-                                        trailingContent = {
-                                            IconButton(
-                                                onClick = {
-                                                    onDeleteEblanIconPackInfo(eblanIconPackInfo.packageName)
-                                                },
-                                                enabled = iconPackInfoPackageName != eblanIconPackInfo.packageName,
-                                            ) {
-                                                Icon(
-                                                    imageVector = EblanLauncherIcons.Delete,
-                                                    contentDescription = null,
-                                                )
-                                            }
-                                        },
-                                        modifier = Modifier
-                                            .clickable {
-                                                onUpdateIconPackInfoPackageName(eblanIconPackInfo.packageName)
-                                            }
-                                            .fillMaxWidth()
-                                            .padding(10.dp),
+            else -> {
+                LazyColumn(
+                    modifier = Modifier.weight(
+                        weight = 1f,
+                        fill = false,
+                    ),
+                ) {
+                    items(eblanIconPackInfos) { eblanIconPackInfo ->
+                        ListItem(
+                            headlineContent = {
+                                Text(text = eblanIconPackInfo.label.toString())
+                            },
+                            leadingContent = {
+                                AsyncImage(
+                                    model = eblanIconPackInfo.icon,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(40.dp),
+                                )
+                            },
+                            trailingContent = {
+                                IconButton(
+                                    onClick = {
+                                        onDeleteEblanIconPackInfo(
+                                            eblanIconPackInfo.packageName,
+                                        )
+                                    },
+                                    enabled = iconPackInfoPackageName != eblanIconPackInfo.packageName,
+                                ) {
+                                    Icon(
+                                        imageVector = EblanLauncherIcons.Delete,
+                                        contentDescription = null,
                                     )
                                 }
-                            }
-                        }
-                    }
-                }
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(10.dp),
-                    horizontalArrangement = Arrangement.End,
-                ) {
-                    TextButton(
-                        onClick = onDismissRequest,
-                    ) {
-                        Text(text = "Cancel")
-                    }
-
-                    TextButton(
-                        onClick = onReset,
-                    ) {
-                        Text(text = "Reset")
+                            },
+                            modifier = Modifier
+                                .clickable {
+                                    onUpdateIconPackInfoPackageName(
+                                        eblanIconPackInfo.packageName,
+                                    )
+                                }
+                                .fillMaxWidth(),
+                        )
                     }
                 }
             }
-        },
-        onDismissRequest = onDismissRequest,
-    )
+        }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End,
+        ) {
+            TextButton(
+                onClick = onDismissRequest,
+            ) {
+                Text(text = stringResource(commonR.string.cancel))
+            }
+
+            TextButton(
+                onClick = onReset,
+            ) {
+                Text(text = stringResource(R.string.reset))
+            }
+        }
+    }
 }

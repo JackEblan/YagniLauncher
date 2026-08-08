@@ -62,7 +62,7 @@ interface EblanApplicationInfoRepository {
         componentName: String,
     ): Flow<List<EblanApplicationInfoTag>>
 
-    fun getEblanApplicationInfosByTagId(id: Long): List<EblanApplicationInfo>
+    suspend fun getEblanApplicationInfosByTagId(id: Long): List<EblanApplicationInfo>
 
-    fun getEblanApplicationInfosWithoutTag(): List<EblanApplicationInfo>
+    suspend fun getEblanApplicationInfosWithoutTag(): List<EblanApplicationInfo>
 }

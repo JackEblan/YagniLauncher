@@ -18,53 +18,18 @@
 package com.eblan.launcher.data.repository
 
 import com.eblan.launcher.data.repository.mapper.asEntity
-import com.eblan.launcher.data.repository.mapper.asGridItem
 import com.eblan.launcher.data.repository.mapper.asModel
 import com.eblan.launcher.data.room.dao.ApplicationInfoGridItemDao
 import com.eblan.launcher.domain.model.ApplicationInfoGridItem
-import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.PartialApplicationInfoGridItem
 import com.eblan.launcher.domain.repository.ApplicationInfoGridItemRepository
-import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-internal class DefaultApplicationInfoGridItemRepository @Inject constructor(private val applicationInfoGridItemDao: ApplicationInfoGridItemDao) : ApplicationInfoGridItemRepository {
-    override val gridItemsFlow =
-        applicationInfoGridItemDao.getApplicationInfoGridItemEntitiesFlow().map { entities ->
-            entities.filter { entity ->
-                entity.folderId == null
-            }.map { entity ->
-                entity.asGridItem()
-            }
-        }
-
-    override val gridItemsWithFolderIdFlow =
-        applicationInfoGridItemDao.getApplicationInfoGridItemEntitiesFlow().map { entities ->
-            entities.map { entity ->
-                entity.asGridItem()
-            }
-        }
-
-    override suspend fun getGridItems(): List<GridItem> = applicationInfoGridItemDao.getApplicationInfoGridItemEntities().filter { entity ->
-        entity.folderId == null
-    }.map { entity ->
-        entity.asGridItem()
-    }
-
-    override suspend fun getGridItemsWithFolderId(): List<GridItem> = applicationInfoGridItemDao.getApplicationInfoGridItemEntities().map { entity ->
-        entity.asGridItem()
-    }
-
-    override suspend fun getApplicationInfoGridItems(): List<ApplicationInfoGridItem> = applicationInfoGridItemDao.getApplicationInfoGridItemEntities().map { entity ->
-        entity.asModel()
-    }
-
-    override suspend fun upsertApplicationInfoGridItems(applicationInfoGridItems: List<ApplicationInfoGridItem>) {
-        val entities = applicationInfoGridItems.map { applicationInfoGridItem ->
-            applicationInfoGridItem.asEntity()
-        }
-
-        applicationInfoGridItemDao.upsertApplicationInfoGridItemEntities(entities = entities)
+internal class DefaultApplicationInfoGridItemRepository @Inject constructor(
+    private val applicationInfoGridItemDao: ApplicationInfoGridItemDao,
+) : ApplicationInfoGridItemRepository {
+    override suspend fun getApplicationInfoGridItems(): List<ApplicationInfoGridItem> = applicationInfoGridItemDao.getApplicationInfoGridItemEntities().map {
+        it.asModel()
     }
 
     override suspend fun updateApplicationInfoGridItem(applicationInfoGridItem: ApplicationInfoGridItem) {
@@ -74,8 +39,8 @@ internal class DefaultApplicationInfoGridItemRepository @Inject constructor(priv
     }
 
     override suspend fun deleteApplicationInfoGridItems(applicationInfoGridItems: List<ApplicationInfoGridItem>) {
-        val entities = applicationInfoGridItems.map { applicationInfoGridItem ->
-            applicationInfoGridItem.asEntity()
+        val entities = applicationInfoGridItems.map {
+            it.asEntity()
         }
 
         applicationInfoGridItemDao.deleteApplicationInfoGridItemEntities(entities = entities)
@@ -91,8 +56,8 @@ internal class DefaultApplicationInfoGridItemRepository @Inject constructor(priv
     ): List<ApplicationInfoGridItem> = applicationInfoGridItemDao.getApplicationInfoGridItemEntitiesByPackageName(
         serialNumber = serialNumber,
         packageName = packageName,
-    ).map { entity ->
-        entity.asModel()
+    ).map {
+        it.asModel()
     }
 
     override suspend fun deleteApplicationInfoGridItem(
@@ -112,8 +77,8 @@ internal class DefaultApplicationInfoGridItemRepository @Inject constructor(priv
     }
 
     override suspend fun insertApplicationInfoGridItems(applicationInfoGridItems: List<ApplicationInfoGridItem>) {
-        val entities = applicationInfoGridItems.map { applicationInfoGridItem ->
-            applicationInfoGridItem.asEntity()
+        val entities = applicationInfoGridItems.map {
+            it.asEntity()
         }
 
         applicationInfoGridItemDao.insertApplicationInfoGridItemEntities(entities = entities)
@@ -123,15 +88,11 @@ internal class DefaultApplicationInfoGridItemRepository @Inject constructor(priv
         applicationInfoGridItemDao.insertApplicationInfoGridItemEntity(entity = applicationInfoGridItem.asEntity())
     }
 
-    override suspend fun updateApplicationInfoGridItems(applicationInfoGridItems: List<ApplicationInfoGridItem>) {
-        val entities = applicationInfoGridItems.map { applicationInfoGridItem ->
-            applicationInfoGridItem.asEntity()
-        }
-
-        applicationInfoGridItemDao.updateApplicationInfoGridItemEntities(entities = entities)
-    }
-
     override suspend fun upsertApplicationInfoGridItem(applicationInfoGridItem: ApplicationInfoGridItem) {
         applicationInfoGridItemDao.upsertApplicationInfoGridItemEntity(entity = applicationInfoGridItem.asEntity())
+    }
+
+    override suspend fun deleteApplicationInfoGridItemById(id: String) {
+        applicationInfoGridItemDao.deleteApplicationInfoGridItemEntityById(id = id)
     }
 }

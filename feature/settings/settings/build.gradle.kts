@@ -26,5 +26,7 @@ android {
 }
 
 dependencies {
+    implementation(projects.common)
     implementation(projects.domain.repository)
+    implementation(projects.ui)
 }

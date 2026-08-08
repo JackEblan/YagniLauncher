@@ -19,8 +19,12 @@ package com.eblan.launcher.domain.usecase.grid
 
 import com.eblan.launcher.domain.common.Dispatcher
 import com.eblan.launcher.domain.common.EblanDispatchers
-import com.eblan.launcher.domain.model.GridItem
+import com.eblan.launcher.domain.common.IconKeyGenerator
+import com.eblan.launcher.domain.framework.FileManager
+import com.eblan.launcher.domain.model.FolderPopup
+import com.eblan.launcher.domain.model.FolderPopupEntry
 import com.eblan.launcher.domain.repository.FolderGridItemRepository
+import com.eblan.launcher.domain.repository.UserDataRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -29,16 +33,30 @@ import javax.inject.Inject
 
 class GetFolderGridItemsByIdUseCase @Inject constructor(
     private val folderGridItemRepository: FolderGridItemRepository,
-    @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
+    private val userDataRepository: UserDataRepository,
+    private val fileManager: FileManager,
+    private val iconKeyGenerator: IconKeyGenerator,
+    @param:Dispatcher(EblanDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) {
     operator fun invoke(
-        idFlow: Flow<String?>,
-    ): Flow<GridItem?> = combine(
-        idFlow,
+        folderPopupEntriesFlow: Flow<List<FolderPopupEntry>>,
+    ): Flow<List<FolderPopup>> = combine(
+        userDataRepository.userDataFlow,
+        folderPopupEntriesFlow,
         folderGridItemRepository.folderGridItemWrappersFlow,
-    ) { id, folderGridItemWrappers ->
-        folderGridItemWrappers.firstOrNull { folderGridItemWrapper ->
-            folderGridItemWrapper.folderGridItem.id == id
-        }?.asGridItem()
-    }.flowOn(defaultDispatcher)
+    ) { userData, folderPopupEntries, folderGridItemWrappers ->
+        folderPopupEntries.mapNotNull { folderPopupEntry ->
+            folderGridItemWrappers.firstOrNull {
+                it.folderGridItem.id == folderPopupEntry.id
+            }?.asFolderPopup(
+                folderGridItemRepository = folderGridItemRepository,
+                folderPopupEntry = folderPopupEntry,
+                maxFolderColumns = userData.homeSettings.maxFolderColumns,
+                maxFolderRows = userData.homeSettings.maxFolderRows,
+                fileManager = fileManager,
+                iconKeyGenerator = iconKeyGenerator,
+                iconPackInfoPackageName = userData.generalSettings.iconPackInfoPackageName,
+            )
+        }
+    }.flowOn(ioDispatcher)
 }

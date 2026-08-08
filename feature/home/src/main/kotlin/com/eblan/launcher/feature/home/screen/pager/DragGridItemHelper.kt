@@ -18,9 +18,9 @@
 package com.eblan.launcher.feature.home.screen.pager
 
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.calculateEndPadding
-import androidx.compose.foundation.layout.calculateStartPadding
-import androidx.compose.foundation.pager.PagerState
+import androidx.compose.runtime.State
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
@@ -31,42 +31,109 @@ import com.eblan.launcher.domain.grid.getWidgetGridItemSize
 import com.eblan.launcher.domain.grid.getWidgetGridItemSpan
 import com.eblan.launcher.domain.grid.isGridItemSpanWithinBounds
 import com.eblan.launcher.domain.model.Associate
+import com.eblan.launcher.domain.model.FolderPopup
+import com.eblan.launcher.domain.model.FolderPopupEntry
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.MoveGridItemResult
-import com.eblan.launcher.domain.usecase.grid.FOLDER_MAX_COLUMNS
-import com.eblan.launcher.domain.usecase.grid.FOLDER_MAX_ROWS
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.PageDirection
 import com.eblan.launcher.feature.home.model.SharedElementKey
-import com.eblan.launcher.feature.home.util.FOLDER_GRID_PADDING
-import com.eblan.launcher.feature.home.util.PAGE_INDICATOR_HEIGHT
+import com.eblan.launcher.feature.home.screen.PAGE_INDICATOR_HEIGHT
 import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.milliseconds
+
+internal suspend fun handlePageDirection(
+    folderPopups: State<List<FolderPopup>>,
+    pageDirection: PageDirection?,
+    currentPage: Int,
+    onAnimateScrollToPage: suspend (Int) -> Unit,
+) {
+    delay(500L.milliseconds)
+
+    if (pageDirection == null || folderPopups.value.isNotEmpty()) return
+
+    when (pageDirection) {
+        PageDirection.Left -> {
+            onAnimateScrollToPage(currentPage - 1)
+        }
+
+        PageDirection.Right -> {
+            onAnimateScrollToPage(currentPage + 1)
+        }
+    }
+}
+
+internal suspend fun onLongPress(
+    graphicsLayer: GraphicsLayer,
+    intOffset: IntOffset,
+    intSize: IntSize,
+    sharedElementKey: SharedElementKey,
+    gridItem: GridItem,
+    onUpdateGridItemSource: (GridItemSource) -> Unit,
+    onUpdateImageBitmap: (ImageBitmap) -> Unit,
+    onUpdateOverlayBounds: (
+        intOffset: IntOffset,
+        intSize: IntSize,
+    ) -> Unit,
+    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
+    onShowGridItemPopup: (
+        intOffset: IntOffset,
+        intSize: IntSize,
+    ) -> Unit,
+    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
+) {
+    onUpdateGridItemSource(GridItemSource.Existing(isFolderGridItem = false))
+
+    onUpdateMoveGridItemResult(
+        MoveGridItemResult(
+            isSuccess = true,
+            movingGridItem = gridItem,
+            conflictingGridItem = null,
+        ),
+    )
+
+    onUpdateImageBitmap(graphicsLayer.toImageBitmap())
+
+    onUpdateOverlayBounds(
+        intOffset,
+        intSize,
+    )
+
+    onUpdateSharedElementKey(sharedElementKey)
+
+    onShowGridItemPopup(
+        intOffset,
+        intSize,
+    )
+
+    onUpdateIsVisibleOverlay(true)
+}
 
 internal fun handleAnimateScrollToPage(
     associate: Associate?,
     density: Density,
     dragIntOffset: IntOffset,
-    folderGridItem: GridItem?,
-    folderPopupIntOffset: IntOffset?,
-    folderPopupIntSize: IntSize?,
-    gridItemSource: GridItemSource?,
+    gridItemSource: State<GridItemSource?>,
     isDragging: Boolean,
     paddingValues: PaddingValues,
     screenWidth: Int,
+    layoutDirection: LayoutDirection,
     onUpdateDockPageDirection: (PageDirection?) -> Unit,
-    onUpdateFolderPageDirection: (PageDirection?) -> Unit,
     onUpdateGridPageDirection: (PageDirection?) -> Unit,
 ) {
-    if (gridItemSource == null || !isDragging) return
+    val currentGridItemSource = gridItemSource.value ?: return
+
+    if (!isDragging) return
 
     val leftPadding = with(density) {
-        paddingValues.calculateStartPadding(LayoutDirection.Ltr).roundToPx()
+        paddingValues.calculateLeftPadding(layoutDirection).roundToPx()
     }
 
     val rightPadding = with(density) {
-        paddingValues.calculateEndPadding(LayoutDirection.Ltr).roundToPx()
+        paddingValues.calculateRightPadding(layoutDirection).roundToPx()
     }
 
     val horizontalPadding = leftPadding + rightPadding
@@ -79,87 +146,33 @@ internal fun handleAnimateScrollToPage(
 
     val dragX = dragIntOffset.x - leftPadding
 
-    when (gridItemSource) {
+    when (currentGridItemSource) {
         is GridItemSource.Existing, is GridItemSource.New, is GridItemSource.Pin -> {
-            val isOnLeftGrid = dragX < edgeDistance
-
-            val isOnRightGrid = dragX > safeDrawingWidth - edgeDistance
-
-            fun animateScrollToPage(onUpdatePageDirection: (PageDirection?) -> Unit) {
-                if (isOnLeftGrid) {
-                    onUpdatePageDirection(PageDirection.Left)
-                } else if (isOnRightGrid) {
-                    onUpdatePageDirection(PageDirection.Right)
-                } else {
-                    onUpdatePageDirection(null)
-                }
-            }
-
-            when (associate) {
-                Associate.Grid -> {
-                    animateScrollToPage(onUpdatePageDirection = onUpdateGridPageDirection)
-                }
-
-                Associate.Dock -> {
-                    animateScrollToPage(onUpdatePageDirection = onUpdateDockPageDirection)
-                }
-
-                null -> Unit
-            }
-        }
-
-        is GridItemSource.Folder -> {
-            if (folderPopupIntOffset == null || folderPopupIntSize == null) return
-
-            val data = folderGridItem?.data as? GridItemData.Folder ?: return
-
-            val folderCellWidth = safeDrawingWidth / FOLDER_MAX_COLUMNS
-
-            val folderGridPaddingPx = with(density) {
-                FOLDER_GRID_PADDING.roundToPx()
-            }
-
-            val folderGridWidthPx = folderCellWidth * data.columns
-
-            val centeredX =
-                folderPopupIntOffset.x + (folderPopupIntSize.width / 2) - (folderGridWidthPx / 2)
-
-            val popupX = centeredX.coerceIn(0, safeDrawingWidth - folderGridWidthPx)
-
-            val folderDragX = dragX - popupX - folderGridPaddingPx
-
-            val isOnLeftGrid = folderDragX < edgeDistance
-
-            val isOnRightGrid = folderDragX > folderGridWidthPx - folderGridPaddingPx - edgeDistance
-
-            if (isOnLeftGrid) {
-                onUpdateFolderPageDirection(PageDirection.Left)
-            } else if (isOnRightGrid) {
-                onUpdateFolderPageDirection(PageDirection.Right)
-            } else {
-                onUpdateFolderPageDirection(null)
-            }
+            animateScrollToPage(
+                associate = associate,
+                dragX = dragX,
+                edgeDistance = edgeDistance,
+                safeDrawingWidth = safeDrawingWidth,
+                onUpdateDockPageDirection = onUpdateDockPageDirection,
+                onUpdateGridPageDirection = onUpdateGridPageDirection,
+            )
         }
     }
 }
 
 internal fun handleDragGridItem(
     columns: Int,
-    currentPage: Int,
+    gridCurrentPage: Int,
+    dockGridCurrentPage: Int,
     density: Density,
     dockColumns: Int,
     dockHeight: Dp,
     dockRows: Int,
     drag: Drag,
     dragIntOffset: IntOffset,
-    folderCurrentPage: Int,
-    folderGridItem: GridItem?,
-    folderPopupIntOffset: IntOffset?,
-    folderPopupIntSize: IntSize?,
-    folderTitleHeightPx: Int,
-    gridItemSource: GridItemSource?,
+    gridItemSource: State<GridItemSource?>,
     isDragging: Boolean,
-    isVisibleOverlay: Boolean,
+    isVisibleOverlay: State<Boolean>,
     isGridScrollInProgress: Boolean,
     isDockScrollInProgress: Boolean,
     lockMovement: Boolean,
@@ -167,18 +180,8 @@ internal fun handleDragGridItem(
     rows: Int,
     screenHeight: Int,
     screenWidth: Int,
-    onMoveFolderGridItem: (
-        conflictingGridItem: GridItem,
-        movingFolderGridItem: GridItem,
-        data: GridItemData.Folder,
-        dragX: Int,
-        dragY: Int,
-        columns: Int,
-        rows: Int,
-        gridWidth: Int,
-        gridHeight: Int,
-        currentPage: Int,
-    ) -> Unit,
+    moveGridItemResult: State<MoveGridItemResult?>,
+    layoutDirection: LayoutDirection,
     onMoveGridItem: (
         movingGridItem: GridItem,
         x: Int,
@@ -190,13 +193,11 @@ internal fun handleDragGridItem(
     ) -> Unit,
     onUpdateAssociate: (Associate) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onUpdateIsMoveFolderGridItemOutsideFolder: (Boolean) -> Unit,
 ) {
     if (drag != Drag.Dragging ||
         isGridScrollInProgress ||
         isDockScrollInProgress ||
-        gridItemSource == null ||
-        !isVisibleOverlay ||
+        !isVisibleOverlay.value ||
         !isDragging ||
         lockMovement
     ) {
@@ -204,11 +205,11 @@ internal fun handleDragGridItem(
     }
 
     val leftPadding = with(density) {
-        paddingValues.calculateStartPadding(LayoutDirection.Ltr).roundToPx()
+        paddingValues.calculateLeftPadding(layoutDirection).roundToPx()
     }
 
     val rightPadding = with(density) {
-        paddingValues.calculateEndPadding(LayoutDirection.Ltr).roundToPx()
+        paddingValues.calculateRightPadding(layoutDirection).roundToPx()
     }
 
     val topPadding = with(density) {
@@ -235,28 +236,29 @@ internal fun handleDragGridItem(
 
     val safeDrawingHeight = screenHeight - verticalPadding
 
-    val dragX = dragIntOffset.x - leftPadding
+    val localDragX = dragIntOffset.x - leftPadding
 
-    val dragY = dragIntOffset.y - topPadding
+    val localDragY = dragIntOffset.y - topPadding
 
-    val isOnDock = dockHeightPx > 0 && dragY > safeDrawingHeight - dockHeightPx
+    val isOnDock = dockHeightPx > 0 && localDragY > safeDrawingHeight - dockHeightPx
 
-    when (gridItemSource) {
+    when (val currentGridItemSource = gridItemSource.value ?: return) {
         is GridItemSource.Existing,
         is GridItemSource.New,
         is GridItemSource.Pin,
         -> {
             if (isOnDock) {
                 dragDockGridItem(
-                    currentPage = currentPage,
+                    currentPage = dockGridCurrentPage,
                     dockColumns = dockColumns,
                     dockHeightPx = dockHeightPx,
                     dockRows = dockRows,
-                    dragX = dragX,
-                    dragY = dragY,
-                    gridItemSource = gridItemSource,
+                    dragX = localDragX,
+                    dragY = localDragY,
+                    gridItemSource = currentGridItemSource,
                     safeDrawingHeight = safeDrawingHeight,
                     safeDrawingWidth = safeDrawingWidth,
+                    moveGridItemResult = moveGridItemResult,
                     onMoveGridItem = onMoveGridItem,
                     onUpdateAssociate = onUpdateAssociate,
                     onUpdateSharedElementKey = onUpdateSharedElementKey,
@@ -264,126 +266,22 @@ internal fun handleDragGridItem(
             } else {
                 dragGridItem(
                     columns = columns,
-                    currentPage = currentPage,
+                    currentPage = gridCurrentPage,
                     dockHeightPx = dockHeightPx,
-                    dragX = dragX,
-                    dragY = dragY,
-                    gridItemSource = gridItemSource,
+                    dragX = localDragX,
+                    dragY = localDragY,
+                    gridItemSource = currentGridItemSource,
                     pageIndicatorHeightPx = pageIndicatorHeightPx,
                     rows = rows,
                     safeDrawingHeight = safeDrawingHeight,
                     safeDrawingWidth = safeDrawingWidth,
+                    moveGridItemResult = moveGridItemResult,
                     onMoveGridItem = onMoveGridItem,
                     onUpdateAssociate = onUpdateAssociate,
                     onUpdateSharedElementKey = onUpdateSharedElementKey,
                 )
             }
         }
-
-        is GridItemSource.Folder -> {
-            dragFolderGridItem(
-                density = density,
-                dragX = dragX,
-                dragY = dragY,
-                folderCurrentPage = folderCurrentPage,
-                folderGridItem = folderGridItem,
-                folderPopupIntOffset = folderPopupIntOffset,
-                folderPopupIntSize = folderPopupIntSize,
-                folderTitleHeightPx = folderTitleHeightPx,
-                gridItemSource = gridItemSource,
-                safeDrawingHeight = safeDrawingHeight,
-                safeDrawingWidth = safeDrawingWidth,
-                onMoveFolderGridItem = onMoveFolderGridItem,
-                onUpdateSharedElementKey = onUpdateSharedElementKey,
-                onUpdateIsMoveFolderGridItemOutsideFolder = onUpdateIsMoveFolderGridItemOutsideFolder,
-            )
-        }
-    }
-}
-
-private fun dragFolderGridItem(
-    density: Density,
-    dragX: Int,
-    dragY: Int,
-    folderCurrentPage: Int,
-    folderGridItem: GridItem?,
-    folderPopupIntOffset: IntOffset?,
-    folderPopupIntSize: IntSize?,
-    folderTitleHeightPx: Int,
-    gridItemSource: GridItemSource,
-    safeDrawingHeight: Int,
-    safeDrawingWidth: Int,
-    onMoveFolderGridItem: (
-        conflictingGridItem: GridItem,
-        movingFolderGridItem: GridItem,
-        data: GridItemData.Folder,
-        dragX: Int,
-        dragY: Int,
-        columns: Int,
-        rows: Int,
-        gridWidth: Int,
-        gridHeight: Int,
-        currentPage: Int,
-    ) -> Unit,
-    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onUpdateIsMoveFolderGridItemOutsideFolder: (Boolean) -> Unit,
-) {
-    if (folderPopupIntOffset == null || folderPopupIntSize == null) return
-
-    val data = folderGridItem?.data as? GridItemData.Folder ?: return
-
-    val folderCellWidth = safeDrawingWidth / FOLDER_MAX_COLUMNS
-
-    val folderCellHeight = safeDrawingHeight / FOLDER_MAX_ROWS
-
-    val folderGridPaddingPx = with(density) {
-        FOLDER_GRID_PADDING.roundToPx()
-    }
-
-    val folderGridWidthPx = folderCellWidth * data.columns
-    val folderGridHeightPx = folderCellHeight * data.rows
-
-    val centeredX =
-        folderPopupIntOffset.x + (folderPopupIntSize.width / 2) - (folderGridWidthPx / 2)
-    val centeredY =
-        folderPopupIntOffset.y + (folderPopupIntSize.height / 2) - (folderGridHeightPx / 2)
-
-    val popupX = centeredX.coerceIn(0, safeDrawingWidth - folderGridWidthPx)
-    val popupY = centeredY.coerceIn(0, safeDrawingHeight - folderGridHeightPx)
-
-    val folderDragX = dragX - popupX - folderGridPaddingPx
-
-    val folderDragY = dragY - popupY - folderGridPaddingPx
-
-    val folderGridVisibleWidthPx = folderGridWidthPx - (folderGridPaddingPx * 2)
-    val folderGridVisibleHeightPx =
-        (folderGridHeightPx - folderTitleHeightPx) - (folderGridPaddingPx * 2)
-
-    val isInsideFolder = folderDragX in 0..folderGridVisibleWidthPx &&
-        folderDragY in 0..folderGridVisibleHeightPx
-
-    if (isInsideFolder) {
-        onUpdateSharedElementKey(
-            SharedElementKey(
-                id = gridItemSource.gridItem.id,
-                parent = SharedElementKey.Parent.Folder,
-            ),
-        )
-
-        onMoveFolderGridItem(
-            folderGridItem,
-            gridItemSource.gridItem,
-            data,
-            folderDragX,
-            folderDragY,
-            data.columns,
-            data.rows,
-            folderGridWidthPx,
-            folderGridHeightPx - folderTitleHeightPx,
-            folderCurrentPage,
-        )
-    } else {
-        onUpdateIsMoveFolderGridItemOutsideFolder(true)
     }
 }
 
@@ -398,6 +296,7 @@ private fun dragGridItem(
     rows: Int,
     safeDrawingHeight: Int,
     safeDrawingWidth: Int,
+    moveGridItemResult: State<MoveGridItemResult?>,
     onMoveGridItem: (
         movingGridItem: GridItem,
         x: Int,
@@ -410,16 +309,7 @@ private fun dragGridItem(
     onUpdateAssociate: (Associate) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
 ) {
-    val gridItem = requireNotNull(gridItemSource.gridItem)
-
-    onUpdateAssociate(Associate.Grid)
-
-    onUpdateSharedElementKey(
-        SharedElementKey(
-            id = gridItem.id,
-            parent = SharedElementKey.Parent.Grid,
-        ),
-    )
+    val movingGridItem = moveGridItemResult.value?.movingGridItem ?: return
 
     val gridHeightWithPadding = safeDrawingHeight - dockHeightPx - pageIndicatorHeightPx
 
@@ -427,13 +317,13 @@ private fun dragGridItem(
 
     val cellHeight = gridHeightWithPadding / rows
 
-    val moveGridItem = getMoveGridItem(
+    val newMovingGridItem = getMoveGridItem(
         associate = Associate.Grid,
         cellHeight = cellHeight,
         cellWidth = cellWidth,
         columns = columns,
         gridHeight = gridHeightWithPadding,
-        gridItem = gridItem,
+        gridItem = movingGridItem,
         gridItemSource = gridItemSource,
         gridWidth = safeDrawingWidth,
         gridX = dragX,
@@ -442,15 +332,23 @@ private fun dragGridItem(
         currentPage = currentPage,
     )
 
-    val isGridItemSpanWithinBounds = isGridItemSpanWithinBounds(
-        gridItem = moveGridItem,
-        columns = columns,
-        rows = rows,
-    )
+    if (isGridItemSpanWithinBounds(
+            gridItem = newMovingGridItem,
+            columns = columns,
+            rows = rows,
+        ) && newMovingGridItem != movingGridItem
+    ) {
+        onUpdateAssociate(Associate.Grid)
 
-    if (isGridItemSpanWithinBounds) {
+        onUpdateSharedElementKey(
+            SharedElementKey(
+                id = newMovingGridItem.id,
+                parent = SharedElementKey.Parent.Grid,
+            ),
+        )
+
         onMoveGridItem(
-            moveGridItem,
+            newMovingGridItem,
             dragX,
             dragY,
             columns,
@@ -471,6 +369,7 @@ private fun dragDockGridItem(
     gridItemSource: GridItemSource,
     safeDrawingHeight: Int,
     safeDrawingWidth: Int,
+    moveGridItemResult: State<MoveGridItemResult?>,
     onMoveGridItem: (
         movingGridItem: GridItem,
         x: Int,
@@ -483,16 +382,7 @@ private fun dragDockGridItem(
     onUpdateAssociate: (Associate) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
 ) {
-    val gridItem = requireNotNull(gridItemSource.gridItem)
-
-    onUpdateAssociate(Associate.Dock)
-
-    onUpdateSharedElementKey(
-        SharedElementKey(
-            id = gridItem.id,
-            parent = SharedElementKey.Parent.Dock,
-        ),
-    )
+    val movingGridItem = moveGridItemResult.value?.movingGridItem ?: return
 
     val cellWidth = safeDrawingWidth / dockColumns
 
@@ -500,13 +390,13 @@ private fun dragDockGridItem(
 
     val dockY = dragY - (safeDrawingHeight - dockHeightPx)
 
-    val moveGridItem = getMoveGridItem(
+    val newMovingGridItem = getMoveGridItem(
         associate = Associate.Dock,
         cellHeight = cellHeight,
         cellWidth = cellWidth,
         columns = dockColumns,
         gridHeight = dockHeightPx,
-        gridItem = gridItem,
+        gridItem = movingGridItem,
         gridItemSource = gridItemSource,
         gridWidth = safeDrawingWidth,
         gridX = dragX,
@@ -515,15 +405,23 @@ private fun dragDockGridItem(
         currentPage = currentPage,
     )
 
-    val isGridItemSpanWithinBounds = isGridItemSpanWithinBounds(
-        gridItem = moveGridItem,
-        columns = dockColumns,
-        rows = dockRows,
-    )
+    if (isGridItemSpanWithinBounds(
+            gridItem = newMovingGridItem,
+            columns = dockColumns,
+            rows = dockRows,
+        ) && newMovingGridItem != movingGridItem
+    ) {
+        onUpdateAssociate(Associate.Dock)
 
-    if (isGridItemSpanWithinBounds) {
+        onUpdateSharedElementKey(
+            SharedElementKey(
+                id = newMovingGridItem.id,
+                parent = SharedElementKey.Parent.Dock,
+            ),
+        )
+
         onMoveGridItem(
-            moveGridItem,
+            newMovingGridItem,
             dragX,
             dockY,
             dockColumns,
@@ -535,155 +433,74 @@ private fun dragDockGridItem(
 }
 
 internal suspend fun handleConflictingGridItem(
-    columns: Int,
-    dockColumns: Int,
-    density: Density,
-    dockHeight: Dp,
-    drag: Drag,
-    isDragging: Boolean,
-    isVisibleOverlay: Boolean,
+    drag: State<Drag>,
+    isDragging: State<Boolean>,
+    isVisibleOverlay: State<Boolean>,
     moveGridItemResult: MoveGridItemResult?,
-    paddingValues: PaddingValues,
-    rows: Int,
-    dockRows: Int,
-    screenHeight: Int,
-    screenWidth: Int,
-    lockMovement: Boolean,
+    lockMovement: State<Boolean>,
+    intOffset: IntOffset,
+    intSize: IntSize,
+    gridItem: State<GridItem>,
+    folderGridItems: State<List<GridItem>?>,
     onShowFolderWhenDragging: (
-        conflictingGridItem: GridItem,
+        folderPopupEntry: FolderPopupEntry,
         movingGridItem: GridItem,
     ) -> Unit,
-    onUpdateFolderPopupBounds: (
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) -> Unit,
-    onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
 ) {
-    if (drag != Drag.Dragging ||
-        moveGridItemResult == null ||
+    delay(1000L.milliseconds)
+
+    val conflictingGridItem = moveGridItemResult?.conflictingGridItem ?: return
+
+    if (drag.value != Drag.Dragging ||
         !moveGridItemResult.isSuccess ||
-        !isVisibleOverlay ||
-        !isDragging ||
-        lockMovement
+        !isVisibleOverlay.value ||
+        !isDragging.value ||
+        lockMovement.value ||
+        conflictingGridItem.id != gridItem.value.id
     ) {
         return
     }
-    val conflictingGridItem = moveGridItemResult.conflictingGridItem ?: return
-
-    val conflictingData = conflictingGridItem.data as? GridItemData.Folder ?: return
-
-    delay(1000L)
 
     val movingGridItem = moveGridItemResult.movingGridItem
 
+    val maxIndex = folderGridItems.value?.maxOfOrNull {
+        when (val data = it.data) {
+            is GridItemData.ApplicationInfo -> data.index + 1
+            is GridItemData.ShortcutInfo -> data.index + 1
+            is GridItemData.ShortcutConfig -> data.index + 1
+            is GridItemData.Folder -> data.index + 1
+            else -> error("Unsupported folder grid item")
+        }
+    } ?: 0
+
     val movingData = when (val data = movingGridItem.data) {
         is GridItemData.ApplicationInfo -> data.copy(
-            index = conflictingData.maxIndex,
-            folderId = conflictingData.id,
+            index = maxIndex,
+            folderId = conflictingGridItem.id,
         )
 
         is GridItemData.ShortcutConfig -> data.copy(
-            index = conflictingData.maxIndex,
-            folderId = conflictingData.id,
+            index = maxIndex,
+            folderId = conflictingGridItem.id,
         )
 
         is GridItemData.ShortcutInfo -> data.copy(
-            index = conflictingData.maxIndex,
-            folderId = conflictingData.id,
+            index = maxIndex,
+            folderId = conflictingGridItem.id,
         )
+
+        is GridItemData.Folder -> {
+            data.copy(
+                index = maxIndex,
+                folderId = conflictingGridItem.id,
+            )
+        }
 
         else -> error("Unsupported Folder GridItem ")
     }
 
-    val leftPadding = with(density) {
-        paddingValues.calculateStartPadding(LayoutDirection.Ltr).roundToPx()
-    }
-
-    val rightPadding = with(density) {
-        paddingValues.calculateEndPadding(LayoutDirection.Ltr).roundToPx()
-    }
-
-    val topPadding = with(density) {
-        paddingValues.calculateTopPadding().roundToPx()
-    }
-
-    val bottomPadding = with(density) {
-        paddingValues.calculateBottomPadding().roundToPx()
-    }
-
-    val dockHeightPx = with(density) {
-        dockHeight.roundToPx()
-    }
-
-    val pageIndicatorHeightPx = with(density) {
-        PAGE_INDICATOR_HEIGHT.roundToPx()
-    }
-
-    val horizontalPadding = leftPadding + rightPadding
-
-    val verticalPadding = topPadding + bottomPadding
-
-    val safeDrawingWidth = screenWidth - horizontalPadding
-
-    val safeDrawingHeight = screenHeight - verticalPadding
-
-    val gridHeight = safeDrawingHeight - pageIndicatorHeightPx - dockHeightPx
-
-    val gridCellWidth = safeDrawingWidth / columns
-
-    val gridCellHeight = gridHeight / rows
-
-    val dockCellWidth = safeDrawingWidth / dockColumns
-
-    val dockCellHeight = dockHeightPx / dockRows
-
-    val dockTopLeft = gridHeight + pageIndicatorHeightPx
-
-    val intOffset = when (conflictingGridItem.associate) {
-        Associate.Grid -> {
-            IntOffset(
-                x = conflictingGridItem.startColumn * gridCellWidth,
-                y = conflictingGridItem.startRow * gridCellHeight,
-            )
-        }
-
-        Associate.Dock -> {
-            IntOffset(
-                x = conflictingGridItem.startColumn * dockCellWidth,
-                y = conflictingGridItem.startRow * dockCellHeight + dockTopLeft,
-            )
-        }
-    }
-
-    val intSize = when (conflictingGridItem.associate) {
-        Associate.Grid -> {
-            IntSize(
-                width = conflictingGridItem.columnSpan * gridCellWidth,
-                height = conflictingGridItem.rowSpan * gridCellHeight,
-            )
-        }
-
-        Associate.Dock -> {
-            IntSize(
-                width = conflictingGridItem.columnSpan * dockCellWidth,
-                height = conflictingGridItem.rowSpan * dockCellHeight,
-            )
-        }
-    }
-
     val movingFolderGridItem = movingGridItem.copy(data = movingData)
-
-    onUpdateGridItemSource(
-        GridItemSource.Folder(
-            gridItem = movingFolderGridItem,
-        ),
-    )
-
-    onUpdateFolderPopupBounds(
-        intOffset,
-        intSize,
-    )
 
     onUpdateSharedElementKey(
         SharedElementKey(
@@ -693,25 +510,16 @@ internal suspend fun handleConflictingGridItem(
     )
 
     onShowFolderWhenDragging(
-        conflictingGridItem,
+        FolderPopupEntry(
+            id = conflictingGridItem.id,
+            x = intOffset.x,
+            y = intOffset.y,
+            width = intSize.width,
+            height = intSize.height,
+            isCloseFolder = false,
+        ),
         movingFolderGridItem,
     )
-}
-
-internal suspend fun handlePageDirection(pageDirection: PageDirection?, pagerState: PagerState) {
-    if (pageDirection == null) return
-
-    delay(500L)
-
-    when (pageDirection) {
-        PageDirection.Left -> {
-            pagerState.animateScrollToPage(page = pagerState.currentPage - 1)
-        }
-
-        PageDirection.Right -> {
-            pagerState.animateScrollToPage(page = pagerState.currentPage + 1)
-        }
-    }
 }
 
 private fun getMoveGridItem(
@@ -728,59 +536,25 @@ private fun getMoveGridItem(
     rows: Int,
     currentPage: Int,
 ): GridItem = when (gridItemSource) {
-    is GridItemSource.Existing, is GridItemSource.Folder,
+    is GridItemSource.Existing,
     -> {
-        when (val data = gridItem.data) {
-            is GridItemData.ApplicationInfo -> {
-                gridItem.copy(
-                    page = currentPage,
-                    startColumn = gridX / cellWidth,
-                    startRow = gridY / cellHeight,
-                    data = data.copy(
-                        index = -1,
-                        folderId = null,
-                    ),
-                    associate = associate,
-                )
-            }
+        val (startColumn, startRow) = getStartPosition(
+            x = gridX,
+            y = gridY,
+            cellWidth = cellWidth,
+            cellHeight = cellHeight,
+            columns = columns,
+            rows = rows,
+            columnSpan = gridItem.columnSpan,
+            rowSpan = gridItem.rowSpan,
+        )
 
-            is GridItemData.ShortcutConfig -> {
-                gridItem.copy(
-                    page = currentPage,
-                    startColumn = gridX / cellWidth,
-                    startRow = gridY / cellHeight,
-                    data = data.copy(
-                        index = -1,
-                        folderId = null,
-                    ),
-                    associate = associate,
-                )
-            }
-
-            is GridItemData.ShortcutInfo -> {
-                gridItem.copy(
-                    page = currentPage,
-                    startColumn = gridX / cellWidth,
-                    startRow = gridY / cellHeight,
-                    data = data.copy(
-                        index = -1,
-                        folderId = null,
-                    ),
-                    associate = associate,
-                )
-            }
-
-            is GridItemData.Widget,
-            is GridItemData.Folder,
-            -> {
-                gridItem.copy(
-                    page = currentPage,
-                    startColumn = gridX / cellWidth,
-                    startRow = gridY / cellHeight,
-                    associate = associate,
-                )
-            }
-        }
+        gridItem.copy(
+            page = currentPage,
+            startColumn = startColumn,
+            startRow = startRow,
+            associate = associate,
+        )
     }
 
     is GridItemSource.New, is GridItemSource.Pin,
@@ -835,6 +609,17 @@ private fun getMoveNewGridItem(
             targetCellHeight = data.targetCellHeight,
         )
 
+        val (startColumn, startRow) = getStartPosition(
+            x = gridX,
+            y = gridY,
+            cellWidth = cellWidth,
+            cellHeight = cellHeight,
+            columns = columns,
+            rows = rows,
+            columnSpan = checkedColumnSpan,
+            rowSpan = checkedRowSpan,
+        )
+
         val newData = data.copy(
             minWidth = checkedMinWidth,
             minHeight = checkedMinHeight,
@@ -842,8 +627,8 @@ private fun getMoveNewGridItem(
 
         gridItem.copy(
             page = currentPage,
-            startColumn = gridX / cellWidth,
-            startRow = gridY / cellHeight,
+            startColumn = startColumn,
+            startRow = startRow,
             columnSpan = checkedColumnSpan.coerceIn(1, columns),
             rowSpan = checkedRowSpan.coerceIn(1, rows),
             data = newData,
@@ -852,11 +637,82 @@ private fun getMoveNewGridItem(
     }
 
     else -> {
+        val (startColumn, startRow) = getStartPosition(
+            x = gridX,
+            y = gridY,
+            cellWidth = cellWidth,
+            cellHeight = cellHeight,
+            columns = columns,
+            rows = rows,
+            columnSpan = gridItem.columnSpan,
+            rowSpan = gridItem.rowSpan,
+        )
+
         gridItem.copy(
             page = currentPage,
-            startColumn = gridX / cellWidth,
-            startRow = gridY / cellHeight,
+            startColumn = startColumn,
+            startRow = startRow,
             associate = associate,
         )
     }
+}
+
+private fun animateScrollToPage(
+    associate: Associate?,
+    dragX: Int,
+    edgeDistance: Int,
+    safeDrawingWidth: Int,
+    onUpdateDockPageDirection: (PageDirection?) -> Unit,
+    onUpdateGridPageDirection: (PageDirection?) -> Unit,
+) {
+    val isOnLeftGrid = dragX < edgeDistance
+
+    val isOnRightGrid = dragX > safeDrawingWidth - edgeDistance
+
+    fun animateScrollToPage(onUpdatePageDirection: (PageDirection?) -> Unit) {
+        if (isOnLeftGrid) {
+            onUpdatePageDirection(PageDirection.Left)
+        } else if (isOnRightGrid) {
+            onUpdatePageDirection(PageDirection.Right)
+        } else {
+            onUpdatePageDirection(null)
+        }
+    }
+
+    when (associate) {
+        Associate.Grid -> {
+            animateScrollToPage(onUpdatePageDirection = onUpdateGridPageDirection)
+        }
+
+        Associate.Dock -> {
+            animateScrollToPage(onUpdatePageDirection = onUpdateDockPageDirection)
+        }
+
+        null -> Unit
+    }
+}
+
+private fun getStartPosition(
+    x: Int,
+    y: Int,
+    cellWidth: Int,
+    cellHeight: Int,
+    columns: Int,
+    rows: Int,
+    columnSpan: Int,
+    rowSpan: Int,
+): Pair<Int, Int> {
+    val safeColumnSpan = columnSpan.coerceIn(1, columns)
+    val safeRowSpan = rowSpan.coerceIn(1, rows)
+
+    val targetColumn = x / cellWidth
+    val targetRow = y / cellHeight
+
+    val maxStartColumn = (columns - safeColumnSpan).coerceAtLeast(0)
+    val maxStartRow = (rows - safeRowSpan).coerceAtLeast(0)
+
+    val startColumn = targetColumn.coerceIn(0, maxStartColumn)
+    val startRow = targetRow.coerceIn(0, maxStartRow)
+
+    return startColumn to startRow
 }

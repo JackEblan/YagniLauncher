@@ -17,7 +17,6 @@
  */
 package com.eblan.launcher.feature.home.screen.widget
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -30,13 +29,11 @@ import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberOverscrollEffect
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -46,38 +43,36 @@ import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
-import androidx.compose.material3.SearchBarValue
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.round
 import coil3.compose.AsyncImage
@@ -86,26 +81,23 @@ import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.EblanAppWidgetProviderInfo
 import com.eblan.launcher.domain.model.EblanApplicationInfoGroup
 import com.eblan.launcher.domain.model.GridItemSettings
+import com.eblan.launcher.domain.model.MoveGridItemResult
+import com.eblan.launcher.feature.home.R
 import com.eblan.launcher.feature.home.component.OffsetNestedScrollConnection
-import com.eblan.launcher.feature.home.component.OffsetOverscrollEffect
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
+import com.eblan.launcher.feature.home.screen.ScreenEffect
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import kotlin.math.roundToInt
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
-@OptIn(ExperimentalSharedTransitionApi::class)
+@OptIn(ExperimentalSharedTransitionApi::class, ExperimentalMaterial3Api::class, FlowPreview::class)
 @Composable
 internal fun WidgetScreen(
     modifier: Modifier = Modifier,
     columns: Int,
-    currentPage: Int,
     drag: Drag,
     eblanAppWidgetProviderInfos: Map<EblanApplicationInfoGroup, List<EblanAppWidgetProviderInfo>>,
     gridItemSettings: GridItemSettings,
@@ -114,7 +106,7 @@ internal fun WidgetScreen(
     rows: Int,
     screenHeight: Int,
     screenWidth: Int,
-    offsetY: Float,
+    swipeY: Float,
     alpha: Float,
     cornerSize: Dp,
     onDismiss: () -> Unit,
@@ -128,93 +120,26 @@ internal fun WidgetScreen(
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
     onVerticalDrag: (Float) -> Unit,
-    onDragEnd: (Float) -> Unit,
+    onDragEnd: () -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
-    Surface(
-        modifier = modifier
-            .offset {
-                IntOffset(x = 0, y = offsetY.roundToInt())
-            }
-            .fillMaxSize()
-            .clip(RoundedCornerShape(cornerSize))
-            .alpha(alpha),
-    ) {
-        Success(
-            columns = columns,
-            currentPage = currentPage,
-            drag = drag,
-            eblanAppWidgetProviderInfos = eblanAppWidgetProviderInfos,
-            gridItemSettings = gridItemSettings,
-            isPressHome = isPressHome,
-            paddingValues = paddingValues,
-            rows = rows,
-            screenHeight = screenHeight,
-            screenWidth = screenWidth,
-            offsetY = offsetY,
-            onDismiss = onDismiss,
-            onDragEnd = onDragEnd,
-            onGetEblanAppWidgetProviderInfosByLabel = onGetEblanAppWidgetProviderInfosByLabel,
-            onUpdateOverlayBounds = onUpdateOverlayBounds,
-            onVerticalDrag = onVerticalDrag,
-            onUpdateImageBitmap = onUpdateImageBitmap,
-            onUpdateGridItemSource = onUpdateGridItemSource,
-            onUpdateSharedElementKey = onUpdateSharedElementKey,
-            onUpdateIsDragging = onUpdateIsDragging,
-            onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-        )
-    }
-}
+    val layoutDirection = LocalLayoutDirection.current
 
-@OptIn(ExperimentalSharedTransitionApi::class, ExperimentalMaterial3Api::class, FlowPreview::class)
-@Composable
-private fun Success(
-    modifier: Modifier = Modifier,
-    columns: Int,
-    currentPage: Int,
-    drag: Drag,
-    eblanAppWidgetProviderInfos: Map<EblanApplicationInfoGroup, List<EblanAppWidgetProviderInfo>>,
-    gridItemSettings: GridItemSettings,
-    isPressHome: Boolean,
-    paddingValues: PaddingValues,
-    rows: Int,
-    screenHeight: Int,
-    screenWidth: Int,
-    offsetY: Float,
-    onDismiss: () -> Unit,
-    onDragEnd: (Float) -> Unit,
-    onGetEblanAppWidgetProviderInfosByLabel: (String) -> Unit,
-    onUpdateOverlayBounds: (
-        intOffset: IntOffset,
-        intSize: IntSize,
-    ) -> Unit,
-    onVerticalDrag: (Float) -> Unit,
-    onUpdateImageBitmap: (ImageBitmap) -> Unit,
-    onUpdateGridItemSource: (GridItemSource) -> Unit,
-    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onUpdateIsDragging: (Boolean) -> Unit,
-    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
-) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+
     val scope = rememberCoroutineScope()
 
     val lazyListState = rememberLazyListState()
 
-    val overscrollEffect = remember(key1 = scope) {
-        OffsetOverscrollEffect(
-            scope = scope,
-            onVerticalDrag = onVerticalDrag,
-            onDragEnd = onDragEnd,
-        )
-    }
-
-    val canScroll by remember(key1 = lazyListState) {
-        derivedStateOf {
-            lazyListState.canScrollForward || lazyListState.canScrollBackward
-        }
-    }
+    val currentSwipeY by rememberUpdatedState(swipeY)
 
     val nestedScrollConnection = remember {
         OffsetNestedScrollConnection(
+            swipeY = { currentSwipeY },
+            isAtTop = {
+                !lazyListState.canScrollBackward
+            },
             onVerticalDrag = onVerticalDrag,
             onDragEnd = onDragEnd,
         )
@@ -224,99 +149,83 @@ private fun Success(
 
     val textFieldState = rememberTextFieldState()
 
-    LaunchedEffect(key1 = isPressHome) {
-        if (isPressHome && offsetY < screenHeight.toFloat()) {
-            onDismiss()
-        }
+    ScreenEffect(
+        isPressHome = isPressHome,
+        swipeY = swipeY,
+        screenHeight = screenHeight,
+        onDismiss = onDismiss,
+        keyboardController = keyboardController,
+        textFieldState = textFieldState,
+        onChangeLabel = onGetEblanAppWidgetProviderInfosByLabel,
+    )
 
-        if (isPressHome && offsetY < screenHeight.toFloat() && searchBarState.currentValue == SearchBarValue.Expanded) {
-            searchBarState.animateToCollapsed()
-        }
-    }
-
-    LaunchedEffect(key1 = drag) {
-        if (drag == Drag.Start && searchBarState.currentValue == SearchBarValue.Expanded) {
-            searchBarState.animateToCollapsed()
-        }
-    }
-
-    LaunchedEffect(key1 = textFieldState) {
-        snapshotFlow { textFieldState.text }.debounce(500L).onEach { text ->
-            onGetEblanAppWidgetProviderInfosByLabel(text.toString())
-        }.collect()
-    }
-
-    BackHandler(enabled = offsetY < screenHeight.toFloat()) {
-        onDismiss()
-    }
-
-    Column(
+    Surface(
         modifier = modifier
-            .run {
-                if (!canScroll) {
-                    nestedScroll(nestedScrollConnection)
-                } else {
-                    this
-                }
+            .graphicsLayer {
+                translationY = swipeY
+                this.alpha = alpha
+                clip = true
+                shape = RoundedCornerShape(cornerSize)
             }
-            .fillMaxSize()
-            .padding(
-                top = paddingValues.calculateTopPadding(),
-                start = paddingValues.calculateStartPadding(LayoutDirection.Ltr),
-                end = paddingValues.calculateEndPadding(LayoutDirection.Ltr),
-            ),
+            .fillMaxSize(),
     ) {
-        SearchBar(
-            state = searchBarState,
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(10.dp),
-            inputField = {
-                SearchBarDefaults.InputField(
-                    textFieldState = textFieldState,
-                    searchBarState = searchBarState,
-                    leadingIcon = {
-                        Icon(
-                            imageVector = EblanLauncherIcons.Search,
-                            contentDescription = null,
-                        )
-                    },
-                    onSearch = { scope.launch { searchBarState.animateToCollapsed() } },
-                    placeholder = { Text(text = "Search Widgets") },
-                )
-            },
-        )
-
-        LazyColumn(
-            state = lazyListState,
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(bottom = paddingValues.calculateBottomPadding()),
-            overscrollEffect = if (canScroll) {
-                overscrollEffect
-            } else {
-                rememberOverscrollEffect()
-            },
+                .nestedScroll(nestedScrollConnection)
+                .fillMaxSize()
+                .padding(
+                    top = paddingValues.calculateTopPadding(),
+                    start = paddingValues.calculateStartPadding(layoutDirection),
+                    end = paddingValues.calculateEndPadding(layoutDirection),
+                ),
         ) {
-            items(eblanAppWidgetProviderInfos.keys.toList()) { eblanApplicationInfoGroup ->
-                key(eblanApplicationInfoGroup.packageName) {
-                    EblanApplicationInfoItem(
-                        columns = columns,
-                        currentPage = currentPage,
-                        drag = drag,
-                        eblanAppWidgetProviderInfos = eblanAppWidgetProviderInfos,
-                        eblanApplicationInfoGroup = eblanApplicationInfoGroup,
-                        gridItemSettings = gridItemSettings,
-                        rows = rows,
-                        screenHeight = screenHeight,
-                        screenWidth = screenWidth,
-                        onUpdateOverlayBounds = onUpdateOverlayBounds,
-                        onUpdateImageBitmap = onUpdateImageBitmap,
-                        onUpdateGridItemSource = onUpdateGridItemSource,
-                        onUpdateSharedElementKey = onUpdateSharedElementKey,
-                        onDismiss = onDismiss,
-                        onUpdateIsDragging = onUpdateIsDragging,
-                        onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+            SearchBar(
+                state = searchBarState,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp),
+                inputField = {
+                    SearchBarDefaults.InputField(
+                        textFieldState = textFieldState,
+                        searchBarState = searchBarState,
+                        leadingIcon = {
+                            Icon(
+                                imageVector = EblanLauncherIcons.Search,
+                                contentDescription = null,
+                            )
+                        },
+                        onSearch = { scope.launch { searchBarState.animateToCollapsed() } },
+                        placeholder = { Text(text = stringResource(R.string.search_widgets)) },
                     )
+                },
+            )
+
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                state = lazyListState,
+                contentPadding = PaddingValues(bottom = paddingValues.calculateBottomPadding()),
+            ) {
+                items(eblanAppWidgetProviderInfos.keys.toList()) { eblanApplicationInfoGroup ->
+                    key(eblanApplicationInfoGroup.packageName) {
+                        EblanApplicationInfoItem(
+                            columns = columns,
+                            drag = drag,
+                            eblanAppWidgetProviderInfos = eblanAppWidgetProviderInfos,
+                            eblanApplicationInfoGroup = eblanApplicationInfoGroup,
+                            gridItemSettings = gridItemSettings,
+                            rows = rows,
+                            screenHeight = screenHeight,
+                            screenWidth = screenWidth,
+                            onUpdateOverlayBounds = onUpdateOverlayBounds,
+                            onUpdateImageBitmap = onUpdateImageBitmap,
+                            onUpdateGridItemSource = onUpdateGridItemSource,
+                            onUpdateSharedElementKey = onUpdateSharedElementKey,
+                            onDismiss = onDismiss,
+                            onUpdateIsDragging = onUpdateIsDragging,
+                            onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                            onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                        )
+                    }
                 }
             }
         }
@@ -328,7 +237,6 @@ private fun Success(
 private fun EblanApplicationInfoItem(
     modifier: Modifier = Modifier,
     columns: Int,
-    currentPage: Int,
     drag: Drag,
     eblanAppWidgetProviderInfos: Map<EblanApplicationInfoGroup, List<EblanAppWidgetProviderInfo>>,
     eblanApplicationInfoGroup: EblanApplicationInfoGroup,
@@ -346,6 +254,7 @@ private fun EblanApplicationInfoItem(
     onDismiss: () -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -393,7 +302,6 @@ private fun EblanApplicationInfoItem(
                 eblanAppWidgetProviderInfos[eblanApplicationInfoGroup]?.forEach { eblanAppWidgetProviderInfo ->
                     EblanAppWidgetProviderInfoItem(
                         columns = columns,
-                        currentPage = currentPage,
                         drag = drag,
                         eblanAppWidgetProviderInfo = eblanAppWidgetProviderInfo,
                         gridItemSettings = gridItemSettings,
@@ -407,6 +315,7 @@ private fun EblanApplicationInfoItem(
                         onDismiss = onDismiss,
                         onUpdateIsDragging = onUpdateIsDragging,
                         onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                        onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                     )
                 }
             }
@@ -419,7 +328,6 @@ private fun EblanApplicationInfoItem(
 private fun EblanAppWidgetProviderInfoItem(
     modifier: Modifier = Modifier,
     columns: Int,
-    currentPage: Int,
     drag: Drag,
     eblanAppWidgetProviderInfo: EblanAppWidgetProviderInfo,
     gridItemSettings: GridItemSettings,
@@ -436,7 +344,10 @@ private fun EblanAppWidgetProviderInfoItem(
     onDismiss: () -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+
     val scope = rememberCoroutineScope()
 
     var intOffset by remember { mutableStateOf(IntOffset.Zero) }
@@ -447,15 +358,13 @@ private fun EblanAppWidgetProviderInfoItem(
 
     val graphicsLayer = rememberGraphicsLayer()
 
-    val id = remember { Uuid.random().toHexString() }
-
     Column(
         modifier = modifier
             .pointerInput(key1 = drag) {
                 detectTapGestures(
                     onLongPress = {
                         scope.launch {
-                            onUpdateImageBitmap(graphicsLayer.toImageBitmap())
+                            val id = Uuid.random().toHexString()
 
                             val gridItem = getWidgetGridItem(
                                 componentName = eblanAppWidgetProviderInfo.componentName,
@@ -471,7 +380,7 @@ private fun EblanAppWidgetProviderInfoItem(
                                 minResizeWidth = eblanAppWidgetProviderInfo.minResizeWidth,
                                 minWidth = eblanAppWidgetProviderInfo.minWidth,
                                 packageName = eblanAppWidgetProviderInfo.packageName,
-                                page = currentPage,
+                                page = 0,
                                 preview = eblanAppWidgetProviderInfo.preview,
                                 resizeMode = eblanAppWidgetProviderInfo.resizeMode,
                                 serialNumber = eblanAppWidgetProviderInfo.serialNumber,
@@ -479,7 +388,17 @@ private fun EblanAppWidgetProviderInfoItem(
                                 targetCellWidth = eblanAppWidgetProviderInfo.targetCellWidth,
                             )
 
-                            onUpdateGridItemSource(GridItemSource.New(gridItem = gridItem))
+                            onUpdateGridItemSource(GridItemSource.New)
+
+                            onUpdateMoveGridItemResult(
+                                MoveGridItemResult(
+                                    isSuccess = false,
+                                    movingGridItem = gridItem,
+                                    conflictingGridItem = null,
+                                ),
+                            )
+
+                            onUpdateImageBitmap(graphicsLayer.toImageBitmap())
 
                             onUpdateOverlayBounds(
                                 intOffset,
@@ -492,6 +411,8 @@ private fun EblanAppWidgetProviderInfoItem(
                                     parent = SharedElementKey.Parent.Grid,
                                 ),
                             )
+
+                            keyboardController?.hide()
 
                             onUpdateIsVisibleOverlay(true)
 

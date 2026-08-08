@@ -18,8 +18,8 @@
 
 import com.android.build.api.dsl.LibraryExtension
 import com.android.build.api.variant.LibraryAndroidComponentsExtension
+import com.eblan.launcher.configureAndroid
 import com.eblan.launcher.libs
-import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
@@ -33,32 +33,17 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
         with(target) {
             apply(plugin = libs.plugins.android.library.get().pluginId)
 
-            configure<LibraryExtension> {
-                compileSdk = 36
-
-                defaultConfig {
-                    minSdk = 24
-                }
-
-                compileOptions {
-                    sourceCompatibility = JavaVersion.VERSION_11
-                    targetCompatibility = JavaVersion.VERSION_11
-                }
-
-                packaging {
-                    resources {
-                        excludes += "/META-INF/{AL2.0,LGPL2.1}"
-                    }
-                }
+            extensions.configure<LibraryExtension> {
+                configureAndroid()
             }
 
-            configure<KotlinAndroidProjectExtension> {
+            extensions.configure<KotlinAndroidProjectExtension> {
                 compilerOptions {
                     jvmTarget = JvmTarget.JVM_11
                 }
             }
 
-            configure<LibraryAndroidComponentsExtension> {
+            extensions.configure<LibraryAndroidComponentsExtension> {
                 beforeVariants {
                     it.androidTest.enable =
                         it.androidTest.enable && project.projectDir.resolve("src/androidTest")

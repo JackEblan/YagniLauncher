@@ -59,7 +59,6 @@ internal class DefaultFileManager @Inject constructor(
 
                 file.absolutePath
             } catch (e: IOException) {
-                e.printStackTrace()
                 null
             }
         }
@@ -71,7 +70,6 @@ internal class DefaultFileManager @Inject constructor(
                 fis.readBytes()
             }
         } catch (e: IOException) {
-            e.printStackTrace()
             null
         }
     } else {

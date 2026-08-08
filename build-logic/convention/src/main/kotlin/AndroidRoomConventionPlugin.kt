@@ -21,6 +21,7 @@ import com.eblan.launcher.libs
 import com.google.devtools.ksp.gradle.KspExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
 
@@ -28,16 +29,14 @@ class AndroidRoomConventionPlugin : Plugin<Project> {
 
     override fun apply(target: Project) {
         with(target) {
-            with(pluginManager) {
-                apply(libs.plugins.room.get().pluginId)
-                apply(libs.plugins.ksp.get().pluginId)
-            }
+            apply(plugin = libs.plugins.room.get().pluginId)
+            apply(plugin = libs.plugins.ksp.get().pluginId)
 
-            configure<KspExtension> {
+            extensions.configure<KspExtension> {
                 arg("room.generateKotlin", "true")
             }
 
-            configure<RoomExtension> {
+            extensions.configure<RoomExtension> {
                 // The schemas directory contains a schema file for each version of the Room database.
                 // This is required to enable Room auto migrations.
                 // See https://developer.android.com/reference/kotlin/androidx/room/AutoMigration.

@@ -21,7 +21,6 @@ import com.eblan.launcher.domain.common.Dispatcher
 import com.eblan.launcher.domain.common.EblanDispatchers
 import com.eblan.launcher.domain.grid.isGridItemSpanWithinBounds
 import com.eblan.launcher.domain.model.Associate
-import com.eblan.launcher.domain.model.EditPageData
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.PageItem
 import com.eblan.launcher.domain.repository.UserDataRepository
@@ -37,7 +36,7 @@ class CachePageItemsUseCase @Inject constructor(
     suspend operator fun invoke(
         gridItems: List<GridItem>,
         associate: Associate,
-    ): EditPageData = withContext(defaultDispatcher) {
+    ): List<PageItem> = withContext(defaultDispatcher) {
         val userData = userDataRepository.userDataFlow.first()
 
         val columns = when (associate) {
@@ -55,24 +54,19 @@ class CachePageItemsUseCase @Inject constructor(
             Associate.Dock -> userData.homeSettings.dockPageCount
         }
 
-        val gridItemsByPage = gridItems.filter { gridItem ->
+        val gridItemsByPage = gridItems.filter {
             isGridItemSpanWithinBounds(
-                gridItem = gridItem,
+                gridItem = it,
                 columns = columns,
                 rows = rows,
-            ) && gridItem.associate == associate
-        }.groupBy { gridItem -> gridItem.page }
+            ) && it.associate == associate
+        }.groupBy { it.page }
 
-        val pageItems = (0 until pageCount).map { page ->
+        (0 until pageCount).map {
             PageItem(
-                id = page,
-                gridItems = gridItemsByPage[page] ?: emptyList(),
+                id = it,
+                gridItems = gridItemsByPage[it] ?: emptyList(),
             )
         }
-
-        EditPageData(
-            associate = associate,
-            pageItems = pageItems,
-        )
     }
 }

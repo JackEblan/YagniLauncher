@@ -57,8 +57,8 @@ class IconPackInfoService : Service() {
             val notification =
                 NotificationCompat.Builder(this, AndroidNotificationManagerWrapper.CHANNEL_ID)
                     .setSmallIcon(R.drawable.baseline_import_export_24)
-                    .setContentTitle("Importing $iconPackInfoLabel into cache")
-                    .setContentText("Loading icons from cache is faster")
+                    .setContentTitle(getString(R.string.importing_into_cache, iconPackInfoLabel))
+                    .setContentText(getString(R.string.loading_icons_from_cache_is_faster))
                     .setOngoing(true)
                     .setProgress(0, 0, true)
                     .build()

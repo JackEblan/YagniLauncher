@@ -64,21 +64,21 @@ class ChangeShortcutsUseCase @Inject constructor(
                 packageName = packageName,
             )
 
-            val newEblanShortcutInfos = launcherAppsShortcutInfos.map { launcherAppsShortcutInfo ->
+            val newEblanShortcutInfos = launcherAppsShortcutInfos.map {
                 ensureActive()
 
-                launcherAppsShortcutInfo.toEblanShortcutInfo()
+                it.toEblanShortcutInfo()
             }
 
             if (oldEblanShortcutInfos.toSet() != newEblanShortcutInfos.toSet()) {
-                val newDeleteEblanShortcutInfos = newEblanShortcutInfos.map { eblanShortcutInfo ->
-                    eblanShortcutInfo.toDeleteEblanShortcutInfo()
+                val newDeleteEblanShortcutInfos = newEblanShortcutInfos.map {
+                    it.toDeleteEblanShortcutInfo()
                 }.toSet()
 
-                val oldDeleteEblanShortcutInfos = oldEblanShortcutInfos.map { eblanShortcutInfo ->
-                    eblanShortcutInfo.toDeleteEblanShortcutInfo()
-                }.filter { deleteEblanShortcutInfo ->
-                    deleteEblanShortcutInfo !in newDeleteEblanShortcutInfos
+                val oldDeleteEblanShortcutInfos = oldEblanShortcutInfos.map {
+                    it.toDeleteEblanShortcutInfo()
+                }.filter {
+                    it !in newDeleteEblanShortcutInfos
                 }
 
                 eblanShortcutInfoRepository.upsertEblanShortcutInfos(

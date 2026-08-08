@@ -21,7 +21,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ElevatedCard
@@ -30,9 +29,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import com.eblan.launcher.designsystem.component.EblanDialogContainer
+import androidx.compose.ui.res.stringResource
+import com.eblan.launcher.designsystem.component.EblanDialog
+import com.eblan.launcher.feature.settings.experimental.R
 import com.eblan.launcher.ui.settings.SettingsSwitch
+import com.eblan.launcher.common.R as commonR
 
 @Composable
 internal fun SyncDataDialog(
@@ -41,55 +42,43 @@ internal fun SyncDataDialog(
     onDismissRequest: () -> Unit,
     onUpdateSyncData: (Boolean) -> Unit,
 ) {
-    EblanDialogContainer(
-        content = {
-            Column(
-                modifier = modifier
-                    .verticalScroll(rememberScrollState())
-                    .fillMaxWidth(),
-            ) {
-                Text(
-                    modifier = Modifier.padding(
-                        start = 15.dp,
-                        top = 10.dp,
-                    ),
-                    text = "Warning",
-                    style = MaterialTheme.typography.titleLarge,
-                )
-
-                Text(
-                    modifier = Modifier.padding(15.dp),
-                    text = "Disabling background sync helps save a bit of memory and keeps things lighter, but it also means Yagni Launcher won’t automatically update your apps, widgets, or shortcuts.\n" +
-                        "Your app drawer might show outdated icons, missing widgets, or shortcuts that no longer work.",
-                )
-
-                ElevatedCard(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 15.dp),
-                ) {
-                    SettingsSwitch(
-                        checked = syncData,
-                        title = "Sync Data",
-                        subtitle = "Keep data up to date",
-                        onCheckedChange = onUpdateSyncData,
-                    )
-                }
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(10.dp),
-                    horizontalArrangement = Arrangement.End,
-                ) {
-                    TextButton(
-                        onClick = onDismissRequest,
-                    ) {
-                        Text(text = "Okay")
-                    }
-                }
-            }
-        },
+    EblanDialog(
+        modifier = modifier,
         onDismissRequest = onDismissRequest,
-    )
+    ) {
+        Text(
+            text = stringResource(R.string.warning),
+            style = MaterialTheme.typography.titleLarge,
+        )
+
+        Column(
+            modifier = Modifier.verticalScroll(rememberScrollState()),
+        ) {
+            Text(
+                text = stringResource(R.string.disable_background_sync_description),
+            )
+
+            ElevatedCard(
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                SettingsSwitch(
+                    checked = syncData,
+                    title = stringResource(R.string.sync_data),
+                    subtitle = stringResource(R.string.keep_data_up_to_date),
+                    onCheckedChange = onUpdateSyncData,
+                )
+            }
+        }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End,
+        ) {
+            TextButton(
+                onClick = onDismissRequest,
+            ) {
+                Text(text = stringResource(commonR.string.okay))
+            }
+        }
+    }
 }

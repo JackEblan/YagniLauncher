@@ -28,4 +28,6 @@ data class AppDrawerSettings(
     val horizontalAppDrawerColumns: Int,
     val horizontalAppDrawerRows: Int,
     val excludeTaggedApps: Boolean,
+    val showKeyboard: Boolean,
+    val fuzzySearch: Boolean,
 )

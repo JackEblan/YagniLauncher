@@ -1,0 +1,2 @@
+- Added component animations
+- Bug fixes and stability improvements

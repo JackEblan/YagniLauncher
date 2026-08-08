@@ -22,32 +22,6 @@ import com.eblan.launcher.domain.model.ApplicationInfoGridItem
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 
-internal fun ApplicationInfoGridItemEntity.asGridItem(): GridItem = GridItem(
-    id = id,
-    page = page,
-    startColumn = startColumn,
-    startRow = startRow,
-    columnSpan = columnSpan,
-    rowSpan = rowSpan,
-    data = GridItemData.ApplicationInfo(
-        serialNumber = serialNumber,
-        componentName = componentName,
-        packageName = packageName,
-        icon = icon,
-        label = label,
-        customIcon = customIcon,
-        customLabel = customLabel,
-        index = index,
-        folderId = folderId,
-    ),
-    associate = associate,
-    override = override,
-    gridItemSettings = gridItemSettings,
-    doubleTap = doubleTap,
-    swipeUp = swipeUp,
-    swipeDown = swipeDown,
-)
-
 internal fun ApplicationInfoGridItemEntity.asModel(): ApplicationInfoGridItem = ApplicationInfoGridItem(
     id = id,
     page = page,

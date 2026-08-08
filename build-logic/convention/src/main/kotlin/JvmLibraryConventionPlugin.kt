@@ -34,12 +34,12 @@ class JvmLibraryConventionPlugin : Plugin<Project> {
         with(target) {
             apply(plugin = libs.plugins.kotlin.jvm.get().pluginId)
 
-            configure<JavaPluginExtension> {
+            extensions.configure<JavaPluginExtension> {
                 sourceCompatibility = JavaVersion.VERSION_11
                 targetCompatibility = JavaVersion.VERSION_11
             }
 
-            configure<KotlinJvmProjectExtension> {
+            extensions.configure<KotlinJvmProjectExtension> {
                 compilerOptions {
                     jvmTarget = JvmTarget.JVM_11
                 }

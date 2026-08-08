@@ -1,0 +1,4 @@
+- Show keyboard when app drawer opens
+- Fuzzy search
+- Show or hide page indicator
+- Bug fixes and stability improvements

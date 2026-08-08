@@ -19,10 +19,16 @@ package com.eblan.launcher.domain.usecase.page
 
 import com.eblan.launcher.domain.common.Dispatcher
 import com.eblan.launcher.domain.common.EblanDispatchers
+import com.eblan.launcher.domain.common.IconKeyGenerator
+import com.eblan.launcher.domain.framework.AppWidgetHostWrapper
+import com.eblan.launcher.domain.framework.FileManager
+import com.eblan.launcher.domain.framework.LauncherAppsWrapper
 import com.eblan.launcher.domain.model.Associate
 import com.eblan.launcher.domain.model.PageItem
+import com.eblan.launcher.domain.repository.FolderGridItemRepository
 import com.eblan.launcher.domain.repository.GridRepository
 import com.eblan.launcher.domain.repository.UserDataRepository
+import com.eblan.launcher.domain.usecase.grid.cleanupGridItemRecursively
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
@@ -31,6 +37,11 @@ import javax.inject.Inject
 class UpdatePageItemsUseCase @Inject constructor(
     private val userDataRepository: UserDataRepository,
     private val gridRepository: GridRepository,
+    private val appWidgetHostWrapper: AppWidgetHostWrapper,
+    private val launcherAppsWrapper: LauncherAppsWrapper,
+    private val folderGridItemRepository: FolderGridItemRepository,
+    private val fileManager: FileManager,
+    private val iconKeyGenerator: IconKeyGenerator,
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke(
@@ -40,10 +51,22 @@ class UpdatePageItemsUseCase @Inject constructor(
         associate: Associate,
     ) {
         withContext(defaultDispatcher) {
-            val homeSettings = userDataRepository.userDataFlow.first().homeSettings
+            val userData = userDataRepository.userDataFlow.first()
 
-            pageItemsToDelete.forEach { pageItem ->
-                gridRepository.deleteGridItems(gridItems = pageItem.gridItems)
+            pageItemsToDelete.forEach {
+                it.gridItems.forEach { gridItem ->
+                    cleanupGridItemRecursively(
+                        gridItem = gridItem,
+                        appWidgetHostWrapper = appWidgetHostWrapper,
+                        launcherAppsWrapper = launcherAppsWrapper,
+                        folderGridItemRepository = folderGridItemRepository,
+                        fileManager = fileManager,
+                        iconKeyGenerator = iconKeyGenerator,
+                        iconPackInfoPackageName = userData.generalSettings.iconPackInfoPackageName,
+                    )
+                }
+
+                gridRepository.deleteGridItems(gridItems = it.gridItems)
             }
 
             val gridItems = pageItems.flatMapIndexed { index, pageItem ->
@@ -57,7 +80,7 @@ class UpdatePageItemsUseCase @Inject constructor(
             when (associate) {
                 Associate.Grid -> {
                     userDataRepository.updateHomeSettings(
-                        homeSettings = homeSettings.copy(
+                        homeSettings = userData.homeSettings.copy(
                             pageCount = pageItems.size,
                             initialPage = newInitialPage,
                         ),
@@ -66,7 +89,7 @@ class UpdatePageItemsUseCase @Inject constructor(
 
                 Associate.Dock -> {
                     userDataRepository.updateHomeSettings(
-                        homeSettings = homeSettings.copy(
+                        homeSettings = userData.homeSettings.copy(
                             dockPageCount = pageItems.size,
                             dockInitialPage = newInitialPage,
                         ),

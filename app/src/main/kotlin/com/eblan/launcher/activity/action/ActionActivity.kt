@@ -130,7 +130,10 @@ class ActionActivity : ComponentActivity() {
             val shortcutId = Uuid.random().toHexString()
 
             val shortcutName =
-                eblanAction.eblanActionType.getEblanActionTypeSubtitle(componentName = eblanAction.componentName)
+                eblanAction.eblanActionType.getEblanActionTypeSubtitle(
+                    context = this@ActionActivity,
+                    componentName = eblanAction.componentName,
+                )
 
             val bitmap = ContextCompat.getDrawable(
                 applicationContext,

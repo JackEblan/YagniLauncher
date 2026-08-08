@@ -13,10 +13,6 @@ pluginManagement {
     }
 }
 
-plugins {
-    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
-}
-
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
@@ -55,6 +51,7 @@ include(":framework:accessibility-manager")
 include(":framework:file-manager")
 include(":framework:icon-pack-manager")
 include(":framework:image-serializer")
+include(":framework:jaro-winkler-similarity")
 include(":framework:launcher-apps")
 include(":framework:notification-manager")
 include(":framework:package-manager")

@@ -19,10 +19,9 @@ package com.eblan.launcher.ui.dialog
 
 import android.graphics.drawable.Drawable
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -46,11 +45,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import com.eblan.launcher.designsystem.component.EblanDialogContainer
+import com.eblan.launcher.designsystem.component.EblanDialog
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.framework.FileManager
 import com.eblan.launcher.domain.model.IconPackInfoComponent
@@ -64,6 +63,8 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import java.io.File
+import kotlin.time.Duration.Companion.milliseconds
+import com.eblan.launcher.common.R as commonR
 
 @OptIn(ExperimentalMaterial3Api::class, FlowPreview::class)
 @Composable
@@ -77,6 +78,9 @@ fun IconPackInfoFilesDialog(
     onUpdateIcon: (String?) -> Unit,
     onSearchIconPackInfoComponent: (String) -> Unit,
 ) {
+    requireNotNull(iconPackInfoPackageName)
+
+    requireNotNull(iconPackInfoLabel)
     val scope = rememberCoroutineScope()
 
     val byteArray = LocalImageSerializer.current
@@ -92,124 +96,119 @@ fun IconPackInfoFilesDialog(
     val textFieldState = rememberTextFieldState()
 
     LaunchedEffect(key1 = textFieldState) {
-        snapshotFlow { textFieldState.text }.debounce(500L).onEach { text ->
+        snapshotFlow { textFieldState.text }.debounce(500L.milliseconds).onEach { text ->
             onSearchIconPackInfoComponent(text.toString())
         }.collect()
     }
 
-    EblanDialogContainer(
-        content = {
-            Column(
-                modifier = modifier
-                    .fillMaxWidth()
-                    .padding(10.dp),
-            ) {
-                Text(
-                    text = iconPackInfoLabel.toString(),
-                    style = MaterialTheme.typography.titleLarge,
+    EblanDialog(
+        modifier = modifier,
+        onDismissRequest = onDismissRequest,
+    ) {
+        Text(
+            text = iconPackInfoLabel,
+            style = MaterialTheme.typography.titleLarge,
+        )
+
+        SearchBar(
+            state = searchBarState,
+            modifier = Modifier.fillMaxWidth(),
+            inputField = {
+                SearchBarDefaults.InputField(
+                    textFieldState = textFieldState,
+                    searchBarState = searchBarState,
+                    leadingIcon = {
+                        Icon(
+                            imageVector = EblanLauncherIcons.Search,
+                            contentDescription = null,
+                        )
+                    },
+                    onSearch = {
+                        scope.launch { searchBarState.animateToCollapsed() }
+                    },
+                    placeholder = {
+                        Text(text = stringResource(commonR.string.search_applications))
+                    },
                 )
+            },
+        )
 
-                Spacer(modifier = Modifier.height(10.dp))
-
-                SearchBar(
-                    state = searchBarState,
+        when {
+            iconPackInfoComponents.isEmpty() -> {
+                CircularProgressIndicator(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(10.dp),
-                    inputField = {
-                        SearchBarDefaults.InputField(
-                            textFieldState = textFieldState,
-                            searchBarState = searchBarState,
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = EblanLauncherIcons.Search,
-                                    contentDescription = null,
-                                )
-                            },
-                            onSearch = { scope.launch { searchBarState.animateToCollapsed() } },
-                            placeholder = { Text(text = "Search Applications") },
-                        )
-                    },
                 )
+            }
 
-                Spacer(modifier = Modifier.height(10.dp))
+            else -> {
+                LazyVerticalGrid(
+                    modifier = Modifier.weight(
+                        weight = 1f,
+                        fill = false,
+                    ),
+                    columns = GridCells.Fixed(5),
+                ) {
+                    items(iconPackInfoComponents) { iconPackInfoComponent ->
 
-                when {
-                    iconPackInfoComponents.isEmpty() -> {
-                        CircularProgressIndicator(
+                        var drawable by remember { mutableStateOf<Drawable?>(null) }
+
+                        LaunchedEffect(iconPackInfoComponent) {
+                            drawable = iconPackManager.loadDrawableFromIconPack(
+                                packageName = iconPackInfoPackageName,
+                                drawableName = iconPackInfoComponent.drawableName,
+                            )
+                        }
+
+                        AsyncImage(
+                            model = drawable,
+                            contentDescription = null,
                             modifier = Modifier
-                                .align(Alignment.CenterHorizontally)
-                                .padding(10.dp),
+                                .clickable {
+                                    scope.launch {
+                                        val icon = drawable?.let { currentDrawable ->
+                                            val directory = fileManager.getFilesDirectory(
+                                                FileManager.CUSTOM_ICONS_DIR,
+                                            )
+
+                                            val file = File(
+                                                directory,
+                                                iconKeyGenerator.getHashedName(name = iconName),
+                                            )
+
+                                            byteArray.createDrawablePath(
+                                                drawable = currentDrawable,
+                                                file = file,
+                                            )
+
+                                            file.absolutePath
+                                        }
+
+                                        if (icon != null) {
+                                            onUpdateIcon(icon)
+                                        }
+
+                                        onDismissRequest()
+                                    }
+                                }
+                                .size(40.dp)
+                                .padding(2.dp),
                         )
                     }
-
-                    else -> {
-                        LazyVerticalGrid(
-                            modifier = Modifier.weight(
-                                weight = 1f,
-                                fill = false,
-                            ),
-                            columns = GridCells.Fixed(5),
-                        ) {
-                            items(iconPackInfoComponents) { iconPackInfoComponent ->
-                                var drawable by remember { mutableStateOf<Drawable?>(null) }
-
-                                LaunchedEffect(key1 = iconPackInfoComponent) {
-                                    drawable = iconPackManager.loadDrawableFromIconPack(
-                                        packageName = iconPackInfoPackageName.toString(),
-                                        drawableName = iconPackInfoComponent.drawableName,
-                                    )
-                                }
-
-                                AsyncImage(
-                                    model = drawable,
-                                    contentDescription = null,
-                                    modifier = Modifier
-                                        .clickable {
-                                            scope.launch {
-                                                val icon = drawable?.let { currentDrawable ->
-                                                    val directory = fileManager.getFilesDirectory(
-                                                        FileManager.CUSTOM_ICONS_DIR,
-                                                    )
-
-                                                    val file = File(
-                                                        directory,
-                                                        iconKeyGenerator.getHashedName(name = iconName),
-                                                    )
-
-                                                    byteArray.createDrawablePath(
-                                                        drawable = currentDrawable,
-                                                        file = file,
-                                                    )
-
-                                                    file.absolutePath
-                                                }
-
-                                                if (icon != null) {
-                                                    onUpdateIcon(icon)
-                                                }
-
-                                                onDismissRequest()
-                                            }
-                                        }
-                                        .size(40.dp)
-                                        .padding(2.dp),
-                                )
-                            }
-                        }
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(10.dp))
-
-                TextButton(
-                    modifier = Modifier.align(Alignment.End),
-                    onClick = onDismissRequest,
-                ) {
-                    Text(text = "Cancel")
                 }
             }
-        },
-        onDismissRequest = onDismissRequest,
-    )
+        }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End,
+        ) {
+            TextButton(
+                onClick = onDismissRequest,
+            ) {
+                Text(text = stringResource(commonR.string.cancel))
+            }
+        }
+    }
 }

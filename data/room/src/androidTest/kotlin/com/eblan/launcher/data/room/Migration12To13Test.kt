@@ -30,7 +30,6 @@ import java.io.IOException
 
 @RunWith(AndroidJUnit4::class)
 class Migration12To13Test {
-
     private val testDatabase = "migration-test"
 
     @get:Rule
@@ -43,9 +42,6 @@ class Migration12To13Test {
     @Throws(IOException::class)
     fun migrate12To13() {
         helper.createDatabase(testDatabase, 12).use { db ->
-            // ---------------------------
-            // EblanShortcutInfoEntity
-            // ---------------------------
             db.execSQL(
                 """
                 INSERT INTO EblanShortcutInfoEntity (

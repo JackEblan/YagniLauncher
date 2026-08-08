@@ -77,6 +77,11 @@ class UserDataSerializer @Inject constructor() : Serializer<UserDataProto> {
         dockPageCount = 1
         dockInfiniteScroll = false
         addNewAppsToHomeScreen = true
+        folderCellWidth = 64
+        folderCellHeight = 96
+        maxFolderColumns = 5
+        maxFolderRows = 4
+        showPageIndicator = false
     }.build()
 
     private val defaultAppDrawerSettingsProto = AppDrawerSettingsProto.newBuilder().apply {
@@ -89,6 +94,8 @@ class UserDataSerializer @Inject constructor() : Serializer<UserDataProto> {
         horizontalAppDrawerColumns = 5
         horizontalAppDrawerRows = 5
         excludeTaggedApps = false
+        showKeyboard = false
+        fuzzySearch = false
     }.build()
 
     private val defaultGestureSettingsProto = GestureSettingsProto.newBuilder().apply {

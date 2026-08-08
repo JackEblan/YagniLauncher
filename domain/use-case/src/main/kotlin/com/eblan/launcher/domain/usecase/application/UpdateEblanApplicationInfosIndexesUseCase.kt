@@ -31,12 +31,11 @@ class UpdateEblanApplicationInfosIndexesUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(eblanApplicationInfos: List<EblanApplicationInfo>) {
         withContext(defaultDispatcher) {
-            val eblanApplicationInfoIndexes =
-                eblanApplicationInfos.mapIndexed { index, eblanApplicationInfo ->
+            eblanApplicationInfoRepository.updateEblanApplicationInfos(
+                eblanApplicationInfos = eblanApplicationInfos.mapIndexed { index, eblanApplicationInfo ->
                     eblanApplicationInfo.copy(index = index)
-                }
-
-            eblanApplicationInfoRepository.updateEblanApplicationInfos(eblanApplicationInfos = eblanApplicationInfoIndexes)
+                },
+            )
         }
     }
 }

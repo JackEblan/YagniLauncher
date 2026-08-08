@@ -88,16 +88,16 @@ internal class DefaultImageSerializer @Inject constructor(
     private fun Drawable.toBitmap(): Bitmap? = if (this is BitmapDrawable) {
         bitmap
     } else {
-        val width = if (!bounds.isEmpty) {
-            bounds.width()
-        } else {
+        val width = if (bounds.isEmpty) {
             intrinsicWidth
+        } else {
+            bounds.width()
         }
 
-        val height = if (!bounds.isEmpty) {
-            bounds.height()
-        } else {
+        val height = if (bounds.isEmpty) {
             intrinsicHeight
+        } else {
+            bounds.height()
         }
 
         if (width > 0 && height > 0) {

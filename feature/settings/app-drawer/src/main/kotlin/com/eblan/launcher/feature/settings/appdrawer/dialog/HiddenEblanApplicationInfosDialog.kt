@@ -17,9 +17,9 @@
  */
 package com.eblan.launcher.feature.settings.appdrawer.dialog
 
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -30,13 +30,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import com.eblan.launcher.designsystem.component.EblanDialogContainer
+import com.eblan.launcher.designsystem.component.EblanDialog
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.EblanApplicationInfo
+import com.eblan.launcher.feature.settings.appdrawer.R
+import com.eblan.launcher.common.R as commonR
 
 @Composable
 internal fun HiddenEblanApplicationInfosDialog(
@@ -45,77 +47,73 @@ internal fun HiddenEblanApplicationInfosDialog(
     onDismissRequest: () -> Unit,
     onUpdateEblanApplicationInfo: (EblanApplicationInfo) -> Unit,
 ) {
-    EblanDialogContainer(
-        content = {
-            Column(
-                modifier = modifier.fillMaxWidth(),
-            ) {
+    EblanDialog(
+        modifier = modifier,
+        onDismissRequest = onDismissRequest,
+    ) {
+        Text(
+            text = stringResource(R.string.hidden_applications),
+            style = MaterialTheme.typography.titleLarge,
+        )
+
+        when {
+            eblanApplicationInfos.isEmpty() -> {
                 Text(
-                    modifier = Modifier.padding(10.dp),
-                    text = "Hidden Applications",
-                    style = MaterialTheme.typography.titleLarge,
+                    text = stringResource(R.string.no_hidden_applications),
                 )
+            }
 
-                when {
-                    eblanApplicationInfos.isEmpty() -> {
-                        Text(
-                            modifier = Modifier.padding(horizontal = 10.dp),
-                            text = "No hidden Applications",
-                        )
-                    }
-
-                    else -> {
-                        LazyColumn(
-                            modifier = Modifier.weight(
-                                weight = 1f,
-                                fill = false,
-                            ),
-                        ) {
-                            items(eblanApplicationInfos) { eblanApplicationInfo ->
-                                ListItem(
-                                    headlineContent = { Text(text = eblanApplicationInfo.label) },
-                                    leadingContent = {
-                                        AsyncImage(
-                                            model = eblanApplicationInfo.icon,
-                                            contentDescription = null,
-                                            modifier = Modifier.size(40.dp),
+            else -> {
+                LazyColumn(
+                    modifier = Modifier.weight(
+                        weight = 1f,
+                        fill = false,
+                    ),
+                ) {
+                    items(eblanApplicationInfos) { eblanApplicationInfo ->
+                        ListItem(
+                            headlineContent = {
+                                Text(text = eblanApplicationInfo.label)
+                            },
+                            leadingContent = {
+                                AsyncImage(
+                                    model = eblanApplicationInfo.icon,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(40.dp),
+                                )
+                            },
+                            trailingContent = {
+                                IconButton(
+                                    onClick = {
+                                        onUpdateEblanApplicationInfo(
+                                            eblanApplicationInfo.copy(
+                                                isHidden = false,
+                                            ),
                                         )
                                     },
-                                    trailingContent = {
-                                        IconButton(
-                                            onClick = {
-                                                onUpdateEblanApplicationInfo(
-                                                    eblanApplicationInfo.copy(
-                                                        isHidden = false,
-                                                    ),
-                                                )
-                                            },
-                                        ) {
-                                            Icon(
-                                                imageVector = EblanLauncherIcons.Delete,
-                                                contentDescription = null,
-                                            )
-                                        }
-                                    },
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(10.dp),
-                                )
-                            }
-                        }
+                                ) {
+                                    Icon(
+                                        imageVector = EblanLauncherIcons.Delete,
+                                        contentDescription = null,
+                                    )
+                                }
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                        )
                     }
                 }
-
-                TextButton(
-                    modifier = Modifier
-                        .align(Alignment.End)
-                        .padding(10.dp),
-                    onClick = onDismissRequest,
-                ) {
-                    Text(text = "Okay")
-                }
             }
-        },
-        onDismissRequest = onDismissRequest,
-    )
+        }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End,
+        ) {
+            TextButton(
+                onClick = onDismissRequest,
+            ) {
+                Text(text = stringResource(commonR.string.okay))
+            }
+        }
+    }
 }

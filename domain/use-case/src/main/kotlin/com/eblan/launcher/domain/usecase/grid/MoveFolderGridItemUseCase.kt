@@ -19,8 +19,10 @@ package com.eblan.launcher.domain.usecase.grid
 
 import com.eblan.launcher.domain.common.Dispatcher
 import com.eblan.launcher.domain.common.EblanDispatchers
+import com.eblan.launcher.domain.model.FolderPopup
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
+import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.domain.repository.GridRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ensureActive
@@ -32,34 +34,32 @@ class MoveFolderGridItemUseCase @Inject constructor(
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke(
-        conflictingGridItem: GridItem,
-        movingFolderGridItem: GridItem,
-        data: GridItemData.Folder,
+        folderPopup: FolderPopup,
+        movingGridItem: GridItem,
         dragX: Int,
         dragY: Int,
-        columns: Int,
-        rows: Int,
         gridWidth: Int,
         gridHeight: Int,
         currentPage: Int,
-    ) = withContext(defaultDispatcher) {
-        val gridItemsPerPage = columns * rows
+    ): MoveGridItemResult = withContext(defaultDispatcher) {
+        val gridItemsPerPage = folderPopup.columns * folderPopup.rows
 
-        val cellWidth = gridWidth / columns
-        val cellHeight = gridHeight / rows
+        val cellWidth = gridWidth / folderPopup.columns
+        val cellHeight = gridHeight / folderPopup.rows
 
         val targetColumn = dragX / cellWidth
         val targetRow = dragY / cellHeight
 
-        val targetIndex = currentPage * gridItemsPerPage + targetRow * columns + targetColumn
+        val targetIndex =
+            currentPage * gridItemsPerPage + targetRow * folderPopup.columns + targetColumn
 
-        val folderGridItems = data.gridItems.toMutableList()
+        val folderGridItems = folderPopup.gridItems.toMutableList()
 
         val movingIndex =
             folderGridItems.indexOfFirst {
                 ensureActive()
 
-                it.id == movingFolderGridItem.id
+                it.id == movingGridItem.id
             }
 
         if (movingIndex != -1) {
@@ -76,22 +76,26 @@ class MoveFolderGridItemUseCase @Inject constructor(
             ensureActive()
 
             when (val data = gridItem.data) {
-                is GridItemData.ApplicationInfo -> {
-                    gridItem.copy(data = data.copy(index = index))
-                }
+                is GridItemData.ApplicationInfo -> gridItem.copy(data = data.copy(index = index))
 
-                is GridItemData.ShortcutConfig -> {
-                    gridItem.copy(data = data.copy(index = index))
-                }
+                is GridItemData.ShortcutConfig -> gridItem.copy(data = data.copy(index = index))
 
-                is GridItemData.ShortcutInfo -> {
+                is GridItemData.ShortcutInfo ->
                     gridItem.copy(data = data.copy(index = index))
-                }
 
-                else -> error("Unsupported folder item type: ${data::class.simpleName}")
+                is GridItemData.Folder ->
+                    gridItem.copy(data = data.copy(index = index))
+
+                else -> error("Unsupported move Folder GridItem ")
             }
         }
 
         gridRepository.upsertGridItems(gridItems = indexedGridItems)
+
+        MoveGridItemResult(
+            isSuccess = true,
+            movingGridItem = movingGridItem,
+            conflictingGridItem = null,
+        )
     }
 }

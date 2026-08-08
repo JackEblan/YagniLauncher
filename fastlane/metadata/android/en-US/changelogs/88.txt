@@ -1,0 +1,2 @@
+⚠️ Breaking change: this update resets your grid items due to a required database migration. Screenshot your layout before updating if you want to recreate it. Includes grid item performance improvements
+- Grid items performance improvements

@@ -17,14 +17,18 @@
  */
 package com.eblan.launcher.feature.home.screen.application.list
 
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -37,7 +41,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
@@ -53,10 +56,7 @@ internal fun ScrollBarThumb(
     modifier: Modifier = Modifier,
     lazyListState: LazyListState,
     paddingValues: PaddingValues,
-    onScrollToItem: suspend (
-        index: Int,
-        offset: Int,
-    ) -> Unit,
+    onScrollToItem: suspend (Int) -> Unit,
 ) {
     val density = LocalDensity.current
 
@@ -89,51 +89,98 @@ internal fun ScrollBarThumb(
 
     var thumbY by remember { mutableFloatStateOf(0f) }
 
-    val thumbAlpha by animateFloatAsState(
-        targetValue = if (lazyListState.isScrollInProgress || isDraggingThumb) 1f else 0.2f,
-    )
+    val animatedThumbY by remember {
+        derivedStateOf {
+            if (isDraggingThumb) thumbY else viewPortThumbY
+        }
+    }
 
     Row(modifier = modifier) {
         Box(
             modifier = Modifier
-                .offset {
-                    val y = if (isDraggingThumb) thumbY else viewPortThumbY
-
-                    IntOffset(0, y.roundToInt())
-                }
                 .pointerInput(lazyListState) {
-                    detectDragGestures(
-                        onDragStart = {
-                            thumbY = viewPortThumbY
+                    detectTapGestures { offset ->
+                        val viewportHeight =
+                            lazyListState.layoutInfo.viewportSize.height - bottomPadding
 
-                            isDraggingThumb = true
-                        },
-                        onDrag = { _, dragAmount ->
-                            handleVerticalDrag(
-                                lazyListState = lazyListState,
-                                density = density,
-                                thumbHeight = thumbHeight,
-                                bottomPadding = bottomPadding,
-                                thumbY = thumbY,
-                                deltaY = dragAmount.y,
-                                scope = scope,
-                                onScrollToItem = onScrollToItem,
-                                onUpdateThumbY = { newThumbY ->
-                                    thumbY = newThumbY
-                                },
+                        val maxThumbY =
+                            (viewportHeight - with(density) { thumbHeight.roundToPx() })
+                                .coerceAtLeast(0)
+
+                        val targetThumbY =
+                            (offset.y - with(density) { thumbHeight.roundToPx() / 2f })
+                                .coerceIn(0f, maxThumbY.toFloat())
+
+                        val totalItems =
+                            lazyListState.layoutInfo.totalItemsCount
+
+                        val item =
+                            (
+                                targetThumbY /
+                                    maxThumbY.coerceAtLeast(1)
+                                ) * (totalItems - 1)
+
+                        scope.launch {
+                            onScrollToItem(
+                                item.roundToInt()
+                                    .coerceAtMost(totalItems - 1),
                             )
-                        },
-                        onDragEnd = { isDraggingThumb = false },
-                        onDragCancel = { isDraggingThumb = false },
-                    )
+                        }
+                    }
                 }
-                .alpha(thumbAlpha)
-                .size(width = 10.dp, height = thumbHeight)
+                .width(10.dp)
+                .fillMaxHeight()
+                .padding(bottom = paddingValues.calculateBottomPadding())
                 .background(
-                    color = MaterialTheme.colorScheme.primary,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
                     shape = RoundedCornerShape(10.dp),
                 ),
-        )
+        ) {
+            Box(
+                modifier = Modifier
+                    .offset {
+                        IntOffset(
+                            x = 0,
+                            y = animatedThumbY.roundToInt(),
+                        )
+                    }
+                    .pointerInput(lazyListState) {
+                        detectDragGestures(
+                            onDragStart = {
+                                thumbY = viewPortThumbY
+                                isDraggingThumb = true
+                            },
+                            onDrag = { _, dragAmount ->
+                                handleVerticalDrag(
+                                    lazyListState = lazyListState,
+                                    density = density,
+                                    thumbHeight = thumbHeight,
+                                    bottomPadding = bottomPadding,
+                                    thumbY = thumbY,
+                                    deltaY = dragAmount.y,
+                                    scope = scope,
+                                    onScrollToItem = onScrollToItem,
+                                    onUpdateThumbY = {
+                                        thumbY = it
+                                    },
+                                )
+                            },
+                            onDragEnd = {
+                                isDraggingThumb = false
+                            },
+                            onDragCancel = {
+                                isDraggingThumb = false
+                            },
+                        )
+                    }
+                    .fillMaxWidth()
+                    .height(thumbHeight)
+                    .background(
+                        color = MaterialTheme.colorScheme.primary,
+                        shape = RoundedCornerShape(10.dp),
+                    ),
+            )
+        }
     }
 }
 
@@ -145,7 +192,7 @@ private fun handleVerticalDrag(
     thumbY: Float,
     deltaY: Float,
     scope: CoroutineScope,
-    onScrollToItem: suspend (index: Int, offset: Int) -> Unit,
+    onScrollToItem: suspend (Int) -> Unit,
     onUpdateThumbY: (Float) -> Unit,
 ) {
     if (deltaY == 0f) return
@@ -183,14 +230,10 @@ private fun handleVerticalDrag(
         .toInt()
         .coerceIn(0, totalItems - 1)
 
-    val offset = (targetScrollY % avgItemSize)
-        .toInt()
-        .coerceAtLeast(0)
-
     onUpdateThumbY(newThumbY)
 
     scope.launch {
-        onScrollToItem(targetIndex, offset)
+        onScrollToItem(targetIndex)
     }
 }
 

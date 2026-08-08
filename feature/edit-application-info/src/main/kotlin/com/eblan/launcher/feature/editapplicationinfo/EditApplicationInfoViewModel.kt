@@ -134,19 +134,6 @@ internal class EditApplicationInfoViewModel @Inject constructor(
         lastIconPackInfoComponents = emptyList()
     }
 
-    fun updateEblanApplicationInfoCustomIcon(
-        customIcon: String?,
-        eblanApplicationInfo: EblanApplicationInfo,
-    ) {
-        viewModelScope.launch {
-            updateEblanApplicationInfo(
-                eblanApplicationInfo = eblanApplicationInfo.copy(
-                    customIcon = customIcon,
-                ),
-            )
-        }
-    }
-
     fun resetEblanApplicationInfoCustomIcon(eblanApplicationInfo: EblanApplicationInfo) {
         viewModelScope.launch {
             eblanApplicationInfoRepository.resetEblanApplicationInfoCustomIcon(

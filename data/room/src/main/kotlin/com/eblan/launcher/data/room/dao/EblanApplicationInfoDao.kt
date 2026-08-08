@@ -112,7 +112,7 @@ interface EblanApplicationInfoDao {
     WHERE ref.id = :id
     """,
     )
-    fun getEblanApplicationInfoEntitiesByTagId(id: Long): List<EblanApplicationInfoEntity>
+    suspend fun getEblanApplicationInfoEntitiesByTagId(id: Long): List<EblanApplicationInfoEntity>
 
     @Query(
         """
@@ -126,5 +126,5 @@ interface EblanApplicationInfoDao {
     )
     """,
     )
-    fun getEblanApplicationInfoEntitiesWithoutTags(): List<EblanApplicationInfoEntity>
+    suspend fun getEblanApplicationInfoEntitiesWithoutTags(): List<EblanApplicationInfoEntity>
 }

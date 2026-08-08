@@ -30,7 +30,6 @@ import java.io.IOException
 
 @RunWith(AndroidJUnit4::class)
 class Migration7To8Test {
-
     private val testDatabase = "migration-test"
 
     @get:Rule
@@ -41,12 +40,8 @@ class Migration7To8Test {
 
     @Test
     @Throws(IOException::class)
-    fun migrate7To8() {
+    fun migrate7To8_applicationInfoGridItemEntity() {
         helper.createDatabase(testDatabase, 7).use { db ->
-
-            // ----------------------------
-            // ApplicationInfoGridItemEntity
-            // ----------------------------
             db.execSQL(
                 """
                 INSERT INTO ApplicationInfoGridItemEntity (
@@ -70,10 +65,30 @@ class Migration7To8Test {
                 )
                 """.trimIndent(),
             )
+        }
 
-            // ----------------------------
-            // ShortcutInfoGridItemEntity
-            // ----------------------------
+        helper.runMigrationsAndValidate(testDatabase, 8, true, Migration7To8()).use { db ->
+            db.query("SELECT * FROM ApplicationInfoGridItemEntity WHERE id = 'app_1'")
+                .use { cursor ->
+                    assertTrue(cursor.moveToFirst())
+                    assertEquals(
+                        "com.example.app",
+                        cursor.getString(cursor.getColumnIndexOrThrow("packageName")),
+                    )
+                    assertEquals(
+                        1002L,
+                        cursor.getLong(cursor.getColumnIndexOrThrow("serialNumber")),
+                    )
+                    assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("page")))
+                    assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("startColumn")))
+                }
+        }
+    }
+
+    @Test
+    @Throws(IOException::class)
+    fun migrate7To8_shortcutInfoGridItemEntity() {
+        helper.createDatabase(testDatabase, 7).use { db ->
             db.execSQL(
                 """
                 INSERT INTO ShortcutInfoGridItemEntity (
@@ -99,10 +114,25 @@ class Migration7To8Test {
                 )
                 """.trimIndent(),
             )
+        }
 
-            // ----------------------------
-            // FolderGridItemEntity
-            // ----------------------------
+        helper.runMigrationsAndValidate(testDatabase, 8, true, Migration7To8()).use { db ->
+            db.query("SELECT * FROM ShortcutInfoGridItemEntity WHERE id = 'shortcut_1'")
+                .use { cursor ->
+                    assertTrue(cursor.moveToFirst())
+                    assertEquals(
+                        "com.example",
+                        cursor.getString(cursor.getColumnIndexOrThrow("packageName")),
+                    )
+                    assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("page")))
+                }
+        }
+    }
+
+    @Test
+    @Throws(IOException::class)
+    fun migrate7To8_folderGridItemEntity() {
+        helper.createDatabase(testDatabase, 7).use { db ->
             db.execSQL(
                 """
                 INSERT INTO FolderGridItemEntity (
@@ -122,10 +152,21 @@ class Migration7To8Test {
                 )
                 """.trimIndent(),
             )
+        }
 
-            // ----------------------------
-            // ShortcutConfigGridItemEntity
-            // ----------------------------
+        helper.runMigrationsAndValidate(testDatabase, 8, true, Migration7To8()).use { db ->
+            db.query("SELECT * FROM FolderGridItemEntity WHERE id = 'folder_1'").use { cursor ->
+                assertTrue(cursor.moveToFirst())
+                assertEquals("My Folder", cursor.getString(cursor.getColumnIndexOrThrow("label")))
+                assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("page")))
+            }
+        }
+    }
+
+    @Test
+    @Throws(IOException::class)
+    fun migrate7To8_shortcutConfigGridItemEntity() {
+        helper.createDatabase(testDatabase, 7).use { db ->
             db.execSQL(
                 """
                 INSERT INTO ShortcutConfigGridItemEntity (
@@ -155,10 +196,30 @@ class Migration7To8Test {
                 )
                 """.trimIndent(),
             )
+        }
 
-            // ----------------------------
-            // WidgetGridItemEntity
-            // ----------------------------
+        helper.runMigrationsAndValidate(testDatabase, 8, true, Migration7To8()).use { db ->
+            db.query("SELECT * FROM ShortcutConfigGridItemEntity WHERE id = 'config_1'")
+                .use { cursor ->
+                    assertTrue(cursor.moveToFirst())
+                    assertEquals(
+                        "com.whatsapp",
+                        cursor.getString(cursor.getColumnIndexOrThrow("packageName")),
+                    )
+                }
+
+            db.query("SELECT cornerRadius FROM ShortcutConfigGridItemEntity WHERE id = 'config_1'")
+                .use { cursor ->
+                    assertTrue(cursor.moveToFirst())
+                    assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("cornerRadius")))
+                }
+        }
+    }
+
+    @Test
+    @Throws(IOException::class)
+    fun migrate7To8_widgetGridItemEntity() {
+        helper.createDatabase(testDatabase, 7).use { db ->
             db.execSQL(
                 """
                 INSERT INTO WidgetGridItemEntity (
@@ -193,84 +254,12 @@ class Migration7To8Test {
             )
         }
 
-        helper.runMigrationsAndValidate(
-            testDatabase,
-            8,
-            true,
-            Migration7To8(),
-        ).use { db ->
-
-            // ============================
-            // ApplicationInfoGridItemEntity
-            // ============================
-            db.query("SELECT * FROM ApplicationInfoGridItemEntity WHERE id = 'app_1'")
-                .use { cursor ->
-                    assertTrue(cursor.moveToFirst())
-                    assertEquals(
-                        "com.example.app",
-                        cursor.getString(cursor.getColumnIndexOrThrow("packageName")),
-                    )
-                    assertEquals(
-                        1002L,
-                        cursor.getLong(cursor.getColumnIndexOrThrow("serialNumber")),
-                    )
-                    assertEquals(0, cursor.getInt(0))
-                    assertEquals(0, cursor.getInt(1))
-                }
-
-            // ============================
-            // ShortcutInfoGridItemEntity
-            // ============================
-            db.query("SELECT * FROM ShortcutInfoGridItemEntity WHERE id = 'shortcut_1'")
-                .use { cursor ->
-                    assertTrue(cursor.moveToFirst())
-                    assertEquals(
-                        "com.example",
-                        cursor.getString(cursor.getColumnIndexOrThrow("packageName")),
-                    )
-                    assertEquals(0, cursor.getInt(0))
-                }
-
-            // ============================
-            // FolderGridItemEntity
-            // ============================
-            db.query("SELECT * FROM FolderGridItemEntity WHERE id = 'folder_1'")
-                .use { cursor ->
-                    assertTrue(cursor.moveToFirst())
-                    assertEquals(
-                        "My Folder",
-                        cursor.getString(cursor.getColumnIndexOrThrow("label")),
-                    )
-                    assertEquals(0, cursor.getInt(0))
-                }
-
-            // ============================
-            // ShortcutConfigGridItemEntity
-            // ============================
-            db.query("SELECT * FROM ShortcutConfigGridItemEntity WHERE id = 'config_1'")
-                .use { cursor ->
-                    assertTrue(cursor.moveToFirst())
-                    assertEquals(
-                        "com.whatsapp",
-                        cursor.getString(cursor.getColumnIndexOrThrow("packageName")),
-                    )
-                }
-
-            db.query("SELECT cornerRadius FROM ShortcutConfigGridItemEntity WHERE id = 'config_1'")
-                .use { cursor ->
-                    assertTrue(cursor.moveToFirst())
-                    assertEquals(0, cursor.getInt(0))
-                }
-
-            // ============================
-            // WidgetGridItemEntity
-            // ============================
-            db.query("SELECT * FROM WidgetGridItemEntity WHERE id = 'widget_1'")
-                .use { cursor ->
-                    assertTrue(cursor.moveToFirst())
-                    assertEquals("Clock", cursor.getString(cursor.getColumnIndexOrThrow("label")))
-                    assertEquals(0, cursor.getInt(0))
-                }
+        helper.runMigrationsAndValidate(testDatabase, 8, true, Migration7To8()).use { db ->
+            db.query("SELECT * FROM WidgetGridItemEntity WHERE id = 'widget_1'").use { cursor ->
+                assertTrue(cursor.moveToFirst())
+                assertEquals("Clock", cursor.getString(cursor.getColumnIndexOrThrow("label")))
+                assertEquals(1, cursor.getInt(cursor.getColumnIndexOrThrow("page")))
+            }
         }
     }
 }

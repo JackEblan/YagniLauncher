@@ -29,7 +29,6 @@ import java.io.IOException
 
 @RunWith(AndroidJUnit4::class)
 class Migration6To7Test {
-
     private val testDatabase = "migration-test"
 
     @get:Rule
@@ -40,8 +39,7 @@ class Migration6To7Test {
 
     @Test
     @Throws(IOException::class)
-    fun migrate6To7() {
-        // Create database at version 6
+    fun migrate6To7_eblanApplicationInfoEntity() {
         helper.createDatabase(testDatabase, 6).use { db ->
             db.execSQL(
                 """
@@ -54,51 +52,9 @@ class Migration6To7Test {
                 )
                 """.trimIndent(),
             )
-
-            db.execSQL(
-                """
-                INSERT INTO EblanAppWidgetProviderInfoEntity (
-                    componentName, serialNumber, packageName,
-                    targetCellWidth, targetCellHeight, minWidth, minHeight,
-                    resizeMode, minResizeWidth, minResizeHeight,
-                    maxResizeWidth, maxResizeHeight, label
-                ) VALUES (
-                    'com.example/.widget', 0, 'com.example',
-                    4, 2, 180, 110, 15, 180, 110, 400, 300, 'Clock'
-                )
-                """.trimIndent(),
-            )
-
-            db.execSQL(
-                """
-                INSERT INTO EblanShortcutConfigEntity (
-                    componentName, packageName, serialNumber,
-                    activityIcon, activityLabel, applicationIcon, applicationLabel
-                ) VALUES (
-                    'com.example/.ShortcutActivity', 'com.example', 1002,
-                    'shortcut_ic', 'Open Settings', 'app_ic', 'Example'
-                )
-                """.trimIndent(),
-            )
-
-            db.execSQL(
-                """
-                INSERT INTO EblanShortcutInfoEntity (
-                    shortcutId, serialNumber, packageName,
-                    shortLabel, longLabel, icon,
-                    shortcutQueryFlag, isEnabled
-                ) VALUES (
-                    'pin-settings', 1003, 'com.example',
-                    'Settings', 'Open device settings', 'ic_settings',
-                    'pinned', 1
-                )
-                """.trimIndent(),
-            )
         }
 
-        // Run migration → validate version 7
         helper.runMigrationsAndValidate(testDatabase, 7, true).use { db ->
-            // EblanApplicationInfoEntity
             db.query(
                 """
                 SELECT componentName, serialNumber, packageName, icon, label,
@@ -130,8 +86,29 @@ class Migration6To7Test {
                 assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("isHidden")))
                 assertEquals(0L, cursor.getLong(cursor.getColumnIndexOrThrow("lastUpdateTime")))
             }
+        }
+    }
 
-            // EblanAppWidgetProviderInfoEntity
+    @Test
+    @Throws(IOException::class)
+    fun migrate6To7_eblanAppWidgetProviderInfoEntity() {
+        helper.createDatabase(testDatabase, 6).use { db ->
+            db.execSQL(
+                """
+                INSERT INTO EblanAppWidgetProviderInfoEntity (
+                    componentName, serialNumber, packageName,
+                    targetCellWidth, targetCellHeight, minWidth, minHeight,
+                    resizeMode, minResizeWidth, minResizeHeight,
+                    maxResizeWidth, maxResizeHeight, label
+                ) VALUES (
+                    'com.example/.widget', 0, 'com.example',
+                    4, 2, 180, 110, 15, 180, 110, 400, 300, 'Clock'
+                )
+                """.trimIndent(),
+            )
+        }
+
+        helper.runMigrationsAndValidate(testDatabase, 7, true).use { db ->
             db.query(
                 """
                 SELECT componentName, serialNumber, packageName,
@@ -164,8 +141,27 @@ class Migration6To7Test {
                 assertEquals("Clock", cursor.getString(cursor.getColumnIndexOrThrow("label")))
                 assertEquals(0L, cursor.getLong(cursor.getColumnIndexOrThrow("lastUpdateTime")))
             }
+        }
+    }
 
-            // EblanShortcutConfigEntity
+    @Test
+    @Throws(IOException::class)
+    fun migrate6To7_eblanShortcutConfigEntity() {
+        helper.createDatabase(testDatabase, 6).use { db ->
+            db.execSQL(
+                """
+                INSERT INTO EblanShortcutConfigEntity (
+                    componentName, packageName, serialNumber,
+                    activityIcon, activityLabel, applicationIcon, applicationLabel
+                ) VALUES (
+                    'com.example/.ShortcutActivity', 'com.example', 1002,
+                    'shortcut_ic', 'Open Settings', 'app_ic', 'Example'
+                )
+                """.trimIndent(),
+            )
+        }
+
+        helper.runMigrationsAndValidate(testDatabase, 7, true).use { db ->
             db.query(
                 """
                 SELECT componentName, packageName, serialNumber,
@@ -203,8 +199,29 @@ class Migration6To7Test {
                 )
                 assertEquals(0L, cursor.getLong(cursor.getColumnIndexOrThrow("lastUpdateTime")))
             }
+        }
+    }
 
-            // EblanShortcutInfoEntity
+    @Test
+    @Throws(IOException::class)
+    fun migrate6To7_eblanShortcutInfoEntity() {
+        helper.createDatabase(testDatabase, 6).use { db ->
+            db.execSQL(
+                """
+                INSERT INTO EblanShortcutInfoEntity (
+                    shortcutId, serialNumber, packageName,
+                    shortLabel, longLabel, icon,
+                    shortcutQueryFlag, isEnabled
+                ) VALUES (
+                    'pin-settings', 1003, 'com.example',
+                    'Settings', 'Open device settings', 'ic_settings',
+                    'pinned', 1
+                )
+                """.trimIndent(),
+            )
+        }
+
+        helper.runMigrationsAndValidate(testDatabase, 7, true).use { db ->
             db.query(
                 """
                 SELECT shortcutId, serialNumber, packageName,

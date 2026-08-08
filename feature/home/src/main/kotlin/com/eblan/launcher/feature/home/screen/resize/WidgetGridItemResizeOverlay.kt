@@ -48,10 +48,12 @@ import com.eblan.launcher.domain.grid.resizeWidgetGridItemWithPixels
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.SideAnchor
-import com.eblan.launcher.feature.home.util.DRAG_HANDLE_SIZE
+import com.eblan.launcher.feature.home.screen.DRAG_HANDLE_SIZE
 import com.eblan.launcher.ui.local.LocalAppWidgetManager
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
+import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 internal fun WidgetGridItemResizeOverlay(
@@ -231,6 +233,8 @@ internal fun WidgetGridItemResizeOverlay(
                 rows = rows,
             ) && !lockMovement
         ) {
+            delay(50L.milliseconds)
+
             val options = Bundle().apply {
                 putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, data.minWidth)
                 putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, data.minHeight)

@@ -1,0 +1,2 @@
+- Improved Folder create or combine animation
+- Bug fixes and stability improvements
