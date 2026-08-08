@@ -284,21 +284,26 @@ internal fun PagerScreen(
 
     val appWidgetLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
-    ) { result ->
+    ) {
         pagerScreenState.handleAppWidgetLauncherResult(
             moveGridItemResult = moveGridItemResult,
-            result = result,
+            result = it,
+            density = density,
+            screenWidth = screenWidth,
+            screenHeight = screenHeight,
+            paddingValues = paddingValues,
+            layoutDirection = layoutDirection,
         )
     }
 
     val shortcutConfigLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
-    ) { result ->
+    ) {
         scope.launch {
             handleShortcutConfigLauncherResult(
                 androidImageSerializer = androidImageSerializer,
                 moveGridItemResult = moveGridItemResult,
-                result = result,
+                result = it,
                 fileManager = fileManager,
                 onDeleteGridItem = onResetGridAfterDeleteGridItem,
                 onUpdateGridItemsAfterMove = onUpdateGridItemsAfterMove,
@@ -309,7 +314,7 @@ internal fun PagerScreen(
 
     val shortcutConfigIntentSenderLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult(),
-    ) { result ->
+    ) {
         scope.launch {
             handleShortcutConfigIntentSenderLauncherResult(
                 androidImageSerializer = androidImageSerializer,
@@ -317,7 +322,7 @@ internal fun PagerScreen(
                 androidUserManagerWrapper = androidUserManagerWrapper,
                 fileManager = fileManager,
                 moveGridItemResult = moveGridItemResult,
-                result = result,
+                result = it,
                 iconKeyGenerator = iconKeyGenerator,
                 onDeleteGridItem = onResetGridAfterDeleteGridItem,
                 onUpdateShortcutConfigIntoShortcutInfoGridItem = onUpdateShortcutConfigIntoShortcutInfoGridItem,
@@ -411,7 +416,6 @@ internal fun PagerScreen(
             gridCurrentPage = gridCurrentPage,
             dockGridCurrentPage = dockGridCurrentPage,
             density = density,
-            dockHeight = dockHeight,
             isGridScrollInProgress = gridHorizontalPagerState.isScrollInProgress,
             isDockScrollInProgress = dockGridHorizontalPagerState.isScrollInProgress,
             lockMovement = lockMovement,
@@ -432,6 +436,11 @@ internal fun PagerScreen(
             onLaunchWidgetIntent = appWidgetLauncher::launch,
             gridItemSource = currentGridItemSource,
             isVisibleOverlay = currentIsVisibleOverlay,
+            paddingValues = paddingValues,
+            screenHeight = screenHeight,
+            screenWidth = screenWidth,
+            layoutDirection = layoutDirection,
+            density = density,
             onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
             onResetGridAfterDeleteGridItem = onResetGridAfterDeleteGridItem,
             onResetGrid = onResetGrid,

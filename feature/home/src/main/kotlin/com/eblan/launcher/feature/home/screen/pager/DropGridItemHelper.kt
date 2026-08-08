@@ -32,9 +32,14 @@ import android.os.Process
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.IntentSenderRequest
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.State
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.unit.dp
 import com.eblan.launcher.domain.common.IconKeyGenerator
 import com.eblan.launcher.domain.framework.FileManager
+import com.eblan.launcher.domain.model.Associate
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.MoveGridItemResult
@@ -42,6 +47,8 @@ import com.eblan.launcher.domain.model.PinItemRequestType
 import com.eblan.launcher.feature.home.R
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
+import com.eblan.launcher.feature.home.screen.PAGE_INDICATOR_HEIGHT
+import com.eblan.launcher.feature.home.screen.updateAppWidgetOptions
 import com.eblan.launcher.framework.imageserializer.AndroidImageSerializer
 import com.eblan.launcher.framework.launcherapps.AndroidLauncherAppsWrapper
 import com.eblan.launcher.framework.usermanager.AndroidUserManagerWrapper
@@ -61,6 +68,14 @@ internal suspend fun handleDropGridItem(
     moveGridItemResult: State<MoveGridItemResult?>,
     lockMovement: Boolean,
     isVisibleOverlay: State<Boolean>,
+    columns: Int,
+    density: Density,
+    rows: Int,
+    paddingValues: PaddingValues,
+    screenHeight: Int,
+    screenWidth: Int,
+    dockHeight: Int,
+    layoutDirection: LayoutDirection,
     onResetGridAfterDeleteGridItem: (GridItem) -> Unit,
     onResetGrid: () -> Unit,
     onUpdateGridItemsAfterMove: (MoveGridItemResult) -> Unit,
@@ -81,6 +96,43 @@ internal suspend fun handleDropGridItem(
         drag == Drag.Dragging
     ) {
         return
+    }
+
+    val leftPadding = with(density) {
+        paddingValues.calculateLeftPadding(layoutDirection).roundToPx()
+    }
+
+    val rightPadding = with(density) {
+        paddingValues.calculateRightPadding(layoutDirection).roundToPx()
+    }
+
+    val topPadding = with(density) {
+        paddingValues.calculateTopPadding().roundToPx()
+    }
+
+    val bottomPadding = with(density) {
+        paddingValues.calculateBottomPadding().roundToPx()
+    }
+
+    val dockHeightPx = with(density) {
+        dockHeight.dp.roundToPx()
+    }
+
+    val pageIndicatorHeightPx = with(density) {
+        PAGE_INDICATOR_HEIGHT.roundToPx()
+    }
+
+    val horizontalPadding = leftPadding + rightPadding
+
+    val verticalPadding = topPadding + bottomPadding
+
+    val safeDrawingWidth = screenWidth - horizontalPadding
+
+    val safeDrawingHeight = screenHeight - verticalPadding
+
+    val gridHeight = when (currentMoveGridItemResult.movingGridItem.associate) {
+        Associate.Grid -> safeDrawingHeight - dockHeightPx - pageIndicatorHeightPx
+        Associate.Dock -> dockHeightPx
     }
 
     fun cancelAndDeleteGridItem() {
@@ -163,6 +215,11 @@ internal suspend fun handleDropGridItem(
                             androidAppWidgetManagerWrapper = androidAppWidgetManagerWrapper,
                             data = data,
                             gridItem = movingGridItem,
+                            columns = columns,
+                            density = density,
+                            gridHeight = gridHeight,
+                            gridWidth = safeDrawingWidth,
+                            rows = rows,
                             onLaunchWidgetIntent = onLaunchWidgetIntent,
                             onUpdateAppWidgetId = onUpdateAppWidgetId,
                             onUpdateWidgetGridItem = onUpdateWidgetGridItem,
@@ -233,6 +290,11 @@ internal suspend fun handleDropGridItem(
                         androidAppWidgetManagerWrapper = androidAppWidgetManagerWrapper,
                         data = data,
                         gridItem = movingGridItem,
+                        columns = columns,
+                        density = density,
+                        gridHeight = gridHeight,
+                        gridWidth = safeDrawingWidth,
+                        rows = rows,
                         onLaunchWidgetIntent = onLaunchWidgetIntent,
                         onUpdateAppWidgetId = onUpdateAppWidgetId,
                         onUpdateWidgetGridItem = onUpdateWidgetGridItem,
@@ -251,6 +313,14 @@ internal fun handleAppWidgetLauncherResult(
     androidAppWidgetManagerWrapper: AndroidAppWidgetManagerWrapper,
     moveGridItemResult: MoveGridItemResult?,
     result: ActivityResult,
+    columns: Int,
+    density: Density,
+    rows: Int,
+    screenWidth: Int,
+    screenHeight: Int,
+    paddingValues: PaddingValues,
+    layoutDirection: LayoutDirection,
+    dockHeight: Int,
     onDeleteAppWidgetId: () -> Unit,
     onUpdateWidgetGridItem: (GridItem) -> Unit,
 ) {
@@ -258,22 +328,61 @@ internal fun handleAppWidgetLauncherResult(
 
     val data = movingGridItem.data as GridItemData.Widget
 
+    val leftPadding = with(density) {
+        paddingValues.calculateLeftPadding(layoutDirection).roundToPx()
+    }
+
+    val rightPadding = with(density) {
+        paddingValues.calculateRightPadding(layoutDirection).roundToPx()
+    }
+
+    val topPadding = with(density) {
+        paddingValues.calculateTopPadding().roundToPx()
+    }
+
+    val bottomPadding = with(density) {
+        paddingValues.calculateBottomPadding().roundToPx()
+    }
+
+    val dockHeightPx = with(density) {
+        dockHeight.dp.roundToPx()
+    }
+
+    val pageIndicatorHeightPx = with(density) {
+        PAGE_INDICATOR_HEIGHT.roundToPx()
+    }
+
+    val horizontalPadding = leftPadding + rightPadding
+
+    val verticalPadding = topPadding + bottomPadding
+
+    val safeDrawingWidth = screenWidth - horizontalPadding
+
+    val safeDrawingHeight = screenHeight - verticalPadding
+
+    val gridHeight = when (movingGridItem.associate) {
+        Associate.Grid -> safeDrawingHeight - dockHeightPx - pageIndicatorHeightPx
+        Associate.Dock -> dockHeightPx
+    }
+
     if (result.resultCode == Activity.RESULT_OK) {
         val appWidgetId = result.data?.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, -1) ?: -1
 
-        val options = Bundle().apply {
-            putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, data.minWidth)
-            putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, data.minHeight)
-            putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH, data.minWidth)
-            putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT, data.minHeight)
-        }
-
-        androidAppWidgetManagerWrapper.updateAppWidgetOptions(
-            appWidgetId = appWidgetId,
-            options = options,
-        )
-
         val newData = data.copy(appWidgetId = appWidgetId)
+
+        updateAppWidgetOptions(
+            height = data.minHeight,
+            width = data.minWidth,
+            androidAppWidgetManagerWrapper = androidAppWidgetManagerWrapper,
+            columns = columns,
+            data = newData,
+            density = density,
+            gridHeight = gridHeight,
+            gridWidth = safeDrawingWidth,
+            rows = rows,
+            startColumn = movingGridItem.startColumn,
+            startRow = movingGridItem.startRow,
+        )
 
         onUpdateWidgetGridItem(movingGridItem.copy(data = newData))
     } else {
@@ -540,6 +649,11 @@ private fun onDragEndWidget(
     androidAppWidgetManagerWrapper: AndroidAppWidgetManagerWrapper,
     data: GridItemData.Widget,
     gridItem: GridItem,
+    columns: Int,
+    density: Density,
+    gridHeight: Int,
+    gridWidth: Int,
+    rows: Int,
     onLaunchWidgetIntent: (Intent) -> Unit,
     onUpdateAppWidgetId: (Int) -> Unit,
     onUpdateWidgetGridItem: (GridItem) -> Unit,
@@ -558,19 +672,21 @@ private fun onDragEndWidget(
     )
 
     if (bindAppWidgetIdIfAllowed) {
-        val options = Bundle().apply {
-            putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, data.minWidth)
-            putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, data.minHeight)
-            putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH, data.minWidth)
-            putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT, data.minHeight)
-        }
-
-        androidAppWidgetManagerWrapper.updateAppWidgetOptions(
-            appWidgetId = appWidgetId,
-            options = options,
-        )
-
         val newData = data.copy(appWidgetId = appWidgetId)
+
+        updateAppWidgetOptions(
+            height = data.minWidth,
+            width = data.minHeight,
+            androidAppWidgetManagerWrapper = androidAppWidgetManagerWrapper,
+            columns = columns,
+            data = newData,
+            density = density,
+            gridHeight = gridHeight,
+            gridWidth = gridWidth,
+            rows = rows,
+            startColumn = gridItem.startColumn,
+            startRow = gridItem.startRow,
+        )
 
         onUpdateWidgetGridItem(gridItem.copy(data = newData))
     } else {

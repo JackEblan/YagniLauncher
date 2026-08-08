@@ -53,7 +53,6 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.LayoutDirection
@@ -360,7 +359,6 @@ internal class PagerScreenState(
         gridCurrentPage: Int,
         dockGridCurrentPage: Int,
         density: Density,
-        dockHeight: Dp,
         isGridScrollInProgress: Boolean,
         isDockScrollInProgress: Boolean,
         lockMovement: Boolean,
@@ -385,7 +383,7 @@ internal class PagerScreenState(
             dockGridCurrentPage = dockGridCurrentPage,
             density = density,
             dockColumns = homeSettings.dockColumns,
-            dockHeight = dockHeight,
+            dockHeight = homeSettings.dockHeight,
             dockRows = homeSettings.dockRows,
             drag = drag,
             dragIntOffset = dragIntOffset,
@@ -418,6 +416,11 @@ internal class PagerScreenState(
         onLaunchWidgetIntent: (Intent) -> Unit,
         gridItemSource: State<GridItemSource?>,
         isVisibleOverlay: State<Boolean>,
+        paddingValues: PaddingValues,
+        screenHeight: Int,
+        screenWidth: Int,
+        layoutDirection: LayoutDirection,
+        density: Density,
         onUpdateIsVisibleOverlay: (Boolean) -> Unit,
         onResetGridAfterDeleteGridItem: (GridItem) -> Unit,
         onResetGrid: () -> Unit,
@@ -435,6 +438,14 @@ internal class PagerScreenState(
             isVisibleOverlay = isVisibleOverlay,
             moveGridItemResult = moveGridItemResult,
             lockMovement = experimentalSettings.lockMovement,
+            columns = homeSettings.columns,
+            density = density,
+            rows = homeSettings.rows,
+            paddingValues = paddingValues,
+            screenHeight = screenHeight,
+            screenWidth = screenWidth,
+            dockHeight = homeSettings.dockHeight,
+            layoutDirection = layoutDirection,
             onResetGridAfterDeleteGridItem = onResetGridAfterDeleteGridItem,
             onResetGrid = onResetGrid,
             onUpdateGridItemsAfterMove = onUpdateGridItemsAfterMove,
@@ -537,11 +548,24 @@ internal class PagerScreenState(
     fun handleAppWidgetLauncherResult(
         moveGridItemResult: MoveGridItemResult?,
         result: ActivityResult,
+        density: Density,
+        screenWidth: Int,
+        screenHeight: Int,
+        paddingValues: PaddingValues,
+        layoutDirection: LayoutDirection,
     ) {
         handleAppWidgetLauncherResult(
             androidAppWidgetManagerWrapper = androidAppWidgetManagerWrapper,
             moveGridItemResult = moveGridItemResult,
             result = result,
+            columns = homeSettings.columns,
+            density = density,
+            rows = homeSettings.rows,
+            screenWidth = screenWidth,
+            screenHeight = screenHeight,
+            paddingValues = paddingValues,
+            layoutDirection = layoutDirection,
+            dockHeight = homeSettings.dockHeight,
             onDeleteAppWidgetId = {
                 deleteAppWidgetId = true
             },
