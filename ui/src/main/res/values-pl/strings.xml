@@ -54,5 +54,5 @@
     <string name="swipe_down">Przesunięcie w dół</string>
     <string name="display_app_names_below_icons">Wyświetlaj nazwy aplikacji pod ikonami</string>
     <string name="limit_app_names_to_one_line">Ogranicz nazwy aplikacji do jednej linii</string>
-    <string name="custom">Własne</string>
+    <string name="custom">Własny</string>
 </resources>
