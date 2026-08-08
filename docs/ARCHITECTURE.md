@@ -2,6 +2,10 @@
 
 This document describes how Yagni Launcher's Gradle modules are organized and how they map onto Clean Architecture. It focuses on stable module responsibilities and dependency rules rather than an inventory of classes, which changes far more often than the architecture itself.
 
+This module structure follows [The Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html):
+
+![The Clean Architecture](https://blog.cleancoder.com/uncle-bob/images/2012-08-13-the-clean-architecture/CleanArchitecture.jpg)
+
 ---
 
 ## Table of Contents
@@ -35,7 +39,7 @@ Dependencies only point **inward**: Presentation depends on Framework and Domain
 
 ## Dependency Diagram
 
-The diagram below is intentionally simplified to the module *groups*; edit it directly as modules are added, split, or merged.
+The diagram below is intentionally simplified to the module *groups* and is representative rather than exhaustive — some direct dependencies (for example `app`'s and `ui`'s direct dependencies on individual `domain:*` modules) are omitted for clarity. Edit it directly as modules are added, split, or merged.
 
 ```mermaid
 graph TD
@@ -81,8 +85,6 @@ graph TD
     UI --> FrameworkModules
     UI --> DomainModel
 
-    DesignSystem --> DomainModel
-
     DomainUseCase --> DomainRepository
     DomainUseCase --> DomainFramework
     DomainUseCase --> DomainGrid
@@ -95,7 +97,6 @@ graph TD
     DataRoom --> DomainModel
 
     DataDatastore --> DataDatastoreProto
-    DataDatastore --> DomainRepository
 
     FrameworkModules --> DomainFramework
 ```
@@ -139,7 +140,7 @@ Most of these modules implement an interface declared in `domain:framework` and 
 | Module | Responsibility |
 |---|---|
 | `feature:*` (`home`, `action`, `pin`, `edit-application-info`, `edit-grid-item`, `settings:*`) | Feature-specific screens, ViewModels, and UI state. |
-| `design-system` | Generic, application-agnostic Compose primitives. |
+| `design-system` | Generic, model-free Compose primitives. |
 | `ui` | Shared, application-aware UI reused by multiple features. |
 | `service` | Background Android services (accessibility, notification listener, icon pack updates). |
 
@@ -157,6 +158,13 @@ Most of these modules implement an interface declared in `domain:framework` and 
 
 These three module groups all sit in the Presentation layer, but each has a distinct responsibility:
 
-- **`design-system`** contains generic, reusable visual primitives — theming, icons, animations, dialogs, and other Compose building blocks that carry no knowledge of the launcher's domain models or features. It depends only on `domain:model` for the types it renders.
-- **`ui`** contains shared, *application-aware* UI: composites built from `design-system` primitives that are reused across multiple features (dialogs like `SelectApplicationDialog`, settings composables, etc.), and it exposes the `framework:*` modules as API dependencies so features can reach framework implementations through a single dependency on `:ui`. It depends on `design-system`.
+- **`design-system`** contains generic, reusable visual primitives — theming, icons, animations, dialogs, and other Compose building blocks that carry no knowledge of the launcher's domain models or features. It is model-free: it has no dependency on `domain:model` or any other domain module.
+- **`ui`** contains shared, *application-aware* UI: composites built from `design-system` primitives that are reused across multiple features (dialogs like `SelectApplicationDialog`, settings composables, etc.). This is where launcher-model-aware and framework-aware shared UI lives — it depends on `design-system`, on `domain:model` for the types it renders, and exposes the `framework:*` modules as API dependencies so features can reach framework implementations through a single dependency on `:ui`.
 - **`feature:*`** modules contain screens, ViewModels, and UI state specific to one feature. They depend on both `design-system` and `ui` (added automatically by the `feature` Gradle convention plugin) plus whatever `domain:*` modules that feature's use cases require.
+
+---
+
+## Further Reading
+
+- [The Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
+- [Now in Android modularization guide](https://github.com/android/nowinandroid/blob/main/docs/ModularizationLearningJourney.md)
