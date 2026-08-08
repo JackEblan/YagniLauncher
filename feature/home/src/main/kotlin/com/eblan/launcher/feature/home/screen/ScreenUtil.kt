@@ -26,7 +26,6 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import com.eblan.launcher.domain.model.EblanAction
 import com.eblan.launcher.domain.model.EblanActionType
-import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.HorizontalAlignment
 import com.eblan.launcher.domain.model.VerticalArrangement
@@ -64,22 +63,23 @@ internal fun onDoubleTap(
 }
 
 internal fun updateAppWidgetOptions(
-    allowedHeight: Int,
-    allowedWidth: Int,
+    height: Int,
+    width: Int,
     androidAppWidgetManagerWrapper: AndroidAppWidgetManagerWrapper,
     columns: Int,
     data: GridItemData.Widget,
     density: Density,
     gridHeight: Int,
-    gridItem: GridItem,
     gridWidth: Int,
     rows: Int,
+    startColumn: Int,
+    startRow: Int,
 ) {
     val cellWidthPx = gridWidth.toFloat() / columns
     val cellHeightPx = gridHeight.toFloat() / rows
 
-    val maxSpanColumns = (columns - gridItem.startColumn).coerceAtLeast(1)
-    val maxSpanRows = (rows - gridItem.startRow).coerceAtLeast(1)
+    val maxSpanColumns = (columns - startColumn).coerceAtLeast(1)
+    val maxSpanRows = (rows - startRow).coerceAtLeast(1)
 
     val maxWidthByGridPx = (maxSpanColumns * cellWidthPx).roundToInt()
     val maxHeightByGridPx = (maxSpanRows * cellHeightPx).roundToInt()
@@ -101,8 +101,8 @@ internal fun updateAppWidgetOptions(
         maxHeightByGridPx
     }
 
-    val minWidthPx = if (data.minResizeWidth > 0) data.minResizeWidth else allowedWidth
-    val minHeightPx = if (data.minResizeHeight > 0) data.minResizeHeight else allowedHeight
+    val minWidthPx = if (data.minResizeWidth > 0) data.minResizeWidth else width
+    val minHeightPx = if (data.minResizeHeight > 0) data.minResizeHeight else height
 
     val minWidthDp = with(density) { minWidthPx.toDp().value.roundToInt().coerceAtLeast(1) }
     val minHeightDp =

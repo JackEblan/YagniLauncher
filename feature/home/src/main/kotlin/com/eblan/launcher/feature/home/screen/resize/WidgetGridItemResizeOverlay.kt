@@ -231,16 +231,17 @@ internal fun WidgetGridItemResizeOverlay(
             ) && !lockMovement
         ) {
             updateAppWidgetOptions(
-                allowedHeight = allowedHeight,
-                allowedWidth = allowedWidth,
+                height = allowedHeight,
+                width = allowedWidth,
                 androidAppWidgetManagerWrapper = appWidgetManager,
                 columns = columns,
                 data = data,
                 density = density,
                 gridHeight = gridHeight,
-                gridItem = gridItem,
                 gridWidth = gridWidth,
                 rows = rows,
+                startColumn = resizingGridItem.startColumn,
+                startRow = resizingGridItem.startRow,
             )
 
             onResizeWidgetGridItem(
