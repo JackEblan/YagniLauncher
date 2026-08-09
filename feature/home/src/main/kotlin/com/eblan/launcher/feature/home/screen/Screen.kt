@@ -68,12 +68,15 @@ internal fun ScreenEffect(
 
 @Composable
 internal fun HomeHandler(
-    enabled: Boolean,
+    enabled: Boolean = true,
     onHome: (Intent) -> Unit,
 ) {
     val activity = LocalActivity.current as ComponentActivity
 
-    DisposableEffect(key1 = activity) {
+    DisposableEffect(
+        key1 = activity,
+        key2 = enabled,
+    ) {
         val listener = Consumer<Intent> { intent ->
             handleActionMainIntent(
                 enabled = enabled,

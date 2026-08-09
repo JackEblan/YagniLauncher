@@ -63,6 +63,7 @@ import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.feature.home.component.popup
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
+import com.eblan.launcher.feature.home.screen.HomeHandler
 import com.eblan.launcher.feature.home.screen.shortcutinfo.ShortcutInfoScreen
 
 @Composable
@@ -134,6 +135,10 @@ internal fun GridItemPopup(
     }
 
     BackHandler(enabled = transitionState.targetState) {
+        transitionState.targetState = false
+    }
+
+    HomeHandler(enabled = transitionState.targetState) {
         transitionState.targetState = false
     }
 
