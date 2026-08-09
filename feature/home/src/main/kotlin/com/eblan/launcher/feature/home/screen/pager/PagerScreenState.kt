@@ -1164,10 +1164,7 @@ internal class PagerScreenState(
     fun handleOnDragEndAppWidgetScreen() {
         scope.launch {
             if (appWidgetScreenSwipeY.value > 200f) {
-                appWidgetScreenSwipeY.animateTo(
-                    targetValue = screenHeight.toFloat(),
-                    animationSpec = tween(easing = FastOutSlowInEasing),
-                )
+                dismissAppWidgetScreen()
             } else {
                 appWidgetScreenSwipeY.animateTo(
                     targetValue = 0f,
@@ -1271,7 +1268,10 @@ internal class PagerScreenState(
         if (swipeY.value != screenHeight.toFloat() ||
             widgetScreenSwipeY.value != screenHeight.toFloat() ||
             shortcutConfigScreenSwipeY.value != screenHeight.toFloat() ||
-            showGridItemPopup || showSettingsPopup ||
+            showWidgetScreen ||
+            showShortcutConfigScreen ||
+            showGridItemPopup ||
+            showSettingsPopup ||
             showFolderGridItemPopup ||
             eblanApplicationInfoGroup != null
         ) {
