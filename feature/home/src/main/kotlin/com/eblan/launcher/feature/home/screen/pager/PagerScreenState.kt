@@ -1135,7 +1135,7 @@ internal class PagerScreenState(
         horizontalPagerState: PagerState,
         windowToken: IBinder,
     ) {
-        if (!homeSettings.wallpaperScroll) return
+        if (!homeSettings.wallpaperScroll || homeSettings.pageCount <= 1) return
 
         var reverseXOffset: Float
 
@@ -1237,7 +1237,7 @@ internal class PagerScreenState(
             )
         }
 
-        if (homeSettings.wallpaperScroll) {
+        if (homeSettings.wallpaperScroll && homeSettings.pageCount > 1) {
             val page = calculatePage(
                 index = gridHorizontalPagerState.currentPage,
                 infiniteScroll = homeSettings.infiniteScroll,
@@ -1245,13 +1245,13 @@ internal class PagerScreenState(
             )
 
             androidWallpaperManagerWrapper.setWallpaperOffsetSteps(
-                xStep = 1f / (homeSettings.pageCount.toFloat() - 1),
+                xStep = 1f / (homeSettings.pageCount - 1),
                 yStep = 1f,
             )
 
             androidWallpaperManagerWrapper.setWallpaperOffsets(
                 windowToken = windowToken,
-                xOffset = page / (homeSettings.pageCount.toFloat() - 1),
+                xOffset = page.toFloat() / (homeSettings.pageCount - 1),
                 yOffset = 0f,
             )
         }
