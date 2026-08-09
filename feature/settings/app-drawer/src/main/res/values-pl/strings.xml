@@ -24,7 +24,7 @@
     <string name="no_hidden_applications">Brak ukrytych aplikacji</string>
     <string name="app_drawer_type">Typ szuflady aplikacji</string>
     <string name="exclude_tagged_apps">Wyklucz aplikacje z etykietami</string>
-    <string name="hide_selected_apps_from_the_app_drawer">Ukryj wybrane aplikacje w szufladzie aplikacji</string>
+    <string name="hide_selected_apps_from_the_app_drawer">Ukryj wybrane aplikacje z szuflady aplikacji</string>
     <string name="hide_apps_marked_with_selected_tags">Ukryj aplikacje oznaczone wybranymi etykietami</string>
     <string name="show_keyboard">Pokaż klawiaturę</string>
     <string name="show_keyboard_when_app_drawer_opens">Otwieraj klawiaturę po otwarciu szuflady aplikacji</string>
