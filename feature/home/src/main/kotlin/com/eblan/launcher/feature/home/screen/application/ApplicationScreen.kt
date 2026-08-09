@@ -84,6 +84,7 @@ import com.eblan.launcher.feature.home.R
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
+import com.eblan.launcher.feature.home.screen.HomeHandler
 import com.eblan.launcher.feature.home.screen.application.horizontal.HorizontalApplicationScreen
 import com.eblan.launcher.feature.home.screen.application.list.ListApplicationScreen
 import com.eblan.launcher.feature.home.screen.application.vertical.VerticalApplicationScreen
@@ -110,7 +111,6 @@ internal fun ApplicationScreen(
     eblanShortcutInfosGroup: Map<EblanShortcutInfoByGroup, List<EblanShortcutInfo>>,
     getEblanApplicationInfosByLabelAndTag: GetEblanApplicationInfosByLabelAndTag,
     hasShortcutHostPermission: Boolean,
-    isPressHome: Boolean,
     managedProfileResult: ManagedProfileResult?,
     paddingValues: PaddingValues,
     screenHeight: Int,
@@ -177,7 +177,6 @@ internal fun ApplicationScreen(
                     eblanShortcutInfosGroup = eblanShortcutInfosGroup,
                     getEblanApplicationInfosByLabelAndTag = getEblanApplicationInfosByLabelAndTag,
                     hasShortcutHostPermission = hasShortcutHostPermission,
-                    isPressHome = isPressHome,
                     managedProfileResult = managedProfileResult,
                     paddingValues = paddingValues,
                     screenHeight = screenHeight,
@@ -212,7 +211,6 @@ internal fun ApplicationScreen(
                     eblanShortcutInfosGroup = eblanShortcutInfosGroup,
                     getEblanApplicationInfosByLabelAndTag = getEblanApplicationInfosByLabelAndTag,
                     hasShortcutHostPermission = hasShortcutHostPermission,
-                    isPressHome = isPressHome,
                     managedProfileResult = managedProfileResult,
                     paddingValues = paddingValues,
                     screenHeight = screenHeight,
@@ -245,7 +243,6 @@ internal fun ApplicationScreen(
                     eblanShortcutInfosGroup = eblanShortcutInfosGroup,
                     getEblanApplicationInfosByLabelAndTag = getEblanApplicationInfosByLabelAndTag,
                     hasShortcutHostPermission = hasShortcutHostPermission,
-                    isPressHome = isPressHome,
                     managedProfileResult = managedProfileResult,
                     paddingValues = paddingValues,
                     screenHeight = screenHeight,
@@ -413,7 +410,6 @@ internal fun EblanApplicationInfoTabRow(
 @Composable
 internal fun ApplicationScreenEffect(
     horizontalPagerState: PagerState,
-    isPressHome: Boolean,
     screenHeight: Int,
     selectedEblanApplicationInfoTagId: Long?,
     showPopupApplicationMenu: Boolean,
@@ -440,12 +436,6 @@ internal fun ApplicationScreenEffect(
 
     LaunchedEffect(key1 = selectedEblanApplicationInfoTagId) {
         onGetEblanApplicationInfosByTagId(selectedEblanApplicationInfoTagId)
-    }
-
-    LaunchedEffect(key1 = isPressHome) {
-        if (isPressHome && swipeY < screenHeight.toFloat()) {
-            onDismiss()
-        }
     }
 
     LaunchedEffect(key1 = horizontalPagerState.isScrollInProgress) {
@@ -475,6 +465,10 @@ internal fun ApplicationScreenEffect(
     }
 
     BackHandler(enabled = swipeY < screenHeight.toFloat()) {
+        onDismiss()
+    }
+
+    HomeHandler(enabled = swipeY < screenHeight.toFloat()) {
         onDismiss()
     }
 }

@@ -33,6 +33,7 @@ import com.eblan.launcher.domain.model.Associate
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.HomeSettings
 import com.eblan.launcher.domain.model.TextColor
+import com.eblan.launcher.feature.home.screen.HomeHandler
 import com.eblan.launcher.feature.home.screen.PAGE_INDICATOR_HEIGHT
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -66,6 +67,10 @@ internal fun ResizeScreen(
     }
 
     BackHandler {
+        onResizeCancel()
+    }
+
+    HomeHandler {
         onResizeCancel()
     }
 

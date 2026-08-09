@@ -110,7 +110,6 @@ internal fun ShortcutConfigScreen(
     drag: Drag,
     eblanShortcutConfigs: Map<EblanUser, Map<EblanApplicationInfoGroup, List<EblanShortcutConfig>>>,
     gridItemSettings: GridItemSettings,
-    isPressHome: Boolean,
     paddingValues: PaddingValues,
     screenHeight: Int,
     swipeY: Float,
@@ -148,7 +147,6 @@ internal fun ShortcutConfigScreen(
     val scope = rememberCoroutineScope()
 
     ScreenEffect(
-        isPressHome = isPressHome,
         swipeY = swipeY,
         screenHeight = screenHeight,
         onDismiss = onDismiss,

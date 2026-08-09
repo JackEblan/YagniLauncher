@@ -53,6 +53,7 @@ import com.eblan.launcher.domain.model.Associate
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.feature.home.R
 import com.eblan.launcher.feature.home.model.SettingsMenuItem
+import com.eblan.launcher.feature.home.screen.HomeHandler
 import com.eblan.launcher.ui.settings.settingsItemShape
 import com.eblan.launcher.common.R as commonR
 
@@ -129,6 +130,10 @@ internal fun SettingsPopup(
     }
 
     BackHandler(enabled = transitionState.targetState) {
+        transitionState.targetState = false
+    }
+
+    HomeHandler(enabled = transitionState.targetState) {
         transitionState.targetState = false
     }
 

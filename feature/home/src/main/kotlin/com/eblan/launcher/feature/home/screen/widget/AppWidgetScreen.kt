@@ -40,7 +40,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -69,6 +68,7 @@ import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
+import com.eblan.launcher.feature.home.screen.HomeHandler
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 import kotlin.uuid.ExperimentalUuidApi
@@ -83,7 +83,6 @@ internal fun AppWidgetScreen(
     eblanAppWidgetProviderInfosGroup: Map<String, List<EblanAppWidgetProviderInfo>>,
     eblanApplicationInfoGroup: EblanApplicationInfoGroup?,
     gridItemSettings: GridItemSettings,
-    isPressHome: Boolean,
     paddingValues: PaddingValues,
     rows: Int,
     screenHeight: Int,
@@ -106,13 +105,11 @@ internal fun AppWidgetScreen(
 ) {
     requireNotNull(eblanApplicationInfoGroup)
 
-    LaunchedEffect(key1 = isPressHome) {
-        if (isPressHome && swipeY < screenHeight.toFloat()) {
-            onDismiss()
-        }
+    BackHandler(enabled = swipeY < screenHeight.toFloat()) {
+        onDismiss()
     }
 
-    BackHandler(enabled = swipeY < screenHeight.toFloat()) {
+    HomeHandler(enabled = swipeY < screenHeight.toFloat()) {
         onDismiss()
     }
 

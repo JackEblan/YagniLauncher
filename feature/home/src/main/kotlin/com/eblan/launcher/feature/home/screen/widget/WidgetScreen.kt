@@ -101,7 +101,6 @@ internal fun WidgetScreen(
     drag: Drag,
     eblanAppWidgetProviderInfos: Map<EblanApplicationInfoGroup, List<EblanAppWidgetProviderInfo>>,
     gridItemSettings: GridItemSettings,
-    isPressHome: Boolean,
     paddingValues: PaddingValues,
     rows: Int,
     screenHeight: Int,
@@ -150,7 +149,6 @@ internal fun WidgetScreen(
     val textFieldState = rememberTextFieldState()
 
     ScreenEffect(
-        isPressHome = isPressHome,
         swipeY = swipeY,
         screenHeight = screenHeight,
         onDismiss = onDismiss,

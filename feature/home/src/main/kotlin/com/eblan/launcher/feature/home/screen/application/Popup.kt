@@ -63,6 +63,7 @@ import com.eblan.launcher.feature.home.component.popup
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
+import com.eblan.launcher.feature.home.screen.HomeHandler
 import com.eblan.launcher.feature.home.screen.shortcutinfo.PrivateShortcutInfoMenu
 import com.eblan.launcher.feature.home.screen.shortcutinfo.ShortcutInfoScreen
 import com.eblan.launcher.ui.local.LocalLauncherApps
@@ -137,6 +138,10 @@ internal fun ApplicationInfoPopup(
     }
 
     BackHandler(enabled = transitionState.targetState) {
+        transitionState.targetState = false
+    }
+
+    HomeHandler(enabled = transitionState.targetState) {
         transitionState.targetState = false
     }
 
@@ -300,6 +305,10 @@ internal fun PrivateApplicationInfoPopup(
     }
 
     BackHandler(enabled = transitionState.targetState) {
+        transitionState.targetState = false
+    }
+
+    HomeHandler(enabled = transitionState.targetState) {
         transitionState.targetState = false
     }
 
