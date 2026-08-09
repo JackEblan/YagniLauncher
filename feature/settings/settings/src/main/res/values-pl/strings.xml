@@ -30,7 +30,7 @@
     <string name="support_message">
     Jeśli uważasz tę aplikację za wartościową, będę wdzięczny za wsparcie poprzez przekazanie darowizny w serwisie Ko-fi lub dodanie gwiazdki do repozytorium na GitHubie.
 </string>
-    <string name="support_on_ko_fi">Wsprzyj na Ko-Fi</string>
+    <string name="support_on_ko_fi">Wesprzyj na Ko-Fi</string>
     <string name="star_on_github">Dodaj gwiazdkę na GitHubie</string>
     <string name="note_this_informational_card_will_be_removed_in_future_stable_releases">Uwaga: Ta karta informacyjna zostanie usunięta w przyszłych wersjach stabilnych</string>
 </resources>
