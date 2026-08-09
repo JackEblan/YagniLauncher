@@ -41,7 +41,7 @@
     <string name="dock">Dok</string>
     <string name="dock_infinite_scroll">Nieskończone przewijanie doku</string>
     <string name="folder">Folder</string>
-    <string name="prevent_rotation_when_device_orientation_changes">Zapobiegaj obracaniu ekranu przy zmianie pozycji urządzenia</string>
+    <string name="prevent_rotation_when_device_orientation_changes">Zapobiegaj obracaniu ekranu przy zmianie orientacji urządzenia</string>
     <string name="show_page_indicator">Pokaż wskaźnik stron</string>
     <string name="show_an_indicator_for_the_current_page">Pokazuj wskaźnik bieżącej strony</string>
 </resources>
