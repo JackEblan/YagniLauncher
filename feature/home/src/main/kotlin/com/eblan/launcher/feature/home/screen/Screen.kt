@@ -26,6 +26,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.core.util.Consumer
@@ -73,6 +75,8 @@ internal fun HomeHandler(
 ) {
     val activity = LocalActivity.current as ComponentActivity
 
+    val currentOnHome by rememberUpdatedState(onHome)
+
     DisposableEffect(
         key1 = activity,
         key2 = enabled,
@@ -81,7 +85,7 @@ internal fun HomeHandler(
             handleActionMainIntent(
                 enabled = enabled,
                 intent = intent,
-                onHome = onHome,
+                onHome = currentOnHome,
             )
         }
 

@@ -526,25 +526,6 @@ internal class PagerScreenState(
         hasDoubleTap = false
     }
 
-    fun handleNewIntent(
-        dockGridHorizontalPagerState: PagerState,
-        gridHorizontalPagerState: PagerState,
-        intent: Intent,
-        windowToken: IBinder,
-    ) {
-        showGridItemPopup = false
-
-        showSettingsPopup = false
-
-        handlePageWhenActionMainIntent(
-            dockGridHorizontalPagerState = dockGridHorizontalPagerState,
-            gridHorizontalPagerState = gridHorizontalPagerState,
-            windowToken = windowToken,
-        )
-
-        handleEblanActionWhenActionMainIntent(intent = intent)
-    }
-
     fun handleAppWidgetLauncherResult(
         moveGridItemResult: MoveGridItemResult?,
         result: ActivityResult,
@@ -1250,30 +1231,15 @@ internal class PagerScreenState(
         }
     }
 
-    private fun handleApplyFling(swipeY: Animatable<Float, AnimationVector1D>) {
-        scope.launch {
-            if (swipeY.value > 200f) {
-                swipeY.animateTo(
-                    targetValue = screenHeight.toFloat(),
-                    animationSpec = tween(easing = FastOutSlowInEasing),
-                )
-            } else {
-                swipeY.animateTo(
-                    targetValue = 0f,
-                    animationSpec = spring(
-                        dampingRatio = Spring.DampingRatioNoBouncy,
-                        stiffness = Spring.StiffnessLow,
-                    ),
-                )
-            }
-        }
-    }
-
-    private fun handlePageWhenActionMainIntent(
+    fun handleActionMainIntent(
         dockGridHorizontalPagerState: PagerState,
         gridHorizontalPagerState: PagerState,
         windowToken: IBinder,
     ) {
+        showGridItemPopup = false
+
+        showSettingsPopup = false
+
         animateScrollToPages(
             dockGridHorizontalPagerState = dockGridHorizontalPagerState,
             gridHorizontalPagerState = gridHorizontalPagerState,
@@ -1299,7 +1265,7 @@ internal class PagerScreenState(
         }
     }
 
-    private fun handleEblanActionWhenActionMainIntent(intent: Intent) {
+    fun handleEblanActionIntent(intent: Intent) {
         if (intent.action != EblanAction.ACTION) return
 
         val eblanAction = intent.getStringExtra(EblanAction.NAME)?.let { eblanAction ->
@@ -1322,6 +1288,25 @@ internal class PagerScreenState(
                 }
             },
         )
+    }
+
+    private fun handleApplyFling(swipeY: Animatable<Float, AnimationVector1D>) {
+        scope.launch {
+            if (swipeY.value > 200f) {
+                swipeY.animateTo(
+                    targetValue = screenHeight.toFloat(),
+                    animationSpec = tween(easing = FastOutSlowInEasing),
+                )
+            } else {
+                swipeY.animateTo(
+                    targetValue = 0f,
+                    animationSpec = spring(
+                        dampingRatio = Spring.DampingRatioNoBouncy,
+                        stiffness = Spring.StiffnessLow,
+                    ),
+                )
+            }
+        }
     }
 }
 

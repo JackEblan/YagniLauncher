@@ -50,6 +50,7 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -65,6 +66,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
+import androidx.core.util.Consumer
 import com.eblan.launcher.domain.model.AppDrawerSettings
 import com.eblan.launcher.domain.model.Associate
 import com.eblan.launcher.domain.model.EblanActionType
@@ -537,6 +539,18 @@ internal fun PagerScreen(
         )
     }
 
+    DisposableEffect(key1 = activity) {
+        val listener = Consumer<Intent> {
+            pagerScreenState.handleEblanActionIntent(intent = it)
+        }
+
+        activity.addOnNewIntentListener(listener)
+
+        onDispose {
+            activity.removeOnNewIntentListener(listener)
+        }
+    }
+
     BackHandler(
         enabled = pagerScreenState.swipeY.value == screenHeight.toFloat() &&
             !pagerScreenState.showGridItemPopup && !pagerScreenState.showSettingsPopup &&
@@ -556,10 +570,9 @@ internal fun PagerScreen(
             !pagerScreenState.showFolderGridItemPopup &&
             pagerScreenState.eblanApplicationInfoGroup == null,
     ) {
-        pagerScreenState.handleNewIntent(
+        pagerScreenState.handleActionMainIntent(
             dockGridHorizontalPagerState = dockGridHorizontalPagerState,
             gridHorizontalPagerState = gridHorizontalPagerState,
-            intent = it,
             windowToken = view.windowToken,
         )
     }
