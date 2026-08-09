@@ -130,9 +130,6 @@ internal class PagerScreenState(
     var hasDoubleTap by mutableStateOf(false)
         private set
 
-    var isPressHome by mutableStateOf(false)
-        private set
-
     var eblanApplicationInfoGroup by mutableStateOf<EblanApplicationInfoGroup?>(null)
         private set
 
@@ -535,14 +532,17 @@ internal class PagerScreenState(
         intent: Intent,
         windowToken: IBinder,
     ) {
-        handleActionMainIntent(
+        showGridItemPopup = false
+
+        showSettingsPopup = false
+
+        handlePageWhenActionMainIntent(
             dockGridHorizontalPagerState = dockGridHorizontalPagerState,
             gridHorizontalPagerState = gridHorizontalPagerState,
-            intent = intent,
             windowToken = windowToken,
         )
 
-        handleEblanActionIntent(intent = intent)
+        handleEblanActionWhenActionMainIntent(intent = intent)
     }
 
     fun handleAppWidgetLauncherResult(
@@ -633,55 +633,6 @@ internal class PagerScreenState(
         }
     }
 
-    fun handleActionMainIntent(
-        dockGridHorizontalPagerState: PagerState,
-        gridHorizontalPagerState: PagerState,
-        intent: Intent,
-        windowToken: IBinder,
-    ) {
-        if (intent.action != Intent.ACTION_MAIN && !intent.hasCategory(Intent.CATEGORY_HOME)) {
-            return
-        }
-
-        if ((intent.flags and Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
-            return
-        }
-
-        isPressHome = true
-
-        if (swipeY.value < screenHeight.toFloat() ||
-            widgetScreenSwipeY.value < screenHeight.toFloat() ||
-            shortcutConfigScreenSwipeY.value < screenHeight.toFloat() ||
-            eblanApplicationInfoGroup != null
-        ) {
-            return
-        }
-
-        animateScrollToPages(
-            dockGridHorizontalPagerState = dockGridHorizontalPagerState,
-            gridHorizontalPagerState = gridHorizontalPagerState,
-        )
-
-        if (homeSettings.wallpaperScroll) {
-            val page = calculatePage(
-                index = gridHorizontalPagerState.currentPage,
-                infiniteScroll = homeSettings.infiniteScroll,
-                pageCount = homeSettings.pageCount,
-            )
-
-            androidWallpaperManagerWrapper.setWallpaperOffsetSteps(
-                xStep = 1f / (homeSettings.pageCount.toFloat() - 1),
-                yStep = 1f,
-            )
-
-            androidWallpaperManagerWrapper.setWallpaperOffsets(
-                windowToken = windowToken,
-                xOffset = page / (homeSettings.pageCount.toFloat() - 1),
-                yOffset = 0f,
-            )
-        }
-    }
-
     fun animateScrollToPages(
         dockGridHorizontalPagerState: PagerState,
         gridHorizontalPagerState: PagerState,
@@ -732,31 +683,6 @@ internal class PagerScreenState(
                 },
             )
         }
-    }
-
-    fun handleEblanActionIntent(intent: Intent) {
-        if (intent.action != EblanAction.ACTION) return
-
-        val eblanAction = intent.getStringExtra(EblanAction.NAME)?.let { eblanAction ->
-            Json.decodeFromString<EblanAction>(eblanAction)
-        } ?: return
-
-        handleEblanAction(
-            context = context,
-            eblanAction = eblanAction,
-            launcherApps = androidLauncherAppsWrapper,
-            onOpenAppDrawer = {
-                scope.launch {
-                    swipeY.animateTo(
-                        targetValue = 0f,
-                        animationSpec = spring(
-                            dampingRatio = Spring.DampingRatioNoBouncy,
-                            stiffness = Spring.StiffnessLow,
-                        ),
-                    )
-                }
-            },
-        )
     }
 
     fun dragStart(offset: Offset) {
@@ -874,14 +800,6 @@ internal class PagerScreenState(
         statusBarNotifications = value
     }
 
-    fun handleIsPressHome() {
-        if (isPressHome) {
-            showGridItemPopup = false
-
-            showSettingsPopup = false
-        }
-    }
-
     fun verticalDrag(dragAmount: Float) {
         scope.launch {
             swipeUpY.snapTo(swipeUpY.value + dragAmount)
@@ -939,10 +857,6 @@ internal class PagerScreenState(
                     easing = FastOutSlowInEasing,
                 ),
             )
-
-            if (isPressHome) {
-                isPressHome = false
-            }
         }
     }
 
@@ -975,10 +889,6 @@ internal class PagerScreenState(
             )
 
             showWidgetScreen = false
-
-            if (isPressHome) {
-                isPressHome = false
-            }
         }
     }
 
@@ -1027,10 +937,6 @@ internal class PagerScreenState(
             )
 
             showShortcutConfigScreen = false
-
-            if (isPressHome) {
-                isPressHome = false
-            }
         }
     }
 
@@ -1044,10 +950,6 @@ internal class PagerScreenState(
             )
 
             eblanApplicationInfoGroup = null
-
-            if (isPressHome) {
-                isPressHome = false
-            }
         }
     }
 
@@ -1365,6 +1267,61 @@ internal class PagerScreenState(
                 )
             }
         }
+    }
+
+    private fun handlePageWhenActionMainIntent(
+        dockGridHorizontalPagerState: PagerState,
+        gridHorizontalPagerState: PagerState,
+        windowToken: IBinder,
+    ) {
+        animateScrollToPages(
+            dockGridHorizontalPagerState = dockGridHorizontalPagerState,
+            gridHorizontalPagerState = gridHorizontalPagerState,
+        )
+
+        if (homeSettings.wallpaperScroll) {
+            val page = calculatePage(
+                index = gridHorizontalPagerState.currentPage,
+                infiniteScroll = homeSettings.infiniteScroll,
+                pageCount = homeSettings.pageCount,
+            )
+
+            androidWallpaperManagerWrapper.setWallpaperOffsetSteps(
+                xStep = 1f / (homeSettings.pageCount.toFloat() - 1),
+                yStep = 1f,
+            )
+
+            androidWallpaperManagerWrapper.setWallpaperOffsets(
+                windowToken = windowToken,
+                xOffset = page / (homeSettings.pageCount.toFloat() - 1),
+                yOffset = 0f,
+            )
+        }
+    }
+
+    private fun handleEblanActionWhenActionMainIntent(intent: Intent) {
+        if (intent.action != EblanAction.ACTION) return
+
+        val eblanAction = intent.getStringExtra(EblanAction.NAME)?.let { eblanAction ->
+            Json.decodeFromString<EblanAction>(eblanAction)
+        } ?: return
+
+        handleEblanAction(
+            context = context,
+            eblanAction = eblanAction,
+            launcherApps = androidLauncherAppsWrapper,
+            onOpenAppDrawer = {
+                scope.launch {
+                    swipeY.animateTo(
+                        targetValue = 0f,
+                        animationSpec = spring(
+                            dampingRatio = Spring.DampingRatioNoBouncy,
+                            stiffness = Spring.StiffnessLow,
+                        ),
+                    )
+                }
+            },
+        )
     }
 }
 
