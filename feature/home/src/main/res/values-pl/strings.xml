@@ -31,7 +31,7 @@
 
     <string name="private_space">Przestrzeń prywatna</string>
 
-    <string name="please_wait_for_the_white_box_indicator">Poczekaj na pojawienie się białego wskaźnika</string>
+    <string name="please_wait_for_the_white_box_indicator">Poczekaj na pojawienie się wskaźnika w postaci białego pola</string>
 
     <string name="edit_pages">Edytuj strony</string>
     <string name="edit_dock_pages">Edytuj strony paska aplikacji</string>
