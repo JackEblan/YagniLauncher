@@ -1268,6 +1268,16 @@ internal class PagerScreenState(
     fun handleEblanActionIntent(intent: Intent) {
         if (intent.action != EblanAction.ACTION) return
 
+        if (swipeY.value != screenHeight.toFloat() ||
+            widgetScreenSwipeY.value != screenHeight.toFloat() ||
+            shortcutConfigScreenSwipeY.value != screenHeight.toFloat() ||
+            showGridItemPopup || showSettingsPopup ||
+            showFolderGridItemPopup ||
+            eblanApplicationInfoGroup != null
+        ) {
+            return
+        }
+
         val eblanAction = intent.getStringExtra(EblanAction.NAME)?.let { eblanAction ->
             Json.decodeFromString<EblanAction>(eblanAction)
         } ?: return
