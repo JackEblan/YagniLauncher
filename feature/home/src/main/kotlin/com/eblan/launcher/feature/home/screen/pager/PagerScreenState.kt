@@ -308,6 +308,15 @@ internal class PagerScreenState(
     var showShortcutConfigScreen by mutableStateOf(false)
         private set
 
+    val isAvailableForSystemNavigation
+        get() = swipeY.value == screenHeight.toFloat() &&
+            !showWidgetScreen &&
+            !showShortcutConfigScreen &&
+            !showGridItemPopup &&
+            !showSettingsPopup &&
+            !showFolderGridItemPopup &&
+            eblanApplicationInfoGroup == null
+
     private val touchSlop = with(density) {
         50.dp.toPx()
     }
@@ -610,58 +619,6 @@ internal class PagerScreenState(
             animateOffset(
                 eblanAction = gestureSettings.swipeDown,
                 swipeY = swipeDownY,
-            )
-        }
-    }
-
-    fun animateScrollToPages(
-        dockGridHorizontalPagerState: PagerState,
-        gridHorizontalPagerState: PagerState,
-    ) {
-        fun getInfiniteScrollInitialPage(
-            currentPage: Int,
-            initialPage: Int,
-            pageCount: Int,
-            center: Int = Int.MAX_VALUE / 2,
-        ): Int {
-            var diff = initialPage - Math.floorMod(currentPage - center, pageCount)
-
-            val halfCount = pageCount / 2
-
-            if (diff > halfCount) {
-                diff -= pageCount
-            } else if (diff < -halfCount) {
-                diff += pageCount
-            }
-
-            return currentPage + diff
-        }
-
-        scope.launch {
-            gridHorizontalPagerState.animateScrollToPage(
-                if (homeSettings.infiniteScroll) {
-                    getInfiniteScrollInitialPage(
-                        currentPage = gridHorizontalPagerState.currentPage,
-                        initialPage = homeSettings.initialPage,
-                        pageCount = homeSettings.pageCount,
-                    )
-                } else {
-                    homeSettings.initialPage
-                },
-            )
-        }
-
-        scope.launch {
-            dockGridHorizontalPagerState.animateScrollToPage(
-                if (homeSettings.dockInfiniteScroll) {
-                    getInfiniteScrollInitialPage(
-                        currentPage = dockGridHorizontalPagerState.currentPage,
-                        initialPage = homeSettings.dockInitialPage,
-                        pageCount = homeSettings.dockPageCount,
-                    )
-                } else {
-                    homeSettings.dockInitialPage
-                },
             )
         }
     }
@@ -1228,19 +1185,57 @@ internal class PagerScreenState(
         }
     }
 
-    fun handleActionMainIntent(
+    fun handleSystemNavigation(
         dockGridHorizontalPagerState: PagerState,
         gridHorizontalPagerState: PagerState,
         windowToken: IBinder,
     ) {
-        showGridItemPopup = false
+        fun getInfiniteScrollInitialPage(
+            currentPage: Int,
+            initialPage: Int,
+            pageCount: Int,
+            center: Int = Int.MAX_VALUE / 2,
+        ): Int {
+            var diff = initialPage - Math.floorMod(currentPage - center, pageCount)
 
-        showSettingsPopup = false
+            val halfCount = pageCount / 2
 
-        animateScrollToPages(
-            dockGridHorizontalPagerState = dockGridHorizontalPagerState,
-            gridHorizontalPagerState = gridHorizontalPagerState,
-        )
+            if (diff > halfCount) {
+                diff -= pageCount
+            } else if (diff < -halfCount) {
+                diff += pageCount
+            }
+
+            return currentPage + diff
+        }
+
+        scope.launch {
+            gridHorizontalPagerState.animateScrollToPage(
+                if (homeSettings.infiniteScroll) {
+                    getInfiniteScrollInitialPage(
+                        currentPage = gridHorizontalPagerState.currentPage,
+                        initialPage = homeSettings.initialPage,
+                        pageCount = homeSettings.pageCount,
+                    )
+                } else {
+                    homeSettings.initialPage
+                },
+            )
+        }
+
+        scope.launch {
+            dockGridHorizontalPagerState.animateScrollToPage(
+                if (homeSettings.dockInfiniteScroll) {
+                    getInfiniteScrollInitialPage(
+                        currentPage = dockGridHorizontalPagerState.currentPage,
+                        initialPage = homeSettings.dockInitialPage,
+                        pageCount = homeSettings.dockPageCount,
+                    )
+                } else {
+                    homeSettings.dockInitialPage
+                },
+            )
+        }
 
         if (homeSettings.wallpaperScroll) {
             val page = calculatePage(
@@ -1263,20 +1258,7 @@ internal class PagerScreenState(
     }
 
     fun handleEblanActionIntent(intent: Intent) {
-        if (intent.action != EblanAction.ACTION) return
-
-        if (swipeY.value != screenHeight.toFloat() ||
-            widgetScreenSwipeY.value != screenHeight.toFloat() ||
-            shortcutConfigScreenSwipeY.value != screenHeight.toFloat() ||
-            showWidgetScreen ||
-            showShortcutConfigScreen ||
-            showGridItemPopup ||
-            showSettingsPopup ||
-            showFolderGridItemPopup ||
-            eblanApplicationInfoGroup != null
-        ) {
-            return
-        }
+        if (intent.action != EblanAction.ACTION || !isAvailableForSystemNavigation) return
 
         val eblanAction = intent.getStringExtra(EblanAction.NAME)?.let { eblanAction ->
             Json.decodeFromString<EblanAction>(eblanAction)

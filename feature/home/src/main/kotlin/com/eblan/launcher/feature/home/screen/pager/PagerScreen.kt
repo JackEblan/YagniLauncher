@@ -551,26 +551,16 @@ internal fun PagerScreen(
         }
     }
 
-    BackHandler(
-        enabled = pagerScreenState.swipeY.value == screenHeight.toFloat() &&
-            !pagerScreenState.showGridItemPopup && !pagerScreenState.showSettingsPopup &&
-            !pagerScreenState.showFolderGridItemPopup,
-    ) {
-        pagerScreenState.animateScrollToPages(
+    BackHandler(enabled = pagerScreenState.isAvailableForSystemNavigation) {
+        pagerScreenState.handleSystemNavigation(
             dockGridHorizontalPagerState = dockGridHorizontalPagerState,
             gridHorizontalPagerState = gridHorizontalPagerState,
+            windowToken = view.windowToken,
         )
     }
 
-    HomeHandler(
-        enabled = pagerScreenState.swipeY.value == screenHeight.toFloat() &&
-            pagerScreenState.widgetScreenSwipeY.value == screenHeight.toFloat() &&
-            pagerScreenState.shortcutConfigScreenSwipeY.value == screenHeight.toFloat() &&
-            !pagerScreenState.showGridItemPopup && !pagerScreenState.showSettingsPopup &&
-            !pagerScreenState.showFolderGridItemPopup &&
-            pagerScreenState.eblanApplicationInfoGroup == null,
-    ) {
-        pagerScreenState.handleActionMainIntent(
+    HomeHandler(enabled = pagerScreenState.isAvailableForSystemNavigation) {
+        pagerScreenState.handleSystemNavigation(
             dockGridHorizontalPagerState = dockGridHorizontalPagerState,
             gridHorizontalPagerState = gridHorizontalPagerState,
             windowToken = view.windowToken,
