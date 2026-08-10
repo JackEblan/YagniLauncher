@@ -50,7 +50,7 @@ class DeleteGridItemCustomIconUseCase @Inject constructor(
                 data.copy(icon = null)
             }
 
-            else -> gridItem.data
+            else -> error("Unsupported Grid Item")
         }
 
         gridRepository.updateGridItem(gridItem = gridItem.copy(data = newData))

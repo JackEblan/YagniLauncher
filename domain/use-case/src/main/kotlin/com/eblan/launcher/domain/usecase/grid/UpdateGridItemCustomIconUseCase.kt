@@ -55,7 +55,7 @@ class UpdateGridItemCustomIconUseCase @Inject constructor(
             is GridItemData.Folder -> data.copy(icon = customIcon)
             is GridItemData.ShortcutConfig -> data.copy(customIcon = customIcon)
             is GridItemData.ShortcutInfo -> data.copy(customIcon = customIcon)
-            is GridItemData.Widget -> return@withContext
+            else -> error("Unsupported GridItem")
         }
 
         gridRepository.updateGridItem(gridItem = gridItem.copy(data = newData))

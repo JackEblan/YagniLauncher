@@ -447,7 +447,7 @@ internal fun deleteGridItemCustomIconFile(gridItem: GridItem) = when (val data =
         }
     }
 
-    else -> error("Unsupported Grid Item Data")
+    else -> Unit
 }
 
 private suspend fun updatePinShortcutsByPackageName(
