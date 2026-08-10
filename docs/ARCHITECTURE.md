@@ -109,25 +109,25 @@ graph TD
 
 Pure Kotlin modules with no Android dependency, so their logic is fully unit-testable in isolation:
 
-| Module | Responsibility |
-|---|---|
-| `domain:model` | Entity and value-object definitions shared by every other layer. |
+| Module              | Responsibility                                                                                           |
+|---------------------|----------------------------------------------------------------------------------------------------------|
+| `domain:model`      | Entity and value-object definitions shared by every other layer.                                         |
 | `domain:repository` | Repository interfaces describing the data operations the domain needs; implemented by `data:repository`. |
-| `domain:framework` | Interfaces abstracting Android system services; implemented by the `framework:*` modules. |
-| `domain:use-case` | Application business logic, composed from repositories and framework interfaces. |
-| `domain:grid` | Grid layout and collision-resolution algorithms used when moving or resizing items. |
-| `domain:common` | Cross-cutting abstractions such as coroutine dispatcher qualifiers. |
+| `domain:framework`  | Interfaces abstracting Android system services; implemented by the `framework:*` modules.                |
+| `domain:use-case`   | Application business logic, composed from repositories and framework interfaces.                         |
+| `domain:grid`       | Grid layout and collision-resolution algorithms used when moving or resizing items.                      |
+| `domain:common`     | Cross-cutting abstractions such as coroutine dispatcher qualifiers.                                      |
 
 ### Data
 
 Concrete persistence implementations behind the `domain:repository` interfaces:
 
-| Module | Responsibility |
-|---|---|
-| `data:repository` | Repository implementations that combine `data:room` and `data:datastore` sources. |
-| `data:room` | The local SQLite database (grid items, installed apps, widgets, shortcuts, icon packs). |
-| `data:datastore` | User settings persistence via Proto DataStore. |
-| `data:datastore-proto` | The `.proto` schema definitions consumed by `data:datastore`. |
+| Module                 | Responsibility                                                                          |
+|------------------------|-----------------------------------------------------------------------------------------|
+| `data:repository`      | Repository implementations that combine `data:room` and `data:datastore` sources.       |
+| `data:room`            | The local SQLite database (grid items, installed apps, widgets, shortcuts, icon packs). |
+| `data:datastore`       | User settings persistence via Proto DataStore.                                          |
+| `data:datastore-proto` | The `.proto` schema definitions consumed by `data:datastore`.                           |
 
 ### Framework
 
@@ -137,20 +137,20 @@ Most of these modules implement an interface declared in `domain:framework` and 
 
 ### Presentation
 
-| Module | Responsibility |
-|---|---|
-| `feature:*` (`home`, `action`, `pin`, `edit-application-info`, `edit-grid-item`, `settings:*`) | Feature-specific screens, ViewModels, and UI state. |
-| `design-system` | Generic, model-free Compose primitives. |
-| `ui` | Shared, application-aware UI reused by multiple features. |
-| `service` | Background Android services (accessibility, notification listener, icon pack updates). |
+| Module                                                                                         | Responsibility                                                                         |
+|------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------|
+| `feature:*` (`home`, `action`, `pin`, `edit-application-info`, `edit-grid-item`, `settings:*`) | Feature-specific screens, ViewModels, and UI state.                                    |
+| `design-system`                                                                                | Generic, model-free Compose primitives.                                                |
+| `ui`                                                                                           | Shared, application-aware UI reused by multiple features.                              |
+| `service`                                                                                      | Background Android services (accessibility, notification listener, icon pack updates). |
 
 ### Shared Infrastructure
 
-| Module | Responsibility |
-|---|---|
-| `app` | Wires every module together: Hilt setup, `Application` class, and the root Activity/navigation graph. |
-| `common` | Application-wide Hilt bindings (icon key generation, coroutine dispatchers). |
-| `build-logic` | Gradle convention plugins that standardize module build configuration. |
+| Module        | Responsibility                                                                                        |
+|---------------|-------------------------------------------------------------------------------------------------------|
+| `app`         | Wires every module together: Hilt setup, `Application` class, and the root Activity/navigation graph. |
+| `common`      | Application-wide Hilt bindings (icon key generation, coroutine dispatchers).                          |
+| `build-logic` | Gradle convention plugins that standardize module build configuration.                                |
 
 ---
 
