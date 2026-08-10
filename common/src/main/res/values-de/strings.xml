@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~
+  ~   Copyright 2023 Einstein Blanco
+  ~
+  ~   Licensed under the GNU General Public License v3.0 (the "License");
+  ~   you may not use this file except in compliance with the License.
+  ~   You may obtain a copy of the License at
+  ~
+  ~       https://www.gnu.org/licenses/gpl-3.0
+  ~
+  ~   Unless required by applicable law or agreed to in writing, software
+  ~   distributed under the License is distributed on an "AS IS" BASIS,
+  ~   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~   See the License for the specific language governing permissions and
+  ~   limitations under the License.
+  ~
+  -->
+<resources>
+    <string name="save">Speichern</string>
+    <string name="settings">Einstellungen</string>
+    <string name="experimental">Experimentell</string>
+    <string name="custom_label">Benutzerdefiniertes Label</string>
+    <string name="background_color">Hintergrundfarbe</string>
+    <string name="gestures">Gesten</string>
+    <string name="columns_is_not_valid">Spalten sind ungültig</string>
+    <string name="grid">Raster</string>
+    <string name="columns">Spalten</string>
+    <string name="update">Aktualisieren</string>
+    <string name="none">Keine</string>
+    <string name="home">Startbildschirm</string>
+    <string name="general">Allgemein</string>
+    <string name="system">System</string>
+    <string name="edit">%1$s bearbeiten</string>
+    <string name="add">Hinzufügen</string>
+    <string name="okay">Okay</string>
+    <string name="custom_label_is_not_valid">Benutzerdefiniertes Label ist ungültig</string>
+    <string name="rows_is_not_valid">Zeilen sind ungültig</string>
+    <string name="search_applications">Anwendungen suchen</string>
+    <string name="dark">Dunkel</string>
+    <string name="app_drawer">App-Schublade</string>
+    <string name="rows">Zeilen</string>
+    <string name="light">Hell</string>
+    <string name="cancel">Abbrechen</string>
+</resources>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~
+  ~   Copyright 2023 Einstein Blanco
+  ~
+  ~   Licensed under the GNU General Public License v3.0 (the "License");
+  ~   you may not use this file except in compliance with the License.
+  ~   You may obtain a copy of the License at
+  ~
+  ~       https://www.gnu.org/licenses/gpl-3.0
+  ~
+  ~   Unless required by applicable law or agreed to in writing, software
+  ~   distributed under the License is distributed on an "AS IS" BASIS,
+  ~   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~   See the License for the specific language governing permissions and
+  ~   limitations under the License.
+  ~
+  -->
+<resources>
+    <string name="dock_grid">Dock-Raster</string>
+    <string name="dock_columns_is_not_valid">Dock-Spalten sind ungültig</string>
+    <string name="dock_rows_is_not_valid">Dock-Zeilen sind ungültig</string>
+    <string name="dock_height">Dock-Höhe</string>
+    <string name="dock_height_is_not_valid">Dock-Höhe ist ungültig</string>
+    <string name="folder_cell_dimension">Ordner-Zellenabmessung</string>
+    <string name="cell_width">Zellenbreite</string>
+    <string name="cell_width_is_not_valid">Zellenbreite ist ungültig</string>
+    <string name="cell_height">Zellenhöhe</string>
+    <string name="cell_height_is_not_valid">Zellenhöhe ist ungültig</string>
+    <string name="max_columns">Max. Spalten</string>
+    <string name="max_columns_is_not_valid">Max. Spalten sind ungültig</string>
+    <string name="folder_max_grid">Ordner-Max-Raster</string>
+    <string name="max_rows">Max. Zeilen</string>
+    <string name="max_rows_is_not_valid">Max. Zeilen sind ungültig</string>
+    <string name="infinite_scrolling">Endloses Scrollen</string>
+    <string name="seamless_loop_page_scroll">Nahtloses Schleifen-Seitenscrollen</string>
+    <string name="wallpaper_scrolling">Hintergrundbild-Scrollen</string>
+    <string name="scroll_wallpaper_across_pages">Hintergrundbild über Seiten hinweg scrollen</string>
+    <string name="lock_screen_orientation">Bildschirmausrichtung sperren</string>
+    <string name="add_new_apps">Neue Apps hinzufügen</string>
+    <string name="add_new_apps_to_home_screen">Neue Apps zum Startbildschirm hinzufügen</string>
+    <string name="dock">Dock</string>
+    <string name="dock_infinite_scroll">Dock endloses Scrollen</string>
+    <string name="folder">Ordner</string>
+    <string name="prevent_rotation_when_device_orientation_changes">Rotation verhindern, wenn sich die Geräteausrichtung ändert</string>
+    <string name="show_page_indicator">Seitenanzeige anzeigen</string>
+    <string name="show_an_indicator_for_the_current_page">Eine Anzeige für die aktuelle Seite anzeigen</string>
+</resources>

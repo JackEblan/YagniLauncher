@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~
+  ~   Copyright 2023 Einstein Blanco
+  ~
+  ~   Licensed under the GNU General Public License v3.0 (the "License");
+  ~   you may not use this file except in compliance with the License.
+  ~   You may obtain a copy of the License at
+  ~
+  ~       https://www.gnu.org/licenses/gpl-3.0
+  ~
+  ~   Unless required by applicable law or agreed to in writing, software
+  ~   distributed under the License is distributed on an "AS IS" BASIS,
+  ~   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~   See the License for the specific language governing permissions and
+  ~   limitations under the License.
+  ~
+  -->
+<resources>
+    <string name="choose_yagni_launcher">Yagni Launcher auswählen</string>
+    <string name="default_launcher">Standard-Launcher</string>
+    <string name="themes_icon_packs">Designs, Icon-Packs</string>
+    <string name="grid_icon_dock_and_more">Raster, Symbol, Dock und mehr</string>
+    <string name="columns_and_rows_count">Anzahl der Spalten und Zeilen</string>
+    <string name="swipe_gesture_actions">Wisch-Gesten-Aktionen</string>
+    <string name="advanced_options_for_power_users">Erweiterte Optionen für erfahrene Benutzer</string>
+    <string name="thank_you_for_using_yagni_launcher_alpha">Vielen Dank, dass Sie Yagni Launcher Alpha verwenden!</string>
+    <string name="about_development_description">
+    Die Entwicklung begann im Januar 2025 mit regelmäßigen wöchentlichen Updates. Dies ist mein bisher komplexestes Projekt, und ich investiere erhebliche Anstrengungen in seine Verbesserung.
+</string>
+    <string name="support_message">
+    Wenn Sie die Anwendung nützlich finden, würden wir uns sehr über Ihre Unterstützung durch eine Spende auf Ko-fi oder durch einen Stern für das Repository auf GitHub freuen.
+</string>
+    <string name="support_on_ko_fi">Auf Ko-Fi unterstützen</string>
+    <string name="star_on_github">Auf GitHub mit Stern versehen</string>
+    <string name="note_this_informational_card_will_be_removed_in_future_stable_releases">Hinweis: Diese Informationskarte wird in zukünftigen stabilen Versionen entfernt</string>
+</resources>
