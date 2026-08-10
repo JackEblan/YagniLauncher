@@ -406,6 +406,50 @@ suspend fun getFolderGridItemsById(
     }
 }
 
+internal fun deleteGridItemCustomIconFile(gridItem: GridItem) = when (val data = gridItem.data) {
+    is GridItemData.ApplicationInfo -> {
+        data.customIcon?.let {
+            val customIconFile = File(it)
+
+            if (customIconFile.exists()) {
+                customIconFile.delete()
+            }
+        }
+    }
+
+    is GridItemData.ShortcutConfig -> {
+        data.customIcon?.let {
+            val customIconFile = File(it)
+
+            if (customIconFile.exists()) {
+                customIconFile.delete()
+            }
+        }
+    }
+
+    is GridItemData.ShortcutInfo -> {
+        data.customIcon?.let {
+            val customIconFile = File(it)
+
+            if (customIconFile.exists()) {
+                customIconFile.delete()
+            }
+        }
+    }
+
+    is GridItemData.Folder -> {
+        data.icon?.let {
+            val iconFile = File(it)
+
+            if (iconFile.exists()) {
+                iconFile.delete()
+            }
+        }
+    }
+
+    else -> error("Unsupported Grid Item Data")
+}
+
 private suspend fun updatePinShortcutsByPackageName(
     launcherAppsWrapper: LauncherAppsWrapper,
     data: GridItemData.ShortcutInfo,

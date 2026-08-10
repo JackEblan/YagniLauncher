@@ -27,6 +27,7 @@ import com.eblan.launcher.domain.repository.EblanApplicationInfoRepository
 import com.eblan.launcher.domain.usecase.util.getCustomIcon
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
+import java.io.File
 import javax.inject.Inject
 
 class UpdateEblanApplicationInfoCustomIconUseCase @Inject constructor(
@@ -40,6 +41,14 @@ class UpdateEblanApplicationInfoCustomIconUseCase @Inject constructor(
         eblanApplicationInfo: EblanApplicationInfo,
         uri: String,
     ) = withContext(ioDispatcher) {
+        eblanApplicationInfo.customIcon?.let {
+            val customIconFile = File(it)
+
+            if (customIconFile.exists()) {
+                customIconFile.delete()
+            }
+        }
+
         val customIcon = getCustomIcon(
             contentResolverWrapper = contentResolverWrapper,
             fileManager = fileManager,

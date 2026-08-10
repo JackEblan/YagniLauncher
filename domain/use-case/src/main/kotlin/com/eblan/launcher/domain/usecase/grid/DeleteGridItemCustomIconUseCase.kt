@@ -21,77 +21,32 @@ import com.eblan.launcher.domain.common.Dispatcher
 import com.eblan.launcher.domain.common.EblanDispatchers
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
-import com.eblan.launcher.domain.repository.EblanApplicationInfoRepository
 import com.eblan.launcher.domain.repository.GridRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
-import java.io.File
 import javax.inject.Inject
 
 class DeleteGridItemCustomIconUseCase @Inject constructor(
     private val gridRepository: GridRepository,
-    private val eblanApplicationInfoRepository: EblanApplicationInfoRepository,
     @param:Dispatcher(EblanDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke(gridItem: GridItem) = withContext(ioDispatcher) {
+        deleteGridItemCustomIconFile(gridItem = gridItem)
+
         val newData = when (val data = gridItem.data) {
             is GridItemData.ApplicationInfo -> {
-                data.customIcon?.let {
-                    val customIconFile = File(it)
-
-                    if (customIconFile.exists()) {
-                        customIconFile.delete()
-                    }
-                }
-
-                val eblanApplicationInfo =
-                    eblanApplicationInfoRepository.getEblanApplicationInfoByComponentName(
-                        serialNumber = data.serialNumber,
-                        componentName = data.componentName,
-                    )
-
-                if (eblanApplicationInfo != null) {
-                    eblanApplicationInfoRepository.updateEblanApplicationInfo(
-                        eblanApplicationInfo = eblanApplicationInfo.copy(customIcon = null),
-                    )
-                }
-
                 data.copy(customIcon = null)
             }
 
             is GridItemData.ShortcutConfig -> {
-                data.customIcon?.let {
-                    val customIconFile = File(it)
-
-                    if (customIconFile.exists()) {
-                        customIconFile.delete()
-                    }
-                }
-
                 data.copy(customIcon = null)
             }
 
             is GridItemData.ShortcutInfo -> {
-                data.customIcon?.let {
-                    val customIconFile = File(it)
-
-                    if (customIconFile.exists()) {
-                        customIconFile.delete()
-                    }
-                }
-
                 data.copy(customIcon = null)
             }
 
             is GridItemData.Folder -> {
-                data.icon?.let {
-                    val iconFile = File(it)
-
-                    if (iconFile.exists()) {
-                        iconFile.delete()
-                    }
-                }
-
                 data.copy(icon = null)
             }
 

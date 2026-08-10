@@ -41,6 +41,8 @@ class UpdateGridItemCustomIconUseCase @Inject constructor(
         gridItem: GridItem,
         uri: String,
     ) = withContext(ioDispatcher) {
+        deleteGridItemCustomIconFile(gridItem = gridItem)
+
         val customIcon = getCustomIcon(
             contentResolverWrapper = contentResolverWrapper,
             fileManager = fileManager,
