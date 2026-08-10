@@ -58,8 +58,6 @@ class UpdateGridItemCustomIconUseCase @Inject constructor(
             uri = uri,
         ) ?: return@withContext
 
-        deleteGridItemCustomIconFile(gridItem = gridItem)
-
         val newData = when (data) {
             is GridItemData.ApplicationInfo -> data.copy(customIcon = customIcon)
             is GridItemData.Folder -> data.copy(icon = customIcon)
@@ -69,5 +67,8 @@ class UpdateGridItemCustomIconUseCase @Inject constructor(
         }
 
         gridRepository.updateGridItem(gridItem = gridItem.copy(data = newData))
+
+        // Delete the old custom icon after successfully updated the new grid item
+        deleteGridItemCustomIconFile(gridItem = gridItem)
     }
 }
