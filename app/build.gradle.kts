@@ -67,6 +67,7 @@ dependencies {
     implementation(projects.feature.settings.gestures)
     implementation(projects.feature.settings.home)
     implementation(projects.feature.settings.settings)
+    implementation(projects.framework.contentResolver)
     implementation(projects.framework.jaroWinklerSimilarity)
     implementation(projects.framework.notificationManager)
     implementation(projects.framework.resources)
