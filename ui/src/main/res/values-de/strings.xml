@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~
+  ~   Copyright 2023 Einstein Blanco
+  ~
+  ~   Licensed under the GNU General Public License v3.0 (the "License");
+  ~   you may not use this file except in compliance with the License.
+  ~   You may obtain a copy of the License at
+  ~
+  ~       https://www.gnu.org/licenses/gpl-3.0
+  ~
+  ~   Unless required by applicable law or agreed to in writing, software
+  ~   distributed under the License is distributed on an "AS IS" BASIS,
+  ~   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~   See the License for the specific language governing permissions and
+  ~   limitations under the License.
+  ~
+  -->
+<resources>
+    <string name="open">%1$s öffnen</string>
+    <string name="app">App</string>
+    <string name="open_app_drawer">App-Schublade öffnen</string>
+    <string name="open_notification_panel">Benachrichtigungsleiste öffnen</string>
+    <string name="lock_screen">Bildschirm sperren</string>
+    <string name="open_quick_settings">Schnelleinstellungen öffnen</string>
+    <string name="open_recents">Letzte öffnen</string>
+    <string name="enable_the_accessibility_service_permission_to_use_additional_actions">Aktivieren Sie die Bedienungshilfen-Berechtigung, um zusätzliche Aktionen zu nutzen</string>
+    <string name="corner_radius">Eckenradius</string>
+    <string name="corner_radius_is_not_valid">Eckenradius ist ungültig</string>
+    <string name="icon_size">Symbolgröße</string>
+    <string name="icon_size_is_not_valid">Symbolgröße ist ungültig</string>
+    <string name="padding">Abstand</string>
+    <string name="padding_is_not_valid">Abstand ist ungültig</string>
+    <string name="text_size">Textgröße</string>
+    <string name="text_size_is_not_valid">Textgröße ist ungültig</string>
+    <string name="select_application">Anwendung auswählen</string>
+    <string name="custom_icon">Benutzerdefiniertes Symbol</string>
+    <string name="gallery">Galerie</string>
+    <string name="pick_icons_from_your_gallery">Symbole aus Ihrer Galerie auswählen</string>
+    <string name="reset_custom_icon">Benutzerdefiniertes Symbol zurücksetzen</string>
+    <string name="grid_item">Rasterelement</string>
+    <string name="text_color">Textfarbe</string>
+    <string name="show_label">Label anzeigen</string>
+    <string name="single_line_label">Einzeiliges Label</string>
+    <string name="horizontal_alignment">Horizontale Ausrichtung</string>
+    <string name="vertical_arrangement">Vertikale Anordnung</string>
+    <string name="start">Start</string>
+    <string name="center_horizontally">Horizontal zentrieren</string>
+    <string name="end">Ende</string>
+    <string name="bottom">Unten</string>
+    <string name="top">Oben</string>
+    <string name="center">Mitte</string>
+    <string name="double_tap">Doppeltippen</string>
+    <string name="swipe_up">Nach oben wischen</string>
+    <string name="swipe_down">Nach unten wischen</string>
+    <string name="display_app_names_below_icons">App-Namen unter Symbolen anzeigen</string>
+    <string name="limit_app_names_to_one_line">App-Namen auf eine Zeile begrenzen</string>
+    <string name="custom">Benutzerdefiniert</string>
+</resources>
