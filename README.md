@@ -21,6 +21,9 @@ Only 2 MB Android Launcher, total control, zero bloat, zero tracking
 > [!WARNING]
 > This is an Alpha Stage Build. Expect bugs, instability, and incomplete features.
 
+> [!NOTE]
+> **AI Policy:** AI tools (like CodeRabbitAI) are welcome here and help me review PRs, but no bot-submitted PRs or unreviewed "AI slop." Every contribution must be understood and stood behind by a human. 🙏
+
 ## About The Project
 
 Closed-source launchers are locking features behind paywalls and adding trackers. My goal is to offer powerful features with no compromises on privacy.
