@@ -22,7 +22,7 @@ Only 2 MB Android Launcher, total control, zero bloat, zero tracking
 > This is an Alpha Stage Build. Expect bugs, instability, and incomplete features.
 
 > [!NOTE]
-> **AI Policy:** AI tools (like CodeRabbitAI) are welcome here and help me review PRs, but no bot-submitted PRs or unreviewed "AI slop." Every contribution must be understood and stood behind by a human. 🙏
+> AI tools (like CodeRabbitAI) are welcome here and help me review PRs, but no bot-submitted PRs or unreviewed **AI slop**. Every contribution must be understood and stood behind by a human. Meow 🐱
 
 ## About The Project
 
