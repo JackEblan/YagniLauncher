@@ -33,6 +33,7 @@ import com.eblan.launcher.domain.model.PackageManagerIconPackInfo
 import com.eblan.launcher.domain.repository.EblanApplicationInfoRepository
 import com.eblan.launcher.domain.repository.EblanApplicationInfoTagCrossRefRepository
 import com.eblan.launcher.domain.repository.EblanApplicationInfoTagRepository
+import com.eblan.launcher.domain.usecase.application.DeleteEblanApplicationInfoCustomIconUseCase
 import com.eblan.launcher.domain.usecase.application.GetEblanApplicationInfoTagUseCase
 import com.eblan.launcher.domain.usecase.application.UpdateEblanApplicationInfoCustomIconUseCase
 import com.eblan.launcher.feature.editapplicationinfo.model.EditApplicationInfoUiState
@@ -59,6 +60,7 @@ internal class EditApplicationInfoViewModel @Inject constructor(
     private val eblanApplicationInfoTagRepository: EblanApplicationInfoTagRepository,
     private val eblanApplicationInfoTagCrossRefRepository: EblanApplicationInfoTagCrossRefRepository,
     private val updateEblanApplicationInfoCustomIconUseCase: UpdateEblanApplicationInfoCustomIconUseCase,
+    private val deleteEblanApplicationInfoCustomIconUseCase: DeleteEblanApplicationInfoCustomIconUseCase,
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) : ViewModel() {
     private val editApplicationInfoRouteData =
@@ -138,9 +140,7 @@ internal class EditApplicationInfoViewModel @Inject constructor(
 
     fun resetEblanApplicationInfoCustomIcon(eblanApplicationInfo: EblanApplicationInfo) {
         viewModelScope.launch {
-            eblanApplicationInfoRepository.resetEblanApplicationInfoCustomIcon(
-                eblanApplicationInfo = eblanApplicationInfo,
-            )
+            deleteEblanApplicationInfoCustomIconUseCase(eblanApplicationInfo = eblanApplicationInfo)
 
             getApplicationInfo()
         }
