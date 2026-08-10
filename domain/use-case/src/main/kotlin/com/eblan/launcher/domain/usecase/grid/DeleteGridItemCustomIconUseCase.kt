@@ -21,6 +21,7 @@ import com.eblan.launcher.domain.common.Dispatcher
 import com.eblan.launcher.domain.common.EblanDispatchers
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
+import com.eblan.launcher.domain.repository.EblanApplicationInfoRepository
 import com.eblan.launcher.domain.repository.GridRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
@@ -28,11 +29,24 @@ import javax.inject.Inject
 
 class DeleteGridItemCustomIconUseCase @Inject constructor(
     private val gridRepository: GridRepository,
+    private val eblanApplicationInfoRepository: EblanApplicationInfoRepository,
     @param:Dispatcher(EblanDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke(gridItem: GridItem) = withContext(ioDispatcher) {
         val newData = when (val data = gridItem.data) {
             is GridItemData.ApplicationInfo -> {
+                val eblanApplicationInfo =
+                    eblanApplicationInfoRepository.getEblanApplicationInfoByComponentName(
+                        serialNumber = data.serialNumber,
+                        componentName = data.componentName,
+                    )
+
+                if (eblanApplicationInfo != null) {
+                    eblanApplicationInfoRepository.updateEblanApplicationInfo(
+                        eblanApplicationInfo = eblanApplicationInfo.copy(customIcon = null),
+                    )
+                }
+
                 data.copy(customIcon = null)
             }
 
