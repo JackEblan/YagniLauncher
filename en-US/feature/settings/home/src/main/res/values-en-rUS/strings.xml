@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~
+  ~   Copyright 2023 Einstein Blanco
+  ~
+  ~   Licensed under the GNU General Public License v3.0 (the "License");
+  ~   you may not use this file except in compliance with the License.
+  ~   You may obtain a copy of the License at
+  ~
+  ~       https://www.gnu.org/licenses/gpl-3.0
+  ~
+  ~   Unless required by applicable law or agreed to in writing, software
+  ~   distributed under the License is distributed on an "AS IS" BASIS,
+  ~   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~   See the License for the specific language governing permissions and
+  ~   limitations under the License.
+  ~
+  -->
+<resources>
+    <string name="dock_grid">Dock Grid</string>
+    <string name="columns">Columns</string>
+    <string name="dock_columns_is_not_valid">Dock columns is not valid</string>
+    <string name="rows">Rows</string>
+    <string name="dock_rows_is_not_valid">Dock rows is not valid</string>
+    <string name="cancel">Cancel</string>
+    <string name="update">Update</string>
+    <string name="dock_height">Dock Height</string>
+    <string name="dock_height_is_not_valid">Dock Height is not valid</string>
+    <string name="folder_cell_dimension">Folder Cell Dimension</string>
+    <string name="cell_width">Cell Width</string>
+    <string name="cell_width_is_not_valid">Cell width is not valid</string>
+    <string name="cell_height">Cell Height</string>
+    <string name="cell_height_is_not_valid">Cell height is not valid</string>
+    <string name="max_columns">Max Columns</string>
+    <string name="max_columns_is_not_valid">Max columns is not valid</string>
+    <string name="folder_max_grid">Folder Max Grid</string>
+    <string name="max_rows">Max Rows</string>
+    <string name="max_rows_is_not_valid">Max rows is not valid</string>
+    <string name="grid">Grid</string>
+    <string name="columns_is_not_valid">Columns is not valid</string>
+    <string name="rows_is_not_valid">Rows is not valid</string>
+    <string name="home">Home</string>
+    <string name="infinite_scrolling">Infinite Scrolling</string>
+    <string name="seamless_loop_page_scroll">Seamless loop page scroll</string>
+    <string name="wallpaper_scrolling">Wallpaper Scrolling</string>
+    <string name="scroll_wallpaper_across_pages">Scroll wallpaper across pages</string>
+    <string name="lock_screen_orientation">Lock Screen Orientation</string>
+    <string name="add_new_apps">Add New Apps</string>
+    <string name="add_new_apps_to_home_screen">Add new apps to home screen</string>
+    <string name="dock">Dock</string>
+    <string name="dock_infinite_scroll">Dock Infinite Scroll</string>
+    <string name="folder">Folder</string>
+    <string name="prevent_rotation_when_device_orientation_changes">Prevent rotation when device orientation changes</string>
+</resources>
