@@ -31,8 +31,6 @@ class DeleteGridItemCustomIconUseCase @Inject constructor(
     @param:Dispatcher(EblanDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke(gridItem: GridItem) = withContext(ioDispatcher) {
-        deleteGridItemCustomIconFile(gridItem = gridItem)
-
         val newData = when (val data = gridItem.data) {
             is GridItemData.ApplicationInfo -> {
                 data.copy(customIcon = null)
@@ -52,6 +50,8 @@ class DeleteGridItemCustomIconUseCase @Inject constructor(
 
             else -> error("Unsupported Grid Item")
         }
+
+        deleteGridItemCustomIconFile(gridItem = gridItem)
 
         gridRepository.updateGridItem(gridItem = gridItem.copy(data = newData))
     }

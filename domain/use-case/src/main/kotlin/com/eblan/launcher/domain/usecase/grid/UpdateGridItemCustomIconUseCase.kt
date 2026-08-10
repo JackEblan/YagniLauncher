@@ -41,7 +41,15 @@ class UpdateGridItemCustomIconUseCase @Inject constructor(
         gridItem: GridItem,
         uri: String,
     ) = withContext(ioDispatcher) {
-        deleteGridItemCustomIconFile(gridItem = gridItem)
+        val data = when (val data = gridItem.data) {
+            is GridItemData.ApplicationInfo,
+            is GridItemData.Folder,
+            is GridItemData.ShortcutConfig,
+            is GridItemData.ShortcutInfo,
+            -> data
+
+            else -> error("Unsupported Grid Item")
+        }
 
         val customIcon = getCustomIcon(
             contentResolverWrapper = contentResolverWrapper,
@@ -50,12 +58,14 @@ class UpdateGridItemCustomIconUseCase @Inject constructor(
             uri = uri,
         ) ?: return@withContext
 
-        val newData = when (val data = gridItem.data) {
+        deleteGridItemCustomIconFile(gridItem = gridItem)
+
+        val newData = when (data) {
             is GridItemData.ApplicationInfo -> data.copy(customIcon = customIcon)
             is GridItemData.Folder -> data.copy(icon = customIcon)
             is GridItemData.ShortcutConfig -> data.copy(customIcon = customIcon)
             is GridItemData.ShortcutInfo -> data.copy(customIcon = customIcon)
-            else -> error("Unsupported GridItem")
+            else -> data
         }
 
         gridRepository.updateGridItem(gridItem = gridItem.copy(data = newData))
