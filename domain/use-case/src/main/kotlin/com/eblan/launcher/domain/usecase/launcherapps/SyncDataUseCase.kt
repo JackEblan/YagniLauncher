@@ -50,7 +50,7 @@ import com.eblan.launcher.domain.repository.UserDataRepository
 import com.eblan.launcher.domain.repository.WidgetGridItemRepository
 import com.eblan.launcher.domain.usecase.grid.GetGridItemsUseCase
 import com.eblan.launcher.domain.usecase.grid.isTopLevel
-import com.eblan.launcher.domain.usecase.iconpack.updateIconPackInfos
+import com.eblan.launcher.domain.usecase.util.updateIconPackInfos
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive

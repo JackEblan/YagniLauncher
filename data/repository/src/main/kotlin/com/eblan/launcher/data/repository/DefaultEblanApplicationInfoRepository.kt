@@ -32,7 +32,6 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
-import java.io.File
 import javax.inject.Inject
 
 internal class DefaultEblanApplicationInfoRepository @Inject constructor(
@@ -93,20 +92,6 @@ internal class DefaultEblanApplicationInfoRepository @Inject constructor(
 
     override suspend fun updateEblanApplicationInfo(eblanApplicationInfo: EblanApplicationInfo) {
         eblanApplicationInfoDao.updateEblanApplicationInfoEntity(entity = eblanApplicationInfo.asEntity())
-    }
-
-    override suspend fun resetEblanApplicationInfoCustomIcon(eblanApplicationInfo: EblanApplicationInfo) {
-        withContext(ioDispatcher) {
-            eblanApplicationInfo.customIcon?.let {
-                val customIconFile = File(it)
-
-                if (customIconFile.exists()) {
-                    customIconFile.delete()
-                }
-            }
-
-            updateEblanApplicationInfo(eblanApplicationInfo = eblanApplicationInfo.copy(customIcon = null))
-        }
     }
 
     override suspend fun getEblanApplicationInfoByComponentName(

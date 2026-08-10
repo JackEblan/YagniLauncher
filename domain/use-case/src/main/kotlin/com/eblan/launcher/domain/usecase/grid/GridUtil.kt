@@ -18,9 +18,7 @@
 package com.eblan.launcher.domain.usecase.grid
 
 import com.eblan.launcher.domain.common.IconKeyGenerator
-import com.eblan.launcher.domain.framework.AppWidgetHostWrapper
 import com.eblan.launcher.domain.framework.FileManager
-import com.eblan.launcher.domain.framework.LauncherAppsWrapper
 import com.eblan.launcher.domain.model.ApplicationInfoGridItem
 import com.eblan.launcher.domain.model.EblanAction
 import com.eblan.launcher.domain.model.EblanActionType
@@ -32,8 +30,6 @@ import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.ShortcutConfigGridItem
 import com.eblan.launcher.domain.model.ShortcutInfoGridItem
-import com.eblan.launcher.domain.model.ShortcutQuery
-import com.eblan.launcher.domain.model.ShortcutQueryFlag
 import com.eblan.launcher.domain.model.WidgetGridItem
 import com.eblan.launcher.domain.repository.FolderGridItemRepository
 import kotlinx.coroutines.currentCoroutineContext
@@ -301,50 +297,6 @@ internal fun GridItem.isTopLevel() = when (val itemData = data) {
     is GridItemData.Widget -> true
 }
 
-internal suspend fun cleanupGridItemRecursively(
-    gridItem: GridItem,
-    appWidgetHostWrapper: AppWidgetHostWrapper,
-    launcherAppsWrapper: LauncherAppsWrapper,
-    folderGridItemRepository: FolderGridItemRepository,
-    fileManager: FileManager,
-    iconKeyGenerator: IconKeyGenerator,
-    iconPackInfoPackageName: String,
-) {
-    when (val data = gridItem.data) {
-        is GridItemData.ShortcutInfo -> {
-            updatePinShortcutsByPackageName(launcherAppsWrapper, data)
-        }
-
-        is GridItemData.Widget -> {
-            appWidgetHostWrapper.deleteAppWidgetId(data.appWidgetId)
-        }
-
-        is GridItemData.Folder -> {
-            val folderGridItems = getFolderGridItemsById(
-                folderGridItemRepository = folderGridItemRepository,
-                fileManager = fileManager,
-                iconKeyGenerator = iconKeyGenerator,
-                iconPackInfoPackageName = iconPackInfoPackageName,
-                folderId = gridItem.id,
-            )
-
-            folderGridItems.forEach { folderGridItem ->
-                cleanupGridItemRecursively(
-                    gridItem = folderGridItem,
-                    appWidgetHostWrapper = appWidgetHostWrapper,
-                    launcherAppsWrapper = launcherAppsWrapper,
-                    folderGridItemRepository = folderGridItemRepository,
-                    fileManager = fileManager,
-                    iconKeyGenerator = iconKeyGenerator,
-                    iconPackInfoPackageName = iconPackInfoPackageName,
-                )
-            }
-        }
-
-        else -> Unit
-    }
-}
-
 internal fun FolderGridItemWrapper.asGridItem(): GridItem = GridItem(
     id = folderGridItem.id,
     page = folderGridItem.page,
@@ -366,66 +318,48 @@ internal fun FolderGridItemWrapper.asGridItem(): GridItem = GridItem(
     swipeDown = folderGridItem.swipeDown,
 )
 
-suspend fun getFolderGridItemsById(
-    folderGridItemRepository: FolderGridItemRepository,
-    fileManager: FileManager,
-    iconKeyGenerator: IconKeyGenerator,
-    iconPackInfoPackageName: String,
-    folderId: String,
-): List<GridItem> {
-    val folderGridItemWrapper = folderGridItemRepository.getFolderGridItemWrapper(
-        id = folderId,
-    ) ?: return emptyList()
+internal fun deleteGridItemCustomIconFile(gridItem: GridItem) = when (val data = gridItem.data) {
+    is GridItemData.ApplicationInfo -> {
+        data.customIcon?.let {
+            val customIconFile = File(it)
 
-    val childFolderGridItems = folderGridItemWrapper.folderGridItems.map { folderGridItem ->
-        folderGridItemRepository.getFolderGridItemWrapper(
-            id = folderGridItem.id,
-        )?.asGridItem() ?: folderGridItem.asGridItem()
-    }
-
-    return (
-        folderGridItemWrapper.applicationInfoGridItems.map {
-            it.asGridItem(
-                fileManager = fileManager,
-                iconKeyGenerator = iconKeyGenerator,
-                iconPackInfoPackageName = iconPackInfoPackageName,
-            )
-        } + folderGridItemWrapper.shortcutInfoGridItems.map {
-            it.asGridItem()
-        } + folderGridItemWrapper.shortcutConfigGridItems.map {
-            it.asGridItem()
-        } + childFolderGridItems
-        ).sortedBy { gridItem ->
-        when (val data = gridItem.data) {
-            is GridItemData.ApplicationInfo -> data.index
-            is GridItemData.ShortcutInfo -> data.index
-            is GridItemData.ShortcutConfig -> data.index
-            is GridItemData.Folder -> data.index
-            else -> error("Unsupported folder grid item")
+            if (customIconFile.exists()) {
+                customIconFile.delete()
+            }
         }
     }
-}
 
-private suspend fun updatePinShortcutsByPackageName(
-    launcherAppsWrapper: LauncherAppsWrapper,
-    data: GridItemData.ShortcutInfo,
-) {
-    if (!launcherAppsWrapper.hasShortcutHostPermission) return
+    is GridItemData.ShortcutConfig -> {
+        data.customIcon?.let {
+            val customIconFile = File(it)
 
-    val shortcutIds = launcherAppsWrapper.getShortcuts(
-        shortcutQuery = ShortcutQuery(
-            packageName = data.packageName,
-            shortcutQueryFlag = ShortcutQueryFlag.Pinned,
-        ),
-    )?.map { it.shortcutId } ?: return
+            if (customIconFile.exists()) {
+                customIconFile.delete()
+            }
+        }
+    }
 
-    if (data.shortcutId !in shortcutIds) return
+    is GridItemData.ShortcutInfo -> {
+        data.customIcon?.let {
+            val customIconFile = File(it)
 
-    launcherAppsWrapper.pinShortcuts(
-        packageName = data.packageName,
-        shortcutIds = shortcutIds - data.shortcutId,
-        serialNumber = data.serialNumber,
-    )
+            if (customIconFile.exists()) {
+                customIconFile.delete()
+            }
+        }
+    }
+
+    is GridItemData.Folder -> {
+        data.icon?.let {
+            val iconFile = File(it)
+
+            if (iconFile.exists()) {
+                iconFile.delete()
+            }
+        }
+    }
+
+    else -> Unit
 }
 
 private suspend fun List<GridItem>.getGridItemsByPage(
