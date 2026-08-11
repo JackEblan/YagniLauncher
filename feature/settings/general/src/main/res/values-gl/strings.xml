@@ -16,16 +16,16 @@
   ~
   -->
 <resources>
-    <string name="import_icon_pack">Import Icon Pack</string>
-    <string name="no_icon_packs">No icon packs</string>
-    <string name="select_icon_pack">Select Icon Pack</string>
-    <string name="please_import_an_icon_pack_first">Please import an icon pack first</string>
-    <string name="reset">Reset</string>
-    <string name="default_icon_pack">Default</string>
-    <string name="theme">Theme</string>
-    <string name="dynamic_theme">Dynamic Theme</string>
-    <string name="notification_dots">Notification Dots</string>
-    <string name="show_notification_dots">Show notification dots</string>
-    <string name="apply_icons_from_supported_icon_packs">Apply icons from supported icon packs</string>
-    <string name="adapt_colors_to_your_wallpaper_automatically">Adapt colors to your wallpaper automatically</string>
+    <string name="import_icon_pack">Importar paquete de iconas</string>
+    <string name="no_icon_packs">Sen paquetes de iconas</string>
+    <string name="select_icon_pack">Selecciona un paquete de iconas</string>
+    <string name="please_import_an_icon_pack_first">Primeiro importa un paquete de iconas</string>
+    <string name="reset">Restablecer</string>
+    <string name="default_icon_pack">Predeterminado</string>
+    <string name="theme">Aparencia</string>
+    <string name="dynamic_theme">Decorado dinámico</string>
+    <string name="notification_dots">Puntos de notificación</string>
+    <string name="show_notification_dots">Mostra un punto de notificación</string>
+    <string name="apply_icons_from_supported_icon_packs">Aplica as iconas dos paquetes de iconas compatibles</string>
+    <string name="adapt_colors_to_your_wallpaper_automatically">Adapta automaticamente as cores en función da imaxe de fondo</string>
 </resources>
