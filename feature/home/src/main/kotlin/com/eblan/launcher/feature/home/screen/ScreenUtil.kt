@@ -17,16 +17,22 @@
  */
 package com.eblan.launcher.feature.home.screen
 
+import android.appwidget.AppWidgetManager
 import android.content.Context
+import android.os.Bundle
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import com.eblan.launcher.domain.model.EblanAction
 import com.eblan.launcher.domain.model.EblanActionType
+import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.HorizontalAlignment
 import com.eblan.launcher.domain.model.VerticalArrangement
 import com.eblan.launcher.feature.home.util.handleEblanAction
 import com.eblan.launcher.framework.launcherapps.AndroidLauncherAppsWrapper
+import com.eblan.launcher.framework.widgetmanager.AndroidAppWidgetManagerWrapper
+import kotlin.math.roundToInt
 
 internal fun getHorizontalAlignment(horizontalAlignment: HorizontalAlignment): Alignment.Horizontal = when (horizontalAlignment) {
     HorizontalAlignment.Start -> Alignment.Start
@@ -53,6 +59,69 @@ internal fun onDoubleTap(
         eblanAction = doubleTap,
         launcherApps = launcherApps,
         onOpenAppDrawer = onOpenAppDrawer,
+    )
+}
+
+internal fun updateAppWidgetOptions(
+    height: Int,
+    width: Int,
+    androidAppWidgetManagerWrapper: AndroidAppWidgetManagerWrapper,
+    columns: Int,
+    data: GridItemData.Widget,
+    density: Density,
+    gridHeight: Int,
+    gridWidth: Int,
+    rows: Int,
+    startColumn: Int,
+    startRow: Int,
+) {
+    val cellWidthPx = gridWidth.toFloat() / columns
+    val cellHeightPx = gridHeight.toFloat() / rows
+
+    val maxSpanColumns = (columns - startColumn).coerceAtLeast(1)
+    val maxSpanRows = (rows - startRow).coerceAtLeast(1)
+
+    val maxWidthByGridPx = (maxSpanColumns * cellWidthPx).roundToInt()
+    val maxHeightByGridPx = (maxSpanRows * cellHeightPx).roundToInt()
+
+    val maxWidthPx = if (data.maxResizeWidth > 0) {
+        minOf(
+            data.maxResizeWidth,
+            maxWidthByGridPx,
+        )
+    } else {
+        maxWidthByGridPx
+    }
+    val maxHeightPx = if (data.maxResizeHeight > 0) {
+        minOf(
+            data.maxResizeHeight,
+            maxHeightByGridPx,
+        )
+    } else {
+        maxHeightByGridPx
+    }
+
+    val minWidthPx = if (data.minResizeWidth > 0) data.minResizeWidth else width
+    val minHeightPx = if (data.minResizeHeight > 0) data.minResizeHeight else height
+
+    val minWidthDp = with(density) { minWidthPx.toDp().value.roundToInt().coerceAtLeast(1) }
+    val minHeightDp =
+        with(density) { minHeightPx.toDp().value.roundToInt().coerceAtLeast(1) }
+    val maxWidthDp =
+        with(density) { maxWidthPx.toDp().value.roundToInt().coerceAtLeast(minWidthDp) }
+    val maxHeightDp =
+        with(density) { maxHeightPx.toDp().value.roundToInt().coerceAtLeast(minHeightDp) }
+
+    val options = Bundle().apply {
+        putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, minWidthDp)
+        putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, minHeightDp)
+        putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH, maxWidthDp)
+        putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT, maxHeightDp)
+    }
+
+    androidAppWidgetManagerWrapper.updateAppWidgetOptions(
+        appWidgetId = data.appWidgetId,
+        options = options,
     )
 }
 

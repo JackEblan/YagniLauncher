@@ -17,13 +17,20 @@
  */
 package com.eblan.launcher.feature.home.screen
 
+import android.content.Intent
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.platform.SoftwareKeyboardController
+import androidx.core.util.Consumer
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.debounce
@@ -33,7 +40,6 @@ import kotlin.time.Duration.Companion.milliseconds
 @Composable
 @OptIn(ExperimentalMaterial3Api::class, FlowPreview::class)
 internal fun ScreenEffect(
-    isPressHome: Boolean,
     swipeY: Float,
     screenHeight: Int,
     onDismiss: () -> Unit,
@@ -41,12 +47,6 @@ internal fun ScreenEffect(
     textFieldState: TextFieldState,
     onChangeLabel: (String) -> Unit,
 ) {
-    LaunchedEffect(key1 = isPressHome) {
-        if (isPressHome && swipeY < screenHeight.toFloat()) {
-            onDismiss()
-        }
-    }
-
     LaunchedEffect(key1 = textFieldState) {
         snapshotFlow { textFieldState.text }.debounce(500L.milliseconds).onEach {
             onChangeLabel(it.toString())
@@ -62,4 +62,55 @@ internal fun ScreenEffect(
     BackHandler(enabled = swipeY < screenHeight.toFloat()) {
         onDismiss()
     }
+
+    HomeHandler(enabled = swipeY < screenHeight.toFloat()) {
+        onDismiss()
+    }
+}
+
+@Composable
+internal fun HomeHandler(
+    enabled: Boolean = true,
+    onHome: (Intent) -> Unit,
+) {
+    val activity = LocalActivity.current as ComponentActivity
+
+    val currentOnHome by rememberUpdatedState(onHome)
+
+    DisposableEffect(
+        key1 = activity,
+        key2 = enabled,
+    ) {
+        val listener = Consumer<Intent> { intent ->
+            handleActionMainIntent(
+                enabled = enabled,
+                intent = intent,
+                onHome = currentOnHome,
+            )
+        }
+
+        activity.addOnNewIntentListener(listener)
+
+        onDispose {
+            activity.removeOnNewIntentListener(listener)
+        }
+    }
+}
+
+private fun handleActionMainIntent(
+    enabled: Boolean,
+    intent: Intent,
+    onHome: (Intent) -> Unit,
+) {
+    if (!enabled) return
+
+    if (intent.action != Intent.ACTION_MAIN && !intent.hasCategory(Intent.CATEGORY_HOME)) {
+        return
+    }
+
+    if ((intent.flags and Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
+        return
+    }
+
+    onHome(intent)
 }

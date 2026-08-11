@@ -53,6 +53,7 @@
             <option value="$PROJECT_DIR$/feature/settings/settings" />
             <option value="$PROJECT_DIR$/framework" />
             <option value="$PROJECT_DIR$/framework/accessibility-manager" />
+            <option value="$PROJECT_DIR$/framework/content-resolver" />
             <option value="$PROJECT_DIR$/framework/file-manager" />
             <option value="$PROJECT_DIR$/framework/icon-pack-manager" />
             <option value="$PROJECT_DIR$/framework/image-serializer" />

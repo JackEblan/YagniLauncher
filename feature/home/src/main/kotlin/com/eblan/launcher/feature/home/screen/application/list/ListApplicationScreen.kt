@@ -138,7 +138,6 @@ internal fun ListApplicationScreen(
     eblanShortcutInfosGroup: Map<EblanShortcutInfoByGroup, List<EblanShortcutInfo>>,
     getEblanApplicationInfosByLabelAndTag: GetEblanApplicationInfosByLabelAndTag,
     hasShortcutHostPermission: Boolean,
-    isPressHome: Boolean,
     managedProfileResult: ManagedProfileResult?,
     paddingValues: PaddingValues,
     screenHeight: Int,
@@ -210,7 +209,6 @@ internal fun ListApplicationScreen(
 
     ApplicationScreenEffect(
         horizontalPagerState = horizontalPagerState,
-        isPressHome = isPressHome,
         screenHeight = screenHeight,
         selectedEblanApplicationInfoTagId = selectedEblanApplicationInfoTagId,
         showPopupApplicationMenu = showPopupApplicationMenu,

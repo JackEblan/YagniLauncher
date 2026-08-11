@@ -22,7 +22,6 @@ import androidx.compose.runtime.State
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.LayoutDirection
@@ -166,7 +165,7 @@ internal fun handleDragGridItem(
     dockGridCurrentPage: Int,
     density: Density,
     dockColumns: Int,
-    dockHeight: Dp,
+    dockHeight: Int,
     dockRows: Int,
     drag: Drag,
     dragIntOffset: IntOffset,
@@ -221,7 +220,7 @@ internal fun handleDragGridItem(
     }
 
     val dockHeightPx = with(density) {
-        dockHeight.roundToPx()
+        dockHeight.dp.roundToPx()
     }
 
     val pageIndicatorHeightPx = with(density) {

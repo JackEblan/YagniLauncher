@@ -93,6 +93,7 @@ import com.eblan.launcher.feature.home.component.GridPagerIndicator
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
+import com.eblan.launcher.feature.home.screen.HomeHandler
 import com.eblan.launcher.feature.home.screen.PAGE_INDICATOR_HEIGHT
 import com.eblan.launcher.feature.home.screen.application.ApplicationScreen
 import com.eblan.launcher.feature.home.screen.folder.FolderGridItemPopup
@@ -284,21 +285,26 @@ internal fun PagerScreen(
 
     val appWidgetLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
-    ) { result ->
+    ) {
         pagerScreenState.handleAppWidgetLauncherResult(
             moveGridItemResult = moveGridItemResult,
-            result = result,
+            result = it,
+            density = density,
+            screenWidth = screenWidth,
+            screenHeight = screenHeight,
+            paddingValues = paddingValues,
+            layoutDirection = layoutDirection,
         )
     }
 
     val shortcutConfigLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
-    ) { result ->
+    ) {
         scope.launch {
             handleShortcutConfigLauncherResult(
                 androidImageSerializer = androidImageSerializer,
                 moveGridItemResult = moveGridItemResult,
-                result = result,
+                result = it,
                 fileManager = fileManager,
                 onDeleteGridItem = onResetGridAfterDeleteGridItem,
                 onUpdateGridItemsAfterMove = onUpdateGridItemsAfterMove,
@@ -309,7 +315,7 @@ internal fun PagerScreen(
 
     val shortcutConfigIntentSenderLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult(),
-    ) { result ->
+    ) {
         scope.launch {
             handleShortcutConfigIntentSenderLauncherResult(
                 androidImageSerializer = androidImageSerializer,
@@ -317,7 +323,7 @@ internal fun PagerScreen(
                 androidUserManagerWrapper = androidUserManagerWrapper,
                 fileManager = fileManager,
                 moveGridItemResult = moveGridItemResult,
-                result = result,
+                result = it,
                 iconKeyGenerator = iconKeyGenerator,
                 onDeleteGridItem = onResetGridAfterDeleteGridItem,
                 onUpdateShortcutConfigIntoShortcutInfoGridItem = onUpdateShortcutConfigIntoShortcutInfoGridItem,
@@ -411,7 +417,6 @@ internal fun PagerScreen(
             gridCurrentPage = gridCurrentPage,
             dockGridCurrentPage = dockGridCurrentPage,
             density = density,
-            dockHeight = dockHeight,
             isGridScrollInProgress = gridHorizontalPagerState.isScrollInProgress,
             isDockScrollInProgress = dockGridHorizontalPagerState.isScrollInProgress,
             lockMovement = lockMovement,
@@ -432,6 +437,11 @@ internal fun PagerScreen(
             onLaunchWidgetIntent = appWidgetLauncher::launch,
             gridItemSource = currentGridItemSource,
             isVisibleOverlay = currentIsVisibleOverlay,
+            paddingValues = paddingValues,
+            screenHeight = screenHeight,
+            screenWidth = screenWidth,
+            layoutDirection = layoutDirection,
+            density = density,
             onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
             onResetGridAfterDeleteGridItem = onResetGridAfterDeleteGridItem,
             onResetGrid = onResetGrid,
@@ -509,27 +519,6 @@ internal fun PagerScreen(
         pagerScreenState.handleHasDoubleTap()
     }
 
-    DisposableEffect(key1 = activity) {
-        val listener = Consumer<Intent> { intent ->
-            pagerScreenState.handleNewIntent(
-                dockGridHorizontalPagerState = dockGridHorizontalPagerState,
-                gridHorizontalPagerState = gridHorizontalPagerState,
-                intent = intent,
-                windowToken = view.windowToken,
-            )
-        }
-
-        activity.addOnNewIntentListener(listener)
-
-        onDispose {
-            activity.removeOnNewIntentListener(listener)
-        }
-    }
-
-    LaunchedEffect(key1 = pagerScreenState.isPressHome) {
-        pagerScreenState.handleIsPressHome()
-    }
-
     LaunchedEffect(key1 = homeSettings.infiniteScroll) {
         gridHorizontalPagerState.scrollToPage(
             if (homeSettings.infiniteScroll) {
@@ -550,14 +539,31 @@ internal fun PagerScreen(
         )
     }
 
-    BackHandler(
-        enabled = pagerScreenState.swipeY.value == screenHeight.toFloat() &&
-            !pagerScreenState.showGridItemPopup && !pagerScreenState.showSettingsPopup &&
-            !pagerScreenState.showFolderGridItemPopup,
-    ) {
-        pagerScreenState.animateScrollToPages(
+    DisposableEffect(key1 = activity) {
+        val listener = Consumer<Intent> {
+            pagerScreenState.handleEblanActionIntent(intent = it)
+        }
+
+        activity.addOnNewIntentListener(listener)
+
+        onDispose {
+            activity.removeOnNewIntentListener(listener)
+        }
+    }
+
+    BackHandler(enabled = pagerScreenState.isAvailableForSystemNavigation) {
+        pagerScreenState.handleSystemNavigation(
             dockGridHorizontalPagerState = dockGridHorizontalPagerState,
             gridHorizontalPagerState = gridHorizontalPagerState,
+            windowToken = view.windowToken,
+        )
+    }
+
+    HomeHandler(enabled = pagerScreenState.isAvailableForSystemNavigation) {
+        pagerScreenState.handleSystemNavigation(
+            dockGridHorizontalPagerState = dockGridHorizontalPagerState,
+            gridHorizontalPagerState = gridHorizontalPagerState,
+            windowToken = view.windowToken,
         )
     }
 
@@ -1050,7 +1056,6 @@ internal fun PagerScreen(
                 eblanShortcutInfosGroup = eblanShortcutInfosGroup,
                 getEblanApplicationInfosByLabelAndTag = getEblanApplicationInfosByLabelAndTag,
                 hasShortcutHostPermission = hasShortcutHostPermission,
-                isPressHome = pagerScreenState.isPressHome,
                 managedProfileResult = pagerScreenState.managedProfileResult,
                 paddingValues = paddingValues,
                 screenHeight = screenHeight,
@@ -1081,7 +1086,6 @@ internal fun PagerScreen(
                 drag = pagerScreenState.drag,
                 eblanAppWidgetProviderInfos = eblanAppWidgetProviderInfos,
                 gridItemSettings = homeSettings.gridItemSettings,
-                isPressHome = pagerScreenState.isPressHome,
                 paddingValues = paddingValues,
                 rows = homeSettings.rows,
                 screenHeight = screenHeight,
@@ -1108,7 +1112,6 @@ internal fun PagerScreen(
                 drag = pagerScreenState.drag,
                 eblanShortcutConfigs = eblanShortcutConfigs,
                 gridItemSettings = homeSettings.gridItemSettings,
-                isPressHome = pagerScreenState.isPressHome,
                 paddingValues = paddingValues,
                 screenHeight = screenHeight,
                 swipeY = pagerScreenState.shortcutConfigScreenSwipeY.value,
@@ -1135,7 +1138,6 @@ internal fun PagerScreen(
                 eblanAppWidgetProviderInfosGroup = eblanAppWidgetProviderInfosGroup,
                 eblanApplicationInfoGroup = pagerScreenState.eblanApplicationInfoGroup,
                 gridItemSettings = homeSettings.gridItemSettings,
-                isPressHome = pagerScreenState.isPressHome,
                 paddingValues = paddingValues,
                 rows = homeSettings.rows,
                 screenHeight = screenHeight,
