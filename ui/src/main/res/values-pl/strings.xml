@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~
+  ~   Copyright 2023 Einstein Blanco
+  ~
+  ~   Licensed under the GNU General Public License v3.0 (the "License");
+  ~   you may not use this file except in compliance with the License.
+  ~   You may obtain a copy of the License at
+  ~
+  ~       https://www.gnu.org/licenses/gpl-3.0
+  ~
+  ~   Unless required by applicable law or agreed to in writing, software
+  ~   distributed under the License is distributed on an "AS IS" BASIS,
+  ~   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~   See the License for the specific language governing permissions and
+  ~   limitations under the License.
+  ~
+  -->
+<resources>
+    <string name="open">Otwórz %1$s</string>
+    <string name="app">Aplikacja</string>
+    <string name="open_app_drawer">Otwórz szufladę aplikacji</string>
+    <string name="open_notification_panel">Otwórz panel powiadomień</string>
+    <string name="lock_screen">Zablokuj ekran</string>
+    <string name="open_quick_settings">Otwórz szybkie ustawienia</string>
+    <string name="open_recents">Otwórz ostatnie aplikacje</string>
+    <string name="enable_the_accessibility_service_permission_to_use_additional_actions">Włącz uprawnienia usługi ułatwień dostępu, aby korzystać z dodatkowych akcji</string>
+    <string name="corner_radius">Promień zaokrąglenia rogów</string>
+    <string name="corner_radius_is_not_valid">Nieprawidłowy promień zaokrąglenia rogów</string>
+    <string name="icon_size">Rozmiar ikon</string>
+    <string name="icon_size_is_not_valid">Nieprawidłowy rozmiar ikon</string>
+    <string name="padding">Margines wewnętrzny (Padding)</string>
+    <string name="padding_is_not_valid">Nieprawidłowy margines wewnętrzny</string>
+    <string name="text_size">Rozmiar tekstu</string>
+    <string name="text_size_is_not_valid">Nieprawidłowy rozmiar tekstu</string>
+    <string name="select_application">Wybierz aplikację</string>
+    <string name="custom_icon">Własna ikona</string>
+    <string name="gallery">Galeria</string>
+    <string name="pick_icons_from_your_gallery">Wybierz ikony ze swojej galerii</string>
+    <string name="reset_custom_icon">Zresetuj własną ikonę</string>
+    <string name="grid_item">Element siatki</string>
+    <string name="text_color">Kolor tekstu</string>
+    <string name="show_label">Pokaż etykietę</string>
+    <string name="single_line_label">Etykieta w jednej linii</string>
+    <string name="horizontal_alignment">Wyrównanie w poziomie</string>
+    <string name="vertical_arrangement">Rozmieszczenie w pionie</string>
+    <string name="start">Do lewej (Start)</string>
+    <string name="center_horizontally">Wyśrodkuj w poziomie</string>
+    <string name="end">Do prawej (End)</string>
+    <string name="bottom">Dół</string>
+    <string name="top">Góra</string>
+    <string name="center">Środek</string>
+    <string name="double_tap">Dwukrotne dotknięcie</string>
+    <string name="swipe_up">Przesunięcie w górę</string>
+    <string name="swipe_down">Przesunięcie w dół</string>
+    <string name="display_app_names_below_icons">Wyświetlaj nazwy aplikacji pod ikonami</string>
+    <string name="limit_app_names_to_one_line">Ogranicz nazwy aplikacji do jednej linii</string>
+    <string name="custom">Własny</string>
+</resources>
