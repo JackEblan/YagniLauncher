@@ -36,6 +36,8 @@ import com.eblan.launcher.framework.imageserializer.AndroidImageSerializer
 import com.eblan.launcher.framework.usermanager.AndroidUserManagerWrapper
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
 import java.io.File
 import javax.inject.Inject
@@ -53,13 +55,13 @@ internal class DefaultAppWidgetManagerWrapper @Inject constructor(
     private val appWidgetManager = AppWidgetManager.getInstance(context)
 
     override suspend fun getInstalledProviders(): List<AppWidgetManagerAppWidgetProviderInfo> = withContext(defaultDispatcher) {
-        appWidgetManager.installedProviders.map { appWidgetProviderInfo ->
-            appWidgetProviderInfo.toEblanAppWidgetProviderInfo()
+        appWidgetManager.installedProviders.map {
+            it.toEblanAppWidgetProviderInfo()
         }
     }
 
-    override suspend fun getFastInstalledProviders(): List<FastAppWidgetManagerAppWidgetProviderInfo> = appWidgetManager.installedProviders.map { appWidgetProviderInfo ->
-        appWidgetProviderInfo.toFastEblanAppWidgetProviderInfo()
+    override suspend fun getFastInstalledProviders(): List<FastAppWidgetManagerAppWidgetProviderInfo> = appWidgetManager.installedProviders.map {
+        it.toFastEblanAppWidgetProviderInfo()
     }
 
     override fun getAppWidgetInfo(appWidgetId: Int): AppWidgetProviderInfo? = appWidgetManager.getAppWidgetInfo(appWidgetId)
@@ -82,6 +84,8 @@ internal class DefaultAppWidgetManagerWrapper @Inject constructor(
     }
 
     private suspend fun AppWidgetProviderInfo.toEblanAppWidgetProviderInfo(): AppWidgetManagerAppWidgetProviderInfo {
+        currentCoroutineContext().ensureActive()
+
         val serialNumber = userManagerWrapper.getSerialNumberForUser(userHandle = profile)
 
         val preview = loadPreviewImage(context, 0)?.let { drawable ->
@@ -140,7 +144,9 @@ internal class DefaultAppWidgetManagerWrapper @Inject constructor(
         }
     }
 
-    private fun AppWidgetProviderInfo.toFastEblanAppWidgetProviderInfo(): FastAppWidgetManagerAppWidgetProviderInfo {
+    private suspend fun AppWidgetProviderInfo.toFastEblanAppWidgetProviderInfo(): FastAppWidgetManagerAppWidgetProviderInfo {
+        currentCoroutineContext().ensureActive()
+
         val serialNumber = userManagerWrapper.getSerialNumberForUser(userHandle = profile)
 
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {

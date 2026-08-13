@@ -452,7 +452,7 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
         }
     }
 
-    override fun getUser(serialNumber: Long): EblanUser {
+    override suspend fun getUser(serialNumber: Long): EblanUser {
         val userHandle = userManagerWrapper.getUserForSerialNumber(serialNumber = serialNumber)
             ?: return EblanUser(
                 serialNumber = serialNumber,
@@ -532,6 +532,8 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
             ?.getBoolean(LauncherUserInfo.PRIVATE_SPACE_ENTRYPOINT_HIDDEN) == true
 
     private suspend fun LauncherActivityInfo.toLauncherAppsActivityInfo(): LauncherAppsActivityInfo {
+        currentCoroutineContext().ensureActive()
+
         val serialNumber = userManagerWrapper.getSerialNumberForUser(userHandle = user)
 
         val badgedIcon = try {
@@ -568,15 +570,21 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
         )
     }
 
-    private fun LauncherActivityInfo.toFastLauncherAppsActivityInfo(): FastLauncherAppsActivityInfo = FastLauncherAppsActivityInfo(
-        serialNumber = userManagerWrapper.getSerialNumberForUser(userHandle = user),
-        componentName = componentName.flattenToString(),
-        packageName = applicationInfo.packageName,
-        lastUpdateTime = packageManagerWrapper.getLastUpdateTime(packageName = applicationInfo.packageName),
-    )
+    private suspend fun LauncherActivityInfo.toFastLauncherAppsActivityInfo(): FastLauncherAppsActivityInfo {
+        currentCoroutineContext().ensureActive()
+
+        return FastLauncherAppsActivityInfo(
+            serialNumber = userManagerWrapper.getSerialNumberForUser(userHandle = user),
+            componentName = componentName.flattenToString(),
+            packageName = applicationInfo.packageName,
+            lastUpdateTime = packageManagerWrapper.getLastUpdateTime(packageName = applicationInfo.packageName),
+        )
+    }
 
     @RequiresApi(Build.VERSION_CODES.N_MR1)
     private suspend fun ShortcutInfo.toLauncherAppsShortcutInfo(): LauncherAppsShortcutInfo {
+        currentCoroutineContext().ensureActive()
+
         val serialNumber = userManagerWrapper.getSerialNumberForUser(userHandle = userHandle)
 
         val shortcutBadgedIconDrawable = try {
@@ -631,9 +639,13 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
     }
 
     @RequiresApi(Build.VERSION_CODES.N_MR1)
-    private fun ShortcutInfo.toFastLauncherAppsShortcutInfo(): FastLauncherAppsShortcutInfo = FastLauncherAppsShortcutInfo(
-        packageName = `package`,
-        serialNumber = userManagerWrapper.getSerialNumberForUser(userHandle = userHandle),
-        lastChangedTimestamp = packageManagerWrapper.getLastUpdateTime(packageName = `package`),
-    )
+    private suspend fun ShortcutInfo.toFastLauncherAppsShortcutInfo(): FastLauncherAppsShortcutInfo {
+        currentCoroutineContext().ensureActive()
+
+        return FastLauncherAppsShortcutInfo(
+            packageName = `package`,
+            serialNumber = userManagerWrapper.getSerialNumberForUser(userHandle = userHandle),
+            lastChangedTimestamp = packageManagerWrapper.getLastUpdateTime(packageName = `package`),
+        )
+    }
 }

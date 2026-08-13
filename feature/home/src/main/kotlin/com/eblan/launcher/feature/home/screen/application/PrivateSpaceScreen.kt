@@ -82,7 +82,6 @@ import com.eblan.launcher.feature.home.screen.getHorizontalAlignment
 import com.eblan.launcher.feature.home.screen.getVerticalArrangement
 import com.eblan.launcher.feature.home.util.getSystemTextColor
 import com.eblan.launcher.ui.local.LocalLauncherApps
-import com.eblan.launcher.ui.local.LocalPackageManager
 import com.eblan.launcher.ui.local.LocalUserManager
 import kotlinx.coroutines.launch
 import kotlin.uuid.ExperimentalUuidApi
@@ -141,8 +140,6 @@ internal fun PrivateSpaceStickyHeader(
 
     val userManager = LocalUserManager.current
 
-    val packageManager = LocalPackageManager.current
-
     val launcherApps = LocalLauncherApps.current
 
     val userHandle =
@@ -151,6 +148,8 @@ internal fun PrivateSpaceStickyHeader(
     val privateSpaceLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult(),
     ) {}
+
+    val isDefaultLauncher by rememberIsDefaultLauncher()
 
     LaunchedEffect(key1 = userHandle) {
         if (userHandle != null) {
@@ -191,7 +190,7 @@ internal fun PrivateSpaceStickyHeader(
                 }
             }
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && packageManager.isDefaultLauncher() && userHandle != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && isDefaultLauncher && userHandle != null) {
                 IconButton(
                     onClick = {
                         userManager.requestQuietModeEnabled(

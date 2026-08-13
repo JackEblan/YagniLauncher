@@ -118,9 +118,10 @@ import com.eblan.launcher.feature.home.screen.application.TagElevatedFilterChip
 import com.eblan.launcher.feature.home.screen.application.handleDragEblanApplicationInfoItem
 import com.eblan.launcher.feature.home.screen.application.handleOnLongPressEblanApplicationInfoItem
 import com.eblan.launcher.feature.home.screen.application.handleOnTapEblanApplicationInfoItem
+import com.eblan.launcher.feature.home.screen.application.rememberIsDefaultLauncher
+import com.eblan.launcher.feature.home.screen.application.rememberIsQuietModeEnabled
 import com.eblan.launcher.feature.home.util.getSystemTextColor
 import com.eblan.launcher.ui.local.LocalLauncherApps
-import com.eblan.launcher.ui.local.LocalPackageManager
 import com.eblan.launcher.ui.local.LocalUserManager
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.launch
@@ -429,8 +430,6 @@ private fun EblanApplicationInfosPage(
 ) {
     val userManager = LocalUserManager.current
 
-    val packageManager = LocalPackageManager.current
-
     val eblanUserPageKey =
         getEblanApplicationInfosByLabelAndTag.eblanApplicationInfoWithIconPackInfos.keys.toList()
             .getOrElse(
@@ -450,30 +449,19 @@ private fun EblanApplicationInfosPage(
     val userHandle =
         userManager.getUserForSerialNumber(serialNumber = eblanUserPageKey.eblanUser.serialNumber)
 
-    var isQuietModeEnabled by remember { mutableStateOf(false) }
+    val isDefaultLauncher by rememberIsDefaultLauncher()
 
-    LaunchedEffect(key1 = userHandle) {
-        if (userHandle != null) {
-            isQuietModeEnabled = userManager.isQuietModeEnabled(userHandle = userHandle)
-        }
-    }
-
-    LaunchedEffect(key1 = managedProfileResult) {
-        if (managedProfileResult != null && managedProfileResult.serialNumber == eblanUserPageKey.eblanUser.serialNumber) {
-            isQuietModeEnabled = managedProfileResult.isQuiteModeEnabled
-        }
-    }
+    val isQuietModeEnabled by rememberIsQuietModeEnabled(
+        userHandle = userHandle,
+        managedProfileResult = managedProfileResult,
+        eblanUserPageKey = eblanUserPageKey,
+    )
 
     Box(modifier = modifier.fillMaxSize()) {
         if (isQuietModeEnabled) {
             QuiteModeScreen(
-                packageManager = packageManager,
                 userHandle = userHandle,
-                userManager = userManager,
                 onDragEnd = onDragEnd,
-                onUpdateRequestQuietModeEnabled = {
-                    isQuietModeEnabled = it
-                },
                 onVerticalDrag = onVerticalDrag,
             )
         } else {
@@ -504,7 +492,7 @@ private fun EblanApplicationInfosPage(
                 onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
             )
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && packageManager.isDefaultLauncher() &&
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && isDefaultLauncher &&
                 eblanUserPageKey.eblanUser.serialNumber > 0 && userHandle != null
             ) {
                 FloatingActionButton(
@@ -519,8 +507,6 @@ private fun EblanApplicationInfosPage(
                             enableQuiteMode = true,
                             userHandle = userHandle,
                         )
-
-                        isQuietModeEnabled = userManager.isQuietModeEnabled(userHandle)
                     },
                 ) {
                     Icon(

@@ -46,6 +46,9 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
@@ -64,6 +67,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.AppDrawerSettings
 import com.eblan.launcher.domain.model.AppDrawerType
@@ -88,8 +94,8 @@ import com.eblan.launcher.feature.home.screen.HomeHandler
 import com.eblan.launcher.feature.home.screen.application.horizontal.HorizontalApplicationScreen
 import com.eblan.launcher.feature.home.screen.application.list.ListApplicationScreen
 import com.eblan.launcher.feature.home.screen.application.vertical.VerticalApplicationScreen
-import com.eblan.launcher.framework.packagemanager.AndroidPackageManagerWrapper
-import com.eblan.launcher.framework.usermanager.AndroidUserManagerWrapper
+import com.eblan.launcher.ui.local.LocalPackageManager
+import com.eblan.launcher.ui.local.LocalUserManager
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.debounce
@@ -271,13 +277,14 @@ internal fun ApplicationScreen(
 @Composable
 internal fun QuiteModeScreen(
     modifier: Modifier = Modifier,
-    packageManager: AndroidPackageManagerWrapper,
     userHandle: UserHandle?,
-    userManager: AndroidUserManagerWrapper,
     onDragEnd: () -> Unit,
-    onUpdateRequestQuietModeEnabled: (Boolean) -> Unit,
     onVerticalDrag: (Float) -> Unit,
 ) {
+    val userManager = LocalUserManager.current
+
+    val isDefaultLauncher by rememberIsDefaultLauncher()
+
     Column(
         modifier = modifier
             .pointerInput(key1 = Unit) {
@@ -304,7 +311,7 @@ internal fun QuiteModeScreen(
             textAlign = TextAlign.Center,
         )
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && packageManager.isDefaultLauncher() && userHandle != null) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && isDefaultLauncher && userHandle != null) {
             Spacer(modifier = Modifier.height(10.dp))
 
             OutlinedButton(
@@ -313,8 +320,6 @@ internal fun QuiteModeScreen(
                         enableQuiteMode = false,
                         userHandle = userHandle,
                     )
-
-                    onUpdateRequestQuietModeEnabled(userManager.isQuietModeEnabled(userHandle = userHandle))
                 },
             ) {
                 Text(text = stringResource(R.string.unpause))
@@ -470,6 +475,43 @@ internal fun ApplicationScreenEffect(
 
     HomeHandler(enabled = swipeY < screenHeight.toFloat()) {
         onDismiss()
+    }
+}
+
+@Composable
+internal fun rememberIsDefaultLauncher(): State<Boolean> {
+    val packageManager = LocalPackageManager.current
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    return produceState(initialValue = false, key1 = lifecycleOwner) {
+        lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+            value = packageManager.isDefaultLauncher()
+        }
+    }
+}
+
+@Composable
+internal fun rememberIsQuietModeEnabled(
+    userHandle: UserHandle?,
+    managedProfileResult: ManagedProfileResult?,
+    eblanUserPageKey: EblanUserPageKey,
+): State<Boolean> {
+    val userManager = LocalUserManager.current
+
+    return produceState(
+        initialValue = false,
+        key1 = userHandle,
+        key2 = managedProfileResult,
+    ) {
+        if (userHandle != null) {
+            value = userManager.isQuietModeEnabled(userHandle = userHandle)
+        }
+
+        if (managedProfileResult != null &&
+            managedProfileResult.serialNumber == eblanUserPageKey.eblanUser.serialNumber
+        ) {
+            value = managedProfileResult.isQuiteModeEnabled
+        }
     }
 }
 

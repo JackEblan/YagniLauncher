@@ -37,7 +37,7 @@ import javax.inject.Inject
 internal class DefaultPackageManagerWrapper @Inject constructor(
     @param:ApplicationContext private val context: Context,
     private val imageSerializer: AndroidImageSerializer,
-    @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
+    @param:Dispatcher(EblanDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) : PackageManagerWrapper,
     AndroidPackageManagerWrapper {
     private val packageManager = context.packageManager
@@ -48,7 +48,7 @@ internal class DefaultPackageManagerWrapper @Inject constructor(
     override suspend fun getApplicationIcon(
         packageName: String,
         file: File,
-    ): String? = withContext(defaultDispatcher) {
+    ): String? = withContext(ioDispatcher) {
         try {
             imageSerializer.createDrawablePath(
                 drawable = packageManager.getApplicationIcon(
@@ -63,7 +63,7 @@ internal class DefaultPackageManagerWrapper @Inject constructor(
         }
     }
 
-    override suspend fun getApplicationLabel(packageName: String): String? = withContext(defaultDispatcher) {
+    override suspend fun getApplicationLabel(packageName: String): String? = withContext(ioDispatcher) {
         try {
             val applicationInfo =
                 packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
@@ -80,7 +80,7 @@ internal class DefaultPackageManagerWrapper @Inject constructor(
         return launchIntent?.component?.flattenToString()
     }
 
-    override fun isDefaultLauncher(): Boolean {
+    override suspend fun isDefaultLauncher(): Boolean = withContext(ioDispatcher) {
         val intent = Intent(Intent.ACTION_MAIN).apply {
             addCategory(Intent.CATEGORY_HOME)
         }
@@ -89,7 +89,7 @@ internal class DefaultPackageManagerWrapper @Inject constructor(
 
         val defaultLauncherPackage = resolveInfo?.activityInfo?.packageName
 
-        return defaultLauncherPackage == context.packageName
+        defaultLauncherPackage == context.packageName
     }
 
     override suspend fun getIconPackInfos(): List<PackageManagerIconPackInfo> {
@@ -102,7 +102,7 @@ internal class DefaultPackageManagerWrapper @Inject constructor(
 
         val resolveInfos = mutableSetOf<ResolveInfo>()
 
-        return withContext(defaultDispatcher) {
+        return withContext(ioDispatcher) {
             intents.forEach { intent ->
                 resolveInfos.addAll(
                     packageManager.queryIntentActivities(
@@ -128,13 +128,20 @@ internal class DefaultPackageManagerWrapper @Inject constructor(
         }
     }
 
-    override fun getLastUpdateTime(packageName: String): Long = try {
-        packageManager.getPackageInfo(packageName, 0).lastUpdateTime
-    } catch (_: PackageManager.NameNotFoundException) {
-        0L
+    override suspend fun getLastUpdateTime(packageName: String): Long = withContext(ioDispatcher) {
+        try {
+            packageManager.getPackageInfo(packageName, 0).lastUpdateTime
+        } catch (_: PackageManager.NameNotFoundException) {
+            0L
+        }
     }
 
     override fun isSystem(flags: Int): Boolean = (flags and (ApplicationInfo.FLAG_SYSTEM or ApplicationInfo.FLAG_UPDATED_SYSTEM_APP)) != 0
 
-    override fun getUserBadgedLabel(label: CharSequence, userHandle: UserHandle): CharSequence = packageManager.getUserBadgedLabel(label, userHandle)
+    override suspend fun getUserBadgedLabel(
+        label: CharSequence,
+        userHandle: UserHandle,
+    ): CharSequence = withContext(ioDispatcher) {
+        packageManager.getUserBadgedLabel(label, userHandle)
+    }
 }
