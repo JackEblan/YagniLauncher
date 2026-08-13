@@ -81,8 +81,6 @@ class AddPackageUseCase @Inject constructor(
                 serialNumber = serialNumber,
                 packageName = packageName,
             ).onEach {
-                currentCoroutineContext().ensureActive()
-
                 addEblanApplicationInfo(
                     homeSettings = userData.homeSettings,
                     serialNumber = it.serialNumber,
@@ -184,8 +182,6 @@ class AddPackageUseCase @Inject constructor(
                 it.serialNumber == serialNumber &&
                     it.packageName == packageName
             }.map {
-                currentCoroutineContext().ensureActive()
-
                 it.toEblanAppWidgetProviderInfo(
                     fileManager = fileManager,
                     packageManagerWrapper = packageManagerWrapper,
@@ -207,8 +203,6 @@ class AddPackageUseCase @Inject constructor(
                 serialNumber = serialNumber,
                 packageName = packageName,
             )?.map {
-                currentCoroutineContext().ensureActive()
-
                 it.toEblanShortcutInfo()
             }
 
@@ -227,8 +221,6 @@ class AddPackageUseCase @Inject constructor(
             serialNumber = serialNumber,
             packageName = packageName,
         ).map {
-            currentCoroutineContext().ensureActive()
-
             it.toEblanShortcutConfig(
                 fileManager = fileManager,
                 packageManagerWrapper = packageManagerWrapper,

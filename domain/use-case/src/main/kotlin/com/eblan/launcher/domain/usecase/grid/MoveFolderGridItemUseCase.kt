@@ -25,7 +25,6 @@ import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.domain.repository.GridRepository
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -57,8 +56,6 @@ class MoveFolderGridItemUseCase @Inject constructor(
 
         val movingIndex =
             folderGridItems.indexOfFirst {
-                ensureActive()
-
                 it.id == movingGridItem.id
             }
 
@@ -73,8 +70,6 @@ class MoveFolderGridItemUseCase @Inject constructor(
         }
 
         val indexedGridItems = folderGridItems.mapIndexed { index, gridItem ->
-            ensureActive()
-
             when (val data = gridItem.data) {
                 is GridItemData.ApplicationInfo -> gridItem.copy(data = data.copy(index = index))
 

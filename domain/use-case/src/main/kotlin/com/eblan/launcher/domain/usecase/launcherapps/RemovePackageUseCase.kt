@@ -182,8 +182,6 @@ class RemovePackageUseCase @Inject constructor(
 
         val hasNoIconPackInfoReference = eblanApplicationInfoRepository.getEblanApplicationInfos()
             .none {
-                currentCoroutineContext().ensureActive()
-
                 it.componentName == componentName
             }
 

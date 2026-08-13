@@ -65,8 +65,6 @@ internal suspend fun updateIconPackInfos(
 
     iconPackInfoDirectory.listFiles()
         ?.filter {
-            currentCoroutineContext().ensureActive()
-
             it.isFile && it.name !in installedComponentHashCodes
         }
         ?.forEach {
@@ -84,14 +82,12 @@ internal suspend fun cacheIconPackFile(
     componentName: String,
 ) {
     appFilter.find {
-        currentCoroutineContext().ensureActive()
-
         componentName == it.componentName.removePrefix("ComponentInfo{")
             .removeSuffix("}")
-    }?.let { iconPackInfoComponent ->
+    }?.let {
         iconPackManager.createIconPackInfoPath(
             packageName = iconPackInfoPackageName,
-            drawableName = iconPackInfoComponent.drawableName,
+            drawableName = it.drawableName,
             file = file,
         )
     }

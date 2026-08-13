@@ -166,24 +166,20 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
 
     override suspend fun getActivityList(): List<LauncherAppsActivityInfo> = withContext(defaultDispatcher) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            launcherApps.profiles.filterNot { userHandle ->
+            launcherApps.profiles.filterNot {
                 currentCoroutineContext().ensureActive()
 
-                isPrivateSpaceEntryPointHidden(userHandle = userHandle)
+                isPrivateSpaceEntryPointHidden(userHandle = it)
             }.flatMap { userHandle ->
                 currentCoroutineContext().ensureActive()
 
-                launcherApps.getActivityList(null, userHandle).map { launcherActivityInfo ->
-                    currentCoroutineContext().ensureActive()
-
-                    launcherActivityInfo.toLauncherAppsActivityInfo()
+                launcherApps.getActivityList(null, userHandle).map {
+                    it.toLauncherAppsActivityInfo()
                 }
             }
         } else {
-            launcherApps.getActivityList(null, myUserHandle()).map { launcherActivityInfo ->
-                currentCoroutineContext().ensureActive()
-
-                launcherActivityInfo.toLauncherAppsActivityInfo()
+            launcherApps.getActivityList(null, myUserHandle()).map {
+                it.toLauncherAppsActivityInfo()
             }
         }
     }
@@ -197,17 +193,13 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
             }.flatMap { userHandle ->
                 currentCoroutineContext().ensureActive()
 
-                launcherApps.getActivityList(null, userHandle).map { launcherActivityInfo ->
-                    currentCoroutineContext().ensureActive()
-
-                    launcherActivityInfo.toFastLauncherAppsActivityInfo()
+                launcherApps.getActivityList(null, userHandle).map {
+                    it.toFastLauncherAppsActivityInfo()
                 }
             }
         } else {
-            launcherApps.getActivityList(null, myUserHandle()).map { launcherActivityInfo ->
-                currentCoroutineContext().ensureActive()
-
-                launcherActivityInfo.toFastLauncherAppsActivityInfo()
+            launcherApps.getActivityList(null, myUserHandle()).map {
+                it.toFastLauncherAppsActivityInfo()
             }
         }
     }
@@ -218,10 +210,8 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
     ): List<LauncherAppsActivityInfo> = withContext(defaultDispatcher) {
         val userHandle = userManagerWrapper.getUserForSerialNumber(serialNumber = serialNumber)
 
-        launcherApps.getActivityList(packageName, userHandle).map { launcherActivityInfo ->
-            currentCoroutineContext().ensureActive()
-
-            launcherActivityInfo.toLauncherAppsActivityInfo()
+        launcherApps.getActivityList(packageName, userHandle).map {
+            it.toLauncherAppsActivityInfo()
         }
     }
 
@@ -231,10 +221,8 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
     ): List<FastLauncherAppsActivityInfo> = withContext(defaultDispatcher) {
         val userHandle = userManagerWrapper.getUserForSerialNumber(serialNumber = serialNumber)
 
-        launcherApps.getActivityList(packageName, userHandle).map { launcherActivityInfo ->
-            currentCoroutineContext().ensureActive()
-
-            launcherActivityInfo.toFastLauncherAppsActivityInfo()
+        launcherApps.getActivityList(packageName, userHandle).map {
+            it.toFastLauncherAppsActivityInfo()
         }
     }
 
@@ -266,17 +254,13 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
                 }.flatMap { userHandle ->
                     currentCoroutineContext().ensureActive()
 
-                    launcherApps.getShortcuts(shortcutQuery, userHandle)?.map { shortcutInfo ->
-                        currentCoroutineContext().ensureActive()
-
-                        shortcutInfo.toLauncherAppsShortcutInfo()
+                    launcherApps.getShortcuts(shortcutQuery, userHandle)?.map {
+                        it.toLauncherAppsShortcutInfo()
                     } ?: emptyList()
                 }
             } else {
-                launcherApps.getShortcuts(shortcutQuery, myUserHandle())?.map { shortcutInfo ->
-                    currentCoroutineContext().ensureActive()
-
-                    shortcutInfo.toLauncherAppsShortcutInfo()
+                launcherApps.getShortcuts(shortcutQuery, myUserHandle())?.map {
+                    it.toLauncherAppsShortcutInfo()
                 }
             }
         } else {
@@ -300,17 +284,13 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
                 }.flatMap { userHandle ->
                     currentCoroutineContext().ensureActive()
 
-                    launcherApps.getShortcuts(shortcutQuery, userHandle)?.map { shortcutInfo ->
-                        currentCoroutineContext().ensureActive()
-
-                        shortcutInfo.toFastLauncherAppsShortcutInfo()
+                    launcherApps.getShortcuts(shortcutQuery, userHandle)?.map {
+                        it.toFastLauncherAppsShortcutInfo()
                     } ?: emptyList()
                 }
             } else {
-                launcherApps.getShortcuts(shortcutQuery, myUserHandle())?.map { shortcutInfo ->
-                    currentCoroutineContext().ensureActive()
-
-                    shortcutInfo.toFastLauncherAppsShortcutInfo()
+                launcherApps.getShortcuts(shortcutQuery, myUserHandle())?.map {
+                    it.toFastLauncherAppsShortcutInfo()
                 }
             }
         } else {
@@ -333,10 +313,8 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
                 )
             }
 
-            launcherApps.getShortcuts(shortcutQuery, userHandle)?.map { shortcutInfo ->
-                currentCoroutineContext().ensureActive()
-
-                shortcutInfo.toLauncherAppsShortcutInfo()
+            launcherApps.getShortcuts(shortcutQuery, userHandle)?.map {
+                it.toLauncherAppsShortcutInfo()
             }
         } else {
             null
@@ -351,10 +329,8 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && userHandle != null) {
             launcherApps.getShortcutConfigActivityList(packageName, userHandle)
-                .map { launcherActivityInfo ->
-                    currentCoroutineContext().ensureActive()
-
-                    launcherActivityInfo.toLauncherAppsActivityInfo()
+                .map {
+                    it.toLauncherAppsActivityInfo()
                 }
         } else {
             emptyList()
@@ -465,8 +441,8 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
 
             val launcherActivityInfo = if (userHandle != null) {
                 launcherApps.getShortcutConfigActivityList(packageName, userHandle)
-                    .find { launcherActivityInfo ->
-                        launcherActivityInfo.componentName.flattenToString() == componentName
+                    .find {
+                        it.componentName.flattenToString() == componentName
                     }
             } else {
                 null

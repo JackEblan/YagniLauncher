@@ -32,8 +32,6 @@ import com.eblan.launcher.domain.model.ShortcutConfigGridItem
 import com.eblan.launcher.domain.model.ShortcutInfoGridItem
 import com.eblan.launcher.domain.model.WidgetGridItem
 import com.eblan.launcher.domain.repository.FolderGridItemRepository
-import kotlinx.coroutines.currentCoroutineContext
-import kotlinx.coroutines.ensureActive
 import java.io.File
 import kotlin.math.ceil
 import kotlin.math.min
@@ -362,12 +360,10 @@ internal fun deleteGridItemCustomIconFile(gridItem: GridItem) = when (val data =
     else -> Unit
 }
 
-private suspend fun List<GridItem>.getGridItemsByPage(
+private fun List<GridItem>.getGridItemsByPage(
     maxFolderColumns: Int,
     maxFolderRows: Int,
 ): Map<Int, List<GridItem>> = chunked(maxFolderColumns * maxFolderRows).mapIndexed { index, gridItems ->
-    currentCoroutineContext().ensureActive()
-
     index to gridItems
 }.toMap()
 

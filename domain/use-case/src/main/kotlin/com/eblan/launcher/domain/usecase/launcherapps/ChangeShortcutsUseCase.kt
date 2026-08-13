@@ -28,7 +28,6 @@ import com.eblan.launcher.domain.repository.EblanShortcutInfoRepository
 import com.eblan.launcher.domain.repository.ShortcutInfoGridItemRepository
 import com.eblan.launcher.domain.repository.UserDataRepository
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -65,8 +64,6 @@ class ChangeShortcutsUseCase @Inject constructor(
             )
 
             val newEblanShortcutInfos = launcherAppsShortcutInfos.map {
-                ensureActive()
-
                 it.toEblanShortcutInfo()
             }
 
@@ -77,8 +74,8 @@ class ChangeShortcutsUseCase @Inject constructor(
 
                 val oldDeleteEblanShortcutInfos = oldEblanShortcutInfos.map {
                     it.toDeleteEblanShortcutInfo()
-                }.filter {
-                    it !in newDeleteEblanShortcutInfos
+                }.filterNot {
+                    it in newDeleteEblanShortcutInfos
                 }
 
                 eblanShortcutInfoRepository.upsertEblanShortcutInfos(
