@@ -550,7 +550,7 @@ internal fun PagerScreen(
         }
     }
 
-    BackHandler(enabled = pagerScreenState.isAvailableForSystemNavigation) {
+    BackHandler(enabled = pagerScreenState.isAvailableSystemNavigation) {
         pagerScreenState.handleSystemNavigation(
             dockGridHorizontalPagerState = dockGridHorizontalPagerState,
             gridHorizontalPagerState = gridHorizontalPagerState,
@@ -558,7 +558,7 @@ internal fun PagerScreen(
         )
     }
 
-    HomeHandler(enabled = pagerScreenState.isAvailableForSystemNavigation) {
+    HomeHandler(enabled = pagerScreenState.isAvailableSystemNavigation) {
         pagerScreenState.handleSystemNavigation(
             dockGridHorizontalPagerState = dockGridHorizontalPagerState,
             gridHorizontalPagerState = gridHorizontalPagerState,
@@ -597,14 +597,13 @@ internal fun PagerScreen(
                     key2 = pagerScreenState,
                 ) {
                     detectVerticalDragGestures(
+                        onDragStart = {
+                            pagerScreenState.verticalDragStart()
+                        },
                         onVerticalDrag = { _, dragAmount ->
                             pagerScreenState.verticalDrag(dragAmount = dragAmount)
                         },
-                        onDragEnd = {
-                            pagerScreenState.swipeEblanAction()
-
-                            pagerScreenState.resetSwipeOffset()
-                        },
+                        onDragEnd = pagerScreenState::verticalDragEnd,
                         onDragCancel = pagerScreenState::verticalDragCancel,
                     )
                 }
