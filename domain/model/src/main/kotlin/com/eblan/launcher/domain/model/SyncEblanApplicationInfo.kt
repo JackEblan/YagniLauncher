@@ -22,7 +22,7 @@ data class SyncEblanApplicationInfo(
     val componentName: String,
     val packageName: String,
     val icon: String?,
-    val label: String?,
+    val label: String,
     val lastUpdateTime: Long,
     val flags: Int,
 )

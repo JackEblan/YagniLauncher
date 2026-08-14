@@ -22,5 +22,5 @@ data class AddNewEblanApplicationInfo(
     val componentName: String,
     val packageName: String,
     val icon: String?,
-    val label: String?,
+    val label: String,
 )
