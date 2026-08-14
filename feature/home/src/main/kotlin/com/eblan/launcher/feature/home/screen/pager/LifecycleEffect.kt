@@ -143,9 +143,9 @@ internal fun LifecycleEffect(
 
                     Lifecycle.Event.ON_STOP -> {
                         if (syncData && pinItemRequestWrapper.getPinItemRequest() == null) {
-                            if (shouldUnbindEblanNotificationListenerService) {
-                                context.unregisterReceiver(managedProfileBroadcastReceiver)
+                            context.unregisterReceiver(managedProfileBroadcastReceiver)
 
+                            if (shouldUnbindEblanNotificationListenerService) {
                                 context.unbindService(eblanNotificationListenerServiceConnection)
 
                                 shouldUnbindEblanNotificationListenerService = false

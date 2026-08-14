@@ -256,7 +256,7 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
 
                     launcherApps.getShortcuts(shortcutQuery, userHandle)?.map {
                         it.toLauncherAppsShortcutInfo()
-                    } ?: emptyList()
+                    }.orEmpty()
                 }
             } else {
                 launcherApps.getShortcuts(shortcutQuery, myUserHandle())?.map {
@@ -286,7 +286,7 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
 
                     launcherApps.getShortcuts(shortcutQuery, userHandle)?.map {
                         it.toFastLauncherAppsShortcutInfo()
-                    } ?: emptyList()
+                    }.orEmpty()
                 }
             } else {
                 launcherApps.getShortcuts(shortcutQuery, myUserHandle())?.map {

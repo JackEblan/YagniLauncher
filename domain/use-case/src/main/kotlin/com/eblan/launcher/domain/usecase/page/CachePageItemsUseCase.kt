@@ -65,7 +65,7 @@ class CachePageItemsUseCase @Inject constructor(
         (0 until pageCount).map {
             PageItem(
                 id = it,
-                gridItems = gridItemsByPage[it] ?: emptyList(),
+                gridItems = gridItemsByPage[it].orEmpty(),
             )
         }
     }
