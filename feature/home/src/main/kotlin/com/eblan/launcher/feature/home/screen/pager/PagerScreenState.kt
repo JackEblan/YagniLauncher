@@ -241,9 +241,13 @@ internal class PagerScreenState(
     }
 
     val applicationScreenSwipeY by derivedStateOf {
-        if (swipeUpY.value < screenHeight.toFloat() && gestureSettings.swipeUp.eblanActionType == EblanActionType.OpenAppDrawer) {
+        if (swipeUpY.value < screenHeight.toFloat() &&
+            gestureSettings.swipeUp.eblanActionType == EblanActionType.OpenAppDrawer
+        ) {
             swipeUpY
-        } else if (swipeDownY.value < screenHeight.toFloat() && gestureSettings.swipeDown.eblanActionType == EblanActionType.OpenAppDrawer) {
+        } else if (swipeDownY.value < screenHeight.toFloat() &&
+            gestureSettings.swipeDown.eblanActionType == EblanActionType.OpenAppDrawer
+        ) {
             swipeDownY
         } else {
             Animatable(screenHeight.toFloat())
@@ -675,7 +679,6 @@ internal class PagerScreenState(
 
     fun verticalDragStart() {
         showApplicationScreen =
-            gestureSettings.doubleTap.eblanActionType == EblanActionType.OpenAppDrawer ||
             gestureSettings.swipeUp.eblanActionType == EblanActionType.OpenAppDrawer ||
             gestureSettings.swipeDown.eblanActionType == EblanActionType.OpenAppDrawer
     }
