@@ -695,20 +695,20 @@ internal class PagerScreenState(
             eblanAction: EblanAction,
             swipeY: Animatable<Float, AnimationVector1D>,
         ) {
-            if (eblanAction.eblanActionType == EblanActionType.OpenAppDrawer) {
-                val targetValue = if (swipeY.value < screenHeight - swipeThreshold) {
-                    0f
-                } else {
-                    screenHeight.toFloat()
-                }
-
-                swipeY.animateTo(
-                    targetValue = targetValue,
-                    animationSpec = tween(
-                        easing = FastOutSlowInEasing,
-                    ),
-                )
+            val targetValue = if (eblanAction.eblanActionType == EblanActionType.OpenAppDrawer &&
+                swipeY.value < screenHeight - swipeThreshold
+            ) {
+                0f
+            } else {
+                screenHeight.toFloat()
             }
+
+            swipeY.animateTo(
+                targetValue = targetValue,
+                animationSpec = tween(
+                    easing = FastOutSlowInEasing,
+                ),
+            )
         }
 
         if (swipeUpY.value < screenHeight - swipeThreshold) {

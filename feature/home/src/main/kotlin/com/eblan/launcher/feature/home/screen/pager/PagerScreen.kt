@@ -393,7 +393,10 @@ internal fun PagerScreen(
     val currentMoveGridItemResult = rememberUpdatedState(moveGridItemResult)
     val currentFolderPopups = rememberUpdatedState(folderPopups)
 
-    LaunchedEffect(key1 = pinGridItem) {
+    LaunchedEffect(
+        key1 = pinGridItem,
+        key2 = pagerScreenState,
+    ) {
         pagerScreenState.handlePinGridItemEffect(
             pinGridItem = pinGridItem,
             onUpdateGridItemSource = onUpdateGridItemSource,
@@ -484,7 +487,10 @@ internal fun PagerScreen(
         )
     }
 
-    LaunchedEffect(key1 = configureResultCode) {
+    LaunchedEffect(
+        key1 = configureResultCode,
+        key2 = pagerScreenState.updatedWidgetGridItem,
+    ) {
         handleConfigureLauncherResultEffect(
             moveGridItemResult = moveGridItemResult,
             resultCode = configureResultCode,
@@ -538,7 +544,10 @@ internal fun PagerScreen(
         )
     }
 
-    DisposableEffect(key1 = activity) {
+    DisposableEffect(
+        key1 = activity,
+        key2 = pagerScreenState,
+    ) {
         val listener = Consumer<Intent> {
             pagerScreenState.handleEblanActionIntent(intent = it)
         }
