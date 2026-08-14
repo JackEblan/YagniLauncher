@@ -17,12 +17,16 @@
  */
 package com.eblan.launcher.feature.home.screen.folder
 
+import android.content.Intent.parseUri
+import android.graphics.Rect
+import android.os.Build
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -51,6 +55,8 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -95,22 +101,15 @@ internal fun InteractiveFolderGridItem(
     isScrollInProgress: Boolean,
     statusBarNotifications: Map<String, Int>,
     isVisibleOverlay: Boolean,
-    sharedElementKey: SharedElementKey,
     moveGridItemResult: MoveGridItemResult?,
     progress: Float,
     showFolderGridItemPopup: Boolean,
     previewFolderGridItems: Map<String, List<GridItem>>,
+    minCellWidthPx: Int,
+    minCellHeightPx: Int,
+    paddingValues: PaddingValues,
+    sharedElementKey: SharedElementKey,
     onOpenAppDrawer: () -> Unit,
-    onTapApplicationInfo: (
-        serialNumber: Long,
-        componentName: String,
-    ) -> Unit,
-    onTapShortcutConfig: (String) -> Unit,
-    onTapShortcutInfo: (
-        serialNumber: Long,
-        packageName: String,
-        shortcutId: String,
-    ) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
     onUpdateOverlayBounds: (
@@ -127,6 +126,22 @@ internal fun InteractiveFolderGridItem(
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
     onUpsertFolderPopupEntry: (FolderPopupEntry) -> Unit,
 ) {
+    val density = LocalDensity.current
+
+    val layoutDirection = LocalLayoutDirection.current
+
+    val leftPadding = with(density) {
+        paddingValues.calculateLeftPadding(layoutDirection).roundToPx()
+    }
+
+    val topPadding = with(density) {
+        paddingValues.calculateTopPadding().roundToPx()
+    }
+
+    val x = gridItem.startColumn * minCellWidthPx
+
+    val y = gridItem.startRow * minCellHeightPx
+
     val isSelected =
         moveGridItemResult != null && moveGridItemResult.movingGridItem.id == gridItem.id
 
@@ -139,6 +154,17 @@ internal fun InteractiveFolderGridItem(
     val padding = lerp(1.dp, gridItemSettings.padding.dp, progress)
 
     val hasInteraction = isSelected && isVisibleOverlay
+
+    val sourceBoundsX = x + leftPadding
+
+    val sourceBoundsY = y + topPadding
+
+    val sourceBounds = Rect(
+        sourceBoundsX,
+        sourceBoundsY,
+        sourceBoundsX + minCellWidthPx,
+        sourceBoundsY + minCellHeightPx,
+    )
 
     LaunchedEffect(
         key1 = drag,
@@ -166,9 +192,9 @@ internal fun InteractiveFolderGridItem(
                 sharedElementKey = sharedElementKey,
                 statusBarNotifications = statusBarNotifications,
                 padding = padding,
+                sourceBounds = sourceBounds,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
-                onTapApplicationInfo = onTapApplicationInfo,
                 onUpdateImageBitmap = onUpdateImageBitmap,
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                 onUpdateOverlayBounds = onUpdateOverlayBounds,
@@ -190,9 +216,9 @@ internal fun InteractiveFolderGridItem(
                 isVisibleOverlay = isVisibleOverlay,
                 sharedElementKey = sharedElementKey,
                 padding = padding,
+                sourceBounds = sourceBounds,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
-                onTapShortcutInfo = onTapShortcutInfo,
                 onUpdateImageBitmap = onUpdateImageBitmap,
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                 onUpdateOverlayBounds = onUpdateOverlayBounds,
@@ -215,7 +241,6 @@ internal fun InteractiveFolderGridItem(
                 padding = padding,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
-                onTapShortcutConfig = onTapShortcutConfig,
                 onUpdateImageBitmap = onUpdateImageBitmap,
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                 onUpdateOverlayBounds = onUpdateOverlayBounds,
@@ -269,14 +294,11 @@ private fun InteractiveFolderApplicationInfoGridItem(
     sharedElementKey: SharedElementKey,
     statusBarNotifications: Map<String, Int>,
     padding: Dp,
+    sourceBounds: Rect,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
         intOffset: IntOffset,
         intSize: IntSize,
-    ) -> Unit,
-    onTapApplicationInfo: (
-        serialNumber: Long,
-        componentName: String,
     ) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
@@ -288,6 +310,8 @@ private fun InteractiveFolderApplicationInfoGridItem(
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
     val launcherApps = LocalLauncherApps.current
+
+    val androidLauncherAppsWrapper = LocalLauncherApps.current
 
     val context = LocalContext.current
 
@@ -360,9 +384,10 @@ private fun InteractiveFolderApplicationInfoGridItem(
                     },
                     onTap = if (!isVisibleOverlay) {
                         {
-                            onTapApplicationInfo(
-                                data.serialNumber,
-                                data.componentName,
+                            androidLauncherAppsWrapper.startMainActivity(
+                                serialNumber = data.serialNumber,
+                                componentName = data.componentName,
+                                sourceBounds = sourceBounds,
                             )
                         }
                     } else {
@@ -459,15 +484,11 @@ private fun InteractiveFolderShortcutInfoGridItem(
     isVisibleOverlay: Boolean,
     sharedElementKey: SharedElementKey,
     padding: Dp,
+    sourceBounds: Rect,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
         intOffset: IntOffset,
         intSize: IntSize,
-    ) -> Unit,
-    onTapShortcutInfo: (
-        serialNumber: Long,
-        packageName: String,
-        shortcutId: String,
     ) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
@@ -478,6 +499,8 @@ private fun InteractiveFolderShortcutInfoGridItem(
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
+    val androidLauncherAppsWrapper = LocalLauncherApps.current
+
     val launcherApps = LocalLauncherApps.current
 
     val context = LocalContext.current
@@ -547,11 +570,15 @@ private fun InteractiveFolderShortcutInfoGridItem(
                     },
                     onTap = if (!isVisibleOverlay) {
                         {
-                            if (hasShortcutHostPermission && data.isEnabled) {
-                                onTapShortcutInfo(
-                                    data.serialNumber,
-                                    data.packageName,
-                                    data.shortcutId,
+                            if (hasShortcutHostPermission &&
+                                data.isEnabled &&
+                                Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1
+                            ) {
+                                androidLauncherAppsWrapper.startShortcut(
+                                    serialNumber = data.serialNumber,
+                                    packageName = data.packageName,
+                                    id = data.shortcutId,
+                                    sourceBounds = sourceBounds,
                                 )
                             }
                         }
@@ -650,7 +677,6 @@ private fun InteractiveFolderShortcutConfigGridItem(
         intOffset: IntOffset,
         intSize: IntSize,
     ) -> Unit,
-    onTapShortcutConfig: (String) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateOverlayBounds: (
@@ -759,7 +785,9 @@ private fun InteractiveFolderShortcutConfigGridItem(
                     },
                     onTap = if (!isVisibleOverlay) {
                         {
-                            data.shortcutIntentUri?.let(onTapShortcutConfig)
+                            data.shortcutIntentUri?.let {
+                                context.startActivity(parseUri(it, 0))
+                            }
                         }
                     } else {
                         null

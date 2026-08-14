@@ -21,9 +21,6 @@ import android.content.ClipDescription
 import android.content.Intent
 import android.content.Intent.ACTION_SET_WALLPAPER
 import android.content.Intent.createChooser
-import android.content.Intent.parseUri
-import android.graphics.Rect
-import android.os.Build
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalActivity
@@ -279,6 +276,8 @@ internal fun PagerScreen(
     val pageIndicatorHeightPx = with(density) {
         PAGE_INDICATOR_HEIGHT.roundToPx()
     }
+
+    val gridHeight = safeDrawingHeight - pageIndicatorHeightPx - dockHeightPx
 
     val paddingValues = WindowInsets.safeDrawing.asPaddingValues()
 
@@ -655,20 +654,6 @@ internal fun PagerScreen(
                     gridItems = gridItemsByPage[page],
                     rows = homeSettings.rows,
                     content = {
-                        val gridHeight = safeDrawingHeight - pageIndicatorHeightPx - dockHeightPx
-
-                        val cellWidth = safeDrawingWidth / homeSettings.columns
-
-                        val cellHeight = gridHeight / homeSettings.rows
-
-                        val x = it.startColumn * cellWidth
-
-                        val y = it.startRow * cellHeight
-
-                        val width = it.columnSpan * cellWidth
-
-                        val height = it.rowSpan * cellHeight
-
                         InteractiveGridItem(
                             sharedTransitionScope = this@SharedTransitionLayout,
                             drag = pagerScreenState.drag,
@@ -679,56 +664,22 @@ internal fun PagerScreen(
                             statusBarNotifications = pagerScreenState.statusBarNotifications,
                             textColor = textColor,
                             isVisibleOverlay = isVisibleOverlay,
-                            sharedElementKey = SharedElementKey(
-                                id = it.id,
-                                parent = SharedElementKey.Parent.Grid,
-                            ),
                             isVisibleFolder = folderPopups.isNotEmpty(),
                             moveGridItemResult = moveGridItemResult,
                             lockMovement = lockMovement,
                             isDragging = pagerScreenState.isDragging,
                             showGridItemPopup = pagerScreenState.showGridItemPopup,
                             previewFolderGridItems = previewFolderGridItems,
+                            cellWidth = safeDrawingWidth / homeSettings.columns,
+                            cellHeight = gridHeight / homeSettings.rows,
+                            leftPadding = leftPadding,
+                            topOffset = topPadding,
+                            sharedElementKey = SharedElementKey(
+                                id = it.id,
+                                parent = SharedElementKey.Parent.Grid,
+                            ),
                             onOpenAppDrawer = pagerScreenState::openApplicationScreen,
-                            onTapApplicationInfo = { serialNumber, componentName ->
-                                val sourceBoundsX = x + leftPadding
-
-                                val sourceBoundsY = y + topPadding
-
-                                androidLauncherAppsWrapper.startMainActivity(
-                                    serialNumber = serialNumber,
-                                    componentName = componentName,
-                                    sourceBounds = Rect(
-                                        sourceBoundsX,
-                                        sourceBoundsY,
-                                        sourceBoundsX + width,
-                                        sourceBoundsY + height,
-                                    ),
-                                )
-                            },
                             onUpsertFolderPopupEntry = onUpsertFolderPopupEntry,
-                            onTapShortcutConfig = { shortcutIntentUri ->
-                                context.startActivity(parseUri(shortcutIntentUri, 0))
-                            },
-                            onTapShortcutInfo = { serialNumber, packageName, shortcutId ->
-                                val sourceBoundsX = x + leftPadding
-
-                                val sourceBoundsY = y + topPadding
-
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
-                                    androidLauncherAppsWrapper.startShortcut(
-                                        serialNumber = serialNumber,
-                                        packageName = packageName,
-                                        id = shortcutId,
-                                        sourceBounds = Rect(
-                                            sourceBoundsX,
-                                            sourceBoundsY,
-                                            sourceBoundsX + width,
-                                            sourceBoundsY + height,
-                                        ),
-                                    )
-                                }
-                            },
                             onUpdateGridItemSource = onUpdateGridItemSource,
                             onUpdateImageBitmap = pagerScreenState::updateOverlayImageBitmap,
                             onUpdateIsDragging = pagerScreenState::updateIsDragging,
@@ -784,18 +735,6 @@ internal fun PagerScreen(
                     gridItems = dockGridItemsByPage[page],
                     rows = homeSettings.dockRows,
                     content = {
-                        val cellWidth = safeDrawingWidth / homeSettings.dockColumns
-
-                        val cellHeight = dockHeightPx / homeSettings.dockRows
-
-                        val x = it.startColumn * cellWidth
-
-                        val y = it.startRow * cellHeight
-
-                        val width = it.columnSpan * cellWidth
-
-                        val height = it.rowSpan * cellHeight
-
                         InteractiveGridItem(
                             sharedTransitionScope = this@SharedTransitionLayout,
                             drag = pagerScreenState.drag,
@@ -806,56 +745,22 @@ internal fun PagerScreen(
                             statusBarNotifications = pagerScreenState.statusBarNotifications,
                             textColor = textColor,
                             isVisibleOverlay = isVisibleOverlay,
-                            sharedElementKey = SharedElementKey(
-                                id = it.id,
-                                parent = SharedElementKey.Parent.Dock,
-                            ),
                             isVisibleFolder = folderPopups.isNotEmpty(),
                             moveGridItemResult = moveGridItemResult,
                             lockMovement = lockMovement,
                             isDragging = pagerScreenState.isDragging,
                             showGridItemPopup = pagerScreenState.showGridItemPopup,
                             previewFolderGridItems = previewFolderGridItems,
+                            cellWidth = safeDrawingWidth / homeSettings.dockColumns,
+                            cellHeight = dockHeightPx / homeSettings.dockRows,
+                            leftPadding = leftPadding,
+                            topOffset = dockTopLeft,
+                            sharedElementKey = SharedElementKey(
+                                id = it.id,
+                                parent = SharedElementKey.Parent.Dock,
+                            ),
                             onOpenAppDrawer = pagerScreenState::openApplicationScreen,
-                            onTapApplicationInfo = { serialNumber, componentName ->
-                                val left = x + leftPadding
-
-                                val top = y + dockTopLeft
-
-                                androidLauncherAppsWrapper.startMainActivity(
-                                    serialNumber = serialNumber,
-                                    componentName = componentName,
-                                    sourceBounds = Rect(
-                                        left,
-                                        top,
-                                        left + width,
-                                        top + height,
-                                    ),
-                                )
-                            },
                             onUpsertFolderPopupEntry = onUpsertFolderPopupEntry,
-                            onTapShortcutConfig = { shortcutIntentUri ->
-                                context.startActivity(parseUri(shortcutIntentUri, 0))
-                            },
-                            onTapShortcutInfo = { serialNumber, packageName, shortcutId ->
-                                val sourceBoundsX = x + leftPadding
-
-                                val sourceBoundsY = y + dockTopLeft
-
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
-                                    androidLauncherAppsWrapper.startShortcut(
-                                        serialNumber = serialNumber,
-                                        packageName = packageName,
-                                        id = shortcutId,
-                                        sourceBounds = Rect(
-                                            sourceBoundsX,
-                                            sourceBoundsY,
-                                            sourceBoundsX + width,
-                                            sourceBoundsY + height,
-                                        ),
-                                    )
-                                }
-                            },
                             onUpdateGridItemSource = onUpdateGridItemSource,
                             onUpdateImageBitmap = pagerScreenState::updateOverlayImageBitmap,
                             onUpdateIsDragging = pagerScreenState::updateIsDragging,

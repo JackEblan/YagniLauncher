@@ -17,6 +17,9 @@
  */
 package com.eblan.launcher.feature.home.screen.pager
 
+import android.content.Intent.parseUri
+import android.graphics.Rect
+import android.os.Build
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
@@ -104,24 +107,18 @@ internal fun InteractiveGridItem(
     textColor: TextColor,
     isVisibleOverlay: Boolean,
     isVisibleFolder: Boolean,
-    sharedElementKey: SharedElementKey,
     moveGridItemResult: MoveGridItemResult?,
     lockMovement: Boolean,
     isDragging: Boolean,
     showGridItemPopup: Boolean,
     previewFolderGridItems: Map<String, List<GridItem>>,
+    cellWidth: Int,
+    cellHeight: Int,
+    leftPadding: Int,
+    topOffset: Int,
+    sharedElementKey: SharedElementKey,
     onOpenAppDrawer: () -> Unit,
-    onTapApplicationInfo: (
-        serialNumber: Long,
-        componentName: String,
-    ) -> Unit,
     onUpsertFolderPopupEntry: (FolderPopupEntry) -> Unit,
-    onTapShortcutConfig: (String) -> Unit,
-    onTapShortcutInfo: (
-        serialNumber: Long,
-        packageName: String,
-        shortcutId: String,
-    ) -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
@@ -170,6 +167,25 @@ internal fun InteractiveGridItem(
 
     val isVisibleWhiteBox = hasInteraction && drag == Drag.Dragging
 
+    val x = gridItem.startColumn * cellWidth
+
+    val y = gridItem.startRow * cellHeight
+
+    val width = gridItem.columnSpan * cellWidth
+
+    val height = gridItem.rowSpan * cellHeight
+
+    val left = x + leftPadding
+
+    val top = y + topOffset
+
+    val sourceBounds = Rect(
+        left,
+        top,
+        left + width,
+        top + height,
+    )
+
     LaunchedEffect(
         key1 = drag,
         key2 = hasInteraction,
@@ -201,9 +217,9 @@ internal fun InteractiveGridItem(
                 textColor = currentTextColor,
                 hasInteraction = hasInteraction,
                 isVisibleWhiteBox = isVisibleWhiteBox,
+                sourceBounds = sourceBounds,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
-                onTapApplicationInfo = onTapApplicationInfo,
                 onUpdateGridItemSource = onUpdateGridItemSource,
                 onUpdateImageBitmap = onUpdateImageBitmap,
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
@@ -250,9 +266,9 @@ internal fun InteractiveGridItem(
                 textColor = currentTextColor,
                 hasInteraction = hasInteraction,
                 isVisibleWhiteBox = isVisibleWhiteBox,
+                sourceBounds = sourceBounds,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
-                onTapShortcutInfo = onTapShortcutInfo,
                 onUpdateGridItemSource = onUpdateGridItemSource,
                 onUpdateImageBitmap = onUpdateImageBitmap,
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
@@ -311,7 +327,6 @@ internal fun InteractiveGridItem(
                 isVisibleWhiteBox = isVisibleWhiteBox,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
-                onTapShortcutConfig = onTapShortcutConfig,
                 onUpdateGridItemSource = onUpdateGridItemSource,
                 onUpdateImageBitmap = onUpdateImageBitmap,
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
@@ -339,14 +354,11 @@ private fun InteractiveApplicationInfoGridItem(
     textColor: Color,
     hasInteraction: Boolean,
     isVisibleWhiteBox: Boolean,
+    sourceBounds: Rect,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
         intOffset: IntOffset,
         intSize: IntSize,
-    ) -> Unit,
-    onTapApplicationInfo: (
-        serialNumber: Long,
-        componentName: String,
     ) -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
@@ -358,6 +370,8 @@ private fun InteractiveApplicationInfoGridItem(
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
+    val androidLauncherAppsWrapper = LocalLauncherApps.current
+
     val launcherApps = LocalLauncherApps.current
 
     val context = LocalContext.current
@@ -430,9 +444,10 @@ private fun InteractiveApplicationInfoGridItem(
                     },
                     onTap = if (!isVisibleOverlay) {
                         {
-                            onTapApplicationInfo(
-                                data.serialNumber,
-                                data.componentName,
+                            androidLauncherAppsWrapper.startMainActivity(
+                                serialNumber = data.serialNumber,
+                                componentName = data.componentName,
+                                sourceBounds = sourceBounds,
                             )
                         }
                     } else {
@@ -689,15 +704,11 @@ private fun InteractiveShortcutInfoGridItem(
     textColor: Color,
     hasInteraction: Boolean,
     isVisibleWhiteBox: Boolean,
+    sourceBounds: Rect,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
         intOffset: IntOffset,
         intSize: IntSize,
-    ) -> Unit,
-    onTapShortcutInfo: (
-        serialNumber: Long,
-        packageName: String,
-        shortcutId: String,
     ) -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
@@ -709,6 +720,8 @@ private fun InteractiveShortcutInfoGridItem(
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
+    val androidLauncherAppsWrapper = LocalLauncherApps.current
+
     val launcherApps = LocalLauncherApps.current
 
     val context = LocalContext.current
@@ -775,11 +788,15 @@ private fun InteractiveShortcutInfoGridItem(
                     },
                     onTap = if (!isVisibleOverlay) {
                         {
-                            if (hasShortcutHostPermission && data.isEnabled) {
-                                onTapShortcutInfo(
-                                    data.serialNumber,
-                                    data.packageName,
-                                    data.shortcutId,
+                            if (hasShortcutHostPermission &&
+                                data.isEnabled &&
+                                Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1
+                            ) {
+                                androidLauncherAppsWrapper.startShortcut(
+                                    serialNumber = data.serialNumber,
+                                    packageName = data.packageName,
+                                    id = data.shortcutId,
+                                    sourceBounds = sourceBounds,
                                 )
                             }
                         }
@@ -1132,7 +1149,6 @@ private fun InteractiveShortcutConfigGridItem(
         intOffset: IntOffset,
         intSize: IntSize,
     ) -> Unit,
-    onTapShortcutConfig: (String) -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
@@ -1241,7 +1257,9 @@ private fun InteractiveShortcutConfigGridItem(
                     },
                     onTap = if (!isVisibleOverlay) {
                         {
-                            data.shortcutIntentUri?.let(onTapShortcutConfig)
+                            data.shortcutIntentUri?.let {
+                                context.startActivity(parseUri(it, 0))
+                            }
                         }
                     } else {
                         null

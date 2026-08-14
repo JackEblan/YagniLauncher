@@ -17,10 +17,7 @@
  */
 package com.eblan.launcher.feature.home.screen.folder
 
-import android.content.Intent.parseUri
-import android.graphics.Rect
 import android.graphics.RectF
-import android.os.Build
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.Animatable
@@ -57,7 +54,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.IntOffset
@@ -80,7 +76,6 @@ import com.eblan.launcher.feature.home.screen.HomeHandler
 import com.eblan.launcher.feature.home.screen.PAGE_INDICATOR_HEIGHT
 import com.eblan.launcher.feature.home.util.FOLDER_PREVIEW_COLUMNS
 import com.eblan.launcher.feature.home.util.FOLDER_PREVIEW_ROWS
-import com.eblan.launcher.ui.local.LocalLauncherApps
 import kotlin.math.roundToInt
 
 @Composable
@@ -151,11 +146,7 @@ internal fun FolderScreen(
 
     val density = LocalDensity.current
 
-    val context = LocalContext.current
-
     val layoutDirection = LocalLayoutDirection.current
-
-    val androidLauncherAppsWrapper = LocalLauncherApps.current
 
     val leftPadding = with(density) {
         paddingValues.calculateLeftPadding(layoutDirection).roundToPx()
@@ -446,10 +437,6 @@ internal fun FolderScreen(
                         previewRows = FOLDER_PREVIEW_ROWS,
                         progress = progress.value,
                         content = {
-                            val x = it.startColumn * minCellWidthPx
-
-                            val y = it.startRow * minCellHeightPx
-
                             InteractiveFolderGridItem(
                                 sharedTransitionScope = sharedTransitionScope,
                                 drag = drag,
@@ -459,53 +446,18 @@ internal fun FolderScreen(
                                 isScrollInProgress = folderGridHorizontalPagerState.isScrollInProgress,
                                 statusBarNotifications = statusBarNotifications,
                                 isVisibleOverlay = isVisibleOverlay,
-                                sharedElementKey = SharedElementKey(
-                                    id = it.id,
-                                    parent = SharedElementKey.Parent.Folder,
-                                ),
                                 moveGridItemResult = moveGridItemResult,
                                 progress = progress.value,
                                 showFolderGridItemPopup = showFolderGridItemPopup,
                                 previewFolderGridItems = previewFolderGridItems,
+                                minCellWidthPx = minCellWidthPx,
+                                minCellHeightPx = minCellHeightPx,
                                 onOpenAppDrawer = onOpenAppDrawer,
-                                onTapApplicationInfo = { serialNumber, componentName ->
-                                    val sourceBoundsX = x + leftPadding
-
-                                    val sourceBoundsY = y + topPadding
-
-                                    androidLauncherAppsWrapper.startMainActivity(
-                                        serialNumber = serialNumber,
-                                        componentName = componentName,
-                                        sourceBounds = Rect(
-                                            sourceBoundsX,
-                                            sourceBoundsY,
-                                            sourceBoundsX + minCellWidthPx,
-                                            sourceBoundsY + minCellHeightPx,
-                                        ),
-                                    )
-                                },
-                                onTapShortcutConfig = { shortcutIntentUri ->
-                                    context.startActivity(parseUri(shortcutIntentUri, 0))
-                                },
-                                onTapShortcutInfo = { serialNumber, packageName, shortcutId ->
-                                    val sourceBoundsX = x + leftPadding
-
-                                    val sourceBoundsY = y + topPadding
-
-                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
-                                        androidLauncherAppsWrapper.startShortcut(
-                                            serialNumber = serialNumber,
-                                            packageName = packageName,
-                                            id = shortcutId,
-                                            sourceBounds = Rect(
-                                                sourceBoundsX,
-                                                sourceBoundsY,
-                                                sourceBoundsX + minCellWidthPx,
-                                                sourceBoundsY + minCellHeightPx,
-                                            ),
-                                        )
-                                    }
-                                },
+                                paddingValues = paddingValues,
+                                sharedElementKey = SharedElementKey(
+                                    id = it.id,
+                                    parent = SharedElementKey.Parent.Folder,
+                                ),
                                 onUpdateImageBitmap = onUpdateImageBitmap,
                                 onUpdateIsDragging = onUpdateIsDragging,
                                 onUpdateOverlayBounds = onUpdateOverlayBounds,
