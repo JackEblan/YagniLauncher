@@ -49,19 +49,21 @@ internal class DefaultAppWidgetManagerWrapper @Inject constructor(
     private val fileManager: FileManager,
     private val packageManagerWrapper: PackageManagerWrapper,
     private val iconKeyGenerator: IconKeyGenerator,
-    @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
+    @param:Dispatcher(EblanDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) : AppWidgetManagerWrapper,
     AndroidAppWidgetManagerWrapper {
     private val appWidgetManager = AppWidgetManager.getInstance(context)
 
-    override suspend fun getInstalledProviders(): List<AppWidgetManagerAppWidgetProviderInfo> = withContext(defaultDispatcher) {
+    override suspend fun getInstalledProviders(): List<AppWidgetManagerAppWidgetProviderInfo> = withContext(ioDispatcher) {
         appWidgetManager.installedProviders.map {
             it.toEblanAppWidgetProviderInfo()
         }
     }
 
-    override suspend fun getFastInstalledProviders(): List<FastAppWidgetManagerAppWidgetProviderInfo> = appWidgetManager.installedProviders.map {
-        it.toFastEblanAppWidgetProviderInfo()
+    override suspend fun getFastInstalledProviders(): List<FastAppWidgetManagerAppWidgetProviderInfo> = withContext(ioDispatcher) {
+        appWidgetManager.installedProviders.map {
+            it.toFastEblanAppWidgetProviderInfo()
+        }
     }
 
     override fun getAppWidgetInfo(appWidgetId: Int): AppWidgetProviderInfo? = appWidgetManager.getAppWidgetInfo(appWidgetId)

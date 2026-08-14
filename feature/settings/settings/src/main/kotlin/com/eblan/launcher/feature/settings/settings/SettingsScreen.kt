@@ -40,11 +40,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -53,9 +49,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
-import com.eblan.launcher.ui.local.LocalPackageManager
 import com.eblan.launcher.ui.model.SettingsItem
 import com.eblan.launcher.ui.settings.SettingsItemContent
+import com.eblan.launcher.ui.settings.rememberIsDefaultLauncher
 import com.eblan.launcher.common.R as commonR
 
 @Composable
@@ -226,13 +222,7 @@ private fun buildSettingsItems(
 ): List<SettingsItem> {
     val context = LocalContext.current
 
-    val packageManager = LocalPackageManager.current
-
-    var isDefaultLauncher by remember { mutableStateOf(false) }
-
-    LaunchedEffect(key1 = Unit) {
-        isDefaultLauncher = packageManager.isDefaultLauncher()
-    }
+    val isDefaultLauncher by rememberIsDefaultLauncher()
 
     return buildList {
         if (!isDefaultLauncher) {
