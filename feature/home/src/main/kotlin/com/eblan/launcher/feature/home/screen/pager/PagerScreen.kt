@@ -69,7 +69,6 @@ import androidx.compose.ui.unit.dp
 import androidx.core.util.Consumer
 import com.eblan.launcher.domain.model.AppDrawerSettings
 import com.eblan.launcher.domain.model.Associate
-import com.eblan.launcher.domain.model.EblanActionType
 import com.eblan.launcher.domain.model.EblanAppWidgetProviderInfo
 import com.eblan.launcher.domain.model.EblanApplicationInfo
 import com.eblan.launcher.domain.model.EblanApplicationInfoGroup
@@ -606,9 +605,7 @@ internal fun PagerScreen(
 
                             pagerScreenState.resetSwipeOffset()
                         },
-                        onDragCancel = {
-                            pagerScreenState.verticalDragEnd()
-                        },
+                        onDragCancel = pagerScreenState::verticalDragCancel,
                     )
                 }
                 .pointerInput(key1 = pagerScreenState) {
@@ -1042,9 +1039,7 @@ internal fun PagerScreen(
             )
         }
 
-        if (gestureSettings.swipeUp.eblanActionType == EblanActionType.OpenAppDrawer ||
-            gestureSettings.swipeDown.eblanActionType == EblanActionType.OpenAppDrawer
-        ) {
+        if (pagerScreenState.showApplicationScreen) {
             ApplicationScreen(
                 sharedTransitionScope = this@SharedTransitionLayout,
                 alpha = pagerScreenState.applicationScreenAlpha,
@@ -1059,7 +1054,7 @@ internal fun PagerScreen(
                 managedProfileResult = pagerScreenState.managedProfileResult,
                 paddingValues = paddingValues,
                 screenHeight = screenHeight,
-                swipeY = pagerScreenState.swipeY.value,
+                swipeY = pagerScreenState.applicationScreenSwipeY.value,
                 isVisibleOverlay = isVisibleOverlay,
                 onDismiss = pagerScreenState::dismissApplicationScreen,
                 onDragEnd = pagerScreenState::handleOnDragEndApplicationScreen,
