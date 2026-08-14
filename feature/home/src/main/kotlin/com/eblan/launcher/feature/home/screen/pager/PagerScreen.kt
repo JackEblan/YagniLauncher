@@ -69,7 +69,6 @@ import androidx.compose.ui.unit.dp
 import androidx.core.util.Consumer
 import com.eblan.launcher.domain.model.AppDrawerSettings
 import com.eblan.launcher.domain.model.Associate
-import com.eblan.launcher.domain.model.EblanActionType
 import com.eblan.launcher.domain.model.EblanAppWidgetProviderInfo
 import com.eblan.launcher.domain.model.EblanApplicationInfo
 import com.eblan.launcher.domain.model.EblanApplicationInfoGroup
@@ -394,7 +393,10 @@ internal fun PagerScreen(
     val currentMoveGridItemResult = rememberUpdatedState(moveGridItemResult)
     val currentFolderPopups = rememberUpdatedState(folderPopups)
 
-    LaunchedEffect(key1 = pinGridItem) {
+    LaunchedEffect(
+        key1 = pinGridItem,
+        key2 = pagerScreenState,
+    ) {
         pagerScreenState.handlePinGridItemEffect(
             pinGridItem = pinGridItem,
             onUpdateGridItemSource = onUpdateGridItemSource,
@@ -485,7 +487,10 @@ internal fun PagerScreen(
         )
     }
 
-    LaunchedEffect(key1 = configureResultCode) {
+    LaunchedEffect(
+        key1 = configureResultCode,
+        key2 = pagerScreenState.updatedWidgetGridItem,
+    ) {
         handleConfigureLauncherResultEffect(
             moveGridItemResult = moveGridItemResult,
             resultCode = configureResultCode,
@@ -539,7 +544,10 @@ internal fun PagerScreen(
         )
     }
 
-    DisposableEffect(key1 = activity) {
+    DisposableEffect(
+        key1 = activity,
+        key2 = pagerScreenState,
+    ) {
         val listener = Consumer<Intent> {
             pagerScreenState.handleEblanActionIntent(intent = it)
         }
@@ -551,7 +559,7 @@ internal fun PagerScreen(
         }
     }
 
-    BackHandler(enabled = pagerScreenState.isAvailableForSystemNavigation) {
+    BackHandler(enabled = pagerScreenState.isAvailableSystemNavigation) {
         pagerScreenState.handleSystemNavigation(
             dockGridHorizontalPagerState = dockGridHorizontalPagerState,
             gridHorizontalPagerState = gridHorizontalPagerState,
@@ -559,7 +567,7 @@ internal fun PagerScreen(
         )
     }
 
-    HomeHandler(enabled = pagerScreenState.isAvailableForSystemNavigation) {
+    HomeHandler(enabled = pagerScreenState.isAvailableSystemNavigation) {
         pagerScreenState.handleSystemNavigation(
             dockGridHorizontalPagerState = dockGridHorizontalPagerState,
             gridHorizontalPagerState = gridHorizontalPagerState,
@@ -598,17 +606,14 @@ internal fun PagerScreen(
                     key2 = pagerScreenState,
                 ) {
                     detectVerticalDragGestures(
+                        onDragStart = {
+                            pagerScreenState.verticalDragStart()
+                        },
                         onVerticalDrag = { _, dragAmount ->
                             pagerScreenState.verticalDrag(dragAmount = dragAmount)
                         },
-                        onDragEnd = {
-                            pagerScreenState.swipeEblanAction()
-
-                            pagerScreenState.resetSwipeOffset()
-                        },
-                        onDragCancel = {
-                            pagerScreenState.verticalDragEnd()
-                        },
+                        onDragEnd = pagerScreenState::verticalDragEnd,
+                        onDragCancel = pagerScreenState::verticalDragCancel,
                     )
                 }
                 .pointerInput(key1 = pagerScreenState) {
@@ -1042,9 +1047,7 @@ internal fun PagerScreen(
             )
         }
 
-        if (gestureSettings.swipeUp.eblanActionType == EblanActionType.OpenAppDrawer ||
-            gestureSettings.swipeDown.eblanActionType == EblanActionType.OpenAppDrawer
-        ) {
+        if (pagerScreenState.showApplicationScreen) {
             ApplicationScreen(
                 sharedTransitionScope = this@SharedTransitionLayout,
                 alpha = pagerScreenState.applicationScreenAlpha,
@@ -1059,7 +1062,7 @@ internal fun PagerScreen(
                 managedProfileResult = pagerScreenState.managedProfileResult,
                 paddingValues = paddingValues,
                 screenHeight = screenHeight,
-                swipeY = pagerScreenState.swipeY.value,
+                swipeY = pagerScreenState.applicationScreenSwipeY.value,
                 isVisibleOverlay = isVisibleOverlay,
                 onDismiss = pagerScreenState::dismissApplicationScreen,
                 onDragEnd = pagerScreenState::handleOnDragEndApplicationScreen,

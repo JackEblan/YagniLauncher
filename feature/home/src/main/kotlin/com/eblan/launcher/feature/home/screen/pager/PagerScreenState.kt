@@ -240,10 +240,14 @@ internal class PagerScreenState(
         override fun onDrop(event: DragAndDropEvent): Boolean = true
     }
 
-    val swipeY by derivedStateOf {
-        if (swipeUpY.value < screenHeight.toFloat() && gestureSettings.swipeUp.eblanActionType == EblanActionType.OpenAppDrawer) {
+    val applicationScreenSwipeY by derivedStateOf {
+        if (swipeUpY.value < screenHeight.toFloat() &&
+            gestureSettings.swipeUp.eblanActionType == EblanActionType.OpenAppDrawer
+        ) {
             swipeUpY
-        } else if (swipeDownY.value < screenHeight.toFloat() && gestureSettings.swipeDown.eblanActionType == EblanActionType.OpenAppDrawer) {
+        } else if (swipeDownY.value < screenHeight.toFloat() &&
+            gestureSettings.swipeDown.eblanActionType == EblanActionType.OpenAppDrawer
+        ) {
             swipeDownY
         } else {
             Animatable(screenHeight.toFloat())
@@ -251,15 +255,15 @@ internal class PagerScreenState(
     }
 
     val isApplicationScreenVisible by derivedStateOf {
-        swipeY.value < screenHeight.toFloat()
+        applicationScreenSwipeY.value < screenHeight.toFloat()
     }
 
     val applicationScreenAlpha by derivedStateOf {
-        ((screenHeight - swipeY.value) / (screenHeight / 2)).coerceIn(0f, 1f)
+        ((screenHeight - applicationScreenSwipeY.value) / (screenHeight / 2)).coerceIn(0f, 1f)
     }
 
     val applicationScreenCornerSize by derivedStateOf {
-        val progress = (swipeY.value / screenHeight).coerceIn(0f, 1f)
+        val progress = (applicationScreenSwipeY.value / screenHeight).coerceIn(0f, 1f)
 
         (20 * progress).dp
     }
@@ -267,7 +271,7 @@ internal class PagerScreenState(
     val pagerScreenAlpha by derivedStateOf {
         val threshold = screenHeight / 2
 
-        ((swipeY.value - threshold) / threshold).coerceIn(0f, 1f)
+        ((applicationScreenSwipeY.value - threshold) / threshold).coerceIn(0f, 1f)
     }
 
     val widgetScreenSwipeY = Animatable(screenHeight.toFloat())
@@ -302,14 +306,17 @@ internal class PagerScreenState(
     var isCloseFolderGridItemPopup by mutableStateOf(false)
         private set
 
+    var showApplicationScreen by mutableStateOf(false)
+        private set
+
     var showWidgetScreen by mutableStateOf(false)
         private set
 
     var showShortcutConfigScreen by mutableStateOf(false)
         private set
 
-    val isAvailableForSystemNavigation
-        get() = swipeY.value == screenHeight.toFloat() &&
+    val isAvailableSystemNavigation
+        get() = applicationScreenSwipeY.value == screenHeight.toFloat() &&
             !showWidgetScreen &&
             !showShortcutConfigScreen &&
             !showGridItemPopup &&
@@ -336,7 +343,7 @@ internal class PagerScreenState(
         val pinItemRequest = pinItemRequestWrapper.getPinItemRequest() ?: return
 
         if (isApplicationScreenVisible) {
-            swipeY.animateTo(
+            applicationScreenSwipeY.animateTo(
                 targetValue = screenHeight.toFloat(),
                 animationSpec = tween(
                     easing = FastOutSlowInEasing,
@@ -519,17 +526,7 @@ internal class PagerScreenState(
             context = context,
             eblanAction = gestureSettings.doubleTap,
             launcherApps = androidLauncherAppsWrapper,
-            onOpenAppDrawer = {
-                scope.launch {
-                    swipeY.animateTo(
-                        targetValue = 0f,
-                        animationSpec = spring(
-                            dampingRatio = Spring.DampingRatioNoBouncy,
-                            stiffness = Spring.StiffnessLow,
-                        ),
-                    )
-                }
-            },
+            onOpenAppDrawer = ::openApplicationScreen,
         )
 
         hasDoubleTap = false
@@ -563,64 +560,6 @@ internal class PagerScreenState(
                 updatedWidgetGridItem = it
             },
         )
-    }
-
-    fun swipeEblanAction() {
-        val swipeThreshold = 100f
-
-        if (swipeUpY.value < screenHeight - swipeThreshold) {
-            handleEblanAction(
-                context = context,
-                eblanAction = gestureSettings.swipeUp,
-                launcherApps = androidLauncherAppsWrapper,
-                onOpenAppDrawer = {},
-            )
-        }
-
-        if (swipeDownY.value < screenHeight - swipeThreshold) {
-            handleEblanAction(
-                context = context,
-                eblanAction = gestureSettings.swipeDown,
-                launcherApps = androidLauncherAppsWrapper,
-                onOpenAppDrawer = {},
-            )
-        }
-    }
-
-    fun resetSwipeOffset() {
-        suspend fun animateOffset(
-            eblanAction: EblanAction,
-            swipeY: Animatable<Float, AnimationVector1D>,
-        ) {
-            if (eblanAction.eblanActionType == EblanActionType.OpenAppDrawer) {
-                val targetValue = if (swipeY.value < screenHeight - 200f) {
-                    0f
-                } else {
-                    screenHeight.toFloat()
-                }
-
-                swipeY.animateTo(
-                    targetValue = targetValue,
-                    animationSpec = tween(
-                        easing = FastOutSlowInEasing,
-                    ),
-                )
-            } else {
-                swipeY.snapTo(screenHeight.toFloat())
-            }
-        }
-
-        scope.launch {
-            animateOffset(
-                eblanAction = gestureSettings.swipeUp,
-                swipeY = swipeUpY,
-            )
-
-            animateOffset(
-                eblanAction = gestureSettings.swipeDown,
-                swipeY = swipeDownY,
-            )
-        }
     }
 
     fun dragStart(offset: Offset) {
@@ -738,6 +677,12 @@ internal class PagerScreenState(
         statusBarNotifications = value
     }
 
+    fun verticalDragStart() {
+        showApplicationScreen =
+            gestureSettings.swipeUp.eblanActionType == EblanActionType.OpenAppDrawer ||
+            gestureSettings.swipeDown.eblanActionType == EblanActionType.OpenAppDrawer
+    }
+
     fun verticalDrag(dragAmount: Float) {
         scope.launch {
             swipeUpY.snapTo(swipeUpY.value + dragAmount)
@@ -747,6 +692,64 @@ internal class PagerScreenState(
     }
 
     fun verticalDragEnd() {
+        val swipeThreshold = 100f
+
+        suspend fun animateSwipeY(
+            eblanAction: EblanAction,
+            swipeY: Animatable<Float, AnimationVector1D>,
+        ) {
+            val targetValue = if (eblanAction.eblanActionType == EblanActionType.OpenAppDrawer &&
+                swipeY.value < screenHeight - swipeThreshold
+            ) {
+                0f
+            } else {
+                screenHeight.toFloat()
+            }
+
+            swipeY.animateTo(
+                targetValue = targetValue,
+                animationSpec = tween(
+                    easing = FastOutSlowInEasing,
+                ),
+            )
+        }
+
+        if (swipeUpY.value < screenHeight - swipeThreshold) {
+            handleEblanAction(
+                context = context,
+                eblanAction = gestureSettings.swipeUp,
+                launcherApps = androidLauncherAppsWrapper,
+                onOpenAppDrawer = {},
+            )
+        }
+
+        if (swipeDownY.value < screenHeight - swipeThreshold) {
+            handleEblanAction(
+                context = context,
+                eblanAction = gestureSettings.swipeDown,
+                launcherApps = androidLauncherAppsWrapper,
+                onOpenAppDrawer = {},
+            )
+        }
+
+        scope.launch {
+            animateSwipeY(
+                eblanAction = gestureSettings.swipeUp,
+                swipeY = swipeUpY,
+            )
+
+            animateSwipeY(
+                eblanAction = gestureSettings.swipeDown,
+                swipeY = swipeDownY,
+            )
+
+            if (applicationScreenSwipeY.value == screenHeight.toFloat()) {
+                showApplicationScreen = false
+            }
+        }
+    }
+
+    fun verticalDragCancel() {
         scope.launch {
             swipeUpY.animateTo(screenHeight.toFloat())
 
@@ -768,7 +771,9 @@ internal class PagerScreenState(
 
     fun openApplicationScreen() {
         scope.launch {
-            swipeY.animateTo(
+            showApplicationScreen = true
+
+            applicationScreenSwipeY.animateTo(
                 targetValue = 0f,
                 animationSpec = spring(
                     dampingRatio = Spring.DampingRatioNoBouncy,
@@ -789,18 +794,25 @@ internal class PagerScreenState(
 
     fun dismissApplicationScreen() {
         scope.launch {
-            swipeY.animateTo(
+            applicationScreenSwipeY.animateTo(
                 targetValue = screenHeight.toFloat(),
                 animationSpec = tween(
                     easing = FastOutSlowInEasing,
                 ),
             )
+
+            showApplicationScreen = false
         }
     }
 
     fun verticalDragApplicationScreen(dragAmount: Float) {
         scope.launch {
-            swipeY.snapTo((swipeY.value + dragAmount).coerceIn(0f, screenHeight.toFloat()))
+            applicationScreenSwipeY.snapTo(
+                (applicationScreenSwipeY.value + dragAmount).coerceIn(
+                    0f,
+                    screenHeight.toFloat(),
+                ),
+            )
         }
     }
 
@@ -1107,15 +1119,66 @@ internal class PagerScreenState(
     }
 
     fun handleOnDragEndApplicationScreen() {
-        handleApplyFling(swipeY = swipeY)
+        scope.launch {
+            if (applicationScreenSwipeY.value > 200f) {
+                applicationScreenSwipeY.animateTo(
+                    targetValue = screenHeight.toFloat(),
+                    animationSpec = tween(easing = FastOutSlowInEasing),
+                )
+
+                showApplicationScreen = false
+            } else {
+                applicationScreenSwipeY.animateTo(
+                    targetValue = 0f,
+                    animationSpec = spring(
+                        dampingRatio = Spring.DampingRatioNoBouncy,
+                        stiffness = Spring.StiffnessLow,
+                    ),
+                )
+            }
+        }
     }
 
     fun handleOnDragEndWidgetScreen() {
-        handleApplyFling(swipeY = widgetScreenSwipeY)
+        scope.launch {
+            if (widgetScreenSwipeY.value > 200f) {
+                widgetScreenSwipeY.animateTo(
+                    targetValue = screenHeight.toFloat(),
+                    animationSpec = tween(easing = FastOutSlowInEasing),
+                )
+
+                showWidgetScreen = false
+            } else {
+                widgetScreenSwipeY.animateTo(
+                    targetValue = 0f,
+                    animationSpec = spring(
+                        dampingRatio = Spring.DampingRatioNoBouncy,
+                        stiffness = Spring.StiffnessLow,
+                    ),
+                )
+            }
+        }
     }
 
     fun handleOnDragEndShortcutConfigScreen() {
-        handleApplyFling(swipeY = shortcutConfigScreenSwipeY)
+        scope.launch {
+            if (shortcutConfigScreenSwipeY.value > 200f) {
+                shortcutConfigScreenSwipeY.animateTo(
+                    targetValue = screenHeight.toFloat(),
+                    animationSpec = tween(easing = FastOutSlowInEasing),
+                )
+
+                showShortcutConfigScreen = false
+            } else {
+                shortcutConfigScreenSwipeY.animateTo(
+                    targetValue = 0f,
+                    animationSpec = spring(
+                        dampingRatio = Spring.DampingRatioNoBouncy,
+                        stiffness = Spring.StiffnessLow,
+                    ),
+                )
+            }
+        }
     }
 
     fun handleOnDragEndAppWidgetScreen() {
@@ -1258,47 +1321,18 @@ internal class PagerScreenState(
     }
 
     fun handleEblanActionIntent(intent: Intent) {
-        if (intent.action != EblanAction.ACTION || !isAvailableForSystemNavigation) return
+        if (intent.action != EblanAction.ACTION || !isAvailableSystemNavigation) return
 
-        val eblanAction = intent.getStringExtra(EblanAction.NAME)?.let { eblanAction ->
-            Json.decodeFromString<EblanAction>(eblanAction)
+        val eblanAction = intent.getStringExtra(EblanAction.NAME)?.let {
+            Json.decodeFromString<EblanAction>(it)
         } ?: return
 
         handleEblanAction(
             context = context,
             eblanAction = eblanAction,
             launcherApps = androidLauncherAppsWrapper,
-            onOpenAppDrawer = {
-                scope.launch {
-                    swipeY.animateTo(
-                        targetValue = 0f,
-                        animationSpec = spring(
-                            dampingRatio = Spring.DampingRatioNoBouncy,
-                            stiffness = Spring.StiffnessLow,
-                        ),
-                    )
-                }
-            },
+            onOpenAppDrawer = ::openApplicationScreen,
         )
-    }
-
-    private fun handleApplyFling(swipeY: Animatable<Float, AnimationVector1D>) {
-        scope.launch {
-            if (swipeY.value > 200f) {
-                swipeY.animateTo(
-                    targetValue = screenHeight.toFloat(),
-                    animationSpec = tween(easing = FastOutSlowInEasing),
-                )
-            } else {
-                swipeY.animateTo(
-                    targetValue = 0f,
-                    animationSpec = spring(
-                        dampingRatio = Spring.DampingRatioNoBouncy,
-                        stiffness = Spring.StiffnessLow,
-                    ),
-                )
-            }
-        }
     }
 }
 
