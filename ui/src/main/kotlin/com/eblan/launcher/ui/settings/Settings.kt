@@ -237,9 +237,14 @@ fun SettingsCategoryText(
 @Composable
 fun rememberIsDefaultLauncher(): State<Boolean> {
     val packageManager = LocalPackageManager.current
+
     val lifecycleOwner = LocalLifecycleOwner.current
 
-    return produceState(initialValue = false, key1 = lifecycleOwner) {
+    return produceState(
+        initialValue = false,
+        key1 = lifecycleOwner,
+        key2 = packageManager,
+    ) {
         lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
             value = packageManager.isDefaultLauncher()
         }
