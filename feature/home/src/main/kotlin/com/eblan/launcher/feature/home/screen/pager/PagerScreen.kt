@@ -19,8 +19,6 @@ package com.eblan.launcher.feature.home.screen.pager
 
 import android.content.ClipDescription
 import android.content.Intent
-import android.content.Intent.ACTION_SET_WALLPAPER
-import android.content.Intent.createChooser
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalActivity
@@ -58,7 +56,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draganddrop.mimeTypes
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalView
@@ -207,8 +204,6 @@ internal fun PagerScreen(
     onUpdateResizeGridItem: (GridItem) -> Unit,
     onResetGrid: () -> Unit,
 ) {
-    val context = LocalContext.current
-
     val layoutDirection = LocalLayoutDirection.current
 
     val androidLauncherAppsWrapper = LocalLauncherApps.current
@@ -845,13 +840,6 @@ internal fun PagerScreen(
                 onEditPage = onEditPage,
                 onSettings = onSettings,
                 onShortcutConfigActivities = pagerScreenState::openShortcutConfigScreen,
-                onWallpaper = {
-                    val intent = Intent(ACTION_SET_WALLPAPER)
-
-                    val chooser = createChooser(intent, "Set Wallpaper")
-
-                    context.startActivity(chooser)
-                },
                 onWidgets = pagerScreenState::openWidgetScreen,
             )
         }
