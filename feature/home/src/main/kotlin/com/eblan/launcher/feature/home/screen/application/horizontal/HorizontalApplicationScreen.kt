@@ -42,6 +42,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -83,9 +84,9 @@ import com.eblan.launcher.feature.home.screen.application.TagElevatedFilterChip
 import com.eblan.launcher.feature.home.screen.application.rememberIsDefaultLauncher
 import com.eblan.launcher.feature.home.screen.application.rememberIsQuietModeEnabled
 import com.eblan.launcher.ui.local.LocalLauncherApps
-import com.eblan.launcher.ui.local.LocalPackageManager
 import com.eblan.launcher.ui.local.LocalUserManager
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class, FlowPreview::class)
 @Composable
@@ -382,9 +383,9 @@ private fun EblanApplicationInfosPage(
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
-    val userManager = LocalUserManager.current
+    val scope = rememberCoroutineScope()
 
-    val packageManager = LocalPackageManager.current
+    val userManager = LocalUserManager.current
 
     val eblanUserPageKey =
         getEblanApplicationInfosByLabelAndTag.eblanApplicationInfoWithIconPackInfos.keys.toList()
@@ -410,7 +411,7 @@ private fun EblanApplicationInfosPage(
     val isQuietModeEnabled by rememberIsQuietModeEnabled(
         userHandle = userHandle,
         managedProfileResult = managedProfileResult,
-        eblanUserPageKey = eblanUserPageKey,
+        eblanUser = eblanUserPageKey.eblanUser,
     )
 
     Box(modifier = modifier.fillMaxSize()) {
@@ -457,10 +458,12 @@ private fun EblanApplicationInfosPage(
                             bottom = paddingValues.calculateBottomPadding() + 10.dp,
                         ),
                     onClick = {
-                        userManager.requestQuietModeEnabled(
-                            enableQuiteMode = true,
-                            userHandle = userHandle,
-                        )
+                        scope.launch {
+                            userManager.requestQuietModeEnabled(
+                                enableQuiteMode = true,
+                                userHandle = userHandle,
+                            )
+                        }
                     },
                 ) {
                     Icon(

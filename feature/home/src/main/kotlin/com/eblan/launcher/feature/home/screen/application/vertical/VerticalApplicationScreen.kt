@@ -52,6 +52,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -98,6 +99,7 @@ import com.eblan.launcher.feature.home.screen.application.rememberIsQuietModeEna
 import com.eblan.launcher.ui.local.LocalLauncherApps
 import com.eblan.launcher.ui.local.LocalUserManager
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class, FlowPreview::class)
 @Composable
@@ -435,6 +437,8 @@ private fun EblanApplicationInfosPage(
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
+    val scope = rememberCoroutineScope()
+
     val userManager = LocalUserManager.current
 
     val eblanUserPageKey =
@@ -461,7 +465,7 @@ private fun EblanApplicationInfosPage(
     val isQuietModeEnabled by rememberIsQuietModeEnabled(
         userHandle = userHandle,
         managedProfileResult = managedProfileResult,
-        eblanUserPageKey = eblanUserPageKey,
+        eblanUser = eblanUserPageKey.eblanUser,
     )
 
     Box(modifier = modifier.fillMaxSize()) {
@@ -521,10 +525,12 @@ private fun EblanApplicationInfosPage(
                             bottom = paddingValues.calculateBottomPadding() + 10.dp,
                         ),
                     onClick = {
-                        userManager.requestQuietModeEnabled(
-                            enableQuiteMode = true,
-                            userHandle = userHandle,
-                        )
+                        scope.launch {
+                            userManager.requestQuietModeEnabled(
+                                enableQuiteMode = true,
+                                userHandle = userHandle,
+                            )
+                        }
                     },
                 ) {
                     Icon(
@@ -569,6 +575,8 @@ private fun EblanApplicationInfos(
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
+    val userManager = LocalUserManager.current
+
     val lazyGridState = rememberLazyGridState()
 
     val canScroll by remember(key1 = lazyGridState) {
@@ -593,7 +601,13 @@ private fun EblanApplicationInfos(
         )
     }
 
-    var isQuietModeEnabled by remember { mutableStateOf(false) }
+    val privateIsQuiteModeEnabled by rememberIsQuietModeEnabled(
+        userHandle = getEblanApplicationInfosByLabelAndTag.privateEblanUser?.serialNumber?.let(
+            userManager::getUserForSerialNumber,
+        ),
+        managedProfileResult = managedProfileResult,
+        eblanUser = getEblanApplicationInfosByLabelAndTag.privateEblanUser,
+    )
 
     LaunchedEffect(key1 = lazyGridState.isScrollInProgress) {
         if (lazyGridState.isScrollInProgress && showPopupApplicationMenu) {
@@ -652,15 +666,11 @@ private fun EblanApplicationInfos(
 
                     privateSpace(
                         appDrawerSettings = appDrawerSettings,
-                        isQuietModeEnabled = isQuietModeEnabled,
-                        managedProfileResult = managedProfileResult,
+                        isQuietModeEnabled = privateIsQuiteModeEnabled,
                         paddingValues = paddingValues,
                         privateEblanApplicationInfoWithIconPackInfos = getEblanApplicationInfosByLabelAndTag.privateEblanApplicationInfoWithIconPackInfos,
                         privateEblanUser = getEblanApplicationInfosByLabelAndTag.privateEblanUser,
                         isVisibleOverlay = isVisibleOverlay,
-                        onUpdateIsQuietModeEnabled = {
-                            isQuietModeEnabled = it
-                        },
                         onUpdateOverlayBounds = onUpdateOverlayBounds,
                         onUpdatePopupMenu = onUpdatePrivatePopupMenu,
                         onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,

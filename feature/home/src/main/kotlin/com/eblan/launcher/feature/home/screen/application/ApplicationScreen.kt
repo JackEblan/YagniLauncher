@@ -80,6 +80,7 @@ import com.eblan.launcher.domain.model.EblanApplicationInfoTag
 import com.eblan.launcher.domain.model.EblanApplicationInfoWithIconPackInfo
 import com.eblan.launcher.domain.model.EblanShortcutInfo
 import com.eblan.launcher.domain.model.EblanShortcutInfoByGroup
+import com.eblan.launcher.domain.model.EblanUser
 import com.eblan.launcher.domain.model.EblanUserPageKey
 import com.eblan.launcher.domain.model.EblanUserType
 import com.eblan.launcher.domain.model.GetEblanApplicationInfosByLabelAndTag
@@ -281,6 +282,8 @@ internal fun QuiteModeScreen(
     onDragEnd: () -> Unit,
     onVerticalDrag: (Float) -> Unit,
 ) {
+    val scope = rememberCoroutineScope()
+
     val userManager = LocalUserManager.current
 
     val isDefaultLauncher by rememberIsDefaultLauncher()
@@ -316,10 +319,12 @@ internal fun QuiteModeScreen(
 
             OutlinedButton(
                 onClick = {
-                    userManager.requestQuietModeEnabled(
-                        enableQuiteMode = false,
-                        userHandle = userHandle,
-                    )
+                    scope.launch {
+                        userManager.requestQuietModeEnabled(
+                            enableQuiteMode = false,
+                            userHandle = userHandle,
+                        )
+                    }
                 },
             ) {
                 Text(text = stringResource(R.string.unpause))
@@ -494,7 +499,7 @@ internal fun rememberIsDefaultLauncher(): State<Boolean> {
 internal fun rememberIsQuietModeEnabled(
     userHandle: UserHandle?,
     managedProfileResult: ManagedProfileResult?,
-    eblanUserPageKey: EblanUserPageKey,
+    eblanUser: EblanUser?,
 ): State<Boolean> {
     val userManager = LocalUserManager.current
 
@@ -508,7 +513,7 @@ internal fun rememberIsQuietModeEnabled(
         }
 
         if (managedProfileResult != null &&
-            managedProfileResult.serialNumber == eblanUserPageKey.eblanUser.serialNumber
+            managedProfileResult.serialNumber == eblanUser?.serialNumber
         ) {
             value = managedProfileResult.isQuiteModeEnabled
         }
