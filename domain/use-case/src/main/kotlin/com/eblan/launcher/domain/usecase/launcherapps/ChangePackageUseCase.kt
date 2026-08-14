@@ -122,8 +122,6 @@ class ChangePackageUseCase @Inject constructor(
                         serialNumber = launcherAppsActivityInfo.serialNumber,
                         packageName = launcherAppsActivityInfo.packageName,
                     ).map {
-                        currentCoroutineContext().ensureActive()
-
                         it.toEblanShortcutConfig(
                             fileManager = fileManager,
                             packageManagerWrapper = packageManagerWrapper,
@@ -146,7 +144,7 @@ class ChangePackageUseCase @Inject constructor(
                 oldSyncEblanApplicationInfosByPackageName.map {
                     it.toDeleteEblanApplicationInfo()
                 }
-                    .filter { it !in newDeleteEblanApplicationInfos }
+                    .filterNot { it in newDeleteEblanApplicationInfos }
 
             eblanApplicationInfoRepository.upsertSyncEblanApplicationInfos(
                 syncEblanApplicationInfos = newSyncEblanApplicationInfosByPackageName,
@@ -195,8 +193,6 @@ class ChangePackageUseCase @Inject constructor(
 
         val newEblanAppWidgetProviderInfosByPackageName =
             appWidgetManagerAppWidgetProviderInfosByPackageName.map {
-                currentCoroutineContext().ensureActive()
-
                 it.toEblanAppWidgetProviderInfo(
                     fileManager = fileManager,
                     packageManagerWrapper = packageManagerWrapper,
@@ -213,8 +209,8 @@ class ChangePackageUseCase @Inject constructor(
             val oldDeleteEblanAppWidgetProviderInfos =
                 oldEblanAppWidgetProviderInfosByPackageName.map {
                     it.toDeleteEblanAppWidgetProviderInfo()
-                }.filter {
-                    it !in newDeleteEblanAppWidgetProviderInfos
+                }.filterNot {
+                    it in newDeleteEblanAppWidgetProviderInfos
                 }
 
             eblanAppWidgetProviderInfoRepository.upsertEblanAppWidgetProviderInfos(
@@ -274,8 +270,8 @@ class ChangePackageUseCase @Inject constructor(
             val oldDeleteEblanShortcutInfos =
                 oldEblanShortcutInfosByPackageName.map {
                     it.toDeleteEblanShortcutInfo()
-                }.filter {
-                    it !in newDeleteEblanShortcutInfos
+                }.filterNot {
+                    it in newDeleteEblanShortcutInfos
                 }
 
             eblanShortcutInfoRepository.upsertEblanShortcutInfos(
@@ -320,8 +316,8 @@ class ChangePackageUseCase @Inject constructor(
             val oldDeleteEblanShortcutConfigs =
                 oldEblanShortcutConfigsByPackageName.map {
                     it.toDeleteEblanShortcutConfig()
-                }.filter {
-                    it !in newDeleteEblanShortcutConfigs
+                }.filterNot {
+                    it in newDeleteEblanShortcutConfigs
                 }
 
             eblanShortcutConfigRepository.upsertEblanShortcutConfigs(
@@ -403,8 +399,6 @@ class ChangePackageUseCase @Inject constructor(
         if (oldFastEblanLauncherAppsActivityInfo.toSet() != fastLauncherAppsActivityInfos.toSet()) {
             iconPackInfoDirectory.listFiles()
                 ?.filter {
-                    currentCoroutineContext().ensureActive()
-
                     it.isFile && it.name !in installedComponentHashCodes
                 }
                 ?.forEach {

@@ -45,8 +45,6 @@ suspend fun resolveConflicts(
         val current = gridItems[currentIndex]
 
         for (i in gridItems.indices) {
-            currentCoroutineContext().ensureActive()
-
             val other = gridItems[i]
 
             if (other.id == current.id) continue

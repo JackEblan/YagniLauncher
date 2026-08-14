@@ -74,12 +74,8 @@ internal suspend fun deleteEblanApplicationInfoIcons(
 
         val hasNoIconReference =
             icon != null && eblanApplicationInfos.none {
-                currentCoroutineContext().ensureActive()
-
                 it.icon == icon
             } && eblanAppWidgetProviderInfos.none {
-                currentCoroutineContext().ensureActive()
-
                 it.applicationIcon == icon
             }
 
@@ -105,12 +101,8 @@ internal suspend fun deleteEblanAppWidgetProviderInfoIcons(
 
         val hasNoIconReference =
             applicationIcon != null && eblanAppWidgetProviderInfos.none {
-                currentCoroutineContext().ensureActive()
-
                 it.applicationIcon == applicationIcon
             } && eblanApplicationInfos.none {
-                currentCoroutineContext().ensureActive()
-
                 it.icon == applicationIcon
             }
 
@@ -143,8 +135,6 @@ internal suspend fun deleteEblanShortInfoIcons(
 
         val hasNoIconReference =
             icon != null && eblanShortcutInfos.none {
-                currentCoroutineContext().ensureActive()
-
                 it.icon == icon
             }
 
@@ -186,15 +176,11 @@ internal suspend fun updateApplicationInfoGridItems(
         applicationInfoGridItemRepository.getApplicationInfoGridItems()
 
     applicationInfoGridItems.filterNot {
-        currentCoroutineContext().ensureActive()
-
         it.override
     }.forEach { applicationInfoGridItem ->
         currentCoroutineContext().ensureActive()
 
         val eblanApplicationInfo = eblanApplicationInfos.find {
-            currentCoroutineContext().ensureActive()
-
             it.serialNumber == applicationInfoGridItem.serialNumber && it.componentName == applicationInfoGridItem.componentName
         }
 
@@ -241,8 +227,6 @@ internal suspend fun updateShortcutInfoGridItems(
             currentCoroutineContext().ensureActive()
 
             val eblanShortcutInfo = eblanShortcutInfos.find {
-                currentCoroutineContext().ensureActive()
-
                 it.serialNumber == shortcutInfoGridItem.serialNumber && it.shortcutId == shortcutInfoGridItem.shortcutId
             }
 
@@ -295,8 +279,6 @@ internal suspend fun updateShortcutConfigGridItems(
         currentCoroutineContext().ensureActive()
 
         val eblanShortcutConfig = eblanShortcutConfigs.find {
-            currentCoroutineContext().ensureActive()
-
             it.serialNumber == shortcutConfigGridItem.serialNumber && it.componentName == shortcutConfigGridItem.componentName
         }
 
@@ -355,8 +337,6 @@ internal suspend fun updateWidgetGridItems(
 
         val eblanAppWidgetProviderInfo =
             eblanAppWidgetProviderInfos.find {
-                currentCoroutineContext().ensureActive()
-
                 it.serialNumber == widgetGridItem.serialNumber && it.componentName == widgetGridItem.componentName
             }
 

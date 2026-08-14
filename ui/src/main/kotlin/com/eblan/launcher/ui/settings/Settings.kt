@@ -38,8 +38,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -50,11 +52,15 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
 import coil3.compose.AsyncImage
 import com.eblan.launcher.designsystem.component.VerticalSlideReveal
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.PackageManagerIconPackInfo
 import com.eblan.launcher.ui.R
+import com.eblan.launcher.ui.local.LocalPackageManager
 import com.eblan.launcher.ui.model.SettingsItem
 import com.eblan.launcher.common.R as commonR
 
@@ -226,6 +232,23 @@ fun SettingsCategoryText(
         text = text,
         style = MaterialTheme.typography.bodySmall,
     )
+}
+
+@Composable
+fun rememberIsDefaultLauncher(): State<Boolean> {
+    val packageManager = LocalPackageManager.current
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    return produceState(
+        initialValue = false,
+        key1 = lifecycleOwner,
+        key2 = packageManager,
+    ) {
+        lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+            value = packageManager.isDefaultLauncher()
+        }
+    }
 }
 
 fun settingsItemShape(

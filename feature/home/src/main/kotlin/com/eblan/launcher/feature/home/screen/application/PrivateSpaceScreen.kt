@@ -41,7 +41,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -76,26 +75,23 @@ import com.eblan.launcher.domain.model.AppDrawerSettings
 import com.eblan.launcher.domain.model.EblanApplicationInfo
 import com.eblan.launcher.domain.model.EblanApplicationInfoWithIconPackInfo
 import com.eblan.launcher.domain.model.EblanUser
-import com.eblan.launcher.domain.model.ManagedProfileResult
 import com.eblan.launcher.feature.home.R
 import com.eblan.launcher.feature.home.screen.getHorizontalAlignment
 import com.eblan.launcher.feature.home.screen.getVerticalArrangement
 import com.eblan.launcher.feature.home.util.getSystemTextColor
 import com.eblan.launcher.ui.local.LocalLauncherApps
-import com.eblan.launcher.ui.local.LocalPackageManager
 import com.eblan.launcher.ui.local.LocalUserManager
+import com.eblan.launcher.ui.settings.rememberIsDefaultLauncher
 import kotlinx.coroutines.launch
 import kotlin.uuid.ExperimentalUuidApi
 
 internal fun LazyGridScope.privateSpace(
     appDrawerSettings: AppDrawerSettings,
     isQuietModeEnabled: Boolean,
-    managedProfileResult: ManagedProfileResult?,
     paddingValues: PaddingValues,
     privateEblanApplicationInfoWithIconPackInfos: List<EblanApplicationInfoWithIconPackInfo>,
     privateEblanUser: EblanUser?,
     isVisibleOverlay: Boolean,
-    onUpdateIsQuietModeEnabled: (Boolean) -> Unit,
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
@@ -107,10 +103,8 @@ internal fun LazyGridScope.privateSpace(
 
     stickyHeader {
         PrivateSpaceStickyHeader(
+            serialNumber = privateEblanUser.serialNumber,
             isQuietModeEnabled = isQuietModeEnabled,
-            managedProfileResult = managedProfileResult,
-            privateEblanUser = privateEblanUser,
-            onUpdateIsQuietModeEnabled = onUpdateIsQuietModeEnabled,
         )
     }
 
@@ -132,37 +126,23 @@ internal fun LazyGridScope.privateSpace(
 @Composable
 internal fun PrivateSpaceStickyHeader(
     modifier: Modifier = Modifier,
+    serialNumber: Long,
     isQuietModeEnabled: Boolean,
-    managedProfileResult: ManagedProfileResult?,
-    privateEblanUser: EblanUser?,
-    onUpdateIsQuietModeEnabled: (Boolean) -> Unit,
 ) {
-    if (privateEblanUser == null) return
+    val scope = rememberCoroutineScope()
 
     val userManager = LocalUserManager.current
-
-    val packageManager = LocalPackageManager.current
 
     val launcherApps = LocalLauncherApps.current
 
     val userHandle =
-        userManager.getUserForSerialNumber(serialNumber = privateEblanUser.serialNumber)
+        userManager.getUserForSerialNumber(serialNumber = serialNumber)
 
     val privateSpaceLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult(),
     ) {}
 
-    LaunchedEffect(key1 = userHandle) {
-        if (userHandle != null) {
-            onUpdateIsQuietModeEnabled(userManager.isQuietModeEnabled(userHandle = userHandle))
-        }
-    }
-
-    LaunchedEffect(key1 = managedProfileResult) {
-        if (managedProfileResult != null && managedProfileResult.serialNumber == privateEblanUser.serialNumber) {
-            onUpdateIsQuietModeEnabled(managedProfileResult.isQuiteModeEnabled)
-        }
-    }
+    val isDefaultLauncher by rememberIsDefaultLauncher()
 
     Row(
         modifier = modifier
@@ -191,15 +171,15 @@ internal fun PrivateSpaceStickyHeader(
                 }
             }
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && packageManager.isDefaultLauncher() && userHandle != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && isDefaultLauncher && userHandle != null) {
                 IconButton(
                     onClick = {
-                        userManager.requestQuietModeEnabled(
-                            enableQuiteMode = !isQuietModeEnabled,
-                            userHandle = userHandle,
-                        )
-
-                        onUpdateIsQuietModeEnabled(userManager.isQuietModeEnabled(userHandle))
+                        scope.launch {
+                            userManager.requestQuietModeEnabled(
+                                enableQuiteMode = !isQuietModeEnabled,
+                                userHandle = userHandle,
+                            )
+                        }
                     },
                 ) {
                     Icon(

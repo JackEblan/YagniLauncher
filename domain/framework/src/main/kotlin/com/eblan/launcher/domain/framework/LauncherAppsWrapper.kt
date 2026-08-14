@@ -60,7 +60,7 @@ interface LauncherAppsWrapper {
         packageName: String,
     ): List<ShortcutConfigActivityInfo>
 
-    fun getUser(serialNumber: Long): EblanUser
+    suspend fun getUser(serialNumber: Long): EblanUser
 
     fun pinShortcuts(
         packageName: String,

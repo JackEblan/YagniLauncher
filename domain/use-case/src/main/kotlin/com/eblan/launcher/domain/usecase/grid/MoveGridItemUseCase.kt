@@ -30,7 +30,6 @@ import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.domain.model.ResolveDirection
 import com.eblan.launcher.domain.repository.GridRepository
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -50,16 +49,12 @@ class MoveGridItemUseCase @Inject constructor(
     ): MoveGridItemResult {
         return withContext(defaultDispatcher) {
             val gridItemsByPage = getGridItemsUseCase().filter {
-                ensureActive()
-
                 it.isTopLevel() && it.page == movingGridItem.page &&
                     it.associate == movingGridItem.associate
             }.toMutableList()
 
             val index =
                 gridItemsByPage.indexOfFirst {
-                    ensureActive()
-
                     it.id == movingGridItem.id
                 }
 
@@ -93,8 +88,6 @@ class MoveGridItemUseCase @Inject constructor(
             }
 
             val conflictingGridItemBySpan = gridItemsByPage.find {
-                ensureActive()
-
                 it.id != movingGridItem.id && rectanglesOverlap(
                     moving = movingGridItem,
                     other = it,

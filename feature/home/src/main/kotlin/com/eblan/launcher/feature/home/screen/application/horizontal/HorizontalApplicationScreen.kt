@@ -39,10 +39,10 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -81,10 +81,12 @@ import com.eblan.launcher.feature.home.screen.application.PrivateApplicationInfo
 import com.eblan.launcher.feature.home.screen.application.PrivateSpaceEblanApplicationInfoItem
 import com.eblan.launcher.feature.home.screen.application.QuiteModeScreen
 import com.eblan.launcher.feature.home.screen.application.TagElevatedFilterChip
+import com.eblan.launcher.feature.home.screen.application.rememberIsQuietModeEnabled
 import com.eblan.launcher.ui.local.LocalLauncherApps
-import com.eblan.launcher.ui.local.LocalPackageManager
 import com.eblan.launcher.ui.local.LocalUserManager
+import com.eblan.launcher.ui.settings.rememberIsDefaultLauncher
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class, FlowPreview::class)
 @Composable
@@ -381,9 +383,9 @@ private fun EblanApplicationInfosPage(
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
-    val userManager = LocalUserManager.current
+    val scope = rememberCoroutineScope()
 
-    val packageManager = LocalPackageManager.current
+    val userManager = LocalUserManager.current
 
     val eblanUserPageKey =
         getEblanApplicationInfosByLabelAndTag.eblanApplicationInfoWithIconPackInfos.keys.toList()
@@ -404,30 +406,19 @@ private fun EblanApplicationInfosPage(
     val userHandle =
         userManager.getUserForSerialNumber(serialNumber = eblanUserPageKey.eblanUser.serialNumber)
 
-    var isQuietModeEnabled by remember { mutableStateOf(false) }
+    val isDefaultLauncher by rememberIsDefaultLauncher()
 
-    LaunchedEffect(key1 = userHandle) {
-        if (userHandle != null) {
-            isQuietModeEnabled = userManager.isQuietModeEnabled(userHandle = userHandle)
-        }
-    }
-
-    LaunchedEffect(key1 = managedProfileResult) {
-        if (managedProfileResult != null && managedProfileResult.serialNumber == eblanUserPageKey.eblanUser.serialNumber) {
-            isQuietModeEnabled = managedProfileResult.isQuiteModeEnabled
-        }
-    }
+    val isQuietModeEnabled by rememberIsQuietModeEnabled(
+        userHandle = userHandle,
+        managedProfileResult = managedProfileResult,
+        eblanUser = eblanUserPageKey.eblanUser,
+    )
 
     Box(modifier = modifier.fillMaxSize()) {
         if (isQuietModeEnabled) {
             QuiteModeScreen(
-                packageManager = packageManager,
                 userHandle = userHandle,
-                userManager = userManager,
                 onDragEnd = onDragEnd,
-                onUpdateRequestQuietModeEnabled = {
-                    isQuietModeEnabled = it
-                },
                 onVerticalDrag = onVerticalDrag,
             )
         } else {
@@ -456,7 +447,7 @@ private fun EblanApplicationInfosPage(
                 onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
             )
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && packageManager.isDefaultLauncher() &&
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && isDefaultLauncher &&
                 eblanUserPageKey.eblanUser.serialNumber > 0 && userHandle != null
             ) {
                 FloatingActionButton(
@@ -467,12 +458,12 @@ private fun EblanApplicationInfosPage(
                             bottom = paddingValues.calculateBottomPadding() + 10.dp,
                         ),
                     onClick = {
-                        userManager.requestQuietModeEnabled(
-                            enableQuiteMode = true,
-                            userHandle = userHandle,
-                        )
-
-                        isQuietModeEnabled = userManager.isQuietModeEnabled(userHandle)
+                        scope.launch {
+                            userManager.requestQuietModeEnabled(
+                                enableQuiteMode = true,
+                                userHandle = userHandle,
+                            )
+                        }
                     },
                 ) {
                     Icon(

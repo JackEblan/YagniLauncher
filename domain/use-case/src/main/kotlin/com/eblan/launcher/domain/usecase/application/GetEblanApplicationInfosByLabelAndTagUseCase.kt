@@ -101,7 +101,7 @@ class GetEblanApplicationInfosByLabelAndTagUseCase @Inject constructor(
         }
     }.flowOn(ioDispatcher)
 
-    private fun getVerticalOrListEblanApplicationInfosByLabel(eblanApplicationInfos: MutableList<EblanApplicationInfoWithIconPackInfo>): GetEblanApplicationInfosByLabelAndTag {
+    private suspend fun getVerticalOrListEblanApplicationInfosByLabel(eblanApplicationInfos: MutableList<EblanApplicationInfoWithIconPackInfo>): GetEblanApplicationInfosByLabelAndTag {
         val groupedEblanApplicationInfos = eblanApplicationInfos.groupBy {
             EblanUserPageKey(
                 eblanUser = launcherAppsWrapper.getUser(serialNumber = it.eblanApplicationInfo.serialNumber),
@@ -120,7 +120,7 @@ class GetEblanApplicationInfosByLabelAndTagUseCase @Inject constructor(
         )
     }
 
-    private fun getHorizontalEblanApplicationInfosByLabel(
+    private suspend fun getHorizontalEblanApplicationInfosByLabel(
         horizontalAppDrawerColumns: Int,
         horizontalAppDrawerRows: Int,
         eblanApplicationInfosByLabel: MutableList<EblanApplicationInfoWithIconPackInfo>,

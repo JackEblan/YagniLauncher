@@ -118,10 +118,11 @@ import com.eblan.launcher.feature.home.screen.application.TagElevatedFilterChip
 import com.eblan.launcher.feature.home.screen.application.handleDragEblanApplicationInfoItem
 import com.eblan.launcher.feature.home.screen.application.handleOnLongPressEblanApplicationInfoItem
 import com.eblan.launcher.feature.home.screen.application.handleOnTapEblanApplicationInfoItem
+import com.eblan.launcher.feature.home.screen.application.rememberIsQuietModeEnabled
 import com.eblan.launcher.feature.home.util.getSystemTextColor
 import com.eblan.launcher.ui.local.LocalLauncherApps
-import com.eblan.launcher.ui.local.LocalPackageManager
 import com.eblan.launcher.ui.local.LocalUserManager
+import com.eblan.launcher.ui.settings.rememberIsDefaultLauncher
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.launch
 import kotlin.uuid.ExperimentalUuidApi
@@ -427,9 +428,9 @@ private fun EblanApplicationInfosPage(
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
-    val userManager = LocalUserManager.current
+    val scope = rememberCoroutineScope()
 
-    val packageManager = LocalPackageManager.current
+    val userManager = LocalUserManager.current
 
     val eblanUserPageKey =
         getEblanApplicationInfosByLabelAndTag.eblanApplicationInfoWithIconPackInfos.keys.toList()
@@ -450,30 +451,19 @@ private fun EblanApplicationInfosPage(
     val userHandle =
         userManager.getUserForSerialNumber(serialNumber = eblanUserPageKey.eblanUser.serialNumber)
 
-    var isQuietModeEnabled by remember { mutableStateOf(false) }
+    val isDefaultLauncher by rememberIsDefaultLauncher()
 
-    LaunchedEffect(key1 = userHandle) {
-        if (userHandle != null) {
-            isQuietModeEnabled = userManager.isQuietModeEnabled(userHandle = userHandle)
-        }
-    }
-
-    LaunchedEffect(key1 = managedProfileResult) {
-        if (managedProfileResult != null && managedProfileResult.serialNumber == eblanUserPageKey.eblanUser.serialNumber) {
-            isQuietModeEnabled = managedProfileResult.isQuiteModeEnabled
-        }
-    }
+    val isQuietModeEnabled by rememberIsQuietModeEnabled(
+        userHandle = userHandle,
+        managedProfileResult = managedProfileResult,
+        eblanUser = eblanUserPageKey.eblanUser,
+    )
 
     Box(modifier = modifier.fillMaxSize()) {
         if (isQuietModeEnabled) {
             QuiteModeScreen(
-                packageManager = packageManager,
                 userHandle = userHandle,
-                userManager = userManager,
                 onDragEnd = onDragEnd,
-                onUpdateRequestQuietModeEnabled = {
-                    isQuietModeEnabled = it
-                },
                 onVerticalDrag = onVerticalDrag,
             )
         } else {
@@ -504,9 +494,7 @@ private fun EblanApplicationInfosPage(
                 onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
             )
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && packageManager.isDefaultLauncher() &&
-                eblanUserPageKey.eblanUser.serialNumber > 0 && userHandle != null
-            ) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && isDefaultLauncher && eblanUserPageKey.eblanUser.serialNumber > 0 && userHandle != null) {
                 FloatingActionButton(
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
@@ -515,12 +503,12 @@ private fun EblanApplicationInfosPage(
                             bottom = paddingValues.calculateBottomPadding() + 10.dp,
                         ),
                     onClick = {
-                        userManager.requestQuietModeEnabled(
-                            enableQuiteMode = true,
-                            userHandle = userHandle,
-                        )
-
-                        isQuietModeEnabled = userManager.isQuietModeEnabled(userHandle)
+                        scope.launch {
+                            userManager.requestQuietModeEnabled(
+                                enableQuiteMode = true,
+                                userHandle = userHandle,
+                            )
+                        }
                     },
                 ) {
                     Icon(
@@ -565,6 +553,8 @@ private fun EblanApplicationInfos(
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
+    val userManager = LocalUserManager.current
+
     val lazyListState = rememberLazyListState()
 
     val canScroll by remember(key1 = lazyListState) {
@@ -589,7 +579,13 @@ private fun EblanApplicationInfos(
         )
     }
 
-    var isQuietModeEnabled by remember { mutableStateOf(false) }
+    val privateIsQuiteModeEnabled by rememberIsQuietModeEnabled(
+        userHandle = getEblanApplicationInfosByLabelAndTag.privateEblanUser?.serialNumber?.let(
+            userManager::getUserForSerialNumber,
+        ),
+        managedProfileResult = managedProfileResult,
+        eblanUser = getEblanApplicationInfosByLabelAndTag.privateEblanUser,
+    )
 
     LaunchedEffect(key1 = lazyListState.isScrollInProgress) {
         if (lazyListState.isScrollInProgress && showPopupApplicationMenu) {
@@ -621,8 +617,7 @@ private fun EblanApplicationInfos(
                     items(
                         items = getEblanApplicationInfosByLabelAndTag.eblanApplicationInfoWithIconPackInfos[eblanUserPageKey].orEmpty(),
                         key = {
-                            it.eblanApplicationInfo.serialNumber to
-                                it.eblanApplicationInfo.componentName
+                            it.eblanApplicationInfo.serialNumber to it.eblanApplicationInfo.componentName
                         },
                     ) {
                         EblanApplicationInfoListItem(
@@ -649,15 +644,11 @@ private fun EblanApplicationInfos(
 
                     privateSpace(
                         appDrawerSettings = appDrawerSettings,
-                        isQuietModeEnabled = isQuietModeEnabled,
-                        managedProfileResult = managedProfileResult,
+                        isQuietModeEnabled = privateIsQuiteModeEnabled,
                         paddingValues = paddingValues,
                         privateEblanApplicationInfos = getEblanApplicationInfosByLabelAndTag.privateEblanApplicationInfoWithIconPackInfos,
                         privateEblanUser = getEblanApplicationInfosByLabelAndTag.privateEblanUser,
                         isVisibleOverlay = isVisibleOverlay,
-                        onUpdateIsQuietModeEnabled = {
-                            isQuietModeEnabled = it
-                        },
                         onUpdateOverlayBounds = onUpdateOverlayBounds,
                         onUpdatePopupMenu = onUpdatePrivatePopupMenu,
                         onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
@@ -668,8 +659,7 @@ private fun EblanApplicationInfos(
                     items(
                         getEblanApplicationInfosByLabelAndTag.eblanApplicationInfoWithIconPackInfos[eblanUserPageKey].orEmpty(),
                         key = {
-                            it.eblanApplicationInfo.serialNumber to
-                                it.eblanApplicationInfo.componentName
+                            it.eblanApplicationInfo.serialNumber to it.eblanApplicationInfo.componentName
                         },
                     ) {
                         EblanApplicationInfoListItem(
@@ -868,31 +858,21 @@ private fun EblanApplicationInfoListItem(
         AsyncImage(
             model = ImageRequest.Builder(context)
                 .data(eblanApplicationInfoWithIconPackInfo.eblanApplicationInfo.customIcon ?: icon)
-                .addLastModifiedToFileCacheKey(true)
-                .size(iconSizePx)
-                .crossfade(false)
-                .build(),
+                .addLastModifiedToFileCacheKey(true).size(iconSizePx).crossfade(false).build(),
             contentDescription = null,
-            modifier = Modifier
-                .size(appDrawerSettings.gridItemSettings.iconSize.dp)
-                .alpha(alpha)
+            modifier = Modifier.size(appDrawerSettings.gridItemSettings.iconSize.dp).alpha(alpha)
                 .drawWithContent {
                     graphicsLayer.record {
                         this@drawWithContent.drawContent()
                     }
 
                     drawLayer(graphicsLayer)
-                }
-                .onGloballyPositioned { layoutCoordinates ->
+                }.onGloballyPositioned { layoutCoordinates ->
                     intOffset = layoutCoordinates.positionInRoot().round()
 
                     intSize = layoutCoordinates.size
-                }
-                .run {
-                    if (!isScrollInProgress &&
-                        !isLongPress &&
-                        !isVisibleOverlay
-                    ) {
+                }.run {
+                    if (!isScrollInProgress && !isLongPress && !isVisibleOverlay) {
                         with(sharedTransitionScope) {
                             sharedElementWithCallerManagedVisibility(
                                 rememberSharedContentState(
