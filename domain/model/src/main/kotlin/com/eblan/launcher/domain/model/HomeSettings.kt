@@ -40,5 +40,8 @@ data class HomeSettings(
     val showPageIndicator: Boolean,
     val dockCustomBackgroundColor: Int,
     val dockPadding: Int,
-    val dockCornerRadius: Int,
+    val dockTopStartCornerRadius: Int,
+    val dockTopEndCornerRadius: Int,
+    val dockBottomStartCornerRadius: Int,
+    val dockBottomEndCornerRadius: Int,
 )

@@ -136,8 +136,6 @@ fun GridItemSettings(
                         iconSize = it,
                     ),
                 )
-
-                showIconSizeDialog = false
             },
         )
     }
@@ -157,8 +155,6 @@ fun GridItemSettings(
                         customTextColor = customTextColor,
                     ),
                 )
-
-                showTextColorDialog = false
             },
         )
     }
@@ -175,8 +171,6 @@ fun GridItemSettings(
                         textSize = it,
                     ),
                 )
-
-                showTextSizeDialog = false
             },
         )
     }
@@ -190,8 +184,6 @@ fun GridItemSettings(
             },
             onSelectColor = {
                 onUpdateGridItemSettings(gridItemSettings.copy(customBackgroundColor = it))
-
-                showBackgroundColorDialog = false
             },
         )
     }
@@ -208,8 +200,6 @@ fun GridItemSettings(
                         padding = it,
                     ),
                 )
-
-                showPaddingDialog = false
             },
         )
     }
@@ -226,8 +216,6 @@ fun GridItemSettings(
                         cornerRadius = it,
                     ),
                 )
-
-                showCornerRadiusDialog = false
             },
         )
     }
@@ -245,8 +233,6 @@ fun GridItemSettings(
             },
             onUpdateClick = {
                 onUpdateGridItemSettings(gridItemSettings.copy(horizontalAlignment = it))
-
-                showHorizontalAlignment = false
             },
         )
     }
@@ -264,8 +250,6 @@ fun GridItemSettings(
             },
             onUpdateClick = {
                 onUpdateGridItemSettings(gridItemSettings.copy(verticalArrangement = it))
-
-                showVerticalArrangement = false
             },
         )
     }

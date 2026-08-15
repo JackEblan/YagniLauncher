@@ -195,8 +195,6 @@ private fun Success(
             },
             onUpdateClick = {
                 onUpdateGeneralSettings(generalSettings.copy(theme = it))
-
-                showDarkThemeConfigDialog = false
             },
         )
     }

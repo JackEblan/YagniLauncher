@@ -84,6 +84,8 @@ fun <T> RadioOptionsDialog(
             TextButton(
                 onClick = {
                     onUpdateClick(selectedOption)
+
+                    onDismissRequest()
                 },
             ) {
                 Text(text = stringResource(commonR.string.update))

@@ -15,7 +15,7 @@
  *   limitations under the License.
  *
  */
-package com.eblan.launcher.feature.editgriditem.dialog
+package com.eblan.launcher.ui.dialog
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -36,23 +36,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.eblan.launcher.designsystem.component.EblanDialog
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
-import com.eblan.launcher.domain.model.GridItem
-import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.common.R as commonR
 
 @Composable
-internal fun EditApplicationInfoCustomLabelDialog(
+fun EditCustomLabelDialog(
     modifier: Modifier = Modifier,
-    gridItem: GridItem,
-    data: GridItemData.ApplicationInfo,
+    customLabel: String?,
     onDismissRequest: () -> Unit,
-    onUpdateGridItem: (GridItem) -> Unit,
+    onUpdateCustomLabel: (String?) -> Unit,
 ) {
-    var value by remember {
-        mutableStateOf(data.customLabel ?: "")
-    }
+    var currentCustomLabel by remember { mutableStateOf(customLabel ?: "") }
 
-    var isError by remember { mutableStateOf(false) }
+    var isErrorCustomLabel by remember { mutableStateOf(false) }
 
     EblanDialog(
         modifier = modifier,
@@ -69,13 +64,9 @@ internal fun EditApplicationInfoCustomLabelDialog(
             )
 
             IconButton(
-                enabled = value.isNotBlank(),
+                enabled = currentCustomLabel.isNotBlank(),
                 onClick = {
-                    onUpdateGridItem(
-                        gridItem.copy(
-                            data = data.copy(customLabel = null),
-                        ),
-                    )
+                    onUpdateCustomLabel(null)
 
                     onDismissRequest()
                 },
@@ -88,17 +79,17 @@ internal fun EditApplicationInfoCustomLabelDialog(
         }
 
         TextField(
-            value = value,
+            value = currentCustomLabel,
             onValueChange = {
-                value = it
-                isError = false
+                currentCustomLabel = it
+                isErrorCustomLabel = false
             },
             modifier = Modifier.fillMaxWidth(),
             label = {
                 Text(text = stringResource(commonR.string.custom_label))
             },
-            isError = isError,
-            supportingText = if (isError) {
+            isError = isErrorCustomLabel,
+            supportingText = if (isErrorCustomLabel) {
                 {
                     Text(text = stringResource(commonR.string.custom_label_is_not_valid))
                 }
@@ -111,22 +102,20 @@ internal fun EditApplicationInfoCustomLabelDialog(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.End,
         ) {
-            TextButton(onClick = onDismissRequest) {
+            TextButton(
+                onClick = onDismissRequest,
+            ) {
                 Text(text = stringResource(commonR.string.cancel))
             }
 
             TextButton(
                 onClick = {
-                    if (value.isNotBlank()) {
-                        onUpdateGridItem(
-                            gridItem.copy(
-                                data = data.copy(customLabel = value),
-                            ),
-                        )
+                    isErrorCustomLabel = currentCustomLabel.isBlank()
+
+                    if (currentCustomLabel.isNotBlank()) {
+                        onUpdateCustomLabel(currentCustomLabel)
 
                         onDismissRequest()
-                    } else {
-                        isError = true
                     }
                 },
             ) {

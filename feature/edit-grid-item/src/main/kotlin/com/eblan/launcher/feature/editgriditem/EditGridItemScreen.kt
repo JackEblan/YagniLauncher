@@ -48,11 +48,9 @@ import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.IconPackInfoComponent
 import com.eblan.launcher.domain.model.PackageManagerIconPackInfo
-import com.eblan.launcher.feature.editgriditem.dialog.EditApplicationInfoCustomLabelDialog
 import com.eblan.launcher.feature.editgriditem.dialog.EditFolderLabelDialog
-import com.eblan.launcher.feature.editgriditem.dialog.EditShortcutConfigCustomLabelDialog
-import com.eblan.launcher.feature.editgriditem.dialog.EditShortcutInfoCustomShortLabelDialog
 import com.eblan.launcher.feature.editgriditem.model.EditGridItemUiState
+import com.eblan.launcher.ui.dialog.EditCustomLabelDialog
 import com.eblan.launcher.ui.dialog.IconPackInfoFilesDialog
 import com.eblan.launcher.ui.model.SettingsItem
 import com.eblan.launcher.ui.settings.EblanActionSettings
@@ -390,13 +388,16 @@ private fun EditApplicationInfo(
     }
 
     if (showCustomLabelDialog) {
-        EditApplicationInfoCustomLabelDialog(
-            gridItem = gridItem,
-            data = data,
+        EditCustomLabelDialog(
+            customLabel = data.customLabel,
             onDismissRequest = {
                 showCustomLabelDialog = false
             },
-            onUpdateGridItem = onUpdateGridItem,
+            onUpdateCustomLabel = {
+                val newData = data.copy(customLabel = it)
+
+                onUpdateGridItem(gridItem.copy(data = newData))
+            },
         )
     }
 }
@@ -636,13 +637,16 @@ private fun EditShortcutInfo(
     }
 
     if (showCustomShortLabelDialog) {
-        EditShortcutInfoCustomShortLabelDialog(
-            data = data,
-            gridItem = gridItem,
+        EditCustomLabelDialog(
+            customLabel = data.customShortLabel,
             onDismissRequest = {
                 showCustomShortLabelDialog = false
             },
-            onUpdateGridItem = onUpdateGridItem,
+            onUpdateCustomLabel = {
+                val newData = data.copy(customShortLabel = it)
+
+                onUpdateGridItem(gridItem.copy(data = newData))
+            },
         )
     }
 }
@@ -759,13 +763,16 @@ private fun EditShortcutConfig(
     }
 
     if (showCustomLabelDialog) {
-        EditShortcutConfigCustomLabelDialog(
-            data = data,
-            gridItem = gridItem,
+        EditCustomLabelDialog(
+            customLabel = data.customLabel,
             onDismissRequest = {
                 showCustomLabelDialog = false
             },
-            onUpdateGridItem = onUpdateGridItem,
+            onUpdateCustomLabel = {
+                val newData = data.copy(customLabel = it)
+
+                onUpdateGridItem(gridItem.copy(data = newData))
+            },
         )
     }
 }

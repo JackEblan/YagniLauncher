@@ -102,6 +102,8 @@ fun TextColorDialog(
                         selectedTextColor,
                         selectedCustomTextColor,
                     )
+
+                    onDismissRequest()
                 },
             ) {
                 Text(text = stringResource(commonR.string.update))
@@ -120,8 +122,6 @@ fun TextColorDialog(
                 selectedTextColor = TextColor.Custom
 
                 selectedCustomTextColor = it
-
-                showColorPickerDialog = false
             },
         )
     }

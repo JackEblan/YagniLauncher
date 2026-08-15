@@ -719,7 +719,12 @@ internal fun PagerScreen(
                         .padding(homeSettings.dockPadding.dp)
                         .background(
                             color = Color(homeSettings.dockCustomBackgroundColor),
-                            shape = RoundedCornerShape(size = homeSettings.dockCornerRadius.dp),
+                            shape = RoundedCornerShape(
+                                topStart = homeSettings.dockTopStartCornerRadius.dp,
+                                topEnd = homeSettings.dockTopEndCornerRadius.dp,
+                                bottomStart = homeSettings.dockBottomStartCornerRadius.dp,
+                                bottomEnd = homeSettings.dockBottomEndCornerRadius.dp,
+                            ),
                         ),
                 )
 
@@ -739,7 +744,12 @@ internal fun PagerScreen(
                     )
 
                     GridLayout(
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(
+                                start = paddingValues.calculateStartPadding(layoutDirection),
+                                end = paddingValues.calculateEndPadding(layoutDirection),
+                            ),
                         columns = homeSettings.dockColumns,
                         gridItems = dockGridItemsByPage[page],
                         rows = homeSettings.dockRows,
