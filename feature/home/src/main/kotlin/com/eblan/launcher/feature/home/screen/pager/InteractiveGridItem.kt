@@ -499,17 +499,13 @@ private fun InteractiveApplicationInfoGridItem(
                         intSize = layoutCoordinates.size
                     }
                     .run {
-                        if (!isScrollInProgress && !hasInteraction) {
-                            with(sharedTransitionScope) {
-                                sharedElementWithCallerManagedVisibility(
-                                    rememberSharedContentState(
-                                        key = sharedElementKey,
-                                    ),
-                                    visible = true,
-                                )
-                            }
-                        } else {
-                            this
+                        with(sharedTransitionScope) {
+                            sharedElementWithCallerManagedVisibility(
+                                rememberSharedContentState(
+                                    key = sharedElementKey,
+                                ),
+                                visible = !isScrollInProgress && !hasInteraction,
+                            )
                         }
                     },
             )
