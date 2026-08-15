@@ -38,4 +38,7 @@ data class HomeSettings(
     val maxFolderColumns: Int,
     val maxFolderRows: Int,
     val showPageIndicator: Boolean,
+    val dockCustomBackgroundColor: Int,
+    val dockPadding: Int,
+    val dockCornerRadius: Int,
 )
