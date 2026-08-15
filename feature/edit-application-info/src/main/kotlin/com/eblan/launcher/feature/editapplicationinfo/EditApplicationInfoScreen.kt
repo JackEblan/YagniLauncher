@@ -60,9 +60,9 @@ import com.eblan.launcher.domain.model.PackageManagerIconPackInfo
 import com.eblan.launcher.feature.editapplicationinfo.R.string.hide_from_drawer
 import com.eblan.launcher.feature.editapplicationinfo.R.string.view_hidden_apps_in_app_drawer_settings
 import com.eblan.launcher.feature.editapplicationinfo.dialog.AddTagDialog
-import com.eblan.launcher.feature.editapplicationinfo.dialog.EditEblanApplicationInfoCustomLabelDialog
 import com.eblan.launcher.feature.editapplicationinfo.dialog.UpdateTagDialog
 import com.eblan.launcher.feature.editapplicationinfo.model.EditApplicationInfoUiState
+import com.eblan.launcher.ui.dialog.EditCustomLabelDialog
 import com.eblan.launcher.ui.dialog.IconPackInfoFilesDialog
 import com.eblan.launcher.ui.model.SettingsItem.Column
 import com.eblan.launcher.ui.model.SettingsItem.CustomIcon
@@ -307,12 +307,14 @@ private fun Success(
     }
 
     if (showCustomLabelDialog) {
-        EditEblanApplicationInfoCustomLabelDialog(
-            eblanApplicationInfo = eblanApplicationInfo,
+        EditCustomLabelDialog(
+            customLabel = eblanApplicationInfo.customLabel,
             onDismissRequest = {
                 showCustomLabelDialog = false
             },
-            onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
+            onUpdateCustomLabel = {
+                onUpdateEblanApplicationInfo(eblanApplicationInfo.copy(customLabel = it))
+            },
         )
     }
 }

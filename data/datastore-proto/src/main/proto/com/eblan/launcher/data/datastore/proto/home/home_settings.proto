@@ -28,5 +28,8 @@ message HomeSettingsProto {
   bool showPageIndicator = 22;
   int32 dockCustomBackgroundColor = 23;
   int32 dockPadding = 24;
-  int32 dockCornerRadius = 25;
+  int32 dockTopStartCornerRadius = 25;
+  int32 dockTopEndCornerRadius = 26;
+  int32 dockBottomStartCornerRadius = 27;
+  int32 dockBottomEndCornerRadius = 28;
 }

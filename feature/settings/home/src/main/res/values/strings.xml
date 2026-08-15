@@ -49,4 +49,13 @@
     <string name="dock_corner_radius">Dock Corner Radius</string>
     <string name="dock_corner_radius_is_not_valid">Dock Corner Radius is not valid</string>
     <string name="dock_padding_is_not_valid">Dock Padding is not valid</string>
+    <string name="top_start">Top Start</string>
+    <string name="top_start_is_not_valid">Top Start is not valid</string>
+    <string name="top_end">Top End</string>
+    <string name="top_end_is_not_valid">Top End is not valid</string>
+    <string name="bottom_start">Bottom Start</string>
+    <string name="bottom_start_is_not_valid">Bottom Start is not valid</string>
+    <string name="bottom_end">Bottom End</string>
+    <string name="bottom_end_is_not_valid">Bottom End is not valid</string>
+    <string name="set_the_radius_for_each_dock_corner">Set the radius for each dock corner</string>
 </resources>

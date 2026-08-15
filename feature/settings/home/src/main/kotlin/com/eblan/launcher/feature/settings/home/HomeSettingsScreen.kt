@@ -221,21 +221,37 @@ private fun Success(
 
     if (showGridDialog) {
         EditGridDialog(
-            homeSettings = homeSettings,
+            columns = homeSettings.columns,
+            rows = homeSettings.rows,
             onDismissRequest = {
                 showGridDialog = false
             },
-            onUpdateHomeSettings = onUpdateHomeSettings,
+            onUpdateGrid = { columns, rows ->
+                onUpdateHomeSettings(
+                    homeSettings.copy(
+                        columns = columns,
+                        rows = rows,
+                    ),
+                )
+            },
         )
     }
 
     if (showDockGridDialog) {
         EditDockGridDialog(
-            homeSettings = homeSettings,
+            dockColumns = homeSettings.dockColumns,
+            dockRows = homeSettings.dockRows,
             onDismissRequest = {
                 showDockGridDialog = false
             },
-            onUpdateHomeSettings = onUpdateHomeSettings,
+            onUpdateDockGrid = { dockColumns, dockRows ->
+                onUpdateHomeSettings(
+                    homeSettings.copy(
+                        dockColumns = dockColumns,
+                        dockRows = dockRows,
+                    ),
+                )
+            },
         )
     }
 
@@ -259,21 +275,37 @@ private fun Success(
 
     if (showFolderCellDimensionDialog) {
         EditFolderCellDimensionDialog(
-            homeSettings = homeSettings,
+            folderCellWidth = homeSettings.folderCellWidth,
+            folderCellHeight = homeSettings.folderCellHeight,
             onDismissRequest = {
                 showFolderCellDimensionDialog = false
             },
-            onUpdateHomeSettings = onUpdateHomeSettings,
+            onUpdateFolderCellDimension = { folderCellWidth, folderCellHeight ->
+                onUpdateHomeSettings(
+                    homeSettings.copy(
+                        folderCellWidth = folderCellWidth,
+                        folderCellHeight = folderCellHeight,
+                    ),
+                )
+            },
         )
     }
 
     if (showFolderMaxGridDialog) {
         EditFolderMaxGridDialog(
-            homeSettings = homeSettings,
+            maxFolderColumns = homeSettings.maxFolderColumns,
+            maxFolderRows = homeSettings.maxFolderRows,
             onDismissRequest = {
                 showFolderMaxGridDialog = false
             },
-            onUpdateHomeSettings = onUpdateHomeSettings,
+            onUpdateFolderMaxGrid = { maxFolderColumns, maxFolderRows ->
+                onUpdateHomeSettings(
+                    homeSettings.copy(
+                        maxFolderColumns = maxFolderColumns,
+                        maxFolderRows = maxFolderRows,
+                    ),
+                )
+            },
         )
     }
 
@@ -286,8 +318,6 @@ private fun Success(
             },
             onSelectColor = {
                 onUpdateHomeSettings(homeSettings.copy(dockCustomBackgroundColor = it))
-
-                showDockCustomBackgroundColorDialog = false
             },
         )
     }
@@ -304,27 +334,30 @@ private fun Success(
                         dockPadding = it,
                     ),
                 )
-
-                showDockPaddingDialog = false
             },
         )
     }
 
     if (showDockCornerRadiusDialog) {
         EditDockCornerRadiusDialog(
-            cornerRadius = homeSettings.dockCornerRadius,
+            dockTopStartCornerRadius = homeSettings.dockTopStartCornerRadius,
+            dockTopEndCornerRadius = homeSettings.dockTopEndCornerRadius,
+            dockBottomStartCornerRadius = homeSettings.dockBottomStartCornerRadius,
+            dockBottomEndCornerRadius = homeSettings.dockBottomEndCornerRadius,
             onDismissRequest = {
                 showDockCornerRadiusDialog = false
             },
-            onUpdateCornerRadius = {
+            onUpdateCornerRadius = { dockTopStartCornerRadius, dockTopEndCornerRadius, dockBottomStartCornerRadius, dockBottomEndCornerRadius ->
                 onUpdateHomeSettings(
                     homeSettings.copy(
-                        dockCornerRadius = it,
+                        dockTopStartCornerRadius = dockTopStartCornerRadius,
+                        dockTopEndCornerRadius = dockTopEndCornerRadius,
+                        dockBottomStartCornerRadius = dockBottomStartCornerRadius,
+                        dockBottomEndCornerRadius = dockBottomEndCornerRadius,
                     ),
                 )
-
-                showDockCornerRadiusDialog = false
             },
+
         )
     }
 }
@@ -497,7 +530,7 @@ private fun buildDockHomeSettingsItems(
     add(
         SettingsItem.Column(
             title = stringResource(R.string.dock_corner_radius),
-            subtitle = "${homeSettings.dockCornerRadius}",
+            subtitle = stringResource(R.string.set_the_radius_for_each_dock_corner),
             onClick = onDockCornerRadiusClick,
         ),
     )

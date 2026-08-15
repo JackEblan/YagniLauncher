@@ -195,29 +195,43 @@ private fun Success(
             },
             onUpdateClick = {
                 onUpdateAppDrawerSettings(appDrawerSettings.copy(appDrawerType = it))
-
-                showAppDrawerTypeDialog = false
             },
         )
     }
 
     if (showVerticalGridDialog) {
         EditVerticalGridDialog(
-            appDrawerSettings = appDrawerSettings,
+            appDrawerColumns = appDrawerSettings.appDrawerColumns,
+            appDrawerRowsHeight = appDrawerSettings.appDrawerRowsHeight,
             onDismissRequest = {
                 showVerticalGridDialog = false
             },
-            onUpdateAppDrawerSettings = onUpdateAppDrawerSettings,
+            onUpdateVerticalGrid = { appDrawerColumns, appDrawerRowsHeight ->
+                onUpdateAppDrawerSettings(
+                    appDrawerSettings.copy(
+                        appDrawerColumns = appDrawerColumns,
+                        appDrawerRowsHeight = appDrawerRowsHeight,
+                    ),
+                )
+            },
         )
     }
 
     if (showHorizontalGridDialog) {
         EditHorizontalGridDialog(
-            appDrawerSettings = appDrawerSettings,
+            horizontalAppDrawerColumns = appDrawerSettings.horizontalAppDrawerColumns,
+            horizontalAppDrawerRows = appDrawerSettings.horizontalAppDrawerRows,
             onDismissRequest = {
                 showHorizontalGridDialog = false
             },
-            onUpdateAppDrawerSettings = onUpdateAppDrawerSettings,
+            onUpdateHorizontalGrid = { horizontalAppDrawerColumns, horizontalAppDrawerRows ->
+                onUpdateAppDrawerSettings(
+                    appDrawerSettings.copy(
+                        horizontalAppDrawerColumns = horizontalAppDrawerColumns,
+                        horizontalAppDrawerRows = horizontalAppDrawerRows,
+                    ),
+                )
+            },
         )
     }
 
@@ -246,8 +260,6 @@ private fun Success(
                         customBackgroundColor = customColor,
                     ),
                 )
-
-                showTextColorDialog = false
             },
         )
     }

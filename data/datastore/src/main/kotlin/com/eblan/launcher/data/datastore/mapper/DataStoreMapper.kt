@@ -69,7 +69,10 @@ internal fun HomeSettingsProto.toHomeSettings(): HomeSettings = HomeSettings(
     showPageIndicator = showPageIndicator,
     dockCustomBackgroundColor = dockCustomBackgroundColor,
     dockPadding = dockPadding,
-    dockCornerRadius = dockCornerRadius,
+    dockTopStartCornerRadius = dockTopStartCornerRadius,
+    dockTopEndCornerRadius = dockTopEndCornerRadius,
+    dockBottomStartCornerRadius = dockBottomStartCornerRadius,
+    dockBottomEndCornerRadius = dockBottomEndCornerRadius,
 )
 
 internal fun AppDrawerSettingsProto.toAppDrawerSettings(): AppDrawerSettings = AppDrawerSettings(
@@ -144,7 +147,10 @@ internal fun HomeSettings.toHomeSettingsProto(): HomeSettingsProto = HomeSetting
     builder.showPageIndicator = showPageIndicator
     builder.dockCustomBackgroundColor = dockCustomBackgroundColor
     builder.dockPadding = dockPadding
-    builder.dockCornerRadius = dockCornerRadius
+    builder.dockTopStartCornerRadius = dockTopStartCornerRadius
+    builder.dockTopEndCornerRadius = dockTopEndCornerRadius
+    builder.dockBottomStartCornerRadius = dockBottomStartCornerRadius
+    builder.dockBottomEndCornerRadius = dockBottomEndCornerRadius
 }.build()
 
 internal fun AppDrawerSettings.toAppDrawerSettingsProto(): AppDrawerSettingsProto = AppDrawerSettingsProto.newBuilder().also { builder ->

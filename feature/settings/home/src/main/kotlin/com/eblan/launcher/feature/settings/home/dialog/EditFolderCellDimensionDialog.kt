@@ -35,22 +35,25 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.eblan.launcher.designsystem.component.EblanDialog
-import com.eblan.launcher.domain.model.HomeSettings
 import com.eblan.launcher.feature.settings.home.R
 import com.eblan.launcher.common.R as commonR
 
 @Composable
 internal fun EditFolderCellDimensionDialog(
     modifier: Modifier = Modifier,
-    homeSettings: HomeSettings,
+    folderCellWidth: Int,
+    folderCellHeight: Int,
     onDismissRequest: () -> Unit,
-    onUpdateHomeSettings: (HomeSettings) -> Unit,
+    onUpdateFolderCellDimension: (
+        folderCellWidth: Int,
+        folderCellHeight: Int,
+    ) -> Unit,
 ) {
-    var cellWidth by remember { mutableStateOf("${homeSettings.folderCellWidth}") }
-    var cellHeight by remember { mutableStateOf("${homeSettings.folderCellHeight}") }
+    var currentFolderCellWidth by remember { mutableStateOf("$folderCellWidth") }
+    var currentFolderCellHeight by remember { mutableStateOf("$folderCellHeight") }
 
-    var firstError by remember { mutableStateOf(false) }
-    var secondError by remember { mutableStateOf(false) }
+    var isErrorFolderCellWidth by remember { mutableStateOf(false) }
+    var isErrorFolderCellHeight by remember { mutableStateOf(false) }
 
     EblanDialog(
         modifier = modifier,
@@ -65,42 +68,42 @@ internal fun EditFolderCellDimensionDialog(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             TextField(
-                value = cellWidth,
+                value = currentFolderCellWidth,
                 onValueChange = {
-                    cellWidth = it
-                    firstError = false
+                    currentFolderCellWidth = it
+                    isErrorFolderCellWidth = false
                 },
                 modifier = Modifier.weight(1f),
                 label = { Text(text = stringResource(R.string.cell_width)) },
-                supportingText = if (firstError) {
+                supportingText = if (isErrorFolderCellWidth) {
                     {
                         Text(text = stringResource(R.string.cell_width_is_not_valid))
                     }
                 } else {
                     null
                 },
-                isError = firstError,
+                isError = isErrorFolderCellWidth,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number,
                 ),
             )
 
             TextField(
-                value = cellHeight,
+                value = currentFolderCellHeight,
                 onValueChange = {
-                    cellHeight = it
-                    secondError = false
+                    currentFolderCellHeight = it
+                    isErrorFolderCellHeight = false
                 },
                 modifier = Modifier.weight(1f),
                 label = { Text(text = stringResource(R.string.cell_height)) },
-                supportingText = if (secondError) {
+                supportingText = if (isErrorFolderCellHeight) {
                     {
                         Text(text = stringResource(R.string.cell_height_is_not_valid))
                     }
                 } else {
                     null
                 },
-                isError = secondError,
+                isError = isErrorFolderCellHeight,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number,
                 ),
@@ -119,23 +122,18 @@ internal fun EditFolderCellDimensionDialog(
 
             TextButton(
                 onClick = {
-                    val newWidth = cellWidth.toIntOrNull()
-                    val newHeight = cellHeight.toIntOrNull()
+                    val newWidth = currentFolderCellWidth.toIntOrNull()
+                    val newHeight = currentFolderCellHeight.toIntOrNull()
 
-                    firstError = newWidth == null || newWidth <= 0
-                    secondError = newHeight == null || newHeight <= 0
+                    isErrorFolderCellWidth = newWidth == null || newWidth <= 0
+                    isErrorFolderCellHeight = newHeight == null || newHeight <= 0
 
                     if (newWidth != null &&
                         newHeight != null &&
                         newWidth > 0 &&
                         newHeight > 0
                     ) {
-                        onUpdateHomeSettings(
-                            homeSettings.copy(
-                                folderCellWidth = newWidth,
-                                folderCellHeight = newHeight,
-                            ),
-                        )
+                        onUpdateFolderCellDimension(newWidth, newHeight)
 
                         onDismissRequest()
                     }

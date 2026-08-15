@@ -35,22 +35,25 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.eblan.launcher.designsystem.component.EblanDialog
-import com.eblan.launcher.domain.model.HomeSettings
 import com.eblan.launcher.feature.settings.home.R
 import com.eblan.launcher.common.R as commonR
 
 @Composable
 internal fun EditFolderMaxGridDialog(
     modifier: Modifier = Modifier,
-    homeSettings: HomeSettings,
+    maxFolderColumns: Int,
+    maxFolderRows: Int,
     onDismissRequest: () -> Unit,
-    onUpdateHomeSettings: (HomeSettings) -> Unit,
+    onUpdateFolderMaxGrid: (
+        maxFolderColumns: Int,
+        maxFolderRows: Int,
+    ) -> Unit,
 ) {
-    var maxFolderColumns by remember { mutableStateOf("${homeSettings.maxFolderColumns}") }
-    var maxFolderRows by remember { mutableStateOf("${homeSettings.maxFolderRows}") }
+    var currentMaxFolderColumns by remember { mutableStateOf("$maxFolderColumns") }
+    var currentMaxFolderRows by remember { mutableStateOf("$maxFolderRows") }
 
-    var firstError by remember { mutableStateOf(false) }
-    var secondError by remember { mutableStateOf(false) }
+    var isErrorMaxFolderColumns by remember { mutableStateOf(false) }
+    var isErrorMaxFolderRows by remember { mutableStateOf(false) }
 
     EblanDialog(
         modifier = modifier,
@@ -65,42 +68,42 @@ internal fun EditFolderMaxGridDialog(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             TextField(
-                value = maxFolderColumns,
+                value = currentMaxFolderColumns,
                 onValueChange = {
-                    maxFolderColumns = it
-                    firstError = false
+                    currentMaxFolderColumns = it
+                    isErrorMaxFolderColumns = false
                 },
                 modifier = Modifier.weight(1f),
                 label = { Text(text = stringResource(R.string.max_columns)) },
-                supportingText = if (firstError) {
+                supportingText = if (isErrorMaxFolderColumns) {
                     {
                         Text(text = stringResource(R.string.max_columns_is_not_valid))
                     }
                 } else {
                     null
                 },
-                isError = firstError,
+                isError = isErrorMaxFolderColumns,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number,
                 ),
             )
 
             TextField(
-                value = maxFolderRows,
+                value = currentMaxFolderRows,
                 onValueChange = {
-                    maxFolderRows = it
-                    secondError = false
+                    currentMaxFolderRows = it
+                    isErrorMaxFolderRows = false
                 },
                 modifier = Modifier.weight(1f),
                 label = { Text(text = stringResource(R.string.max_rows)) },
-                supportingText = if (secondError) {
+                supportingText = if (isErrorMaxFolderRows) {
                     {
                         Text(text = stringResource(R.string.max_rows_is_not_valid))
                     }
                 } else {
                     null
                 },
-                isError = secondError,
+                isError = isErrorMaxFolderRows,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number,
                 ),
@@ -119,23 +122,18 @@ internal fun EditFolderMaxGridDialog(
 
             TextButton(
                 onClick = {
-                    val newColumns = maxFolderColumns.toIntOrNull()
-                    val newRows = maxFolderRows.toIntOrNull()
+                    val newColumns = currentMaxFolderColumns.toIntOrNull()
+                    val newRows = currentMaxFolderRows.toIntOrNull()
 
-                    firstError = newColumns == null || newColumns <= 0
-                    secondError = newRows == null || newRows <= 0
+                    isErrorMaxFolderColumns = newColumns == null || newColumns <= 0
+                    isErrorMaxFolderRows = newRows == null || newRows <= 0
 
                     if (newColumns != null &&
                         newRows != null &&
                         newColumns > 0 &&
                         newRows > 0
                     ) {
-                        onUpdateHomeSettings(
-                            homeSettings.copy(
-                                maxFolderColumns = newColumns,
-                                maxFolderRows = newRows,
-                            ),
-                        )
+                        onUpdateFolderMaxGrid(newColumns, newRows)
 
                         onDismissRequest()
                     }
