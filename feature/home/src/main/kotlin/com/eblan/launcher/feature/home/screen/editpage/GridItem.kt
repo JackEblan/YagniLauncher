@@ -31,6 +31,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -57,7 +58,7 @@ import com.eblan.launcher.feature.home.util.FOLDER_PREVIEW_COLUMNS
 import com.eblan.launcher.feature.home.util.FOLDER_PREVIEW_ROWS
 import com.eblan.launcher.feature.home.util.getGridItemTextColor
 import com.eblan.launcher.feature.home.util.getSystemTextColor
-import com.eblan.launcher.ui.local.LocalSettings
+import com.eblan.launcher.ui.settings.rememberIsNotificationAccessGranted
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -146,8 +147,6 @@ private fun ApplicationInfoGridItem(
     statusBarNotifications: Map<String, Int>,
     textColor: Color,
 ) {
-    val settings = LocalSettings.current
-
     val horizontalAlignment =
         getHorizontalAlignment(horizontalAlignment = gridItemSettings.horizontalAlignment)
 
@@ -163,6 +162,8 @@ private fun ApplicationInfoGridItem(
             statusBarNotifications[data.packageName]
                 ?: 0
             ) > 0
+
+    val isNotificationAccessGranted by rememberIsNotificationAccessGranted()
 
     Column(
         modifier = modifier
@@ -183,7 +184,7 @@ private fun ApplicationInfoGridItem(
                 modifier = Modifier.matchParentSize(),
             )
 
-            if (settings.isNotificationAccessGranted() && hasNotifications) {
+            if (isNotificationAccessGranted && hasNotifications) {
                 Box(
                     modifier = Modifier
                         .size((gridItemSettings.iconSize * 0.4).dp)

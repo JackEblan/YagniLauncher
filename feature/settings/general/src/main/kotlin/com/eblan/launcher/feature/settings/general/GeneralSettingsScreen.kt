@@ -55,9 +55,9 @@ import com.eblan.launcher.feature.settings.general.dialog.SelectIconPackInfoDial
 import com.eblan.launcher.feature.settings.general.model.GeneralSettingsUiState
 import com.eblan.launcher.service.IconPackInfoService
 import com.eblan.launcher.ui.dialog.RadioOptionsDialog
-import com.eblan.launcher.ui.local.LocalSettings
 import com.eblan.launcher.ui.model.SettingsItem
 import com.eblan.launcher.ui.settings.SettingsItemContent
+import com.eblan.launcher.ui.settings.rememberIsNotificationAccessGranted
 import com.eblan.launcher.common.R as commonR
 
 @Composable
@@ -141,8 +141,6 @@ private fun Success(
 ) {
     val context = LocalContext.current
 
-    val settings = LocalSettings.current
-
     var showDarkThemeConfigDialog by remember { mutableStateOf(false) }
 
     var showImportIconPackDialog by remember { mutableStateOf(false) }
@@ -151,7 +149,6 @@ private fun Success(
 
     val items = buildGeneralSettingsItems(
         generalSettings = generalSettings,
-        isNotificationAccessGranted = settings.isNotificationAccessGranted(),
         onImportIconPackClick = { showImportIconPackDialog = true },
         onSelectIconPackClick = { selectIconPackDialog = true },
         onThemeClick = { showDarkThemeConfigDialog = true },
@@ -247,61 +244,64 @@ private fun Success(
 @Composable
 private fun buildGeneralSettingsItems(
     generalSettings: GeneralSettings,
-    isNotificationAccessGranted: Boolean,
     onImportIconPackClick: () -> Unit,
     onSelectIconPackClick: () -> Unit,
     onThemeClick: () -> Unit,
     onDynamicThemeChange: (Boolean) -> Unit,
     onNotificationDotsClick: () -> Unit,
-): List<SettingsItem> = buildList {
-    add(
-        SettingsItem.Column(
-            title = stringResource(R.string.import_icon_pack),
-            subtitle = stringResource(R.string.apply_icons_from_supported_icon_packs),
-            onClick = onImportIconPackClick,
-        ),
-    )
+): List<SettingsItem> {
+    val isNotificationAccessGranted by rememberIsNotificationAccessGranted()
 
-    add(
-        SettingsItem.Column(
-            title = stringResource(R.string.select_icon_pack),
-            subtitle = generalSettings.iconPackInfoPackageName.ifEmpty {
-                stringResource(R.string.default_icon_pack)
-            },
-            onClick = onSelectIconPackClick,
-        ),
-    )
-
-    add(
-        SettingsItem.Column(
-            title = stringResource(R.string.theme),
-            subtitle = generalSettings.theme.name,
-            onClick = onThemeClick,
-        ),
-    )
-
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-        add(
-            SettingsItem.Switch(
-                checked = generalSettings.dynamicTheme,
-                title = stringResource(R.string.dynamic_theme),
-                subtitle = stringResource(R.string.adapt_colors_to_your_wallpaper_automatically),
-                onClick = {
-                    onDynamicThemeChange(!generalSettings.dynamicTheme)
-                },
-                onCheckedChange = onDynamicThemeChange,
-            ),
-        )
-    }
-
-    if (!isNotificationAccessGranted) {
+    return buildList {
         add(
             SettingsItem.Column(
-                title = stringResource(R.string.notification_dots),
-                subtitle = stringResource(R.string.show_notification_dots),
-                onClick = onNotificationDotsClick,
+                title = stringResource(R.string.import_icon_pack),
+                subtitle = stringResource(R.string.apply_icons_from_supported_icon_packs),
+                onClick = onImportIconPackClick,
             ),
         )
+
+        add(
+            SettingsItem.Column(
+                title = stringResource(R.string.select_icon_pack),
+                subtitle = generalSettings.iconPackInfoPackageName.ifEmpty {
+                    stringResource(R.string.default_icon_pack)
+                },
+                onClick = onSelectIconPackClick,
+            ),
+        )
+
+        add(
+            SettingsItem.Column(
+                title = stringResource(R.string.theme),
+                subtitle = generalSettings.theme.name,
+                onClick = onThemeClick,
+            ),
+        )
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            add(
+                SettingsItem.Switch(
+                    checked = generalSettings.dynamicTheme,
+                    title = stringResource(R.string.dynamic_theme),
+                    subtitle = stringResource(R.string.adapt_colors_to_your_wallpaper_automatically),
+                    onClick = {
+                        onDynamicThemeChange(!generalSettings.dynamicTheme)
+                    },
+                    onCheckedChange = onDynamicThemeChange,
+                ),
+            )
+        }
+
+        if (!isNotificationAccessGranted) {
+            add(
+                SettingsItem.Column(
+                    title = stringResource(R.string.notification_dots),
+                    subtitle = stringResource(R.string.show_notification_dots),
+                    onClick = onNotificationDotsClick,
+                ),
+            )
+        }
     }
 }
 

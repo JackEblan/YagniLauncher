@@ -86,7 +86,7 @@ import com.eblan.launcher.feature.home.screen.onDoubleTap
 import com.eblan.launcher.feature.home.util.FOLDER_PREVIEW_COLUMNS
 import com.eblan.launcher.feature.home.util.FOLDER_PREVIEW_ROWS
 import com.eblan.launcher.ui.local.LocalLauncherApps
-import com.eblan.launcher.ui.local.LocalSettings
+import com.eblan.launcher.ui.settings.rememberIsNotificationAccessGranted
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -315,8 +315,6 @@ private fun InteractiveFolderApplicationInfoGridItem(
 
     val context = LocalContext.current
 
-    val settings = LocalSettings.current
-
     var intOffset by remember { mutableStateOf(IntOffset.Zero) }
 
     var intSize by remember { mutableStateOf(IntSize.Zero) }
@@ -344,6 +342,8 @@ private fun InteractiveFolderApplicationInfoGridItem(
     val hasInteraction = isSelected && isVisibleOverlay
 
     val alpha = if (hasInteraction) 0f else 1f
+
+    val isNotificationAccessGranted by rememberIsNotificationAccessGranted()
 
     Column(
         modifier = modifier
@@ -444,7 +444,7 @@ private fun InteractiveFolderApplicationInfoGridItem(
                 },
             )
 
-            if (settings.isNotificationAccessGranted() && hasNotifications) {
+            if (isNotificationAccessGranted && hasNotifications) {
                 Box(
                     modifier = Modifier
                         .size((gridItemSettings.iconSize * 0.3).dp)

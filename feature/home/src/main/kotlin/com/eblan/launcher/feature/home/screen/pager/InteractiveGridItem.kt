@@ -90,7 +90,7 @@ import com.eblan.launcher.feature.home.util.getSystemTextColor
 import com.eblan.launcher.ui.local.LocalAppWidgetHost
 import com.eblan.launcher.ui.local.LocalAppWidgetManager
 import com.eblan.launcher.ui.local.LocalLauncherApps
-import com.eblan.launcher.ui.local.LocalSettings
+import com.eblan.launcher.ui.settings.rememberIsNotificationAccessGranted
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -376,8 +376,6 @@ private fun InteractiveApplicationInfoGridItem(
 
     val context = LocalContext.current
 
-    val settings = LocalSettings.current
-
     var intOffset by remember { mutableStateOf(IntOffset.Zero) }
 
     var intSize by remember { mutableStateOf(IntSize.Zero) }
@@ -403,6 +401,8 @@ private fun InteractiveApplicationInfoGridItem(
             ) > 0
 
     val alpha = if (hasInteraction) 0f else 1f
+
+    val isNotificationAccessGranted by rememberIsNotificationAccessGranted()
 
     Column(
         modifier = modifier
@@ -514,7 +514,7 @@ private fun InteractiveApplicationInfoGridItem(
                     },
             )
 
-            if (settings.isNotificationAccessGranted() && hasNotifications) {
+            if (isNotificationAccessGranted && hasNotifications) {
                 Box(
                     modifier = Modifier
                         .size((gridItemSettings.iconSize * 0.3).dp)

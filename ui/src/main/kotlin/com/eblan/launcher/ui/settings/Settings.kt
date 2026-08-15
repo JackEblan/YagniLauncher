@@ -61,6 +61,7 @@ import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.PackageManagerIconPackInfo
 import com.eblan.launcher.ui.R
 import com.eblan.launcher.ui.local.LocalPackageManager
+import com.eblan.launcher.ui.local.LocalSettings
 import com.eblan.launcher.ui.model.SettingsItem
 import com.eblan.launcher.common.R as commonR
 
@@ -247,6 +248,23 @@ fun rememberIsDefaultLauncher(): State<Boolean> {
     ) {
         lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
             value = packageManager.isDefaultLauncher()
+        }
+    }
+}
+
+@Composable
+fun rememberIsNotificationAccessGranted(): State<Boolean> {
+    val settingsWrapper = LocalSettings.current
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    return produceState(
+        initialValue = false,
+        key1 = lifecycleOwner,
+        key2 = settingsWrapper,
+    ) {
+        lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+            value = settingsWrapper.isNotificationAccessGranted()
         }
     }
 }
