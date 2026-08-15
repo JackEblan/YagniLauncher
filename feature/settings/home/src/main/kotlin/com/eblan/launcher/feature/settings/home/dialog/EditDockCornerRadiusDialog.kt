@@ -184,18 +184,18 @@ internal fun EditDockCornerRadiusDialog(
                         currentDockBottomEndCornerRadius.toIntOrNull()
 
                     isErrorDockTopStartCornerRadius = newDockTopStartCornerRadius == null ||
-                        newDockTopStartCornerRadius <= 0
+                        newDockTopStartCornerRadius < 0
                     isErrorDockTopEndCornerRadius = newDockTopEndCornerRadius == null ||
-                        newDockTopEndCornerRadius <= 0
+                        newDockTopEndCornerRadius < 0
                     isErrorDockBottomStartCornerRadius = newDockBottomStartCornerRadius == null ||
-                        newDockBottomStartCornerRadius <= 0
+                        newDockBottomStartCornerRadius < 0
                     isErrorDockBottomEndCornerRadius = newDockBottomEndCornerRadius == null ||
-                        newDockBottomEndCornerRadius <= 0
+                        newDockBottomEndCornerRadius < 0
 
-                    if (newDockTopStartCornerRadius != null && newDockTopStartCornerRadius > 0 &&
-                        newDockTopEndCornerRadius != null && newDockTopEndCornerRadius > 0 &&
-                        newDockBottomStartCornerRadius != null && newDockBottomStartCornerRadius > 0 &&
-                        newDockBottomEndCornerRadius != null && newDockBottomEndCornerRadius > 0
+                    if (newDockTopStartCornerRadius != null && newDockTopStartCornerRadius >= 0 &&
+                        newDockTopEndCornerRadius != null && newDockTopEndCornerRadius >= 0 &&
+                        newDockBottomStartCornerRadius != null && newDockBottomStartCornerRadius >= 0 &&
+                        newDockBottomEndCornerRadius != null && newDockBottomEndCornerRadius >= 0
                     ) {
                         onUpdateCornerRadius(
                             newDockTopStartCornerRadius,

@@ -94,9 +94,9 @@ internal fun EditDockHeightDialog(
                 onClick = {
                     val newDockHeight = currentDockHeight.toIntOrNull()
 
-                    isErrorDockHeight = newDockHeight == null || newDockHeight <= 0
+                    isErrorDockHeight = newDockHeight == null || newDockHeight < 0
 
-                    if (newDockHeight != null && newDockHeight > 0) {
+                    if (newDockHeight != null && newDockHeight >= 0) {
                         onUpdateDockHeight(newDockHeight)
                     }
                 },
