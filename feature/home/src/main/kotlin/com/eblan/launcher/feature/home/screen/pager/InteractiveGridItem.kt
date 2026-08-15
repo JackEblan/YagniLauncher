@@ -1306,16 +1306,20 @@ private fun InteractiveShortcutConfigGridItem(
 
                     intSize = layoutCoordinates.size
                 }
-                .then(
-                    with(sharedTransitionScope) {
-                        Modifier.sharedElementWithCallerManagedVisibility(
-                            rememberSharedContentState(
-                                key = sharedElementKey,
-                            ),
-                            visible = !isScrollInProgress && !hasInteraction,
-                        )
-                    },
-                ),
+                .run {
+                    if (!isScrollInProgress && !hasInteraction) {
+                        with(sharedTransitionScope) {
+                            sharedElementWithCallerManagedVisibility(
+                                rememberSharedContentState(
+                                    key = sharedElementKey,
+                                ),
+                                visible = true,
+                            )
+                        }
+                    } else {
+                        this
+                    }
+                },
         )
 
         if (gridItemSettings.showLabel) {
