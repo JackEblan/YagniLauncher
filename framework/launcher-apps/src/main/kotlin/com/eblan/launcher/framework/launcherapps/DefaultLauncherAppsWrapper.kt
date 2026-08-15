@@ -174,11 +174,15 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
                 currentCoroutineContext().ensureActive()
 
                 launcherApps.getActivityList(null, userHandle).map {
+                    currentCoroutineContext().ensureActive()
+
                     it.toLauncherAppsActivityInfo()
                 }
             }
         } else {
             launcherApps.getActivityList(null, myUserHandle()).map {
+                currentCoroutineContext().ensureActive()
+
                 it.toLauncherAppsActivityInfo()
             }
         }
@@ -194,11 +198,15 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
                 currentCoroutineContext().ensureActive()
 
                 launcherApps.getActivityList(null, userHandle).map {
+                    currentCoroutineContext().ensureActive()
+
                     it.toFastLauncherAppsActivityInfo()
                 }
             }
         } else {
             launcherApps.getActivityList(null, myUserHandle()).map {
+                currentCoroutineContext().ensureActive()
+
                 it.toFastLauncherAppsActivityInfo()
             }
         }
@@ -211,6 +219,8 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
         val userHandle = userManagerWrapper.getUserForSerialNumber(serialNumber = serialNumber)
 
         launcherApps.getActivityList(packageName, userHandle).map {
+            currentCoroutineContext().ensureActive()
+
             it.toLauncherAppsActivityInfo()
         }
     }
@@ -222,6 +232,8 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
         val userHandle = userManagerWrapper.getUserForSerialNumber(serialNumber = serialNumber)
 
         launcherApps.getActivityList(packageName, userHandle).map {
+            currentCoroutineContext().ensureActive()
+
             it.toFastLauncherAppsActivityInfo()
         }
     }
@@ -255,11 +267,15 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
                     currentCoroutineContext().ensureActive()
 
                     launcherApps.getShortcuts(shortcutQuery, userHandle)?.map {
+                        currentCoroutineContext().ensureActive()
+
                         it.toLauncherAppsShortcutInfo()
                     }.orEmpty()
                 }
             } else {
                 launcherApps.getShortcuts(shortcutQuery, myUserHandle())?.map {
+                    currentCoroutineContext().ensureActive()
+
                     it.toLauncherAppsShortcutInfo()
                 }
             }
@@ -285,11 +301,15 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
                     currentCoroutineContext().ensureActive()
 
                     launcherApps.getShortcuts(shortcutQuery, userHandle)?.map {
+                        currentCoroutineContext().ensureActive()
+
                         it.toFastLauncherAppsShortcutInfo()
                     }.orEmpty()
                 }
             } else {
                 launcherApps.getShortcuts(shortcutQuery, myUserHandle())?.map {
+                    currentCoroutineContext().ensureActive()
+
                     it.toFastLauncherAppsShortcutInfo()
                 }
             }
@@ -314,6 +334,8 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
             }
 
             launcherApps.getShortcuts(shortcutQuery, userHandle)?.map {
+                currentCoroutineContext().ensureActive()
+
                 it.toLauncherAppsShortcutInfo()
             }
         } else {
@@ -330,6 +352,8 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && userHandle != null) {
             launcherApps.getShortcutConfigActivityList(packageName, userHandle)
                 .map {
+                    currentCoroutineContext().ensureActive()
+
                     it.toLauncherAppsActivityInfo()
                 }
         } else {
@@ -532,8 +556,6 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
             ?.getBoolean(LauncherUserInfo.PRIVATE_SPACE_ENTRYPOINT_HIDDEN) == true
 
     private suspend fun LauncherActivityInfo.toLauncherAppsActivityInfo(): LauncherAppsActivityInfo {
-        currentCoroutineContext().ensureActive()
-
         val serialNumber = userManagerWrapper.getSerialNumberForUser(userHandle = user)
 
         val badgedIcon = try {
@@ -570,21 +592,15 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
         )
     }
 
-    private suspend fun LauncherActivityInfo.toFastLauncherAppsActivityInfo(): FastLauncherAppsActivityInfo {
-        currentCoroutineContext().ensureActive()
-
-        return FastLauncherAppsActivityInfo(
-            serialNumber = userManagerWrapper.getSerialNumberForUser(userHandle = user),
-            componentName = componentName.flattenToString(),
-            packageName = applicationInfo.packageName,
-            lastUpdateTime = packageManagerWrapper.getLastUpdateTime(packageName = applicationInfo.packageName),
-        )
-    }
+    private suspend fun LauncherActivityInfo.toFastLauncherAppsActivityInfo(): FastLauncherAppsActivityInfo = FastLauncherAppsActivityInfo(
+        serialNumber = userManagerWrapper.getSerialNumberForUser(userHandle = user),
+        componentName = componentName.flattenToString(),
+        packageName = applicationInfo.packageName,
+        lastUpdateTime = packageManagerWrapper.getLastUpdateTime(packageName = applicationInfo.packageName),
+    )
 
     @RequiresApi(Build.VERSION_CODES.N_MR1)
     private suspend fun ShortcutInfo.toLauncherAppsShortcutInfo(): LauncherAppsShortcutInfo {
-        currentCoroutineContext().ensureActive()
-
         val serialNumber = userManagerWrapper.getSerialNumberForUser(userHandle = userHandle)
 
         val shortcutBadgedIconDrawable = try {
@@ -639,13 +655,9 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
     }
 
     @RequiresApi(Build.VERSION_CODES.N_MR1)
-    private suspend fun ShortcutInfo.toFastLauncherAppsShortcutInfo(): FastLauncherAppsShortcutInfo {
-        currentCoroutineContext().ensureActive()
-
-        return FastLauncherAppsShortcutInfo(
-            packageName = `package`,
-            serialNumber = userManagerWrapper.getSerialNumberForUser(userHandle = userHandle),
-            lastChangedTimestamp = packageManagerWrapper.getLastUpdateTime(packageName = `package`),
-        )
-    }
+    private suspend fun ShortcutInfo.toFastLauncherAppsShortcutInfo(): FastLauncherAppsShortcutInfo = FastLauncherAppsShortcutInfo(
+        packageName = `package`,
+        serialNumber = userManagerWrapper.getSerialNumberForUser(userHandle = userHandle),
+        lastChangedTimestamp = packageManagerWrapper.getLastUpdateTime(packageName = `package`),
+    )
 }
