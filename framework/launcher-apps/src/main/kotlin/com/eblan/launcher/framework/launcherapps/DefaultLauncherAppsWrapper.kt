@@ -75,7 +75,7 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
     private val packageManagerWrapper: PackageManagerWrapper,
     private val androidPackageManager: AndroidPackageManagerWrapper,
     private val iconKeyGenerator: IconKeyGenerator,
-    @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
+    @param:Dispatcher(EblanDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) : LauncherAppsWrapper,
     AndroidLauncherAppsWrapper {
     private val launcherApps =
@@ -140,7 +140,7 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
                 shortcuts: MutableList<ShortcutInfo>,
                 user: UserHandle,
             ) {
-                launch(defaultDispatcher) {
+                launch(ioDispatcher) {
                     trySend(
                         LauncherAppsEvent.ShortcutsChanged(
                             serialNumber = userManagerWrapper.getSerialNumberForUser(userHandle = user),
@@ -164,7 +164,7 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
         }
     }
 
-    override suspend fun getActivityList(): List<LauncherAppsActivityInfo> = withContext(defaultDispatcher) {
+    override suspend fun getActivityList(): List<LauncherAppsActivityInfo> = withContext(ioDispatcher) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             launcherApps.profiles.filterNot {
                 currentCoroutineContext().ensureActive()
@@ -184,7 +184,7 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
         }
     }
 
-    override suspend fun getFastActivityList(): List<FastLauncherAppsActivityInfo> = withContext(defaultDispatcher) {
+    override suspend fun getFastActivityList(): List<FastLauncherAppsActivityInfo> = withContext(ioDispatcher) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             launcherApps.profiles.filterNot { userHandle ->
                 currentCoroutineContext().ensureActive()
@@ -207,7 +207,7 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
     override suspend fun getActivityList(
         serialNumber: Long,
         packageName: String,
-    ): List<LauncherAppsActivityInfo> = withContext(defaultDispatcher) {
+    ): List<LauncherAppsActivityInfo> = withContext(ioDispatcher) {
         val userHandle = userManagerWrapper.getUserForSerialNumber(serialNumber = serialNumber)
 
         launcherApps.getActivityList(packageName, userHandle).map {
@@ -218,7 +218,7 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
     override suspend fun getFastActivityList(
         serialNumber: Long,
         packageName: String,
-    ): List<FastLauncherAppsActivityInfo> = withContext(defaultDispatcher) {
+    ): List<FastLauncherAppsActivityInfo> = withContext(ioDispatcher) {
         val userHandle = userManagerWrapper.getUserForSerialNumber(serialNumber = serialNumber)
 
         launcherApps.getActivityList(packageName, userHandle).map {
@@ -226,7 +226,7 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
         }
     }
 
-    override suspend fun getShortcuts(shortcutQuery: ShortcutQuery?): List<LauncherAppsShortcutInfo>? = withContext(defaultDispatcher) {
+    override suspend fun getShortcuts(shortcutQuery: ShortcutQuery?): List<LauncherAppsShortcutInfo>? = withContext(ioDispatcher) {
         if (hasShortcutHostPermission) {
             val shortcutQuery = LauncherApps.ShortcutQuery().apply {
                 val shortcutQueryFlag = when (shortcutQuery?.shortcutQueryFlag) {
@@ -268,7 +268,7 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
         }
     }
 
-    override suspend fun getFastShortcuts(): List<FastLauncherAppsShortcutInfo>? = withContext(defaultDispatcher) {
+    override suspend fun getFastShortcuts(): List<FastLauncherAppsShortcutInfo>? = withContext(ioDispatcher) {
         if (hasShortcutHostPermission) {
             val shortcutQuery = LauncherApps.ShortcutQuery().apply {
                 setQueryFlags(
@@ -301,7 +301,7 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
     override suspend fun getShortcutsByPackageName(
         serialNumber: Long,
         packageName: String,
-    ): List<LauncherAppsShortcutInfo>? = withContext(defaultDispatcher) {
+    ): List<LauncherAppsShortcutInfo>? = withContext(ioDispatcher) {
         val userHandle = userManagerWrapper.getUserForSerialNumber(serialNumber = serialNumber)
 
         if (hasShortcutHostPermission && userHandle != null) {
@@ -324,7 +324,7 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
     override suspend fun getShortcutConfigActivityList(
         serialNumber: Long,
         packageName: String,
-    ): List<ShortcutConfigActivityInfo> = withContext(defaultDispatcher) {
+    ): List<ShortcutConfigActivityInfo> = withContext(ioDispatcher) {
         val userHandle = userManagerWrapper.getUserForSerialNumber(serialNumber = serialNumber)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && userHandle != null) {
@@ -436,7 +436,7 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
     ): IntentSender? {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O || !hasShortcutHostPermission) return null
 
-        return withContext(defaultDispatcher) {
+        return withContext(ioDispatcher) {
             val userHandle = userManagerWrapper.getUserForSerialNumber(serialNumber = serialNumber)
 
             val launcherActivityInfo = if (userHandle != null) {
