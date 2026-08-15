@@ -52,8 +52,8 @@ import com.eblan.launcher.domain.model.EblanAction
 import com.eblan.launcher.domain.model.EblanActionType
 import com.eblan.launcher.domain.model.EblanApplicationInfo
 import com.eblan.launcher.ui.R
-import com.eblan.launcher.ui.local.LocalAccessibilityManager
 import com.eblan.launcher.ui.settings.getEblanActionTypeSubtitle
+import com.eblan.launcher.ui.settings.rememberIsAccessibilityServiceEnabled
 import com.eblan.launcher.common.R as commonR
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -68,15 +68,11 @@ internal fun EblanActionDialog(
 ) {
     val context = LocalContext.current
 
-    val accessibilityManager = LocalAccessibilityManager.current
-
     var selectedEblanAction by remember { mutableStateOf(eblanAction) }
 
     var showSelectApplicationDialog by remember { mutableStateOf(false) }
 
-    val isAccessibilityServiceEnabled = remember {
-        accessibilityManager.isAccessibilityServiceEnabled()
-    }
+    val isAccessibilityServiceEnabled by rememberIsAccessibilityServiceEnabled()
 
     EblanDialog(
         modifier = modifier,

@@ -60,6 +60,7 @@ import com.eblan.launcher.designsystem.component.VerticalSlideReveal
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.PackageManagerIconPackInfo
 import com.eblan.launcher.ui.R
+import com.eblan.launcher.ui.local.LocalAccessibilityManager
 import com.eblan.launcher.ui.local.LocalPackageManager
 import com.eblan.launcher.ui.local.LocalSettings
 import com.eblan.launcher.ui.model.SettingsItem
@@ -265,6 +266,23 @@ fun rememberIsNotificationAccessGranted(): State<Boolean> {
     ) {
         lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
             value = settingsWrapper.isNotificationAccessGranted()
+        }
+    }
+}
+
+@Composable
+fun rememberIsAccessibilityServiceEnabled(): State<Boolean> {
+    val accessibilityManager = LocalAccessibilityManager.current
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    return produceState(
+        initialValue = false,
+        key1 = lifecycleOwner,
+        key2 = accessibilityManager,
+    ) {
+        lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+            value = accessibilityManager.isAccessibilityServiceEnabled()
         }
     }
 }
