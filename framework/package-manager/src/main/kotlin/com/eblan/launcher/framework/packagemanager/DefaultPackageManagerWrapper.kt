@@ -74,10 +74,10 @@ internal class DefaultPackageManagerWrapper @Inject constructor(
         }
     }
 
-    override fun getComponentName(packageName: String): String? {
+    override suspend fun getComponentName(packageName: String): String? = withContext(ioDispatcher) {
         val launchIntent = packageManager.getLaunchIntentForPackage(packageName)
 
-        return launchIntent?.component?.flattenToString()
+        launchIntent?.component?.flattenToString()
     }
 
     override suspend fun isDefaultLauncher(): Boolean = withContext(ioDispatcher) {

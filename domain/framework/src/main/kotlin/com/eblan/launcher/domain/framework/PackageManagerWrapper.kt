@@ -30,7 +30,7 @@ interface PackageManagerWrapper {
 
     suspend fun getApplicationLabel(packageName: String): String?
 
-    fun getComponentName(packageName: String): String?
+    suspend fun getComponentName(packageName: String): String?
 
     suspend fun getIconPackInfos(): List<PackageManagerIconPackInfo>
 
