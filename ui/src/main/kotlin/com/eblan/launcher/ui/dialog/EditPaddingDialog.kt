@@ -94,9 +94,9 @@ internal fun EditPaddingDialog(
                 onClick = {
                     val newPadding = currentPadding.toIntOrNull()
 
-                    isErrorPadding = newPadding == null || newPadding <= 0
+                    isErrorPadding = newPadding == null || newPadding < 0
 
-                    if (newPadding != null && newPadding > 0) {
+                    if (newPadding != null && newPadding >= 0) {
                         onUpdatePadding(currentPadding.toInt())
 
                         onDismissRequest()

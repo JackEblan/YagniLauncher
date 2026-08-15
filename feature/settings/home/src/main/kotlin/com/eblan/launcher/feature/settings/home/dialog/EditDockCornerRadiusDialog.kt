@@ -82,10 +82,10 @@ internal fun EditDockCornerRadiusDialog(
                     isErrorDockTopStartCornerRadius = false
                 },
                 modifier = Modifier.weight(1f),
-                label = { Text(text = "Top Start") },
+                label = { Text(text = stringResource(R.string.top_start)) },
                 supportingText = if (isErrorDockTopStartCornerRadius) {
                     {
-                        Text(text = "Top Start is not valid")
+                        Text(text = stringResource(R.string.top_start_is_not_valid))
                     }
                 } else {
                     null
@@ -103,10 +103,10 @@ internal fun EditDockCornerRadiusDialog(
                     isErrorDockTopEndCornerRadius = false
                 },
                 modifier = Modifier.weight(1f),
-                label = { Text(text = "Top End") },
+                label = { Text(text = stringResource(R.string.top_end)) },
                 supportingText = if (isErrorDockTopEndCornerRadius) {
                     {
-                        Text(text = "Top End is not valid")
+                        Text(text = stringResource(R.string.top_end_is_not_valid))
                     }
                 } else {
                     null
@@ -128,10 +128,10 @@ internal fun EditDockCornerRadiusDialog(
                     isErrorDockBottomStartCornerRadius = false
                 },
                 modifier = Modifier.weight(1f),
-                label = { Text(text = "Bottom Start") },
+                label = { Text(text = stringResource(R.string.bottom_start)) },
                 supportingText = if (isErrorDockBottomStartCornerRadius) {
                     {
-                        Text(text = "Bottom Start is not valid")
+                        Text(text = stringResource(R.string.bottom_start_is_not_valid))
                     }
                 } else {
                     null
@@ -149,10 +149,10 @@ internal fun EditDockCornerRadiusDialog(
                     isErrorDockBottomEndCornerRadius = false
                 },
                 modifier = Modifier.weight(1f),
-                label = { Text(text = "Bottom End") },
+                label = { Text(text = stringResource(R.string.bottom_end)) },
                 supportingText = if (isErrorDockBottomEndCornerRadius) {
                     {
-                        Text(text = "Bottom End is not valid")
+                        Text(text = stringResource(R.string.bottom_end_is_not_valid))
                     }
                 } else {
                     null

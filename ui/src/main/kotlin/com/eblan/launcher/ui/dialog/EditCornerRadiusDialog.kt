@@ -94,7 +94,7 @@ internal fun EditCornerRadiusDialog(
                 onClick = {
                     val newCornerRadius = currentCornerRadius.toIntOrNull()
 
-                    isErrorCornerRadius = newCornerRadius == null || newCornerRadius <= 0
+                    isErrorCornerRadius = newCornerRadius == null || newCornerRadius < 0
 
                     if (newCornerRadius != null && newCornerRadius >= 0) {
                         onUpdateCornerRadius(newCornerRadius)

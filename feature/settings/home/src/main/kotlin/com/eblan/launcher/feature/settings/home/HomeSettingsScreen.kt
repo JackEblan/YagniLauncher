@@ -530,7 +530,7 @@ private fun buildDockHomeSettingsItems(
     add(
         SettingsItem.Column(
             title = stringResource(R.string.dock_corner_radius),
-            subtitle = stringResource(R.string.dock_corner_radius),
+            subtitle = stringResource(R.string.set_the_radius_for_each_dock_corner),
             onClick = onDockCornerRadiusClick,
         ),
     )
