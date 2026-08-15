@@ -67,6 +67,9 @@ internal fun HomeSettingsProto.toHomeSettings(): HomeSettings = HomeSettings(
     maxFolderColumns = maxFolderColumns,
     maxFolderRows = maxFolderRows,
     showPageIndicator = showPageIndicator,
+    dockCustomBackgroundColor = dockCustomBackgroundColor,
+    dockPadding = dockPadding,
+    dockCornerRadius = dockCornerRadius,
 )
 
 internal fun AppDrawerSettingsProto.toAppDrawerSettings(): AppDrawerSettings = AppDrawerSettings(
@@ -139,6 +142,9 @@ internal fun HomeSettings.toHomeSettingsProto(): HomeSettingsProto = HomeSetting
     builder.maxFolderColumns = maxFolderColumns
     builder.maxFolderRows = maxFolderRows
     builder.showPageIndicator = showPageIndicator
+    builder.dockCustomBackgroundColor = dockCustomBackgroundColor
+    builder.dockPadding = dockPadding
+    builder.dockCornerRadius = dockCornerRadius
 }.build()
 
 internal fun AppDrawerSettings.toAppDrawerSettingsProto(): AppDrawerSettingsProto = AppDrawerSettingsProto.newBuilder().also { builder ->

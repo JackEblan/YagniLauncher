@@ -42,12 +42,15 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.HomeSettings
+import com.eblan.launcher.feature.settings.home.dialog.EditDockCornerRadiusDialog
 import com.eblan.launcher.feature.settings.home.dialog.EditDockGridDialog
 import com.eblan.launcher.feature.settings.home.dialog.EditDockHeightDialog
+import com.eblan.launcher.feature.settings.home.dialog.EditDockPaddingDialog
 import com.eblan.launcher.feature.settings.home.dialog.EditFolderCellDimensionDialog
 import com.eblan.launcher.feature.settings.home.dialog.EditFolderMaxGridDialog
 import com.eblan.launcher.feature.settings.home.dialog.EditGridDialog
 import com.eblan.launcher.feature.settings.home.model.HomeSettingsUiState
+import com.eblan.launcher.ui.dialog.ColorPickerDialog
 import com.eblan.launcher.ui.model.SettingsItem
 import com.eblan.launcher.ui.settings.GridItemSettings
 import com.eblan.launcher.ui.settings.SettingsCategoryText
@@ -127,6 +130,12 @@ private fun Success(
 
     var showFolderMaxGridDialog by remember { mutableStateOf(false) }
 
+    var showDockCustomBackgroundColorDialog by remember { mutableStateOf(false) }
+
+    var showDockPaddingDialog by remember { mutableStateOf(false) }
+
+    var showDockCornerRadiusDialog by remember { mutableStateOf(false) }
+
     val homeSettingsItems = buildHomeSettingsItems(
         homeSettings = homeSettings,
         onGridClick = {
@@ -144,6 +153,15 @@ private fun Success(
             showDockHeightDialog = true
         },
         onUpdateHomeSettings = onUpdateHomeSettings,
+        onDockCustomBackgroundColorClick = {
+            showDockCustomBackgroundColorDialog = true
+        },
+        onDockPaddingClick = {
+            showDockPaddingDialog = true
+        },
+        onDockCornerRadiusClick = {
+            showDockCornerRadiusDialog = true
+        },
     )
 
     val folderHomeSettingsItems = buildFolderHomeSettingsItems(
@@ -258,6 +276,57 @@ private fun Success(
             onUpdateHomeSettings = onUpdateHomeSettings,
         )
     }
+
+    if (showDockCustomBackgroundColorDialog) {
+        ColorPickerDialog(
+            title = stringResource(R.string.dock_background_color),
+            customColor = homeSettings.dockCustomBackgroundColor,
+            onDismissRequest = {
+                showDockCustomBackgroundColorDialog = false
+            },
+            onSelectColor = {
+                onUpdateHomeSettings(homeSettings.copy(dockCustomBackgroundColor = it))
+
+                showDockCustomBackgroundColorDialog = false
+            },
+        )
+    }
+
+    if (showDockPaddingDialog) {
+        EditDockPaddingDialog(
+            padding = homeSettings.dockPadding,
+            onDismissRequest = {
+                showDockPaddingDialog = false
+            },
+            onUpdatePadding = {
+                onUpdateHomeSettings(
+                    homeSettings.copy(
+                        dockPadding = it,
+                    ),
+                )
+
+                showDockPaddingDialog = false
+            },
+        )
+    }
+
+    if (showDockCornerRadiusDialog) {
+        EditDockCornerRadiusDialog(
+            cornerRadius = homeSettings.dockCornerRadius,
+            onDismissRequest = {
+                showDockCornerRadiusDialog = false
+            },
+            onUpdateCornerRadius = {
+                onUpdateHomeSettings(
+                    homeSettings.copy(
+                        dockCornerRadius = it,
+                    ),
+                )
+
+                showDockCornerRadiusDialog = false
+            },
+        )
+    }
 }
 
 @Composable
@@ -370,6 +439,9 @@ private fun buildDockHomeSettingsItems(
     homeSettings: HomeSettings,
     onDockGridClick: () -> Unit,
     onDockHeightClick: () -> Unit,
+    onDockCustomBackgroundColorClick: () -> Unit,
+    onDockPaddingClick: () -> Unit,
+    onDockCornerRadiusClick: () -> Unit,
     onUpdateHomeSettings: (HomeSettings) -> Unit,
 ): List<SettingsItem> = buildList {
     add(
@@ -403,6 +475,30 @@ private fun buildDockHomeSettingsItems(
                     homeSettings.copy(dockInfiniteScroll = it),
                 )
             },
+        ),
+    )
+
+    add(
+        SettingsItem.CustomBackgroundColor(
+            title = stringResource(R.string.dock_background_color),
+            customBackgroundColor = homeSettings.dockCustomBackgroundColor,
+            onClick = onDockCustomBackgroundColorClick,
+        ),
+    )
+
+    add(
+        SettingsItem.Column(
+            title = stringResource(R.string.dock_padding),
+            subtitle = "${homeSettings.dockPadding}",
+            onClick = onDockPaddingClick,
+        ),
+    )
+
+    add(
+        SettingsItem.Column(
+            title = stringResource(R.string.dock_corner_radius),
+            subtitle = "${homeSettings.dockCornerRadius}",
+            onClick = onDockCornerRadiusClick,
         ),
     )
 }

@@ -44,4 +44,9 @@
     <string name="prevent_rotation_when_device_orientation_changes">Prevent rotation when device orientation changes</string>
     <string name="show_page_indicator">Show Page Indicator</string>
     <string name="show_an_indicator_for_the_current_page">Show an indicator for the current page</string>
+    <string name="dock_background_color">Dock Background Color</string>
+    <string name="dock_padding">Dock Padding</string>
+    <string name="dock_corner_radius">Dock Corner Radius</string>
+    <string name="dock_corner_radius_is_not_valid">Dock Corner Radius is not valid</string>
+    <string name="dock_padding_is_not_valid">Dock Padding is not valid</string>
 </resources>

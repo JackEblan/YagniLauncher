@@ -82,6 +82,9 @@ class UserDataSerializer @Inject constructor() : Serializer<UserDataProto> {
         maxFolderColumns = 5
         maxFolderRows = 4
         showPageIndicator = false
+        dockCustomBackgroundColor = 0x00000000
+        dockPadding = 0
+        dockCornerRadius = 0
     }.build()
 
     private val defaultAppDrawerSettingsProto = AppDrawerSettingsProto.newBuilder().apply {
