@@ -534,15 +534,12 @@ private fun calculateGridDragPosition(
     }
 
     val horizontalPadding = leftPadding + rightPadding
-
     val verticalPadding = topPadding + bottomPadding
 
     val safeDrawingWidth = screenWidth - horizontalPadding
-
     val safeDrawingHeight = screenHeight - verticalPadding
 
     val localDragX = dragIntOffset.x - leftPadding
-
     val localDragY = dragIntOffset.y - topPadding
 
     val layoutDirectionX = when (layoutDirection) {
@@ -632,7 +629,6 @@ private fun dragGridItem(
     val gridHeightWithPadding = safeDrawingHeight - dockHeightPx - pageIndicatorHeightPx
 
     val cellWidth = safeDrawingWidth / columns
-
     val cellHeight = gridHeightWithPadding / rows
 
     val newMovingGridItem = getMoveGridItem(
@@ -703,7 +699,6 @@ private fun dragDockGridItem(
     val movingGridItem = moveGridItemResult.value?.movingGridItem ?: return
 
     val cellWidth = safeDrawingWidth / dockColumns
-
     val cellHeight = dockHeightPx / dockRows
 
     val dockY = dragY - (safeDrawingHeight - dockHeightPx)

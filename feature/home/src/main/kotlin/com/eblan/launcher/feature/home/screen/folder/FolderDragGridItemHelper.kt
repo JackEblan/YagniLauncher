@@ -245,26 +245,27 @@ private fun calculateFolderPageDirection(
 
     val safeDrawingWidth = screenWidth - horizontalPadding
 
+    val availableWidth = safeDrawingWidth.coerceAtLeast(0)
+
+    val cellWidthDp = folderCellWidth.dp
+    val cellWidthPx = with(receiver = density) { cellWidthDp.roundToPx() }
+
+    val folderGridWidthPx = (cellWidthPx * folderPopup.columns)
+        .coerceAtMost(availableWidth)
+
     val edgeDistance = with(density) {
         20.dp.roundToPx()
     }
 
-    val dragX = dragIntOffset.x - leftPadding
-
-    val cellWidthDp = folderCellWidth.dp
-
-    val cellWidthPx = with(receiver = density) { cellWidthDp.roundToPx() }
-
-    val folderGridWidthPx = cellWidthPx * folderPopup.columns
-
     val x = folderPopupIntOffset.x - leftPadding
 
-    val popupX = x.coerceIn(0, safeDrawingWidth - folderGridWidthPx) + leftPadding
+    val dragX = dragIntOffset.x - leftPadding
+
+    val popupX = x.coerceIn(0, availableWidth - folderGridWidthPx) + leftPadding
 
     val folderDragX = dragX - popupX
 
     val isOnLeftGrid = folderDragX < edgeDistance
-
     val isOnRightGrid = folderDragX > folderGridWidthPx - edgeDistance
 
     return when {
@@ -303,27 +304,23 @@ private fun calculateFolderGridDragPosition(
     }
 
     val horizontalPadding = leftPadding + rightPadding
-
     val verticalPadding = topPadding + bottomPadding
 
     val safeDrawingWidth = screenWidth - horizontalPadding
-
     val safeDrawingHeight = screenHeight - verticalPadding
 
     val localDragX = dragIntOffset.x - leftPadding
-
     val localDragY = dragIntOffset.y - topPadding
 
     val minCellWidthPx = with(receiver = density) {
         folderCellWidth.dp.roundToPx()
     }
-
     val minCellHeightPx = with(receiver = density) {
         folderCellHeight.dp.roundToPx()
     }
 
-    val availableWidth = (safeDrawingWidth - leftPadding * 2).coerceAtLeast(0)
-    val availableHeight = (safeDrawingHeight - topPadding * 2).coerceAtLeast(0)
+    val availableWidth = safeDrawingWidth.coerceAtLeast(0)
+    val availableHeight = safeDrawingHeight.coerceAtLeast(0)
 
     val folderTitleHeightPx = with(receiver = density) {
         PAGE_INDICATOR_HEIGHT.roundToPx()
