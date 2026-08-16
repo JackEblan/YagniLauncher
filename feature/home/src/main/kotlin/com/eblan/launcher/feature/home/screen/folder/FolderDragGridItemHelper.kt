@@ -337,16 +337,16 @@ private fun calculateFolderGridDragPosition(
     val endHeight = folderGridHeightPx + folderTitleHeightPx
 
     val maximumX = (
-            safeDrawingWidth -
-                    folderGridWidthPx +
-                    leftPadding
-            ).coerceAtLeast(minimumValue = leftPadding)
+        safeDrawingWidth -
+            folderGridWidthPx +
+            leftPadding
+        ).coerceAtLeast(minimumValue = leftPadding)
 
     val maximumY = (
-            safeDrawingHeight -
-                    endHeight +
-                    topPadding
-            ).coerceAtLeast(minimumValue = topPadding)
+        safeDrawingHeight -
+            endHeight +
+            topPadding
+        ).coerceAtLeast(minimumValue = topPadding)
 
     val endIntOffset = IntOffset(
         x = folderPopupIntOffset.x.coerceIn(
@@ -373,5 +373,5 @@ private fun calculateFolderGridDragPosition(
     }
 
     return IntOffset(x = layoutDirectionX, y = dragY) to
-            IntSize(width = folderGridWidthPx, height = folderGridHeightPx)
+        IntSize(width = folderGridWidthPx, height = folderGridHeightPx)
 }

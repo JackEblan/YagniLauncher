@@ -218,7 +218,7 @@ internal fun handleDragGridItem(
         is GridItemSource.Existing,
         is GridItemSource.New,
         is GridItemSource.Pin,
-            -> {
+        -> {
             if (isOnDock) {
                 dragDockGridItem(
                     currentPage = dockGridCurrentPage,
@@ -328,7 +328,7 @@ private fun getMoveGridItem(
     currentPage: Int,
 ): GridItem = when (gridItemSource) {
     is GridItemSource.Existing,
-        -> {
+    -> {
         val (startColumn, startRow) = getStartPosition(
             x = gridX,
             y = gridY,
@@ -349,7 +349,7 @@ private fun getMoveGridItem(
     }
 
     is GridItemSource.New, is GridItemSource.Pin,
-        -> {
+    -> {
         getMoveNewGridItem(
             associate = associate,
             cellHeight = cellHeight,
