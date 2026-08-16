@@ -35,6 +35,7 @@ import androidx.activity.result.IntentSenderRequest
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.State
 import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.eblan.launcher.domain.common.IconKeyGenerator
@@ -98,42 +99,15 @@ internal suspend fun handleDropGridItem(
         return
     }
 
-    val leftPadding = with(density) {
-        paddingValues.calculateLeftPadding(layoutDirection).roundToPx()
-    }
-
-    val rightPadding = with(density) {
-        paddingValues.calculateRightPadding(layoutDirection).roundToPx()
-    }
-
-    val topPadding = with(density) {
-        paddingValues.calculateTopPadding().roundToPx()
-    }
-
-    val bottomPadding = with(density) {
-        paddingValues.calculateBottomPadding().roundToPx()
-    }
-
-    val dockHeightPx = with(density) {
-        dockHeight.dp.roundToPx()
-    }
-
-    val pageIndicatorHeightPx = with(density) {
-        PAGE_INDICATOR_HEIGHT.roundToPx()
-    }
-
-    val horizontalPadding = leftPadding + rightPadding
-
-    val verticalPadding = topPadding + bottomPadding
-
-    val safeDrawingWidth = screenWidth - horizontalPadding
-
-    val safeDrawingHeight = screenHeight - verticalPadding
-
-    val gridHeight = when (currentMoveGridItemResult.movingGridItem.associate) {
-        Associate.Grid -> safeDrawingHeight - dockHeightPx - pageIndicatorHeightPx
-        Associate.Dock -> dockHeightPx
-    }
+    val gridSize = calculateGridSize(
+        density = density,
+        paddingValues = paddingValues,
+        screenWidth = screenWidth,
+        screenHeight = screenHeight,
+        dockHeight = dockHeight,
+        layoutDirection = layoutDirection,
+        associate = currentMoveGridItemResult.movingGridItem.associate,
+    )
 
     fun cancelAndDeleteGridItem() {
         onUpdateIsVisibleOverlay(false)
@@ -217,8 +191,8 @@ internal suspend fun handleDropGridItem(
                             gridItem = movingGridItem,
                             columns = columns,
                             density = density,
-                            gridHeight = gridHeight,
-                            gridWidth = safeDrawingWidth,
+                            gridHeight = gridSize.height,
+                            gridWidth = gridSize.width,
                             rows = rows,
                             onLaunchWidgetIntent = onLaunchWidgetIntent,
                             onUpdateAppWidgetId = onUpdateAppWidgetId,
@@ -292,8 +266,8 @@ internal suspend fun handleDropGridItem(
                         gridItem = movingGridItem,
                         columns = columns,
                         density = density,
-                        gridHeight = gridHeight,
-                        gridWidth = safeDrawingWidth,
+                        gridHeight = gridSize.height,
+                        gridWidth = gridSize.width,
                         rows = rows,
                         onLaunchWidgetIntent = onLaunchWidgetIntent,
                         onUpdateAppWidgetId = onUpdateAppWidgetId,
@@ -328,42 +302,15 @@ internal fun handleAppWidgetLauncherResult(
 
     val data = movingGridItem.data as GridItemData.Widget
 
-    val leftPadding = with(density) {
-        paddingValues.calculateLeftPadding(layoutDirection).roundToPx()
-    }
-
-    val rightPadding = with(density) {
-        paddingValues.calculateRightPadding(layoutDirection).roundToPx()
-    }
-
-    val topPadding = with(density) {
-        paddingValues.calculateTopPadding().roundToPx()
-    }
-
-    val bottomPadding = with(density) {
-        paddingValues.calculateBottomPadding().roundToPx()
-    }
-
-    val dockHeightPx = with(density) {
-        dockHeight.dp.roundToPx()
-    }
-
-    val pageIndicatorHeightPx = with(density) {
-        PAGE_INDICATOR_HEIGHT.roundToPx()
-    }
-
-    val horizontalPadding = leftPadding + rightPadding
-
-    val verticalPadding = topPadding + bottomPadding
-
-    val safeDrawingWidth = screenWidth - horizontalPadding
-
-    val safeDrawingHeight = screenHeight - verticalPadding
-
-    val gridHeight = when (movingGridItem.associate) {
-        Associate.Grid -> safeDrawingHeight - dockHeightPx - pageIndicatorHeightPx
-        Associate.Dock -> dockHeightPx
-    }
+    val gridSize = calculateGridSize(
+        density = density,
+        paddingValues = paddingValues,
+        screenWidth = screenWidth,
+        screenHeight = screenHeight,
+        dockHeight = dockHeight,
+        layoutDirection = layoutDirection,
+        associate = movingGridItem.associate,
+    )
 
     if (result.resultCode == Activity.RESULT_OK) {
         val appWidgetId = result.data?.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, -1) ?: -1
@@ -377,8 +324,8 @@ internal fun handleAppWidgetLauncherResult(
             columns = columns,
             data = newData,
             density = density,
-            gridHeight = gridHeight,
-            gridWidth = safeDrawingWidth,
+            gridHeight = gridSize.height,
+            gridWidth = gridSize.width,
             rows = rows,
             startColumn = movingGridItem.startColumn,
             startRow = movingGridItem.startRow,
@@ -835,4 +782,56 @@ private fun startAppWidgetConfigureActivityForResult(
     } catch (_: SecurityException) {
         onDeleteGridItem(updatedWidgetGridItem)
     }
+}
+
+private fun calculateGridSize(
+    density: Density,
+    paddingValues: PaddingValues,
+    screenWidth: Int,
+    screenHeight: Int,
+    dockHeight: Int,
+    layoutDirection: LayoutDirection,
+    associate: Associate,
+): IntSize {
+    val leftPadding = with(density) {
+        paddingValues.calculateLeftPadding(layoutDirection).roundToPx()
+    }
+
+    val rightPadding = with(density) {
+        paddingValues.calculateRightPadding(layoutDirection).roundToPx()
+    }
+
+    val topPadding = with(density) {
+        paddingValues.calculateTopPadding().roundToPx()
+    }
+
+    val bottomPadding = with(density) {
+        paddingValues.calculateBottomPadding().roundToPx()
+    }
+
+    val dockHeightPx = with(density) {
+        dockHeight.dp.roundToPx()
+    }
+
+    val pageIndicatorHeightPx = with(density) {
+        PAGE_INDICATOR_HEIGHT.roundToPx()
+    }
+
+    val horizontalPadding = leftPadding + rightPadding
+
+    val verticalPadding = topPadding + bottomPadding
+
+    val safeDrawingWidth = screenWidth - horizontalPadding
+
+    val safeDrawingHeight = screenHeight - verticalPadding
+
+    val gridHeight = when (associate) {
+        Associate.Grid -> safeDrawingHeight - dockHeightPx - pageIndicatorHeightPx
+        Associate.Dock -> dockHeightPx
+    }
+
+    return IntSize(
+        width = safeDrawingWidth,
+        height = gridHeight,
+    )
 }
