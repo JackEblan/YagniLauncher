@@ -29,6 +29,7 @@ import android.os.UserHandle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -66,6 +67,8 @@ internal fun LifecycleEffect(
             Intent(context, EblanNotificationListenerService::class.java)
 
         var shouldUnbindEblanNotificationListenerService = false
+
+        var shouldUnRegisterManagedProfileBroadcastReceiver = false
 
         val eblanNotificationListenerServiceConnection = object : ServiceConnection {
             override fun onServiceConnected(name: ComponentName, service: IBinder) {
@@ -114,7 +117,8 @@ internal fun LifecycleEffect(
                 when (event) {
                     Lifecycle.Event.ON_START -> {
                         if (syncData && pinItemRequestWrapper.getPinItemRequest() == null) {
-                            context.registerReceiver(
+                            ContextCompat.registerReceiver(
+                                context,
                                 managedProfileBroadcastReceiver,
                                 IntentFilter().apply {
                                     addAction(Intent.ACTION_MANAGED_PROFILE_AVAILABLE)
@@ -127,7 +131,10 @@ internal fun LifecycleEffect(
                                         addAction(Intent.ACTION_PROFILE_UNAVAILABLE)
                                     }
                                 },
+                                ContextCompat.RECEIVER_NOT_EXPORTED,
                             )
+
+                            shouldUnRegisterManagedProfileBroadcastReceiver = true
 
                             shouldUnbindEblanNotificationListenerService = context.bindService(
                                 eblanNotificationListenerIntent,
@@ -143,7 +150,11 @@ internal fun LifecycleEffect(
 
                     Lifecycle.Event.ON_STOP -> {
                         if (syncData && pinItemRequestWrapper.getPinItemRequest() == null) {
-                            context.unregisterReceiver(managedProfileBroadcastReceiver)
+                            if (shouldUnRegisterManagedProfileBroadcastReceiver) {
+                                context.unregisterReceiver(managedProfileBroadcastReceiver)
+
+                                shouldUnRegisterManagedProfileBroadcastReceiver = false
+                            }
 
                             if (shouldUnbindEblanNotificationListenerService) {
                                 context.unbindService(eblanNotificationListenerServiceConnection)
