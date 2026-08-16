@@ -64,7 +64,7 @@ jobs:
 
       - name: Upload Debug APK
         if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Debug APK output
           path: '**/build/outputs/apk/**/*.apk'
@@ -127,7 +127,7 @@ jobs:
 
       - name: Upload test reports
         if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: test-reports-${{ matrix.api-level }}
           path: '**/build/reports/androidTests'
