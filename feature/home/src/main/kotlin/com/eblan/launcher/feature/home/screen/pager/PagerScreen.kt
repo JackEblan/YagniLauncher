@@ -87,11 +87,10 @@ import com.eblan.launcher.domain.model.PinItemRequestType
 import com.eblan.launcher.domain.model.TextColor
 import com.eblan.launcher.feature.home.component.GridLayout
 import com.eblan.launcher.feature.home.component.GridPagerIndicator
+import com.eblan.launcher.feature.home.component.HomeHandler
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
-import com.eblan.launcher.feature.home.screen.HomeHandler
-import com.eblan.launcher.feature.home.screen.PAGE_INDICATOR_HEIGHT
 import com.eblan.launcher.feature.home.screen.application.ApplicationScreen
 import com.eblan.launcher.feature.home.screen.folder.FolderGridItemPopup
 import com.eblan.launcher.feature.home.screen.folder.FolderScreen
@@ -99,6 +98,7 @@ import com.eblan.launcher.feature.home.screen.resize.ResizeScreen
 import com.eblan.launcher.feature.home.screen.shortcutconfig.ShortcutConfigScreen
 import com.eblan.launcher.feature.home.screen.widget.AppWidgetScreen
 import com.eblan.launcher.feature.home.screen.widget.WidgetScreen
+import com.eblan.launcher.feature.home.util.PAGE_INDICATOR_HEIGHT
 import com.eblan.launcher.feature.home.util.calculatePage
 import com.eblan.launcher.feature.home.util.getSystemTextColor
 import com.eblan.launcher.ui.local.LocalAppWidgetHost

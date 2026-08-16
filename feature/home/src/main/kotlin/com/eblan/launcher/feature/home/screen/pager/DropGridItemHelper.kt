@@ -47,8 +47,8 @@ import com.eblan.launcher.domain.model.PinItemRequestType
 import com.eblan.launcher.feature.home.R
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
-import com.eblan.launcher.feature.home.screen.PAGE_INDICATOR_HEIGHT
-import com.eblan.launcher.feature.home.screen.updateAppWidgetOptions
+import com.eblan.launcher.feature.home.util.PAGE_INDICATOR_HEIGHT
+import com.eblan.launcher.feature.home.util.updateAppWidgetOptions
 import com.eblan.launcher.framework.imageserializer.AndroidImageSerializer
 import com.eblan.launcher.framework.launcherapps.AndroidLauncherAppsWrapper
 import com.eblan.launcher.framework.usermanager.AndroidUserManagerWrapper

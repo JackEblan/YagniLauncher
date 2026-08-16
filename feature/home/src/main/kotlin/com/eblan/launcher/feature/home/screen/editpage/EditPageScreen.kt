@@ -75,8 +75,8 @@ import com.eblan.launcher.domain.model.HomeSettings
 import com.eblan.launcher.domain.model.PageItem
 import com.eblan.launcher.domain.model.TextColor
 import com.eblan.launcher.feature.home.component.GridLayout
+import com.eblan.launcher.feature.home.component.HomeHandler
 import com.eblan.launcher.feature.home.model.Screen
-import com.eblan.launcher.feature.home.screen.HomeHandler
 import kotlinx.coroutines.launch
 import com.eblan.launcher.common.R as commonR
 

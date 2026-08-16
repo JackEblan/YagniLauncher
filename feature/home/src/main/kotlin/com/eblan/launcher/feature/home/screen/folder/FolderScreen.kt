@@ -68,14 +68,14 @@ import com.eblan.launcher.domain.model.GridItemSettings
 import com.eblan.launcher.domain.model.HomeSettings
 import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.feature.home.component.FolderGridLayout
+import com.eblan.launcher.feature.home.component.HomeHandler
 import com.eblan.launcher.feature.home.component.PageIndicator
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.PageDirection
 import com.eblan.launcher.feature.home.model.SharedElementKey
-import com.eblan.launcher.feature.home.screen.HomeHandler
-import com.eblan.launcher.feature.home.screen.PAGE_INDICATOR_HEIGHT
 import com.eblan.launcher.feature.home.util.FOLDER_PREVIEW_COLUMNS
 import com.eblan.launcher.feature.home.util.FOLDER_PREVIEW_ROWS
+import com.eblan.launcher.feature.home.util.PAGE_INDICATOR_HEIGHT
 import kotlin.math.roundToInt
 
 @Composable

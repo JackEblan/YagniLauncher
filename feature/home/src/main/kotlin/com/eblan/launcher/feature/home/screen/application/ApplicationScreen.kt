@@ -85,10 +85,10 @@ import com.eblan.launcher.domain.model.ManagedProfileResult
 import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.domain.model.TextColor
 import com.eblan.launcher.feature.home.R
+import com.eblan.launcher.feature.home.component.HomeHandler
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
-import com.eblan.launcher.feature.home.screen.HomeHandler
 import com.eblan.launcher.feature.home.screen.application.horizontal.HorizontalApplicationScreen
 import com.eblan.launcher.feature.home.screen.application.list.ListApplicationScreen
 import com.eblan.launcher.feature.home.screen.application.vertical.VerticalApplicationScreen

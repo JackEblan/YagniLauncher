@@ -46,8 +46,8 @@ import com.eblan.launcher.domain.grid.resizeWidgetGridItemWithPixels
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.SideAnchor
-import com.eblan.launcher.feature.home.screen.DRAG_HANDLE_SIZE
-import com.eblan.launcher.feature.home.screen.updateAppWidgetOptions
+import com.eblan.launcher.feature.home.util.DRAG_HANDLE_SIZE
+import com.eblan.launcher.feature.home.util.updateAppWidgetOptions
 import com.eblan.launcher.ui.local.LocalAppWidgetManager
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
