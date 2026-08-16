@@ -128,44 +128,18 @@ internal fun handleAnimateScrollToPage(
         return
     }
 
-    val leftPadding = with(density) {
-        paddingValues.calculateLeftPadding(layoutDirection).roundToPx()
-    }
-
-    val rightPadding = with(density) {
-        paddingValues.calculateRightPadding(layoutDirection).roundToPx()
-    }
-
-    val horizontalPadding = leftPadding + rightPadding
-
-    val safeDrawingWidth = screenWidth - horizontalPadding
-
-    val edgeDistance = with(density) {
-        20.dp.roundToPx()
-    }
-
-    val dragX = dragIntOffset.x - leftPadding
-
-    val cellWidthDp = folderCellWidth.dp
-
-    val cellWidthPx = with(receiver = density) { cellWidthDp.roundToPx() }
-
-    val folderGridWidthPx = cellWidthPx * folderPopup.columns
-
-    val x = folderPopupIntOffset.x - leftPadding
-    val popupX = x.coerceIn(0, safeDrawingWidth - folderGridWidthPx) + leftPadding
-    val folderDragX = dragX - popupX
-
-    val isOnLeftGrid = folderDragX < edgeDistance
-    val isOnRightGrid = folderDragX > folderGridWidthPx - edgeDistance
-
-    if (isOnLeftGrid) {
-        onUpdateFolderPageDirection(PageDirection.Left)
-    } else if (isOnRightGrid) {
-        onUpdateFolderPageDirection(PageDirection.Right)
-    } else {
-        onUpdateFolderPageDirection(null)
-    }
+    onUpdateFolderPageDirection(
+        calculateFolderPageDirection(
+            density = density,
+            dragIntOffset = dragIntOffset,
+            folderPopup = folderPopup,
+            folderPopupIntOffset = folderPopupIntOffset,
+            paddingValues = paddingValues,
+            screenWidth = screenWidth,
+            layoutDirection = layoutDirection,
+            folderCellWidth = folderCellWidth,
+        ),
+    )
 }
 
 internal fun handleDragFolderGridItem(
@@ -210,6 +184,108 @@ internal fun handleDragFolderGridItem(
         return
     }
 
+    val (intOffset, intSize) = calculateFolderGridDragPosition(
+        density = density,
+        dragIntOffset = dragIntOffset,
+        folderPopup = folderPopup,
+        folderPopupIntOffset = folderPopupIntOffset,
+        paddingValues = paddingValues,
+        screenHeight = screenHeight,
+        screenWidth = screenWidth,
+        layoutDirection = layoutDirection,
+        folderCellWidth = folderCellWidth,
+        folderCellHeight = folderCellHeight,
+    )
+
+    if (intOffset.x in 0 until intSize.width &&
+        intOffset.y in 0 until intSize.height
+    ) {
+        val movingGridItem = moveGridItemResult.movingGridItem
+
+        onUpdateSharedElementKey(
+            SharedElementKey(
+                id = movingGridItem.id,
+                parent = SharedElementKey.Parent.Folder,
+            ),
+        )
+
+        onMoveFolderGridItem(
+            folderPopup,
+            movingGridItem,
+            intOffset.x,
+            intOffset.y,
+            intSize.width,
+            intSize.height,
+            currentPage,
+        )
+    } else if (!folderPopup.folderPopupEntry.isCloseFolder) {
+        onUpsertFolderPopupEntry(folderPopup.folderPopupEntry.copy(isCloseFolder = true))
+    }
+}
+
+private fun calculateFolderPageDirection(
+    density: Density,
+    dragIntOffset: IntOffset,
+    folderPopup: FolderPopup,
+    folderPopupIntOffset: IntOffset,
+    paddingValues: PaddingValues,
+    screenWidth: Int,
+    layoutDirection: LayoutDirection,
+    folderCellWidth: Int,
+): PageDirection? {
+    val leftPadding = with(density) {
+        paddingValues.calculateLeftPadding(layoutDirection).roundToPx()
+    }
+
+    val rightPadding = with(density) {
+        paddingValues.calculateRightPadding(layoutDirection).roundToPx()
+    }
+
+    val horizontalPadding = leftPadding + rightPadding
+
+    val safeDrawingWidth = screenWidth - horizontalPadding
+
+    val edgeDistance = with(density) {
+        20.dp.roundToPx()
+    }
+
+    val dragX = dragIntOffset.x - leftPadding
+
+    val cellWidthDp = folderCellWidth.dp
+
+    val cellWidthPx = with(receiver = density) { cellWidthDp.roundToPx() }
+
+    val folderGridWidthPx = cellWidthPx * folderPopup.columns
+
+    val x = folderPopupIntOffset.x - leftPadding
+
+    val popupX = x.coerceIn(0, safeDrawingWidth - folderGridWidthPx) + leftPadding
+
+    val folderDragX = dragX - popupX
+
+    val isOnLeftGrid = folderDragX < edgeDistance
+
+    val isOnRightGrid = folderDragX > folderGridWidthPx - edgeDistance
+
+    return when {
+        isOnLeftGrid -> PageDirection.Left
+        isOnRightGrid -> PageDirection.Right
+        else -> null
+    }
+}
+
+private fun calculateFolderGridDragPosition(
+    density: Density,
+    dragIntOffset: IntOffset,
+    folderPopup: FolderPopup,
+    folderPopupIntOffset: IntOffset,
+    paddingValues: PaddingValues,
+    screenHeight: Int,
+    screenWidth: Int,
+    layoutDirection: LayoutDirection,
+    folderCellWidth: Int,
+    folderCellHeight: Int,
+): Pair<IntOffset, IntSize> {
     val leftPadding = with(density) {
         paddingValues.calculateLeftPadding(layoutDirection).roundToPx()
     }
@@ -261,16 +337,16 @@ internal fun handleDragFolderGridItem(
     val endHeight = folderGridHeightPx + folderTitleHeightPx
 
     val maximumX = (
-        safeDrawingWidth -
-            folderGridWidthPx +
-            leftPadding
-        ).coerceAtLeast(minimumValue = leftPadding)
+            safeDrawingWidth -
+                    folderGridWidthPx +
+                    leftPadding
+            ).coerceAtLeast(minimumValue = leftPadding)
 
     val maximumY = (
-        safeDrawingHeight -
-            endHeight +
-            topPadding
-        ).coerceAtLeast(minimumValue = topPadding)
+            safeDrawingHeight -
+                    endHeight +
+                    topPadding
+            ).coerceAtLeast(minimumValue = topPadding)
 
     val endIntOffset = IntOffset(
         x = folderPopupIntOffset.x.coerceIn(
@@ -296,28 +372,6 @@ internal fun handleDragFolderGridItem(
         LayoutDirection.Ltr -> dragX
     }
 
-    if (layoutDirectionX in 0 until folderGridWidthPx &&
-        dragY in 0 until folderGridHeightPx
-    ) {
-        val movingGridItem = moveGridItemResult.movingGridItem
-
-        onUpdateSharedElementKey(
-            SharedElementKey(
-                id = movingGridItem.id,
-                parent = SharedElementKey.Parent.Folder,
-            ),
-        )
-
-        onMoveFolderGridItem(
-            folderPopup,
-            movingGridItem,
-            layoutDirectionX,
-            dragY,
-            folderGridWidthPx,
-            folderGridHeightPx,
-            currentPage,
-        )
-    } else if (!folderPopup.folderPopupEntry.isCloseFolder) {
-        onUpsertFolderPopupEntry(folderPopup.folderPopupEntry.copy(isCloseFolder = true))
-    }
+    return IntOffset(x = layoutDirectionX, y = dragY) to
+            IntSize(width = folderGridWidthPx, height = folderGridHeightPx)
 }
