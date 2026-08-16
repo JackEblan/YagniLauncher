@@ -239,6 +239,11 @@ internal fun handleDragGridItem(
 
     val localDragY = dragIntOffset.y - topPadding
 
+    val layoutDirectionX = when (layoutDirection) {
+        LayoutDirection.Rtl -> safeDrawingWidth - localDragX
+        LayoutDirection.Ltr -> localDragX
+    }
+
     val isOnDock = dockHeightPx > 0 && localDragY > safeDrawingHeight - dockHeightPx
 
     when (val currentGridItemSource = gridItemSource.value ?: return) {
@@ -252,7 +257,7 @@ internal fun handleDragGridItem(
                     dockColumns = dockColumns,
                     dockHeightPx = dockHeightPx,
                     dockRows = dockRows,
-                    dragX = localDragX,
+                    dragX = layoutDirectionX,
                     dragY = localDragY,
                     gridItemSource = currentGridItemSource,
                     safeDrawingHeight = safeDrawingHeight,
@@ -267,7 +272,7 @@ internal fun handleDragGridItem(
                     columns = columns,
                     currentPage = gridCurrentPage,
                     dockHeightPx = dockHeightPx,
-                    dragX = localDragX,
+                    dragX = layoutDirectionX,
                     dragY = localDragY,
                     gridItemSource = currentGridItemSource,
                     pageIndicatorHeightPx = pageIndicatorHeightPx,

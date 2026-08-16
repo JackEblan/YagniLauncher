@@ -1086,6 +1086,7 @@ internal fun PagerScreen(
             overlayIntSize = pagerScreenState.overlayIntSize,
             sharedElementKey = pagerScreenState.sharedElementKey,
             isVisibleOverlay = isVisibleOverlay,
+            screenWidth = screenWidth,
             onResetOverlay = pagerScreenState::resetOverlay,
         )
     }

@@ -58,6 +58,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import com.eblan.launcher.domain.model.FolderPopup
@@ -177,17 +178,9 @@ internal fun FolderScreen(
 
     val endHeight = folderGridHeightPx + folderTitleHeightPx
 
-    val maximumX = (
-        safeDrawingWidth -
-            folderGridWidthPx +
-            leftPadding
-        ).coerceAtLeast(leftPadding)
+    val maximumX = (safeDrawingWidth - folderGridWidthPx + leftPadding).coerceAtLeast(leftPadding)
 
-    val maximumY = (
-        safeDrawingHeight -
-            endHeight +
-            topPadding
-        ).coerceAtLeast(topPadding)
+    val maximumY = (safeDrawingHeight - endHeight + topPadding).coerceAtLeast(topPadding)
 
     val endIntOffset = IntOffset(
         x = folderPopupIntOffset.x.coerceIn(
@@ -408,7 +401,12 @@ internal fun FolderScreen(
             modifier = Modifier
                 .offset {
                     IntOffset(
-                        x = animatedRect.left.roundToInt(),
+                        x = when (layoutDirection) {
+                            LayoutDirection.Ltr -> animatedRect.left.roundToInt()
+
+                            LayoutDirection.Rtl -> screenWidth - animatedRect.width()
+                                .roundToInt() - animatedRect.left.roundToInt()
+                        },
                         y = animatedRect.top.roundToInt(),
                     )
                 }
@@ -540,11 +538,7 @@ private suspend fun handleFolderPopup(
 
         val gridItem = moveGridItemResult.value?.movingGridItem
 
-        if (drag.value == Drag.Dragging &&
-            isDragging.value &&
-            isVisibleOverlay.value &&
-            gridItem != null
-        ) {
+        if (drag.value == Drag.Dragging && isDragging.value && isVisibleOverlay.value && gridItem != null) {
             onUpdateSharedElementKey(
                 SharedElementKey(
                     id = gridItem.id,

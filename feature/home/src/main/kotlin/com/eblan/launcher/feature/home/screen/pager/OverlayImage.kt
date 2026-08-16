@@ -27,9 +27,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.LayoutDirection
 import com.eblan.launcher.feature.home.model.SharedElementKey
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -41,6 +43,7 @@ internal fun SharedTransitionScope.OverlayImage(
     overlayIntSize: IntSize?,
     sharedElementKey: SharedElementKey?,
     isVisibleOverlay: Boolean,
+    screenWidth: Int,
     onResetOverlay: () -> Unit,
 ) {
     if (overlayImageBitmap == null ||
@@ -52,6 +55,8 @@ internal fun SharedTransitionScope.OverlayImage(
     }
 
     val density = LocalDensity.current
+
+    val layoutDirection = LocalLayoutDirection.current
 
     val size = with(density) {
         DpSize(width = overlayIntSize.width.toDp(), height = overlayIntSize.height.toDp())
@@ -66,7 +71,14 @@ internal fun SharedTransitionScope.OverlayImage(
     Image(
         modifier = modifier
             .offset {
-                overlayIntOffset
+                when (layoutDirection) {
+                    LayoutDirection.Ltr -> overlayIntOffset
+
+                    LayoutDirection.Rtl -> IntOffset(
+                        x = screenWidth - overlayIntSize.width - overlayIntOffset.x,
+                        y = overlayIntOffset.y,
+                    )
+                }
             }
             .size(size)
             .sharedElementWithCallerManagedVisibility(
