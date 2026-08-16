@@ -288,7 +288,12 @@ internal fun handleDragFolderGridItem(
     val dragX = localDragX - endIntOffset.x
     val dragY = localDragY - endIntOffset.y
 
-    if (dragX in 0 until folderGridWidthPx &&
+    val layoutDirectionX = when (layoutDirection) {
+        LayoutDirection.Rtl -> folderGridWidthPx - dragX
+        LayoutDirection.Ltr -> dragX
+    }
+
+    if (layoutDirectionX in 0 until folderGridWidthPx &&
         dragY in 0 until folderGridHeightPx
     ) {
         onUpdateSharedElementKey(
@@ -301,7 +306,7 @@ internal fun handleDragFolderGridItem(
         onMoveFolderGridItem(
             folderPopup,
             movingGridItem,
-            dragX,
+            layoutDirectionX,
             dragY,
             folderGridWidthPx,
             folderGridHeightPx,

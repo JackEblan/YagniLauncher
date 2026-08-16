@@ -175,7 +175,7 @@ internal fun Modifier.popup(
     val childY = if (topY < 0) bottomY else topY
 
     layout(constraints.maxWidth, constraints.maxHeight) {
-        placeable.placeRelative(
+        placeable.place(
             x = childX.coerceIn(0, constraints.maxWidth - placeable.width),
             y = childY.coerceIn(0, constraints.maxHeight - placeable.height),
         )
