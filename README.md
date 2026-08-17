@@ -43,7 +43,7 @@ Yagni Launcher matches stock launcher functionality and goes beyond it, rebuilt 
 - 🔋 Efficient — Minimal resource and battery footprint
 - 🛠️ Modern — 100% Kotlin, 100% Jetpack Compose, written from the ground up (no forked codebase)
 
-If it's not something you need, it's not in the app. That's the whole philosophy behind the name — and it's why Yagni Launcher stays fast where others get slower with every update.
+If it's not something you need, it's not in the app. That's the whole philosophy behind the name and it's why Yagni Launcher stays fast where others get slower with every update.
 
 ## Screenshots
 
