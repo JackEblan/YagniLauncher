@@ -37,27 +37,10 @@ class GetApplicationThemeUseCase @Inject constructor(
     ) { userData, colorHints ->
         when (userData.generalSettings.theme) {
             Theme.System -> {
-                if (colorHints != null) {
-                    val hintSupportsDarkTheme =
-                        colorHints and wallpaperManagerWrapper.hintSupportsDarkTheme != 0
-
-                    if (hintSupportsDarkTheme) {
-                        ApplicationTheme(
-                            theme = Theme.Dark,
-                            dynamicTheme = userData.generalSettings.dynamicTheme,
-                        )
-                    } else {
-                        ApplicationTheme(
-                            theme = Theme.Light,
-                            dynamicTheme = userData.generalSettings.dynamicTheme,
-                        )
-                    }
-                } else {
-                    ApplicationTheme(
-                        theme = resourcesWrapper.getSystemTheme(),
-                        dynamicTheme = userData.generalSettings.dynamicTheme,
-                    )
-                }
+                getApplicationThemeByColorHints(
+                    colorHints = colorHints,
+                    dynamicTheme = userData.generalSettings.dynamicTheme,
+                )
             }
 
             Theme.Light, Theme.Dark -> {
@@ -67,5 +50,30 @@ class GetApplicationThemeUseCase @Inject constructor(
                 )
             }
         }
+    }
+
+    private fun getApplicationThemeByColorHints(
+        colorHints: Int?,
+        dynamicTheme: Boolean,
+    ): ApplicationTheme = if (colorHints != null) {
+        val hintSupportsDarkTheme =
+            colorHints and wallpaperManagerWrapper.hintSupportsDarkTheme != 0
+
+        if (hintSupportsDarkTheme) {
+            ApplicationTheme(
+                theme = Theme.Dark,
+                dynamicTheme = dynamicTheme,
+            )
+        } else {
+            ApplicationTheme(
+                theme = Theme.Light,
+                dynamicTheme = dynamicTheme,
+            )
+        }
+    } else {
+        ApplicationTheme(
+            theme = resourcesWrapper.getSystemTheme(),
+            dynamicTheme = dynamicTheme,
+        )
     }
 }
