@@ -12,7 +12,6 @@ This module structure follows [The Clean Architecture](https://blog.cleancoder.c
 
 - [Clean Architecture Layers](#clean-architecture-layers)
 - [Dependency Rule](#dependency-rule)
-- [Dependency Diagram](#dependency-diagram)
 - [Module Groups](#module-groups)
   - [Domain](#domain)
   - [Data](#data)
@@ -36,10 +35,6 @@ The codebase is split into four layers:
 ## Dependency Rule
 
 Dependencies only point **inward**: Presentation depends on Framework and Domain, Data depends on Domain, and Framework depends on Domain. Domain depends on nothing else in the project. No inner layer ever references an outer one.
-
-## Dependency Diagram
-
-The diagram below is intentionally simplified to the module *groups* and is representative rather than exhaustive — some direct dependencies (for example `app`'s and `ui`'s direct dependencies on individual `domain:*` modules) are omitted for clarity. Edit it directly as modules are added, split, or merged.
 
 ## Module Groups
 
