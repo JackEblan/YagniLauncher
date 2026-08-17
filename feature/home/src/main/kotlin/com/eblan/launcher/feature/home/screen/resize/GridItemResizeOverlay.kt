@@ -307,38 +307,12 @@ private fun getBorderY(
     currentY: Animatable<Float, AnimationVector1D>,
     y: Int,
     height: Int,
-): Int = when (dragHandle) {
-    Alignment.TopStart -> {
-        if (currentHeight.value >= dragHandleSizePx) {
-            currentY.value.roundToInt()
-        } else {
-            (y + height) - dragHandleSizePx
-        }
-    }
-
-    Alignment.TopEnd -> {
-        if (currentHeight.value >= dragHandleSizePx) {
-            currentY.value.roundToInt()
-        } else {
-            (y + height) - dragHandleSizePx
-        }
-    }
-
-    Alignment.BottomStart -> {
-        if (currentHeight.value >= dragHandleSizePx) {
-            currentY.value.roundToInt()
-        } else {
-            y
-        }
-    }
-
-    else -> {
-        if (currentHeight.value >= dragHandleSizePx) {
-            currentY.value.roundToInt()
-        } else {
-            y
-        }
-    }
+): Int = if (currentHeight.value >= dragHandleSizePx) {
+    currentY.value.roundToInt()
+} else if (dragHandle == Alignment.TopStart || dragHandle == Alignment.TopEnd) {
+    (y + height) - dragHandleSizePx
+} else {
+    y
 }
 
 private fun getBorderX(
