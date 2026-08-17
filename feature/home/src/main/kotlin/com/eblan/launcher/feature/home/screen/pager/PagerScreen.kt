@@ -278,8 +278,6 @@ internal fun PagerScreen(
 
     val gridHeight = safeDrawingHeight - pageIndicatorHeightPx - dockHeightPx
 
-    val paddingValues = WindowInsets.safeDrawing.asPaddingValues()
-
     val appWidgetLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
     ) {
