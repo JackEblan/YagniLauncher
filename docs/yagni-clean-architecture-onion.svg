@@ -8,8 +8,8 @@
   <rect x="0" y="0" width="1200" height="980" fill="#fafaf8"/>
 
   <!-- Title -->
-  <text x="600" y="42" text-anchor="middle" font-size="26" font-weight="700" fill="#1f2328">Yagni Launcher — Clean Architecture</text>
-  <text x="600" y="65" text-anchor="middle" font-size="13" fill="#6b7280">Dependencies point inward, toward Domain</text>
+  <text x="600" y="30" text-anchor="middle" font-size="26" font-weight="700" fill="#1f2328">Yagni Launcher — Clean Architecture</text>
+  <text x="600" y="50" text-anchor="middle" font-size="13" fill="#6b7280">Dependencies point inward, toward Domain</text>
 
   <!-- ============ THE ONION ============ -->
   <!-- Outer ring: Presentation (radius 250) -->
@@ -46,63 +46,65 @@
   </g>
 
   <!-- ============ CALLOUT: PRESENTATION (top) ============ -->
-  <line x1="600" y1="230" x2="600" y2="200" stroke="#818cf8" stroke-width="1.5" stroke-dasharray="3 3"/>
-  <rect x="380" y="78" width="440" height="150" rx="12" fill="#eef2ff" stroke="#818cf8" stroke-width="1.5"/>
-  <g font-size="12" fill="#3730a3">
-    <text x="398" y="98" font-weight="700" font-size="12">PRESENTATION modules</text>
-    <text x="398" y="118"><tspan font-weight="600">app</tspan> — Hilt wiring / nav graph</text>
-    <text x="398" y="136"><tspan font-weight="600">common</tspan> — Hilt bindings</text>
-    <text x="398" y="154"><tspan font-weight="600">design-system</tspan> — generic Compose primitives</text>
-    <text x="398" y="172"><tspan font-weight="600">feature:*</tspan> — home, pin, action,</text>
-    <text x="398" y="186" font-size="10.5">edit-application-info, edit-grid-item, settings:*</text>
-    <text x="398" y="206"><tspan font-weight="600">service</tspan>   ·   <tspan font-weight="600">ui</tspan> — shared app-aware UI</text>
+  <line x1="600" y1="230" x2="600" y2="215" stroke="#818cf8" stroke-width="1.5" stroke-dasharray="3 3"/>
+  <rect x="380" y="57" width="440" height="158" rx="12" fill="#eef2ff" stroke="#818cf8" stroke-width="1.5"/>
+  <g font-size="13" fill="#3730a3" text-anchor="middle">
+    <text x="600" y="75" font-weight="700" font-size="12">PRESENTATION modules</text>
+    <text x="600" y="95" font-weight="600">app</text>
+    <text x="600" y="113" font-weight="600">common</text>
+    <text x="600" y="131" font-weight="600">design-system</text>
+    <text x="600" y="149" font-weight="600">feature:*</text>
+    <text x="600" y="165" font-size="9.5" font-style="italic" fill="#4f46e5">action · edit-application-info · edit-grid-item · home · pin · settings:*</text>
+    <text x="600" y="183" font-weight="600">service</text>
+    <text x="600" y="199" font-weight="600">ui</text>
   </g>
 
   <!-- ============ CALLOUT: FRAMEWORK (left) ============ -->
   <line x1="425" y1="480" x2="335" y2="480" stroke="#fb923c" stroke-width="1.5" stroke-dasharray="3 3"/>
   <rect x="25" y="320" width="310" height="352" rx="12" fill="#fff7ed" stroke="#fb923c" stroke-width="1.5"/>
-  <g font-size="12.5" fill="#9a3412">
-    <text x="43" y="345" font-weight="700" font-size="12">FRAMEWORK modules</text>
-    <text x="43" y="368">framework:accessibility-manager</text>
-    <text x="43" y="390">framework:content-resolver</text>
-    <text x="43" y="412">framework:file-manager</text>
-    <text x="43" y="434">framework:icon-pack-manager</text>
-    <text x="43" y="456">framework:image-serializer</text>
-    <text x="43" y="478">framework:jaro-winkler-similarity</text>
-    <text x="43" y="500">framework:launcher-apps</text>
-    <text x="43" y="522">framework:notification-manager</text>
-    <text x="43" y="544">framework:package-manager</text>
-    <text x="43" y="566">framework:resources</text>
-    <text x="43" y="588">framework:settings</text>
-    <text x="43" y="610">framework:user-manager</text>
-    <text x="43" y="632">framework:wallpaper-manager</text>
-    <text x="43" y="654">framework:widget-manager</text>
+  <g font-size="12.5" fill="#9a3412" text-anchor="middle">
+    <text x="180" y="345" font-weight="700" font-size="12">FRAMEWORK modules</text>
+    <text x="180" y="368">framework:accessibility-manager</text>
+    <text x="180" y="390">framework:content-resolver</text>
+    <text x="180" y="412">framework:file-manager</text>
+    <text x="180" y="434">framework:icon-pack-manager</text>
+    <text x="180" y="456">framework:image-serializer</text>
+    <text x="180" y="478">framework:jaro-winkler-similarity</text>
+    <text x="180" y="500">framework:launcher-apps</text>
+    <text x="180" y="522">framework:notification-manager</text>
+    <text x="180" y="544">framework:package-manager</text>
+    <text x="180" y="566">framework:resources</text>
+    <text x="180" y="588">framework:settings</text>
+    <text x="180" y="610">framework:user-manager</text>
+    <text x="180" y="632">framework:wallpaper-manager</text>
+    <text x="180" y="654">framework:widget-manager</text>
   </g>
 
   <!-- ============ CALLOUT: DATA (right) ============ -->
   <line x1="775" y1="480" x2="865" y2="480" stroke="#34d399" stroke-width="1.5" stroke-dasharray="3 3"/>
   <rect x="865" y="360" width="310" height="240" rx="12" fill="#ecfdf5" stroke="#34d399" stroke-width="1.5"/>
-  <g font-size="13" fill="#065f46">
-    <text x="883" y="385" font-weight="700" font-size="12">DATA modules</text>
-    <text x="883" y="415" font-weight="600">data:datastore</text>
-    <text x="883" y="445" font-weight="600">data:datastore-proto</text>
-    <text x="883" y="475" font-weight="600">data:repository</text>
-    <text x="883" y="492" font-size="10.5" fill="#047857">combines room + datastore</text>
-    <text x="883" y="520" font-weight="600">data:room</text>
+  <g font-size="13" fill="#065f46" text-anchor="middle">
+    <text x="1020" y="385" font-weight="700" font-size="12">DATA modules</text>
+    <text x="1020" y="413" font-weight="600">data:datastore</text>
+    <text x="1020" y="439" font-weight="600">data:datastore-proto</text>
+    <text x="1020" y="467" font-weight="600">data:repository</text>
+    <text x="1020" y="484" font-size="10.5" fill="#047857">combines room + datastore</text>
+    <text x="1020" y="512" font-weight="600">data:room</text>
   </g>
 
   <!-- ============ CALLOUT: DOMAIN (bottom) ============ -->
-  <line x1="600" y1="730" x2="600" y2="758" stroke="#eab308" stroke-width="1.5" stroke-dasharray="3 3"/>
-  <rect x="400" y="758" width="400" height="170" rx="12" fill="#fef9c3" stroke="#eab308" stroke-width="1.5"/>
-  <g font-size="12.5" fill="#713f12">
-    <text x="418" y="782" font-weight="700" font-size="12">DOMAIN modules</text>
-    <text x="418" y="804" font-weight="600">domain:common</text>
-    <text x="418" y="826" font-weight="600">domain:framework</text>
-    <text x="418" y="848" font-weight="600">domain:grid</text>
-    <text x="418" y="870" font-weight="600">domain:model</text>
-    <text x="418" y="892" font-weight="600">domain:repository</text>
-    <text x="418" y="914" font-weight="600">domain:use-case</text>
+  <line x1="600" y1="730" x2="600" y2="745" stroke="#eab308" stroke-width="1.5" stroke-dasharray="3 3"/>
+  <rect x="400" y="745" width="400" height="180" rx="12" fill="#fef9c3" stroke="#eab308" stroke-width="1.5"/>
+  <g font-size="12.5" fill="#713f12" text-anchor="middle">
+    <text x="600" y="769" font-weight="700" font-size="12">DOMAIN modules</text>
+    <text x="600" y="791" font-weight="600">domain:common</text>
+    <text x="600" y="813" font-weight="600">domain:framework</text>
+    <text x="600" y="835" font-weight="600">domain:grid</text>
+    <text x="600" y="857" font-weight="600">domain:model</text>
+    <text x="600" y="874" font-size="10.5" fill="#a16207">entities &amp; value objects</text>
+    <text x="600" y="902" font-weight="600">domain:repository</text>
+    <text x="600" y="924" font-weight="600">domain:use-case</text>
   </g>
 
-  <text x="600" y="960" text-anchor="middle" font-size="11" fill="#9ca3af">GPL-3.0 · F-Droid · IzzyOnDroid — inspired by Uncle Bob's Clean Architecture</text>
+  <text x="600" y="955" text-anchor="middle" font-size="11" fill="#9ca3af">GPL-3.0 · F-Droid · IzzyOnDroid — inspired by Uncle Bob's Clean Architecture</text>
 </svg>
