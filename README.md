@@ -30,22 +30,20 @@ Closed-source launchers are locking features behind paywalls and adding trackers
 
 **YAGNI ("You Aren't Gonna Need It")** is a principle which arose from extreme programming (XP) that states a programmer should not add functionality until deemed necessary.
 
-## Features
-* No fixed grid size. You can set the grid width and height to any value you want.
-* Each grid item is fully customizable:
-  * Size and rotation
-  * Background color
-  * Icon size
-  * Text and label size
-  * Label color
-  * Show or hide icons and labels
+## Why Choose Yagni Launcher?
 
-* Infinite scrolling
-* Multiple dock pages
-* Adjustable dock height
-* Custom dock grid size
+The launcher is the first thing you see every time you unlock your phone — it shouldn't be slow, heavy, or draining your battery in the background.
 
-We keep the APK size minimal and heavily cache icons and images, which improves the launcher’s performance. Each launch uses less memory because there’s less overhead, with no trackers or ads.
+There are a lot of launchers out there. What sets Yagni Launcher apart is a relentless focus on performance and user experience over feature bloat.
+
+Yagni Launcher matches stock launcher functionality and goes beyond it, rebuilt from scratch with modern Android tooling.
+
+- ⚡ Fast — Built with Kotlin & Jetpack Compose, no legacy overhead
+- 🪶 Small — ~2MB total size, 80–90% smaller than typical stock launchers (which often run 10–60MB+)
+- 🔋 Efficient — Minimal resource and battery footprint
+- 🛠️ Modern — 100% Kotlin, 100% Jetpack Compose, written from the ground up (no forked codebase)
+
+If it's not something you need, it's not in the app. That's the whole philosophy behind the name — and it's why Yagni Launcher stays fast where others get slower with every update.
 
 ## Screenshots
 
