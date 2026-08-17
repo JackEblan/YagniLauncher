@@ -46,8 +46,8 @@ import kotlin.time.Duration.Companion.milliseconds
 private data class GridDragPosition(
     val x: Int,
     val y: Int,
-    val width: Int,
-    val height: Int,
+    val safeDrawingWidth: Int,
+    val safeDrawingHeight: Int,
     val isOnDock: Boolean,
 )
 
@@ -232,8 +232,8 @@ internal fun handleDragGridItem(
                     dragX = gridDragPosition.x,
                     dragY = gridDragPosition.y,
                     gridItemSource = currentGridItemSource,
-                    safeDrawingHeight = gridDragPosition.height,
-                    safeDrawingWidth = gridDragPosition.width,
+                    safeDrawingHeight = gridDragPosition.safeDrawingHeight,
+                    safeDrawingWidth = gridDragPosition.safeDrawingWidth,
                     moveGridItemResult = moveGridItemResult,
                     onMoveGridItem = onMoveGridItem,
                     onUpdateAssociate = onUpdateAssociate,
@@ -249,8 +249,8 @@ internal fun handleDragGridItem(
                     dragY = gridDragPosition.y,
                     gridItemSource = currentGridItemSource,
                     rows = rows,
-                    safeDrawingHeight = gridDragPosition.height,
-                    safeDrawingWidth = gridDragPosition.width,
+                    safeDrawingHeight = gridDragPosition.safeDrawingHeight,
+                    safeDrawingWidth = gridDragPosition.safeDrawingWidth,
                     moveGridItemResult = moveGridItemResult,
                     onMoveGridItem = onMoveGridItem,
                     onUpdateAssociate = onUpdateAssociate,
@@ -556,8 +556,8 @@ private fun calculateGridDragPosition(
     return GridDragPosition(
         x = layoutDirectionX,
         y = localDragY,
-        width = safeDrawingWidth,
-        height = safeDrawingHeight,
+        safeDrawingWidth = safeDrawingWidth,
+        safeDrawingHeight = safeDrawingHeight,
         isOnDock = isOnDock,
     )
 }

@@ -210,20 +210,16 @@ internal fun ApplicationInfoPopup(
                     transitionState.targetState = false
                 },
                 onTapShortcutInfo = { serialNumber, packageName, shortcutId ->
-                    val sourceBoundsX = popupIntOffset.x + leftPadding
-
-                    val sourceBoundsY = popupIntOffset.y + topPadding
-
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
                         launcherApps.startShortcut(
                             serialNumber = serialNumber,
                             packageName = packageName,
                             id = shortcutId,
                             sourceBounds = Rect(
-                                sourceBoundsX,
-                                sourceBoundsY,
-                                sourceBoundsX + popupIntSize.width,
-                                sourceBoundsY + popupIntSize.height,
+                                popupIntOffset.x,
+                                popupIntOffset.y,
+                                popupIntOffset.x + popupIntSize.width,
+                                popupIntOffset.y + popupIntSize.height,
                             ),
                         )
                     }
@@ -378,20 +374,16 @@ internal fun PrivateApplicationInfoPopup(
                     transitionState.targetState = false
                 },
                 onTapShortcutInfo = { serialNumber, packageName, shortcutId ->
-                    val sourceBoundsX = popupIntOffset.x + leftPadding
-
-                    val sourceBoundsY = popupIntOffset.y + topPadding
-
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
                         launcherApps.startShortcut(
                             serialNumber = serialNumber,
                             packageName = packageName,
                             id = shortcutId,
                             sourceBounds = Rect(
-                                sourceBoundsX,
-                                sourceBoundsY,
-                                sourceBoundsX + popupIntSize.width,
-                                sourceBoundsY + popupIntSize.height,
+                                popupIntOffset.x,
+                                popupIntOffset.y,
+                                popupIntOffset.x + popupIntSize.width,
+                                popupIntOffset.y + popupIntSize.height,
                             ),
                         )
                     }

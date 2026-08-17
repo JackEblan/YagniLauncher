@@ -144,19 +144,19 @@ internal fun GridItemResizeOverlay(
         key2 = currentHeight.value,
     ) {
         resizeGridItem(
-            currentWidth,
-            cellWidth,
-            currentHeight,
-            cellHeight,
-            dragHandle,
-            gridItem,
-            rows,
-            columns,
-            gridWidth,
-            gridHeight,
-            isResizing,
-            lockMovement,
-            onResizeGridItem,
+            currentWidth = currentWidth,
+            cellWidth = cellWidth,
+            currentHeight = currentHeight,
+            cellHeight = cellHeight,
+            dragHandle = dragHandle,
+            gridItem = gridItem,
+            rows = rows,
+            columns = columns,
+            gridWidth = gridWidth,
+            gridHeight = gridHeight,
+            isResizing = isResizing,
+            lockMovement = lockMovement,
+            onResizeGridItem = onResizeGridItem,
         )
     }
 
