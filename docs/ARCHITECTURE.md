@@ -2,9 +2,9 @@
 
 This document describes how Yagni Launcher's Gradle modules are organized and how they map onto Clean Architecture. It focuses on stable module responsibilities and dependency rules rather than an inventory of classes, which changes far more often than the architecture itself.
 
-This module structure follows [The Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html):
+This module structure follows [The Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
 
-![<img src="docs/yagni-clean-architecture-onion.svg"](docs/yagni-clean-architecture-onion.svg)
+![Clean Architecture](yagni-clean-architecture-onion.svg)
 
 ---
 
