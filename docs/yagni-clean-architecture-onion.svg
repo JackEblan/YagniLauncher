@@ -100,7 +100,6 @@
     <text x="418" y="826" font-weight="600">domain:framework</text>
     <text x="418" y="848" font-weight="600">domain:grid</text>
     <text x="418" y="870" font-weight="600">domain:model</text>
-    <text x="418" y="866" font-size="10.5" fill="#a16207" dx="88">entities &amp; value objects</text>
     <text x="418" y="892" font-weight="600">domain:repository</text>
     <text x="418" y="914" font-weight="600">domain:use-case</text>
   </g>
