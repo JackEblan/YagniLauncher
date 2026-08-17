@@ -6,7 +6,7 @@
 <p><b>YAGNI ("You Aren't Gonna Need It")</b> is a principle which arose from extreme programming (XP) that states a programmer should not add functionality until deemed necessary.</p>
 
 <p><b>Why Choose Yagni Launcher?</b></p>
-<p>The launcher is the first thing you see every time you unlock your phone — it shouldn't be slow, heavy, or draining your battery in the background.</p>
+<p>The launcher is the first thing you see every time you unlock your phone. It shouldn't be slow, heavy, or draining your battery in the background.</p>
 <p>There are a lot of launchers out there. What sets Yagni Launcher apart is a relentless focus on performance and user experience over feature bloat.</p>
 <p>Yagni Launcher matches stock launcher functionality and goes beyond it, rebuilt from scratch with modern Android tooling.</p>
 <ul>

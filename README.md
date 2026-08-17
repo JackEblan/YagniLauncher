@@ -32,7 +32,7 @@ Closed-source launchers are locking features behind paywalls and adding trackers
 
 ## Why Choose Yagni Launcher?
 
-The launcher is the first thing you see every time you unlock your phone — it shouldn't be slow, heavy, or draining your battery in the background.
+The launcher is the first thing you see every time you unlock your phone. It shouldn't be slow, heavy, or draining your battery in the background.
 
 There are a lot of launchers out there. What sets Yagni Launcher apart is a relentless focus on performance and user experience over feature bloat.
 
