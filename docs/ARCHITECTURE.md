@@ -4,7 +4,7 @@ This document describes how Yagni Launcher's Gradle modules are organized and ho
 
 This module structure follows [The Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html):
 
-![The Clean Architecture](https://blog.cleancoder.com/uncle-bob/images/2012-08-13-the-clean-architecture/CleanArchitecture.jpg)
+![<img src="docs/yagni-clean-architecture-onion.svg"](docs/yagni-clean-architecture-onion.svg)
 
 ---
 
@@ -40,68 +40,6 @@ Dependencies only point **inward**: Presentation depends on Framework and Domain
 ## Dependency Diagram
 
 The diagram below is intentionally simplified to the module *groups* and is representative rather than exhaustive — some direct dependencies (for example `app`'s and `ui`'s direct dependencies on individual `domain:*` modules) are omitted for clarity. Edit it directly as modules are added, split, or merged.
-
-```mermaid
-graph TD
-    subgraph Presentation
-        Feature["feature:*"]
-        UI["ui"]
-        DesignSystem["design-system"]
-        Service["service"]
-    end
-
-    subgraph Framework
-        FrameworkModules["framework:*"]
-    end
-
-    subgraph Data
-        DataRepository["data:repository"]
-        DataRoom["data:room"]
-        DataDatastore["data:datastore"]
-        DataDatastoreProto["data:datastore-proto"]
-    end
-
-    subgraph Domain
-        DomainModel["domain:model"]
-        DomainRepository["domain:repository"]
-        DomainFramework["domain:framework"]
-        DomainUseCase["domain:use-case"]
-        DomainGrid["domain:grid"]
-        DomainCommon["domain:common"]
-    end
-
-    App["app"] --> Feature
-    App --> Service
-    App --> DataRepository
-    App --> FrameworkModules
-
-    Feature --> UI
-    Feature --> DesignSystem
-    Feature --> DomainUseCase
-    Feature --> DomainRepository
-    Feature --> DomainFramework
-
-    UI --> DesignSystem
-    UI --> FrameworkModules
-    UI --> DomainModel
-
-    DomainUseCase --> DomainRepository
-    DomainUseCase --> DomainFramework
-    DomainUseCase --> DomainGrid
-    DomainUseCase --> DomainCommon
-    DomainUseCase --> DomainModel
-
-    DataRepository --> DataRoom
-    DataRepository --> DataDatastore
-    DataRepository --> DomainRepository
-    DataRoom --> DomainModel
-
-    DataDatastore --> DataDatastoreProto
-
-    FrameworkModules --> DomainFramework
-```
-
----
 
 ## Module Groups
 
