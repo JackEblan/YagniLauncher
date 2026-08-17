@@ -59,9 +59,11 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.unit.round
@@ -130,18 +132,6 @@ internal fun InteractiveFolderGridItem(
 
     val layoutDirection = LocalLayoutDirection.current
 
-    val leftPadding = with(density) {
-        paddingValues.calculateLeftPadding(layoutDirection).roundToPx()
-    }
-
-    val topPadding = with(density) {
-        paddingValues.calculateTopPadding().roundToPx()
-    }
-
-    val x = gridItem.startColumn * minCellWidthPx
-
-    val y = gridItem.startRow * minCellHeightPx
-
     val isSelected =
         moveGridItemResult != null && moveGridItemResult.movingGridItem.id == gridItem.id
 
@@ -155,15 +145,13 @@ internal fun InteractiveFolderGridItem(
 
     val hasInteraction = isSelected && isVisibleOverlay
 
-    val sourceBoundsX = x + leftPadding
-
-    val sourceBoundsY = y + topPadding
-
-    val sourceBounds = Rect(
-        sourceBoundsX,
-        sourceBoundsY,
-        sourceBoundsX + minCellWidthPx,
-        sourceBoundsY + minCellHeightPx,
+    val sourceBounds = getSourceBounds(
+        density = density,
+        layoutDirection = layoutDirection,
+        paddingValues = paddingValues,
+        gridItem = gridItem,
+        minCellWidthPx = minCellWidthPx,
+        minCellHeightPx = minCellHeightPx,
     )
 
     LaunchedEffect(
@@ -335,9 +323,9 @@ private fun InteractiveFolderApplicationInfoGridItem(
 
     val hasNotifications =
         statusBarNotifications[data.packageName] != null && (
-            statusBarNotifications[data.packageName]
-                ?: 0
-            ) > 0
+                statusBarNotifications[data.packageName]
+                    ?: 0
+                ) > 0
 
     val hasInteraction = isSelected && isVisibleOverlay
 
@@ -1134,4 +1122,35 @@ private fun PreviewNestedFolderGridItem(
             else -> Unit
         }
     }
+}
+
+private fun getSourceBounds(
+    density: Density,
+    layoutDirection: LayoutDirection,
+    paddingValues: PaddingValues,
+    gridItem: GridItem,
+    minCellWidthPx: Int,
+    minCellHeightPx: Int,
+): Rect {
+    val leftPadding = with(density) {
+        paddingValues.calculateLeftPadding(layoutDirection).roundToPx()
+    }
+
+    val topPadding = with(density) {
+        paddingValues.calculateTopPadding().roundToPx()
+    }
+
+    val x = gridItem.startColumn * minCellWidthPx
+
+    val y = gridItem.startRow * minCellHeightPx
+
+    val sourceBoundsX = x + leftPadding
+
+    val sourceBoundsY = y + topPadding
+    return Rect(
+        sourceBoundsX,
+        sourceBoundsY,
+        sourceBoundsX + minCellWidthPx,
+        sourceBoundsY + minCellHeightPx,
+    )
 }

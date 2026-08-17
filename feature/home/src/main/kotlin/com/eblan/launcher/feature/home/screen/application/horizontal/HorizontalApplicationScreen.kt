@@ -17,7 +17,6 @@
  */
 package com.eblan.launcher.feature.home.screen.application.horizontal
 
-import android.graphics.Rect
 import android.os.Build
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
@@ -49,8 +48,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
@@ -82,7 +79,6 @@ import com.eblan.launcher.feature.home.screen.application.PrivateSpaceEblanAppli
 import com.eblan.launcher.feature.home.screen.application.QuiteModeScreen
 import com.eblan.launcher.feature.home.screen.application.TagElevatedFilterChip
 import com.eblan.launcher.feature.home.screen.application.rememberIsQuietModeEnabled
-import com.eblan.launcher.ui.local.LocalLauncherApps
 import com.eblan.launcher.ui.local.LocalUserManager
 import com.eblan.launcher.ui.settings.rememberIsDefaultLauncher
 import kotlinx.coroutines.FlowPreview
@@ -126,12 +122,6 @@ internal fun HorizontalApplicationScreen(
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
-    val density = LocalDensity.current
-
-    val layoutDirection = LocalLayoutDirection.current
-
-    val launcherApps = LocalLauncherApps.current
-
     var showPopupApplicationMenu by remember { mutableStateOf(false) }
 
     var showPrivatePopupApplicationMenu by remember { mutableStateOf(false) }
@@ -139,14 +129,6 @@ internal fun HorizontalApplicationScreen(
     var popupIntOffset by remember { mutableStateOf(IntOffset.Zero) }
 
     var popupIntSize by remember { mutableStateOf(IntSize.Zero) }
-
-    val leftPadding = with(density) {
-        paddingValues.calculateLeftPadding(layoutDirection).roundToPx()
-    }
-
-    val topPadding = with(density) {
-        paddingValues.calculateTopPadding().roundToPx()
-    }
 
     val horizontalPagerState = rememberPagerState(
         pageCount = {
@@ -287,25 +269,6 @@ internal fun HorizontalApplicationScreen(
                 onUpdateIsDragging(it)
             },
             onEditApplicationInfo = onEditApplicationInfo,
-            onTapShortcutInfo = { serialNumber, packageName, shortcutId ->
-                val sourceBoundsX = popupIntOffset.x + leftPadding
-
-                val sourceBoundsY = popupIntOffset.y + topPadding
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
-                    launcherApps.startShortcut(
-                        serialNumber = serialNumber,
-                        packageName = packageName,
-                        id = shortcutId,
-                        sourceBounds = Rect(
-                            sourceBoundsX,
-                            sourceBoundsY,
-                            sourceBoundsX + popupIntSize.width,
-                            sourceBoundsY + popupIntSize.height,
-                        ),
-                    )
-                }
-            },
             onUpdateGridItemSource = onUpdateGridItemSource,
             onUpdateImageBitmap = onUpdateImageBitmap,
             onUpdateOverlayBounds = onUpdateOverlayBounds,
@@ -329,25 +292,6 @@ internal fun HorizontalApplicationScreen(
                 showPrivatePopupApplicationMenu = false
             },
             onEditApplicationInfo = onEditApplicationInfo,
-            onTapShortcutInfo = { serialNumber, packageName, shortcutId ->
-                val sourceBoundsX = popupIntOffset.x + leftPadding
-
-                val sourceBoundsY = popupIntOffset.y + topPadding
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
-                    launcherApps.startShortcut(
-                        serialNumber = serialNumber,
-                        packageName = packageName,
-                        id = shortcutId,
-                        sourceBounds = Rect(
-                            sourceBoundsX,
-                            sourceBoundsY,
-                            sourceBoundsX + popupIntSize.width,
-                            sourceBoundsY + popupIntSize.height,
-                        ),
-                    )
-                }
-            },
         )
     }
 }

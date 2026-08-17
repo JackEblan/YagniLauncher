@@ -66,6 +66,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.core.util.Consumer
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
@@ -106,33 +109,13 @@ internal fun EditGridPageScreen(
 
     val layoutDirection = LocalLayoutDirection.current
 
-    val leftPadding = with(density) {
-        paddingValues.calculateLeftPadding(layoutDirection).roundToPx()
-    }
-
-    val topPadding = with(density) {
-        paddingValues.calculateTopPadding().roundToPx()
-    }
-
-    val rightPadding = with(density) {
-        paddingValues.calculateRightPadding(layoutDirection).roundToPx()
-    }
-
-    val bottomPadding = with(density) {
-        paddingValues.calculateBottomPadding().roundToPx()
-    }
-
-    val horizontalPadding = leftPadding + rightPadding
-
-    val verticalPadding = topPadding + bottomPadding
-
-    val gridWidthDp = with(density) {
-        (screenWidth - horizontalPadding).toDp()
-    }
-
-    val gridHeightDp = with(density) {
-        (screenHeight - verticalPadding).toDp()
-    }
+    val (gridWidthDp, gridHeightDp) = getGridSize(
+        density = density,
+        paddingValues = paddingValues,
+        layoutDirection = layoutDirection,
+        screenWidth = screenWidth,
+        screenHeight = screenHeight,
+    )
 
     var currentPageItems by remember { mutableStateOf(pageItems) }
 
@@ -283,6 +266,44 @@ internal fun EditGridPageScreen(
             },
         )
     }
+}
+
+private fun getGridSize(
+    density: Density,
+    paddingValues: PaddingValues,
+    layoutDirection: LayoutDirection,
+    screenWidth: Int,
+    screenHeight: Int,
+): Pair<Dp, Dp> {
+    val leftPadding = with(density) {
+        paddingValues.calculateLeftPadding(layoutDirection).roundToPx()
+    }
+
+    val topPadding = with(density) {
+        paddingValues.calculateTopPadding().roundToPx()
+    }
+
+    val rightPadding = with(density) {
+        paddingValues.calculateRightPadding(layoutDirection).roundToPx()
+    }
+
+    val bottomPadding = with(density) {
+        paddingValues.calculateBottomPadding().roundToPx()
+    }
+
+    val horizontalPadding = leftPadding + rightPadding
+
+    val verticalPadding = topPadding + bottomPadding
+
+    val gridWidthDp = with(density) {
+        (screenWidth - horizontalPadding).toDp()
+    }
+
+    val gridHeightDp = with(density) {
+        (screenHeight - verticalPadding).toDp()
+    }
+
+    return gridWidthDp to gridHeightDp
 }
 
 @OptIn(ExperimentalSharedTransitionApi::class)

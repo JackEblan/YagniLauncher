@@ -17,7 +17,6 @@
  */
 package com.eblan.launcher.feature.home.screen.application.list
 
-import android.graphics.Rect
 import android.os.Build
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
@@ -165,8 +164,6 @@ internal fun ListApplicationScreen(
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
-    val density = LocalDensity.current
-
     val layoutDirection = LocalLayoutDirection.current
 
     var showPopupApplicationMenu by remember { mutableStateOf(false) }
@@ -176,16 +173,6 @@ internal fun ListApplicationScreen(
     var popupIntOffset by remember { mutableStateOf(IntOffset.Zero) }
 
     var popupIntSize by remember { mutableStateOf(IntSize.Zero) }
-
-    val launcherApps = LocalLauncherApps.current
-
-    val leftPadding = with(density) {
-        paddingValues.calculateLeftPadding(layoutDirection).roundToPx()
-    }
-
-    val topPadding = with(density) {
-        paddingValues.calculateTopPadding().roundToPx()
-    }
 
     val horizontalPagerState = rememberPagerState(
         pageCount = {
@@ -331,25 +318,6 @@ internal fun ListApplicationScreen(
                 onUpdateIsDragging(it)
             },
             onEditApplicationInfo = onEditApplicationInfo,
-            onTapShortcutInfo = { serialNumber, packageName, shortcutId ->
-                val sourceBoundsX = popupIntOffset.x + leftPadding
-
-                val sourceBoundsY = popupIntOffset.y + topPadding
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
-                    launcherApps.startShortcut(
-                        serialNumber = serialNumber,
-                        packageName = packageName,
-                        id = shortcutId,
-                        sourceBounds = Rect(
-                            sourceBoundsX,
-                            sourceBoundsY,
-                            sourceBoundsX + popupIntSize.width,
-                            sourceBoundsY + popupIntSize.height,
-                        ),
-                    )
-                }
-            },
             onUpdateGridItemSource = onUpdateGridItemSource,
             onUpdateImageBitmap = onUpdateImageBitmap,
             onUpdateOverlayBounds = onUpdateOverlayBounds,
@@ -373,25 +341,6 @@ internal fun ListApplicationScreen(
                 showPrivatePopupApplicationMenu = false
             },
             onEditApplicationInfo = onEditApplicationInfo,
-            onTapShortcutInfo = { serialNumber, packageName, shortcutId ->
-                val sourceBoundsX = popupIntOffset.x + leftPadding
-
-                val sourceBoundsY = popupIntOffset.y + topPadding
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
-                    launcherApps.startShortcut(
-                        serialNumber = serialNumber,
-                        packageName = packageName,
-                        id = shortcutId,
-                        sourceBounds = Rect(
-                            sourceBoundsX,
-                            sourceBoundsY,
-                            sourceBoundsX + popupIntSize.width,
-                            sourceBoundsY + popupIntSize.height,
-                        ),
-                    )
-                }
-            },
         )
     }
 }
