@@ -149,9 +149,10 @@ internal fun InteractiveFolderGridItem(
         density = density,
         layoutDirection = layoutDirection,
         paddingValues = paddingValues,
-        gridItem = gridItem,
-        minCellWidthPx = minCellWidthPx,
-        minCellHeightPx = minCellHeightPx,
+        startColumn = gridItem.startColumn,
+        startRow = gridItem.startRow,
+        cellWidth = minCellWidthPx,
+        cellHeight = minCellHeightPx,
     )
 
     LaunchedEffect(
@@ -323,9 +324,9 @@ private fun InteractiveFolderApplicationInfoGridItem(
 
     val hasNotifications =
         statusBarNotifications[data.packageName] != null && (
-                statusBarNotifications[data.packageName]
-                    ?: 0
-                ) > 0
+            statusBarNotifications[data.packageName]
+                ?: 0
+            ) > 0
 
     val hasInteraction = isSelected && isVisibleOverlay
 
@@ -1128,9 +1129,10 @@ private fun getSourceBounds(
     density: Density,
     layoutDirection: LayoutDirection,
     paddingValues: PaddingValues,
-    gridItem: GridItem,
-    minCellWidthPx: Int,
-    minCellHeightPx: Int,
+    startColumn: Int,
+    startRow: Int,
+    cellWidth: Int,
+    cellHeight: Int,
 ): Rect {
     val leftPadding = with(density) {
         paddingValues.calculateLeftPadding(layoutDirection).roundToPx()
@@ -1140,17 +1142,18 @@ private fun getSourceBounds(
         paddingValues.calculateTopPadding().roundToPx()
     }
 
-    val x = gridItem.startColumn * minCellWidthPx
+    val x = startColumn * cellWidth
 
-    val y = gridItem.startRow * minCellHeightPx
+    val y = startRow * cellHeight
 
-    val sourceBoundsX = x + leftPadding
+    val left = x + leftPadding
 
-    val sourceBoundsY = y + topPadding
+    val top = y + topPadding
+
     return Rect(
-        sourceBoundsX,
-        sourceBoundsY,
-        sourceBoundsX + minCellWidthPx,
-        sourceBoundsY + minCellHeightPx,
+        left,
+        top,
+        left + cellWidth,
+        top + cellHeight,
     )
 }

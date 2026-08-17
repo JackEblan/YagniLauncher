@@ -19,6 +19,7 @@ package com.eblan.launcher.feature.home.screen.resize
 
 import android.appwidget.AppWidgetProviderInfo
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -39,6 +40,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.eblan.launcher.domain.grid.isGridItemSpanWithinBounds
@@ -48,6 +50,7 @@ import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.SideAnchor
 import com.eblan.launcher.feature.home.util.DRAG_HANDLE_SIZE
 import com.eblan.launcher.feature.home.util.updateAppWidgetOptions
+import com.eblan.launcher.framework.widgetmanager.AndroidAppWidgetManagerWrapper
 import com.eblan.launcher.ui.local.LocalAppWidgetManager
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
@@ -115,29 +118,27 @@ internal fun WidgetGridItemResizeOverlay(
 
     val borderX by remember {
         derivedStateOf {
-            if (dragHandle == Alignment.CenterStart) {
-                if (currentWidth.value >= dragHandleSizePx) {
-                    currentX.value.roundToInt()
-                } else {
-                    (x + width) - dragHandleSizePx
-                }
-            } else {
-                currentX.value.roundToInt()
-            }
+            getBorderX(
+                dragHandle = dragHandle,
+                currentWidth = currentWidth,
+                dragHandleSizePx = dragHandleSizePx,
+                currentX = currentX,
+                x = x,
+                width = width,
+            )
         }
     }
 
     val borderY by remember {
         derivedStateOf {
-            if (dragHandle == Alignment.TopCenter) {
-                if (currentHeight.value >= dragHandleSizePx) {
-                    currentY.value.roundToInt()
-                } else {
-                    (y + height) - dragHandleSizePx
-                }
-            } else {
-                currentY.value.roundToInt()
-            }
+            getBorderY(
+                dragHandle = dragHandle,
+                currentHeight = currentHeight,
+                dragHandleSizePx = dragHandleSizePx,
+                currentY = currentY,
+                y = y,
+                height = height,
+            )
         }
     }
 
@@ -150,106 +151,24 @@ internal fun WidgetGridItemResizeOverlay(
         key1 = currentWidth.value,
         key2 = currentHeight.value,
     ) {
-        val allowedWidth =
-            if (data.minResizeWidth > 0 && currentWidth.value.roundToInt() <= data.minResizeWidth) {
-                data.minResizeWidth
-            } else if (data.maxResizeWidth in 1..<currentWidth.value.roundToInt()) {
-                data.maxResizeWidth
-            } else {
-                currentWidth.value.roundToInt()
-            }
-
-        val allowedHeight =
-            if (data.minResizeHeight > 0 && currentHeight.value.roundToInt() <= data.minResizeHeight) {
-                data.minResizeHeight
-            } else if (data.maxResizeHeight in 1..<currentHeight.value.roundToInt()) {
-                data.maxResizeHeight
-            } else {
-                currentHeight.value.roundToInt()
-            }
-
-        val resizingGridItem = when (dragHandle) {
-            Alignment.TopCenter -> {
-                resizeWidgetGridItemWithPixels(
-                    gridItem = gridItem,
-                    width = width,
-                    height = allowedHeight,
-                    rows = rows,
-                    columns = columns,
-                    gridWidth = gridWidth,
-                    gridHeight = gridHeight,
-                    anchor = SideAnchor.Bottom,
-                )
-            }
-
-            Alignment.CenterEnd -> {
-                resizeWidgetGridItemWithPixels(
-                    gridItem = gridItem,
-                    width = allowedWidth,
-                    height = height,
-                    rows = rows,
-                    columns = columns,
-                    gridWidth = gridWidth,
-                    gridHeight = gridHeight,
-                    anchor = SideAnchor.Left,
-                )
-            }
-
-            Alignment.BottomCenter -> {
-                resizeWidgetGridItemWithPixels(
-                    gridItem = gridItem,
-                    width = width,
-                    height = allowedHeight,
-                    rows = rows,
-                    columns = columns,
-                    gridWidth = gridWidth,
-                    gridHeight = gridHeight,
-                    anchor = SideAnchor.Top,
-                )
-            }
-
-            Alignment.CenterStart -> {
-                resizeWidgetGridItemWithPixels(
-                    gridItem = gridItem,
-                    width = allowedWidth,
-                    height = height,
-                    rows = rows,
-                    columns = columns,
-                    gridWidth = gridWidth,
-                    gridHeight = gridHeight,
-                    anchor = SideAnchor.Right,
-                )
-            }
-
-            else -> null
-        }
-
-        if (isResizing && resizingGridItem != null && isGridItemSpanWithinBounds(
-                gridItem = resizingGridItem,
-                columns = columns,
-                rows = rows,
-            ) && !lockMovement
-        ) {
-            updateAppWidgetOptions(
-                height = allowedHeight,
-                width = allowedWidth,
-                androidAppWidgetManagerWrapper = appWidgetManager,
-                columns = columns,
-                data = data,
-                density = density,
-                gridHeight = gridHeight,
-                gridWidth = gridWidth,
-                rows = rows,
-                startColumn = resizingGridItem.startColumn,
-                startRow = resizingGridItem.startRow,
-            )
-
-            onResizeWidgetGridItem(
-                resizingGridItem,
-                columns,
-                rows,
-            )
-        }
+        resizeGridItem(
+            data = data,
+            currentWidth = currentWidth,
+            currentHeight = currentHeight,
+            dragHandle = dragHandle,
+            gridItem = gridItem,
+            width = width,
+            rows = rows,
+            columns = columns,
+            gridWidth = gridWidth,
+            gridHeight = gridHeight,
+            height = height,
+            isResizing = isResizing,
+            lockMovement = lockMovement,
+            appWidgetManager = appWidgetManager,
+            density = density,
+            onResizeWidgetGridItem = onResizeWidgetGridItem,
+        )
     }
 
     LaunchedEffect(key1 = isResizing) {
@@ -388,6 +307,160 @@ internal fun WidgetGridItemResizeOverlay(
                     this
                 }
             },
+        )
+    }
+}
+
+private fun getBorderX(
+    dragHandle: Alignment,
+    currentWidth: Animatable<Float, AnimationVector1D>,
+    dragHandleSizePx: Int,
+    currentX: Animatable<Float, AnimationVector1D>,
+    x: Int,
+    width: Int,
+): Int = if (dragHandle == Alignment.CenterStart) {
+    if (currentWidth.value >= dragHandleSizePx) {
+        currentX.value.roundToInt()
+    } else {
+        (x + width) - dragHandleSizePx
+    }
+} else {
+    currentX.value.roundToInt()
+}
+
+private fun getBorderY(
+    dragHandle: Alignment,
+    currentHeight: Animatable<Float, AnimationVector1D>,
+    dragHandleSizePx: Int,
+    currentY: Animatable<Float, AnimationVector1D>,
+    y: Int,
+    height: Int,
+): Int = if (dragHandle == Alignment.TopCenter) {
+    if (currentHeight.value >= dragHandleSizePx) {
+        currentY.value.roundToInt()
+    } else {
+        (y + height) - dragHandleSizePx
+    }
+} else {
+    currentY.value.roundToInt()
+}
+
+private fun resizeGridItem(
+    data: GridItemData.Widget,
+    currentWidth: Animatable<Float, AnimationVector1D>,
+    currentHeight: Animatable<Float, AnimationVector1D>,
+    dragHandle: Alignment,
+    gridItem: GridItem,
+    width: Int,
+    rows: Int,
+    columns: Int,
+    gridWidth: Int,
+    gridHeight: Int,
+    height: Int,
+    isResizing: Boolean,
+    lockMovement: Boolean,
+    appWidgetManager: AndroidAppWidgetManagerWrapper,
+    density: Density,
+    onResizeWidgetGridItem: (GridItem, Int, Int) -> Unit,
+) {
+    val allowedWidth =
+        if (data.minResizeWidth > 0 && currentWidth.value.roundToInt() <= data.minResizeWidth) {
+            data.minResizeWidth
+        } else if (data.maxResizeWidth in 1..<currentWidth.value.roundToInt()) {
+            data.maxResizeWidth
+        } else {
+            currentWidth.value.roundToInt()
+        }
+
+    val allowedHeight =
+        if (data.minResizeHeight > 0 && currentHeight.value.roundToInt() <= data.minResizeHeight) {
+            data.minResizeHeight
+        } else if (data.maxResizeHeight in 1..<currentHeight.value.roundToInt()) {
+            data.maxResizeHeight
+        } else {
+            currentHeight.value.roundToInt()
+        }
+
+    val resizingGridItem = when (dragHandle) {
+        Alignment.TopCenter -> {
+            resizeWidgetGridItemWithPixels(
+                gridItem = gridItem,
+                width = width,
+                height = allowedHeight,
+                rows = rows,
+                columns = columns,
+                gridWidth = gridWidth,
+                gridHeight = gridHeight,
+                anchor = SideAnchor.Bottom,
+            )
+        }
+
+        Alignment.CenterEnd -> {
+            resizeWidgetGridItemWithPixels(
+                gridItem = gridItem,
+                width = allowedWidth,
+                height = height,
+                rows = rows,
+                columns = columns,
+                gridWidth = gridWidth,
+                gridHeight = gridHeight,
+                anchor = SideAnchor.Left,
+            )
+        }
+
+        Alignment.BottomCenter -> {
+            resizeWidgetGridItemWithPixels(
+                gridItem = gridItem,
+                width = width,
+                height = allowedHeight,
+                rows = rows,
+                columns = columns,
+                gridWidth = gridWidth,
+                gridHeight = gridHeight,
+                anchor = SideAnchor.Top,
+            )
+        }
+
+        Alignment.CenterStart -> {
+            resizeWidgetGridItemWithPixels(
+                gridItem = gridItem,
+                width = allowedWidth,
+                height = height,
+                rows = rows,
+                columns = columns,
+                gridWidth = gridWidth,
+                gridHeight = gridHeight,
+                anchor = SideAnchor.Right,
+            )
+        }
+
+        else -> null
+    }
+
+    if (isResizing && resizingGridItem != null && isGridItemSpanWithinBounds(
+            gridItem = resizingGridItem,
+            columns = columns,
+            rows = rows,
+        ) && !lockMovement
+    ) {
+        updateAppWidgetOptions(
+            height = allowedHeight,
+            width = allowedWidth,
+            androidAppWidgetManagerWrapper = appWidgetManager,
+            columns = columns,
+            data = data,
+            density = density,
+            gridHeight = gridHeight,
+            gridWidth = gridWidth,
+            rows = rows,
+            startColumn = resizingGridItem.startColumn,
+            startRow = resizingGridItem.startRow,
+        )
+
+        onResizeWidgetGridItem(
+            resizingGridItem,
+            columns,
+            rows,
         )
     }
 }

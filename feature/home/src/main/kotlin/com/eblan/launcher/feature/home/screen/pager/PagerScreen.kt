@@ -814,29 +814,10 @@ internal fun PagerScreen(
                 onDismissRequest = pagerScreenState::dismissGridItemPopup,
                 onUpdateIsDragging = pagerScreenState::updateIsDragging,
                 onEdit = onEditGridItem,
-                onInfo = { serialNumber, componentName ->
-                    pagerScreenState.startAppDetailsActivity(
-                        left = pagerScreenState.popupIntOffset?.x,
-                        top = pagerScreenState.popupIntOffset?.y,
-                        width = pagerScreenState.popupIntSize?.width,
-                        height = pagerScreenState.popupIntSize?.height,
-                        serialNumber = serialNumber,
-                        componentName = componentName,
-                    )
-                },
                 onResize = {
                     pagerScreenState.resize(
                         resizeGridItem = it,
                         onUpdateResizeGridItem = onUpdateResizeGridItem,
-                    )
-                },
-                onTapShortcutInfo = { serialNumber, packageName, shortcutId ->
-                    pagerScreenState.startPopupShortcut(
-                        leftPadding = leftPadding,
-                        topPadding = topPadding,
-                        serialNumber = serialNumber,
-                        packageName = packageName,
-                        shortcutId = shortcutId,
                     )
                 },
                 onUpdateGridItemSource = onUpdateGridItemSource,
@@ -924,25 +905,6 @@ internal fun PagerScreen(
                 onDismissRequest = pagerScreenState::dismissFolderGridItemPopup,
                 onUpdateIsDragging = pagerScreenState::updateIsDragging,
                 onEdit = onEditGridItem,
-                onInfo = { serialNumber, componentName ->
-                    pagerScreenState.startAppDetailsActivity(
-                        left = lastPopupFolderGridItem.folderPopupEntry.x,
-                        top = lastPopupFolderGridItem.folderPopupEntry.y,
-                        width = lastPopupFolderGridItem.folderPopupEntry.width,
-                        height = lastPopupFolderGridItem.folderPopupEntry.height,
-                        serialNumber = serialNumber,
-                        componentName = componentName,
-                    )
-                },
-                onTapShortcutInfo = { serialNumber, packageName, shortcutId ->
-                    pagerScreenState.startPopupShortcut(
-                        leftPadding = leftPadding,
-                        topPadding = topPadding,
-                        serialNumber = serialNumber,
-                        packageName = packageName,
-                        shortcutId = shortcutId,
-                    )
-                },
                 onUpdateGridItemSource = onUpdateGridItemSource,
                 onUpdateImageBitmap = pagerScreenState::updateOverlayImageBitmap,
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,

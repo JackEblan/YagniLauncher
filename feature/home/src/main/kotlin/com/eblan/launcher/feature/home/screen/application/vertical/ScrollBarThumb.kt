@@ -112,7 +112,7 @@ internal fun ScrollBarThumb(
                             offset = it,
                             appDrawerColumns = appDrawerColumns,
                             scope = scope,
-                            onScrollToItem = onScrollToItem
+                            onScrollToItem = onScrollToItem,
                         )
                     })
                 }
@@ -198,13 +198,13 @@ private fun handleOnTap(
     val totalRows =
         ceil(
             lazyGridState.layoutInfo.totalItemsCount /
-                    appDrawerColumns.toFloat(),
+                appDrawerColumns.toFloat(),
         ).toInt()
 
     val row = (
-            targetThumbY /
-                    maxThumbY.coerceAtLeast(1)
-            ) * (totalRows - 1)
+        targetThumbY /
+            maxThumbY.coerceAtLeast(1)
+        ) * (totalRows - 1)
 
     scope.launch {
         onScrollToItem(

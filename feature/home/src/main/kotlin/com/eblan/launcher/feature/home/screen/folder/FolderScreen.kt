@@ -164,10 +164,11 @@ internal fun FolderScreen(
 
     val progress = remember { Animatable(0f) }
 
-    val animatedRect by rememberAnimatedFolderRect(
-        folderPopupLayoutInfo = folderPopupLayoutInfo,
-        progress = progress,
-    )
+    val animatedRect by remember(key1 = folderPopupLayoutInfo) {
+        derivedStateOf {
+            getAnimatedRect(folderPopupLayoutInfo = folderPopupLayoutInfo, progress = progress)
+        }
+    }
 
     val folderGridHorizontalPagerState = rememberPagerState(
         pageCount = {
@@ -407,6 +408,42 @@ internal fun FolderScreen(
     }
 }
 
+private fun getAnimatedRect(
+    folderPopupLayoutInfo: FolderPopupLayoutInfo,
+    progress: Animatable<Float, AnimationVector1D>,
+): RectF {
+    val currentWidth = lerp(
+        folderPopupLayoutInfo.startWidth,
+        folderPopupLayoutInfo.folderGridWidthPx.toFloat(),
+        progress.value,
+    )
+
+    val currentHeight = lerp(
+        folderPopupLayoutInfo.startHeight,
+        folderPopupLayoutInfo.endHeight.toFloat(),
+        progress.value,
+    )
+
+    val currentX = lerp(
+        folderPopupLayoutInfo.startCenterX,
+        folderPopupLayoutInfo.endCenterX,
+        progress.value,
+    ) - currentWidth / 2f
+
+    val currentY = lerp(
+        folderPopupLayoutInfo.startCenterY,
+        folderPopupLayoutInfo.endCenterY,
+        progress.value,
+    ) - currentHeight / 2f
+
+    return RectF(
+        currentX,
+        currentY,
+        currentX + currentWidth,
+        currentY + currentHeight,
+    )
+}
+
 @Composable
 internal fun FolderTitle(
     modifier: Modifier = Modifier,
@@ -443,6 +480,20 @@ internal fun FolderTitle(
         }
     }
 }
+
+private data class FolderPopupLayoutInfo(
+    val minCellWidthPx: Int,
+    val minCellHeightPx: Int,
+    val folderGridWidthPx: Int,
+    val folderGridHeightPx: Int,
+    val endHeight: Int,
+    val startWidth: Float,
+    val startHeight: Float,
+    val startCenterX: Float,
+    val startCenterY: Float,
+    val endCenterX: Float,
+    val endCenterY: Float,
+)
 
 private suspend fun handleFolderPopup(
     drag: State<Drag>,
@@ -530,20 +581,6 @@ private suspend fun handleFolderPopup(
     }
 }
 
-private data class FolderPopupLayoutInfo(
-    val minCellWidthPx: Int,
-    val minCellHeightPx: Int,
-    val folderGridWidthPx: Int,
-    val folderGridHeightPx: Int,
-    val endHeight: Int,
-    val startWidth: Float,
-    val startHeight: Float,
-    val startCenterX: Float,
-    val startCenterY: Float,
-    val endCenterX: Float,
-    val endCenterY: Float,
-)
-
 private fun getFolderPopupLayoutInfo(
     density: Density,
     layoutDirection: LayoutDirection,
@@ -611,45 +648,4 @@ private fun getFolderPopupLayoutInfo(
         endCenterX = endCenterX,
         endCenterY = endCenterY,
     )
-}
-
-@Composable
-private fun rememberAnimatedFolderRect(
-    folderPopupLayoutInfo: FolderPopupLayoutInfo,
-    progress: Animatable<Float, AnimationVector1D>,
-): State<RectF> {
-    return remember(key1 = folderPopupLayoutInfo) {
-        derivedStateOf {
-            val currentWidth = lerp(
-                folderPopupLayoutInfo.startWidth,
-                folderPopupLayoutInfo.folderGridWidthPx.toFloat(),
-                progress.value,
-            )
-
-            val currentHeight = lerp(
-                folderPopupLayoutInfo.startHeight,
-                folderPopupLayoutInfo.endHeight.toFloat(),
-                progress.value,
-            )
-
-            val currentX = lerp(
-                folderPopupLayoutInfo.startCenterX,
-                folderPopupLayoutInfo.endCenterX,
-                progress.value,
-            ) - currentWidth / 2f
-
-            val currentY = lerp(
-                folderPopupLayoutInfo.startCenterY,
-                folderPopupLayoutInfo.endCenterY,
-                progress.value,
-            ) - currentHeight / 2f
-
-            RectF(
-                currentX,
-                currentY,
-                currentX + currentWidth,
-                currentY + currentHeight,
-            )
-        }
-    }
 }

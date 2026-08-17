@@ -18,6 +18,8 @@
 package com.eblan.launcher.feature.home.screen.pager
 
 import android.appwidget.AppWidgetProviderInfo
+import android.graphics.Rect
+import android.os.Build
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.MutableTransitionState
@@ -65,6 +67,7 @@ import com.eblan.launcher.feature.home.component.popup
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
 import com.eblan.launcher.feature.home.screen.shortcutinfo.ShortcutInfoScreen
+import com.eblan.launcher.ui.local.LocalLauncherApps
 
 @Composable
 internal fun GridItemPopup(
@@ -83,9 +86,7 @@ internal fun GridItemPopup(
     onDismissRequest: () -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
     onEdit: (String) -> Unit,
-    onInfo: (Long, String) -> Unit,
     onResize: (GridItem) -> Unit,
-    onTapShortcutInfo: (Long, String, String) -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
     onUpdateOverlayBounds: (intOffset: IntOffset, intSize: IntSize) -> Unit,
@@ -101,6 +102,8 @@ internal fun GridItemPopup(
     val density = LocalDensity.current
 
     val layoutDirection = LocalLayoutDirection.current
+
+    val launcherApps = LocalLauncherApps.current
 
     val transitionState = remember {
         MutableTransitionState(false).apply { targetState = true }
@@ -142,6 +145,19 @@ internal fun GridItemPopup(
         transitionState.targetState = false
     }
 
+    fun getSourceBounds(): Rect {
+        val sourceBoundsX = popupIntOffset.x + leftPadding
+
+        val sourceBoundsY = popupIntOffset.y + topPadding
+
+        return Rect(
+            sourceBoundsX,
+            sourceBoundsY,
+            sourceBoundsX + popupIntSize.width,
+            sourceBoundsY + popupIntSize.height,
+        )
+    }
+
     Box(
         modifier = modifier
             .pointerInput(Unit) {
@@ -180,9 +196,24 @@ internal fun GridItemPopup(
                 },
                 onUpdateIsDragging = onUpdateIsDragging,
                 onEdit = onEdit,
-                onInfo = onInfo,
+                onInfo = { serialNumber, componentName ->
+                    launcherApps.startAppDetailsActivity(
+                        serialNumber = serialNumber,
+                        componentName = componentName,
+                        sourceBounds = getSourceBounds(),
+                    )
+                },
                 onResize = onResize,
-                onTapShortcutInfo = onTapShortcutInfo,
+                onTapShortcutInfo = { serialNumber, packageName, shortcutId ->
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+                        launcherApps.startShortcut(
+                            serialNumber = serialNumber,
+                            packageName = packageName,
+                            id = shortcutId,
+                            sourceBounds = getSourceBounds(),
+                        )
+                    }
+                },
                 onUpdateGridItemSource = onUpdateGridItemSource,
                 onUpdateImageBitmap = onUpdateImageBitmap,
                 onUpdateOverlayBounds = onUpdateOverlayBounds,
