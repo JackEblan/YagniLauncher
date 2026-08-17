@@ -24,7 +24,7 @@ jobs:
           ls /dev/kvm
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Grant execute permission to Gradle wrapper
         run: chmod +x ./gradlew
