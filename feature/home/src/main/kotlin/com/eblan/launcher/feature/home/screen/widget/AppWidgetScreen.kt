@@ -50,6 +50,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
@@ -237,59 +238,23 @@ private fun EblanAppWidgetProviderInfoItem(
                 detectTapGestures(
                     onLongPress = {
                         scope.launch {
-                            val gridItem = getWidgetGridItem(
-                                componentName = eblanAppWidgetProviderInfo.componentName,
-                                configure = eblanAppWidgetProviderInfo.configure,
+                            handleOnLongPress(
+                                eblanAppWidgetProviderInfo = eblanAppWidgetProviderInfo,
                                 gridItemSettings = gridItemSettings,
-                                icon = eblanAppWidgetProviderInfo.applicationIcon,
                                 id = id,
-                                label = eblanAppWidgetProviderInfo.applicationLabel,
-                                maxResizeHeight = eblanAppWidgetProviderInfo.maxResizeHeight,
-                                maxResizeWidth = eblanAppWidgetProviderInfo.maxResizeWidth,
-                                minHeight = eblanAppWidgetProviderInfo.minHeight,
-                                minResizeHeight = eblanAppWidgetProviderInfo.minResizeHeight,
-                                minResizeWidth = eblanAppWidgetProviderInfo.minResizeWidth,
-                                minWidth = eblanAppWidgetProviderInfo.minWidth,
-                                packageName = eblanAppWidgetProviderInfo.packageName,
-                                page = 0,
-                                preview = eblanAppWidgetProviderInfo.preview,
-                                resizeMode = eblanAppWidgetProviderInfo.resizeMode,
-                                serialNumber = eblanAppWidgetProviderInfo.serialNumber,
-                                targetCellHeight = eblanAppWidgetProviderInfo.targetCellHeight,
-                                targetCellWidth = eblanAppWidgetProviderInfo.targetCellWidth,
+                                onUpdateGridItemSource = onUpdateGridItemSource,
+                                onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                                onUpdateImageBitmap = onUpdateImageBitmap,
+                                graphicsLayer = graphicsLayer,
+                                onUpdateOverlayBounds = onUpdateOverlayBounds,
+                                intOffset = intOffset,
+                                intSize = intSize,
+                                onUpdateSharedElementKey = onUpdateSharedElementKey,
+                                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                                onDismiss = onDismiss,
+                                onDismissApplicationScreen = onDismissApplicationScreen,
+                                onUpdateIsDragging = onUpdateIsDragging,
                             )
-
-                            onUpdateGridItemSource(GridItemSource.New)
-
-                            onUpdateMoveGridItemResult(
-                                MoveGridItemResult(
-                                    isSuccess = false,
-                                    movingGridItem = gridItem,
-                                    conflictingGridItem = null,
-                                ),
-                            )
-
-                            onUpdateImageBitmap(graphicsLayer.toImageBitmap())
-
-                            onUpdateOverlayBounds(
-                                intOffset,
-                                intSize,
-                            )
-
-                            onUpdateSharedElementKey(
-                                SharedElementKey(
-                                    id = id,
-                                    parent = SharedElementKey.Parent.Grid,
-                                ),
-                            )
-
-                            onUpdateIsVisibleOverlay(true)
-
-                            onDismiss()
-
-                            onDismissApplicationScreen()
-
-                            onUpdateIsDragging(true)
                         }
                     },
                 )
@@ -364,4 +329,76 @@ private fun EblanAppWidgetProviderInfoItem(
             contentDescription = null,
         )
     }
+}
+
+private suspend fun handleOnLongPress(
+    eblanAppWidgetProviderInfo: EblanAppWidgetProviderInfo,
+    gridItemSettings: GridItemSettings,
+    id: String,
+    onUpdateGridItemSource: (GridItemSource) -> Unit,
+    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
+    onUpdateImageBitmap: (ImageBitmap) -> Unit,
+    graphicsLayer: GraphicsLayer,
+    onUpdateOverlayBounds: (IntOffset, IntSize) -> Unit,
+    intOffset: IntOffset,
+    intSize: IntSize,
+    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
+    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+    onDismiss: () -> Unit,
+    onDismissApplicationScreen: () -> Unit,
+    onUpdateIsDragging: (Boolean) -> Unit,
+) {
+    val gridItem = getWidgetGridItem(
+        componentName = eblanAppWidgetProviderInfo.componentName,
+        configure = eblanAppWidgetProviderInfo.configure,
+        gridItemSettings = gridItemSettings,
+        icon = eblanAppWidgetProviderInfo.applicationIcon,
+        id = id,
+        label = eblanAppWidgetProviderInfo.applicationLabel,
+        maxResizeHeight = eblanAppWidgetProviderInfo.maxResizeHeight,
+        maxResizeWidth = eblanAppWidgetProviderInfo.maxResizeWidth,
+        minHeight = eblanAppWidgetProviderInfo.minHeight,
+        minResizeHeight = eblanAppWidgetProviderInfo.minResizeHeight,
+        minResizeWidth = eblanAppWidgetProviderInfo.minResizeWidth,
+        minWidth = eblanAppWidgetProviderInfo.minWidth,
+        packageName = eblanAppWidgetProviderInfo.packageName,
+        page = 0,
+        preview = eblanAppWidgetProviderInfo.preview,
+        resizeMode = eblanAppWidgetProviderInfo.resizeMode,
+        serialNumber = eblanAppWidgetProviderInfo.serialNumber,
+        targetCellHeight = eblanAppWidgetProviderInfo.targetCellHeight,
+        targetCellWidth = eblanAppWidgetProviderInfo.targetCellWidth,
+    )
+
+    onUpdateGridItemSource(GridItemSource.New)
+
+    onUpdateMoveGridItemResult(
+        MoveGridItemResult(
+            isSuccess = false,
+            movingGridItem = gridItem,
+            conflictingGridItem = null,
+        ),
+    )
+
+    onUpdateImageBitmap(graphicsLayer.toImageBitmap())
+
+    onUpdateOverlayBounds(
+        intOffset,
+        intSize,
+    )
+
+    onUpdateSharedElementKey(
+        SharedElementKey(
+            id = id,
+            parent = SharedElementKey.Parent.Grid,
+        ),
+    )
+
+    onUpdateIsVisibleOverlay(true)
+
+    onDismiss()
+
+    onDismissApplicationScreen()
+
+    onUpdateIsDragging(true)
 }

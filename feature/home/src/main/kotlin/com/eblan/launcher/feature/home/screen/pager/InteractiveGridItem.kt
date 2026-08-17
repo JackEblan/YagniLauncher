@@ -167,23 +167,15 @@ internal fun InteractiveGridItem(
 
     val isVisibleWhiteBox = hasInteraction && drag == Drag.Dragging
 
-    val x = gridItem.startColumn * cellWidth
-
-    val y = gridItem.startRow * cellHeight
-
-    val width = gridItem.columnSpan * cellWidth
-
-    val height = gridItem.rowSpan * cellHeight
-
-    val left = x + leftPadding
-
-    val top = y + topOffset
-
-    val sourceBounds = Rect(
-        left,
-        top,
-        left + width,
-        top + height,
+    val sourceBounds = getSourceBounds(
+        startColumn = gridItem.startColumn,
+        startRow = gridItem.startRow,
+        columnSpan = gridItem.columnSpan,
+        rowSpan = gridItem.rowSpan,
+        cellWidth = cellWidth,
+        cellHeight = cellHeight,
+        leftPadding = leftPadding,
+        topOffset = topOffset,
     )
 
     LaunchedEffect(
@@ -336,6 +328,36 @@ internal fun InteractiveGridItem(
             )
         }
     }
+}
+
+private fun getSourceBounds(
+    startColumn: Int,
+    startRow: Int,
+    columnSpan: Int,
+    rowSpan: Int,
+    cellWidth: Int,
+    cellHeight: Int,
+    leftPadding: Int,
+    topOffset: Int,
+): Rect {
+    val x = startColumn * cellWidth
+
+    val y = startRow * cellHeight
+
+    val width = columnSpan * cellWidth
+
+    val height = rowSpan * cellHeight
+
+    val left = x + leftPadding
+
+    val top = y + topOffset
+
+    return Rect(
+        left,
+        top,
+        left + width,
+        top + height,
+    )
 }
 
 @OptIn(ExperimentalSharedTransitionApi::class)

@@ -64,6 +64,7 @@ import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -72,6 +73,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
@@ -474,45 +476,22 @@ private fun EblanShortcutConfigItem(
                 detectTapGestures(
                     onLongPress = {
                         scope.launch {
-                            val id = Uuid.random().toHexString()
-
-                            val gridItem = getShortcutConfigGridItem(
+                            handleOnLongPress(
                                 eblanShortcutConfig = eblanShortcutConfig,
                                 gridItemSettings = gridItemSettings,
-                                id = id,
+                                onUpdateGridItemSource = onUpdateGridItemSource,
+                                onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                                onUpdateImageBitmap = onUpdateImageBitmap,
+                                graphicsLayer = graphicsLayer,
+                                onUpdateOverlayBounds = onUpdateOverlayBounds,
+                                intOffset = intOffset,
+                                intSize = intSize,
+                                onUpdateSharedElementKey = onUpdateSharedElementKey,
+                                keyboardController = keyboardController,
+                                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                                onDismiss = onDismiss,
+                                onUpdateIsDragging = onUpdateIsDragging,
                             )
-
-                            onUpdateGridItemSource(GridItemSource.New)
-
-                            onUpdateMoveGridItemResult(
-                                MoveGridItemResult(
-                                    isSuccess = false,
-                                    movingGridItem = gridItem,
-                                    conflictingGridItem = null,
-                                ),
-                            )
-
-                            onUpdateImageBitmap(graphicsLayer.toImageBitmap())
-
-                            onUpdateOverlayBounds(
-                                intOffset,
-                                intSize,
-                            )
-
-                            onUpdateSharedElementKey(
-                                SharedElementKey(
-                                    id = id,
-                                    parent = SharedElementKey.Parent.Grid,
-                                ),
-                            )
-
-                            keyboardController?.hide()
-
-                            onUpdateIsVisibleOverlay(true)
-
-                            onDismiss()
-
-                            onUpdateIsDragging(true)
                         }
                     },
                 )
@@ -549,6 +528,64 @@ private fun EblanShortcutConfigItem(
             style = MaterialTheme.typography.bodySmall,
         )
     }
+}
+
+@OptIn(ExperimentalUuidApi::class)
+private suspend fun handleOnLongPress(
+    eblanShortcutConfig: EblanShortcutConfig,
+    gridItemSettings: GridItemSettings,
+    onUpdateGridItemSource: (GridItemSource) -> Unit,
+    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
+    onUpdateImageBitmap: (ImageBitmap) -> Unit,
+    graphicsLayer: GraphicsLayer,
+    onUpdateOverlayBounds: (IntOffset, IntSize) -> Unit,
+    intOffset: IntOffset,
+    intSize: IntSize,
+    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
+    keyboardController: SoftwareKeyboardController?,
+    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+    onDismiss: () -> Unit,
+    onUpdateIsDragging: (Boolean) -> Unit,
+) {
+    val id = Uuid.random().toHexString()
+
+    val gridItem = getShortcutConfigGridItem(
+        eblanShortcutConfig = eblanShortcutConfig,
+        gridItemSettings = gridItemSettings,
+        id = id,
+    )
+
+    onUpdateGridItemSource(GridItemSource.New)
+
+    onUpdateMoveGridItemResult(
+        MoveGridItemResult(
+            isSuccess = false,
+            movingGridItem = gridItem,
+            conflictingGridItem = null,
+        ),
+    )
+
+    onUpdateImageBitmap(graphicsLayer.toImageBitmap())
+
+    onUpdateOverlayBounds(
+        intOffset,
+        intSize,
+    )
+
+    onUpdateSharedElementKey(
+        SharedElementKey(
+            id = id,
+            parent = SharedElementKey.Parent.Grid,
+        ),
+    )
+
+    keyboardController?.hide()
+
+    onUpdateIsVisibleOverlay(true)
+
+    onDismiss()
+
+    onUpdateIsDragging(true)
 }
 
 private fun getShortcutConfigGridItem(

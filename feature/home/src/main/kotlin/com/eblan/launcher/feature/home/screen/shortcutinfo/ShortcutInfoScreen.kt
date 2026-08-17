@@ -37,6 +37,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
@@ -200,44 +201,22 @@ private fun ShortcutInfoMenuItem(
                         detectTapGestures(
                             onLongPress = {
                                 scope.launch {
-                                    val id = Uuid.random().toHexString()
-
-                                    val gridItem = getShortcutInfoGridItem(
+                                    handleOnLongPress(
                                         eblanShortcutInfo = eblanShortcutInfo,
                                         gridItemSettings = gridItemSettings,
                                         icon = icon,
-                                        id = id,
+                                        onUpdateGridItemSource = onUpdateGridItemSource,
+                                        onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                                        onUpdateImageBitmap = onUpdateImageBitmap,
+                                        graphicsLayer = graphicsLayer,
+                                        onUpdateOverlayBounds = onUpdateOverlayBounds,
+                                        intOffset = intOffset,
+                                        intSize = intSize,
+                                        onUpdateSharedElementKey = onUpdateSharedElementKey,
+                                        onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                                        onUpdateTransitionState = onUpdateTransitionState,
+                                        onUpdateIsDragging = onUpdateIsDragging,
                                     )
-
-                                    onUpdateGridItemSource(GridItemSource.New)
-
-                                    onUpdateMoveGridItemResult(
-                                        MoveGridItemResult(
-                                            isSuccess = false,
-                                            movingGridItem = gridItem,
-                                            conflictingGridItem = null,
-                                        ),
-                                    )
-
-                                    onUpdateImageBitmap(graphicsLayer.toImageBitmap())
-
-                                    onUpdateOverlayBounds(
-                                        intOffset,
-                                        intSize,
-                                    )
-
-                                    onUpdateSharedElementKey(
-                                        SharedElementKey(
-                                            id = id,
-                                            parent = SharedElementKey.Parent.Grid,
-                                        ),
-                                    )
-
-                                    onUpdateIsVisibleOverlay(true)
-
-                                    onUpdateTransitionState(false)
-
-                                    onUpdateIsDragging(true)
                                 }
                             },
                         )
@@ -259,6 +238,63 @@ private fun ShortcutInfoMenuItem(
             }
         },
     )
+}
+
+@OptIn(ExperimentalUuidApi::class)
+private suspend fun handleOnLongPress(
+    eblanShortcutInfo: EblanShortcutInfo,
+    gridItemSettings: GridItemSettings,
+    icon: String?,
+    onUpdateGridItemSource: (GridItemSource) -> Unit,
+    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
+    onUpdateImageBitmap: (ImageBitmap) -> Unit,
+    graphicsLayer: GraphicsLayer,
+    onUpdateOverlayBounds: (IntOffset, IntSize) -> Unit,
+    intOffset: IntOffset,
+    intSize: IntSize,
+    onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
+    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+    onUpdateTransitionState: (Boolean) -> Unit,
+    onUpdateIsDragging: (Boolean) -> Unit,
+) {
+    val id = Uuid.random().toHexString()
+
+    val gridItem = getShortcutInfoGridItem(
+        eblanShortcutInfo = eblanShortcutInfo,
+        gridItemSettings = gridItemSettings,
+        icon = icon,
+        id = id,
+    )
+
+    onUpdateGridItemSource(GridItemSource.New)
+
+    onUpdateMoveGridItemResult(
+        MoveGridItemResult(
+            isSuccess = false,
+            movingGridItem = gridItem,
+            conflictingGridItem = null,
+        ),
+    )
+
+    onUpdateImageBitmap(graphicsLayer.toImageBitmap())
+
+    onUpdateOverlayBounds(
+        intOffset,
+        intSize,
+    )
+
+    onUpdateSharedElementKey(
+        SharedElementKey(
+            id = id,
+            parent = SharedElementKey.Parent.Grid,
+        ),
+    )
+
+    onUpdateIsVisibleOverlay(true)
+
+    onUpdateTransitionState(false)
+
+    onUpdateIsDragging(true)
 }
 
 private fun getShortcutInfoGridItem(

@@ -18,6 +18,7 @@
 package com.eblan.launcher.feature.home.screen.application
 
 import android.graphics.Rect
+import android.os.Build
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.MutableTransitionState
@@ -85,11 +86,6 @@ internal fun ApplicationInfoPopup(
     onEditApplicationInfo: (
         serialNumber: Long,
         componentName: String,
-    ) -> Unit,
-    onTapShortcutInfo: (
-        serialNumber: Long,
-        packageName: String,
-        shortcutId: String,
     ) -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
@@ -214,11 +210,19 @@ internal fun ApplicationInfoPopup(
                     transitionState.targetState = false
                 },
                 onTapShortcutInfo = { serialNumber, packageName, shortcutId ->
-                    onTapShortcutInfo(
-                        serialNumber,
-                        packageName,
-                        shortcutId,
-                    )
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+                        launcherApps.startShortcut(
+                            serialNumber = serialNumber,
+                            packageName = packageName,
+                            id = shortcutId,
+                            sourceBounds = Rect(
+                                popupIntOffset.x,
+                                popupIntOffset.y,
+                                popupIntOffset.x + popupIntSize.width,
+                                popupIntOffset.y + popupIntSize.height,
+                            ),
+                        )
+                    }
 
                     transitionState.targetState = false
                 },
@@ -262,11 +266,6 @@ internal fun PrivateApplicationInfoPopup(
     onEditApplicationInfo: (
         serialNumber: Long,
         componentName: String,
-    ) -> Unit,
-    onTapShortcutInfo: (
-        serialNumber: Long,
-        packageName: String,
-        shortcutId: String,
     ) -> Unit,
 ) {
     requireNotNull(eblanApplicationInfo)
@@ -375,11 +374,19 @@ internal fun PrivateApplicationInfoPopup(
                     transitionState.targetState = false
                 },
                 onTapShortcutInfo = { serialNumber, packageName, shortcutId ->
-                    onTapShortcutInfo(
-                        serialNumber,
-                        packageName,
-                        shortcutId,
-                    )
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+                        launcherApps.startShortcut(
+                            serialNumber = serialNumber,
+                            packageName = packageName,
+                            id = shortcutId,
+                            sourceBounds = Rect(
+                                popupIntOffset.x,
+                                popupIntOffset.y,
+                                popupIntOffset.x + popupIntSize.width,
+                                popupIntOffset.y + popupIntSize.height,
+                            ),
+                        )
+                    }
 
                     transitionState.targetState = false
                 },

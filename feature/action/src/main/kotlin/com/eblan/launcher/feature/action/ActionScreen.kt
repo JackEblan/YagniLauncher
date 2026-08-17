@@ -108,16 +108,11 @@ internal fun ActionScreen(
                 .fillMaxSize()
                 .padding(paddingValues),
         ) {
-            when (actionUiState) {
-                ActionUiState.Loading -> {
-                }
-
-                is ActionUiState.Success -> {
-                    Success(
-                        eblanApplicationInfos = actionUiState.eblanApplicationInfos,
-                        onUpdateEblanAction = onUpdateEblanAction,
-                    )
-                }
+            if (actionUiState is ActionUiState.Success) {
+                Success(
+                    eblanApplicationInfos = actionUiState.eblanApplicationInfos,
+                    onUpdateEblanAction = onUpdateEblanAction,
+                )
             }
         }
     }

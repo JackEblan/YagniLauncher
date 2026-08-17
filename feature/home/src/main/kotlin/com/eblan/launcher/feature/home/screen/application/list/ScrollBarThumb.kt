@@ -41,6 +41,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
@@ -66,7 +67,7 @@ internal fun ScrollBarThumb(
         paddingValues.calculateBottomPadding().roundToPx()
     }
 
-    val thumbHeight by remember(lazyListState) {
+    val thumbHeight by remember(key1 = lazyListState) {
         derivedStateOf {
             with(density) {
                 (lazyListState.layoutInfo.viewportSize.height / 4).toDp()
@@ -74,7 +75,7 @@ internal fun ScrollBarThumb(
         }
     }
 
-    val viewPortThumbY by remember(lazyListState) {
+    val viewPortThumbY by remember(key1 = lazyListState) {
         derivedStateOf {
             getViewPortThumbY(
                 lazyListState = lazyListState,
@@ -99,34 +100,19 @@ internal fun ScrollBarThumb(
         Box(
             modifier = Modifier
                 .pointerInput(lazyListState) {
-                    detectTapGestures { offset ->
-                        val viewportHeight =
-                            lazyListState.layoutInfo.viewportSize.height - bottomPadding
-
-                        val maxThumbY =
-                            (viewportHeight - with(density) { thumbHeight.roundToPx() })
-                                .coerceAtLeast(0)
-
-                        val targetThumbY =
-                            (offset.y - with(density) { thumbHeight.roundToPx() / 2f })
-                                .coerceIn(0f, maxThumbY.toFloat())
-
-                        val totalItems =
-                            lazyListState.layoutInfo.totalItemsCount
-
-                        val item =
-                            (
-                                targetThumbY /
-                                    maxThumbY.coerceAtLeast(1)
-                                ) * (totalItems - 1)
-
-                        scope.launch {
-                            onScrollToItem(
-                                item.roundToInt()
-                                    .coerceAtMost(totalItems - 1),
+                    detectTapGestures(
+                        onTap = {
+                            handleOnTap(
+                                lazyListState = lazyListState,
+                                bottomPadding = bottomPadding,
+                                density = density,
+                                thumbHeight = thumbHeight,
+                                offset = it,
+                                scope = scope,
+                                onScrollToItem = onScrollToItem,
                             )
-                        }
-                    }
+                        },
+                    )
                 }
                 .width(10.dp)
                 .fillMaxHeight()
@@ -184,6 +170,35 @@ internal fun ScrollBarThumb(
     }
 }
 
+private fun handleOnTap(
+    lazyListState: LazyListState,
+    bottomPadding: Int,
+    density: Density,
+    thumbHeight: Dp,
+    offset: Offset,
+    scope: CoroutineScope,
+    onScrollToItem: suspend (Int) -> Unit,
+) {
+    val viewportHeight = lazyListState.layoutInfo.viewportSize.height - bottomPadding
+
+    val maxThumbY = (viewportHeight - with(density) { thumbHeight.roundToPx() }).coerceAtLeast(0)
+
+    val targetThumbY = (offset.y - with(density) { thumbHeight.roundToPx() / 2f }).coerceIn(
+        0f,
+        maxThumbY.toFloat(),
+    )
+
+    val totalItems = lazyListState.layoutInfo.totalItemsCount
+
+    val item = (targetThumbY / maxThumbY.coerceAtLeast(1)) * (totalItems - 1)
+
+    scope.launch {
+        onScrollToItem(
+            item.roundToInt().coerceAtMost(totalItems - 1),
+        )
+    }
+}
+
 private fun handleVerticalDrag(
     lazyListState: LazyListState,
     density: Density,
@@ -207,11 +222,9 @@ private fun handleVerticalDrag(
 
     val thumbHeightPx = with(density) { thumbHeight.toPx() }
 
-    val availableHeight = (viewportHeight - thumbHeightPx - bottomPadding)
-        .coerceAtLeast(0f)
+    val availableHeight = (viewportHeight - thumbHeightPx - bottomPadding).coerceAtLeast(0f)
 
-    val newThumbY = (thumbY + deltaY)
-        .coerceIn(0f, availableHeight)
+    val newThumbY = (thumbY + deltaY).coerceIn(0f, availableHeight)
 
     val progress = if (availableHeight > 0f) {
         (newThumbY / availableHeight).coerceIn(0f, 1f)
@@ -220,15 +233,11 @@ private fun handleVerticalDrag(
     }
 
     val totalContentHeight = totalItems * avgItemSize
-    val scrollableHeight = (totalContentHeight - viewportHeight)
-        .coerceAtLeast(0)
+    val scrollableHeight = (totalContentHeight - viewportHeight).coerceAtLeast(0)
 
-    val targetScrollY = (progress * scrollableHeight)
-        .coerceIn(0f, scrollableHeight.toFloat())
+    val targetScrollY = (progress * scrollableHeight).coerceIn(0f, scrollableHeight.toFloat())
 
-    val targetIndex = (targetScrollY / avgItemSize)
-        .toInt()
-        .coerceIn(0, totalItems - 1)
+    val targetIndex = (targetScrollY / avgItemSize).toInt().coerceIn(0, totalItems - 1)
 
     onUpdateThumbY(newThumbY)
 
@@ -258,8 +267,7 @@ private fun getViewPortThumbY(
 
     val viewportHeight = layoutInfo.viewportSize.height.toFloat()
 
-    val scrollableHeight = (totalContentHeight - viewportHeight)
-        .coerceAtLeast(0f)
+    val scrollableHeight = (totalContentHeight - viewportHeight).coerceAtLeast(0f)
 
     val progress = if (scrollableHeight > 0f) {
         (scrollY / scrollableHeight).coerceIn(0f, 1f)
@@ -269,9 +277,7 @@ private fun getViewPortThumbY(
 
     val thumbHeightPx = with(density) { thumbHeight.toPx() }
 
-    val availableHeight = (viewportHeight - thumbHeightPx - bottomPadding)
-        .coerceAtLeast(0f)
+    val availableHeight = (viewportHeight - thumbHeightPx - bottomPadding).coerceAtLeast(0f)
 
-    return (progress * availableHeight)
-        .coerceIn(0f, availableHeight)
+    return (progress * availableHeight).coerceIn(0f, availableHeight)
 }

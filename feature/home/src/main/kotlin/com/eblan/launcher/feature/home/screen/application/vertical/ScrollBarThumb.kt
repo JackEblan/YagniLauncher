@@ -41,6 +41,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
@@ -102,36 +103,18 @@ internal fun ScrollBarThumb(
         Box(
             modifier = Modifier
                 .pointerInput(lazyGridState) {
-                    detectTapGestures { offset ->
-                        val viewportHeight =
-                            lazyGridState.layoutInfo.viewportSize.height - bottomPadding
-
-                        val maxThumbY =
-                            (viewportHeight - with(density) { thumbHeight.roundToPx() })
-                                .coerceAtLeast(0)
-
-                        val targetThumbY =
-                            (offset.y - with(density) { thumbHeight.roundToPx() / 2f })
-                                .coerceIn(0f, maxThumbY.toFloat())
-
-                        val totalRows =
-                            ceil(
-                                lazyGridState.layoutInfo.totalItemsCount /
-                                    appDrawerColumns.toFloat(),
-                            ).toInt()
-
-                        val row = (
-                            targetThumbY /
-                                maxThumbY.coerceAtLeast(1)
-                            ) * (totalRows - 1)
-
-                        scope.launch {
-                            onScrollToItem(
-                                (row.roundToInt() * appDrawerColumns)
-                                    .coerceAtMost(lazyGridState.layoutInfo.totalItemsCount - 1),
-                            )
-                        }
-                    }
+                    detectTapGestures(onTap = {
+                        handleOnTap(
+                            lazyGridState = lazyGridState,
+                            bottomPadding = bottomPadding,
+                            density = density,
+                            thumbHeight = thumbHeight,
+                            offset = it,
+                            appDrawerColumns = appDrawerColumns,
+                            scope = scope,
+                            onScrollToItem = onScrollToItem,
+                        )
+                    })
                 }
                 .width(10.dp)
                 .fillMaxHeight()
@@ -188,6 +171,46 @@ internal fun ScrollBarThumb(
                     ),
             )
         }
+    }
+}
+
+private fun handleOnTap(
+    lazyGridState: LazyGridState,
+    bottomPadding: Int,
+    density: Density,
+    thumbHeight: Dp,
+    offset: Offset,
+    appDrawerColumns: Int,
+    scope: CoroutineScope,
+    onScrollToItem: suspend (Int) -> Unit,
+) {
+    val viewportHeight =
+        lazyGridState.layoutInfo.viewportSize.height - bottomPadding
+
+    val maxThumbY =
+        (viewportHeight - with(density) { thumbHeight.roundToPx() })
+            .coerceAtLeast(0)
+
+    val targetThumbY =
+        (offset.y - with(density) { thumbHeight.roundToPx() / 2f })
+            .coerceIn(0f, maxThumbY.toFloat())
+
+    val totalRows =
+        ceil(
+            lazyGridState.layoutInfo.totalItemsCount /
+                appDrawerColumns.toFloat(),
+        ).toInt()
+
+    val row = (
+        targetThumbY /
+            maxThumbY.coerceAtLeast(1)
+        ) * (totalRows - 1)
+
+    scope.launch {
+        onScrollToItem(
+            (row.roundToInt() * appDrawerColumns)
+                .coerceAtMost(lazyGridState.layoutInfo.totalItemsCount - 1),
+        )
     }
 }
 

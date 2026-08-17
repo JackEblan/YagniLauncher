@@ -17,6 +17,8 @@
  */
 package com.eblan.launcher.feature.home.screen.folder
 
+import android.graphics.Rect
+import android.os.Build
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.MutableTransitionState
@@ -67,6 +69,7 @@ import com.eblan.launcher.feature.home.component.popup
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
 import com.eblan.launcher.feature.home.screen.shortcutinfo.ShortcutInfoScreen
+import com.eblan.launcher.ui.local.LocalLauncherApps
 
 @Composable
 internal fun FolderGridItemPopup(
@@ -88,12 +91,6 @@ internal fun FolderGridItemPopup(
     onDismissRequest: () -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
     onEdit: (String) -> Unit,
-    onInfo: (Long, String) -> Unit,
-    onTapShortcutInfo: (
-        serialNumber: Long,
-        packageName: String,
-        shortcutId: String,
-    ) -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
@@ -112,6 +109,8 @@ internal fun FolderGridItemPopup(
     val density = LocalDensity.current
 
     val layoutDirection = LocalLayoutDirection.current
+
+    val launcherApps = LocalLauncherApps.current
 
     val transitionState = remember {
         MutableTransitionState(false).apply {
@@ -151,6 +150,19 @@ internal fun FolderGridItemPopup(
 
     HomeHandler(enabled = transitionState.targetState) {
         transitionState.targetState = false
+    }
+
+    fun getSourceBounds(): Rect {
+        val sourceBoundsX = popupIntOffset.x + leftPadding
+
+        val sourceBoundsY = popupIntOffset.y + topPadding
+
+        return Rect(
+            sourceBoundsX,
+            sourceBoundsY,
+            sourceBoundsX + popupIntSize.width,
+            sourceBoundsY + popupIntSize.height,
+        )
     }
 
     Box(
@@ -200,8 +212,23 @@ internal fun FolderGridItemPopup(
                 },
                 onUpdateIsDragging = onUpdateIsDragging,
                 onEdit = onEdit,
-                onInfo = onInfo,
-                onTapShortcutInfo = onTapShortcutInfo,
+                onInfo = { serialNumber, componentName ->
+                    launcherApps.startAppDetailsActivity(
+                        serialNumber = serialNumber,
+                        componentName = componentName,
+                        sourceBounds = getSourceBounds(),
+                    )
+                },
+                onTapShortcutInfo = { serialNumber, packageName, shortcutId ->
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+                        launcherApps.startShortcut(
+                            serialNumber = serialNumber,
+                            packageName = packageName,
+                            id = shortcutId,
+                            sourceBounds = getSourceBounds(),
+                        )
+                    }
+                },
                 onUpdateGridItemSource = onUpdateGridItemSource,
                 onUpdateImageBitmap = onUpdateImageBitmap,
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
