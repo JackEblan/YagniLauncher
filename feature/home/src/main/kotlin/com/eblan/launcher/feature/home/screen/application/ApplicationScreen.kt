@@ -153,21 +153,10 @@ internal fun ApplicationScreen(
             }
             .fillMaxSize(),
         color = when (appDrawerSettings.backgroundColor) {
-            TextColor.System -> {
-                MaterialTheme.colorScheme.surface
-            }
-
-            TextColor.Light -> {
-                Color.White
-            }
-
-            TextColor.Dark -> {
-                Color.Black
-            }
-
-            TextColor.Custom -> {
-                Color(appDrawerSettings.customBackgroundColor)
-            }
+            TextColor.System -> MaterialTheme.colorScheme.surface
+            TextColor.Light -> Color.White
+            TextColor.Dark -> Color.Black
+            TextColor.Custom -> Color(appDrawerSettings.customBackgroundColor)
         },
     ) {
         when (appDrawerSettings.appDrawerType) {

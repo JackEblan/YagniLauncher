@@ -38,13 +38,9 @@ internal suspend fun cleanupGridItemRecursively(
     iconPackInfoPackageName: String,
 ) {
     when (val data = gridItem.data) {
-        is GridItemData.ShortcutInfo -> {
-            updatePinShortcutsByPackageName(launcherAppsWrapper, data)
-        }
+        is GridItemData.ShortcutInfo -> updatePinShortcutsByPackageName(launcherAppsWrapper, data)
 
-        is GridItemData.Widget -> {
-            appWidgetHostWrapper.deleteAppWidgetId(data.appWidgetId)
-        }
+        is GridItemData.Widget -> appWidgetHostWrapper.deleteAppWidgetId(data.appWidgetId)
 
         is GridItemData.Folder -> {
             val folderGridItems = getFolderGridItemsById(

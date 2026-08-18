@@ -87,17 +87,15 @@ class GetEblanApplicationInfosByLabelAndTagUseCase @Inject constructor(
         )
 
         when (userData.appDrawerSettings.appDrawerType) {
-            AppDrawerType.Vertical, AppDrawerType.List -> {
+            AppDrawerType.Vertical, AppDrawerType.List ->
                 getVerticalOrListEblanApplicationInfosByLabel(eblanApplicationInfos = eblanApplicationInfoWithIconPackInfosByLabel)
-            }
 
-            AppDrawerType.Horizontal -> {
+            AppDrawerType.Horizontal ->
                 getHorizontalEblanApplicationInfosByLabel(
                     horizontalAppDrawerColumns = userData.appDrawerSettings.horizontalAppDrawerColumns,
                     horizontalAppDrawerRows = userData.appDrawerSettings.horizontalAppDrawerRows,
                     eblanApplicationInfosByLabel = eblanApplicationInfoWithIconPackInfosByLabel,
                 )
-            }
         }
     }.flowOn(ioDispatcher)
 
@@ -172,17 +170,13 @@ class GetEblanApplicationInfosByLabelAndTagUseCase @Inject constructor(
         eblanApplicationInfos: List<EblanApplicationInfo>,
     ): MutableList<EblanApplicationInfoWithIconPackInfo> {
         val eblanApplicationInfosByTag = when {
-            tagId != null -> {
+            tagId != null ->
                 eblanApplicationInfoRepository.getEblanApplicationInfosByTagId(id = tagId)
-            }
 
-            excludeTaggedApps -> {
+            excludeTaggedApps ->
                 eblanApplicationInfoRepository.getEblanApplicationInfosWithoutTag()
-            }
 
-            else -> {
-                eblanApplicationInfos
-            }
+            else -> eblanApplicationInfos
         }.filterNot { it.isHidden }
 
         val eblanApplicationInfosByLabel = eblanApplicationInfosByTag.filter {

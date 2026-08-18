@@ -47,13 +47,8 @@ internal suspend fun handlePageDirection(
     delay(500L.milliseconds)
 
     when (pageDirection) {
-        PageDirection.Left -> {
-            onAnimateScrollToPage(currentPage - 1)
-        }
-
-        PageDirection.Right -> {
-            onAnimateScrollToPage(currentPage + 1)
-        }
+        PageDirection.Left -> onAnimateScrollToPage(currentPage - 1)
+        PageDirection.Right -> onAnimateScrollToPage(currentPage + 1)
     }
 }
 

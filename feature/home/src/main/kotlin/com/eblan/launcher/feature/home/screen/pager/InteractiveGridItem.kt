@@ -158,8 +158,8 @@ internal fun InteractiveGridItem(
         )
     } else {
         getSystemTextColor(
-            systemCustomTextColor = gridItemSettings.customTextColor,
-            systemTextColor = textColor,
+            customTextColor = gridItemSettings.customTextColor,
+            textColor = textColor,
         )
     }
 
@@ -1202,39 +1202,17 @@ private fun InteractiveShortcutConfigGridItem(
     val maxLines = if (gridItemSettings.singleLineLabel) 1 else Int.MAX_VALUE
 
     val icon = when {
-        data.customIcon != null -> {
-            data.customIcon
-        }
-
-        data.shortcutIntentIcon != null -> {
-            data.shortcutIntentIcon
-        }
-
-        data.activityIcon != null -> {
-            data.activityIcon
-        }
-
-        else -> {
-            data.applicationIcon
-        }
+        data.customIcon != null -> data.customIcon
+        data.shortcutIntentIcon != null -> data.shortcutIntentIcon
+        data.activityIcon != null -> data.activityIcon
+        else -> data.applicationIcon
     }
 
     val label = when {
-        data.customLabel != null -> {
-            data.customLabel
-        }
-
-        data.shortcutIntentName != null -> {
-            data.shortcutIntentName
-        }
-
-        data.activityLabel != null -> {
-            data.activityLabel
-        }
-
-        else -> {
-            data.applicationLabel
-        }
+        data.customLabel != null -> data.customLabel
+        data.shortcutIntentName != null -> data.shortcutIntentName
+        data.activityLabel != null -> data.activityLabel
+        else -> data.applicationLabel
     }
 
     val alpha = if (hasInteraction) 0f else 1f
@@ -1439,21 +1417,10 @@ private fun PreviewFolderGridItem(
 
             is GridItemData.ShortcutConfig -> {
                 val icon = when {
-                    data.customIcon != null -> {
-                        data.customIcon
-                    }
-
-                    data.shortcutIntentIcon != null -> {
-                        data.shortcutIntentIcon
-                    }
-
-                    data.activityIcon != null -> {
-                        data.activityIcon
-                    }
-
-                    else -> {
-                        data.applicationIcon
-                    }
+                    data.customIcon != null -> data.customIcon
+                    data.shortcutIntentIcon != null -> data.shortcutIntentIcon
+                    data.activityIcon != null -> data.activityIcon
+                    else -> data.applicationIcon
                 }
 
                 AsyncImage(

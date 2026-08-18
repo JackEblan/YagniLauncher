@@ -35,15 +35,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -695,8 +692,8 @@ internal fun PagerScreen(
                     .fillMaxWidth()
                     .height(PAGE_INDICATOR_HEIGHT),
                 color = getSystemTextColor(
-                    systemCustomTextColor = homeSettings.gridItemSettings.customTextColor,
-                    systemTextColor = textColor,
+                    customTextColor = homeSettings.gridItemSettings.customTextColor,
+                    textColor = textColor,
                 ),
                 gridHorizontalPagerState = gridHorizontalPagerState,
                 infiniteScroll = homeSettings.infiniteScroll,

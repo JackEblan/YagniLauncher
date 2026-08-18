@@ -21,27 +21,14 @@ import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 
 internal fun getGridItem(gridItem: GridItem, customIcon: String?): GridItem = when (val data = gridItem.data) {
-    is GridItemData.ApplicationInfo -> {
-        val newData = data.copy(customIcon = customIcon)
+    is GridItemData.ApplicationInfo -> gridItem.copy(data = data.copy(customIcon = customIcon))
 
-        gridItem.copy(data = newData)
-    }
+    is GridItemData.Folder -> gridItem.copy(data = data.copy(icon = customIcon))
 
-    is GridItemData.Folder -> {
-        gridItem.copy(data = data.copy(icon = customIcon))
-    }
+    is GridItemData.ShortcutConfig -> gridItem.copy(data = data.copy(customIcon = customIcon))
 
-    is GridItemData.ShortcutConfig -> {
-        val newData = data.copy(customIcon = customIcon)
-
-        gridItem.copy(data = newData)
-    }
-
-    is GridItemData.ShortcutInfo -> {
-        val newData = data.copy(customIcon = customIcon)
-
-        gridItem.copy(data = newData)
-    }
+    is GridItemData.ShortcutInfo ->
+        gridItem.copy(data = data.copy(customIcon = customIcon))
 
     else -> gridItem
 }

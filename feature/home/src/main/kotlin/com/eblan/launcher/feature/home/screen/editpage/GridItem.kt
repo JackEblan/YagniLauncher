@@ -86,13 +86,13 @@ internal fun GridItemContent(
         )
     } else {
         getSystemTextColor(
-            systemCustomTextColor = gridItemSettings.customTextColor,
-            systemTextColor = textColor,
+            customTextColor = gridItemSettings.customTextColor,
+            textColor = textColor,
         )
     }
 
     when (val data = gridItem.data) {
-        is GridItemData.ApplicationInfo -> {
+        is GridItemData.ApplicationInfo ->
             ApplicationInfoGridItem(
                 modifier = modifier,
                 data = data,
@@ -100,13 +100,10 @@ internal fun GridItemContent(
                 statusBarNotifications = statusBarNotifications,
                 textColor = currentTextColor,
             )
-        }
 
-        is GridItemData.Widget -> {
-            WidgetGridItem(modifier = modifier, data = data)
-        }
+        is GridItemData.Widget -> WidgetGridItem(modifier = modifier, data = data)
 
-        is GridItemData.ShortcutInfo -> {
+        is GridItemData.ShortcutInfo ->
             ShortcutInfoGridItem(
                 modifier = modifier,
                 data = data,
@@ -114,9 +111,8 @@ internal fun GridItemContent(
                 hasShortcutHostPermission = hasShortcutHostPermission,
                 textColor = currentTextColor,
             )
-        }
 
-        is GridItemData.Folder -> {
+        is GridItemData.Folder ->
             FolderGridItem(
                 modifier = modifier,
                 gridItem = gridItem,
@@ -125,16 +121,14 @@ internal fun GridItemContent(
                 textColor = currentTextColor,
                 previewFolderGridItems = previewFolderGridItems,
             )
-        }
 
-        is GridItemData.ShortcutConfig -> {
+        is GridItemData.ShortcutConfig ->
             ShortcutConfigGridItem(
                 modifier = modifier,
                 data = data,
                 gridItemSettings = currentGridItemSettings,
                 textColor = currentTextColor,
             )
-        }
     }
 }
 
@@ -388,39 +382,17 @@ private fun ShortcutConfigGridItem(
     val maxLines = if (gridItemSettings.singleLineLabel) 1 else Int.MAX_VALUE
 
     val icon = when {
-        data.customIcon != null -> {
-            data.customIcon
-        }
-
-        data.shortcutIntentIcon != null -> {
-            data.shortcutIntentIcon
-        }
-
-        data.activityIcon != null -> {
-            data.activityIcon
-        }
-
-        else -> {
-            data.applicationIcon
-        }
+        data.customIcon != null -> data.customIcon
+        data.shortcutIntentIcon != null -> data.shortcutIntentIcon
+        data.activityIcon != null -> data.activityIcon
+        else -> data.applicationIcon
     }
 
     val label = when {
-        data.customLabel != null -> {
-            data.customLabel
-        }
-
-        data.shortcutIntentName != null -> {
-            data.shortcutIntentName
-        }
-
-        data.activityLabel != null -> {
-            data.activityLabel
-        }
-
-        else -> {
-            data.applicationLabel
-        }
+        data.customLabel != null -> data.customLabel
+        data.shortcutIntentName != null -> data.shortcutIntentName
+        data.activityLabel != null -> data.activityLabel
+        else -> data.applicationLabel
     }
 
     Column(
@@ -497,21 +469,10 @@ private fun PreviewFolderGridItemContent(
 
             is GridItemData.ShortcutConfig -> {
                 val icon = when {
-                    data.customIcon != null -> {
-                        data.customIcon
-                    }
-
-                    data.shortcutIntentIcon != null -> {
-                        data.shortcutIntentIcon
-                    }
-
-                    data.activityIcon != null -> {
-                        data.activityIcon
-                    }
-
-                    else -> {
-                        data.applicationIcon
-                    }
+                    data.customIcon != null -> data.customIcon
+                    data.shortcutIntentIcon != null -> data.shortcutIntentIcon
+                    data.activityIcon != null -> data.activityIcon
+                    else -> data.applicationIcon
                 }
 
                 AsyncImage(

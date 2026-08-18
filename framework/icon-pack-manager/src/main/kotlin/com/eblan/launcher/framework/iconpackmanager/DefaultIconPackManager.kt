@@ -66,36 +66,24 @@ internal class DefaultIconPackManager @Inject constructor(
             )
 
             val autoCloseable = when {
-                xmlId != 0 -> {
-                    resources.getXml(xmlId)
-                }
-
-                rawId != 0 -> {
-                    resources.openRawResource(rawId)
-                }
-
-                else -> {
-                    packageContext.assets.open("appfilter.xml")
-                }
+                xmlId != 0 -> resources.getXml(xmlId)
+                rawId != 0 -> resources.openRawResource(rawId)
+                else -> packageContext.assets.open("appfilter.xml")
             }
 
-            autoCloseable.use { autoCloseable ->
-                when (autoCloseable) {
-                    is XmlResourceParser -> {
-                        parseXml(xmlPullParser = autoCloseable)
-                    }
+            autoCloseable.use {
+                when (it) {
+                    is XmlResourceParser -> parseXml(xmlPullParser = it)
 
                     is InputStream -> {
                         val xmlPullParser = XmlPullParserFactory.newInstance().newPullParser()
 
-                        xmlPullParser.setInput(autoCloseable.reader())
+                        xmlPullParser.setInput(it.reader())
 
                         parseXml(xmlPullParser = xmlPullParser)
                     }
 
-                    else -> {
-                        emptyList()
-                    }
+                    else -> emptyList()
                 }
             }
         } catch (_: Exception) {

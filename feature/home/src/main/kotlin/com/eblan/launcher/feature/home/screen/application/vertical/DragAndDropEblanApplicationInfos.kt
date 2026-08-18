@@ -218,8 +218,8 @@ private fun EblanApplicationInfoItem(
     appDrawerSettings: AppDrawerSettings,
 ) {
     val textColor = getSystemTextColor(
-        systemCustomTextColor = appDrawerSettings.gridItemSettings.customTextColor,
-        systemTextColor = appDrawerSettings.gridItemSettings.textColor,
+        customTextColor = appDrawerSettings.gridItemSettings.customTextColor,
+        textColor = appDrawerSettings.gridItemSettings.textColor,
     )
 
     val appDrawerRowsHeight = appDrawerSettings.appDrawerRowsHeight.dp

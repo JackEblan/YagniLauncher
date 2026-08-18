@@ -25,44 +25,28 @@ internal fun getGridItemTextColor(
     gridItemTextColor: TextColor,
     systemCustomTextColor: Int,
     systemTextColor: TextColor,
+    defaultColor: Color = Color.Unspecified,
 ): Color = when (gridItemTextColor) {
-    TextColor.System -> {
-        getSystemTextColor(
-            systemCustomTextColor = systemCustomTextColor,
-            systemTextColor = systemTextColor,
-        )
-    }
+    TextColor.System -> getSystemTextColor(
+        customTextColor = systemCustomTextColor,
+        textColor = systemTextColor,
+        defaultColor = defaultColor,
+    )
 
-    TextColor.Light -> {
-        Color.White
-    }
+    TextColor.Light -> Color.White
 
-    TextColor.Dark -> {
-        Color.Black
-    }
+    TextColor.Dark -> Color.Black
 
-    TextColor.Custom -> {
-        Color(gridItemCustomTextColor)
-    }
+    TextColor.Custom -> Color(gridItemCustomTextColor)
 }
 
 internal fun getSystemTextColor(
-    systemCustomTextColor: Int,
-    systemTextColor: TextColor,
-): Color = when (systemTextColor) {
-    TextColor.System -> {
-        Color.Unspecified
-    }
-
-    TextColor.Light -> {
-        Color.White
-    }
-
-    TextColor.Dark -> {
-        Color.Black
-    }
-
-    TextColor.Custom -> {
-        Color(systemCustomTextColor)
-    }
+    customTextColor: Int,
+    textColor: TextColor,
+    defaultColor: Color = Color.Unspecified,
+): Color = when (textColor) {
+    TextColor.System -> defaultColor
+    TextColor.Light -> Color.White
+    TextColor.Dark -> Color.Black
+    TextColor.Custom -> Color(customTextColor)
 }

@@ -694,8 +694,8 @@ private fun EblanApplicationInfoListItem(
     val keyboardController = LocalSoftwareKeyboardController.current
 
     val textColor = getSystemTextColor(
-        systemCustomTextColor = appDrawerSettings.gridItemSettings.customTextColor,
-        systemTextColor = appDrawerSettings.gridItemSettings.textColor,
+        customTextColor = appDrawerSettings.gridItemSettings.customTextColor,
+        textColor = appDrawerSettings.gridItemSettings.textColor,
     )
 
     val maxLines = if (appDrawerSettings.gridItemSettings.singleLineLabel) 1 else Int.MAX_VALUE
