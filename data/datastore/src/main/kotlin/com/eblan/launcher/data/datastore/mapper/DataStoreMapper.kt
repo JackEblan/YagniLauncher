@@ -161,7 +161,7 @@ internal fun AppDrawerSettings.toAppDrawerSettingsProto(): AppDrawerSettingsProt
     builder.gridItemSettingsProto = gridItemSettings.toGridItemSettingsProto()
     builder.eblanApplicationInfoOrderProto =
         eblanApplicationInfoOrder.toEblanApplicationInfoOrderProto()
-    builder.backgroundColorProto = backgroundColor.toTextColorProto()
+    builder.backgroundColorProto = backgroundColor.toBackgroundColorProto()
     builder.customBackgroundColor = customBackgroundColor
     builder.appDrawerTypeProto = appDrawerType.toAppDrawerTypeProto()
     builder.horizontalAppDrawerColumns = horizontalAppDrawerColumns
@@ -263,7 +263,7 @@ private fun TextColor.toTextColorProto(): TextColorProto = when (this) {
     TextColor.Custom -> TextColorProto.TextColorCustom
 }
 
-private fun BackgroundColor.toTextColorProto(): BackgroundColorProto = when (this) {
+private fun BackgroundColor.toBackgroundColorProto(): BackgroundColorProto = when (this) {
     BackgroundColor.System -> BackgroundColorProto.BackgroundColorSystem
     BackgroundColor.Light -> BackgroundColorProto.BackgroundColorLight
     BackgroundColor.Dark -> BackgroundColorProto.BackgroundColorDark

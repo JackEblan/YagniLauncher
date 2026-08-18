@@ -93,7 +93,7 @@ fun getTextColorByLuminance(
     customBackgroundColor: Color,
     systemTextColor: Color,
     minTrustedAlpha: Float = 0.85f,
-    luminanceCrossover: Double = 0.179,
+    luminanceCrossover: Double = 0.5,
     marginOfSafety: Double = 0.05,
 ): Color {
     if (customBackgroundColor.alpha < 0.3f) return systemTextColor
@@ -108,7 +108,7 @@ fun getTextColorByLuminance(
         return systemTextColor
     }
 
-    return if (luminance > luminanceCrossover) Color.Black else Color.White
+    return if (luminance >= luminanceCrossover) Color.Black else Color.White
 }
 
 private fun relativeLuminance(color: Color): Double {

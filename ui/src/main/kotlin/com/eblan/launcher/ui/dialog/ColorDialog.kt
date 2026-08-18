@@ -164,6 +164,7 @@ private fun <T : Enum<T>> ColorDialog(
                         selectedColor,
                         selectedCustomColor,
                     )
+
                     onDismissRequest()
                 },
             ) {
