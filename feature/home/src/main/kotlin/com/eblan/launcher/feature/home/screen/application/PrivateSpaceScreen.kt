@@ -77,7 +77,7 @@ import com.eblan.launcher.domain.model.EblanApplicationInfoWithIconPackInfo
 import com.eblan.launcher.domain.model.EblanUser
 import com.eblan.launcher.feature.home.R
 import com.eblan.launcher.feature.home.util.getHorizontalAlignment
-import com.eblan.launcher.feature.home.util.getSystemTextColor
+import com.eblan.launcher.feature.home.util.getTextColor
 import com.eblan.launcher.feature.home.util.getVerticalArrangement
 import com.eblan.launcher.ui.local.LocalLauncherApps
 import com.eblan.launcher.ui.local.LocalUserManager
@@ -227,7 +227,7 @@ internal fun PrivateSpaceEblanApplicationInfoItem(
 
     val scope = rememberCoroutineScope()
 
-    val textColor = getSystemTextColor(
+    val textColor = getTextColor(
         customTextColor = appDrawerSettings.gridItemSettings.customTextColor,
         textColor = appDrawerSettings.gridItemSettings.textColor,
     )

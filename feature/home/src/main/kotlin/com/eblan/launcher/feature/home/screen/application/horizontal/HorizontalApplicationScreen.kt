@@ -65,6 +65,7 @@ import com.eblan.launcher.domain.model.EblanUserType
 import com.eblan.launcher.domain.model.GetEblanApplicationInfosByLabelAndTag
 import com.eblan.launcher.domain.model.ManagedProfileResult
 import com.eblan.launcher.domain.model.MoveGridItemResult
+import com.eblan.launcher.domain.model.TextColor
 import com.eblan.launcher.feature.home.component.HorizontalAppDrawerGridLayout
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
@@ -101,6 +102,8 @@ internal fun HorizontalApplicationScreen(
     screenHeight: Int,
     swipeY: Float,
     isVisibleOverlay: Boolean,
+    systemTextColor: TextColor,
+    systemCustomTextColor: Int,
     onDismiss: () -> Unit,
     onDragEnd: () -> Unit,
     onEditApplicationInfo: (
@@ -218,6 +221,8 @@ internal fun HorizontalApplicationScreen(
                 isVisibleOverlay = isVisibleOverlay,
                 swipeY = swipeY,
                 isScrollInProgress = horizontalPagerState.isScrollInProgress,
+                systemTextColor = systemTextColor,
+                systemCustomTextColor = systemCustomTextColor,
                 onDismiss = onDismiss,
                 onDragEnd = onDragEnd,
                 onUpdateGridItemSource = onUpdateGridItemSource,
@@ -310,6 +315,8 @@ private fun EblanApplicationInfosPage(
     swipeY: Float,
     isVisibleOverlay: Boolean,
     isScrollInProgress: Boolean,
+    systemTextColor: TextColor,
+    systemCustomTextColor: Int,
     onDismiss: () -> Unit,
     onDragEnd: () -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
@@ -376,6 +383,8 @@ private fun EblanApplicationInfosPage(
                 isVisibleOverlay = isVisibleOverlay,
                 swipeY = swipeY,
                 isScrollInProgress = isScrollInProgress,
+                systemTextColor = systemTextColor,
+                systemCustomTextColor = systemCustomTextColor,
                 onDismiss = onDismiss,
                 onDragEnd = onDragEnd,
                 onUpdateGridItemSource = onUpdateGridItemSource,
@@ -433,6 +442,8 @@ private fun EblanApplicationInfos(
     isVisibleOverlay: Boolean,
     swipeY: Float,
     isScrollInProgress: Boolean,
+    systemTextColor: TextColor,
+    systemCustomTextColor: Int,
     onDismiss: () -> Unit,
     onDragEnd: () -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
@@ -483,6 +494,8 @@ private fun EblanApplicationInfos(
                         appDrawerType = appDrawerSettings.appDrawerType,
                         isSwiping = swipeY > 0f,
                         isScrollInProgress = isScrollInProgress,
+                        systemTextColor = systemTextColor,
+                        systemCustomTextColor = systemCustomTextColor,
                         onDismiss = onDismiss,
                         onUpdateGridItemSource = onUpdateGridItemSource,
                         onUpdateImageBitmap = onUpdateImageBitmap,

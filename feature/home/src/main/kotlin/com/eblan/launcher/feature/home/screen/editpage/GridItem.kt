@@ -56,7 +56,7 @@ import com.eblan.launcher.feature.home.util.FOLDER_PREVIEW_COLUMNS
 import com.eblan.launcher.feature.home.util.FOLDER_PREVIEW_ROWS
 import com.eblan.launcher.feature.home.util.getGridItemTextColor
 import com.eblan.launcher.feature.home.util.getHorizontalAlignment
-import com.eblan.launcher.feature.home.util.getSystemTextColor
+import com.eblan.launcher.feature.home.util.getTextColor
 import com.eblan.launcher.feature.home.util.getVerticalArrangement
 import com.eblan.launcher.ui.settings.rememberIsNotificationAccessGranted
 
@@ -85,7 +85,7 @@ internal fun GridItemContent(
             systemTextColor = textColor,
         )
     } else {
-        getSystemTextColor(
+        getTextColor(
             customTextColor = gridItemSettings.customTextColor,
             textColor = textColor,
         )

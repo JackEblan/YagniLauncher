@@ -118,7 +118,7 @@ import com.eblan.launcher.feature.home.screen.application.handleDragEblanApplica
 import com.eblan.launcher.feature.home.screen.application.handleOnLongPressEblanApplicationInfoItem
 import com.eblan.launcher.feature.home.screen.application.handleOnTapEblanApplicationInfoItem
 import com.eblan.launcher.feature.home.screen.application.rememberIsQuietModeEnabled
-import com.eblan.launcher.feature.home.util.getSystemTextColor
+import com.eblan.launcher.feature.home.util.getTextColor
 import com.eblan.launcher.ui.local.LocalLauncherApps
 import com.eblan.launcher.ui.local.LocalUserManager
 import com.eblan.launcher.ui.settings.rememberIsDefaultLauncher
@@ -693,7 +693,7 @@ private fun EblanApplicationInfoListItem(
 
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    val textColor = getSystemTextColor(
+    val textColor = getTextColor(
         customTextColor = appDrawerSettings.gridItemSettings.customTextColor,
         textColor = appDrawerSettings.gridItemSettings.textColor,
     )

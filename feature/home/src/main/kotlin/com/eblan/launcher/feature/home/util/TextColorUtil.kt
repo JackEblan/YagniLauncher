@@ -19,6 +19,8 @@ package com.eblan.launcher.feature.home.util
 
 import androidx.compose.ui.graphics.Color
 import com.eblan.launcher.domain.model.TextColor
+import kotlin.math.abs
+import kotlin.math.pow
 
 internal fun getGridItemTextColor(
     gridItemCustomTextColor: Int,
@@ -27,20 +29,18 @@ internal fun getGridItemTextColor(
     systemTextColor: TextColor,
     defaultColor: Color = Color.Unspecified,
 ): Color = when (gridItemTextColor) {
-    TextColor.System -> getSystemTextColor(
+    TextColor.System -> getTextColor(
         customTextColor = systemCustomTextColor,
         textColor = systemTextColor,
         defaultColor = defaultColor,
     )
 
     TextColor.Light -> Color.White
-
     TextColor.Dark -> Color.Black
-
     TextColor.Custom -> Color(gridItemCustomTextColor)
 }
 
-internal fun getSystemTextColor(
+internal fun getTextColor(
     customTextColor: Int,
     textColor: TextColor,
     defaultColor: Color = Color.Unspecified,
@@ -49,4 +49,72 @@ internal fun getSystemTextColor(
     TextColor.Light -> Color.White
     TextColor.Dark -> Color.Black
     TextColor.Custom -> Color(customTextColor)
+}
+
+internal fun getEblanApplicationInfoTextColor(
+    backgroundColor: TextColor,
+    customBackgroundColor: Int,
+    textColor: TextColor,
+    customTextColor: Int,
+    systemCustomTextColor: Int,
+    systemTextColor: TextColor,
+    defaultColor: Color = Color.Unspecified,
+): Color = when (backgroundColor) {
+    TextColor.System -> defaultColor
+    TextColor.Light -> Color.Black
+    TextColor.Dark -> Color.White
+    TextColor.Custom -> {
+        val homeGridItemTextColor = getTextColor(
+            customTextColor = systemCustomTextColor,
+            textColor = systemTextColor,
+            defaultColor = Color.Red,
+        )
+
+        val gridItemTextColor = getTextColorByLuminance(
+            customBackgroundColor = Color(customBackgroundColor),
+            systemTextColor = homeGridItemTextColor,
+        )
+
+        getTextColor(
+            customTextColor = customTextColor,
+            textColor = textColor,
+            defaultColor = gridItemTextColor,
+        )
+    }
+}
+
+fun getTextColorByLuminance(
+    customBackgroundColor: Color,
+    systemTextColor: Color,
+    minTrustedAlpha: Float = 0.85f,
+    luminanceCrossover: Double = 0.179,
+    marginOfSafety: Double = 0.05,
+): Color {
+    if (customBackgroundColor.alpha < 0.3f) return systemTextColor
+
+    val luminance = relativeLuminance(color = customBackgroundColor)
+
+    val distanceFromCrossover = abs(luminance - luminanceCrossover)
+
+    if (customBackgroundColor.alpha < minTrustedAlpha &&
+        distanceFromCrossover < marginOfSafety
+    ) {
+        return systemTextColor
+    }
+
+    return if (luminance > luminanceCrossover) Color.Black else Color.White
+}
+
+private fun relativeLuminance(color: Color): Double {
+    fun channel(c: Float): Double {
+        val cs = c.toDouble()
+
+        return if (cs <= 0.03928) cs / 12.92 else ((cs + 0.055) / 1.055).pow(2.4)
+    }
+
+    val r = channel(color.red)
+    val g = channel(color.green)
+    val b = channel(color.blue)
+
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b
 }

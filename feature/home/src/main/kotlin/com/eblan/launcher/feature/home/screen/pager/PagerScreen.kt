@@ -97,7 +97,7 @@ import com.eblan.launcher.feature.home.screen.widget.AppWidgetScreen
 import com.eblan.launcher.feature.home.screen.widget.WidgetScreen
 import com.eblan.launcher.feature.home.util.PAGE_INDICATOR_HEIGHT
 import com.eblan.launcher.feature.home.util.calculatePage
-import com.eblan.launcher.feature.home.util.getSystemTextColor
+import com.eblan.launcher.feature.home.util.getTextColor
 import com.eblan.launcher.ui.local.LocalAppWidgetHost
 import com.eblan.launcher.ui.local.LocalFileManager
 import com.eblan.launcher.ui.local.LocalIconKeyGenerator
@@ -691,7 +691,7 @@ internal fun PagerScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(PAGE_INDICATOR_HEIGHT),
-                color = getSystemTextColor(
+                color = getTextColor(
                     customTextColor = homeSettings.gridItemSettings.customTextColor,
                     textColor = textColor,
                 ),
@@ -927,6 +927,8 @@ internal fun PagerScreen(
                 screenHeight = screenHeight,
                 swipeY = pagerScreenState.applicationScreenSwipeY.value,
                 isVisibleOverlay = isVisibleOverlay,
+                systemTextColor = textColor,
+                systemCustomTextColor = homeSettings.gridItemSettings.customTextColor,
                 onDismiss = pagerScreenState::dismissApplicationScreen,
                 onDragEnd = pagerScreenState::handleOnDragEndApplicationScreen,
                 onEditApplicationInfo = onEditApplicationInfo,

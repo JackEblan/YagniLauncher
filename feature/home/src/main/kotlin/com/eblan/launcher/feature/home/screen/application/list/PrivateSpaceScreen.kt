@@ -67,7 +67,7 @@ import com.eblan.launcher.domain.model.EblanUser
 import com.eblan.launcher.feature.home.screen.application.PrivateSpaceStickyHeader
 import com.eblan.launcher.feature.home.screen.application.handleOnLongPressPrivateSpaceEblanApplicationInfoItem
 import com.eblan.launcher.feature.home.screen.application.handleOnTapEblanApplicationInfoItem
-import com.eblan.launcher.feature.home.util.getSystemTextColor
+import com.eblan.launcher.feature.home.util.getTextColor
 import com.eblan.launcher.ui.local.LocalLauncherApps
 import kotlinx.coroutines.launch
 import kotlin.uuid.ExperimentalUuidApi
@@ -141,7 +141,7 @@ private fun PrivateSpaceEblanApplicationInfoItem(
 
     val scope = rememberCoroutineScope()
 
-    val textColor = getSystemTextColor(
+    val textColor = getTextColor(
         customTextColor = appDrawerSettings.gridItemSettings.customTextColor,
         textColor = appDrawerSettings.gridItemSettings.textColor,
     )
