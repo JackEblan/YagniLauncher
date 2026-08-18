@@ -96,7 +96,7 @@ fun getTextColorByLuminance(
 ): Color {
     if (customBackgroundColor.alpha < alphaThreshold) return systemTextColor
 
-    return if (customBackgroundColor.luminance() > luminanceCrossover) {
+    return if (customBackgroundColor.luminance() >= luminanceCrossover) {
         Color.Black
     } else {
         Color.White
