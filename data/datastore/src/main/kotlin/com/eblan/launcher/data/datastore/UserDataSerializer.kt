@@ -24,6 +24,7 @@ import com.eblan.launcher.data.datastore.mapper.toThemeProto
 import com.eblan.launcher.data.datastore.proto.UserDataProto
 import com.eblan.launcher.data.datastore.proto.appdrawer.AppDrawerSettingsProto
 import com.eblan.launcher.data.datastore.proto.appdrawer.AppDrawerTypeProto
+import com.eblan.launcher.data.datastore.proto.appdrawer.BackgroundColorProto
 import com.eblan.launcher.data.datastore.proto.appdrawer.EblanApplicationInfoOrderProto
 import com.eblan.launcher.data.datastore.proto.experimental.ExperimentalSettingsProto
 import com.eblan.launcher.data.datastore.proto.general.GeneralSettingsProto
@@ -95,7 +96,7 @@ class UserDataSerializer @Inject constructor() : Serializer<UserDataProto> {
         appDrawerRowsHeight = 100
         gridItemSettingsProto = defaultGridItemSettingsProto
         eblanApplicationInfoOrderProto = EblanApplicationInfoOrderProto.Alphabetical
-        backgroundColor = TextColorProto.TextColorSystem
+        backgroundColorProto = BackgroundColorProto.BackgroundColorSystem
         appDrawerTypeProto = AppDrawerTypeProto.Vertical
         horizontalAppDrawerColumns = 5
         horizontalAppDrawerRows = 5

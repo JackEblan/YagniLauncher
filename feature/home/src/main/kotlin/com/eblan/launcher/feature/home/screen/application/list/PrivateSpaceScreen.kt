@@ -64,10 +64,11 @@ import com.eblan.launcher.domain.model.AppDrawerSettings
 import com.eblan.launcher.domain.model.EblanApplicationInfo
 import com.eblan.launcher.domain.model.EblanApplicationInfoWithIconPackInfo
 import com.eblan.launcher.domain.model.EblanUser
+import com.eblan.launcher.domain.model.TextColor
 import com.eblan.launcher.feature.home.screen.application.PrivateSpaceStickyHeader
 import com.eblan.launcher.feature.home.screen.application.handleOnLongPressPrivateSpaceEblanApplicationInfoItem
 import com.eblan.launcher.feature.home.screen.application.handleOnTapEblanApplicationInfoItem
-import com.eblan.launcher.feature.home.util.getTextColor
+import com.eblan.launcher.feature.home.util.getAppDrawerGridItemTextColor
 import com.eblan.launcher.ui.local.LocalLauncherApps
 import kotlinx.coroutines.launch
 import kotlin.uuid.ExperimentalUuidApi
@@ -79,6 +80,8 @@ internal fun LazyListScope.privateSpace(
     privateEblanApplicationInfos: List<EblanApplicationInfoWithIconPackInfo>,
     privateEblanUser: EblanUser?,
     isVisibleOverlay: Boolean,
+    systemCustomTextColor: Int,
+    systemTextColor: TextColor,
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
@@ -102,6 +105,8 @@ internal fun LazyListScope.privateSpace(
                 eblanApplicationInfoWithIconPackInfo = eblanApplicationInfo,
                 paddingValues = paddingValues,
                 isVisibleOverlay = isVisibleOverlay,
+                systemTextColor = systemTextColor,
+                systemCustomTextColor = systemCustomTextColor,
                 onUpdateOverlayBounds = onUpdateOverlayBounds,
                 onUpdatePopupMenu = onUpdatePopupMenu,
                 onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
@@ -122,6 +127,8 @@ private fun PrivateSpaceEblanApplicationInfoItem(
     eblanApplicationInfoWithIconPackInfo: EblanApplicationInfoWithIconPackInfo,
     paddingValues: PaddingValues,
     isVisibleOverlay: Boolean,
+    systemCustomTextColor: Int,
+    systemTextColor: TextColor,
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
@@ -141,9 +148,13 @@ private fun PrivateSpaceEblanApplicationInfoItem(
 
     val scope = rememberCoroutineScope()
 
-    val textColor = getTextColor(
-        customTextColor = appDrawerSettings.gridItemSettings.customTextColor,
+    val textColor = getAppDrawerGridItemTextColor(
+        backgroundColor = appDrawerSettings.backgroundColor,
+        customBackgroundColor = appDrawerSettings.customBackgroundColor,
         textColor = appDrawerSettings.gridItemSettings.textColor,
+        customTextColor = appDrawerSettings.gridItemSettings.customTextColor,
+        systemTextColor = systemTextColor,
+        systemCustomTextColor = systemCustomTextColor,
     )
 
     val maxLines = if (appDrawerSettings.gridItemSettings.singleLineLabel) 1 else Int.MAX_VALUE

@@ -37,6 +37,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -75,9 +76,10 @@ import com.eblan.launcher.domain.model.AppDrawerSettings
 import com.eblan.launcher.domain.model.EblanApplicationInfo
 import com.eblan.launcher.domain.model.EblanApplicationInfoWithIconPackInfo
 import com.eblan.launcher.domain.model.EblanUser
+import com.eblan.launcher.domain.model.TextColor
 import com.eblan.launcher.feature.home.R
+import com.eblan.launcher.feature.home.util.getAppDrawerGridItemTextColor
 import com.eblan.launcher.feature.home.util.getHorizontalAlignment
-import com.eblan.launcher.feature.home.util.getTextColor
 import com.eblan.launcher.feature.home.util.getVerticalArrangement
 import com.eblan.launcher.ui.local.LocalLauncherApps
 import com.eblan.launcher.ui.local.LocalUserManager
@@ -92,6 +94,8 @@ internal fun LazyGridScope.privateSpace(
     privateEblanApplicationInfoWithIconPackInfos: List<EblanApplicationInfoWithIconPackInfo>,
     privateEblanUser: EblanUser?,
     isVisibleOverlay: Boolean,
+    systemCustomTextColor: Int,
+    systemTextColor: TextColor,
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
@@ -115,6 +119,8 @@ internal fun LazyGridScope.privateSpace(
                 eblanApplicationInfoWithIconPackInfo = eblanApplicationInfo,
                 paddingValues = paddingValues,
                 isVisibleOverlay = isVisibleOverlay,
+                systemTextColor = systemTextColor,
+                systemCustomTextColor = systemCustomTextColor,
                 onUpdateOverlayBounds = onUpdateOverlayBounds,
                 onUpdatePopupMenu = onUpdatePopupMenu,
                 onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
@@ -144,52 +150,58 @@ internal fun PrivateSpaceStickyHeader(
 
     val isDefaultLauncher by rememberIsDefaultLauncher()
 
-    Row(
+    ElevatedCard(
         modifier = modifier
             .fillMaxWidth()
-            .padding(20.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
+            .padding(5.dp),
     ) {
-        Text(
-            text = stringResource(R.string.private_space),
-        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(5.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = stringResource(R.string.private_space),
+            )
 
-        Row {
-            launcherApps.getPrivateSpaceSettingsIntent()?.let { intentSender ->
-                IconButton(
-                    onClick = {
-                        privateSpaceLauncher.launch(
-                            IntentSenderRequest.Builder(intentSender).build(),
-                        )
-                    },
-                ) {
-                    Icon(
-                        imageVector = EblanLauncherIcons.Settings,
-                        contentDescription = null,
-                    )
-                }
-            }
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && isDefaultLauncher && userHandle != null) {
-                IconButton(
-                    onClick = {
-                        scope.launch {
-                            userManager.requestQuietModeEnabled(
-                                enableQuiteMode = !isQuietModeEnabled,
-                                userHandle = userHandle,
+            Row {
+                launcherApps.getPrivateSpaceSettingsIntent()?.let { intentSender ->
+                    IconButton(
+                        onClick = {
+                            privateSpaceLauncher.launch(
+                                IntentSenderRequest.Builder(intentSender).build(),
                             )
-                        }
-                    },
-                ) {
-                    Icon(
-                        imageVector = if (isQuietModeEnabled) {
-                            EblanLauncherIcons.Lock
-                        } else {
-                            EblanLauncherIcons.LockOpen
                         },
-                        contentDescription = null,
-                    )
+                    ) {
+                        Icon(
+                            imageVector = EblanLauncherIcons.Settings,
+                            contentDescription = null,
+                        )
+                    }
+                }
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && isDefaultLauncher && userHandle != null) {
+                    IconButton(
+                        onClick = {
+                            scope.launch {
+                                userManager.requestQuietModeEnabled(
+                                    enableQuiteMode = !isQuietModeEnabled,
+                                    userHandle = userHandle,
+                                )
+                            }
+                        },
+                    ) {
+                        Icon(
+                            imageVector = if (isQuietModeEnabled) {
+                                EblanLauncherIcons.Lock
+                            } else {
+                                EblanLauncherIcons.LockOpen
+                            },
+                            contentDescription = null,
+                        )
+                    }
                 }
             }
         }
@@ -208,6 +220,8 @@ internal fun PrivateSpaceEblanApplicationInfoItem(
     eblanApplicationInfoWithIconPackInfo: EblanApplicationInfoWithIconPackInfo,
     paddingValues: PaddingValues,
     isVisibleOverlay: Boolean,
+    systemCustomTextColor: Int,
+    systemTextColor: TextColor,
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
@@ -227,9 +241,13 @@ internal fun PrivateSpaceEblanApplicationInfoItem(
 
     val scope = rememberCoroutineScope()
 
-    val textColor = getTextColor(
-        customTextColor = appDrawerSettings.gridItemSettings.customTextColor,
+    val textColor = getAppDrawerGridItemTextColor(
+        backgroundColor = appDrawerSettings.backgroundColor,
+        customBackgroundColor = appDrawerSettings.customBackgroundColor,
         textColor = appDrawerSettings.gridItemSettings.textColor,
+        customTextColor = appDrawerSettings.gridItemSettings.customTextColor,
+        systemTextColor = systemTextColor,
+        systemCustomTextColor = systemCustomTextColor,
     )
 
     val appDrawerRowsHeight = appDrawerSettings.appDrawerRowsHeight.dp

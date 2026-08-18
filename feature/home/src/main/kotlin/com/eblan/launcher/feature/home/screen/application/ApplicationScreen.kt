@@ -248,6 +248,8 @@ internal fun ApplicationScreen(
                     screenHeight = screenHeight,
                     swipeY = swipeY,
                     isVisibleOverlay = isVisibleOverlay,
+                    systemTextColor = systemTextColor,
+                    systemCustomTextColor = systemCustomTextColor,
                     onDismiss = onDismiss,
                     onDragEnd = onDragEnd,
                     onEditApplicationInfo = onEditApplicationInfo,

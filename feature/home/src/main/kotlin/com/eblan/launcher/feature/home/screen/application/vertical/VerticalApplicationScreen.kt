@@ -631,6 +631,8 @@ private fun EblanApplicationInfos(
                         privateEblanApplicationInfoWithIconPackInfos = getEblanApplicationInfosByLabelAndTag.privateEblanApplicationInfoWithIconPackInfos,
                         privateEblanUser = getEblanApplicationInfosByLabelAndTag.privateEblanUser,
                         isVisibleOverlay = isVisibleOverlay,
+                        systemTextColor = systemTextColor,
+                        systemCustomTextColor = systemCustomTextColor,
                         onUpdateOverlayBounds = onUpdateOverlayBounds,
                         onUpdatePopupMenu = onUpdatePrivatePopupMenu,
                         onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
