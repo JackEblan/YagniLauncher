@@ -53,36 +53,11 @@ internal fun GridLayout(
         layout(width = constraints.maxWidth, height = constraints.maxHeight) {
             gridItems?.forEach { gridItem ->
                 subcompose(gridItem.id) {
-                    val width by animateIntAsState(
-                        targetValue = gridItem.columnSpan * cellWidth,
-                        label = "width",
-                    )
-
-                    val height by animateIntAsState(
-                        targetValue = gridItem.rowSpan * cellHeight,
-                        label = "height",
-                    )
-
-                    val x by animateIntAsState(
-                        targetValue = gridItem.startColumn * cellWidth,
-                        label = "x",
-                    )
-
-                    val y by animateIntAsState(
-                        targetValue = gridItem.startRow * cellHeight,
-                        label = "y",
-                    )
-
-                    Box(
-                        modifier = Modifier.gridItem(
-                            width = width,
-                            height = height,
-                            x = x,
-                            y = y,
-                        ),
-                        content = {
-                            content(gridItem)
-                        },
+                    GridLayoutContent(
+                        gridItem = gridItem,
+                        cellWidth = cellWidth,
+                        cellHeight = cellHeight,
+                        content = content,
                     )
                 }.forEach { measurable ->
                     val parentData = measurable.parentData as GridItemParentData
@@ -295,6 +270,46 @@ internal fun HorizontalAppDrawerGridLayout(
             }
         }
     }
+}
+
+@Composable
+private fun GridLayoutContent(
+    gridItem: GridItem,
+    cellWidth: Int,
+    cellHeight: Int,
+    content: @Composable (BoxScope.(GridItem) -> Unit),
+) {
+    val width by animateIntAsState(
+        targetValue = gridItem.columnSpan * cellWidth,
+        label = "width",
+    )
+
+    val height by animateIntAsState(
+        targetValue = gridItem.rowSpan * cellHeight,
+        label = "height",
+    )
+
+    val x by animateIntAsState(
+        targetValue = gridItem.startColumn * cellWidth,
+        label = "x",
+    )
+
+    val y by animateIntAsState(
+        targetValue = gridItem.startRow * cellHeight,
+        label = "y",
+    )
+
+    Box(
+        modifier = Modifier.gridItem(
+            width = width,
+            height = height,
+            x = x,
+            y = y,
+        ),
+        content = {
+            content(gridItem)
+        },
+    )
 }
 
 @Composable

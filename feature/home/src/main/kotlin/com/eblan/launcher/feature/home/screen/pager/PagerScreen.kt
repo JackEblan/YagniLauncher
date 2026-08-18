@@ -35,15 +35,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -100,7 +97,7 @@ import com.eblan.launcher.feature.home.screen.widget.AppWidgetScreen
 import com.eblan.launcher.feature.home.screen.widget.WidgetScreen
 import com.eblan.launcher.feature.home.util.PAGE_INDICATOR_HEIGHT
 import com.eblan.launcher.feature.home.util.calculatePage
-import com.eblan.launcher.feature.home.util.getSystemTextColor
+import com.eblan.launcher.feature.home.util.getTextColor
 import com.eblan.launcher.ui.local.LocalAppWidgetHost
 import com.eblan.launcher.ui.local.LocalFileManager
 import com.eblan.launcher.ui.local.LocalIconKeyGenerator
@@ -694,9 +691,9 @@ internal fun PagerScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(PAGE_INDICATOR_HEIGHT),
-                color = getSystemTextColor(
-                    systemCustomTextColor = homeSettings.gridItemSettings.customTextColor,
-                    systemTextColor = textColor,
+                color = getTextColor(
+                    customTextColor = homeSettings.gridItemSettings.customTextColor,
+                    textColor = textColor,
                 ),
                 gridHorizontalPagerState = gridHorizontalPagerState,
                 infiniteScroll = homeSettings.infiniteScroll,
@@ -930,6 +927,8 @@ internal fun PagerScreen(
                 screenHeight = screenHeight,
                 swipeY = pagerScreenState.applicationScreenSwipeY.value,
                 isVisibleOverlay = isVisibleOverlay,
+                systemTextColor = textColor,
+                systemCustomTextColor = homeSettings.gridItemSettings.customTextColor,
                 onDismiss = pagerScreenState::dismissApplicationScreen,
                 onDragEnd = pagerScreenState::handleOnDragEndApplicationScreen,
                 onEditApplicationInfo = onEditApplicationInfo,

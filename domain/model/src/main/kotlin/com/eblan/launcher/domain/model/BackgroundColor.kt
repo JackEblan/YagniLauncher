@@ -17,17 +17,9 @@
  */
 package com.eblan.launcher.domain.model
 
-data class AppDrawerSettings(
-    val appDrawerColumns: Int,
-    val appDrawerRowsHeight: Int,
-    val gridItemSettings: GridItemSettings,
-    val eblanApplicationInfoOrder: EblanApplicationInfoOrder,
-    val backgroundColor: BackgroundColor,
-    val customBackgroundColor: Int,
-    val appDrawerType: AppDrawerType,
-    val horizontalAppDrawerColumns: Int,
-    val horizontalAppDrawerRows: Int,
-    val excludeTaggedApps: Boolean,
-    val showKeyboard: Boolean,
-    val fuzzySearch: Boolean,
-)
+enum class BackgroundColor {
+    System,
+    Light,
+    Dark,
+    Custom,
+}

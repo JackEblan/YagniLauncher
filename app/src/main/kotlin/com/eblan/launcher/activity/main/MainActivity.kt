@@ -133,9 +133,7 @@ class MainActivity : ComponentActivity() {
                 val mainActivityUiState by viewModel.activityUiState.collectAsStateWithLifecycle()
 
                 when (val state = mainActivityUiState) {
-                    ActivityUiState.Loading -> {
-                        enableEdgeToEdge()
-                    }
+                    ActivityUiState.Loading -> enableEdgeToEdge()
 
                     is ActivityUiState.Success -> {
                         SideEffect {

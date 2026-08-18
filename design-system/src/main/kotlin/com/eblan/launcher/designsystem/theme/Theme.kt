@@ -127,17 +127,9 @@ fun EblanLauncherTheme(
 
 @Composable
 private fun getGreenColorScheme(theme: Theme): ColorScheme = when (theme) {
-    Theme.System -> {
-        if (isSystemInDarkTheme()) DarkColorScheme else LightColorScheme
-    }
-
-    Theme.Light -> {
-        LightColorScheme
-    }
-
-    Theme.Dark -> {
-        DarkColorScheme
-    }
+    Theme.System -> if (isSystemInDarkTheme()) DarkColorScheme else LightColorScheme
+    Theme.Light -> LightColorScheme
+    Theme.Dark -> DarkColorScheme
 }
 
 @RequiresApi(Build.VERSION_CODES.S)
@@ -146,22 +138,16 @@ private fun getDynamicColorScheme(theme: Theme): ColorScheme {
     val context = LocalContext.current
 
     return when (theme) {
-        Theme.System -> {
-            if (isSystemInDarkTheme()) {
-                dynamicDarkColorScheme(context)
-            } else {
-                dynamicLightColorScheme(
-                    context,
-                )
-            }
-        }
-
-        Theme.Light -> {
-            dynamicLightColorScheme(context)
-        }
-
-        Theme.Dark -> {
+        Theme.System -> if (isSystemInDarkTheme()) {
             dynamicDarkColorScheme(context)
+        } else {
+            dynamicLightColorScheme(
+                context,
+            )
         }
+
+        Theme.Light -> dynamicLightColorScheme(context)
+
+        Theme.Dark -> dynamicDarkColorScheme(context)
     }
 }

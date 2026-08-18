@@ -68,16 +68,8 @@ class GetTextColorUseCase @Inject constructor(
     }
 
     private fun getTextColorFromSystemTheme(theme: Theme): TextColor = when (theme) {
-        Theme.System -> {
-            getTextColorFromSystemTheme(theme = resourcesWrapper.getSystemTheme())
-        }
-
-        Theme.Light -> {
-            TextColor.Light
-        }
-
-        Theme.Dark -> {
-            TextColor.Dark
-        }
+        Theme.System -> getTextColorFromSystemTheme(theme = resourcesWrapper.getSystemTheme())
+        Theme.Light -> TextColor.Light
+        Theme.Dark -> TextColor.Dark
     }
 }

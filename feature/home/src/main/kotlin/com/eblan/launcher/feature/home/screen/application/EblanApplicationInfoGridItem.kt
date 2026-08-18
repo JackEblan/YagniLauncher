@@ -76,11 +76,12 @@ import com.eblan.launcher.domain.model.EblanApplicationInfoWithIconPackInfo
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.MoveGridItemResult
+import com.eblan.launcher.domain.model.TextColor
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
+import com.eblan.launcher.feature.home.util.getAppDrawerGridItemTextColor
 import com.eblan.launcher.feature.home.util.getHorizontalAlignment
-import com.eblan.launcher.feature.home.util.getSystemTextColor
 import com.eblan.launcher.feature.home.util.getVerticalArrangement
 import com.eblan.launcher.framework.launcherapps.AndroidLauncherAppsWrapper
 import com.eblan.launcher.ui.local.LocalLauncherApps
@@ -105,6 +106,8 @@ internal fun EblanApplicationInfoGridItem(
     appDrawerType: AppDrawerType,
     isScrollInProgress: Boolean,
     isSwiping: Boolean,
+    systemTextColor: TextColor,
+    systemCustomTextColor: Int,
     onDismiss: () -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
@@ -133,9 +136,13 @@ internal fun EblanApplicationInfoGridItem(
 
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    val textColor = getSystemTextColor(
-        systemCustomTextColor = appDrawerSettings.gridItemSettings.customTextColor,
-        systemTextColor = appDrawerSettings.gridItemSettings.textColor,
+    val textColor = getAppDrawerGridItemTextColor(
+        backgroundColor = appDrawerSettings.backgroundColor,
+        customBackgroundColor = appDrawerSettings.customBackgroundColor,
+        textColor = appDrawerSettings.gridItemSettings.textColor,
+        customTextColor = appDrawerSettings.gridItemSettings.customTextColor,
+        systemTextColor = systemTextColor,
+        systemCustomTextColor = systemCustomTextColor,
     )
 
     val maxLines = if (appDrawerSettings.gridItemSettings.singleLineLabel) 1 else Int.MAX_VALUE

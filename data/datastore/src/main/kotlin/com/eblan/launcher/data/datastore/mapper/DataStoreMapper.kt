@@ -19,6 +19,7 @@ package com.eblan.launcher.data.datastore.mapper
 
 import com.eblan.launcher.data.datastore.proto.appdrawer.AppDrawerSettingsProto
 import com.eblan.launcher.data.datastore.proto.appdrawer.AppDrawerTypeProto
+import com.eblan.launcher.data.datastore.proto.appdrawer.BackgroundColorProto
 import com.eblan.launcher.data.datastore.proto.appdrawer.EblanApplicationInfoOrderProto
 import com.eblan.launcher.data.datastore.proto.experimental.ExperimentalSettingsProto
 import com.eblan.launcher.data.datastore.proto.general.GeneralSettingsProto
@@ -33,6 +34,7 @@ import com.eblan.launcher.data.datastore.proto.home.TextColorProto
 import com.eblan.launcher.data.datastore.proto.home.VerticalArrangementProto
 import com.eblan.launcher.domain.model.AppDrawerSettings
 import com.eblan.launcher.domain.model.AppDrawerType
+import com.eblan.launcher.domain.model.BackgroundColor
 import com.eblan.launcher.domain.model.EblanAction
 import com.eblan.launcher.domain.model.EblanActionType
 import com.eblan.launcher.domain.model.EblanApplicationInfoOrder
@@ -80,7 +82,7 @@ internal fun AppDrawerSettingsProto.toAppDrawerSettings(): AppDrawerSettings = A
     appDrawerRowsHeight = appDrawerRowsHeight,
     gridItemSettings = gridItemSettingsProto.toGridItemSettings(),
     eblanApplicationInfoOrder = eblanApplicationInfoOrderProto.toEblanApplicationInfoOrder(),
-    backgroundColor = backgroundColor.toTextColor(),
+    backgroundColor = backgroundColorProto.toBackgroundColor(),
     customBackgroundColor = customBackgroundColor,
     appDrawerType = appDrawerTypeProto.toAppDrawerType(),
     horizontalAppDrawerColumns = horizontalAppDrawerColumns,
@@ -105,7 +107,7 @@ internal fun GridItemSettingsProto.toGridItemSettings(): GridItemSettings = Grid
 )
 
 internal fun GeneralSettingsProto.toGeneralSettings(): GeneralSettings = GeneralSettings(
-    theme = themeProto.toDarkThemeConfig(),
+    theme = themeProto.toTheme(),
     dynamicTheme = dynamicTheme,
     iconPackInfoPackageName = iconPackInfoPackageName,
 )
@@ -159,7 +161,7 @@ internal fun AppDrawerSettings.toAppDrawerSettingsProto(): AppDrawerSettingsProt
     builder.gridItemSettingsProto = gridItemSettings.toGridItemSettingsProto()
     builder.eblanApplicationInfoOrderProto =
         eblanApplicationInfoOrder.toEblanApplicationInfoOrderProto()
-    builder.backgroundColor = backgroundColor.toTextColorProto()
+    builder.backgroundColorProto = backgroundColor.toBackgroundColorProto()
     builder.customBackgroundColor = customBackgroundColor
     builder.appDrawerTypeProto = appDrawerType.toAppDrawerTypeProto()
     builder.horizontalAppDrawerColumns = horizontalAppDrawerColumns
@@ -212,9 +214,9 @@ internal fun EblanActionProto.toEblanAction(): EblanAction = EblanAction(
 )
 
 internal fun Theme.toThemeProto(): ThemeProto = when (this) {
-    Theme.System -> ThemeProto.DarkThemeConfigSystem
-    Theme.Light -> ThemeProto.DarkThemeConfigLight
-    Theme.Dark -> ThemeProto.DarkThemeConfigDark
+    Theme.System -> ThemeProto.ThemeSystem
+    Theme.Light -> ThemeProto.ThemeLight
+    Theme.Dark -> ThemeProto.ThemeDark
 }
 
 private fun EblanActionType.toEblanActionTypeProto(): EblanActionTypeProto = when (this) {
@@ -237,10 +239,10 @@ private fun EblanActionTypeProto.toEblanActionType(): EblanActionType = when (th
     EblanActionTypeProto.OpenRecents -> EblanActionType.OpenRecents
 }
 
-private fun ThemeProto.toDarkThemeConfig(): Theme = when (this) {
-    ThemeProto.DarkThemeConfigSystem, ThemeProto.UNRECOGNIZED -> Theme.System
-    ThemeProto.DarkThemeConfigLight -> Theme.Light
-    ThemeProto.DarkThemeConfigDark -> Theme.Dark
+private fun ThemeProto.toTheme(): Theme = when (this) {
+    ThemeProto.ThemeSystem, ThemeProto.UNRECOGNIZED -> Theme.System
+    ThemeProto.ThemeLight -> Theme.Light
+    ThemeProto.ThemeDark -> Theme.Dark
 }
 
 private fun EblanApplicationInfoOrderProto.toEblanApplicationInfoOrder(): EblanApplicationInfoOrder = when (this) {
@@ -261,11 +263,25 @@ private fun TextColor.toTextColorProto(): TextColorProto = when (this) {
     TextColor.Custom -> TextColorProto.TextColorCustom
 }
 
+private fun BackgroundColor.toBackgroundColorProto(): BackgroundColorProto = when (this) {
+    BackgroundColor.System -> BackgroundColorProto.BackgroundColorSystem
+    BackgroundColor.Light -> BackgroundColorProto.BackgroundColorLight
+    BackgroundColor.Dark -> BackgroundColorProto.BackgroundColorDark
+    BackgroundColor.Custom -> BackgroundColorProto.BackgroundColorCustom
+}
+
 private fun TextColorProto.toTextColor(): TextColor = when (this) {
     TextColorProto.TextColorSystem, TextColorProto.UNRECOGNIZED -> TextColor.System
     TextColorProto.TextColorLight -> TextColor.Light
     TextColorProto.TextColorDark -> TextColor.Dark
     TextColorProto.TextColorCustom -> TextColor.Custom
+}
+
+private fun BackgroundColorProto.toBackgroundColor(): BackgroundColor = when (this) {
+    BackgroundColorProto.BackgroundColorSystem, BackgroundColorProto.UNRECOGNIZED -> BackgroundColor.System
+    BackgroundColorProto.BackgroundColorLight -> BackgroundColor.Light
+    BackgroundColorProto.BackgroundColorDark -> BackgroundColor.Dark
+    BackgroundColorProto.BackgroundColorCustom -> BackgroundColor.Custom
 }
 
 private fun HorizontalAlignment.toHorizontalAlignmentProto(): HorizontalAlignmentProto = when (this) {

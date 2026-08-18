@@ -62,13 +62,8 @@ internal suspend fun handlePageDirection(
     if (pageDirection == null || folderPopups.value.isNotEmpty()) return
 
     when (pageDirection) {
-        PageDirection.Left -> {
-            onAnimateScrollToPage(currentPage - 1)
-        }
-
-        PageDirection.Right -> {
-            onAnimateScrollToPage(currentPage + 1)
-        }
+        PageDirection.Left -> onAnimateScrollToPage(currentPage - 1)
+        PageDirection.Right -> onAnimateScrollToPage(currentPage + 1)
     }
 }
 
@@ -475,14 +470,8 @@ private fun animateScrollToPage(
     }
 
     when (associate) {
-        Associate.Grid -> {
-            animateScrollToPage(onUpdatePageDirection = onUpdateGridPageDirection)
-        }
-
-        Associate.Dock -> {
-            animateScrollToPage(onUpdatePageDirection = onUpdateDockPageDirection)
-        }
-
+        Associate.Grid -> animateScrollToPage(onUpdatePageDirection = onUpdateGridPageDirection)
+        Associate.Dock -> animateScrollToPage(onUpdatePageDirection = onUpdateDockPageDirection)
         null -> Unit
     }
 }

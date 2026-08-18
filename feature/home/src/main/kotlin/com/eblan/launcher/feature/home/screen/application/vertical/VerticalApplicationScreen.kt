@@ -78,6 +78,7 @@ import com.eblan.launcher.domain.model.EblanUserType
 import com.eblan.launcher.domain.model.GetEblanApplicationInfosByLabelAndTag
 import com.eblan.launcher.domain.model.ManagedProfileResult
 import com.eblan.launcher.domain.model.MoveGridItemResult
+import com.eblan.launcher.domain.model.TextColor
 import com.eblan.launcher.feature.home.component.OffsetNestedScrollConnection
 import com.eblan.launcher.feature.home.dialog.EblanApplicationInfoOrderDialog
 import com.eblan.launcher.feature.home.model.Drag
@@ -115,6 +116,8 @@ internal fun VerticalApplicationScreen(
     screenHeight: Int,
     swipeY: Float,
     isVisibleOverlay: Boolean,
+    systemTextColor: TextColor,
+    systemCustomTextColor: Int,
     onDismiss: () -> Unit,
     onDragEnd: () -> Unit,
     onEditApplicationInfo: (
@@ -250,6 +253,8 @@ internal fun VerticalApplicationScreen(
                 showPopupApplicationMenu = showPopupApplicationMenu,
                 swipeY = swipeY,
                 screenHeight = screenHeight,
+                systemTextColor = systemTextColor,
+                systemCustomTextColor = systemCustomTextColor,
                 onDismiss = onDismiss,
                 onDismissDragAndDrop = {
                     isRearrangeEblanApplicationInfo = false
@@ -365,6 +370,8 @@ private fun EblanApplicationInfosPage(
     isVisibleOverlay: Boolean,
     swipeY: Float,
     screenHeight: Int,
+    systemTextColor: TextColor,
+    systemCustomTextColor: Int,
     onDismiss: () -> Unit,
     onDismissDragAndDrop: () -> Unit,
     onDragEnd: () -> Unit,
@@ -446,6 +453,8 @@ private fun EblanApplicationInfosPage(
                 isVisibleOverlay = isVisibleOverlay,
                 swipeY = swipeY,
                 screenHeight = screenHeight,
+                systemTextColor = systemTextColor,
+                systemCustomTextColor = systemCustomTextColor,
                 onDismiss = onDismiss,
                 onDragEnd = onDragEnd,
                 onUpdateGridItemSource = onUpdateGridItemSource,
@@ -505,6 +514,8 @@ private fun EblanApplicationInfos(
     showPopupApplicationMenu: Boolean,
     swipeY: Float,
     screenHeight: Int,
+    systemTextColor: TextColor,
+    systemCustomTextColor: Int,
     onDismiss: () -> Unit,
     onDragEnd: () -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
@@ -598,6 +609,8 @@ private fun EblanApplicationInfos(
                             appDrawerType = appDrawerSettings.appDrawerType,
                             isSwiping = swipeY > 0f,
                             isScrollInProgress = lazyGridState.isScrollInProgress,
+                            systemTextColor = systemTextColor,
+                            systemCustomTextColor = systemCustomTextColor,
                             onDismiss = onDismiss,
                             onUpdateGridItemSource = onUpdateGridItemSource,
                             onUpdateImageBitmap = onUpdateImageBitmap,
@@ -618,6 +631,8 @@ private fun EblanApplicationInfos(
                         privateEblanApplicationInfoWithIconPackInfos = getEblanApplicationInfosByLabelAndTag.privateEblanApplicationInfoWithIconPackInfos,
                         privateEblanUser = getEblanApplicationInfosByLabelAndTag.privateEblanUser,
                         isVisibleOverlay = isVisibleOverlay,
+                        systemTextColor = systemTextColor,
+                        systemCustomTextColor = systemCustomTextColor,
                         onUpdateOverlayBounds = onUpdateOverlayBounds,
                         onUpdatePopupMenu = onUpdatePrivatePopupMenu,
                         onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
@@ -642,6 +657,8 @@ private fun EblanApplicationInfos(
                             appDrawerType = appDrawerSettings.appDrawerType,
                             isScrollInProgress = lazyGridState.isScrollInProgress,
                             isSwiping = swipeY > 0f,
+                            systemTextColor = systemTextColor,
+                            systemCustomTextColor = systemCustomTextColor,
                             onDismiss = onDismiss,
                             onUpdateGridItemSource = onUpdateGridItemSource,
                             onUpdateImageBitmap = onUpdateImageBitmap,

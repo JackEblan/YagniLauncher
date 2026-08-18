@@ -43,13 +43,11 @@ internal fun handleEblanAction(
     onOpenAppDrawer: () -> Unit,
 ) {
     when (eblanAction.eblanActionType) {
-        EblanActionType.OpenApp -> {
-            launcherApps.startMainActivity(
-                serialNumber = eblanAction.serialNumber,
-                componentName = eblanAction.componentName,
-                sourceBounds = Rect(),
-            )
-        }
+        EblanActionType.OpenApp -> launcherApps.startMainActivity(
+            serialNumber = eblanAction.serialNumber,
+            componentName = eblanAction.componentName,
+            sourceBounds = Rect(),
+        )
 
         EblanActionType.OpenNotificationPanel -> {
             val intent = Intent(GlobalAction.NAME).setPackage(context.packageName).putExtra(
@@ -87,9 +85,7 @@ internal fun handleEblanAction(
             context.sendBroadcast(intent)
         }
 
-        EblanActionType.OpenAppDrawer -> {
-            onOpenAppDrawer()
-        }
+        EblanActionType.OpenAppDrawer -> onOpenAppDrawer()
 
         EblanActionType.None -> Unit
     }

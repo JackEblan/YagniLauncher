@@ -311,25 +311,21 @@ internal class DefaultGridRepository @Inject constructor(
 
     override suspend fun deleteGridItemById(gridItem: GridItem) {
         when (gridItem.data) {
-            is GridItemData.ApplicationInfo -> {
-                applicationInfoGridItemRepository.deleteApplicationInfoGridItemById(id = gridItem.id)
-            }
+            is GridItemData.ApplicationInfo -> applicationInfoGridItemRepository.deleteApplicationInfoGridItemById(
+                id = gridItem.id,
+            )
 
-            is GridItemData.Folder -> {
+            is GridItemData.Folder ->
                 folderGridItemRepository.deleteFolderGridItemById(id = gridItem.id)
-            }
 
-            is GridItemData.ShortcutInfo -> {
+            is GridItemData.ShortcutInfo ->
                 shortcutInfoGridItemRepository.deleteShortcutInfoGridItemById(id = gridItem.id)
-            }
 
-            is GridItemData.Widget -> {
+            is GridItemData.Widget ->
                 widgetGridItemRepository.deleteWidgetGridItemById(id = gridItem.id)
-            }
 
-            is GridItemData.ShortcutConfig -> {
+            is GridItemData.ShortcutConfig ->
                 shortcutConfigGridItemRepository.deleteShortcutConfigGridItemById(id = gridItem.id)
-            }
         }
     }
 

@@ -523,9 +523,7 @@ private fun Success(
                 )
             }
 
-            Screen.Loading -> {
-                LoadingScreen()
-            }
+            Screen.Loading -> LoadingScreen()
 
             Screen.EditGridPage -> {
                 EditGridPageScreen(

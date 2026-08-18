@@ -18,6 +18,8 @@
 package com.eblan.launcher.feature.home.util
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
+import com.eblan.launcher.domain.model.BackgroundColor
 import com.eblan.launcher.domain.model.TextColor
 
 internal fun getGridItemTextColor(
@@ -25,44 +27,78 @@ internal fun getGridItemTextColor(
     gridItemTextColor: TextColor,
     systemCustomTextColor: Int,
     systemTextColor: TextColor,
+    defaultColor: Color = Color.Unspecified,
 ): Color = when (gridItemTextColor) {
-    TextColor.System -> {
-        getSystemTextColor(
-            systemCustomTextColor = systemCustomTextColor,
-            systemTextColor = systemTextColor,
+    TextColor.System -> getTextColor(
+        customTextColor = systemCustomTextColor,
+        textColor = systemTextColor,
+        defaultColor = defaultColor,
+    )
+
+    TextColor.Light -> Color.White
+
+    TextColor.Dark -> Color.Black
+
+    TextColor.Custom -> Color(gridItemCustomTextColor)
+}
+
+internal fun getTextColor(
+    customTextColor: Int,
+    textColor: TextColor,
+    defaultColor: Color = Color.Unspecified,
+): Color = when (textColor) {
+    TextColor.System -> defaultColor
+    TextColor.Light -> Color.White
+    TextColor.Dark -> Color.Black
+    TextColor.Custom -> Color(customTextColor)
+}
+
+internal fun getAppDrawerGridItemTextColor(
+    backgroundColor: BackgroundColor,
+    customBackgroundColor: Int,
+    textColor: TextColor,
+    customTextColor: Int,
+    systemCustomTextColor: Int,
+    systemTextColor: TextColor,
+    defaultColor: Color = Color.Unspecified,
+): Color = when (backgroundColor) {
+    BackgroundColor.System -> defaultColor
+
+    BackgroundColor.Light -> Color.Black
+
+    BackgroundColor.Dark -> Color.White
+
+    BackgroundColor.Custom -> {
+        val gridItemTextColor = getTextColor(
+            customTextColor = systemCustomTextColor,
+            textColor = systemTextColor,
+            defaultColor = defaultColor,
         )
-    }
 
-    TextColor.Light -> {
-        Color.White
-    }
+        val appDrawerGridItemTextColor = getTextColorByLuminance(
+            customBackgroundColor = Color(customBackgroundColor),
+            systemTextColor = gridItemTextColor,
+        )
 
-    TextColor.Dark -> {
-        Color.Black
-    }
-
-    TextColor.Custom -> {
-        Color(gridItemCustomTextColor)
+        getTextColor(
+            customTextColor = customTextColor,
+            textColor = textColor,
+            defaultColor = appDrawerGridItemTextColor,
+        )
     }
 }
 
-internal fun getSystemTextColor(
-    systemCustomTextColor: Int,
-    systemTextColor: TextColor,
-): Color = when (systemTextColor) {
-    TextColor.System -> {
-        Color.Unspecified
-    }
+fun getTextColorByLuminance(
+    customBackgroundColor: Color,
+    systemTextColor: Color,
+    alphaThreshold: Float = 0.5f,
+    luminanceCrossover: Float = 0.5f,
+): Color {
+    if (customBackgroundColor.alpha < alphaThreshold) return systemTextColor
 
-    TextColor.Light -> {
-        Color.White
-    }
-
-    TextColor.Dark -> {
+    return if (customBackgroundColor.luminance() >= luminanceCrossover) {
         Color.Black
-    }
-
-    TextColor.Custom -> {
-        Color(systemCustomTextColor)
+    } else {
+        Color.White
     }
 }

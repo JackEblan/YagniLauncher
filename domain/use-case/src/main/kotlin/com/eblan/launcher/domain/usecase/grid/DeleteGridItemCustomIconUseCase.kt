@@ -50,17 +50,11 @@ class DeleteGridItemCustomIconUseCase @Inject constructor(
                 data.copy(customIcon = null)
             }
 
-            is GridItemData.ShortcutConfig -> {
-                data.copy(customIcon = null)
-            }
+            is GridItemData.ShortcutConfig -> data.copy(customIcon = null)
 
-            is GridItemData.ShortcutInfo -> {
-                data.copy(customIcon = null)
-            }
+            is GridItemData.ShortcutInfo -> data.copy(customIcon = null)
 
-            is GridItemData.Folder -> {
-                data.copy(icon = null)
-            }
+            is GridItemData.Folder -> data.copy(icon = null)
 
             else -> error("Unsupported Grid Item")
         }

@@ -103,6 +103,7 @@ import com.eblan.launcher.domain.model.EblanUserType
 import com.eblan.launcher.domain.model.GetEblanApplicationInfosByLabelAndTag
 import com.eblan.launcher.domain.model.ManagedProfileResult
 import com.eblan.launcher.domain.model.MoveGridItemResult
+import com.eblan.launcher.domain.model.TextColor
 import com.eblan.launcher.feature.home.component.OffsetNestedScrollConnection
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
@@ -118,7 +119,7 @@ import com.eblan.launcher.feature.home.screen.application.handleDragEblanApplica
 import com.eblan.launcher.feature.home.screen.application.handleOnLongPressEblanApplicationInfoItem
 import com.eblan.launcher.feature.home.screen.application.handleOnTapEblanApplicationInfoItem
 import com.eblan.launcher.feature.home.screen.application.rememberIsQuietModeEnabled
-import com.eblan.launcher.feature.home.util.getSystemTextColor
+import com.eblan.launcher.feature.home.util.getAppDrawerGridItemTextColor
 import com.eblan.launcher.ui.local.LocalLauncherApps
 import com.eblan.launcher.ui.local.LocalUserManager
 import com.eblan.launcher.ui.settings.rememberIsDefaultLauncher
@@ -143,6 +144,8 @@ internal fun ListApplicationScreen(
     screenHeight: Int,
     swipeY: Float,
     isVisibleOverlay: Boolean,
+    systemCustomTextColor: Int,
+    systemTextColor: TextColor,
     onDismiss: () -> Unit,
     onDragEnd: () -> Unit,
     onEditApplicationInfo: (
@@ -267,6 +270,8 @@ internal fun ListApplicationScreen(
                 showPopupApplicationMenu = showPopupApplicationMenu,
                 swipeY = swipeY,
                 screenHeight = screenHeight,
+                systemTextColor = systemTextColor,
+                systemCustomTextColor = systemCustomTextColor,
                 onDismiss = onDismiss,
                 onDragEnd = onDragEnd,
                 onUpdateGridItemSource = onUpdateGridItemSource,
@@ -360,6 +365,8 @@ private fun EblanApplicationInfosPage(
     isVisibleOverlay: Boolean,
     swipeY: Float,
     screenHeight: Int,
+    systemCustomTextColor: Int,
+    systemTextColor: TextColor,
     onDismiss: () -> Unit,
     onDragEnd: () -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
@@ -428,6 +435,8 @@ private fun EblanApplicationInfosPage(
                 isVisibleOverlay = isVisibleOverlay,
                 swipeY = swipeY,
                 screenHeight = screenHeight,
+                systemTextColor = systemTextColor,
+                systemCustomTextColor = systemCustomTextColor,
                 onDismiss = onDismiss,
                 onDragEnd = onDragEnd,
                 onUpdateGridItemSource = onUpdateGridItemSource,
@@ -485,6 +494,8 @@ private fun EblanApplicationInfos(
     showPopupApplicationMenu: Boolean,
     swipeY: Float,
     screenHeight: Int,
+    systemCustomTextColor: Int,
+    systemTextColor: TextColor,
     onDismiss: () -> Unit,
     onDragEnd: () -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
@@ -578,6 +589,8 @@ private fun EblanApplicationInfos(
                             isVisibleOverlay = isVisibleOverlay,
                             isSwiping = swipeY > 0f,
                             isScrollInProgress = lazyListState.isScrollInProgress,
+                            systemTextColor = systemTextColor,
+                            systemCustomTextColor = systemCustomTextColor,
                             onDismiss = onDismiss,
                             onUpdateGridItemSource = onUpdateGridItemSource,
                             onUpdateImageBitmap = onUpdateImageBitmap,
@@ -598,6 +611,8 @@ private fun EblanApplicationInfos(
                         privateEblanApplicationInfos = getEblanApplicationInfosByLabelAndTag.privateEblanApplicationInfoWithIconPackInfos,
                         privateEblanUser = getEblanApplicationInfosByLabelAndTag.privateEblanUser,
                         isVisibleOverlay = isVisibleOverlay,
+                        systemTextColor = systemTextColor,
+                        systemCustomTextColor = systemCustomTextColor,
                         onUpdateOverlayBounds = onUpdateOverlayBounds,
                         onUpdatePopupMenu = onUpdatePrivatePopupMenu,
                         onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
@@ -620,6 +635,8 @@ private fun EblanApplicationInfos(
                             isVisibleOverlay = isVisibleOverlay,
                             isSwiping = swipeY > 0f,
                             isScrollInProgress = lazyListState.isScrollInProgress,
+                            systemTextColor = systemTextColor,
+                            systemCustomTextColor = systemCustomTextColor,
                             onDismiss = onDismiss,
                             onUpdateGridItemSource = onUpdateGridItemSource,
                             onUpdateImageBitmap = onUpdateImageBitmap,
@@ -665,6 +682,8 @@ private fun EblanApplicationInfoListItem(
     isVisibleOverlay: Boolean,
     isSwiping: Boolean,
     isScrollInProgress: Boolean,
+    systemCustomTextColor: Int,
+    systemTextColor: TextColor,
     onDismiss: () -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
@@ -693,9 +712,13 @@ private fun EblanApplicationInfoListItem(
 
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    val textColor = getSystemTextColor(
-        systemCustomTextColor = appDrawerSettings.gridItemSettings.customTextColor,
-        systemTextColor = appDrawerSettings.gridItemSettings.textColor,
+    val textColor = getAppDrawerGridItemTextColor(
+        backgroundColor = appDrawerSettings.backgroundColor,
+        customBackgroundColor = appDrawerSettings.customBackgroundColor,
+        textColor = appDrawerSettings.gridItemSettings.textColor,
+        customTextColor = appDrawerSettings.gridItemSettings.customTextColor,
+        systemTextColor = systemTextColor,
+        systemCustomTextColor = systemCustomTextColor,
     )
 
     val maxLines = if (appDrawerSettings.gridItemSettings.singleLineLabel) 1 else Int.MAX_VALUE

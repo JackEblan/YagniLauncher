@@ -66,17 +66,9 @@ fun getResolveDirectionByX(
     val xInGridItem = x - gridItemX
 
     return when {
-        xInGridItem < gridItemWidth / 3 -> {
-            ResolveDirection.Right
-        }
-
-        xInGridItem < 2 * gridItemWidth / 3 -> {
-            ResolveDirection.Center
-        }
-
-        else -> {
-            ResolveDirection.Left
-        }
+        xInGridItem < gridItemWidth / 3 -> ResolveDirection.Right
+        xInGridItem < 2 * gridItemWidth / 3 -> ResolveDirection.Center
+        else -> ResolveDirection.Left
     }
 }
 
