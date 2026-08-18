@@ -18,6 +18,7 @@
 package com.eblan.launcher.feature.home.util
 
 import androidx.compose.ui.graphics.Color
+import com.eblan.launcher.domain.model.BackgroundColor
 import com.eblan.launcher.domain.model.TextColor
 import kotlin.math.abs
 import kotlin.math.pow
@@ -36,7 +37,9 @@ internal fun getGridItemTextColor(
     )
 
     TextColor.Light -> Color.White
+
     TextColor.Dark -> Color.Black
+
     TextColor.Custom -> Color(gridItemCustomTextColor)
 }
 
@@ -51,8 +54,8 @@ internal fun getTextColor(
     TextColor.Custom -> Color(customTextColor)
 }
 
-internal fun getEblanApplicationInfoTextColor(
-    backgroundColor: TextColor,
+internal fun getAppDrawerGridItemTextColor(
+    backgroundColor: BackgroundColor,
     customBackgroundColor: Int,
     textColor: TextColor,
     customTextColor: Int,
@@ -60,25 +63,28 @@ internal fun getEblanApplicationInfoTextColor(
     systemTextColor: TextColor,
     defaultColor: Color = Color.Unspecified,
 ): Color = when (backgroundColor) {
-    TextColor.System -> defaultColor
-    TextColor.Light -> Color.Black
-    TextColor.Dark -> Color.White
-    TextColor.Custom -> {
-        val homeGridItemTextColor = getTextColor(
+    BackgroundColor.System -> defaultColor
+
+    BackgroundColor.Light -> Color.Black
+
+    BackgroundColor.Dark -> Color.White
+
+    BackgroundColor.Custom -> {
+        val gridItemTextColor = getTextColor(
             customTextColor = systemCustomTextColor,
             textColor = systemTextColor,
-            defaultColor = Color.Red,
+            defaultColor = defaultColor,
         )
 
-        val gridItemTextColor = getTextColorByLuminance(
+        val appDrawerGridItemTextColor = getTextColorByLuminance(
             customBackgroundColor = Color(customBackgroundColor),
-            systemTextColor = homeGridItemTextColor,
+            systemTextColor = gridItemTextColor,
         )
 
         getTextColor(
             customTextColor = customTextColor,
             textColor = textColor,
-            defaultColor = gridItemTextColor,
+            defaultColor = appDrawerGridItemTextColor,
         )
     }
 }

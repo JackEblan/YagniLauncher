@@ -48,12 +48,12 @@ import com.eblan.launcher.feature.settings.appdrawer.dialog.EditHorizontalGridDi
 import com.eblan.launcher.feature.settings.appdrawer.dialog.EditVerticalGridDialog
 import com.eblan.launcher.feature.settings.appdrawer.dialog.HiddenEblanApplicationInfosDialog
 import com.eblan.launcher.feature.settings.appdrawer.model.AppDrawerSettingsUiState
+import com.eblan.launcher.ui.dialog.BackgroundColorDialog
 import com.eblan.launcher.ui.dialog.RadioOptionsDialog
-import com.eblan.launcher.ui.dialog.TextColorDialog
+import com.eblan.launcher.ui.dialog.getBackgroundColorTitle
 import com.eblan.launcher.ui.model.SettingsItem
 import com.eblan.launcher.ui.settings.GridItemSettings
 import com.eblan.launcher.ui.settings.SettingsItemContent
-import com.eblan.launcher.ui.settings.getTitle
 import com.eblan.launcher.common.R as commonR
 
 @Composable
@@ -246,10 +246,10 @@ private fun Success(
     }
 
     if (showTextColorDialog) {
-        TextColorDialog(
+        BackgroundColorDialog(
             title = stringResource(commonR.string.background_color),
-            textColor = appDrawerSettings.backgroundColor,
-            customTextColor = appDrawerSettings.customBackgroundColor,
+            backgroundColor = appDrawerSettings.backgroundColor,
+            customBackgroundColor = appDrawerSettings.customBackgroundColor,
             onDismissRequest = {
                 showTextColorDialog = false
             },
@@ -306,7 +306,7 @@ private fun buildAppDrawerSettingsItems(
     add(
         SettingsItem.Column(
             title = stringResource(commonR.string.background_color),
-            subtitle = appDrawerSettings.backgroundColor.getTitle(),
+            subtitle = appDrawerSettings.backgroundColor.getBackgroundColorTitle(),
             onClick = onBackgroundColorClick,
         ),
     )

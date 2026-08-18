@@ -80,7 +80,7 @@ import com.eblan.launcher.domain.model.TextColor
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
-import com.eblan.launcher.feature.home.util.getEblanApplicationInfoTextColor
+import com.eblan.launcher.feature.home.util.getAppDrawerGridItemTextColor
 import com.eblan.launcher.feature.home.util.getHorizontalAlignment
 import com.eblan.launcher.feature.home.util.getVerticalArrangement
 import com.eblan.launcher.framework.launcherapps.AndroidLauncherAppsWrapper
@@ -136,9 +136,9 @@ internal fun EblanApplicationInfoGridItem(
 
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    val textColor = getEblanApplicationInfoTextColor(
+    val textColor = getAppDrawerGridItemTextColor(
         backgroundColor = appDrawerSettings.backgroundColor,
-        customBackgroundColor = appDrawerSettings.gridItemSettings.customBackgroundColor,
+        customBackgroundColor = appDrawerSettings.customBackgroundColor,
         textColor = appDrawerSettings.gridItemSettings.textColor,
         customTextColor = appDrawerSettings.gridItemSettings.customTextColor,
         systemTextColor = systemTextColor,
