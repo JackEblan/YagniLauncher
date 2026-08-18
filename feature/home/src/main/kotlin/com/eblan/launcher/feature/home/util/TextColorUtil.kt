@@ -18,10 +18,9 @@
 package com.eblan.launcher.feature.home.util
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import com.eblan.launcher.domain.model.BackgroundColor
 import com.eblan.launcher.domain.model.TextColor
-import kotlin.math.abs
-import kotlin.math.pow
 
 internal fun getGridItemTextColor(
     gridItemCustomTextColor: Int,
@@ -92,35 +91,14 @@ internal fun getAppDrawerGridItemTextColor(
 fun getTextColorByLuminance(
     customBackgroundColor: Color,
     systemTextColor: Color,
-    minTrustedAlpha: Float = 0.85f,
-    luminanceCrossover: Double = 0.5,
-    marginOfSafety: Double = 0.05,
+    alphaThreshold: Float = 0.5f,
+    luminanceCrossover: Float = 0.5f,
 ): Color {
-    if (customBackgroundColor.alpha < 0.3f) return systemTextColor
+    if (customBackgroundColor.alpha < alphaThreshold) return systemTextColor
 
-    val luminance = relativeLuminance(color = customBackgroundColor)
-
-    val distanceFromCrossover = abs(luminance - luminanceCrossover)
-
-    if (customBackgroundColor.alpha < minTrustedAlpha &&
-        distanceFromCrossover < marginOfSafety
-    ) {
-        return systemTextColor
+    return if (customBackgroundColor.luminance() > luminanceCrossover) {
+        Color.Black
+    } else {
+        Color.White
     }
-
-    return if (luminance >= luminanceCrossover) Color.Black else Color.White
-}
-
-private fun relativeLuminance(color: Color): Double {
-    fun channel(c: Float): Double {
-        val cs = c.toDouble()
-
-        return if (cs <= 0.03928) cs / 12.92 else ((cs + 0.055) / 1.055).pow(2.4)
-    }
-
-    val r = channel(color.red)
-    val g = channel(color.green)
-    val b = channel(color.blue)
-
-    return 0.2126 * r + 0.7152 * g + 0.0722 * b
 }
