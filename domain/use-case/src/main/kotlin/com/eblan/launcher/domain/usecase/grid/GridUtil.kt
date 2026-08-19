@@ -39,6 +39,9 @@ import kotlin.math.ceil
 import kotlin.math.min
 import kotlin.math.sqrt
 
+const val FOLDER_PREVIEW_COLUMNS = 2
+const val FOLDER_PREVIEW_ROWS = 2
+
 internal suspend fun ApplicationInfoGridItem.asGridItem(
     fileManager: FileManager,
     iconKeyGenerator: IconKeyGenerator,
@@ -362,16 +365,7 @@ internal fun deleteGridItemCustomIconFile(gridItem: GridItem) = when (val data =
     else -> Unit
 }
 
-private suspend fun List<GridItem>.getGridItemsByPage(
-    maxFolderColumns: Int,
-    maxFolderRows: Int,
-): Map<Int, List<GridItem>> = chunked(maxFolderColumns * maxFolderRows).mapIndexed { index, gridItems ->
-    currentCoroutineContext().ensureActive()
-
-    index to gridItems
-}.toMap()
-
-private fun getGridDimension(
+internal fun getGridDimension(
     count: Int,
     maxFolderColumns: Int,
     maxFolderRows: Int,
@@ -383,3 +377,12 @@ private fun getGridDimension(
 
     return columns to rows
 }
+
+private suspend fun List<GridItem>.getGridItemsByPage(
+    maxFolderColumns: Int,
+    maxFolderRows: Int,
+): Map<Int, List<GridItem>> = chunked(maxFolderColumns * maxFolderRows).mapIndexed { index, gridItems ->
+    currentCoroutineContext().ensureActive()
+
+    index to gridItems
+}.toMap()

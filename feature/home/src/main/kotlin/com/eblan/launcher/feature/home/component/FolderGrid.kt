@@ -26,8 +26,8 @@ import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Density
 import com.eblan.launcher.domain.model.GridItem
-import com.eblan.launcher.feature.home.util.FOLDER_PREVIEW_COLUMNS
-import com.eblan.launcher.feature.home.util.FOLDER_PREVIEW_ROWS
+import com.eblan.launcher.domain.usecase.grid.FOLDER_PREVIEW_COLUMNS
+import com.eblan.launcher.domain.usecase.grid.FOLDER_PREVIEW_ROWS
 
 @Composable
 internal fun PreviewFolderGridLayout(
@@ -58,38 +58,36 @@ internal fun PreviewFolderGridLayout(
             width = constraints.maxWidth,
             height = constraints.maxHeight,
         ) {
-            gridItems
-                ?.take(previewColumns * previewRows)
-                ?.forEachIndexed { index, gridItem ->
-                    subcompose(gridItem.id) {
-                        val x = previewOffsetX + (index % previewColumns) * previewCellSize
+            gridItems?.forEachIndexed { index, gridItem ->
+                subcompose(gridItem.id) {
+                    val x = previewOffsetX + (index % previewColumns) * previewCellSize
 
-                        val y = previewOffsetY + (index / previewColumns) * previewCellSize
+                    val y = previewOffsetY + (index / previewColumns) * previewCellSize
 
-                        Box(
-                            modifier = Modifier.folderGridItem(
-                                x = x,
-                                y = y,
-                                width = previewCellSize,
-                                height = previewCellSize,
-                            ),
-                        ) {
-                            content(gridItem)
-                        }
-                    }.forEach { measurable ->
-                        val parentData = measurable.parentData as FolderGridItemParentData
-
-                        measurable.measure(
-                            Constraints.fixed(
-                                width = parentData.width,
-                                height = parentData.height,
-                            ),
-                        ).placeRelative(
-                            x = parentData.x,
-                            y = parentData.y,
-                        )
+                    Box(
+                        modifier = Modifier.folderGridItem(
+                            x = x,
+                            y = y,
+                            width = previewCellSize,
+                            height = previewCellSize,
+                        ),
+                    ) {
+                        content(gridItem)
                     }
+                }.forEach { measurable ->
+                    val parentData = measurable.parentData as FolderGridItemParentData
+
+                    measurable.measure(
+                        Constraints.fixed(
+                            width = parentData.width,
+                            height = parentData.height,
+                        ),
+                    ).placeRelative(
+                        x = parentData.x,
+                        y = parentData.y,
+                    )
                 }
+            }
         }
     }
 }

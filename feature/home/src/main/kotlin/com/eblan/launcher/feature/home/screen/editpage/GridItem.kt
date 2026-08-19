@@ -51,9 +51,9 @@ import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.GridItemSettings
 import com.eblan.launcher.domain.model.TextColor
+import com.eblan.launcher.domain.usecase.grid.FOLDER_PREVIEW_COLUMNS
+import com.eblan.launcher.domain.usecase.grid.FOLDER_PREVIEW_ROWS
 import com.eblan.launcher.feature.home.component.PreviewFolderGridLayout
-import com.eblan.launcher.feature.home.util.FOLDER_PREVIEW_COLUMNS
-import com.eblan.launcher.feature.home.util.FOLDER_PREVIEW_ROWS
 import com.eblan.launcher.feature.home.util.getGridItemTextColor
 import com.eblan.launcher.feature.home.util.getHorizontalAlignment
 import com.eblan.launcher.feature.home.util.getTextColor

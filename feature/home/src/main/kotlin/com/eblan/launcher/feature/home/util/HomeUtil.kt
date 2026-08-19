@@ -184,5 +184,3 @@ internal fun updateAppWidgetOptions(
 
 internal val PAGE_INDICATOR_HEIGHT = 30.dp
 internal val DRAG_HANDLE_SIZE = 30.dp
-internal const val FOLDER_PREVIEW_COLUMNS = 2
-internal const val FOLDER_PREVIEW_ROWS = 2
