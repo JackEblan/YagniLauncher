@@ -17,6 +17,8 @@
  */
 package com.eblan.launcher.feature.home.screen.folder
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.State
 import androidx.compose.ui.graphics.ImageBitmap
@@ -40,9 +42,10 @@ import kotlin.time.Duration.Companion.milliseconds
 internal suspend fun handlePageDirection(
     pageDirection: PageDirection?,
     currentPage: Int,
+    progress: Animatable<Float, AnimationVector1D>,
     onAnimateScrollToPage: suspend (Int) -> Unit,
 ) {
-    if (pageDirection == null) return
+    if (pageDirection == null || progress.value < 1f) return
 
     delay(500L.milliseconds)
 
@@ -111,6 +114,7 @@ internal fun handleAnimateScrollToPage(
     layoutDirection: LayoutDirection,
     folderCellWidth: Int,
     isLast: Boolean,
+    progress: Animatable<Float, AnimationVector1D>,
     onUpdateFolderPageDirection: (PageDirection?) -> Unit,
 ) {
     if (drag != Drag.Dragging ||
@@ -118,7 +122,8 @@ internal fun handleAnimateScrollToPage(
         !isDragging.value ||
         lockMovement.value ||
         moveGridItemResult == null ||
-        !isLast
+        !isLast ||
+        progress.value < 1f
     ) {
         return
     }
@@ -156,6 +161,7 @@ internal fun handleDragFolderGridItem(
     folderCellWidth: Int,
     folderCellHeight: Int,
     isLastFolderGridItem: Boolean,
+    progress: Animatable<Float, AnimationVector1D>,
     onMoveFolderGridItem: (
         folderPopup: FolderPopup,
         movingFolderGridItem: GridItem,
@@ -174,7 +180,8 @@ internal fun handleDragFolderGridItem(
         !isDragging.value ||
         lockMovement.value ||
         moveGridItemResult == null ||
-        !isLastFolderGridItem
+        !isLastFolderGridItem ||
+        progress.value < 1f
     ) {
         return
     }
