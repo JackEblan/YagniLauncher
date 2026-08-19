@@ -52,6 +52,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
@@ -75,8 +76,6 @@ import com.eblan.launcher.feature.home.component.PageIndicator
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.PageDirection
 import com.eblan.launcher.feature.home.model.SharedElementKey
-import com.eblan.launcher.feature.home.util.FOLDER_PREVIEW_COLUMNS
-import com.eblan.launcher.feature.home.util.FOLDER_PREVIEW_ROWS
 import com.eblan.launcher.feature.home.util.PAGE_INDICATOR_HEIGHT
 import kotlin.math.roundToInt
 
@@ -329,7 +328,6 @@ internal fun FolderScreen(
                     IntOffset(
                         x = when (layoutDirection) {
                             LayoutDirection.Ltr -> animatedRect.left.roundToInt()
-
                             LayoutDirection.Rtl -> screenWidth - animatedRect.width()
                                 .roundToInt() - animatedRect.left.roundToInt()
                         },
@@ -339,11 +337,17 @@ internal fun FolderScreen(
                 .size(
                     width = with(density) { animatedRect.width().toDp() },
                     height = with(density) { animatedRect.height().toDp() },
-                ),
+                )
+                .clipToBounds(),
             shape = RoundedCornerShape(5.dp),
             shadowElevation = 2.dp,
         ) {
-            Column(modifier = Modifier.fillMaxSize()) {
+            Column(
+                modifier = Modifier.size(
+                    width = with(density) { folderPopupLayoutInfo.folderGridWidthPx.toDp() },
+                    height = with(density) { folderPopupLayoutInfo.folderGridHeightPx.toDp() },
+                ),
+            ) {
                 HorizontalPager(
                     modifier = Modifier.weight(1f),
                     state = folderGridHorizontalPagerState,
@@ -356,9 +360,6 @@ internal fun FolderScreen(
                         rows = folderPopup.rows,
                         layoutWidth = folderPopupLayoutInfo.folderGridWidthPx,
                         layoutHeight = folderPopupLayoutInfo.folderGridHeightPx,
-                        previewEnabled = true,
-                        previewColumns = FOLDER_PREVIEW_COLUMNS,
-                        previewRows = FOLDER_PREVIEW_ROWS,
                         progress = progress.value,
                         content = {
                             InteractiveFolderGridItem(
@@ -396,13 +397,11 @@ internal fun FolderScreen(
                     )
                 }
 
-                if (progress.value > 0.5f) {
-                    FolderTitle(
-                        label = folderPopup.label,
-                        gridItemsByPage = folderPopup.gridItemsByPage,
-                        folderGridHorizontalPagerState = folderGridHorizontalPagerState,
-                    )
-                }
+                FolderTitle(
+                    label = folderPopup.label,
+                    gridItemsByPage = folderPopup.gridItemsByPage,
+                    folderGridHorizontalPagerState = folderGridHorizontalPagerState,
+                )
             }
         }
     }
