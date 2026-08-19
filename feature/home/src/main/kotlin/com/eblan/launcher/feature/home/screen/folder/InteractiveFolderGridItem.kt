@@ -515,7 +515,9 @@ private fun InteractiveFolderShortcutInfoGridItem(
 
     val hasInteraction = isSelected && isVisibleOverlay
 
-    val alpha = if (hasInteraction) 0f else 1f
+    val defaultAlpha = if (hasShortcutHostPermission && data.isEnabled) 1f else 0.3f
+
+    val alpha = if (hasInteraction) 0f else defaultAlpha
 
     Column(
         modifier = modifier
