@@ -347,6 +347,7 @@ internal fun FolderScreen(
                     IntOffset(
                         x = when (layoutDirection) {
                             LayoutDirection.Ltr -> animatedFolderRect.left.roundToInt()
+
                             LayoutDirection.Rtl -> screenWidth - animatedFolderRect.width()
                                 .roundToInt() - animatedFolderRect.left.roundToInt()
                         },
@@ -426,44 +427,6 @@ internal fun FolderScreen(
     }
 }
 
-private fun getAnimatedRect(
-    folderPopupLayoutInfo: FolderPopupLayoutInfo,
-    progress: Animatable<Float, AnimationVector1D>,
-    startWidth: Float,
-    startHeight: Float,
-): RectF {
-    val currentWidth = lerp(
-        startWidth,
-        folderPopupLayoutInfo.folderGridWidthPx.toFloat(),
-        progress.value,
-    )
-
-    val currentHeight = lerp(
-        startHeight,
-        folderPopupLayoutInfo.endHeight.toFloat(),
-        progress.value,
-    )
-
-    val currentX = lerp(
-        folderPopupLayoutInfo.startCenterX,
-        folderPopupLayoutInfo.endCenterX,
-        progress.value,
-    ) - currentWidth / 2f
-
-    val currentY = lerp(
-        folderPopupLayoutInfo.startCenterY,
-        folderPopupLayoutInfo.endCenterY,
-        progress.value,
-    ) - currentHeight / 2f
-
-    return RectF(
-        currentX,
-        currentY,
-        currentX + currentWidth,
-        currentY + currentHeight,
-    )
-}
-
 @Composable
 internal fun FolderTitle(
     modifier: Modifier = Modifier,
@@ -474,8 +437,8 @@ internal fun FolderTitle(
 ) {
     Row(
         modifier = modifier
-            .graphicsLayer{
-                alpha = if(progress > 0.5) 1f else 0f
+            .graphicsLayer {
+                alpha = if (progress > 0.5) 1f else 0f
             }
             .fillMaxWidth()
             .height(PAGE_INDICATOR_HEIGHT)
@@ -520,6 +483,44 @@ private data class FolderPopupLayoutInfo(
     val startPreviewWidth: Float,
     val startPreviewHeight: Float,
 )
+
+private fun getAnimatedRect(
+    folderPopupLayoutInfo: FolderPopupLayoutInfo,
+    progress: Animatable<Float, AnimationVector1D>,
+    startWidth: Float,
+    startHeight: Float,
+): RectF {
+    val currentWidth = lerp(
+        startWidth,
+        folderPopupLayoutInfo.folderGridWidthPx.toFloat(),
+        progress.value,
+    )
+
+    val currentHeight = lerp(
+        startHeight,
+        folderPopupLayoutInfo.endHeight.toFloat(),
+        progress.value,
+    )
+
+    val currentX = lerp(
+        folderPopupLayoutInfo.startCenterX,
+        folderPopupLayoutInfo.endCenterX,
+        progress.value,
+    ) - currentWidth / 2f
+
+    val currentY = lerp(
+        folderPopupLayoutInfo.startCenterY,
+        folderPopupLayoutInfo.endCenterY,
+        progress.value,
+    ) - currentHeight / 2f
+
+    return RectF(
+        currentX,
+        currentY,
+        currentX + currentWidth,
+        currentY + currentHeight,
+    )
+}
 
 private suspend fun handleFolderPopup(
     drag: State<Drag>,
