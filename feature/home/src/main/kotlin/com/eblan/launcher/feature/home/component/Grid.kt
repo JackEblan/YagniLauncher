@@ -29,8 +29,6 @@ import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Density
 import com.eblan.launcher.domain.model.EblanApplicationInfoWithIconPackInfo
 import com.eblan.launcher.domain.model.GridItem
-import com.eblan.launcher.feature.home.util.FOLDER_PREVIEW_COLUMNS
-import com.eblan.launcher.feature.home.util.FOLDER_PREVIEW_ROWS
 
 @Composable
 internal fun GridLayout(
@@ -63,121 +61,6 @@ internal fun GridLayout(
                             height = parentData.height,
                         ),
                     ).placeRelative(
-                        x = parentData.x,
-                        y = parentData.y,
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-internal fun PreviewFolderGridLayout(
-    modifier: Modifier = Modifier,
-    gridItems: List<GridItem>?,
-    previewColumns: Int = FOLDER_PREVIEW_COLUMNS,
-    previewRows: Int = FOLDER_PREVIEW_ROWS,
-    content: @Composable BoxScope.(GridItem) -> Unit,
-) {
-    SubcomposeLayout(modifier = modifier) { constraints ->
-        val previewCellSize = minOf(
-            constraints.maxWidth,
-            constraints.maxHeight,
-        ) / maxOf(
-            previewColumns,
-            previewRows,
-        )
-
-        val previewGridWidth = previewCellSize * previewColumns
-
-        val previewGridHeight = previewCellSize * previewRows
-
-        val previewOffsetX = (constraints.maxWidth - previewGridWidth) / 2
-
-        val previewOffsetY = (constraints.maxHeight - previewGridHeight) / 2
-
-        layout(
-            width = constraints.maxWidth,
-            height = constraints.maxHeight,
-        ) {
-            gridItems
-                ?.take(previewColumns * previewRows)
-                ?.forEachIndexed { index, gridItem ->
-                    subcompose(gridItem.id) {
-                        val x = previewOffsetX + (index % previewColumns) * previewCellSize
-
-                        val y = previewOffsetY + (index / previewColumns) * previewCellSize
-
-                        Box(
-                            modifier = Modifier.folderGridItem(
-                                x = x,
-                                y = y,
-                                width = previewCellSize,
-                                height = previewCellSize,
-                            ),
-                        ) {
-                            content(gridItem)
-                        }
-                    }.forEach { measurable ->
-                        val parentData = measurable.parentData as FolderGridItemParentData
-
-                        measurable.measure(
-                            Constraints.fixed(
-                                width = parentData.width,
-                                height = parentData.height,
-                            ),
-                        ).placeRelative(
-                            x = parentData.x,
-                            y = parentData.y,
-                        )
-                    }
-                }
-        }
-    }
-}
-
-@Composable
-internal fun FolderGridLayout(
-    modifier: Modifier = Modifier,
-    gridItems: List<GridItem>?,
-    columns: Int,
-    rows: Int,
-    layoutWidth: Int,
-    layoutHeight: Int,
-    progress: Float = 0f,
-    content: @Composable BoxScope.(GridItem) -> Unit,
-) {
-    SubcomposeLayout(modifier = modifier) { constraints ->
-        val endCellWidth = layoutWidth / columns
-
-        val endCellHeight = layoutHeight / rows
-
-        layout(
-            width = constraints.maxWidth,
-            height = constraints.maxHeight,
-        ) {
-            gridItems?.forEachIndexed { index, gridItem ->
-                subcompose(gridItem.id) {
-                    Box(
-                        modifier = Modifier.folderGridItem(
-                            x = (index % columns) * endCellWidth,
-                            y = (index / columns) * endCellHeight,
-                            width = endCellWidth,
-                            height = endCellHeight,
-                        ),
-                    ) {
-                        content(gridItem)
-                    }
-                }.forEach { measurable ->
-                    val parentData = measurable.parentData as FolderGridItemParentData
-
-                    measurable.measure(
-                        Constraints.fixed(
-                            width = parentData.width,
-                            height = parentData.height,
-                        ),
-                    ).placeRelativeWithLayer(
                         x = parentData.x,
                         y = parentData.y,
                     )
@@ -283,13 +166,6 @@ private data class GridItemParentData(
     val y: Int,
 )
 
-private data class FolderGridItemParentData(
-    val x: Int,
-    val y: Int,
-    val width: Int,
-    val height: Int,
-)
-
 private fun Modifier.gridItem(
     width: Int,
     height: Int,
@@ -306,18 +182,3 @@ private fun Modifier.gridItem(
     },
 )
 
-private fun Modifier.folderGridItem(
-    x: Int,
-    y: Int,
-    width: Int,
-    height: Int,
-) = then(
-    object : ParentDataModifier {
-        override fun Density.modifyParentData(parentData: Any?) = FolderGridItemParentData(
-            x = x,
-            y = y,
-            width = width,
-            height = height,
-        )
-    },
-)
