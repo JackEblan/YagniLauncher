@@ -95,58 +95,14 @@ internal fun PreviewFolderGridLayout(
 }
 
 @Composable
-internal fun FixedFolderGridLayout(
+internal fun FolderGridLayout(
     modifier: Modifier = Modifier,
     gridItems: List<GridItem>?,
     columns: Int,
     rows: Int,
     width: Int,
     height: Int,
-    content: @Composable BoxScope.(GridItem) -> Unit,
-) {
-    FolderGridLayout(
-        modifier = modifier,
-        gridItems = gridItems,
-        columns = columns,
-        rows = rows,
-        width = width,
-        height = height,
-        animate = false,
-        content = content,
-    )
-}
-
-@Composable
-internal fun AnimatedFolderGridLayout(
-    modifier: Modifier = Modifier,
-    gridItems: List<GridItem>?,
-    columns: Int,
-    rows: Int,
-    width: Int,
-    height: Int,
-    content: @Composable BoxScope.(GridItem) -> Unit,
-) {
-    FolderGridLayout(
-        modifier = modifier,
-        gridItems = gridItems,
-        columns = columns,
-        rows = rows,
-        width = width,
-        height = height,
-        animate = true,
-        content = content,
-    )
-}
-
-@Composable
-private fun FolderGridLayout(
-    modifier: Modifier,
-    gridItems: List<GridItem>?,
-    columns: Int,
-    rows: Int,
-    width: Int,
-    height: Int,
-    animate: Boolean,
+    isVisibleOverlay: Boolean,
     content: @Composable BoxScope.(GridItem) -> Unit,
 ) {
     SubcomposeLayout(modifier = modifier) { constraints ->
@@ -159,25 +115,24 @@ private fun FolderGridLayout(
         ) {
             gridItems?.forEachIndexed { index, gridItem ->
                 subcompose(gridItem.id) {
-                    FolderGridLayoutItem(
+                    FolderGridLayoutContent(
                         index = index,
                         columns = columns,
                         cellWidth = cellWidth,
                         cellHeight = cellHeight,
-                        animatePosition = animate,
                         gridItem = gridItem,
+                        isVisibleOverlay = isVisibleOverlay,
                         content = content,
                     )
                 }.forEach { measurable ->
-                    val parentData =
-                        measurable.parentData as FolderGridItemParentData
+                    val parentData = measurable.parentData as FolderGridItemParentData
 
                     measurable.measure(
                         Constraints.fixed(
                             width = parentData.width,
                             height = parentData.height,
                         ),
-                    ).placeRelative(
+                    ).placeRelativeWithLayer(
                         x = parentData.x,
                         y = parentData.y,
                     )
@@ -188,14 +143,15 @@ private fun FolderGridLayout(
 }
 
 @Composable
-private fun FolderGridLayoutItem(
+private fun FolderGridLayoutContent(
+    modifier: Modifier = Modifier,
     index: Int,
     columns: Int,
     cellWidth: Int,
     cellHeight: Int,
-    animatePosition: Boolean,
     gridItem: GridItem,
-    content: @Composable BoxScope.(GridItem) -> Unit,
+    isVisibleOverlay: Boolean,
+    content: @Composable (BoxScope.(GridItem) -> Unit),
 ) {
     val x = (index % columns) * cellWidth
     val y = (index / columns) * cellHeight
@@ -211,9 +167,9 @@ private fun FolderGridLayoutItem(
     )
 
     Box(
-        modifier = Modifier.folderGridItem(
-            x = if (animatePosition) animatedX else x,
-            y = if (animatePosition) animatedY else y,
+        modifier = modifier.folderGridItem(
+            x = if (isVisibleOverlay) animatedX else x,
+            y = if (isVisibleOverlay) animatedY else y,
             width = cellWidth,
             height = cellHeight,
         ),

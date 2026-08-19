@@ -644,6 +644,7 @@ internal fun PagerScreen(
                     columns = homeSettings.columns,
                     gridItems = gridItemsByPage[page],
                     rows = homeSettings.rows,
+                    isVisibleOverlay = isVisibleOverlay,
                     content = {
                         InteractiveGridItem(
                             sharedTransitionScope = this@SharedTransitionLayout,
@@ -748,6 +749,7 @@ internal fun PagerScreen(
                         columns = homeSettings.dockColumns,
                         gridItems = dockGridItemsByPage[page],
                         rows = homeSettings.dockRows,
+                        isVisibleOverlay = isVisibleOverlay,
                         content = {
                             InteractiveGridItem(
                                 sharedTransitionScope = this@SharedTransitionLayout,

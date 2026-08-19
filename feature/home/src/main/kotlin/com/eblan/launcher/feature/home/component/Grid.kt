@@ -36,6 +36,7 @@ internal fun GridLayout(
     columns: Int,
     gridItems: List<GridItem>?,
     rows: Int,
+    isVisibleOverlay: Boolean,
     content: @Composable BoxScope.(GridItem) -> Unit,
 ) {
     SubcomposeLayout(modifier = modifier) { constraints ->
@@ -50,6 +51,7 @@ internal fun GridLayout(
                         gridItem = gridItem,
                         cellWidth = cellWidth,
                         cellHeight = cellHeight,
+                        isVisibleOverlay = isVisibleOverlay,
                         content = content,
                     )
                 }.forEach { measurable ->
@@ -125,34 +127,41 @@ private fun GridLayoutItem(
     gridItem: GridItem,
     cellWidth: Int,
     cellHeight: Int,
+    isVisibleOverlay: Boolean,
     content: @Composable (BoxScope.(GridItem) -> Unit),
 ) {
-    val width by animateIntAsState(
-        targetValue = gridItem.columnSpan * cellWidth,
+    val width = gridItem.columnSpan * cellWidth
+    val height = gridItem.rowSpan * cellHeight
+
+    val x = gridItem.startColumn * cellWidth
+    val y = gridItem.startRow * cellHeight
+
+    val animatedWidth by animateIntAsState(
+        targetValue = width,
         label = "width",
     )
 
-    val height by animateIntAsState(
-        targetValue = gridItem.rowSpan * cellHeight,
+    val animatedHeight by animateIntAsState(
+        targetValue = height,
         label = "height",
     )
 
-    val x by animateIntAsState(
-        targetValue = gridItem.startColumn * cellWidth,
+    val animatedX by animateIntAsState(
+        targetValue = x,
         label = "x",
     )
 
-    val y by animateIntAsState(
-        targetValue = gridItem.startRow * cellHeight,
+    val animatedY by animateIntAsState(
+        targetValue = y,
         label = "y",
     )
 
     Box(
         modifier = modifier.gridItem(
-            width = width,
-            height = height,
-            x = x,
-            y = y,
+            width = if (isVisibleOverlay) animatedWidth else width,
+            height = if (isVisibleOverlay) animatedHeight else height,
+            x = if (isVisibleOverlay) animatedX else x,
+            y = if (isVisibleOverlay) animatedY else y,
         ),
         content = {
             content(gridItem)
