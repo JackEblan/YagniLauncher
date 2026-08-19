@@ -121,6 +121,7 @@ internal fun HorizontalAppDrawerGridLayout(
 
 @Composable
 private fun GridLayoutContent(
+    modifier: Modifier = Modifier,
     gridItem: GridItem,
     cellWidth: Int,
     cellHeight: Int,
@@ -147,7 +148,7 @@ private fun GridLayoutContent(
     )
 
     Box(
-        modifier = Modifier.gridItem(
+        modifier = modifier.gridItem(
             width = width,
             height = height,
             x = x,

@@ -17,9 +17,11 @@
  */
 package com.eblan.launcher.feature.home.component
 
+import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ParentDataModifier
 import androidx.compose.ui.layout.SubcomposeLayout
@@ -112,16 +114,14 @@ internal fun FolderGridLayout(
         ) {
             gridItems?.forEachIndexed { index, gridItem ->
                 subcompose(gridItem.id) {
-                    Box(
-                        modifier = Modifier.folderGridItem(
-                            x = (index % columns) * cellWidth,
-                            y = (index / columns) * cellHeight,
-                            width = cellWidth,
-                            height = cellHeight,
-                        ),
-                    ) {
-                        content(gridItem)
-                    }
+                    FolderGridLayoutContent(
+                        index = index,
+                        columns = columns,
+                        cellWidth = cellWidth,
+                        cellHeight = cellHeight,
+                        content = content,
+                        gridItem = gridItem,
+                    )
                 }.forEach { measurable ->
                     val parentData = measurable.parentData as FolderGridItemParentData
 
@@ -137,6 +137,38 @@ internal fun FolderGridLayout(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun FolderGridLayoutContent(
+    modifier: Modifier = Modifier,
+    index: Int,
+    columns: Int,
+    cellWidth: Int,
+    cellHeight: Int,
+    content: @Composable (BoxScope.(GridItem) -> Unit),
+    gridItem: GridItem,
+) {
+    val animatedX by animateIntAsState(
+        targetValue = (index % columns) * cellWidth,
+        label = "x",
+    )
+
+    val animatedY by animateIntAsState(
+        targetValue = (index / columns) * cellHeight,
+        label = "y",
+    )
+
+    Box(
+        modifier = modifier.folderGridItem(
+            x = animatedX,
+            y = animatedY,
+            width = cellWidth,
+            height = cellHeight,
+        ),
+    ) {
+        content(gridItem)
     }
 }
 
