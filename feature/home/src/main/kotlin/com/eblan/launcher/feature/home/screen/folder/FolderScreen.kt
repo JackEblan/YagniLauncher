@@ -248,6 +248,7 @@ internal fun FolderScreen(
         folderPopup,
         moveGridItemResult,
         isLastFolderGridItem,
+        progress.value,
     ) {
         handleDragFolderGridItem(
             density = density,
@@ -268,7 +269,7 @@ internal fun FolderScreen(
             folderCellWidth = folderCellWidth,
             folderCellHeight = folderCellHeight,
             isLastFolderGridItem = isLastFolderGridItem,
-            progress = progress,
+            progress = progress.value,
             onMoveFolderGridItem = onMoveFolderGridItem,
             onUpdateSharedElementKey = onUpdateSharedElementKey,
             onUpsertFolderPopupEntry = onUpsertFolderPopupEntry,
@@ -292,11 +293,14 @@ internal fun FolderScreen(
         )
     }
 
-    LaunchedEffect(key1 = pageDirection) {
+    LaunchedEffect(
+        key1 = pageDirection,
+        key2 = progress.value,
+    ) {
         handlePageDirection(
             pageDirection = pageDirection,
             currentPage = folderGridHorizontalPagerState.currentPage,
-            progress = progress,
+            progress = progress.value,
             onAnimateScrollToPage = folderGridHorizontalPagerState::animateScrollToPage,
         )
     }
@@ -313,6 +317,7 @@ internal fun FolderScreen(
         moveGridItemResult,
         folderPopup,
         isLastFolderGridItem,
+        progress.value,
     ) {
         handleAnimateScrollToPage(
             density = density,
@@ -329,7 +334,7 @@ internal fun FolderScreen(
             layoutDirection = layoutDirection,
             folderCellWidth = folderCellWidth,
             isLast = isLastFolderGridItem,
-            progress = progress,
+            progress = progress.value,
             onUpdateFolderPageDirection = {
                 pageDirection = it
             },
