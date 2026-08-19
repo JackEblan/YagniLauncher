@@ -64,6 +64,7 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
+import com.eblan.launcher.domain.model.Associate
 import com.eblan.launcher.domain.model.FolderPopup
 import com.eblan.launcher.domain.model.FolderPopupEntry
 import com.eblan.launcher.domain.model.GridItem
@@ -570,13 +571,6 @@ private suspend fun handleFolderPopup(
         isVisibleOverlay.value &&
         gridItem != null
     ) {
-        onUpdateSharedElementKey(
-            SharedElementKey(
-                id = gridItem.id,
-                parent = SharedElementKey.Parent.Grid,
-            ),
-        )
-
         val newGridItem = when (val data = gridItem.data) {
             is GridItemData.ApplicationInfo -> {
                 gridItem.copy(
@@ -628,6 +622,16 @@ private suspend fun handleFolderPopup(
 
             is GridItemData.Widget -> error("Unsupported Folder Grid Item")
         }
+
+        onUpdateSharedElementKey(
+            SharedElementKey(
+                id = gridItem.id,
+                parent = when (folderPopup.gridItem.associate) {
+                    Associate.Grid -> SharedElementKey.Parent.Grid
+                    Associate.Dock -> SharedElementKey.Parent.Dock
+                },
+            ),
+        )
 
         onMoveFolderGridItemOutsideFolder(newGridItem)
     }
