@@ -288,6 +288,7 @@ internal fun InteractiveGridItem(
                 hasInteraction = hasInteraction,
                 isVisibleWhiteBox = isVisibleWhiteBox,
                 previewFolderGridItems = previewFolderGridItems,
+                hasShortcutHostPermission = hasShortcutHostPermission,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
                 onUpsertFolderPopupEntry = onUpsertFolderPopupEntry,
@@ -507,13 +508,6 @@ private fun InteractiveApplicationInfoGridItem(
                 contentDescription = null,
                 modifier = Modifier
                     .matchParentSize()
-                    .drawWithContent {
-                        graphicsLayer.record {
-                            this@drawWithContent.drawContent()
-                        }
-
-                        drawLayer(graphicsLayer)
-                    }
                     .onGloballyPositioned { layoutCoordinates ->
                         intOffset = layoutCoordinates.positionInRoot().round()
 
@@ -532,6 +526,13 @@ private fun InteractiveApplicationInfoGridItem(
                         } else {
                             this
                         }
+                    }
+                    .drawWithContent {
+                        graphicsLayer.record {
+                            this@drawWithContent.drawContent()
+                        }
+
+                        drawLayer(graphicsLayer)
                     },
             )
 
@@ -612,14 +613,6 @@ private fun InteractiveWidgetGridItem(
     ) {
         val commonModifier = Modifier
             .matchParentSize()
-            .alpha(alpha)
-            .drawWithContent {
-                graphicsLayer.record {
-                    this@drawWithContent.drawContent()
-                }
-
-                drawLayer(graphicsLayer)
-            }
             .onGloballyPositioned { layoutCoordinates ->
                 intOffset = layoutCoordinates.positionInRoot().round()
 
@@ -639,6 +632,14 @@ private fun InteractiveWidgetGridItem(
                     this
                 }
             }
+            .drawWithContent {
+                graphicsLayer.record {
+                    this@drawWithContent.drawContent()
+                }
+
+                drawLayer(graphicsLayer)
+            }
+            .alpha(alpha)
 
         if (appWidgetInfo != null) {
             AndroidView(
@@ -848,9 +849,7 @@ private fun InteractiveShortcutInfoGridItem(
         verticalArrangement = verticalArrangement,
     ) {
         Box(
-            modifier = Modifier
-                .size(gridItemSettings.iconSize.dp)
-                .alpha(alpha),
+            modifier = Modifier.size(gridItemSettings.iconSize.dp),
         ) {
             AsyncImage(
                 model = Builder(context).data(customIcon)
@@ -859,13 +858,6 @@ private fun InteractiveShortcutInfoGridItem(
                     .build(),
                 modifier = Modifier
                     .matchParentSize()
-                    .drawWithContent {
-                        graphicsLayer.record {
-                            this@drawWithContent.drawContent()
-                        }
-
-                        drawLayer(graphicsLayer)
-                    }
                     .onGloballyPositioned { layoutCoordinates ->
                         intOffset = layoutCoordinates.positionInRoot().round()
 
@@ -884,6 +876,17 @@ private fun InteractiveShortcutInfoGridItem(
                         } else {
                             this
                         }
+                    }
+                    .drawWithContent {
+                        graphicsLayer.apply {
+                            this.alpha = alpha
+                        }
+
+                        graphicsLayer.record {
+                            this@drawWithContent.drawContent()
+                        }
+
+                        drawLayer(graphicsLayer)
                     },
                 contentDescription = null,
             )
@@ -894,6 +897,7 @@ private fun InteractiveShortcutInfoGridItem(
                     .build(),
                 modifier = Modifier
                     .size((gridItemSettings.iconSize * 0.25).dp)
+                    .alpha(alpha)
                     .align(Alignment.BottomEnd),
                 contentDescription = null,
             )
@@ -933,6 +937,7 @@ private fun InteractiveFolderGridItem(
     hasInteraction: Boolean,
     isVisibleWhiteBox: Boolean,
     previewFolderGridItems: Map<String, PreviewFolder>,
+    hasShortcutHostPermission: Boolean,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
         intOffset: IntOffset,
@@ -981,7 +986,8 @@ private fun InteractiveFolderGridItem(
     val currentIsVisibleOverlay = rememberUpdatedState(isVisibleOverlay)
     val currentGridItem = rememberUpdatedState(gridItem)
     val currentLockMovement = rememberUpdatedState(lockMovement)
-    val currentFolderGridItems = rememberUpdatedState(previewFolderGridItems[gridItem.id]?.folderGridItems)
+    val currentFolderGridItems =
+        rememberUpdatedState(previewFolderGridItems[gridItem.id]?.folderGridItems)
 
     LaunchedEffect(key1 = moveGridItemResult) {
         handleConflictingGridItem(
@@ -1075,14 +1081,6 @@ private fun InteractiveFolderGridItem(
     ) {
         val commonModifier = Modifier
             .size(gridItemSettings.iconSize.dp)
-            .alpha(alpha)
-            .drawWithContent {
-                graphicsLayer.record {
-                    this@drawWithContent.drawContent()
-                }
-
-                drawLayer(graphicsLayer)
-            }
             .onGloballyPositioned { layoutCoordinates ->
                 intOffset = layoutCoordinates.positionInRoot().round()
 
@@ -1102,6 +1100,13 @@ private fun InteractiveFolderGridItem(
                     this
                 }
             }
+            .drawWithContent {
+                graphicsLayer.record {
+                    this@drawWithContent.drawContent()
+                }
+
+                drawLayer(graphicsLayer)
+            }.alpha(alpha)
 
         if (data.icon != null) {
             AsyncImage(
@@ -1131,6 +1136,7 @@ private fun InteractiveFolderGridItem(
                             drag = drag,
                             folderGridItems = previewFolderGridItems[gridItem.id]?.folderGridItems,
                             isVisibleFolder = isVisibleFolder,
+                            hasShortcutHostPermission = hasShortcutHostPermission,
                             onResetGrid = onResetGrid,
                         )
                     },
@@ -1294,14 +1300,6 @@ private fun InteractiveShortcutConfigGridItem(
             contentDescription = null,
             modifier = Modifier
                 .size(gridItemSettings.iconSize.dp)
-                .alpha(alpha)
-                .drawWithContent {
-                    graphicsLayer.record {
-                        this@drawWithContent.drawContent()
-                    }
-
-                    drawLayer(graphicsLayer)
-                }
                 .onGloballyPositioned { layoutCoordinates ->
                     intOffset = layoutCoordinates.positionInRoot().round()
 
@@ -1320,7 +1318,14 @@ private fun InteractiveShortcutConfigGridItem(
                     } else {
                         this
                     }
-                },
+                }
+                .drawWithContent {
+                    graphicsLayer.record {
+                        this@drawWithContent.drawContent()
+                    }
+
+                    drawLayer(graphicsLayer)
+                }.alpha(alpha),
         )
 
         if (gridItemSettings.showLabel) {
@@ -1350,6 +1355,7 @@ private fun PreviewFolderGridItem(
     drag: Drag,
     folderGridItems: List<GridItem>?,
     isVisibleFolder: Boolean,
+    hasShortcutHostPermission: Boolean,
     onResetGrid: () -> Unit,
 ) {
     val context = LocalContext.current
@@ -1360,11 +1366,26 @@ private fun PreviewFolderGridItem(
 
         val hasInteraction = isSelected && isVisibleOverlay
 
-        val alpha = if (hasInteraction) 0f else 1f
+        val alpha = when (val data = gridItem.data) {
+            is GridItemData.ApplicationInfo,
+            is GridItemData.Folder,
+            is GridItemData.ShortcutConfig,
+            is GridItemData.Widget,
+            -> if (hasInteraction) 0f else 1f
+
+            is GridItemData.ShortcutInfo -> {
+                if (hasInteraction) {
+                    0f
+                } else if (hasShortcutHostPermission && data.isEnabled) {
+                    1f
+                } else {
+                    0.3f
+                }
+            }
+        }
 
         val commonModifier = modifier
             .padding(1.dp)
-            .alpha(alpha)
             .run {
                 if (!isScrollInProgress && !hasInteraction) {
                     with(sharedTransitionScope) {
@@ -1382,6 +1403,7 @@ private fun PreviewFolderGridItem(
                     this
                 }
             }
+            .alpha(alpha)
 
         LaunchedEffect(
             drag,

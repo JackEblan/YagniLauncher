@@ -119,6 +119,7 @@ internal fun GridItemContent(
                 gridItemSettings = currentGridItemSettings,
                 textColor = currentTextColor,
                 previewFolderGridItems = previewFolderGridItems,
+                hasShortcutHostPermission = hasShortcutHostPermission,
             )
 
         is GridItemData.ShortcutConfig ->
@@ -251,12 +252,15 @@ private fun ShortcutInfoGridItem(
         horizontalAlignment = horizontalAlignment,
         verticalArrangement = verticalArrangement,
     ) {
-        Box(modifier = Modifier.size(gridItemSettings.iconSize.dp)) {
+        Box(
+            modifier = Modifier
+                .size(gridItemSettings.iconSize.dp)
+                .alpha(alpha),
+        ) {
             AsyncImage(
                 model = customIcon,
                 modifier = Modifier
-                    .matchParentSize()
-                    .alpha(alpha),
+                    .matchParentSize(),
                 contentDescription = null,
             )
 
@@ -264,8 +268,7 @@ private fun ShortcutInfoGridItem(
                 model = data.eblanApplicationInfoIcon,
                 modifier = Modifier
                     .size((gridItemSettings.iconSize * 0.25).dp)
-                    .align(Alignment.BottomEnd)
-                    .alpha(alpha),
+                    .align(Alignment.BottomEnd),
                 contentDescription = null,
             )
         }
@@ -293,6 +296,7 @@ private fun FolderGridItem(
     gridItemSettings: GridItemSettings,
     textColor: Color,
     previewFolderGridItems: Map<String, PreviewFolder>,
+    hasShortcutHostPermission: Boolean,
 ) {
     val horizontalAlignment =
         getHorizontalAlignment(horizontalAlignment = gridItemSettings.horizontalAlignment)
@@ -335,6 +339,7 @@ private fun FolderGridItem(
                         PreviewFolderGridItemContent(
                             gridItem = it,
                             textColor = textColor,
+                            hasShortcutHostPermission = hasShortcutHostPermission,
                         )
                     },
                 )
@@ -446,12 +451,26 @@ private fun PreviewFolderGridItemContent(
     modifier: Modifier = Modifier,
     gridItem: GridItem,
     textColor: Color,
+    hasShortcutHostPermission: Boolean,
 ) {
     val context = LocalContext.current
 
     key(gridItem.id) {
+        val alpha = when (val data = gridItem.data) {
+            is GridItemData.ApplicationInfo,
+            is GridItemData.Folder,
+            is GridItemData.ShortcutConfig,
+            is GridItemData.Widget,
+            -> 1f
+
+            is GridItemData.ShortcutInfo -> {
+                if (hasShortcutHostPermission && data.isEnabled) 1f else 0.3f
+            }
+        }
+
         val commonModifier = modifier
             .padding(1.dp)
+            .alpha(alpha)
 
         when (val data = gridItem.data) {
             is GridItemData.ApplicationInfo -> {
