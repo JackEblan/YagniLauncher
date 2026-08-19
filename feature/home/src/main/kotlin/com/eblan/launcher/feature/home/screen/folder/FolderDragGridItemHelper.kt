@@ -186,7 +186,7 @@ internal fun handleDragFolderGridItem(
         return
     }
 
-    val (intOffset, intSize) = calculateFolderGridDragPosition(
+    val folderGridDragPosition = calculateFolderGridDragPosition(
         density = density,
         dragIntOffset = dragIntOffset,
         folderPopup = folderPopup,
@@ -199,8 +199,8 @@ internal fun handleDragFolderGridItem(
         folderCellHeight = folderCellHeight,
     )
 
-    if (intOffset.x in 0 until intSize.width &&
-        intOffset.y in 0 until intSize.height
+    if (folderGridDragPosition.x in 0 until folderGridDragPosition.width &&
+        folderGridDragPosition.y in 0 until folderGridDragPosition.height
     ) {
         val movingGridItem = moveGridItemResult.movingGridItem
 
@@ -214,16 +214,23 @@ internal fun handleDragFolderGridItem(
         onMoveFolderGridItem(
             folderPopup,
             movingGridItem,
-            intOffset.x,
-            intOffset.y,
-            intSize.width,
-            intSize.height,
+            folderGridDragPosition.x,
+            folderGridDragPosition.y,
+            folderGridDragPosition.width,
+            folderGridDragPosition.height,
             currentPage,
         )
     } else if (!folderPopup.folderPopupEntry.isCloseFolder) {
         onUpsertFolderPopupEntry(folderPopup.folderPopupEntry.copy(isCloseFolder = true))
     }
 }
+
+private data class FolderGridDragPosition(
+    val x: Int,
+    val y: Int,
+    val width: Int,
+    val height: Int,
+)
 
 private fun calculateFolderPageDirection(
     density: Density,
@@ -288,7 +295,7 @@ private fun calculateFolderGridDragPosition(
     layoutDirection: LayoutDirection,
     folderCellWidth: Int,
     folderCellHeight: Int,
-): Pair<IntOffset, IntSize> {
+): FolderGridDragPosition {
     val leftPadding = with(density) {
         paddingValues.calculateLeftPadding(layoutDirection).roundToPx()
     }
@@ -371,6 +378,10 @@ private fun calculateFolderGridDragPosition(
         LayoutDirection.Ltr -> dragX
     }
 
-    return IntOffset(x = layoutDirectionX, y = dragY) to
-        IntSize(width = folderGridWidthPx, height = folderGridHeightPx)
+    return FolderGridDragPosition(
+        x = layoutDirectionX,
+        y = dragY,
+        width = folderGridWidthPx,
+        height = endHeight,
+    )
 }
