@@ -36,7 +36,7 @@ internal fun GridLayout(
     columns: Int,
     gridItems: List<GridItem>?,
     rows: Int,
-    isVisibleOverlay: Boolean,
+    animate: Boolean,
     content: @Composable BoxScope.(GridItem) -> Unit,
 ) {
     SubcomposeLayout(modifier = modifier) { constraints ->
@@ -51,7 +51,7 @@ internal fun GridLayout(
                         gridItem = gridItem,
                         cellWidth = cellWidth,
                         cellHeight = cellHeight,
-                        isVisibleOverlay = isVisibleOverlay,
+                        animate = animate,
                         content = content,
                     )
                 }.forEach { measurable ->
@@ -127,7 +127,7 @@ private fun GridLayoutItem(
     gridItem: GridItem,
     cellWidth: Int,
     cellHeight: Int,
-    isVisibleOverlay: Boolean,
+    animate: Boolean,
     content: @Composable (BoxScope.(GridItem) -> Unit),
 ) {
     val width = gridItem.columnSpan * cellWidth
@@ -158,10 +158,10 @@ private fun GridLayoutItem(
 
     Box(
         modifier = modifier.gridItem(
-            width = if (isVisibleOverlay) animatedWidth else width,
-            height = if (isVisibleOverlay) animatedHeight else height,
-            x = if (isVisibleOverlay) animatedX else x,
-            y = if (isVisibleOverlay) animatedY else y,
+            width = if (animate) animatedWidth else width,
+            height = if (animate) animatedHeight else height,
+            x = if (animate) animatedX else x,
+            y = if (animate) animatedY else y,
         ),
         content = {
             content(gridItem)

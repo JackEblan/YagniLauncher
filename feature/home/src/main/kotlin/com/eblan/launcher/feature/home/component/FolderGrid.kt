@@ -102,7 +102,7 @@ internal fun FolderGridLayout(
     rows: Int,
     width: Int,
     height: Int,
-    isVisibleOverlay: Boolean,
+    animate: Boolean,
     content: @Composable BoxScope.(GridItem) -> Unit,
 ) {
     SubcomposeLayout(modifier = modifier) { constraints ->
@@ -121,7 +121,7 @@ internal fun FolderGridLayout(
                         cellWidth = cellWidth,
                         cellHeight = cellHeight,
                         gridItem = gridItem,
-                        isVisibleOverlay = isVisibleOverlay,
+                        animate = animate,
                         content = content,
                     )
                 }.forEach { measurable ->
@@ -150,7 +150,7 @@ private fun FolderGridLayoutContent(
     cellWidth: Int,
     cellHeight: Int,
     gridItem: GridItem,
-    isVisibleOverlay: Boolean,
+    animate: Boolean,
     content: @Composable (BoxScope.(GridItem) -> Unit),
 ) {
     val x = (index % columns) * cellWidth
@@ -168,8 +168,8 @@ private fun FolderGridLayoutContent(
 
     Box(
         modifier = modifier.folderGridItem(
-            x = if (isVisibleOverlay) animatedX else x,
-            y = if (isVisibleOverlay) animatedY else y,
+            x = if (animate) animatedX else x,
+            y = if (animate) animatedY else y,
             width = cellWidth,
             height = cellHeight,
         ),

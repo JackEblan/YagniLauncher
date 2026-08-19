@@ -202,7 +202,7 @@ internal fun EditGridPageScreen(
                         columns = columns,
                         gridItems = pageItem.gridItems,
                         rows = rows,
-                        isVisibleOverlay = false,
+                        animate = false,
                         content = {
                             GridItemContent(
                                 gridItem = it,
@@ -418,7 +418,7 @@ internal fun EditDockGridPageScreen(
                             columns = columns,
                             gridItems = pageItem.gridItems,
                             rows = rows,
-                            isVisibleOverlay = false,
+                            animate = false,
                             content = {
                                 GridItemContent(
                                     gridItem = it,
