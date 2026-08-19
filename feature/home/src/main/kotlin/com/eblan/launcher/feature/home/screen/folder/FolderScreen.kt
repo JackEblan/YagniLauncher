@@ -71,6 +71,7 @@ import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.GridItemSettings
 import com.eblan.launcher.domain.model.HomeSettings
 import com.eblan.launcher.domain.model.MoveGridItemResult
+import com.eblan.launcher.domain.model.PreviewFolder
 import com.eblan.launcher.domain.usecase.grid.FOLDER_PREVIEW_COLUMNS
 import com.eblan.launcher.domain.usecase.grid.FOLDER_PREVIEW_ROWS
 import com.eblan.launcher.feature.home.component.FolderGridLayout
@@ -106,7 +107,7 @@ internal fun FolderScreen(
     screenWidth: Int,
     lastFolderPopup: FolderPopup?,
     showFolderGridItemPopup: Boolean,
-    previewFolderGridItems: Map<String, List<GridItem>>,
+    previewFolderGridItems: Map<String, PreviewFolder>,
     onDeleteFolderPopupEntry: (FolderPopupEntry) -> Unit,
     onMoveFolderGridItemOutsideFolder: (GridItem) -> Unit,
     onOpenAppDrawer: () -> Unit,

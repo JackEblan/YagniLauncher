@@ -78,8 +78,7 @@ import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.GridItemSettings
 import com.eblan.launcher.domain.model.MoveGridItemResult
-import com.eblan.launcher.domain.usecase.grid.FOLDER_PREVIEW_COLUMNS
-import com.eblan.launcher.domain.usecase.grid.FOLDER_PREVIEW_ROWS
+import com.eblan.launcher.domain.model.PreviewFolder
 import com.eblan.launcher.feature.home.component.PreviewFolderGridLayout
 import com.eblan.launcher.feature.home.component.swipeGestures
 import com.eblan.launcher.feature.home.model.Drag
@@ -106,7 +105,7 @@ internal fun InteractiveFolderGridItem(
     moveGridItemResult: MoveGridItemResult?,
     progress: Float,
     showFolderGridItemPopup: Boolean,
-    previewFolderGridItems: Map<String, List<GridItem>>,
+    previewFolderGridItems: Map<String, PreviewFolder>,
     minCellWidthPx: Int,
     minCellHeightPx: Int,
     paddingValues: PaddingValues,
@@ -832,7 +831,7 @@ private fun InteractiveNestedFolderGridItem(
     isVisibleOverlay: Boolean,
     sharedElementKey: SharedElementKey,
     showFolderGridItemPopup: Boolean,
-    previewFolderGridItems: Map<String, List<GridItem>>,
+    previewFolderGridItems: Map<String, PreviewFolder>,
     onUpdateIsCloseFolderGridItemPopup: (Boolean) -> Unit,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
@@ -996,7 +995,7 @@ private fun InteractiveNestedFolderGridItem(
             ) {
                 PreviewFolderGridLayout(
                     modifier = Modifier.matchParentSize(),
-                    gridItems = previewFolderGridItems[gridItem.id],
+                    gridItems = previewFolderGridItems[gridItem.id]?.previewFolderGridItems,
                     content = {
                         PreviewNestedFolderGridItem(
                             alpha = alpha,

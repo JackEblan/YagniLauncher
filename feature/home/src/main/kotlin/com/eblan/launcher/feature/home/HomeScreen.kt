@@ -59,6 +59,7 @@ import com.eblan.launcher.domain.model.HomeData
 import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.domain.model.PageItem
 import com.eblan.launcher.domain.model.PinItemRequestType
+import com.eblan.launcher.domain.model.PreviewFolder
 import com.eblan.launcher.domain.model.TextColor
 import com.eblan.launcher.feature.home.dialog.TextDialog
 import com.eblan.launcher.feature.home.model.GridItemSource
@@ -197,7 +198,7 @@ internal fun HomeScreen(
     gridItemSource: GridItemSource?,
     isVisibleOverlay: Boolean,
     textColor: TextColor,
-    previewFolderGridItems: Map<String, List<GridItem>>,
+    previewFolderGridItems: Map<String, PreviewFolder>,
     onResetGrid: () -> Unit,
     onDeleteGridItem: (GridItem) -> Unit,
     onResetGridAfterDeleteGridItem: (GridItem) -> Unit,
@@ -369,7 +370,7 @@ private fun Success(
     gridItemSource: GridItemSource?,
     isVisibleOverlay: Boolean,
     textColor: TextColor,
-    previewFolderGridItems: Map<String, List<GridItem>>,
+    previewFolderGridItems: Map<String, PreviewFolder>,
     onResetGrid: () -> Unit,
     onDeleteGridItem: (GridItem) -> Unit,
     onResetGridAfterDeleteGridItem: (GridItem) -> Unit,

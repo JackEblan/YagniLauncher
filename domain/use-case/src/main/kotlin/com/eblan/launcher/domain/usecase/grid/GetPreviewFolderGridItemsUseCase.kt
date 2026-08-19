@@ -21,8 +21,8 @@ import com.eblan.launcher.domain.common.Dispatcher
 import com.eblan.launcher.domain.common.EblanDispatchers
 import com.eblan.launcher.domain.common.IconKeyGenerator
 import com.eblan.launcher.domain.framework.FileManager
-import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
+import com.eblan.launcher.domain.model.PreviewFolder
 import com.eblan.launcher.domain.repository.FolderGridItemRepository
 import com.eblan.launcher.domain.repository.UserDataRepository
 import kotlinx.coroutines.CoroutineDispatcher
@@ -38,12 +38,12 @@ class GetPreviewFolderGridItemsUseCase @Inject constructor(
     private val iconKeyGenerator: IconKeyGenerator,
     @param:Dispatcher(EblanDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) {
-    operator fun invoke(): Flow<Map<String, List<GridItem>>> = combine(
+    operator fun invoke(): Flow<Map<String, PreviewFolder>> = combine(
         userDataRepository.userDataFlow,
         folderGridItemRepository.folderGridItemWrappersFlow,
     ) { userData, folderGridItemWrappers ->
         folderGridItemWrappers.associate { folderGridItemWrapper ->
-            val gridItems = (
+            val folderGridItems = (
                 folderGridItemWrapper.applicationInfoGridItems.map {
                     it.asGridItem(
                         fileManager = fileManager,
@@ -64,22 +64,25 @@ class GetPreviewFolderGridItemsUseCase @Inject constructor(
             }
 
             val (columns, rows) = getGridDimension(
-                count = gridItems.size,
+                count = folderGridItems.size,
                 maxFolderColumns = userData.homeSettings.maxFolderColumns,
                 maxFolderRows = userData.homeSettings.maxFolderRows,
             )
 
-            val previewGridItems = buildList {
+            val previewFolderGridItems = buildList {
                 for (row in 0 until minOf(rows, FOLDER_PREVIEW_ROWS)) {
                     for (column in 0 until minOf(columns, FOLDER_PREVIEW_COLUMNS)) {
                         val index = row * columns + column
 
-                        gridItems.getOrNull(index)?.let(::add)
+                        folderGridItems.getOrNull(index)?.let(::add)
                     }
                 }
             }
 
-            folderGridItemWrapper.folderGridItem.id to previewGridItems
+            folderGridItemWrapper.folderGridItem.id to PreviewFolder(
+                previewFolderGridItems = previewFolderGridItems,
+                folderGridItems = folderGridItems,
+            )
         }
     }.flowOn(ioDispatcher)
 }

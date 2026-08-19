@@ -73,9 +73,9 @@ import androidx.compose.ui.unit.dp
 import androidx.core.util.Consumer
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.Associate
-import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.HomeSettings
 import com.eblan.launcher.domain.model.PageItem
+import com.eblan.launcher.domain.model.PreviewFolder
 import com.eblan.launcher.domain.model.TextColor
 import com.eblan.launcher.feature.home.component.GridLayout
 import com.eblan.launcher.feature.home.component.HomeHandler
@@ -94,7 +94,7 @@ internal fun EditGridPageScreen(
     screenWidth: Int,
     screenHeight: Int,
     textColor: TextColor,
-    previewFolderGridItems: Map<String, List<GridItem>>,
+    previewFolderGridItems: Map<String, PreviewFolder>,
     onSaveEditPage: (
         id: Int,
         pageItems: List<PageItem>,
@@ -316,7 +316,7 @@ internal fun EditDockGridPageScreen(
     homeSettings: HomeSettings,
     paddingValues: PaddingValues,
     textColor: TextColor,
-    previewFolderGridItems: Map<String, List<GridItem>>,
+    previewFolderGridItems: Map<String, PreviewFolder>,
     onSaveEditPage: (
         id: Int,
         pageItems: List<PageItem>,

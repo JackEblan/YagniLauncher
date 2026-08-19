@@ -73,6 +73,7 @@ import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.GridItemSettings
 import com.eblan.launcher.domain.model.MoveGridItemResult
+import com.eblan.launcher.domain.model.PreviewFolder
 import com.eblan.launcher.domain.model.TextColor
 import com.eblan.launcher.feature.home.component.PreviewFolderGridLayout
 import com.eblan.launcher.feature.home.component.swipeGestures
@@ -109,7 +110,7 @@ internal fun InteractiveGridItem(
     lockMovement: Boolean,
     isDragging: Boolean,
     showGridItemPopup: Boolean,
-    previewFolderGridItems: Map<String, List<GridItem>>,
+    previewFolderGridItems: Map<String, PreviewFolder>,
     cellWidth: Int,
     cellHeight: Int,
     leftPadding: Int,
@@ -931,7 +932,7 @@ private fun InteractiveFolderGridItem(
     isDragging: Boolean,
     hasInteraction: Boolean,
     isVisibleWhiteBox: Boolean,
-    previewFolderGridItems: Map<String, List<GridItem>>,
+    previewFolderGridItems: Map<String, PreviewFolder>,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
         intOffset: IntOffset,
@@ -980,7 +981,7 @@ private fun InteractiveFolderGridItem(
     val currentIsVisibleOverlay = rememberUpdatedState(isVisibleOverlay)
     val currentGridItem = rememberUpdatedState(gridItem)
     val currentLockMovement = rememberUpdatedState(lockMovement)
-    val currentFolderGridItems = rememberUpdatedState(previewFolderGridItems[gridItem.id])
+    val currentFolderGridItems = rememberUpdatedState(previewFolderGridItems[gridItem.id]?.folderGridItems)
 
     LaunchedEffect(key1 = moveGridItemResult) {
         handleConflictingGridItem(
@@ -1117,7 +1118,7 @@ private fun InteractiveFolderGridItem(
             ) {
                 PreviewFolderGridLayout(
                     modifier = Modifier.matchParentSize(),
-                    gridItems = previewFolderGridItems[gridItem.id],
+                    gridItems = previewFolderGridItems[gridItem.id]?.previewFolderGridItems,
                     content = {
                         PreviewFolderGridItem(
                             sharedTransitionScope = sharedTransitionScope,
@@ -1128,7 +1129,7 @@ private fun InteractiveFolderGridItem(
                             moveGridItemResult = moveGridItemResult,
                             textColor = textColor,
                             drag = drag,
-                            folderGridItems = previewFolderGridItems[gridItem.id],
+                            folderGridItems = previewFolderGridItems[gridItem.id]?.folderGridItems,
                             isVisibleFolder = isVisibleFolder,
                             onResetGrid = onResetGrid,
                         )
