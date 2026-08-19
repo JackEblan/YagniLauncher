@@ -597,7 +597,7 @@ private fun InteractiveFolderShortcutInfoGridItem(
         verticalArrangement = verticalArrangement,
     ) {
         Box(
-            modifier = Modifier.size(gridItemSettings.iconSize.dp),
+            modifier = Modifier.size(gridItemSettings.iconSize.dp).alpha(alpha),
         ) {
             AsyncImage(
                 model = Builder(context).data(customIcon).addLastModifiedToFileCacheKey(true)
@@ -642,6 +642,7 @@ private fun InteractiveFolderShortcutInfoGridItem(
                     .build(),
                 modifier = Modifier
                     .size((gridItemSettings.iconSize * 0.25).dp)
+                    .alpha(alpha)
                     .align(Alignment.BottomEnd),
                 contentDescription = null,
             )
