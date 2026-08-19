@@ -52,6 +52,8 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
@@ -69,14 +71,14 @@ import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.GridItemSettings
 import com.eblan.launcher.domain.model.HomeSettings
 import com.eblan.launcher.domain.model.MoveGridItemResult
+import com.eblan.launcher.domain.usecase.grid.FOLDER_PREVIEW_COLUMNS
+import com.eblan.launcher.domain.usecase.grid.FOLDER_PREVIEW_ROWS
 import com.eblan.launcher.feature.home.component.FolderGridLayout
 import com.eblan.launcher.feature.home.component.HomeHandler
 import com.eblan.launcher.feature.home.component.PageIndicator
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.PageDirection
 import com.eblan.launcher.feature.home.model.SharedElementKey
-import com.eblan.launcher.feature.home.util.FOLDER_PREVIEW_COLUMNS
-import com.eblan.launcher.feature.home.util.FOLDER_PREVIEW_ROWS
 import com.eblan.launcher.feature.home.util.PAGE_INDICATOR_HEIGHT
 import kotlin.math.roundToInt
 
@@ -164,9 +166,35 @@ internal fun FolderScreen(
 
     val progress = remember { Animatable(0f) }
 
-    val animatedRect by remember(key1 = folderPopupLayoutInfo) {
+    val animatedFolderRect by remember(key1 = folderPopupLayoutInfo) {
         derivedStateOf {
-            getAnimatedRect(folderPopupLayoutInfo = folderPopupLayoutInfo, progress = progress)
+            getAnimatedRect(
+                progress = progress.value,
+                startWidth = folderPopupLayoutInfo.startWidth,
+                startHeight = folderPopupLayoutInfo.startHeight,
+                endWidth = folderPopupLayoutInfo.folderGridWidthPx.toFloat(),
+                endHeight = folderPopupLayoutInfo.endHeight.toFloat(),
+                startCenterX = folderPopupLayoutInfo.startCenterX,
+                startCenterY = folderPopupLayoutInfo.startCenterY,
+                endCenterX = folderPopupLayoutInfo.endCenterX,
+                endCenterY = folderPopupLayoutInfo.endCenterY,
+            )
+        }
+    }
+
+    val animatedPreviewRect by remember(key1 = folderPopupLayoutInfo) {
+        derivedStateOf {
+            getAnimatedRect(
+                progress = progress.value,
+                startWidth = folderPopupLayoutInfo.startPreviewWidth,
+                startHeight = folderPopupLayoutInfo.startPreviewHeight,
+                endWidth = folderPopupLayoutInfo.folderGridWidthPx.toFloat(),
+                endHeight = folderPopupLayoutInfo.folderGridHeightPx.toFloat(),
+                startCenterX = folderPopupLayoutInfo.startCenterX,
+                startCenterY = folderPopupLayoutInfo.startCenterY,
+                endCenterX = folderPopupLayoutInfo.endCenterX,
+                endCenterY = folderPopupLayoutInfo.endCenterY,
+            )
         }
     }
 
@@ -328,22 +356,28 @@ internal fun FolderScreen(
                 .offset {
                     IntOffset(
                         x = when (layoutDirection) {
-                            LayoutDirection.Ltr -> animatedRect.left.roundToInt()
+                            LayoutDirection.Ltr -> animatedFolderRect.left.roundToInt()
 
-                            LayoutDirection.Rtl -> screenWidth - animatedRect.width()
-                                .roundToInt() - animatedRect.left.roundToInt()
+                            LayoutDirection.Rtl -> screenWidth - animatedFolderRect.width()
+                                .roundToInt() - animatedFolderRect.left.roundToInt()
                         },
-                        y = animatedRect.top.roundToInt(),
+                        y = animatedFolderRect.top.roundToInt(),
                     )
                 }
                 .size(
-                    width = with(density) { animatedRect.width().toDp() },
-                    height = with(density) { animatedRect.height().toDp() },
-                ),
+                    width = with(density) { animatedFolderRect.width().toDp() },
+                    height = with(density) { animatedFolderRect.height().toDp() },
+                )
+                .clipToBounds(),
             shape = RoundedCornerShape(5.dp),
             shadowElevation = 2.dp,
         ) {
-            Column(modifier = Modifier.fillMaxSize()) {
+            Column(
+                modifier = Modifier.size(
+                    width = with(density) { folderPopupLayoutInfo.folderGridWidthPx.toDp() },
+                    height = with(density) { folderPopupLayoutInfo.endHeight.toDp() },
+                ),
+            ) {
                 HorizontalPager(
                     modifier = Modifier.weight(1f),
                     state = folderGridHorizontalPagerState,
@@ -354,12 +388,9 @@ internal fun FolderScreen(
                         columns = folderPopup.columns,
                         gridItems = folderPopup.gridItemsByPage[index],
                         rows = folderPopup.rows,
-                        layoutWidth = folderPopupLayoutInfo.folderGridWidthPx,
-                        layoutHeight = folderPopupLayoutInfo.folderGridHeightPx,
-                        previewEnabled = true,
-                        previewColumns = FOLDER_PREVIEW_COLUMNS,
-                        previewRows = FOLDER_PREVIEW_ROWS,
-                        progress = progress.value,
+                        width = animatedPreviewRect.width().roundToInt(),
+                        height = animatedPreviewRect.height().roundToInt(),
+                        animate = isVisibleOverlay,
                         content = {
                             InteractiveFolderGridItem(
                                 sharedTransitionScope = sharedTransitionScope,
@@ -396,52 +427,15 @@ internal fun FolderScreen(
                     )
                 }
 
-                if (progress.value > 0.5f) {
-                    FolderTitle(
-                        label = folderPopup.label,
-                        gridItemsByPage = folderPopup.gridItemsByPage,
-                        folderGridHorizontalPagerState = folderGridHorizontalPagerState,
-                    )
-                }
+                FolderTitle(
+                    label = folderPopup.label,
+                    gridItemsByPage = folderPopup.gridItemsByPage,
+                    folderGridHorizontalPagerState = folderGridHorizontalPagerState,
+                    progress = progress.value,
+                )
             }
         }
     }
-}
-
-private fun getAnimatedRect(
-    folderPopupLayoutInfo: FolderPopupLayoutInfo,
-    progress: Animatable<Float, AnimationVector1D>,
-): RectF {
-    val currentWidth = lerp(
-        folderPopupLayoutInfo.startWidth,
-        folderPopupLayoutInfo.folderGridWidthPx.toFloat(),
-        progress.value,
-    )
-
-    val currentHeight = lerp(
-        folderPopupLayoutInfo.startHeight,
-        folderPopupLayoutInfo.endHeight.toFloat(),
-        progress.value,
-    )
-
-    val currentX = lerp(
-        folderPopupLayoutInfo.startCenterX,
-        folderPopupLayoutInfo.endCenterX,
-        progress.value,
-    ) - currentWidth / 2f
-
-    val currentY = lerp(
-        folderPopupLayoutInfo.startCenterY,
-        folderPopupLayoutInfo.endCenterY,
-        progress.value,
-    ) - currentHeight / 2f
-
-    return RectF(
-        currentX,
-        currentY,
-        currentX + currentWidth,
-        currentY + currentHeight,
-    )
 }
 
 @Composable
@@ -450,9 +444,11 @@ internal fun FolderTitle(
     label: String,
     gridItemsByPage: Map<Int, List<GridItem>>,
     folderGridHorizontalPagerState: PagerState,
+    progress: Float,
 ) {
     Row(
         modifier = modifier
+            .alpha(if (progress > 0.5) 1f else 0f)
             .fillMaxWidth()
             .height(PAGE_INDICATOR_HEIGHT)
             .padding(horizontal = 10.dp),
@@ -493,7 +489,52 @@ private data class FolderPopupLayoutInfo(
     val startCenterY: Float,
     val endCenterX: Float,
     val endCenterY: Float,
+    val startPreviewWidth: Float,
+    val startPreviewHeight: Float,
 )
+
+private fun getAnimatedRect(
+    progress: Float,
+    startWidth: Float,
+    startHeight: Float,
+    endWidth: Float,
+    endHeight: Float,
+    startCenterX: Float,
+    startCenterY: Float,
+    endCenterX: Float,
+    endCenterY: Float,
+): RectF {
+    val currentWidth = lerp(
+        startWidth,
+        endWidth,
+        progress,
+    )
+
+    val currentHeight = lerp(
+        startHeight,
+        endHeight,
+        progress,
+    )
+
+    val currentX = lerp(
+        startCenterX,
+        endCenterX,
+        progress,
+    ) - currentWidth / 2f
+
+    val currentY = lerp(
+        startCenterY,
+        endCenterY,
+        progress,
+    ) - currentHeight / 2f
+
+    return RectF(
+        currentX,
+        currentY,
+        currentX + currentWidth,
+        currentY + currentHeight,
+    )
+}
 
 private suspend fun handleFolderPopup(
     drag: State<Drag>,
@@ -635,6 +676,21 @@ private fun getFolderPopupLayoutInfo(
     val endCenterX = endIntOffset.x + folderGridWidthPx.toFloat() / 2f
     val endCenterY = endIntOffset.y + endHeight.toFloat() / 2f
 
+    val previewCellSize = minOf(
+        folderPopupIntSize.width,
+        folderPopupIntSize.height,
+    ) / maxOf(FOLDER_PREVIEW_COLUMNS, FOLDER_PREVIEW_ROWS)
+
+    val startPreviewWidth = minOf(
+        (previewCellSize * folderPopup.columns).toFloat(),
+        availableWidth.toFloat(),
+    )
+
+    val startPreviewHeight = minOf(
+        (previewCellSize * folderPopup.rows).toFloat(),
+        (availableHeight - folderTitleHeightPx).coerceAtLeast(0).toFloat(),
+    )
+
     return FolderPopupLayoutInfo(
         minCellWidthPx = minCellWidthPx,
         minCellHeightPx = minCellHeightPx,
@@ -647,5 +703,7 @@ private fun getFolderPopupLayoutInfo(
         startCenterY = startCenterY,
         endCenterX = endCenterX,
         endCenterY = endCenterY,
+        startPreviewWidth = startPreviewWidth,
+        startPreviewHeight = startPreviewHeight,
     )
 }

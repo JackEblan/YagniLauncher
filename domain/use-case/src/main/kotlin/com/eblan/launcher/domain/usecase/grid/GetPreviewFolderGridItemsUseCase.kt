@@ -63,7 +63,23 @@ class GetPreviewFolderGridItemsUseCase @Inject constructor(
                 }
             }
 
-            folderGridItemWrapper.folderGridItem.id to gridItems
+            val (columns, rows) = getGridDimension(
+                count = gridItems.size,
+                maxFolderColumns = userData.homeSettings.maxFolderColumns,
+                maxFolderRows = userData.homeSettings.maxFolderRows,
+            )
+
+            val previewGridItems = buildList {
+                for (row in 0 until minOf(rows, FOLDER_PREVIEW_ROWS)) {
+                    for (column in 0 until minOf(columns, FOLDER_PREVIEW_COLUMNS)) {
+                        val index = row * columns + column
+
+                        gridItems.getOrNull(index)?.let(::add)
+                    }
+                }
+            }
+
+            folderGridItemWrapper.folderGridItem.id to previewGridItems
         }
     }.flowOn(ioDispatcher)
 }

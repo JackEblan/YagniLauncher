@@ -202,6 +202,7 @@ internal fun EditGridPageScreen(
                         columns = columns,
                         gridItems = pageItem.gridItems,
                         rows = rows,
+                        animate = false,
                         content = {
                             GridItemContent(
                                 gridItem = it,
@@ -417,6 +418,7 @@ internal fun EditDockGridPageScreen(
                             columns = columns,
                             gridItems = pageItem.gridItems,
                             rows = rows,
+                            animate = false,
                             content = {
                                 GridItemContent(
                                     gridItem = it,
