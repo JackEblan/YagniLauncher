@@ -46,7 +46,7 @@ internal fun GridLayout(
         layout(width = constraints.maxWidth, height = constraints.maxHeight) {
             gridItems?.forEach { gridItem ->
                 subcompose(gridItem.id) {
-                    GridLayoutContent(
+                    GridLayoutItem(
                         gridItem = gridItem,
                         cellWidth = cellWidth,
                         cellHeight = cellHeight,
@@ -120,7 +120,7 @@ internal fun HorizontalAppDrawerGridLayout(
 }
 
 @Composable
-private fun GridLayoutContent(
+private fun GridLayoutItem(
     modifier: Modifier = Modifier,
     gridItem: GridItem,
     cellWidth: Int,

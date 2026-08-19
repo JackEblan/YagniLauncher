@@ -73,7 +73,8 @@ import com.eblan.launcher.domain.model.HomeSettings
 import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.domain.usecase.grid.FOLDER_PREVIEW_COLUMNS
 import com.eblan.launcher.domain.usecase.grid.FOLDER_PREVIEW_ROWS
-import com.eblan.launcher.feature.home.component.FolderGridLayout
+import com.eblan.launcher.feature.home.component.AnimatedFolderGridLayout
+import com.eblan.launcher.feature.home.component.FixedFolderGridLayout
 import com.eblan.launcher.feature.home.component.HomeHandler
 import com.eblan.launcher.feature.home.component.PageIndicator
 import com.eblan.launcher.feature.home.model.Drag
@@ -378,19 +379,14 @@ internal fun FolderScreen(
                     height = with(density) { folderPopupLayoutInfo.endHeight.toDp() },
                 ),
             ) {
-                HorizontalPager(
-                    modifier = Modifier.weight(1f),
-                    state = folderGridHorizontalPagerState,
-                    userScrollEnabled = !isVisibleOverlay,
-                ) { index ->
-                    FolderGridLayout(
+                if (progress.value < 1f) {
+                    FixedFolderGridLayout(
                         modifier = Modifier.fillMaxSize(),
                         columns = folderPopup.columns,
-                        gridItems = folderPopup.gridItemsByPage[index],
+                        gridItems = folderPopup.gridItemsByPage.values.firstOrNull(),
                         rows = folderPopup.rows,
                         width = animatedPreviewRect.width().roundToInt(),
                         height = animatedPreviewRect.height().roundToInt(),
-                        progress = progress.value,
                         content = {
                             InteractiveFolderGridItem(
                                 sharedTransitionScope = sharedTransitionScope,
@@ -425,6 +421,54 @@ internal fun FolderScreen(
                             )
                         },
                     )
+                } else {
+                    HorizontalPager(
+                        modifier = Modifier.weight(1f),
+                        state = folderGridHorizontalPagerState,
+                        userScrollEnabled = !isVisibleOverlay,
+                    ) { index ->
+                        AnimatedFolderGridLayout(
+                            modifier = Modifier.fillMaxSize(),
+                            columns = folderPopup.columns,
+                            gridItems = folderPopup.gridItemsByPage[index],
+                            rows = folderPopup.rows,
+                            width = animatedPreviewRect.width().roundToInt(),
+                            height = animatedPreviewRect.height().roundToInt(),
+                            content = {
+                                InteractiveFolderGridItem(
+                                    sharedTransitionScope = sharedTransitionScope,
+                                    drag = drag,
+                                    gridItem = it,
+                                    gridItemSettings = gridItemSettings,
+                                    hasShortcutHostPermission = hasShortcutHostPermission,
+                                    isScrollInProgress = folderGridHorizontalPagerState.isScrollInProgress,
+                                    statusBarNotifications = statusBarNotifications,
+                                    isVisibleOverlay = isVisibleOverlay,
+                                    moveGridItemResult = moveGridItemResult,
+                                    progress = progress.value,
+                                    showFolderGridItemPopup = showFolderGridItemPopup,
+                                    previewFolderGridItems = previewFolderGridItems,
+                                    minCellWidthPx = folderPopupLayoutInfo.minCellWidthPx,
+                                    minCellHeightPx = folderPopupLayoutInfo.minCellHeightPx,
+                                    onOpenAppDrawer = onOpenAppDrawer,
+                                    paddingValues = paddingValues,
+                                    sharedElementKey = SharedElementKey(
+                                        id = it.id,
+                                        parent = SharedElementKey.Parent.Folder,
+                                    ),
+                                    onUpdateImageBitmap = onUpdateImageBitmap,
+                                    onUpdateIsDragging = onUpdateIsDragging,
+                                    onUpdateOverlayBounds = onUpdateOverlayBounds,
+                                    onUpdateSharedElementKey = onUpdateSharedElementKey,
+                                    onShowGridItemPopup = onShowGridItemPopup,
+                                    onUpdateIsCloseFolderGridItemPopup = onUpdateIsCloseFolderGridItemPopup,
+                                    onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                                    onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                                    onUpsertFolderPopupEntry = onUpsertFolderPopupEntry,
+                                )
+                            },
+                        )
+                    }
                 }
 
                 FolderTitle(
