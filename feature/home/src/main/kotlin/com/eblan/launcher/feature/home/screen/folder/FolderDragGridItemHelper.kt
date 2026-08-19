@@ -40,9 +40,10 @@ import kotlin.time.Duration.Companion.milliseconds
 internal suspend fun handlePageDirection(
     pageDirection: PageDirection?,
     currentPage: Int,
+    progress: Float,
     onAnimateScrollToPage: suspend (Int) -> Unit,
 ) {
-    if (pageDirection == null) return
+    if (pageDirection == null || progress < 1f) return
 
     delay(500L.milliseconds)
 
@@ -111,6 +112,7 @@ internal fun handleAnimateScrollToPage(
     layoutDirection: LayoutDirection,
     folderCellWidth: Int,
     isLast: Boolean,
+    progress: Float,
     onUpdateFolderPageDirection: (PageDirection?) -> Unit,
 ) {
     if (drag != Drag.Dragging ||
@@ -118,7 +120,8 @@ internal fun handleAnimateScrollToPage(
         !isDragging.value ||
         lockMovement.value ||
         moveGridItemResult == null ||
-        !isLast
+        !isLast ||
+        progress < 1f
     ) {
         return
     }
@@ -156,6 +159,7 @@ internal fun handleDragFolderGridItem(
     folderCellWidth: Int,
     folderCellHeight: Int,
     isLastFolderGridItem: Boolean,
+    progress: Float,
     onMoveFolderGridItem: (
         folderPopup: FolderPopup,
         movingFolderGridItem: GridItem,
@@ -174,12 +178,13 @@ internal fun handleDragFolderGridItem(
         !isDragging.value ||
         lockMovement.value ||
         moveGridItemResult == null ||
-        !isLastFolderGridItem
+        !isLastFolderGridItem ||
+        progress < 1f
     ) {
         return
     }
 
-    val (intOffset, intSize) = calculateFolderGridDragPosition(
+    val folderGridDragPosition = calculateFolderGridDragPosition(
         density = density,
         dragIntOffset = dragIntOffset,
         folderPopup = folderPopup,
@@ -192,8 +197,8 @@ internal fun handleDragFolderGridItem(
         folderCellHeight = folderCellHeight,
     )
 
-    if (intOffset.x in 0 until intSize.width &&
-        intOffset.y in 0 until intSize.height
+    if (folderGridDragPosition.x in 0 until folderGridDragPosition.width &&
+        folderGridDragPosition.y in 0 until folderGridDragPosition.height
     ) {
         val movingGridItem = moveGridItemResult.movingGridItem
 
@@ -207,16 +212,23 @@ internal fun handleDragFolderGridItem(
         onMoveFolderGridItem(
             folderPopup,
             movingGridItem,
-            intOffset.x,
-            intOffset.y,
-            intSize.width,
-            intSize.height,
+            folderGridDragPosition.x,
+            folderGridDragPosition.y,
+            folderGridDragPosition.width,
+            folderGridDragPosition.height,
             currentPage,
         )
     } else if (!folderPopup.folderPopupEntry.isCloseFolder) {
         onUpsertFolderPopupEntry(folderPopup.folderPopupEntry.copy(isCloseFolder = true))
     }
 }
+
+private data class FolderGridDragPosition(
+    val x: Int,
+    val y: Int,
+    val width: Int,
+    val height: Int,
+)
 
 private fun calculateFolderPageDirection(
     density: Density,
@@ -281,7 +293,7 @@ private fun calculateFolderGridDragPosition(
     layoutDirection: LayoutDirection,
     folderCellWidth: Int,
     folderCellHeight: Int,
-): Pair<IntOffset, IntSize> {
+): FolderGridDragPosition {
     val leftPadding = with(density) {
         paddingValues.calculateLeftPadding(layoutDirection).roundToPx()
     }
@@ -364,6 +376,10 @@ private fun calculateFolderGridDragPosition(
         LayoutDirection.Ltr -> dragX
     }
 
-    return IntOffset(x = layoutDirectionX, y = dragY) to
-        IntSize(width = folderGridWidthPx, height = folderGridHeightPx)
+    return FolderGridDragPosition(
+        x = layoutDirectionX,
+        y = dragY,
+        width = folderGridWidthPx,
+        height = endHeight,
+    )
 }

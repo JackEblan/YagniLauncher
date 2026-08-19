@@ -251,6 +251,7 @@ internal fun InteractiveFolderGridItem(
                 sharedElementKey = sharedElementKey,
                 showFolderGridItemPopup = showFolderGridItemPopup,
                 previewFolderGridItems = previewFolderGridItems,
+                hasShortcutHostPermission = hasShortcutHostPermission,
                 onUpdateIsCloseFolderGridItemPopup = onUpdateIsCloseFolderGridItemPopup,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
@@ -406,30 +407,34 @@ private fun InteractiveFolderApplicationInfoGridItem(
                 model = Builder(context).data(data.customIcon ?: icon)
                     .addLastModifiedToFileCacheKey(true).size(Size.ORIGINAL).build(),
                 contentDescription = null,
-                modifier = Modifier.matchParentSize().drawWithContent {
-                    graphicsLayer.record {
-                        this@drawWithContent.drawContent()
+                modifier = Modifier
+                    .matchParentSize()
+                    .onGloballyPositioned { layoutCoordinates ->
+                        intOffset = layoutCoordinates.positionInRoot().round()
+
+                        intSize = layoutCoordinates.size
                     }
-
-                    drawLayer(graphicsLayer)
-                }.onGloballyPositioned { layoutCoordinates ->
-                    intOffset = layoutCoordinates.positionInRoot().round()
-
-                    intSize = layoutCoordinates.size
-                }.run {
-                    if (!isScrollInProgress && !hasInteraction) {
-                        with(sharedTransitionScope) {
-                            sharedElementWithCallerManagedVisibility(
-                                rememberSharedContentState(
-                                    key = sharedElementKey,
-                                ),
-                                visible = true,
-                            )
+                    .run {
+                        if (!isScrollInProgress && !hasInteraction) {
+                            with(sharedTransitionScope) {
+                                sharedElementWithCallerManagedVisibility(
+                                    rememberSharedContentState(
+                                        key = sharedElementKey,
+                                    ),
+                                    visible = true,
+                                )
+                            }
+                        } else {
+                            this
                         }
-                    } else {
-                        this
                     }
-                },
+                    .drawWithContent {
+                        graphicsLayer.record {
+                            this@drawWithContent.drawContent()
+                        }
+
+                        drawLayer(graphicsLayer)
+                    },
             )
 
             if (isNotificationAccessGranted && hasNotifications) {
@@ -515,7 +520,9 @@ private fun InteractiveFolderShortcutInfoGridItem(
 
     val hasInteraction = isSelected && isVisibleOverlay
 
-    val alpha = if (hasInteraction) 0f else 1f
+    val defaultAlpha = if (hasShortcutHostPermission && data.isEnabled) 1f else 0.3f
+
+    val alpha = if (hasInteraction) 0f else defaultAlpha
 
     Column(
         modifier = modifier
@@ -590,37 +597,43 @@ private fun InteractiveFolderShortcutInfoGridItem(
         verticalArrangement = verticalArrangement,
     ) {
         Box(
-            modifier = Modifier
-                .size(gridItemSettings.iconSize.dp)
-                .alpha(alpha),
+            modifier = Modifier.size(gridItemSettings.iconSize.dp),
         ) {
             AsyncImage(
                 model = Builder(context).data(customIcon).addLastModifiedToFileCacheKey(true)
                     .size(Size.ORIGINAL).build(),
-                modifier = Modifier.matchParentSize().drawWithContent {
-                    graphicsLayer.record {
-                        this@drawWithContent.drawContent()
+                modifier = Modifier
+                    .matchParentSize()
+                    .onGloballyPositioned { layoutCoordinates ->
+                        intOffset = layoutCoordinates.positionInRoot().round()
+
+                        intSize = layoutCoordinates.size
                     }
-
-                    drawLayer(graphicsLayer)
-                }.onGloballyPositioned { layoutCoordinates ->
-                    intOffset = layoutCoordinates.positionInRoot().round()
-
-                    intSize = layoutCoordinates.size
-                }.run {
-                    if (!isScrollInProgress && !hasInteraction) {
-                        with(sharedTransitionScope) {
-                            sharedElementWithCallerManagedVisibility(
-                                rememberSharedContentState(
-                                    key = sharedElementKey,
-                                ),
-                                visible = true,
-                            )
+                    .run {
+                        if (!isScrollInProgress && !hasInteraction) {
+                            with(sharedTransitionScope) {
+                                sharedElementWithCallerManagedVisibility(
+                                    rememberSharedContentState(
+                                        key = sharedElementKey,
+                                    ),
+                                    visible = true,
+                                )
+                            }
+                        } else {
+                            this
                         }
-                    } else {
-                        this
                     }
-                },
+                    .drawWithContent {
+                        graphicsLayer.apply {
+                            this.alpha = alpha
+                        }
+
+                        graphicsLayer.record {
+                            this@drawWithContent.drawContent()
+                        }
+
+                        drawLayer(graphicsLayer)
+                    },
                 contentDescription = null,
             )
 
@@ -629,6 +642,7 @@ private fun InteractiveFolderShortcutInfoGridItem(
                     .build(),
                 modifier = Modifier
                     .size((gridItemSettings.iconSize * 0.25).dp)
+                    .alpha(alpha)
                     .align(Alignment.BottomEnd),
                 contentDescription = null,
             )
@@ -778,30 +792,34 @@ private fun InteractiveFolderShortcutConfigGridItem(
             model = Builder(context).data(icon).addLastModifiedToFileCacheKey(true)
                 .size(Size.ORIGINAL).build(),
             contentDescription = null,
-            modifier = Modifier.size(gridItemSettings.iconSize.dp).alpha(alpha).drawWithContent {
-                graphicsLayer.record {
-                    this@drawWithContent.drawContent()
+            modifier = Modifier
+                .size(gridItemSettings.iconSize.dp)
+                .onGloballyPositioned { layoutCoordinates ->
+                    intOffset = layoutCoordinates.positionInRoot().round()
+
+                    intSize = layoutCoordinates.size
                 }
-
-                drawLayer(graphicsLayer)
-            }.onGloballyPositioned { layoutCoordinates ->
-                intOffset = layoutCoordinates.positionInRoot().round()
-
-                intSize = layoutCoordinates.size
-            }.run {
-                if (!isScrollInProgress && !hasInteraction) {
-                    with(sharedTransitionScope) {
-                        sharedElementWithCallerManagedVisibility(
-                            rememberSharedContentState(
-                                key = sharedElementKey,
-                            ),
-                            visible = true,
-                        )
+                .run {
+                    if (!isScrollInProgress && !hasInteraction) {
+                        with(sharedTransitionScope) {
+                            sharedElementWithCallerManagedVisibility(
+                                rememberSharedContentState(
+                                    key = sharedElementKey,
+                                ),
+                                visible = true,
+                            )
+                        }
+                    } else {
+                        this
                     }
-                } else {
-                    this
                 }
-            },
+                .drawWithContent {
+                    graphicsLayer.record {
+                        this@drawWithContent.drawContent()
+                    }
+
+                    drawLayer(graphicsLayer)
+                }.alpha(alpha),
         )
 
         if (gridItemSettings.showLabel) {
@@ -832,6 +850,7 @@ private fun InteractiveNestedFolderGridItem(
     sharedElementKey: SharedElementKey,
     showFolderGridItemPopup: Boolean,
     previewFolderGridItems: Map<String, PreviewFolder>,
+    hasShortcutHostPermission: Boolean,
     onUpdateIsCloseFolderGridItemPopup: (Boolean) -> Unit,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
@@ -955,30 +974,34 @@ private fun InteractiveNestedFolderGridItem(
         verticalArrangement = verticalArrangement,
     ) {
         val commonModifier =
-            Modifier.size(gridItemSettings.iconSize.dp).alpha(alpha).drawWithContent {
-                graphicsLayer.record {
-                    this@drawWithContent.drawContent()
+            Modifier
+                .size(gridItemSettings.iconSize.dp)
+                .onGloballyPositioned { layoutCoordinates ->
+                    intOffset = layoutCoordinates.positionInRoot().round()
+
+                    intSize = layoutCoordinates.size
                 }
-
-                drawLayer(graphicsLayer)
-            }.onGloballyPositioned { layoutCoordinates ->
-                intOffset = layoutCoordinates.positionInRoot().round()
-
-                intSize = layoutCoordinates.size
-            }.run {
-                if (!isScrollInProgress && !hasInteraction) {
-                    with(sharedTransitionScope) {
-                        sharedElementWithCallerManagedVisibility(
-                            rememberSharedContentState(
-                                key = sharedElementKey,
-                            ),
-                            visible = true,
-                        )
+                .run {
+                    if (!isScrollInProgress && !hasInteraction) {
+                        with(sharedTransitionScope) {
+                            sharedElementWithCallerManagedVisibility(
+                                rememberSharedContentState(
+                                    key = sharedElementKey,
+                                ),
+                                visible = true,
+                            )
+                        }
+                    } else {
+                        this
                     }
-                } else {
-                    this
                 }
-            }
+                .drawWithContent {
+                    graphicsLayer.record {
+                        this@drawWithContent.drawContent()
+                    }
+
+                    drawLayer(graphicsLayer)
+                }.alpha(alpha)
 
         if (data.icon != null) {
             AsyncImage(
@@ -1000,6 +1023,7 @@ private fun InteractiveNestedFolderGridItem(
                         PreviewNestedFolderGridItem(
                             alpha = alpha,
                             gridItem = it,
+                            hasShortcutHostPermission = hasShortcutHostPermission,
                         )
                     },
                 )
@@ -1024,10 +1048,23 @@ private fun PreviewNestedFolderGridItem(
     modifier: Modifier = Modifier,
     alpha: Float,
     gridItem: GridItem,
+    hasShortcutHostPermission: Boolean,
 ) {
     val context = LocalContext.current
 
     key(gridItem.id) {
+        val alpha = when (val data = gridItem.data) {
+            is GridItemData.ApplicationInfo,
+            is GridItemData.Folder,
+            is GridItemData.ShortcutConfig,
+            is GridItemData.Widget,
+            -> alpha
+
+            is GridItemData.ShortcutInfo -> {
+                if (hasShortcutHostPermission && data.isEnabled) 1f else 0.3f
+            }
+        }
+
         val commonModifier = modifier
             .padding(1.dp)
             .alpha(alpha)
