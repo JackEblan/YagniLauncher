@@ -192,6 +192,7 @@ internal fun ApplicationSearchBarWithoutMenu(
 
 @Composable
 private fun EblanApplicationInfoOrderMenu(
+    modifier: Modifier = Modifier,
     expanded: Boolean,
     onDismissRequest: () -> Unit,
     eblanApplicationInfoOrder: EblanApplicationInfoOrder,
@@ -200,6 +201,7 @@ private fun EblanApplicationInfoOrderMenu(
     onUpdateIsRearrangeEblanApplicationInfo: (Boolean) -> Unit,
 ) {
     DropdownMenu(
+        modifier = modifier,
         expanded = expanded,
         onDismissRequest = onDismissRequest,
     ) {
@@ -209,19 +211,19 @@ private fun EblanApplicationInfoOrderMenu(
             style = MaterialTheme.typography.bodySmall,
         )
 
-        EblanApplicationInfoOrder.entries.forEach { order ->
+        EblanApplicationInfoOrder.entries.forEach {
             DropdownMenuItem(
                 text = {
-                    Text(order.name)
+                    Text(text = it.getTitle())
                 },
                 leadingIcon = {
                     RadioButton(
-                        selected = eblanApplicationInfoOrder == order,
+                        selected = eblanApplicationInfoOrder == it,
                         onClick = null,
                     )
                 },
                 onClick = {
-                    onUpdateEblanApplicationInfoOrder(order)
+                    onUpdateEblanApplicationInfoOrder(it)
                 },
             )
         }
@@ -246,7 +248,15 @@ private fun EblanApplicationInfoOrderMenu(
             },
             onClick = {
                 onUpdateIsRearrangeEblanApplicationInfo(!isRearrangeEblanApplicationInfo)
+
+                onDismissRequest()
             },
         )
     }
+}
+
+@Composable
+private fun EblanApplicationInfoOrder.getTitle(): String = when (this) {
+    EblanApplicationInfoOrder.Alphabetical -> stringResource(R.string.alphabetical)
+    EblanApplicationInfoOrder.Index -> stringResource(R.string.index)
 }
