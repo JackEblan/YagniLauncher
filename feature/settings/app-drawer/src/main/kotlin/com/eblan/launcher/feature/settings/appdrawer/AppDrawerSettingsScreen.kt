@@ -17,6 +17,7 @@
  */
 package com.eblan.launcher.feature.settings.appdrawer
 
+import android.os.Build
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -385,25 +386,27 @@ private fun buildAppDrawerSettingsItems(
         ),
     )
 
-    add(
-        SettingsItem.Switch(
-            checked = appDrawerSettings.blurBehind,
-            title = stringResource(R.string.blur_behind),
-            subtitle = stringResource(R.string.blurs_the_wallpaper_when_app_drawer_opens),
-            onClick = {
-                onUpdateAppDrawerSettings(
-                    appDrawerSettings.copy(
-                        blurBehind = !appDrawerSettings.blurBehind,
-                    ),
-                )
-            },
-            onCheckedChange = {
-                onUpdateAppDrawerSettings(
-                    appDrawerSettings.copy(
-                        blurBehind = it,
-                    ),
-                )
-            },
-        ),
-    )
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        add(
+            SettingsItem.Switch(
+                checked = appDrawerSettings.blurBehind,
+                title = stringResource(R.string.blur_behind),
+                subtitle = stringResource(R.string.blurs_the_wallpaper_when_app_drawer_opens),
+                onClick = {
+                    onUpdateAppDrawerSettings(
+                        appDrawerSettings.copy(
+                            blurBehind = !appDrawerSettings.blurBehind,
+                        ),
+                    )
+                },
+                onCheckedChange = {
+                    onUpdateAppDrawerSettings(
+                        appDrawerSettings.copy(
+                            blurBehind = it,
+                        ),
+                    )
+                },
+            ),
+        )
+    }
 }
