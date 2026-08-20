@@ -19,7 +19,9 @@ package com.eblan.launcher.feature.home.screen.application
 
 import android.os.Build
 import android.os.UserHandle
+import android.view.WindowManager
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.LocalActivity
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
@@ -45,6 +47,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
@@ -100,6 +103,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.milliseconds
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -146,6 +150,12 @@ internal fun ApplicationScreen(
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
+    BlurBehindEffect(
+        blurBehind = appDrawerSettings.blurBehind,
+        swipeY = swipeY,
+        screenHeight = screenHeight,
+    )
+
     Surface(
         modifier = modifier
             .graphicsLayer {
@@ -499,6 +509,50 @@ internal fun rememberIsQuietModeEnabled(
             managedProfileResult.serialNumber == eblanUser?.serialNumber
         ) {
             value = managedProfileResult.isQuiteModeEnabled
+        }
+    }
+}
+
+@Composable
+private fun BlurBehindEffect(
+    blurBehind: Boolean,
+    swipeY: Float,
+    screenHeight: Int,
+) {
+    if (!blurBehind) return
+
+    val activity = LocalActivity.current ?: return
+
+    val window = activity.window
+
+    val progress = 1f - (swipeY / screenHeight).coerceIn(0f, 1f)
+
+    val radius = (progress * 20f).roundToInt()
+
+    DisposableEffect(
+        key1 = window,
+        key2 = radius,
+    ) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            window.addFlags(
+                WindowManager.LayoutParams.FLAG_BLUR_BEHIND,
+            )
+
+            window.attributes = window.attributes.apply {
+                blurBehindRadius = radius
+            }
+        }
+
+        onDispose {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                window.attributes = window.attributes.apply {
+                    blurBehindRadius = 0
+                }
+
+                window.clearFlags(
+                    WindowManager.LayoutParams.FLAG_BLUR_BEHIND,
+                )
+            }
         }
     }
 }

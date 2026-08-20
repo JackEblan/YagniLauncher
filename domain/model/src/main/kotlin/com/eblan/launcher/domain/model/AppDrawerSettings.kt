@@ -30,4 +30,5 @@ data class AppDrawerSettings(
     val excludeTaggedApps: Boolean,
     val showKeyboard: Boolean,
     val fuzzySearch: Boolean,
+    val blurBehind: Boolean,
 )

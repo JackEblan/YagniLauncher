@@ -384,4 +384,26 @@ private fun buildAppDrawerSettingsItems(
             },
         ),
     )
+
+    add(
+        SettingsItem.Switch(
+            checked = appDrawerSettings.blurBehind,
+            title = stringResource(R.string.blur_behind),
+            subtitle = stringResource(R.string.blurs_the_wallpaper_when_app_drawer_opens),
+            onClick = {
+                onUpdateAppDrawerSettings(
+                    appDrawerSettings.copy(
+                        blurBehind = !appDrawerSettings.blurBehind,
+                    ),
+                )
+            },
+            onCheckedChange = {
+                onUpdateAppDrawerSettings(
+                    appDrawerSettings.copy(
+                        blurBehind = it,
+                    ),
+                )
+            },
+        ),
+    )
 }
