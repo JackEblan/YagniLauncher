@@ -198,9 +198,14 @@ private fun getSearchBarColors(
             unfocusedPlaceholderColor = contentColor.copy(alpha = 0.6f),
             focusedContainerColor = Color.Transparent,
             unfocusedContainerColor = Color.Transparent,
+            focusedLeadingIconColor = contentColor,
+            unfocusedLeadingIconColor = contentColor,
+            focusedTrailingIconColor = contentColor,
+            unfocusedTrailingIconColor = contentColor,
             cursorColor = contentColor,
         ),
     )
+
     return searchBarColors
 }
 
