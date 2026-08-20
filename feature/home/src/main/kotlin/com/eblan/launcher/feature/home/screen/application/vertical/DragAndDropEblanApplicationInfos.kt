@@ -76,9 +76,10 @@ import com.eblan.launcher.domain.model.EblanApplicationInfo
 import com.eblan.launcher.domain.model.EblanApplicationInfoWithIconPackInfo
 import com.eblan.launcher.domain.model.EblanUserPageKey
 import com.eblan.launcher.domain.model.GetEblanApplicationInfosByLabelAndTag
+import com.eblan.launcher.domain.model.TextColor
 import com.eblan.launcher.feature.home.R
+import com.eblan.launcher.feature.home.util.getAppDrawerGridItemTextColor
 import com.eblan.launcher.feature.home.util.getHorizontalAlignment
-import com.eblan.launcher.feature.home.util.getTextColor
 import com.eblan.launcher.feature.home.util.getVerticalArrangement
 import kotlin.uuid.ExperimentalUuidApi
 import com.eblan.launcher.common.R as commonR
@@ -93,6 +94,8 @@ internal fun DragAndDropEblanApplicationInfos(
     paddingValues: PaddingValues,
     swipeY: Float,
     screenHeight: Int,
+    systemCustomTextColor: Int,
+    systemTextColor: TextColor,
     onDismissDragAndDrop: () -> Unit,
     onUpdateEblanApplicationInfos: (List<EblanApplicationInfo>) -> Unit,
 ) {
@@ -170,6 +173,8 @@ internal fun DragAndDropEblanApplicationInfos(
                     EblanApplicationInfoItem(
                         eblanApplicationInfoWithIconPackInfo = eblanApplicationInfo,
                         appDrawerSettings = appDrawerSettings,
+                        systemTextColor = systemTextColor,
+                        systemCustomTextColor = systemCustomTextColor,
                     )
                 }
             }
@@ -216,10 +221,16 @@ private fun EblanApplicationInfoItem(
     modifier: Modifier = Modifier,
     eblanApplicationInfoWithIconPackInfo: EblanApplicationInfoWithIconPackInfo,
     appDrawerSettings: AppDrawerSettings,
+    systemCustomTextColor: Int,
+    systemTextColor: TextColor,
 ) {
-    val textColor = getTextColor(
-        customTextColor = appDrawerSettings.gridItemSettings.customTextColor,
+    val textColor = getAppDrawerGridItemTextColor(
+        backgroundColor = appDrawerSettings.backgroundColor,
+        customBackgroundColor = appDrawerSettings.customBackgroundColor,
         textColor = appDrawerSettings.gridItemSettings.textColor,
+        customTextColor = appDrawerSettings.gridItemSettings.customTextColor,
+        systemTextColor = systemTextColor,
+        systemCustomTextColor = systemCustomTextColor,
     )
 
     val appDrawerRowsHeight = appDrawerSettings.appDrawerRowsHeight.dp

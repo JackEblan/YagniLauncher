@@ -80,7 +80,6 @@ import com.eblan.launcher.domain.model.ManagedProfileResult
 import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.domain.model.TextColor
 import com.eblan.launcher.feature.home.component.OffsetNestedScrollConnection
-import com.eblan.launcher.feature.home.dialog.EblanApplicationInfoOrderDialog
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
@@ -165,8 +164,6 @@ internal fun VerticalApplicationScreen(
 
     var isRearrangeEblanApplicationInfo by remember { mutableStateOf(false) }
 
-    var showEblanApplicationInfoOrderDialog by remember { mutableStateOf(false) }
-
     var selectedEblanApplicationInfo by remember { mutableStateOf<EblanApplicationInfo?>(null) }
 
     val eblanUserPageKeys =
@@ -206,8 +203,13 @@ internal fun VerticalApplicationScreen(
             focusRequester = focusRequester,
             searchBarState = searchBarState,
             textFieldState = textFieldState,
-            onUpdateShowEblanApplicationInfoOrderDialog = {
-                showEblanApplicationInfoOrderDialog = it
+            eblanApplicationInfoOrder = appDrawerSettings.eblanApplicationInfoOrder,
+            isRearrangeEblanApplicationInfo = isRearrangeEblanApplicationInfo,
+            onUpdateEblanApplicationInfoOrder = {
+                onUpdateAppDrawerSettings(appDrawerSettings.copy(eblanApplicationInfoOrder = it))
+            },
+            onUpdateIsRearrangeEblanApplicationInfo = {
+                isRearrangeEblanApplicationInfo = it
             },
         )
 
@@ -320,22 +322,6 @@ internal fun VerticalApplicationScreen(
         )
     }
 
-    if (showEblanApplicationInfoOrderDialog) {
-        EblanApplicationInfoOrderDialog(
-            eblanApplicationInfoOrder = appDrawerSettings.eblanApplicationInfoOrder,
-            onDismissRequest = {
-                showEblanApplicationInfoOrderDialog = false
-            },
-            onUpdateClick = { eblanApplicationInfoOrder, newIsRearrangeEblanApplicationInfo ->
-                onUpdateAppDrawerSettings(appDrawerSettings.copy(eblanApplicationInfoOrder = eblanApplicationInfoOrder))
-
-                isRearrangeEblanApplicationInfo = newIsRearrangeEblanApplicationInfo
-
-                showEblanApplicationInfoOrderDialog = false
-            },
-        )
-    }
-
     if (showPrivatePopupApplicationMenu && selectedEblanApplicationInfo != null) {
         PrivateApplicationInfoPopup(
             drag = drag,
@@ -437,6 +423,8 @@ private fun EblanApplicationInfosPage(
                 paddingValues = paddingValues,
                 swipeY = swipeY,
                 screenHeight = screenHeight,
+                systemTextColor = systemTextColor,
+                systemCustomTextColor = systemCustomTextColor,
                 onDismissDragAndDrop = onDismissDragAndDrop,
                 onUpdateEblanApplicationInfos = onUpdateEblanApplicationInfos,
             )

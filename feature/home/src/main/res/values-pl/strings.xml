@@ -22,7 +22,7 @@
 
     <string name="sort_applications">Sortuj aplikacje</string>
     <string name="rearrange_applications">Zmień kolejność aplikacji</string>
-    <string name="rearrange_applications_by_index">Sortuj aplikacje według indeksu</string>
+
     <string name="drag_an_item_to_rearrange">Przeciągnij element, aby zmienić jego położenie</string>
 
     <string name="work_apps_are_paused">Aplikacje służbowe są wstrzymane</string>
