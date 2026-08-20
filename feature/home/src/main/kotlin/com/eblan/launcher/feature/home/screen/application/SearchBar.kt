@@ -248,8 +248,6 @@ private fun EblanApplicationInfoOrderMenu(
             },
             onClick = {
                 onUpdateIsRearrangeEblanApplicationInfo(!isRearrangeEblanApplicationInfo)
-
-                onDismissRequest()
             },
         )
     }
