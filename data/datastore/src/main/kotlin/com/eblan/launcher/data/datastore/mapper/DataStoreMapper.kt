@@ -90,6 +90,7 @@ internal fun AppDrawerSettingsProto.toAppDrawerSettings(): AppDrawerSettings = A
     excludeTaggedApps = excludeTaggedApps,
     showKeyboard = showKeyboard,
     fuzzySearch = fuzzySearch,
+    blurBehind = blurBehind,
 )
 
 internal fun GridItemSettingsProto.toGridItemSettings(): GridItemSettings = GridItemSettings(
@@ -169,6 +170,7 @@ internal fun AppDrawerSettings.toAppDrawerSettingsProto(): AppDrawerSettingsProt
     builder.excludeTaggedApps = excludeTaggedApps
     builder.showKeyboard = showKeyboard
     builder.fuzzySearch = fuzzySearch
+    builder.blurBehind = blurBehind
 }.build()
 
 internal fun GeneralSettings.toGeneralSettingsProto(): GeneralSettingsProto = GeneralSettingsProto.newBuilder().also { builder ->

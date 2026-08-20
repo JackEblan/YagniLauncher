@@ -21,4 +21,5 @@ message AppDrawerSettingsProto {
   bool excludeTaggedApps = 11;
   bool showKeyboard = 12;
   bool fuzzySearch = 13;
+  bool blurBehind = 14;
 }
