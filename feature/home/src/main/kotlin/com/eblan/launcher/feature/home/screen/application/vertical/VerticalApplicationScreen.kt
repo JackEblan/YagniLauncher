@@ -205,6 +205,10 @@ internal fun VerticalApplicationScreen(
             textFieldState = textFieldState,
             eblanApplicationInfoOrder = appDrawerSettings.eblanApplicationInfoOrder,
             isRearrangeEblanApplicationInfo = isRearrangeEblanApplicationInfo,
+            backgroundColor = appDrawerSettings.backgroundColor,
+            customBackgroundColor = appDrawerSettings.customBackgroundColor,
+            systemTextColor = systemTextColor,
+            systemCustomTextColor = systemCustomTextColor,
             onUpdateEblanApplicationInfoOrder = {
                 onUpdateAppDrawerSettings(appDrawerSettings.copy(eblanApplicationInfoOrder = it))
             },
@@ -232,6 +236,10 @@ internal fun VerticalApplicationScreen(
                 currentPage = horizontalPagerState.currentPage,
                 eblanUserPageKeys = eblanUserPageKeys,
                 eblanApplicationInfos = getEblanApplicationInfosByLabelAndTag.eblanApplicationInfoWithIconPackInfos,
+                backgroundColor = appDrawerSettings.backgroundColor,
+                customBackgroundColor = appDrawerSettings.customBackgroundColor,
+                systemTextColor = systemTextColor,
+                systemCustomTextColor = systemCustomTextColor,
                 onAnimateScrollToPage = horizontalPagerState::animateScrollToPage,
             )
         }

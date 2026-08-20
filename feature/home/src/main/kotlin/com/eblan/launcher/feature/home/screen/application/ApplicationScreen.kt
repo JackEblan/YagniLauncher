@@ -45,6 +45,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -97,6 +98,7 @@ import com.eblan.launcher.feature.home.model.SharedElementKey
 import com.eblan.launcher.feature.home.screen.application.horizontal.HorizontalApplicationScreen
 import com.eblan.launcher.feature.home.screen.application.list.ListApplicationScreen
 import com.eblan.launcher.feature.home.screen.application.vertical.VerticalApplicationScreen
+import com.eblan.launcher.feature.home.util.getApplicationScreenContentColor
 import com.eblan.launcher.ui.local.LocalUserManager
 import com.eblan.launcher.ui.settings.rememberIsDefaultLauncher
 import kotlinx.coroutines.FlowPreview
@@ -380,6 +382,10 @@ internal fun EblanApplicationInfoTabRow(
     currentPage: Int,
     eblanUserPageKeys: List<EblanUserPageKey>,
     eblanApplicationInfos: Map<EblanUserPageKey, List<EblanApplicationInfoWithIconPackInfo>>,
+    backgroundColor: BackgroundColor,
+    customBackgroundColor: Int,
+    systemTextColor: TextColor,
+    systemCustomTextColor: Int,
     onAnimateScrollToPage: suspend (Int) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
@@ -395,13 +401,38 @@ internal fun EblanApplicationInfoTabRow(
         }
     }
 
+    val containerColor = when (backgroundColor) {
+        BackgroundColor.System -> MaterialTheme.colorScheme.surface
+        BackgroundColor.Light -> Color.White
+        BackgroundColor.Dark -> Color.Black
+        BackgroundColor.Custom -> Color(customBackgroundColor)
+    }
+
+    val contentColor = getApplicationScreenContentColor(
+        backgroundColor = backgroundColor,
+        customBackgroundColor = customBackgroundColor,
+        systemCustomTextColor = systemCustomTextColor,
+        systemTextColor = systemTextColor,
+        defaultColor = MaterialTheme.colorScheme.onSurface,
+    )
+
     SecondaryTabRow(
         modifier = modifier,
         selectedTabIndex = selectedTabIndex,
+        containerColor = containerColor,
+        contentColor = contentColor,
+        indicator = {
+            TabRowDefaults.SecondaryIndicator(
+                modifier = Modifier.tabIndicatorOffset(selectedTabIndex),
+                color = contentColor,
+            )
+        },
     ) {
         eblanUserPageKeys.forEach { eblanUserPageKey ->
+            val selected = currentEblanUserPageKey == eblanUserPageKey
+
             Tab(
-                selected = currentEblanUserPageKey == eblanUserPageKey,
+                selected = selected,
                 onClick = {
                     scope.launch {
                         onAnimateScrollToPage(
@@ -411,6 +442,8 @@ internal fun EblanApplicationInfoTabRow(
                         )
                     }
                 },
+                selectedContentColor = contentColor,
+                unselectedContentColor = contentColor.copy(alpha = 0.6f),
                 text = {
                     Text(
                         text = eblanUserPageKey.eblanUser.eblanUserType.getEblanUserTypeTitle(),
