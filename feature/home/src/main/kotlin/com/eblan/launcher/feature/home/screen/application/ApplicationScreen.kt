@@ -49,6 +49,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
@@ -529,18 +530,11 @@ private fun BlurBehindEffect(
 
     val radius = (progress * 20f).roundToInt()
 
-    DisposableEffect(
-        key1 = window,
-        key2 = radius,
-    ) {
+    DisposableEffect(key1 = window) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             window.addFlags(
                 WindowManager.LayoutParams.FLAG_BLUR_BEHIND,
             )
-
-            window.attributes = window.attributes.apply {
-                blurBehindRadius = radius
-            }
         }
 
         onDispose {
@@ -552,6 +546,14 @@ private fun BlurBehindEffect(
                 window.clearFlags(
                     WindowManager.LayoutParams.FLAG_BLUR_BEHIND,
                 )
+            }
+        }
+    }
+
+    SideEffect {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            window.attributes = window.attributes.apply {
+                blurBehindRadius = radius
             }
         }
     }
