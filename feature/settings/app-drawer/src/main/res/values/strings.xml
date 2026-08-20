@@ -31,5 +31,5 @@
     <string name="fuzzy_search">Fuzzy Search</string>
     <string name="find_apps_even_with_typos_or_accented_characters">Find apps even with typos or accented characters</string>
     <string name="blur_behind">Blur Behind</string>
-    <string name="blurs_the_wallpaper_when_app_drawer_opens">Blurs the wallpaper when app drawer opens</string>
+    <string name="blurs_the_wallpaper_when_app_drawer_opens">Blur the wallpaper when app drawer opens</string>
 </resources>
