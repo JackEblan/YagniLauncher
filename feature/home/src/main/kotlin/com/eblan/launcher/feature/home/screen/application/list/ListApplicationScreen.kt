@@ -228,6 +228,10 @@ internal fun ListApplicationScreen(
             focusRequester = focusRequester,
             searchBarState = searchBarState,
             textFieldState = textFieldState,
+            backgroundColor = appDrawerSettings.backgroundColor,
+            customBackgroundColor = appDrawerSettings.customBackgroundColor,
+            systemTextColor = systemTextColor,
+            systemCustomTextColor = systemCustomTextColor,
         )
 
         if (eblanApplicationInfoTags.isNotEmpty()) {
@@ -249,6 +253,10 @@ internal fun ListApplicationScreen(
                 currentPage = horizontalPagerState.currentPage,
                 eblanUserPageKeys = eblanUserPageKeys,
                 eblanApplicationInfos = getEblanApplicationInfosByLabelAndTag.eblanApplicationInfoWithIconPackInfos,
+                backgroundColor = appDrawerSettings.backgroundColor,
+                customBackgroundColor = appDrawerSettings.customBackgroundColor,
+                systemTextColor = systemTextColor,
+                systemCustomTextColor = systemCustomTextColor,
                 onAnimateScrollToPage = horizontalPagerState::animateScrollToPage,
             )
         }

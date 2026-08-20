@@ -88,7 +88,34 @@ internal fun getAppDrawerGridItemTextColor(
     }
 }
 
-fun getTextColorByLuminance(
+internal fun getApplicationScreenContentColor(
+    backgroundColor: BackgroundColor,
+    customBackgroundColor: Int,
+    systemCustomTextColor: Int,
+    systemTextColor: TextColor,
+    defaultColor: Color = Color.Unspecified,
+): Color = when (backgroundColor) {
+    BackgroundColor.System -> defaultColor
+
+    BackgroundColor.Light -> Color.Black
+
+    BackgroundColor.Dark -> Color.White
+
+    BackgroundColor.Custom -> {
+        val gridItemTextColor = getTextColor(
+            customTextColor = systemCustomTextColor,
+            textColor = systemTextColor,
+            defaultColor = defaultColor,
+        )
+
+        getTextColorByLuminance(
+            customBackgroundColor = Color(customBackgroundColor),
+            systemTextColor = gridItemTextColor,
+        )
+    }
+}
+
+private fun getTextColorByLuminance(
     customBackgroundColor: Color,
     systemTextColor: Color,
     alphaThreshold: Float = 0.5f,
