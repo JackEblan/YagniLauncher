@@ -37,9 +37,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CardColors
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -166,67 +163,61 @@ internal fun PrivateSpaceStickyHeader(
 
     val isDefaultLauncher by rememberIsDefaultLauncher()
 
-    val elevatedCardColors =
-        getElevatedCardColors(
-            backgroundColor = backgroundColor,
-            customBackgroundColor = customBackgroundColor,
-            systemCustomTextColor = systemCustomTextColor,
-            systemTextColor = systemTextColor,
-        )
+    val contentColor = getApplicationScreenContentColor(
+        backgroundColor = backgroundColor,
+        customBackgroundColor = customBackgroundColor,
+        systemCustomTextColor = systemCustomTextColor,
+        systemTextColor = systemTextColor,
+        defaultColor = MaterialTheme.colorScheme.onSurface,
+    )
 
-    ElevatedCard(
+    Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(5.dp),
-        colors = elevatedCardColors,
+            .padding(10.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(5.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(
-                text = stringResource(R.string.private_space),
-            )
-
-            Row {
-                launcherApps.getPrivateSpaceSettingsIntent()?.let { intentSender ->
-                    IconButton(
-                        onClick = {
-                            privateSpaceLauncher.launch(
-                                IntentSenderRequest.Builder(intentSender).build(),
-                            )
-                        },
-                    ) {
-                        Icon(
-                            imageVector = EblanLauncherIcons.Settings,
-                            contentDescription = null,
+        Text(
+            text = stringResource(R.string.private_space),
+            color = contentColor,
+        )
+        Row {
+            launcherApps.getPrivateSpaceSettingsIntent()?.let { intentSender ->
+                IconButton(
+                    onClick = {
+                        privateSpaceLauncher.launch(
+                            IntentSenderRequest.Builder(intentSender).build(),
                         )
-                    }
+                    },
+                ) {
+                    Icon(
+                        imageVector = EblanLauncherIcons.Settings,
+                        contentDescription = null,
+                        tint = contentColor,
+                    )
                 }
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && isDefaultLauncher && userHandle != null) {
-                    IconButton(
-                        onClick = {
-                            scope.launch {
-                                userManager.requestQuietModeEnabled(
-                                    enableQuiteMode = !isQuietModeEnabled,
-                                    userHandle = userHandle,
-                                )
-                            }
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && isDefaultLauncher && userHandle != null) {
+                IconButton(
+                    onClick = {
+                        scope.launch {
+                            userManager.requestQuietModeEnabled(
+                                enableQuiteMode = !isQuietModeEnabled,
+                                userHandle = userHandle,
+                            )
+                        }
+                    },
+                ) {
+                    Icon(
+                        imageVector = if (isQuietModeEnabled) {
+                            EblanLauncherIcons.Lock
+                        } else {
+                            EblanLauncherIcons.LockOpen
                         },
-                    ) {
-                        Icon(
-                            imageVector = if (isQuietModeEnabled) {
-                                EblanLauncherIcons.Lock
-                            } else {
-                                EblanLauncherIcons.LockOpen
-                            },
-                            contentDescription = null,
-                        )
-                    }
+                        contentDescription = null,
+                        tint = contentColor,
+                    )
                 }
             }
         }
@@ -384,36 +375,6 @@ internal fun PrivateSpaceEblanApplicationInfoItem(
             overflow = TextOverflow.Ellipsis,
         )
     }
-}
-
-@Composable
-internal fun getElevatedCardColors(
-    backgroundColor: BackgroundColor,
-    customBackgroundColor: Int,
-    systemCustomTextColor: Int,
-    systemTextColor: TextColor,
-): CardColors {
-    val containerColor = when (backgroundColor) {
-        BackgroundColor.System -> MaterialTheme.colorScheme.surfaceContainer
-        BackgroundColor.Light -> Color.White
-        BackgroundColor.Dark -> Color.Black
-        BackgroundColor.Custom -> Color(customBackgroundColor)
-    }
-
-    val contentColor = getApplicationScreenContentColor(
-        backgroundColor = backgroundColor,
-        customBackgroundColor = customBackgroundColor,
-        systemCustomTextColor = systemCustomTextColor,
-        systemTextColor = systemTextColor,
-        defaultColor = MaterialTheme.colorScheme.onSurface,
-    )
-
-    val elevatedCardColors = CardDefaults.elevatedCardColors(
-        containerColor = containerColor,
-        contentColor = contentColor,
-    )
-
-    return elevatedCardColors
 }
 
 internal fun handleOnLongPressPrivateSpaceEblanApplicationInfoItem(
