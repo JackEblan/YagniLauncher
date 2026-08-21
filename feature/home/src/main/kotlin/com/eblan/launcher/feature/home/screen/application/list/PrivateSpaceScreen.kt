@@ -61,6 +61,7 @@ import coil3.request.ImageRequest
 import coil3.request.addLastModifiedToFileCacheKey
 import coil3.request.crossfade
 import com.eblan.launcher.domain.model.AppDrawerSettings
+import com.eblan.launcher.domain.model.BackgroundColor
 import com.eblan.launcher.domain.model.EblanApplicationInfo
 import com.eblan.launcher.domain.model.EblanApplicationInfoWithIconPackInfo
 import com.eblan.launcher.domain.model.EblanUser
@@ -80,6 +81,8 @@ internal fun LazyListScope.privateSpace(
     privateEblanApplicationInfos: List<EblanApplicationInfoWithIconPackInfo>,
     privateEblanUser: EblanUser?,
     isVisibleOverlay: Boolean,
+    backgroundColor: BackgroundColor,
+    customBackgroundColor: Int,
     systemCustomTextColor: Int,
     systemTextColor: TextColor,
     onUpdateOverlayBounds: (
@@ -95,6 +98,10 @@ internal fun LazyListScope.privateSpace(
         PrivateSpaceStickyHeader(
             serialNumber = privateEblanUser.serialNumber,
             isQuietModeEnabled = isQuietModeEnabled,
+            backgroundColor = backgroundColor,
+            customBackgroundColor = customBackgroundColor,
+            systemCustomTextColor = systemCustomTextColor,
+            systemTextColor = systemTextColor,
         )
     }
 

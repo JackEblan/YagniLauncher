@@ -37,9 +37,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CardColors
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -73,12 +76,14 @@ import coil3.request.addLastModifiedToFileCacheKey
 import coil3.request.crossfade
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.AppDrawerSettings
+import com.eblan.launcher.domain.model.BackgroundColor
 import com.eblan.launcher.domain.model.EblanApplicationInfo
 import com.eblan.launcher.domain.model.EblanApplicationInfoWithIconPackInfo
 import com.eblan.launcher.domain.model.EblanUser
 import com.eblan.launcher.domain.model.TextColor
 import com.eblan.launcher.feature.home.R
 import com.eblan.launcher.feature.home.util.getAppDrawerGridItemTextColor
+import com.eblan.launcher.feature.home.util.getApplicationScreenContentColor
 import com.eblan.launcher.feature.home.util.getHorizontalAlignment
 import com.eblan.launcher.feature.home.util.getVerticalArrangement
 import com.eblan.launcher.ui.local.LocalLauncherApps
@@ -94,6 +99,8 @@ internal fun LazyGridScope.privateSpace(
     privateEblanApplicationInfoWithIconPackInfos: List<EblanApplicationInfoWithIconPackInfo>,
     privateEblanUser: EblanUser?,
     isVisibleOverlay: Boolean,
+    backgroundColor: BackgroundColor,
+    customBackgroundColor: Int,
     systemCustomTextColor: Int,
     systemTextColor: TextColor,
     onUpdateOverlayBounds: (
@@ -109,6 +116,11 @@ internal fun LazyGridScope.privateSpace(
         PrivateSpaceStickyHeader(
             serialNumber = privateEblanUser.serialNumber,
             isQuietModeEnabled = isQuietModeEnabled,
+            backgroundColor = backgroundColor,
+            customBackgroundColor = customBackgroundColor,
+            systemCustomTextColor = systemCustomTextColor,
+            systemTextColor = systemTextColor,
+
         )
     }
 
@@ -134,6 +146,10 @@ internal fun PrivateSpaceStickyHeader(
     modifier: Modifier = Modifier,
     serialNumber: Long,
     isQuietModeEnabled: Boolean,
+    backgroundColor: BackgroundColor,
+    customBackgroundColor: Int,
+    systemCustomTextColor: Int,
+    systemTextColor: TextColor,
 ) {
     val scope = rememberCoroutineScope()
 
@@ -150,10 +166,19 @@ internal fun PrivateSpaceStickyHeader(
 
     val isDefaultLauncher by rememberIsDefaultLauncher()
 
+    val elevatedCardColors =
+        getElevatedCardColors(
+            backgroundColor = backgroundColor,
+            customBackgroundColor = customBackgroundColor,
+            systemCustomTextColor = systemCustomTextColor,
+            systemTextColor = systemTextColor,
+        )
+
     ElevatedCard(
         modifier = modifier
             .fillMaxWidth()
             .padding(5.dp),
+        colors = elevatedCardColors,
     ) {
         Row(
             modifier = Modifier
@@ -359,6 +384,36 @@ internal fun PrivateSpaceEblanApplicationInfoItem(
             overflow = TextOverflow.Ellipsis,
         )
     }
+}
+
+@Composable
+internal fun getElevatedCardColors(
+    backgroundColor: BackgroundColor,
+    customBackgroundColor: Int,
+    systemCustomTextColor: Int,
+    systemTextColor: TextColor,
+): CardColors {
+    val containerColor = when (backgroundColor) {
+        BackgroundColor.System -> MaterialTheme.colorScheme.surfaceContainer
+        BackgroundColor.Light -> Color.White
+        BackgroundColor.Dark -> Color.Black
+        BackgroundColor.Custom -> Color(customBackgroundColor)
+    }
+
+    val contentColor = getApplicationScreenContentColor(
+        backgroundColor = backgroundColor,
+        customBackgroundColor = customBackgroundColor,
+        systemCustomTextColor = systemCustomTextColor,
+        systemTextColor = systemTextColor,
+        defaultColor = MaterialTheme.colorScheme.onSurface,
+    )
+
+    val elevatedCardColors = CardDefaults.elevatedCardColors(
+        containerColor = containerColor,
+        contentColor = contentColor,
+    )
+
+    return elevatedCardColors
 }
 
 internal fun handleOnLongPressPrivateSpaceEblanApplicationInfoItem(
