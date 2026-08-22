@@ -118,6 +118,8 @@ class ChangePackageUseCase @Inject constructor(
                         serialNumber = launcherAppsActivityInfo.serialNumber,
                         packageName = launcherAppsActivityInfo.packageName,
                     ).map {
+                        currentCoroutineContext().ensureActive()
+
                         it.toEblanShortcutConfig(
                             fileManager = fileManager,
                             packageManagerWrapper = packageManagerWrapper,

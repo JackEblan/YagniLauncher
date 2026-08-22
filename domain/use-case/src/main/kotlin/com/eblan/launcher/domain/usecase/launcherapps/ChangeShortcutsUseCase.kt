@@ -23,7 +23,6 @@ import com.eblan.launcher.domain.common.IconKeyGenerator
 import com.eblan.launcher.domain.framework.FileManager
 import com.eblan.launcher.domain.framework.LauncherAppsWrapper
 import com.eblan.launcher.domain.framework.PackageManagerWrapper
-import com.eblan.launcher.domain.model.LauncherAppsShortcutInfo
 import com.eblan.launcher.domain.repository.EblanShortcutInfoRepository
 import com.eblan.launcher.domain.repository.ShortcutInfoGridItemRepository
 import kotlinx.coroutines.CoroutineDispatcher
@@ -42,13 +41,17 @@ class ChangeShortcutsUseCase @Inject constructor(
     suspend operator fun invoke(
         serialNumber: Long,
         packageName: String,
-        launcherAppsShortcutInfos: List<LauncherAppsShortcutInfo>?,
     ) {
-        if (!launcherAppsWrapper.hasShortcutHostPermission || launcherAppsShortcutInfos === null) {
+        if (!launcherAppsWrapper.hasShortcutHostPermission) {
             return
         }
 
         withContext(ioDispatcher) {
+            val launcherAppsShortcutInfos = launcherAppsWrapper.getShortcutsByPackageName(
+                serialNumber = serialNumber,
+                packageName = packageName,
+            ) ?: return@withContext
+
             val oldEblanShortcutInfos = eblanShortcutInfoRepository.getEblanShortcutInfos(
                 serialNumber = serialNumber,
                 packageName = packageName,

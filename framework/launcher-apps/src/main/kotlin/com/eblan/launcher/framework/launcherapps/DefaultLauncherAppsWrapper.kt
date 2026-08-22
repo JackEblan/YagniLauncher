@@ -31,7 +31,6 @@ import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
-import android.os.Looper
 import android.os.Process.myUserHandle
 import android.os.UserHandle
 import android.os.UserManager
@@ -47,7 +46,6 @@ import com.eblan.launcher.domain.model.EblanUserType
 import com.eblan.launcher.domain.model.FastLauncherAppsActivityInfo
 import com.eblan.launcher.domain.model.FastLauncherAppsShortcutInfo
 import com.eblan.launcher.domain.model.LauncherAppsActivityInfo
-import com.eblan.launcher.domain.model.LauncherAppsEvent
 import com.eblan.launcher.domain.model.LauncherAppsShortcutInfo
 import com.eblan.launcher.domain.model.ShortcutConfigActivityInfo
 import com.eblan.launcher.domain.model.ShortcutQuery
@@ -57,12 +55,8 @@ import com.eblan.launcher.framework.packagemanager.AndroidPackageManagerWrapper
 import com.eblan.launcher.framework.usermanager.AndroidUserManagerWrapper
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 import javax.inject.Inject
@@ -84,84 +78,15 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
     override val hasShortcutHostPermission
         get() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1 && launcherApps.hasShortcutHostPermission()
 
-    override val launcherAppsEvent: Flow<LauncherAppsEvent> = callbackFlow {
-        val callback = object : LauncherApps.Callback() {
-            override fun onPackageRemoved(packageName: String?, user: UserHandle?) {
-                if (packageName != null && user != null) {
-                    trySend(
-                        LauncherAppsEvent.PackageRemoved(
-                            serialNumber = userManagerWrapper.getSerialNumberForUser(userHandle = user),
-                            packageName = packageName,
-                        ),
-                    )
-                }
-            }
+    override fun registerCallback(
+        callback: LauncherApps.Callback,
+        handler: Handler,
+    ) {
+        launcherApps.registerCallback(callback, handler)
+    }
 
-            override fun onPackageAdded(packageName: String?, user: UserHandle?) {
-                if (packageName != null && user != null) {
-                    trySend(
-                        LauncherAppsEvent.PackageAdded(
-                            serialNumber = userManagerWrapper.getSerialNumberForUser(userHandle = user),
-                            packageName = packageName,
-                        ),
-                    )
-                }
-            }
-
-            override fun onPackageChanged(packageName: String?, user: UserHandle?) {
-                if (packageName != null && user != null) {
-                    trySend(
-                        LauncherAppsEvent.PackageChanged(
-                            serialNumber = userManagerWrapper.getSerialNumberForUser(userHandle = user),
-                            packageName = packageName,
-                        ),
-                    )
-                }
-            }
-
-            override fun onPackagesAvailable(
-                packageNames: Array<out String>?,
-                user: UserHandle?,
-                replacing: Boolean,
-            ) {
-                // TODO: Show installed applications
-            }
-
-            override fun onPackagesUnavailable(
-                packageNames: Array<out String>?,
-                user: UserHandle?,
-                replacing: Boolean,
-            ) {
-                // TODO: Hide installed applications
-            }
-
-            override fun onShortcutsChanged(
-                packageName: String,
-                shortcuts: MutableList<ShortcutInfo>,
-                user: UserHandle,
-            ) {
-                launch(ioDispatcher) {
-                    trySend(
-                        LauncherAppsEvent.ShortcutsChanged(
-                            serialNumber = userManagerWrapper.getSerialNumberForUser(userHandle = user),
-                            packageName = packageName,
-                            launcherAppsShortcutInfos = getShortcutsByPackageName(
-                                serialNumber = userManagerWrapper.getSerialNumberForUser(
-                                    userHandle = user,
-                                ),
-                                packageName = packageName,
-                            ),
-                        ),
-                    )
-                }
-            }
-        }
-
-        launcherApps.registerCallback(callback, Handler(Looper.getMainLooper()))
-
-        awaitClose {
-            launcherApps.unregisterCallback(callback)
-        }
+    override fun unregisterCallback(callback: LauncherApps.Callback) {
+        launcherApps.unregisterCallback(callback)
     }
 
     override suspend fun getActivityList(): List<LauncherAppsActivityInfo> = withContext(ioDispatcher) {

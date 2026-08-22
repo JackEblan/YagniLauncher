@@ -174,6 +174,10 @@ internal fun HomeRoute(
         onUpdateIsVisibleOverlay = viewModel::updateIsVisibleOverlay,
         onUpdateMoveGridItemResult = viewModel::updateMoveGridItemResult,
         onUpdateResizeGridItem = viewModel::updateResizeGridItem,
+        onPackageRemoved = viewModel::packageRemove,
+        onPackageAdded = viewModel::packageAdded,
+        onPackageChanged = viewModel::packageChanged,
+        onShortcutsChanged = viewModel::shortcutsChanged,
     )
 }
 
@@ -271,6 +275,22 @@ internal fun HomeScreen(
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
     onUpdateResizeGridItem: (GridItem) -> Unit,
+    onPackageRemoved: (
+        serialNumber: Long,
+        packageName: String,
+    ) -> Unit,
+    onPackageAdded: (
+        serialNumber: Long,
+        packageName: String,
+    ) -> Unit,
+    onPackageChanged: (
+        serialNumber: Long,
+        packageName: String,
+    ) -> Unit,
+    onShortcutsChanged: (
+        serialNumber: Long,
+        packageName: String,
+    ) -> Unit,
 ) {
     val paddingValues = WindowInsets.safeDrawing.asPaddingValues()
 
@@ -341,6 +361,10 @@ internal fun HomeScreen(
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                 onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                 onUpdateResizeGridItem = onUpdateResizeGridItem,
+                onPackageRemoved = onPackageRemoved,
+                onPackageAdded = onPackageAdded,
+                onPackageChanged = onPackageChanged,
+                onShortcutsChanged = onShortcutsChanged,
             )
         }
     }
@@ -443,6 +467,22 @@ private fun Success(
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
     onUpdateResizeGridItem: (GridItem) -> Unit,
+    onPackageRemoved: (
+        serialNumber: Long,
+        packageName: String,
+    ) -> Unit,
+    onPackageAdded: (
+        serialNumber: Long,
+        packageName: String,
+    ) -> Unit,
+    onPackageChanged: (
+        serialNumber: Long,
+        packageName: String,
+    ) -> Unit,
+    onShortcutsChanged: (
+        serialNumber: Long,
+        packageName: String,
+    ) -> Unit,
 ) {
     val activity = LocalActivity.current
 
@@ -521,6 +561,10 @@ private fun Success(
                     onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                     onUpdateResizeGridItem = onUpdateResizeGridItem,
                     onResetGrid = onResetGrid,
+                    onPackageRemoved = onPackageRemoved,
+                    onPackageAdded = onPackageAdded,
+                    onPackageChanged = onPackageChanged,
+                    onShortcutsChanged = onShortcutsChanged,
                 )
             }
 

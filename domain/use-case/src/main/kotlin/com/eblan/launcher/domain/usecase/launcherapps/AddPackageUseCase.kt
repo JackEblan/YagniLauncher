@@ -219,6 +219,8 @@ class AddPackageUseCase @Inject constructor(
             serialNumber = serialNumber,
             packageName = packageName,
         ).map {
+            currentCoroutineContext().ensureActive()
+
             it.toEblanShortcutConfig(
                 fileManager = fileManager,
                 packageManagerWrapper = packageManagerWrapper,

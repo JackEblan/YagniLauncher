@@ -23,8 +23,12 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.ServiceConnection
+import android.content.pm.LauncherApps
+import android.content.pm.ShortcutInfo
 import android.os.Build
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import android.os.UserHandle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -32,6 +36,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -39,6 +44,7 @@ import com.eblan.launcher.domain.model.ManagedProfileResult
 import com.eblan.launcher.framework.usermanager.AndroidUserManagerWrapper
 import com.eblan.launcher.service.EblanNotificationListenerService
 import com.eblan.launcher.ui.local.LocalAppWidgetHost
+import com.eblan.launcher.ui.local.LocalLauncherApps
 import com.eblan.launcher.ui.local.LocalPinItemRequest
 import kotlinx.coroutines.launch
 
@@ -50,6 +56,22 @@ internal fun LifecycleEffect(
     onStartSyncData: () -> Unit,
     onStatusBarNotificationsChange: (Map<String, Int>) -> Unit,
     onStopSyncData: () -> Unit,
+    onPackageRemoved: (
+        serialNumber: Long,
+        packageName: String,
+    ) -> Unit,
+    onPackageAdded: (
+        serialNumber: Long,
+        packageName: String,
+    ) -> Unit,
+    onPackageChanged: (
+        serialNumber: Long,
+        packageName: String,
+    ) -> Unit,
+    onShortcutsChanged: (
+        serialNumber: Long,
+        packageName: String,
+    ) -> Unit,
 ) {
     val context = LocalContext.current
 
@@ -58,6 +80,8 @@ internal fun LifecycleEffect(
     val appWidgetHost = LocalAppWidgetHost.current
 
     val pinItemRequestWrapper = LocalPinItemRequest.current
+
+    val launcherAppsWrapper = LocalLauncherApps.current
 
     DisposableEffect(
         key1 = lifecycleOwner,
@@ -70,47 +94,25 @@ internal fun LifecycleEffect(
 
         var shouldUnRegisterManagedProfileBroadcastReceiver = false
 
-        val eblanNotificationListenerServiceConnection = object : ServiceConnection {
-            override fun onServiceConnected(name: ComponentName, service: IBinder) {
-                val listener =
-                    (service as EblanNotificationListenerService.LocalBinder).getService()
+        val eblanNotificationListenerServiceConnection =
+            getEblanNotificationListenerServiceConnection(
+                lifecycleOwner = lifecycleOwner,
+                onStatusBarNotificationsChange = onStatusBarNotificationsChange,
+            )
 
-                lifecycleOwner.lifecycleScope.launch {
-                    lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                        listener.statusBarNotifications.collect {
-                            onStatusBarNotificationsChange(it)
-                        }
-                    }
-                }
-            }
+        val managedProfileBroadcastReceiver = getManagedProfileBroadcastReceiver(
+            userManagerWrapper = userManagerWrapper,
+            onStartSyncData = onStartSyncData,
+            onManagedProfileResultChange = onManagedProfileResultChange,
+        )
 
-            override fun onServiceDisconnected(name: ComponentName) {}
-        }
-
-        val managedProfileBroadcastReceiver = object : BroadcastReceiver() {
-            override fun onReceive(context: Context, intent: Intent) {
-                val userHandle = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    intent.getParcelableExtra(
-                        Intent.EXTRA_USER,
-                        UserHandle::class.java,
-                    )
-                } else {
-                    @Suppress("DEPRECATION")
-                    intent.getParcelableExtra(Intent.EXTRA_USER)
-                }
-
-                if (userHandle != null) {
-                    onStartSyncData()
-
-                    onManagedProfileResultChange(
-                        ManagedProfileResult(
-                            serialNumber = userManagerWrapper.getSerialNumberForUser(userHandle = userHandle),
-                            isQuiteModeEnabled = userManagerWrapper.isQuietModeEnabled(userHandle = userHandle),
-                        ),
-                    )
-                }
-            }
-        }
+        val launcherAppsCallback = getLauncherAppsCallback(
+            userManagerWrapper = userManagerWrapper,
+            onPackageRemoved = onPackageRemoved,
+            onPackageAdded = onPackageAdded,
+            onPackageChanged = onPackageChanged,
+            onShortcutsChanged = onShortcutsChanged,
+        )
 
         val lifecycleEventObserver = LifecycleEventObserver { lifecycleOwner, event ->
             lifecycleOwner.lifecycleScope.launch {
@@ -142,6 +144,11 @@ internal fun LifecycleEffect(
                                 Context.BIND_AUTO_CREATE,
                             )
 
+                            launcherAppsWrapper.registerCallback(
+                                callback = launcherAppsCallback,
+                                handler = Handler(Looper.getMainLooper()),
+                            )
+
                             onStartSyncData()
                         }
 
@@ -162,6 +169,8 @@ internal fun LifecycleEffect(
                                 shouldUnbindEblanNotificationListenerService = false
                             }
 
+                            launcherAppsWrapper.unregisterCallback(callback = launcherAppsCallback)
+
                             onStopSyncData()
                         }
 
@@ -178,5 +187,126 @@ internal fun LifecycleEffect(
         onDispose {
             lifecycleOwner.lifecycle.removeObserver(lifecycleEventObserver)
         }
+    }
+}
+
+private fun getEblanNotificationListenerServiceConnection(
+    lifecycleOwner: LifecycleOwner,
+    onStatusBarNotificationsChange: (Map<String, Int>) -> Unit,
+): ServiceConnection = object : ServiceConnection {
+    override fun onServiceConnected(name: ComponentName, service: IBinder) {
+        val listener =
+            (service as EblanNotificationListenerService.LocalBinder).getService()
+
+        lifecycleOwner.lifecycleScope.launch {
+            lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                listener.statusBarNotifications.collect {
+                    onStatusBarNotificationsChange(it)
+                }
+            }
+        }
+    }
+
+    override fun onServiceDisconnected(name: ComponentName) {}
+}
+
+private fun getManagedProfileBroadcastReceiver(
+    userManagerWrapper: AndroidUserManagerWrapper,
+    onStartSyncData: () -> Unit,
+    onManagedProfileResultChange: (ManagedProfileResult?) -> Unit,
+): BroadcastReceiver = object : BroadcastReceiver() {
+    override fun onReceive(context: Context, intent: Intent) {
+        val userHandle = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            intent.getParcelableExtra(
+                Intent.EXTRA_USER,
+                UserHandle::class.java,
+            )
+        } else {
+            @Suppress("DEPRECATION")
+            intent.getParcelableExtra(Intent.EXTRA_USER)
+        }
+
+        if (userHandle != null) {
+            onStartSyncData()
+
+            onManagedProfileResultChange(
+                ManagedProfileResult(
+                    serialNumber = userManagerWrapper.getSerialNumberForUser(userHandle = userHandle),
+                    isQuiteModeEnabled = userManagerWrapper.isQuietModeEnabled(userHandle = userHandle),
+                ),
+            )
+        }
+    }
+}
+
+private fun getLauncherAppsCallback(
+    userManagerWrapper: AndroidUserManagerWrapper,
+    onPackageRemoved: (
+        serialNumber: Long,
+        packageName: String,
+    ) -> Unit,
+    onPackageAdded: (
+        serialNumber: Long,
+        packageName: String,
+    ) -> Unit,
+    onPackageChanged: (
+        serialNumber: Long,
+        packageName: String,
+    ) -> Unit,
+    onShortcutsChanged: (
+        serialNumber: Long,
+        packageName: String,
+    ) -> Unit,
+): LauncherApps.Callback = object : LauncherApps.Callback() {
+    override fun onPackageRemoved(packageName: String?, user: UserHandle?) {
+        if (packageName != null && user != null) {
+            onPackageRemoved(
+                userManagerWrapper.getSerialNumberForUser(userHandle = user),
+                packageName,
+            )
+        }
+    }
+
+    override fun onPackageAdded(packageName: String?, user: UserHandle?) {
+        if (packageName != null && user != null) {
+            onPackageAdded(
+                userManagerWrapper.getSerialNumberForUser(userHandle = user),
+                packageName,
+            )
+        }
+    }
+
+    override fun onPackageChanged(packageName: String?, user: UserHandle?) {
+        if (packageName != null && user != null) {
+            onPackageChanged(
+                userManagerWrapper.getSerialNumberForUser(userHandle = user),
+                packageName,
+            )
+        }
+    }
+
+    override fun onPackagesAvailable(
+        packageNames: Array<out String>?,
+        user: UserHandle?,
+        replacing: Boolean,
+    ) {
+    }
+
+    override fun onPackagesUnavailable(
+        packageNames: Array<out String>?,
+        user: UserHandle?,
+        replacing: Boolean,
+    ) {
+    }
+
+    override fun onShortcutsChanged(
+        packageName: String,
+        shortcuts: MutableList<ShortcutInfo>,
+        user: UserHandle,
+    ) {
+        onShortcutsChanged(
+            userManagerWrapper.getSerialNumberForUser(userHandle = user),
+            packageName,
+        )
     }
 }
