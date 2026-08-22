@@ -17,8 +17,17 @@
  */
 package com.eblan.launcher.feature.home.screen.pager
 
+import android.content.BroadcastReceiver
 import android.content.ClipDescription
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
+import android.content.pm.LauncherApps
+import android.content.pm.ShortcutInfo
+import android.os.Build
+import android.os.Handler
+import android.os.Looper
+import android.os.UserHandle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalActivity
@@ -26,6 +35,8 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.draganddrop.dragAndDropTarget
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
@@ -40,15 +51,19 @@ import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
@@ -56,12 +71,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draganddrop.mimeTypes
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.core.util.Consumer
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import com.eblan.launcher.domain.model.AppDrawerSettings
 import com.eblan.launcher.domain.model.Associate
 import com.eblan.launcher.domain.model.EblanAppWidgetProviderInfo
@@ -79,6 +105,7 @@ import com.eblan.launcher.domain.model.GestureSettings
 import com.eblan.launcher.domain.model.GetEblanApplicationInfosByLabelAndTag
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.HomeSettings
+import com.eblan.launcher.domain.model.ManagedProfileResult
 import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.domain.model.PinItemRequestType
 import com.eblan.launcher.domain.model.PreviewFolder
@@ -99,11 +126,13 @@ import com.eblan.launcher.feature.home.screen.widget.WidgetScreen
 import com.eblan.launcher.feature.home.util.PAGE_INDICATOR_HEIGHT
 import com.eblan.launcher.feature.home.util.calculatePage
 import com.eblan.launcher.feature.home.util.getTextColor
+import com.eblan.launcher.framework.usermanager.AndroidUserManagerWrapper
 import com.eblan.launcher.ui.local.LocalAppWidgetHost
 import com.eblan.launcher.ui.local.LocalFileManager
 import com.eblan.launcher.ui.local.LocalIconKeyGenerator
 import com.eblan.launcher.ui.local.LocalImageSerializer
 import com.eblan.launcher.ui.local.LocalLauncherApps
+import com.eblan.launcher.ui.local.LocalPinItemRequest
 import com.eblan.launcher.ui.local.LocalUserManager
 import kotlinx.coroutines.launch
 
@@ -139,6 +168,7 @@ internal fun PagerScreen(
     gridItemSource: GridItemSource?,
     isVisibleOverlay: Boolean,
     previewFolderGridItems: Map<String, PreviewFolder>,
+    statusBarNotifications: Map<String, Int>,
     onDeleteGridItem: (GridItem) -> Unit,
     onResetGridAfterDeleteGridItem: (GridItem) -> Unit,
     onUpdateGridItemsAfterMove: (MoveGridItemResult) -> Unit,
@@ -403,6 +433,8 @@ internal fun PagerScreen(
     val currentMoveGridItemResult = rememberUpdatedState(moveGridItemResult)
     val currentFolderPopups = rememberUpdatedState(folderPopups)
 
+    val managedProfileResult by rememberManagedProfileResult()
+
     LaunchedEffect(
         key1 = pinGridItem,
         key2 = pagerScreenState,
@@ -415,12 +447,9 @@ internal fun PagerScreen(
         )
     }
 
-    LifecycleEffect(
+    SyncDataEffect(
         syncData = experimentalSettings.syncData,
-        userManagerWrapper = androidUserManagerWrapper,
-        onManagedProfileResultChange = pagerScreenState::updateManagedProfileResult,
         onStartSyncData = onStartSyncData,
-        onStatusBarNotificationsChange = pagerScreenState::updateStatusBarNotifications,
         onStopSyncData = onStopSyncData,
         onPackageRemoved = onPackageRemoved,
         onPackageAdded = onPackageAdded,
@@ -674,7 +703,7 @@ internal fun PagerScreen(
                             gridItemSettings = homeSettings.gridItemSettings,
                             hasShortcutHostPermission = hasShortcutHostPermission,
                             isScrollInProgress = gridHorizontalPagerState.isScrollInProgress,
-                            statusBarNotifications = pagerScreenState.statusBarNotifications,
+                            statusBarNotifications = statusBarNotifications,
                             textColor = textColor,
                             isVisibleOverlay = isVisibleOverlay,
                             isVisibleFolder = folderPopups.isNotEmpty(),
@@ -779,7 +808,7 @@ internal fun PagerScreen(
                                 gridItemSettings = homeSettings.gridItemSettings,
                                 hasShortcutHostPermission = hasShortcutHostPermission,
                                 isScrollInProgress = dockGridHorizontalPagerState.isScrollInProgress,
-                                statusBarNotifications = pagerScreenState.statusBarNotifications,
+                                statusBarNotifications = statusBarNotifications,
                                 textColor = textColor,
                                 isVisibleOverlay = isVisibleOverlay,
                                 isVisibleFolder = folderPopups.isNotEmpty(),
@@ -870,7 +899,7 @@ internal fun PagerScreen(
                 paddingValues = paddingValues,
                 safeDrawingHeight = safeDrawingHeight,
                 safeDrawingWidth = safeDrawingWidth,
-                statusBarNotifications = pagerScreenState.statusBarNotifications,
+                statusBarNotifications = statusBarNotifications,
                 isVisibleOverlay = isVisibleOverlay,
                 hasShortcutHostPermission = hasShortcutHostPermission,
                 moveGridItemResult = moveGridItemResult,
@@ -945,7 +974,7 @@ internal fun PagerScreen(
                 eblanShortcutInfosGroup = eblanShortcutInfosGroup,
                 getEblanApplicationInfosByLabelAndTag = getEblanApplicationInfosByLabelAndTag,
                 hasShortcutHostPermission = hasShortcutHostPermission,
-                managedProfileResult = pagerScreenState.managedProfileResult,
+                managedProfileResult = managedProfileResult,
                 paddingValues = paddingValues,
                 screenHeight = screenHeight,
                 swipeY = pagerScreenState.applicationScreenSwipeY.value,
@@ -1070,6 +1099,288 @@ internal fun PagerScreen(
             isVisibleOverlay = isVisibleOverlay,
             screenWidth = screenWidth,
             onResetOverlay = pagerScreenState::resetOverlay,
+        )
+    }
+}
+
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Composable
+private fun SharedTransitionScope.OverlayImage(
+    modifier: Modifier = Modifier,
+    overlayImageBitmap: ImageBitmap?,
+    overlayIntOffset: IntOffset?,
+    overlayIntSize: IntSize?,
+    sharedElementKey: SharedElementKey?,
+    isVisibleOverlay: Boolean,
+    screenWidth: Int,
+    onResetOverlay: () -> Unit,
+) {
+    if (overlayImageBitmap == null ||
+        sharedElementKey == null ||
+        overlayIntOffset == null ||
+        overlayIntSize == null
+    ) {
+        return
+    }
+
+    val density = LocalDensity.current
+
+    val layoutDirection = LocalLayoutDirection.current
+
+    val size = with(density) {
+        DpSize(width = overlayIntSize.width.toDp(), height = overlayIntSize.height.toDp())
+    }
+
+    LaunchedEffect(key1 = isVisibleOverlay) {
+        if (!isVisibleOverlay) {
+            onResetOverlay()
+        }
+    }
+
+    Image(
+        modifier = modifier
+            .offset {
+                when (layoutDirection) {
+                    LayoutDirection.Ltr -> overlayIntOffset
+
+                    LayoutDirection.Rtl -> IntOffset(
+                        x = screenWidth - overlayIntSize.width - overlayIntOffset.x,
+                        y = overlayIntOffset.y,
+                    )
+                }
+            }
+            .size(size)
+            .sharedElementWithCallerManagedVisibility(
+                rememberSharedContentState(key = sharedElementKey),
+                visible = isVisibleOverlay,
+            ),
+        bitmap = overlayImageBitmap,
+        contentDescription = null,
+    )
+}
+
+@Composable
+private fun SyncDataEffect(
+    syncData: Boolean,
+    onStartSyncData: () -> Unit,
+    onStopSyncData: () -> Unit,
+    onPackageRemoved: (
+        serialNumber: Long,
+        packageName: String,
+    ) -> Unit,
+    onPackageAdded: (
+        serialNumber: Long,
+        packageName: String,
+    ) -> Unit,
+    onPackageChanged: (
+        serialNumber: Long,
+        packageName: String,
+    ) -> Unit,
+    onShortcutsChanged: (
+        serialNumber: Long,
+        packageName: String,
+    ) -> Unit,
+) {
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    val appWidgetHost = LocalAppWidgetHost.current
+
+    val pinItemRequestWrapper = LocalPinItemRequest.current
+
+    val launcherAppsWrapper = LocalLauncherApps.current
+
+    val userManagerWrapper = LocalUserManager.current
+
+    DisposableEffect(
+        key1 = lifecycleOwner,
+        key2 = syncData,
+    ) {
+        val launcherAppsCallback = getLauncherAppsCallback(
+            userManagerWrapper = userManagerWrapper,
+            onPackageRemoved = onPackageRemoved,
+            onPackageAdded = onPackageAdded,
+            onPackageChanged = onPackageChanged,
+            onShortcutsChanged = onShortcutsChanged,
+        )
+
+        val lifecycleEventObserver = LifecycleEventObserver { lifecycleOwner, event ->
+            lifecycleOwner.lifecycleScope.launch {
+                when (event) {
+                    Lifecycle.Event.ON_START -> {
+                        if (syncData &&
+                            pinItemRequestWrapper.getPinItemRequest() == null
+                        ) {
+                            launcherAppsWrapper.registerCallback(
+                                callback = launcherAppsCallback,
+                                handler = Handler(Looper.getMainLooper()),
+                            )
+
+                            onStartSyncData()
+                        }
+
+                        appWidgetHost.startListening()
+                    }
+
+                    Lifecycle.Event.ON_STOP -> {
+                        if (syncData &&
+                            pinItemRequestWrapper.getPinItemRequest() == null
+                        ) {
+                            launcherAppsWrapper.unregisterCallback(callback = launcherAppsCallback)
+
+                            onStopSyncData()
+                        }
+
+                        appWidgetHost.stopListening()
+                    }
+
+                    else -> Unit
+                }
+            }
+        }
+
+        lifecycleOwner.lifecycle.addObserver(lifecycleEventObserver)
+
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(lifecycleEventObserver)
+
+            launcherAppsWrapper.unregisterCallback(callback = launcherAppsCallback)
+
+            onStopSyncData()
+
+            appWidgetHost.stopListening()
+        }
+    }
+}
+
+@Composable
+private fun rememberManagedProfileResult(): State<ManagedProfileResult?> {
+    val context = LocalContext.current
+
+    val userManagerWrapper = LocalUserManager.current
+
+    return produceState(
+        initialValue = null,
+        key1 = context,
+        key2 = userManagerWrapper,
+    ) {
+        val receiver = object : BroadcastReceiver() {
+            override fun onReceive(
+                context: Context,
+                intent: Intent,
+            ) {
+                val userHandle =
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        intent.getParcelableExtra(
+                            Intent.EXTRA_USER,
+                            UserHandle::class.java,
+                        )
+                    } else {
+                        @Suppress("DEPRECATION")
+                        intent.getParcelableExtra(Intent.EXTRA_USER)
+                    }
+
+                if (userHandle != null) {
+                    value = ManagedProfileResult(
+                        serialNumber =
+                        userManagerWrapper.getSerialNumberForUser(
+                            userHandle = userHandle,
+                        ),
+                        isQuiteModeEnabled =
+                        userManagerWrapper.isQuietModeEnabled(
+                            userHandle = userHandle,
+                        ),
+                    )
+                }
+            }
+        }
+
+        ContextCompat.registerReceiver(
+            context,
+            receiver,
+            IntentFilter().apply {
+                addAction(Intent.ACTION_MANAGED_PROFILE_AVAILABLE)
+                addAction(Intent.ACTION_MANAGED_PROFILE_UNAVAILABLE)
+                addAction(Intent.ACTION_MANAGED_PROFILE_REMOVED)
+                addAction(Intent.ACTION_MANAGED_PROFILE_ADDED)
+                addAction(Intent.ACTION_MANAGED_PROFILE_UNLOCKED)
+            },
+            ContextCompat.RECEIVER_NOT_EXPORTED,
+        )
+
+        awaitDispose {
+            context.unregisterReceiver(receiver)
+        }
+    }
+}
+
+private fun getLauncherAppsCallback(
+    userManagerWrapper: AndroidUserManagerWrapper,
+    onPackageRemoved: (
+        serialNumber: Long,
+        packageName: String,
+    ) -> Unit,
+    onPackageAdded: (
+        serialNumber: Long,
+        packageName: String,
+    ) -> Unit,
+    onPackageChanged: (
+        serialNumber: Long,
+        packageName: String,
+    ) -> Unit,
+    onShortcutsChanged: (
+        serialNumber: Long,
+        packageName: String,
+    ) -> Unit,
+): LauncherApps.Callback = object : LauncherApps.Callback() {
+    override fun onPackageRemoved(packageName: String?, user: UserHandle?) {
+        if (packageName != null && user != null) {
+            onPackageRemoved(
+                userManagerWrapper.getSerialNumberForUser(userHandle = user),
+                packageName,
+            )
+        }
+    }
+
+    override fun onPackageAdded(packageName: String?, user: UserHandle?) {
+        if (packageName != null && user != null) {
+            onPackageAdded(
+                userManagerWrapper.getSerialNumberForUser(userHandle = user),
+                packageName,
+            )
+        }
+    }
+
+    override fun onPackageChanged(packageName: String?, user: UserHandle?) {
+        if (packageName != null && user != null) {
+            onPackageChanged(
+                userManagerWrapper.getSerialNumberForUser(userHandle = user),
+                packageName,
+            )
+        }
+    }
+
+    override fun onPackagesAvailable(
+        packageNames: Array<out String>?,
+        user: UserHandle?,
+        replacing: Boolean,
+    ) {
+    }
+
+    override fun onPackagesUnavailable(
+        packageNames: Array<out String>?,
+        user: UserHandle?,
+        replacing: Boolean,
+    ) {
+    }
+
+    override fun onShortcutsChanged(
+        packageName: String,
+        shortcuts: MutableList<ShortcutInfo>,
+        user: UserHandle,
+    ) {
+        onShortcutsChanged(
+            userManagerWrapper.getSerialNumberForUser(userHandle = user),
+            packageName,
         )
     }
 }
