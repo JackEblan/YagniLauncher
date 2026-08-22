@@ -205,6 +205,22 @@ internal fun PagerScreen(
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
     onUpdateResizeGridItem: (GridItem) -> Unit,
     onResetGrid: () -> Unit,
+    onPackageRemoved: (
+        serialNumber: Long,
+        packageName: String,
+    ) -> Unit,
+    onPackageAdded: (
+        serialNumber: Long,
+        packageName: String,
+    ) -> Unit,
+    onPackageChanged: (
+        serialNumber: Long,
+        packageName: String,
+    ) -> Unit,
+    onShortcutsChanged: (
+        serialNumber: Long,
+        packageName: String,
+    ) -> Unit,
 ) {
     val layoutDirection = LocalLayoutDirection.current
 
@@ -406,6 +422,10 @@ internal fun PagerScreen(
         onStartSyncData = onStartSyncData,
         onStatusBarNotificationsChange = pagerScreenState::updateStatusBarNotifications,
         onStopSyncData = onStopSyncData,
+        onPackageRemoved = onPackageRemoved,
+        onPackageAdded = onPackageAdded,
+        onPackageChanged = onPackageChanged,
+        onShortcutsChanged = onShortcutsChanged,
     )
 
     LaunchedEffect(key1 = pagerScreenState.dragIntOffset) {

@@ -23,8 +23,12 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.ServiceConnection
+import android.content.pm.LauncherApps
+import android.content.pm.ShortcutInfo
 import android.os.Build
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import android.os.UserHandle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -32,13 +36,18 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.eblan.launcher.domain.model.ManagedProfileResult
+import com.eblan.launcher.framework.launcherapps.AndroidLauncherAppsWrapper
+import com.eblan.launcher.framework.launcherapps.PinItemRequestWrapper
 import com.eblan.launcher.framework.usermanager.AndroidUserManagerWrapper
+import com.eblan.launcher.framework.widgetmanager.AndroidAppWidgetHostWrapper
 import com.eblan.launcher.service.EblanNotificationListenerService
 import com.eblan.launcher.ui.local.LocalAppWidgetHost
+import com.eblan.launcher.ui.local.LocalLauncherApps
 import com.eblan.launcher.ui.local.LocalPinItemRequest
 import kotlinx.coroutines.launch
 
@@ -50,6 +59,22 @@ internal fun LifecycleEffect(
     onStartSyncData: () -> Unit,
     onStatusBarNotificationsChange: (Map<String, Int>) -> Unit,
     onStopSyncData: () -> Unit,
+    onPackageRemoved: (
+        serialNumber: Long,
+        packageName: String,
+    ) -> Unit,
+    onPackageAdded: (
+        serialNumber: Long,
+        packageName: String,
+    ) -> Unit,
+    onPackageChanged: (
+        serialNumber: Long,
+        packageName: String,
+    ) -> Unit,
+    onShortcutsChanged: (
+        serialNumber: Long,
+        packageName: String,
+    ) -> Unit,
 ) {
     val context = LocalContext.current
 
@@ -58,6 +83,8 @@ internal fun LifecycleEffect(
     val appWidgetHost = LocalAppWidgetHost.current
 
     val pinItemRequestWrapper = LocalPinItemRequest.current
+
+    val launcherAppsWrapper = LocalLauncherApps.current
 
     DisposableEffect(
         key1 = lifecycleOwner,
@@ -70,102 +97,68 @@ internal fun LifecycleEffect(
 
         var shouldUnRegisterManagedProfileBroadcastReceiver = false
 
-        val eblanNotificationListenerServiceConnection = object : ServiceConnection {
-            override fun onServiceConnected(name: ComponentName, service: IBinder) {
-                val listener =
-                    (service as EblanNotificationListenerService.LocalBinder).getService()
+        val eblanNotificationListenerServiceConnection =
+            getEblanNotificationListenerServiceConnection(
+                lifecycleOwner = lifecycleOwner,
+                onStatusBarNotificationsChange = onStatusBarNotificationsChange,
+            )
 
-                lifecycleOwner.lifecycleScope.launch {
-                    lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                        listener.statusBarNotifications.collect {
-                            onStatusBarNotificationsChange(it)
-                        }
-                    }
-                }
-            }
+        val managedProfileBroadcastReceiver = getManagedProfileBroadcastReceiver(
+            userManagerWrapper = userManagerWrapper,
+            onStartSyncData = onStartSyncData,
+            onManagedProfileResultChange = onManagedProfileResultChange,
+        )
 
-            override fun onServiceDisconnected(name: ComponentName) {}
-        }
-
-        val managedProfileBroadcastReceiver = object : BroadcastReceiver() {
-            override fun onReceive(context: Context, intent: Intent) {
-                val userHandle = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    intent.getParcelableExtra(
-                        Intent.EXTRA_USER,
-                        UserHandle::class.java,
-                    )
-                } else {
-                    @Suppress("DEPRECATION")
-                    intent.getParcelableExtra(Intent.EXTRA_USER)
-                }
-
-                if (userHandle != null) {
-                    onStartSyncData()
-
-                    onManagedProfileResultChange(
-                        ManagedProfileResult(
-                            serialNumber = userManagerWrapper.getSerialNumberForUser(userHandle = userHandle),
-                            isQuiteModeEnabled = userManagerWrapper.isQuietModeEnabled(userHandle = userHandle),
-                        ),
-                    )
-                }
-            }
-        }
+        val launcherAppsCallback = getLauncherAppsCallback(
+            userManagerWrapper = userManagerWrapper,
+            onPackageRemoved = onPackageRemoved,
+            onPackageAdded = onPackageAdded,
+            onPackageChanged = onPackageChanged,
+            onShortcutsChanged = onShortcutsChanged,
+        )
 
         val lifecycleEventObserver = LifecycleEventObserver { lifecycleOwner, event ->
             lifecycleOwner.lifecycleScope.launch {
                 when (event) {
                     Lifecycle.Event.ON_START -> {
-                        if (syncData && pinItemRequestWrapper.getPinItemRequest() == null) {
-                            ContextCompat.registerReceiver(
-                                context,
-                                managedProfileBroadcastReceiver,
-                                IntentFilter().apply {
-                                    addAction(Intent.ACTION_MANAGED_PROFILE_AVAILABLE)
-                                    addAction(Intent.ACTION_MANAGED_PROFILE_UNAVAILABLE)
-                                    addAction(Intent.ACTION_MANAGED_PROFILE_REMOVED)
-                                    addAction(Intent.ACTION_MANAGED_PROFILE_ADDED)
-                                    addAction(Intent.ACTION_MANAGED_PROFILE_UNLOCKED)
-                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-                                        addAction(Intent.ACTION_PROFILE_AVAILABLE)
-                                        addAction(Intent.ACTION_PROFILE_UNAVAILABLE)
-                                    }
-                                },
-                                ContextCompat.RECEIVER_NOT_EXPORTED,
-                            )
-
-                            shouldUnRegisterManagedProfileBroadcastReceiver = true
-
-                            shouldUnbindEblanNotificationListenerService = context.bindService(
-                                eblanNotificationListenerIntent,
-                                eblanNotificationListenerServiceConnection,
-                                Context.BIND_AUTO_CREATE,
-                            )
-
-                            onStartSyncData()
-                        }
-
-                        appWidgetHost.startListening()
+                        onStart(
+                            appWidgetHost = appWidgetHost,
+                            context = context,
+                            eblanNotificationListenerIntent = eblanNotificationListenerIntent,
+                            eblanNotificationListenerServiceConnection = eblanNotificationListenerServiceConnection,
+                            launcherAppsCallback = launcherAppsCallback,
+                            launcherAppsWrapper = launcherAppsWrapper,
+                            managedProfileBroadcastReceiver = managedProfileBroadcastReceiver,
+                            pinItemRequestWrapper = pinItemRequestWrapper,
+                            syncData = syncData,
+                            onStartSyncData = onStartSyncData,
+                            onUpdateShouldUnRegisterManagedProfileBroadcastReceiver = {
+                                shouldUnRegisterManagedProfileBroadcastReceiver = it
+                            },
+                            onUpdateShouldUnbindEblanNotificationListenerService = {
+                                shouldUnbindEblanNotificationListenerService = it
+                            },
+                        )
                     }
 
                     Lifecycle.Event.ON_STOP -> {
-                        if (syncData && pinItemRequestWrapper.getPinItemRequest() == null) {
-                            if (shouldUnRegisterManagedProfileBroadcastReceiver) {
-                                context.unregisterReceiver(managedProfileBroadcastReceiver)
-
-                                shouldUnRegisterManagedProfileBroadcastReceiver = false
-                            }
-
-                            if (shouldUnbindEblanNotificationListenerService) {
-                                context.unbindService(eblanNotificationListenerServiceConnection)
-
-                                shouldUnbindEblanNotificationListenerService = false
-                            }
-
-                            onStopSyncData()
-                        }
-
-                        appWidgetHost.stopListening()
+                        onStop(
+                            appWidgetHost = appWidgetHost,
+                            context = context,
+                            eblanNotificationListenerServiceConnection = eblanNotificationListenerServiceConnection,
+                            launcherAppsCallback = launcherAppsCallback,
+                            launcherAppsWrapper = launcherAppsWrapper,
+                            managedProfileBroadcastReceiver = managedProfileBroadcastReceiver,
+                            shouldUnRegisterManagedProfileBroadcastReceiver = shouldUnRegisterManagedProfileBroadcastReceiver,
+                            shouldUnbindEblanNotificationListenerService = shouldUnbindEblanNotificationListenerService,
+                            onStopSyncData = onStopSyncData,
+                            onUpdateShouldUnRegisterManagedProfileBroadcastReceiver = {
+                                shouldUnRegisterManagedProfileBroadcastReceiver = it
+                            },
+                            onUpdateShouldUnbindEblanNotificationListenerService = {
+                                shouldUnbindEblanNotificationListenerService = it
+                            },
+                        )
                     }
 
                     else -> Unit
@@ -177,6 +170,236 @@ internal fun LifecycleEffect(
 
         onDispose {
             lifecycleOwner.lifecycle.removeObserver(lifecycleEventObserver)
+
+            onStop(
+                appWidgetHost = appWidgetHost,
+                context = context,
+                eblanNotificationListenerServiceConnection = eblanNotificationListenerServiceConnection,
+                launcherAppsCallback = launcherAppsCallback,
+                launcherAppsWrapper = launcherAppsWrapper,
+                managedProfileBroadcastReceiver = managedProfileBroadcastReceiver,
+                shouldUnRegisterManagedProfileBroadcastReceiver = shouldUnRegisterManagedProfileBroadcastReceiver,
+                shouldUnbindEblanNotificationListenerService = shouldUnbindEblanNotificationListenerService,
+                onStopSyncData = onStopSyncData,
+                onUpdateShouldUnRegisterManagedProfileBroadcastReceiver = {
+                    shouldUnRegisterManagedProfileBroadcastReceiver = it
+                },
+                onUpdateShouldUnbindEblanNotificationListenerService = {
+                    shouldUnbindEblanNotificationListenerService = it
+                },
+            )
         }
     }
+}
+
+private fun getEblanNotificationListenerServiceConnection(
+    lifecycleOwner: LifecycleOwner,
+    onStatusBarNotificationsChange: (Map<String, Int>) -> Unit,
+): ServiceConnection = object : ServiceConnection {
+    override fun onServiceConnected(name: ComponentName, service: IBinder) {
+        val listener =
+            (service as EblanNotificationListenerService.LocalBinder).getService()
+
+        lifecycleOwner.lifecycleScope.launch {
+            lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                listener.statusBarNotifications.collect {
+                    onStatusBarNotificationsChange(it)
+                }
+            }
+        }
+    }
+
+    override fun onServiceDisconnected(name: ComponentName) {}
+}
+
+private fun getManagedProfileBroadcastReceiver(
+    userManagerWrapper: AndroidUserManagerWrapper,
+    onStartSyncData: () -> Unit,
+    onManagedProfileResultChange: (ManagedProfileResult?) -> Unit,
+): BroadcastReceiver = object : BroadcastReceiver() {
+    override fun onReceive(context: Context, intent: Intent) {
+        val userHandle = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            intent.getParcelableExtra(
+                Intent.EXTRA_USER,
+                UserHandle::class.java,
+            )
+        } else {
+            @Suppress("DEPRECATION")
+            intent.getParcelableExtra(Intent.EXTRA_USER)
+        }
+
+        if (userHandle != null) {
+            onStartSyncData()
+
+            onManagedProfileResultChange(
+                ManagedProfileResult(
+                    serialNumber = userManagerWrapper.getSerialNumberForUser(userHandle = userHandle),
+                    isQuiteModeEnabled = userManagerWrapper.isQuietModeEnabled(userHandle = userHandle),
+                ),
+            )
+        }
+    }
+}
+
+private fun getLauncherAppsCallback(
+    userManagerWrapper: AndroidUserManagerWrapper,
+    onPackageRemoved: (
+        serialNumber: Long,
+        packageName: String,
+    ) -> Unit,
+    onPackageAdded: (
+        serialNumber: Long,
+        packageName: String,
+    ) -> Unit,
+    onPackageChanged: (
+        serialNumber: Long,
+        packageName: String,
+    ) -> Unit,
+    onShortcutsChanged: (
+        serialNumber: Long,
+        packageName: String,
+    ) -> Unit,
+): LauncherApps.Callback = object : LauncherApps.Callback() {
+    override fun onPackageRemoved(packageName: String?, user: UserHandle?) {
+        if (packageName != null && user != null) {
+            onPackageRemoved(
+                userManagerWrapper.getSerialNumberForUser(userHandle = user),
+                packageName,
+            )
+        }
+    }
+
+    override fun onPackageAdded(packageName: String?, user: UserHandle?) {
+        if (packageName != null && user != null) {
+            onPackageAdded(
+                userManagerWrapper.getSerialNumberForUser(userHandle = user),
+                packageName,
+            )
+        }
+    }
+
+    override fun onPackageChanged(packageName: String?, user: UserHandle?) {
+        if (packageName != null && user != null) {
+            onPackageChanged(
+                userManagerWrapper.getSerialNumberForUser(userHandle = user),
+                packageName,
+            )
+        }
+    }
+
+    override fun onPackagesAvailable(
+        packageNames: Array<out String>?,
+        user: UserHandle?,
+        replacing: Boolean,
+    ) {
+    }
+
+    override fun onPackagesUnavailable(
+        packageNames: Array<out String>?,
+        user: UserHandle?,
+        replacing: Boolean,
+    ) {
+    }
+
+    override fun onShortcutsChanged(
+        packageName: String,
+        shortcuts: MutableList<ShortcutInfo>,
+        user: UserHandle,
+    ) {
+        onShortcutsChanged(
+            userManagerWrapper.getSerialNumberForUser(userHandle = user),
+            packageName,
+        )
+    }
+}
+
+private fun onStart(
+    appWidgetHost: AndroidAppWidgetHostWrapper,
+    context: Context,
+    eblanNotificationListenerIntent: Intent,
+    eblanNotificationListenerServiceConnection: ServiceConnection,
+    launcherAppsCallback: LauncherApps.Callback,
+    launcherAppsWrapper: AndroidLauncherAppsWrapper,
+    managedProfileBroadcastReceiver: BroadcastReceiver,
+    pinItemRequestWrapper: PinItemRequestWrapper,
+    syncData: Boolean,
+    onStartSyncData: () -> Unit,
+    onUpdateShouldUnRegisterManagedProfileBroadcastReceiver: (Boolean) -> Unit,
+    onUpdateShouldUnbindEblanNotificationListenerService: (Boolean) -> Unit,
+) {
+    if (
+        syncData &&
+        pinItemRequestWrapper.getPinItemRequest() == null
+    ) {
+        ContextCompat.registerReceiver(
+            context,
+            managedProfileBroadcastReceiver,
+            IntentFilter().apply {
+                addAction(Intent.ACTION_MANAGED_PROFILE_AVAILABLE)
+                addAction(Intent.ACTION_MANAGED_PROFILE_UNAVAILABLE)
+                addAction(Intent.ACTION_MANAGED_PROFILE_REMOVED)
+                addAction(Intent.ACTION_MANAGED_PROFILE_ADDED)
+                addAction(Intent.ACTION_MANAGED_PROFILE_UNLOCKED)
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+                    addAction(Intent.ACTION_PROFILE_AVAILABLE)
+                    addAction(Intent.ACTION_PROFILE_UNAVAILABLE)
+                }
+            },
+            ContextCompat.RECEIVER_NOT_EXPORTED,
+        )
+
+        onUpdateShouldUnRegisterManagedProfileBroadcastReceiver(true)
+
+        onUpdateShouldUnbindEblanNotificationListenerService(
+            context.bindService(
+                eblanNotificationListenerIntent,
+                eblanNotificationListenerServiceConnection,
+                Context.BIND_AUTO_CREATE,
+            ),
+        )
+
+        launcherAppsWrapper.registerCallback(
+            callback = launcherAppsCallback,
+            handler = Handler(Looper.getMainLooper()),
+        )
+
+        onStartSyncData()
+    }
+
+    appWidgetHost.startListening()
+}
+
+private fun onStop(
+    appWidgetHost: AndroidAppWidgetHostWrapper,
+    context: Context,
+    eblanNotificationListenerServiceConnection: ServiceConnection,
+    launcherAppsCallback: LauncherApps.Callback,
+    launcherAppsWrapper: AndroidLauncherAppsWrapper,
+    managedProfileBroadcastReceiver: BroadcastReceiver,
+    shouldUnRegisterManagedProfileBroadcastReceiver: Boolean,
+    shouldUnbindEblanNotificationListenerService: Boolean,
+    onStopSyncData: () -> Unit,
+    onUpdateShouldUnRegisterManagedProfileBroadcastReceiver: (Boolean) -> Unit,
+    onUpdateShouldUnbindEblanNotificationListenerService: (Boolean) -> Unit,
+) {
+    if (shouldUnRegisterManagedProfileBroadcastReceiver) {
+        context.unregisterReceiver(managedProfileBroadcastReceiver)
+
+        onUpdateShouldUnRegisterManagedProfileBroadcastReceiver(false)
+    }
+
+    if (shouldUnbindEblanNotificationListenerService) {
+        context.unbindService(
+            eblanNotificationListenerServiceConnection,
+        )
+
+        onUpdateShouldUnbindEblanNotificationListenerService(false)
+    }
+
+    launcherAppsWrapper.unregisterCallback(callback = launcherAppsCallback)
+
+    onStopSyncData()
+
+    appWidgetHost.stopListening()
 }

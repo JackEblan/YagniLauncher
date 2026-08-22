@@ -137,8 +137,6 @@ class RemovePackageUseCase @Inject constructor(
             val hasNoIconReference = icon != null &&
                 eblanApplicationInfoRepository.getEblanApplicationInfos()
                     .none {
-                        currentCoroutineContext().ensureActive()
-
                         it.icon == icon
                     }
 
@@ -283,8 +281,6 @@ class RemovePackageUseCase @Inject constructor(
             val hasNoIconReference = activityIcon != null &&
                 eblanShortcutConfigRepository.getEblanShortcutConfigs()
                     .none {
-                        currentCoroutineContext().ensureActive()
-
                         it.activityIcon == activityIcon
                     }
 

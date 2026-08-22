@@ -21,7 +21,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.eblan.launcher.domain.common.IconKeyGenerator
 import com.eblan.launcher.domain.framework.FileManager
-import com.eblan.launcher.domain.framework.LauncherAppsWrapper
 import com.eblan.launcher.domain.framework.PackageManagerWrapper
 import com.eblan.launcher.domain.model.AppDrawerSettings
 import com.eblan.launcher.domain.model.Associate
@@ -31,7 +30,6 @@ import com.eblan.launcher.domain.model.FolderPopupEntry
 import com.eblan.launcher.domain.model.GetEblanApplicationInfosByLabelAndTag
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData.ShortcutInfo
-import com.eblan.launcher.domain.model.LauncherAppsEvent
 import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.domain.model.PageItem
 import com.eblan.launcher.domain.model.PinItemRequestType
@@ -99,7 +97,6 @@ internal class HomeViewModel @Inject constructor(
     private val gridRepository: GridRepository,
     eblanApplicationInfoTagRepository: EblanApplicationInfoTagRepository,
     private val syncDataUseCase: SyncDataUseCase,
-    private val launcherAppsWrapper: LauncherAppsWrapper,
     private val addPackageUseCase: AddPackageUseCase,
     private val removePackageUseCase: RemovePackageUseCase,
     private val changePackageUseCase: ChangePackageUseCase,
@@ -201,8 +198,10 @@ internal class HomeViewModel @Inject constructor(
         )
 
     private var syncDataJob: Job? = null
-
-    private var launcherAppsEventJob: Job? = null
+    private var packageRemovedJob: Job? = null
+    private var packageAddedJob: Job? = null
+    private var packageChangedJob: Job? = null
+    private var shortcutsChangedJob: Job? = null
 
     private val _folderPopupEntries = MutableStateFlow<List<FolderPopupEntry>>(emptyList())
 
@@ -501,51 +500,20 @@ internal class HomeViewModel @Inject constructor(
         syncDataJob = viewModelScope.launch {
             syncDataUseCase()
         }
-
-        launcherAppsEventJob = viewModelScope.launch {
-            launcherAppsWrapper.launcherAppsEvent.collect { launcherAppsEvent ->
-                when (launcherAppsEvent) {
-                    is LauncherAppsEvent.PackageAdded -> {
-                        addPackageUseCase(
-                            serialNumber = launcherAppsEvent.serialNumber,
-                            packageName = launcherAppsEvent.packageName,
-                        )
-                    }
-
-                    is LauncherAppsEvent.PackageChanged -> {
-                        changePackageUseCase(
-                            serialNumber = launcherAppsEvent.serialNumber,
-                            packageName = launcherAppsEvent.packageName,
-                        )
-                    }
-
-                    is LauncherAppsEvent.PackageRemoved -> {
-                        removePackageUseCase(
-                            serialNumber = launcherAppsEvent.serialNumber,
-                            packageName = launcherAppsEvent.packageName,
-                        )
-                    }
-
-                    is LauncherAppsEvent.ShortcutsChanged -> {
-                        changeShortcutsUseCase(
-                            serialNumber = launcherAppsEvent.serialNumber,
-                            packageName = launcherAppsEvent.packageName,
-                            launcherAppsShortcutInfos = launcherAppsEvent.launcherAppsShortcutInfos,
-                        )
-                    }
-                }
-            }
-        }
     }
 
     fun stopSyncData() {
         syncDataJob?.cancel()
-
-        launcherAppsEventJob?.cancel()
+        packageRemovedJob?.cancel()
+        packageAddedJob?.cancel()
+        packageChangedJob?.cancel()
+        shortcutsChangedJob?.cancel()
 
         syncDataJob = null
-
-        launcherAppsEventJob = null
+        packageRemovedJob = null
+        packageAddedJob = null
+        packageChangedJob = null
+        shortcutsChangedJob = null
     }
 
     fun updateAppDrawerSettings(appDrawerSettings: AppDrawerSettings) {
@@ -694,6 +662,62 @@ internal class HomeViewModel @Inject constructor(
     fun deleteFolderPopupEntry(folderPopupEntry: FolderPopupEntry) {
         _folderPopupEntries.update { folderPopupEntries ->
             folderPopupEntries.filterNot { it.id == folderPopupEntry.id }
+        }
+    }
+
+    fun packageRemove(
+        serialNumber: Long,
+        packageName: String,
+    ) {
+        packageRemovedJob?.cancel()
+
+        packageRemovedJob = viewModelScope.launch {
+            removePackageUseCase(
+                serialNumber = serialNumber,
+                packageName = packageName,
+            )
+        }
+    }
+
+    fun packageAdded(
+        serialNumber: Long,
+        packageName: String,
+    ) {
+        packageAddedJob?.cancel()
+
+        packageAddedJob = viewModelScope.launch {
+            addPackageUseCase(
+                serialNumber = serialNumber,
+                packageName = packageName,
+            )
+        }
+    }
+
+    fun packageChanged(
+        serialNumber: Long,
+        packageName: String,
+    ) {
+        packageChangedJob?.cancel()
+
+        packageChangedJob = viewModelScope.launch {
+            changePackageUseCase(
+                serialNumber = serialNumber,
+                packageName = packageName,
+            )
+        }
+    }
+
+    fun shortcutsChanged(
+        serialNumber: Long,
+        packageName: String,
+    ) {
+        shortcutsChangedJob?.cancel()
+
+        shortcutsChangedJob = viewModelScope.launch {
+            changeShortcutsUseCase(
+                serialNumber = serialNumber,
+                packageName = packageName,
+            )
         }
     }
 }

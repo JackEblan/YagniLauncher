@@ -21,15 +21,11 @@ import com.eblan.launcher.domain.model.EblanUser
 import com.eblan.launcher.domain.model.FastLauncherAppsActivityInfo
 import com.eblan.launcher.domain.model.FastLauncherAppsShortcutInfo
 import com.eblan.launcher.domain.model.LauncherAppsActivityInfo
-import com.eblan.launcher.domain.model.LauncherAppsEvent
 import com.eblan.launcher.domain.model.LauncherAppsShortcutInfo
 import com.eblan.launcher.domain.model.ShortcutConfigActivityInfo
 import com.eblan.launcher.domain.model.ShortcutQuery
-import kotlinx.coroutines.flow.Flow
 
 interface LauncherAppsWrapper {
-    val launcherAppsEvent: Flow<LauncherAppsEvent>
-
     val hasShortcutHostPermission: Boolean
 
     suspend fun getActivityList(): List<LauncherAppsActivityInfo>
