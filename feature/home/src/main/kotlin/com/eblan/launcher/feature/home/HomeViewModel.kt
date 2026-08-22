@@ -669,6 +669,8 @@ internal class HomeViewModel @Inject constructor(
         serialNumber: Long,
         packageName: String,
     ) {
+        packageRemovedJob?.cancel()
+
         packageRemovedJob = viewModelScope.launch {
             removePackageUseCase(
                 serialNumber = serialNumber,
@@ -681,6 +683,8 @@ internal class HomeViewModel @Inject constructor(
         serialNumber: Long,
         packageName: String,
     ) {
+        packageAddedJob?.cancel()
+
         packageAddedJob = viewModelScope.launch {
             addPackageUseCase(
                 serialNumber = serialNumber,
@@ -693,6 +697,8 @@ internal class HomeViewModel @Inject constructor(
         serialNumber: Long,
         packageName: String,
     ) {
+        packageChangedJob?.cancel()
+
         packageChangedJob = viewModelScope.launch {
             changePackageUseCase(
                 serialNumber = serialNumber,
@@ -705,6 +711,8 @@ internal class HomeViewModel @Inject constructor(
         serialNumber: Long,
         packageName: String,
     ) {
+        shortcutsChangedJob?.cancel()
+
         shortcutsChangedJob = viewModelScope.launch {
             changeShortcutsUseCase(
                 serialNumber = serialNumber,

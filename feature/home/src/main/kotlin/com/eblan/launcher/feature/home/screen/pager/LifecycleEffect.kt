@@ -186,6 +186,14 @@ internal fun LifecycleEffect(
 
         onDispose {
             lifecycleOwner.lifecycle.removeObserver(lifecycleEventObserver)
+
+            if (syncData && pinItemRequestWrapper.getPinItemRequest() == null) {
+                launcherAppsWrapper.unregisterCallback(callback = launcherAppsCallback)
+
+                onStopSyncData()
+            }
+
+            appWidgetHost.stopListening()
         }
     }
 }
