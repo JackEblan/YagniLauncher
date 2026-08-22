@@ -68,10 +68,6 @@ class ChangePackageUseCase @Inject constructor(
         packageName: String,
     ) {
         withContext(ioDispatcher) {
-            val userData = userDataRepository.userDataFlow.first()
-
-            if (!userData.experimentalSettings.syncData) return@withContext
-
             updateEblanApplicationInfo(
                 packageName = packageName,
                 serialNumber = serialNumber,

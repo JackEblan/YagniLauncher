@@ -26,16 +26,13 @@ import com.eblan.launcher.domain.framework.PackageManagerWrapper
 import com.eblan.launcher.domain.model.LauncherAppsShortcutInfo
 import com.eblan.launcher.domain.repository.EblanShortcutInfoRepository
 import com.eblan.launcher.domain.repository.ShortcutInfoGridItemRepository
-import com.eblan.launcher.domain.repository.UserDataRepository
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class ChangeShortcutsUseCase @Inject constructor(
     private val eblanShortcutInfoRepository: EblanShortcutInfoRepository,
     private val launcherAppsWrapper: LauncherAppsWrapper,
-    private val userDataRepository: UserDataRepository,
     private val shortcutInfoGridItemRepository: ShortcutInfoGridItemRepository,
     private val fileManager: FileManager,
     private val packageManagerWrapper: PackageManagerWrapper,
@@ -47,17 +44,11 @@ class ChangeShortcutsUseCase @Inject constructor(
         packageName: String,
         launcherAppsShortcutInfos: List<LauncherAppsShortcutInfo>?,
     ) {
-        if (!launcherAppsWrapper.hasShortcutHostPermission) {
+        if (!launcherAppsWrapper.hasShortcutHostPermission || launcherAppsShortcutInfos === null) {
             return
         }
 
         withContext(ioDispatcher) {
-            if (!userDataRepository.userDataFlow.first().experimentalSettings.syncData ||
-                launcherAppsShortcutInfos === null
-            ) {
-                return@withContext
-            }
-
             val oldEblanShortcutInfos = eblanShortcutInfoRepository.getEblanShortcutInfos(
                 serialNumber = serialNumber,
                 packageName = packageName,

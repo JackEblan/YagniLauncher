@@ -59,8 +59,6 @@ class RemovePackageUseCase @Inject constructor(
         packageName: String,
     ) {
         withContext(ioDispatcher) {
-            if (!userDataRepository.userDataFlow.first().experimentalSettings.syncData) return@withContext
-
             deleteEblanApplicationInfoFiles(
                 packageName = packageName,
                 serialNumber = serialNumber,

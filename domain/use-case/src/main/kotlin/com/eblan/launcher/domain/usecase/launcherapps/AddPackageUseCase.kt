@@ -73,8 +73,6 @@ class AddPackageUseCase @Inject constructor(
         withContext(ioDispatcher) {
             val userData = userDataRepository.userDataFlow.first()
 
-            if (!userData.experimentalSettings.syncData) return@withContext
-
             val newApplicationInfoGridItems = mutableListOf<ApplicationInfoGridItem>()
 
             val launcherAppsActivityInfosByPackageName = launcherAppsWrapper.getActivityList(
