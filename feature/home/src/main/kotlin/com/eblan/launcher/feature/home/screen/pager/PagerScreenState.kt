@@ -21,7 +21,6 @@ import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.LauncherApps.PinItemRequest
-import android.graphics.Rect
 import android.os.Build
 import android.os.IBinder
 import androidx.activity.result.ActivityResult
@@ -68,7 +67,6 @@ import com.eblan.launcher.domain.model.ExperimentalSettings
 import com.eblan.launcher.domain.model.GestureSettings
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.HomeSettings
-import com.eblan.launcher.domain.model.ManagedProfileResult
 import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.domain.model.PinItemRequestType
 import com.eblan.launcher.feature.home.model.Drag
@@ -185,12 +183,6 @@ internal class PagerScreenState(
         private set
 
     var sharedElementKey by mutableStateOf<SharedElementKey?>(null)
-        private set
-
-    var managedProfileResult by mutableStateOf<ManagedProfileResult?>(null)
-        private set
-
-    var statusBarNotifications by mutableStateOf<Map<String, Int>>(emptyMap())
         private set
 
     var associate by mutableStateOf<Associate?>(null)
@@ -667,14 +659,6 @@ internal class PagerScreenState(
 
     fun updateSharedElementKey(value: SharedElementKey?) {
         sharedElementKey = value
-    }
-
-    fun updateManagedProfileResult(value: ManagedProfileResult?) {
-        managedProfileResult = value
-    }
-
-    fun updateStatusBarNotifications(value: Map<String, Int>) {
-        statusBarNotifications = value
     }
 
     fun verticalDragStart() {

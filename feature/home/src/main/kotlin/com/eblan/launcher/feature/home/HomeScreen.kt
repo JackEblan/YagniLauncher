@@ -18,8 +18,13 @@
 package com.eblan.launcher.feature.home
 
 import android.Manifest
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
 import android.content.pm.ActivityInfo
 import android.os.Build
+import android.os.IBinder
 import androidx.activity.compose.LocalActivity
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalSharedTransitionApi
@@ -31,16 +36,23 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntSize
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.eblan.launcher.domain.model.AppDrawerSettings
 import com.eblan.launcher.domain.model.Associate
 import com.eblan.launcher.domain.model.EblanAppWidgetProviderInfo
@@ -69,8 +81,10 @@ import com.eblan.launcher.feature.home.screen.editpage.EditDockGridPageScreen
 import com.eblan.launcher.feature.home.screen.editpage.EditGridPageScreen
 import com.eblan.launcher.feature.home.screen.loading.LoadingScreen
 import com.eblan.launcher.feature.home.screen.pager.PagerScreen
+import com.eblan.launcher.service.EblanNotificationListenerService
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import kotlinx.coroutines.launch
 
 @Composable
 internal fun HomeRoute(
@@ -486,6 +500,8 @@ private fun Success(
 ) {
     val activity = LocalActivity.current
 
+    val statusBarNotifications by rememberStatusBarNotifications()
+
     LaunchedEffect(key1 = homeData.userData.homeSettings.lockScreenOrientation) {
         if (homeData.userData.homeSettings.lockScreenOrientation) {
             activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LOCKED
@@ -527,6 +543,7 @@ private fun Success(
                     gridItemSource = gridItemSource,
                     isVisibleOverlay = isVisibleOverlay,
                     previewFolderGridItems = previewFolderGridItems,
+                    statusBarNotifications = statusBarNotifications,
                     onDeleteGridItem = onDeleteGridItem,
                     onResetGridAfterDeleteGridItem = onResetGridAfterDeleteGridItem,
                     onUpdateGridItemsAfterMove = onUpdateGridItemsAfterMove,
@@ -580,6 +597,7 @@ private fun Success(
                     screenHeight = screenHeight,
                     textColor = textColor,
                     previewFolderGridItems = previewFolderGridItems,
+                    statusBarNotifications = statusBarNotifications,
                     onSaveEditPage = onSaveEditPage,
                     onUpdateScreen = onUpdateScreen,
                 )
@@ -593,6 +611,7 @@ private fun Success(
                     paddingValues = paddingValues,
                     textColor = textColor,
                     previewFolderGridItems = previewFolderGridItems,
+                    statusBarNotifications = statusBarNotifications,
                     onSaveEditPage = onSaveEditPage,
                     onUpdateScreen = onUpdateScreen,
                 )
@@ -640,5 +659,51 @@ private fun RequestPermissionsEffect(modifier: Modifier = Modifier) {
                 showTextDialog = false
             },
         )
+    }
+}
+
+@Composable
+private fun rememberStatusBarNotifications(): State<Map<String, Int>> {
+    val context = LocalContext.current
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    return produceState(
+        initialValue = emptyMap(),
+        key1 = context,
+        key2 = lifecycleOwner,
+    ) {
+        val serviceConnection = object : ServiceConnection {
+            override fun onServiceConnected(
+                name: ComponentName,
+                service: IBinder,
+            ) {
+                val listener =
+                    (service as EblanNotificationListenerService.LocalBinder).getService()
+
+                lifecycleOwner.lifecycleScope.launch {
+                    lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                        listener.statusBarNotifications.collect {
+                            value = it
+                        }
+                    }
+                }
+            }
+
+            override fun onServiceDisconnected(name: ComponentName) = Unit
+        }
+
+        context.bindService(
+            Intent(
+                context,
+                EblanNotificationListenerService::class.java,
+            ),
+            serviceConnection,
+            Context.BIND_AUTO_CREATE,
+        )
+
+        awaitDispose {
+            context.unbindService(serviceConnection)
+        }
     }
 }
