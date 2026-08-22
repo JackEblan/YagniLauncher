@@ -51,7 +51,6 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.eblan.launcher.domain.model.AppDrawerSettings
 import com.eblan.launcher.domain.model.Associate
@@ -681,7 +680,7 @@ private fun rememberStatusBarNotifications(): State<Map<String, Int>> {
                 val listener =
                     (service as EblanNotificationListenerService.LocalBinder).getService()
 
-                lifecycleOwner.lifecycleScope.launch {
+                launch {
                     lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                         listener.statusBarNotifications.collect {
                             value = it

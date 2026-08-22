@@ -1243,6 +1243,8 @@ private fun SyncDataEffect(
         onDispose {
             lifecycleOwner.lifecycle.removeObserver(lifecycleEventObserver)
 
+            launcherAppsWrapper.unregisterCallback(callback = launcherAppsCallback)
+
             onStopSyncData()
 
             appWidgetHost.stopListening()
