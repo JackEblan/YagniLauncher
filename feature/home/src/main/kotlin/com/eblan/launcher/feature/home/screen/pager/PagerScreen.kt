@@ -128,6 +128,7 @@ import com.eblan.launcher.feature.home.util.calculatePage
 import com.eblan.launcher.feature.home.util.getTextColor
 import com.eblan.launcher.framework.usermanager.AndroidUserManagerWrapper
 import com.eblan.launcher.ui.local.LocalAppWidgetHost
+import com.eblan.launcher.ui.local.LocalAppWidgetManager
 import com.eblan.launcher.ui.local.LocalFileManager
 import com.eblan.launcher.ui.local.LocalIconKeyGenerator
 import com.eblan.launcher.ui.local.LocalImageSerializer
@@ -262,9 +263,13 @@ internal fun PagerScreen(
 
     val density = LocalDensity.current
 
+    val context = LocalContext.current
+
     val androidUserManagerWrapper = LocalUserManager.current
 
     val androidImageSerializer = LocalImageSerializer.current
+
+    val androidAppWidgetManagerWrapper = LocalAppWidgetManager.current
 
     val fileManager = LocalFileManager.current
 
@@ -278,7 +283,6 @@ internal fun PagerScreen(
         gestureSettings = gestureSettings,
         homeSettings = homeSettings,
         screenHeight = screenHeight,
-        screenWidth = screenWidth,
         experimentalSettings = experimentalSettings,
         onGetPinGridItem = onGetPinGridItem,
         onResetPinGridItem = onResetPinGridItem,
@@ -325,14 +329,20 @@ internal fun PagerScreen(
     val appWidgetLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
     ) {
-        pagerScreenState.handleAppWidgetLauncherResult(
+        handleAppWidgetLauncherResult(
+            androidAppWidgetManagerWrapper = androidAppWidgetManagerWrapper,
             moveGridItemResult = moveGridItemResult,
             result = it,
+            columns = homeSettings.columns,
             density = density,
+            rows = homeSettings.rows,
             screenWidth = screenWidth,
             screenHeight = screenHeight,
             paddingValues = paddingValues,
             layoutDirection = layoutDirection,
+            dockHeight = homeSettings.dockHeight,
+            onUpdateDeleteAppWidgetId = pagerScreenState::updateDeleteAppWidgetId,
+            onUpdateWidgetGridItem = pagerScreenState::updateWidgetGridItem,
         )
     }
 
@@ -457,57 +467,96 @@ internal fun PagerScreen(
         onShortcutsChanged = onShortcutsChanged,
     )
 
-    LaunchedEffect(key1 = pagerScreenState.dragIntOffset) {
-        pagerScreenState.handleDragGridItemEffect(
+    LaunchedEffect(
+        key1 = pagerScreenState.dragIntOffset,
+        key2 = pagerScreenState,
+    ) {
+        handleDragGridItem(
+            columns = homeSettings.columns,
             gridCurrentPage = gridCurrentPage,
             dockGridCurrentPage = dockGridCurrentPage,
             density = density,
+            dockColumns = homeSettings.dockColumns,
+            dockHeight = homeSettings.dockHeight,
+            dockRows = homeSettings.dockRows,
+            drag = pagerScreenState.drag,
+            dragIntOffset = pagerScreenState.dragIntOffset,
+            gridItemSource = currentGridItemSource,
+            isDragging = pagerScreenState.isDragging,
+            isVisibleOverlay = currentIsVisibleOverlay,
             isGridScrollInProgress = gridHorizontalPagerState.isScrollInProgress,
             isDockScrollInProgress = dockGridHorizontalPagerState.isScrollInProgress,
             lockMovement = lockMovement,
             paddingValues = paddingValues,
-            gridItemSource = currentGridItemSource,
-            isVisibleOverlay = currentIsVisibleOverlay,
+            rows = homeSettings.rows,
+            screenHeight = screenHeight,
+            screenWidth = screenWidth,
             moveGridItemResult = currentMoveGridItemResult,
             layoutDirection = layoutDirection,
             onMoveGridItem = onMoveGridItem,
+            onUpdateAssociate = pagerScreenState::updateAssociate,
+            onUpdateSharedElementKey = pagerScreenState::updateSharedElementKey,
         )
     }
 
-    LaunchedEffect(key1 = pagerScreenState.drag) {
-        pagerScreenState.handleDropGridItemEffect(
-            moveGridItemResult = currentMoveGridItemResult,
-            onLaunchShortcutConfigIntent = shortcutConfigLauncher::launch,
-            onLaunchShortcutConfigIntentSenderRequest = shortcutConfigIntentSenderLauncher::launch,
-            onLaunchWidgetIntent = appWidgetLauncher::launch,
+    LaunchedEffect(
+        key1 = pagerScreenState.drag,
+        key2 = pagerScreenState,
+    ) {
+        handleDropGridItem(
+            androidAppWidgetHostWrapper = androidAppWidgetHostWrapper,
+            androidAppWidgetManagerWrapper = androidAppWidgetManagerWrapper,
+            androidLauncherAppsWrapper = androidLauncherAppsWrapper,
+            androidUserManagerWrapper = androidUserManagerWrapper,
+            context = context,
+            drag = pagerScreenState.drag,
             gridItemSource = currentGridItemSource,
+            isDragging = pagerScreenState.isDragging,
             isVisibleOverlay = currentIsVisibleOverlay,
+            moveGridItemResult = currentMoveGridItemResult,
+            lockMovement = experimentalSettings.lockMovement,
+            columns = homeSettings.columns,
+            density = density,
+            rows = homeSettings.rows,
             paddingValues = paddingValues,
             screenHeight = screenHeight,
             screenWidth = screenWidth,
+            dockHeight = homeSettings.dockHeight,
             layoutDirection = layoutDirection,
-            density = density,
-            onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
             onResetGridAfterDeleteGridItem = onResetGridAfterDeleteGridItem,
             onResetGrid = onResetGrid,
             onUpdateGridItemsAfterMove = onUpdateGridItemsAfterMove,
+            onLaunchShortcutConfigIntent = shortcutConfigLauncher::launch,
+            onLaunchShortcutConfigIntentSenderRequest = shortcutConfigIntentSenderLauncher::launch,
+            onLaunchWidgetIntent = appWidgetLauncher::launch,
+            onUpdateAppWidgetId = pagerScreenState::updateLastAppWidgetId,
+            onUpdateIsDragging = pagerScreenState::updateIsDragging,
+            onUpdateWidgetGridItem = pagerScreenState::updateWidgetGridItem,
+            onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
         )
     }
 
-    LaunchedEffect(key1 = pagerScreenState.deleteAppWidgetId) {
-        pagerScreenState.handleDeleteAppWidgetIdEffect(
-            moveGridItemResult = moveGridItemResult,
+    LaunchedEffect(
+        key1 = pagerScreenState.deleteAppWidgetId,
+        key2 = pagerScreenState,
+    ) {
+        handleDeleteAppWidgetId(
+            appWidgetId = pagerScreenState.lastAppWidgetId,
+            deleteAppWidgetId = pagerScreenState.deleteAppWidgetId,
+            moveGridItemResult = currentMoveGridItemResult,
             onResetGridAfterDeleteGridItem = onResetGridAfterDeleteGridItem,
+            onUpdateLastAppWidgetId = pagerScreenState::updateLastAppWidgetId,
+            onUpdateDeleteAppWidgetId = pagerScreenState::updateDeleteAppWidgetId,
         )
     }
 
-    LaunchedEffect(key1 = pagerScreenState.updatedWidgetGridItem) {
+    LaunchedEffect(key1 = pagerScreenState.widgetGridItem) {
         handleBoundWidgetEffect(
             activity = activity,
             androidAppWidgetHostWrapper = androidAppWidgetHostWrapper,
-            gridItemSource = gridItemSource,
-            moveGridItemResult = moveGridItemResult,
-            updatedWidgetGridItem = pagerScreenState.updatedWidgetGridItem,
+            gridItemSource = currentGridItemSource,
+            moveGridItemResult = currentMoveGridItemResult,
+            widgetGridItem = pagerScreenState.widgetGridItem,
             onDeleteGridItem = onResetGridAfterDeleteGridItem,
             onUpdateGridItemsAfterMove = onUpdateGridItemsAfterMove,
             onResetGrid = onResetGrid,
@@ -521,23 +570,32 @@ internal fun PagerScreen(
         )
     }
 
-    LaunchedEffect(key1 = pagerScreenState.dragIntOffset) {
-        pagerScreenState.handleAnimateScrollToPageEffect(
+    LaunchedEffect(
+        key1 = pagerScreenState.dragIntOffset,
+        key2 = pagerScreenState,
+    ) {
+        handleAnimateScrollToPage(
+            associate = pagerScreenState.associate,
             density = density,
-            paddingValues = paddingValues,
+            dragIntOffset = pagerScreenState.dragIntOffset,
             gridItemSource = currentGridItemSource,
+            isDragging = pagerScreenState.isDragging,
+            paddingValues = paddingValues,
+            screenWidth = screenWidth,
             layoutDirection = layoutDirection,
+            onUpdateDockPageDirection = pagerScreenState::updateDockPageDirection,
+            onUpdateGridPageDirection = pagerScreenState::updateGridPageDirection,
         )
     }
 
     LaunchedEffect(
         key1 = configureResultCode,
-        key2 = pagerScreenState.updatedWidgetGridItem,
+        key2 = pagerScreenState.widgetGridItem,
     ) {
         handleConfigureLauncherResultEffect(
-            moveGridItemResult = moveGridItemResult,
+            moveGridItemResult = currentMoveGridItemResult,
             resultCode = configureResultCode,
-            updatedGridItem = pagerScreenState.updatedWidgetGridItem,
+            widgetGridItem = pagerScreenState.widgetGridItem,
             onDeleteGridItem = onDeleteGridItem,
             onUpdateGridItemsAfterMove = onUpdateGridItemsAfterMove,
             onResetConfigureResultCode = onResetConfigureResultCode,
