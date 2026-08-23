@@ -166,17 +166,6 @@ internal fun InteractiveGridItem(
 
     val isVisibleWhiteBox = hasInteraction && drag == Drag.Dragging
 
-    val sourceBounds = getSourceBounds(
-        startColumn = gridItem.startColumn,
-        startRow = gridItem.startRow,
-        columnSpan = gridItem.columnSpan,
-        rowSpan = gridItem.rowSpan,
-        cellWidth = cellWidth,
-        cellHeight = cellHeight,
-        leftPadding = leftPadding,
-        topOffset = topOffset,
-    )
-
     LaunchedEffect(
         key1 = drag,
         key2 = hasInteraction,
@@ -190,6 +179,24 @@ internal fun InteractiveGridItem(
 
             onUpdateIsCloseGridItemPopup(true)
         }
+    }
+
+    fun getSourceBounds(): Rect {
+        val x = gridItem.startColumn * cellWidth
+        val y = gridItem.startRow * cellHeight
+
+        val width = gridItem.columnSpan * cellWidth
+        val height = gridItem.rowSpan * cellHeight
+
+        val left = x + leftPadding
+        val top = y + topOffset
+
+        return Rect(
+            left,
+            top,
+            left + width,
+            top + height,
+        )
     }
 
     when (val data = gridItem.data) {
@@ -208,7 +215,7 @@ internal fun InteractiveGridItem(
                 textColor = currentTextColor,
                 hasInteraction = hasInteraction,
                 isVisibleWhiteBox = isVisibleWhiteBox,
-                sourceBounds = sourceBounds,
+                sourceBounds = getSourceBounds(),
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
                 onUpdateGridItemSource = onUpdateGridItemSource,
@@ -257,7 +264,7 @@ internal fun InteractiveGridItem(
                 textColor = currentTextColor,
                 hasInteraction = hasInteraction,
                 isVisibleWhiteBox = isVisibleWhiteBox,
-                sourceBounds = sourceBounds,
+                sourceBounds = getSourceBounds(),
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
                 onUpdateGridItemSource = onUpdateGridItemSource,
@@ -328,36 +335,6 @@ internal fun InteractiveGridItem(
             )
         }
     }
-}
-
-private fun getSourceBounds(
-    startColumn: Int,
-    startRow: Int,
-    columnSpan: Int,
-    rowSpan: Int,
-    cellWidth: Int,
-    cellHeight: Int,
-    leftPadding: Int,
-    topOffset: Int,
-): Rect {
-    val x = startColumn * cellWidth
-
-    val y = startRow * cellHeight
-
-    val width = columnSpan * cellWidth
-
-    val height = rowSpan * cellHeight
-
-    val left = x + leftPadding
-
-    val top = y + topOffset
-
-    return Rect(
-        left,
-        top,
-        left + width,
-        top + height,
-    )
 }
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -1106,7 +1083,8 @@ private fun InteractiveFolderGridItem(
                 }
 
                 drawLayer(graphicsLayer)
-            }.alpha(alpha)
+            }
+            .alpha(alpha)
 
         if (data.icon != null) {
             AsyncImage(
@@ -1325,7 +1303,8 @@ private fun InteractiveShortcutConfigGridItem(
                     }
 
                     drawLayer(graphicsLayer)
-                }.alpha(alpha),
+                }
+                .alpha(alpha),
         )
 
         if (gridItemSettings.showLabel) {

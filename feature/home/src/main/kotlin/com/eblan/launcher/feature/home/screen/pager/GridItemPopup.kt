@@ -146,15 +146,14 @@ internal fun GridItemPopup(
     }
 
     fun getSourceBounds(): Rect {
-        val sourceBoundsX = popupIntOffset.x + leftPadding
-
-        val sourceBoundsY = popupIntOffset.y + topPadding
+        val left = popupIntOffset.x + leftPadding
+        val top = popupIntOffset.y + topPadding
 
         return Rect(
-            sourceBoundsX,
-            sourceBoundsY,
-            sourceBoundsX + popupIntSize.width,
-            sourceBoundsY + popupIntSize.height,
+            left,
+            top,
+            left + popupIntSize.width,
+            top + popupIntSize.height,
         )
     }
 

@@ -458,37 +458,37 @@ internal suspend fun handleShortcutConfigLauncherResult(
 
     val name = result.data?.getStringExtra(Intent.EXTRA_SHORTCUT_NAME)
 
-    val icon = result.data?.let { intent ->
+    val icon = result.data?.let {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            intent.getParcelableExtra(
+            it.getParcelableExtra(
                 Intent.EXTRA_SHORTCUT_ICON,
                 Bitmap::class.java,
             )
         } else {
-            intent.getParcelableExtra(Intent.EXTRA_SHORTCUT_ICON)
+            it.getParcelableExtra(Intent.EXTRA_SHORTCUT_ICON)
         }
     }?.let { bitmap ->
         androidImageSerializer.createByteArray(bitmap = bitmap)
     }
 
-    val shortcutIntentUri = result.data?.let { intent ->
+    val shortcutIntentUri = result.data?.let {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            intent.getParcelableExtra(
+            it.getParcelableExtra(
                 Intent.EXTRA_SHORTCUT_INTENT,
                 Intent::class.java,
             )
         } else {
-            intent.getParcelableExtra(Intent.EXTRA_SHORTCUT_INTENT)
+            it.getParcelableExtra(Intent.EXTRA_SHORTCUT_INTENT)
         }
     }?.toUri(Intent.URI_INTENT_SCHEME)
 
     val movingData = movingGridItem.data as GridItemData.ShortcutConfig
 
-    val shortcutIntentIcon = icon?.let { currentByteArray ->
+    val shortcutIntentIcon = icon?.let {
         fileManager.updateAndGetFilePath(
             fileManager.getFilesDirectory(FileManager.SHORTCUT_INTENT_ICONS_DIR),
             movingGridItem.id,
-            currentByteArray,
+            it,
         )
     }
 
@@ -530,14 +530,14 @@ internal suspend fun handleShortcutConfigIntentSenderLauncherResult(
         return
     }
 
-    val pinItemRequest = result.data?.let { intent ->
+    val pinItemRequest = result.data?.let {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            intent.getParcelableExtra(
+            it.getParcelableExtra(
                 LauncherApps.EXTRA_PIN_ITEM_REQUEST,
                 PinItemRequest::class.java,
             )
         } else {
-            intent.getParcelableExtra(LauncherApps.EXTRA_PIN_ITEM_REQUEST)
+            it.getParcelableExtra(LauncherApps.EXTRA_PIN_ITEM_REQUEST)
         }
     }
 
@@ -554,7 +554,7 @@ internal suspend fun handleShortcutConfigIntentSenderLauncherResult(
         val icon = androidLauncherAppsWrapper.getShortcutBadgedIconDrawable(
             shortcutInfo = shortcutInfo,
             density = 0,
-        )?.let { drawable ->
+        )?.let {
             val directory = fileManager.getFilesDirectory(FileManager.SHORTCUTS_DIR)
 
             val file = File(
@@ -566,7 +566,7 @@ internal suspend fun handleShortcutConfigIntentSenderLauncherResult(
                 ),
             )
 
-            androidImageSerializer.createDrawablePath(drawable = drawable, file = file)
+            androidImageSerializer.createDrawablePath(drawable = it, file = file)
 
             file.absolutePath
         }
