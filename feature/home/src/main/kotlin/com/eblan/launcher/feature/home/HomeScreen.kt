@@ -531,7 +531,6 @@ private fun Success(
                     hasShortcutHostPermission = homeData.hasShortcutHostPermission,
                     hasSystemFeatureAppWidgets = homeData.hasSystemFeatureAppWidgets,
                     homeSettings = homeData.userData.homeSettings,
-                    lockMovement = homeData.userData.experimentalSettings.lockMovement,
                     moveGridItemResult = movedGridItemResult,
                     paddingValues = paddingValues,
                     pinGridItem = pinGridItem,

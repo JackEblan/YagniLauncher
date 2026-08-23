@@ -27,7 +27,7 @@ import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.repository.FolderGridItemRepository
 import com.eblan.launcher.domain.repository.GridRepository
 import com.eblan.launcher.domain.repository.UserDataRepository
-import com.eblan.launcher.domain.usecase.util.cleanupGridItemRecursively
+import com.eblan.launcher.domain.usecase.util.deleteGridItemData
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
@@ -46,7 +46,7 @@ class DeleteGridItemUseCase @Inject constructor(
     suspend operator fun invoke(gridItem: GridItem) = withContext(defaultDispatcher) {
         val userData = userDataRepository.userDataFlow.first()
 
-        cleanupGridItemRecursively(
+        deleteGridItemData(
             gridItem = gridItem,
             appWidgetHostWrapper = appWidgetHostWrapper,
             launcherAppsWrapper = launcherAppsWrapper,

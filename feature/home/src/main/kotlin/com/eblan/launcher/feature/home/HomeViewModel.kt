@@ -392,7 +392,7 @@ internal class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             moveGridItemJob?.cancelAndJoin()
 
-            gridRepository.deleteGridItemById(gridItem = gridItem)
+            deleteGridItemUseCase(gridItem = gridItem)
 
             _moveGridItemResult.update {
                 null

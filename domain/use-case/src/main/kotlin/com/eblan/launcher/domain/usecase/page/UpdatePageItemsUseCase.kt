@@ -28,7 +28,7 @@ import com.eblan.launcher.domain.model.PageItem
 import com.eblan.launcher.domain.repository.FolderGridItemRepository
 import com.eblan.launcher.domain.repository.GridRepository
 import com.eblan.launcher.domain.repository.UserDataRepository
-import com.eblan.launcher.domain.usecase.util.cleanupGridItemRecursively
+import com.eblan.launcher.domain.usecase.util.deleteGridItemData
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
@@ -55,7 +55,7 @@ class UpdatePageItemsUseCase @Inject constructor(
 
             pageItemsToDelete.forEach {
                 it.gridItems.forEach { gridItem ->
-                    cleanupGridItemRecursively(
+                    deleteGridItemData(
                         gridItem = gridItem,
                         appWidgetHostWrapper = appWidgetHostWrapper,
                         launcherAppsWrapper = launcherAppsWrapper,

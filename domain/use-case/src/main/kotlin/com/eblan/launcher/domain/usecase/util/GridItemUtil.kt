@@ -28,7 +28,7 @@ import com.eblan.launcher.domain.model.ShortcutQueryFlag
 import com.eblan.launcher.domain.repository.FolderGridItemRepository
 import com.eblan.launcher.domain.usecase.grid.asGridItem
 
-internal suspend fun cleanupGridItemRecursively(
+internal suspend fun deleteGridItemData(
     gridItem: GridItem,
     appWidgetHostWrapper: AppWidgetHostWrapper,
     launcherAppsWrapper: LauncherAppsWrapper,
@@ -52,7 +52,7 @@ internal suspend fun cleanupGridItemRecursively(
             )
 
             folderGridItems.forEach { folderGridItem ->
-                cleanupGridItemRecursively(
+                deleteGridItemData(
                     gridItem = folderGridItem,
                     appWidgetHostWrapper = appWidgetHostWrapper,
                     launcherAppsWrapper = launcherAppsWrapper,
