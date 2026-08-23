@@ -325,12 +325,18 @@ internal fun PagerScreen(
 
     val gridHeight = safeDrawingHeight - pageIndicatorHeightPx - dockHeightPx
 
+    val currentGridItemSource = rememberUpdatedState(gridItemSource)
+    val currentIsVisibleOverlay = rememberUpdatedState(isVisibleOverlay)
+    val currentMoveGridItemResult = rememberUpdatedState(moveGridItemResult)
+    val currentFolderPopups = rememberUpdatedState(folderPopups)
+
     val appWidgetLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
     ) {
         handleAppWidgetLauncherResult(
+            androidAppWidgetHostWrapper = androidAppWidgetHostWrapper,
             androidAppWidgetManagerWrapper = androidAppWidgetManagerWrapper,
-            moveGridItemResult = moveGridItemResult,
+            moveGridItemResult = currentMoveGridItemResult,
             result = it,
             columns = homeSettings.columns,
             density = density,
@@ -340,8 +346,10 @@ internal fun PagerScreen(
             paddingValues = paddingValues,
             layoutDirection = layoutDirection,
             dockHeight = homeSettings.dockHeight,
-            onUpdateDeleteAppWidgetId = pagerScreenState::updateDeleteAppWidgetId,
+            lastAppWidgetId = pagerScreenState.lastAppWidgetId,
             onUpdateWidgetGridItem = pagerScreenState::updateWidgetGridItem,
+            onResetGridAfterDeleteGridItem = onResetGridAfterDeleteGridItem,
+            onUpdateLastAppWidgetId = pagerScreenState::updateLastAppWidgetId,
         )
     }
 
@@ -351,7 +359,7 @@ internal fun PagerScreen(
         scope.launch {
             handleShortcutConfigLauncherResult(
                 androidImageSerializer = androidImageSerializer,
-                moveGridItemResult = moveGridItemResult,
+                moveGridItemResult = currentMoveGridItemResult,
                 result = it,
                 fileManager = fileManager,
                 onDeleteGridItem = onResetGridAfterDeleteGridItem,
@@ -370,7 +378,7 @@ internal fun PagerScreen(
                 androidLauncherAppsWrapper = androidLauncherAppsWrapper,
                 androidUserManagerWrapper = androidUserManagerWrapper,
                 fileManager = fileManager,
-                moveGridItemResult = moveGridItemResult,
+                moveGridItemResult = currentMoveGridItemResult,
                 result = it,
                 iconKeyGenerator = iconKeyGenerator,
                 onDeleteGridItem = onResetGridAfterDeleteGridItem,
@@ -436,11 +444,6 @@ internal fun PagerScreen(
     }
 
     val lastPopupFolderGridItem = folderPopups.lastOrNull()
-
-    val currentGridItemSource = rememberUpdatedState(gridItemSource)
-    val currentIsVisibleOverlay = rememberUpdatedState(isVisibleOverlay)
-    val currentMoveGridItemResult = rememberUpdatedState(moveGridItemResult)
-    val currentFolderPopups = rememberUpdatedState(folderPopups)
 
     val managedProfileResult by rememberManagedProfileResult()
 
@@ -534,21 +537,6 @@ internal fun PagerScreen(
             onUpdateIsDragging = pagerScreenState::updateIsDragging,
             onUpdateWidgetGridItem = pagerScreenState::updateWidgetGridItem,
             onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-        )
-    }
-
-    LaunchedEffect(
-        key1 = pagerScreenState.deleteAppWidgetId,
-        key2 = pagerScreenState,
-    ) {
-        handleDeleteAppWidgetId(
-            androidAppWidgetHostWrapper = androidAppWidgetHostWrapper,
-            lastAppWidgetId = pagerScreenState.lastAppWidgetId,
-            deleteAppWidgetId = pagerScreenState.deleteAppWidgetId,
-            moveGridItemResult = currentMoveGridItemResult,
-            onResetGridAfterDeleteGridItem = onResetGridAfterDeleteGridItem,
-            onUpdateLastAppWidgetId = pagerScreenState::updateLastAppWidgetId,
-            onUpdateDeleteAppWidgetId = pagerScreenState::updateDeleteAppWidgetId,
         )
     }
 

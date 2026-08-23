@@ -284,8 +284,9 @@ internal suspend fun handleDropGridItem(
 }
 
 internal fun handleAppWidgetLauncherResult(
+    androidAppWidgetHostWrapper: AndroidAppWidgetHostWrapper,
     androidAppWidgetManagerWrapper: AndroidAppWidgetManagerWrapper,
-    moveGridItemResult: MoveGridItemResult?,
+    moveGridItemResult: State<MoveGridItemResult?>,
     result: ActivityResult,
     columns: Int,
     density: Density,
@@ -295,10 +296,12 @@ internal fun handleAppWidgetLauncherResult(
     paddingValues: PaddingValues,
     layoutDirection: LayoutDirection,
     dockHeight: Int,
-    onUpdateDeleteAppWidgetId: (Boolean) -> Unit,
+    lastAppWidgetId: Int,
     onUpdateWidgetGridItem: (GridItem) -> Unit,
+    onResetGridAfterDeleteGridItem: (GridItem) -> Unit,
+    onUpdateLastAppWidgetId: (Int) -> Unit,
 ) {
-    val movingGridItem = requireNotNull(moveGridItemResult?.movingGridItem)
+    val movingGridItem = requireNotNull(moveGridItemResult.value?.movingGridItem)
 
     val data = movingGridItem.data as GridItemData.Widget
 
@@ -333,7 +336,13 @@ internal fun handleAppWidgetLauncherResult(
 
         onUpdateWidgetGridItem(movingGridItem.copy(data = newData))
     } else {
-        onUpdateDeleteAppWidgetId(true)
+        handleDeleteAppWidgetId(
+            androidAppWidgetHostWrapper = androidAppWidgetHostWrapper,
+            lastAppWidgetId = lastAppWidgetId,
+            moveGridItemResult = moveGridItemResult,
+            onResetGridAfterDeleteGridItem = onResetGridAfterDeleteGridItem,
+            onUpdateLastAppWidgetId = onUpdateLastAppWidgetId,
+        )
     }
 }
 
@@ -363,36 +372,6 @@ internal fun handleConfigureLauncherResultEffect(
     }
 
     onResetConfigureResultCode()
-}
-
-internal fun handleDeleteAppWidgetId(
-    androidAppWidgetHostWrapper: AndroidAppWidgetHostWrapper,
-    lastAppWidgetId: Int,
-    deleteAppWidgetId: Boolean,
-    moveGridItemResult: State<MoveGridItemResult?>,
-    onResetGridAfterDeleteGridItem: (GridItem) -> Unit,
-    onUpdateLastAppWidgetId: (Int) -> Unit,
-    onUpdateDeleteAppWidgetId: (Boolean) -> Unit,
-) {
-    if (lastAppWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID ||
-        !deleteAppWidgetId
-    ) {
-        return
-    }
-
-    val movingGridItem = requireNotNull(moveGridItemResult.value?.movingGridItem)
-
-    val data = movingGridItem.data as GridItemData.Widget
-
-    val newData = data.copy(appWidgetId = lastAppWidgetId)
-
-    onResetGridAfterDeleteGridItem(movingGridItem.copy(data = newData))
-
-    androidAppWidgetHostWrapper.deleteAppWidgetId(appWidgetId = lastAppWidgetId)
-
-    onUpdateLastAppWidgetId(AppWidgetManager.INVALID_APPWIDGET_ID)
-
-    onUpdateDeleteAppWidgetId(false)
 }
 
 internal fun handleBoundWidgetEffect(
@@ -447,16 +426,16 @@ internal fun handleBoundWidgetEffect(
 @Suppress("DEPRECATION")
 internal suspend fun handleShortcutConfigLauncherResult(
     androidImageSerializer: AndroidImageSerializer,
-    moveGridItemResult: MoveGridItemResult?,
+    moveGridItemResult: State<MoveGridItemResult?>,
     result: ActivityResult,
     fileManager: FileManager,
     onDeleteGridItem: (GridItem) -> Unit,
     onUpdateGridItemsAfterMove: (MoveGridItemResult) -> Unit,
     onResetGrid: () -> Unit,
 ) {
-    requireNotNull(moveGridItemResult)
+    val currentMoveGridItemResult = requireNotNull(moveGridItemResult.value)
 
-    val movingGridItem = moveGridItemResult.movingGridItem
+    val movingGridItem = currentMoveGridItemResult.movingGridItem
 
     if (result.resultCode == Activity.RESULT_CANCELED) {
         onDeleteGridItem(movingGridItem)
@@ -506,9 +485,9 @@ internal suspend fun handleShortcutConfigLauncherResult(
         shortcutIntentUri = shortcutIntentUri,
     )
 
-    val newMovingGridItem = moveGridItemResult.movingGridItem.copy(data = newData)
+    val newMovingGridItem = movingGridItem.copy(data = newData)
 
-    onUpdateGridItemsAfterMove(moveGridItemResult.copy(movingGridItem = newMovingGridItem))
+    onUpdateGridItemsAfterMove(currentMoveGridItemResult.copy(movingGridItem = newMovingGridItem))
 
     onResetGrid()
 }
@@ -519,7 +498,7 @@ internal suspend fun handleShortcutConfigIntentSenderLauncherResult(
     androidLauncherAppsWrapper: AndroidLauncherAppsWrapper,
     androidUserManagerWrapper: AndroidUserManagerWrapper,
     fileManager: FileManager,
-    moveGridItemResult: MoveGridItemResult?,
+    moveGridItemResult: State<MoveGridItemResult?>,
     result: ActivityResult,
     iconKeyGenerator: IconKeyGenerator,
     onDeleteGridItem: (GridItem) -> Unit,
@@ -528,9 +507,9 @@ internal suspend fun handleShortcutConfigIntentSenderLauncherResult(
         pinItemRequestType: PinItemRequestType.ShortcutInfo,
     ) -> Unit,
 ) {
-    requireNotNull(moveGridItemResult)
+    val currentMoveGridItemResult = requireNotNull(moveGridItemResult.value)
 
-    val movingGridItem = moveGridItemResult.movingGridItem
+    val movingGridItem = currentMoveGridItemResult.movingGridItem
 
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O || result.resultCode == Activity.RESULT_CANCELED) {
         onDeleteGridItem(movingGridItem)
@@ -591,7 +570,7 @@ internal suspend fun handleShortcutConfigIntentSenderLauncherResult(
         )
 
         onUpdateShortcutConfigIntoShortcutInfoGridItem(
-            moveGridItemResult,
+            currentMoveGridItemResult,
             pinItemRequestType,
         )
     } else {
@@ -842,4 +821,24 @@ private fun calculateGridSize(
         width = safeDrawingWidth,
         height = gridHeight,
     )
+}
+
+private fun handleDeleteAppWidgetId(
+    androidAppWidgetHostWrapper: AndroidAppWidgetHostWrapper,
+    lastAppWidgetId: Int,
+    moveGridItemResult: State<MoveGridItemResult?>,
+    onResetGridAfterDeleteGridItem: (GridItem) -> Unit,
+    onUpdateLastAppWidgetId: (Int) -> Unit,
+) {
+    val movingGridItem = requireNotNull(moveGridItemResult.value?.movingGridItem)
+
+    val data = movingGridItem.data as GridItemData.Widget
+
+    val newData = data.copy(appWidgetId = lastAppWidgetId)
+
+    onResetGridAfterDeleteGridItem(movingGridItem.copy(data = newData))
+
+    androidAppWidgetHostWrapper.deleteAppWidgetId(appWidgetId = lastAppWidgetId)
+
+    onUpdateLastAppWidgetId(AppWidgetManager.INVALID_APPWIDGET_ID)
 }

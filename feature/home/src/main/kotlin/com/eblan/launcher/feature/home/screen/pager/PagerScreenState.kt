@@ -142,9 +142,6 @@ internal class PagerScreenState(
     var popupIntSize by mutableStateOf<IntSize?>(null)
         private set
 
-    var deleteAppWidgetId by mutableStateOf(false)
-        private set
-
     var widgetGridItem by mutableStateOf<GridItem?>(null)
         private set
 
@@ -1078,10 +1075,6 @@ internal class PagerScreenState(
 
     fun updateWidgetGridItem(value: GridItem) {
         widgetGridItem = value
-    }
-
-    fun updateDeleteAppWidgetId(value: Boolean) {
-        deleteAppWidgetId = value
     }
 
     fun updateGridPageDirection(value: PageDirection?) {
