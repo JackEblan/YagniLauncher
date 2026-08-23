@@ -345,9 +345,18 @@ class GridItemConstraintsTest {
                 rowSpan = 2,
             )
 
-            assertEquals(
-                rectanglesOverlap(moving, other),
-                rectanglesOverlap(other, moving),
+            assertTrue(
+                rectanglesOverlap(
+                    moving = moving,
+                    other = other,
+                ),
+            )
+
+            assertTrue(
+                rectanglesOverlap(
+                    moving = other,
+                    other = moving,
+                ),
             )
         }
     }
