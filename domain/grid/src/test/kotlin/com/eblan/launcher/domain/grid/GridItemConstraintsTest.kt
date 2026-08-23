@@ -17,16 +17,7 @@
  */
 package com.eblan.launcher.domain.grid
 
-import com.eblan.launcher.domain.model.Associate
-import com.eblan.launcher.domain.model.EblanAction
-import com.eblan.launcher.domain.model.EblanActionType
-import com.eblan.launcher.domain.model.GridItem
-import com.eblan.launcher.domain.model.GridItemData
-import com.eblan.launcher.domain.model.GridItemSettings
-import com.eblan.launcher.domain.model.HorizontalAlignment
 import com.eblan.launcher.domain.model.ResolveDirection
-import com.eblan.launcher.domain.model.TextColor
-import com.eblan.launcher.domain.model.VerticalArrangement
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
@@ -1106,56 +1097,4 @@ class GridItemConstraintsTest {
             )
         }
     }
-
-    private fun gridItem(
-        id: String = "Test",
-        page: Int = 0,
-        startColumn: Int,
-        startRow: Int,
-        columnSpan: Int,
-        rowSpan: Int,
-    ) = GridItem(
-        id = id,
-        page = page,
-        startColumn = startColumn,
-        startRow = startRow,
-        columnSpan = columnSpan,
-        rowSpan = rowSpan,
-        data = GridItemData.Folder(
-            label = "Test",
-            icon = null,
-            index = 0,
-            folderId = null,
-        ),
-        associate = Associate.Grid,
-        override = false,
-        gridItemSettings = GridItemSettings(
-            iconSize = 0,
-            textColor = TextColor.System,
-            textSize = 0,
-            showLabel = true,
-            singleLineLabel = true,
-            horizontalAlignment = HorizontalAlignment.CenterHorizontally,
-            verticalArrangement = VerticalArrangement.Center,
-            customTextColor = 0,
-            customBackgroundColor = 0,
-            padding = 0,
-            cornerRadius = 0,
-        ),
-        doubleTap = EblanAction(
-            eblanActionType = EblanActionType.None,
-            serialNumber = 0,
-            componentName = "",
-        ),
-        swipeUp = EblanAction(
-            eblanActionType = EblanActionType.None,
-            serialNumber = 0,
-            componentName = "",
-        ),
-        swipeDown = EblanAction(
-            eblanActionType = EblanActionType.None,
-            serialNumber = 0,
-            componentName = "",
-        ),
-    )
 }
