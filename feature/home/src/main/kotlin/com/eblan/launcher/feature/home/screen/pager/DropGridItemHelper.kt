@@ -83,7 +83,6 @@ internal suspend fun handleDropGridItem(
     onLaunchShortcutConfigIntent: (Intent) -> Unit,
     onLaunchShortcutConfigIntentSenderRequest: (IntentSenderRequest) -> Unit,
     onLaunchWidgetIntent: (Intent) -> Unit,
-    onUpdateAppWidgetId: (Int) -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
     onUpdateWidgetGridItem: (GridItem) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
@@ -195,7 +194,6 @@ internal suspend fun handleDropGridItem(
                             gridWidth = gridSize.width,
                             rows = rows,
                             onLaunchWidgetIntent = onLaunchWidgetIntent,
-                            onUpdateAppWidgetId = onUpdateAppWidgetId,
                             onUpdateWidgetGridItem = onUpdateWidgetGridItem,
                             onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                             onUpdateIsDragging = onUpdateIsDragging,
@@ -270,7 +268,6 @@ internal suspend fun handleDropGridItem(
                         gridWidth = gridSize.width,
                         rows = rows,
                         onLaunchWidgetIntent = onLaunchWidgetIntent,
-                        onUpdateAppWidgetId = onUpdateAppWidgetId,
                         onUpdateWidgetGridItem = onUpdateWidgetGridItem,
                         onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                         onUpdateIsDragging = onUpdateIsDragging,
@@ -295,8 +292,8 @@ internal fun handleAppWidgetLauncherResult(
     paddingValues: PaddingValues,
     layoutDirection: LayoutDirection,
     dockHeight: Int,
-    onDeleteAppWidgetId: () -> Unit,
     onUpdateWidgetGridItem: (GridItem) -> Unit,
+    onResetGridAfterDeleteGridItem: (GridItem) -> Unit,
 ) {
     val movingGridItem = requireNotNull(moveGridItemResult?.movingGridItem)
 
@@ -333,7 +330,7 @@ internal fun handleAppWidgetLauncherResult(
 
         onUpdateWidgetGridItem(movingGridItem.copy(data = newData))
     } else {
-        onDeleteAppWidgetId()
+        onResetGridAfterDeleteGridItem(movingGridItem)
     }
 }
 
@@ -363,28 +360,6 @@ internal fun handleConfigureLauncherResultEffect(
     }
 
     onResetConfigureResultCode()
-}
-
-internal fun handleDeleteAppWidgetId(
-    appWidgetId: Int,
-    deleteAppWidgetId: Boolean,
-    moveGridItemResult: MoveGridItemResult?,
-    onResetGridAfterDeleteGridItem: (GridItem) -> Unit,
-    onResetAppWidgetId: () -> Unit,
-) {
-    if (appWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID ||
-        !deleteAppWidgetId
-    ) {
-        return
-    }
-
-    val movingGridItem = requireNotNull(moveGridItemResult?.movingGridItem)
-
-    check(movingGridItem.data is GridItemData.Widget)
-
-    onResetGridAfterDeleteGridItem(movingGridItem)
-
-    onResetAppWidgetId()
 }
 
 internal fun handleBoundWidgetEffect(
@@ -602,14 +577,11 @@ private fun onDragEndWidget(
     gridWidth: Int,
     rows: Int,
     onLaunchWidgetIntent: (Intent) -> Unit,
-    onUpdateAppWidgetId: (Int) -> Unit,
     onUpdateWidgetGridItem: (GridItem) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
 ) {
     val appWidgetId = androidAppWidgetHostWrapper.allocateAppWidgetId()
-
-    onUpdateAppWidgetId(appWidgetId)
 
     val provider = ComponentName.unflattenFromString(data.componentName)
 

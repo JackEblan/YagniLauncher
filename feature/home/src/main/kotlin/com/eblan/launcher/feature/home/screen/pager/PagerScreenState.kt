@@ -17,14 +17,12 @@
  */
 package com.eblan.launcher.feature.home.screen.pager
 
-import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.LauncherApps.PinItemRequest
 import android.os.Build
 import android.os.IBinder
 import androidx.activity.result.ActivityResult
-import androidx.activity.result.IntentSenderRequest
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -38,7 +36,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -80,9 +77,7 @@ import com.eblan.launcher.framework.launcherapps.AndroidLauncherAppsWrapper
 import com.eblan.launcher.framework.launcherapps.PinItemRequestWrapper
 import com.eblan.launcher.framework.usermanager.AndroidUserManagerWrapper
 import com.eblan.launcher.framework.wallpapermanager.AndroidWallpaperManagerWrapper
-import com.eblan.launcher.framework.widgetmanager.AndroidAppWidgetHostWrapper
 import com.eblan.launcher.framework.widgetmanager.AndroidAppWidgetManagerWrapper
-import com.eblan.launcher.ui.local.LocalAppWidgetHost
 import com.eblan.launcher.ui.local.LocalAppWidgetManager
 import com.eblan.launcher.ui.local.LocalFileManager
 import com.eblan.launcher.ui.local.LocalIconKeyGenerator
@@ -117,10 +112,8 @@ internal class PagerScreenState(
     private val pinItemRequestWrapper: PinItemRequestWrapper,
     private val gestureSettings: GestureSettings,
     private val homeSettings: HomeSettings,
-    private val androidAppWidgetHostWrapper: AndroidAppWidgetHostWrapper,
     private val androidAppWidgetManagerWrapper: AndroidAppWidgetManagerWrapper,
     private val androidWallpaperManagerWrapper: AndroidWallpaperManagerWrapper,
-    private val experimentalSettings: ExperimentalSettings,
     private val iconKeyGenerator: IconKeyGenerator,
     private val onGetPinGridItem: (PinItemRequestType) -> Unit,
     private val onResetPinGridItem: () -> Unit,
@@ -153,9 +146,6 @@ internal class PagerScreenState(
         private set
 
     var popupIntSize by mutableStateOf<IntSize?>(null)
-        private set
-
-    var deleteAppWidgetId by mutableStateOf(false)
         private set
 
     var updatedWidgetGridItem by mutableStateOf<GridItem?>(null)
@@ -322,8 +312,6 @@ internal class PagerScreenState(
 
     private var accumulatedDragOffset by mutableStateOf(Offset.Zero)
 
-    private var lastAppWidgetId by mutableIntStateOf(AppWidgetManager.INVALID_APPWIDGET_ID)
-
     suspend fun handlePinGridItemEffect(
         pinGridItem: GridItem?,
         onUpdateGridItemSource: (GridItemSource) -> Unit,
@@ -358,133 +346,6 @@ internal class PagerScreenState(
         onUpdateIsVisibleOverlay(true)
 
         isDragging = true
-    }
-
-    fun handleDragGridItemEffect(
-        gridCurrentPage: Int,
-        dockGridCurrentPage: Int,
-        density: Density,
-        isGridScrollInProgress: Boolean,
-        isDockScrollInProgress: Boolean,
-        lockMovement: Boolean,
-        paddingValues: PaddingValues,
-        gridItemSource: State<GridItemSource?>,
-        isVisibleOverlay: State<Boolean>,
-        moveGridItemResult: State<MoveGridItemResult?>,
-        layoutDirection: LayoutDirection,
-        onMoveGridItem: (
-            movingGridItem: GridItem,
-            x: Int,
-            y: Int,
-            columns: Int,
-            rows: Int,
-            gridWidth: Int,
-            gridHeight: Int,
-        ) -> Unit,
-    ) {
-        handleDragGridItem(
-            columns = homeSettings.columns,
-            gridCurrentPage = gridCurrentPage,
-            dockGridCurrentPage = dockGridCurrentPage,
-            density = density,
-            dockColumns = homeSettings.dockColumns,
-            dockHeight = homeSettings.dockHeight,
-            dockRows = homeSettings.dockRows,
-            drag = drag,
-            dragIntOffset = dragIntOffset,
-            gridItemSource = gridItemSource,
-            isDragging = isDragging,
-            isVisibleOverlay = isVisibleOverlay,
-            isGridScrollInProgress = isGridScrollInProgress,
-            isDockScrollInProgress = isDockScrollInProgress,
-            lockMovement = lockMovement,
-            paddingValues = paddingValues,
-            rows = homeSettings.rows,
-            screenHeight = screenHeight,
-            screenWidth = screenWidth,
-            moveGridItemResult = moveGridItemResult,
-            layoutDirection = layoutDirection,
-            onMoveGridItem = onMoveGridItem,
-            onUpdateAssociate = {
-                associate = it
-            },
-            onUpdateSharedElementKey = {
-                sharedElementKey = it
-            },
-        )
-    }
-
-    suspend fun handleDropGridItemEffect(
-        moveGridItemResult: State<MoveGridItemResult?>,
-        onLaunchShortcutConfigIntent: (Intent) -> Unit,
-        onLaunchShortcutConfigIntentSenderRequest: (IntentSenderRequest) -> Unit,
-        onLaunchWidgetIntent: (Intent) -> Unit,
-        gridItemSource: State<GridItemSource?>,
-        isVisibleOverlay: State<Boolean>,
-        paddingValues: PaddingValues,
-        screenHeight: Int,
-        screenWidth: Int,
-        layoutDirection: LayoutDirection,
-        density: Density,
-        onUpdateIsVisibleOverlay: (Boolean) -> Unit,
-        onResetGridAfterDeleteGridItem: (GridItem) -> Unit,
-        onResetGrid: () -> Unit,
-        onUpdateGridItemsAfterMove: (MoveGridItemResult) -> Unit,
-    ) {
-        handleDropGridItem(
-            androidAppWidgetHostWrapper = androidAppWidgetHostWrapper,
-            androidAppWidgetManagerWrapper = androidAppWidgetManagerWrapper,
-            androidLauncherAppsWrapper = androidLauncherAppsWrapper,
-            androidUserManagerWrapper = androidUserManagerWrapper,
-            context = context,
-            drag = drag,
-            gridItemSource = gridItemSource,
-            isDragging = isDragging,
-            isVisibleOverlay = isVisibleOverlay,
-            moveGridItemResult = moveGridItemResult,
-            lockMovement = experimentalSettings.lockMovement,
-            columns = homeSettings.columns,
-            density = density,
-            rows = homeSettings.rows,
-            paddingValues = paddingValues,
-            screenHeight = screenHeight,
-            screenWidth = screenWidth,
-            dockHeight = homeSettings.dockHeight,
-            layoutDirection = layoutDirection,
-            onResetGridAfterDeleteGridItem = onResetGridAfterDeleteGridItem,
-            onResetGrid = onResetGrid,
-            onUpdateGridItemsAfterMove = onUpdateGridItemsAfterMove,
-            onLaunchShortcutConfigIntent = onLaunchShortcutConfigIntent,
-            onLaunchShortcutConfigIntentSenderRequest = onLaunchShortcutConfigIntentSenderRequest,
-            onLaunchWidgetIntent = onLaunchWidgetIntent,
-            onUpdateAppWidgetId = {
-                lastAppWidgetId = it
-            },
-            onUpdateIsDragging = {
-                isDragging = it
-            },
-            onUpdateWidgetGridItem = {
-                updatedWidgetGridItem = it
-            },
-            onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-        )
-    }
-
-    fun handleDeleteAppWidgetIdEffect(
-        moveGridItemResult: MoveGridItemResult?,
-        onResetGridAfterDeleteGridItem: (GridItem) -> Unit,
-    ) {
-        handleDeleteAppWidgetId(
-            appWidgetId = lastAppWidgetId,
-            deleteAppWidgetId = deleteAppWidgetId,
-            moveGridItemResult = moveGridItemResult,
-            onResetGridAfterDeleteGridItem = onResetGridAfterDeleteGridItem,
-            onResetAppWidgetId = {
-                lastAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID
-
-                deleteAppWidgetId = false
-            },
-        )
     }
 
     fun handleAnimateScrollToPageEffect(
@@ -532,6 +393,7 @@ internal class PagerScreenState(
         screenHeight: Int,
         paddingValues: PaddingValues,
         layoutDirection: LayoutDirection,
+        onResetGridAfterDeleteGridItem: (GridItem) -> Unit,
     ) {
         handleAppWidgetLauncherResult(
             androidAppWidgetManagerWrapper = androidAppWidgetManagerWrapper,
@@ -545,12 +407,10 @@ internal class PagerScreenState(
             paddingValues = paddingValues,
             layoutDirection = layoutDirection,
             dockHeight = homeSettings.dockHeight,
-            onDeleteAppWidgetId = {
-                deleteAppWidgetId = true
-            },
             onUpdateWidgetGridItem = {
                 updatedWidgetGridItem = it
             },
+            onResetGridAfterDeleteGridItem = onResetGridAfterDeleteGridItem,
         )
     }
 
@@ -1260,6 +1120,14 @@ internal class PagerScreenState(
             onOpenAppDrawer = ::openApplicationScreen,
         )
     }
+
+    fun updateAssociate(value: Associate) {
+        associate = value
+    }
+
+    fun updateUpdatedWidgetGridItem(value: GridItem) {
+        updatedWidgetGridItem = value
+    }
 }
 
 @Composable
@@ -1290,8 +1158,6 @@ internal fun rememberPagerScreenState(
 
     val fileManager = LocalFileManager.current
 
-    val androidAppWidgetHostWrapper = LocalAppWidgetHost.current
-
     val pinItemRequestWrapper = LocalPinItemRequest.current
 
     val iconKeyGenerator = LocalIconKeyGenerator.current
@@ -1316,10 +1182,8 @@ internal fun rememberPagerScreenState(
             pinItemRequestWrapper = pinItemRequestWrapper,
             gestureSettings = gestureSettings,
             homeSettings = homeSettings,
-            androidAppWidgetHostWrapper = androidAppWidgetHostWrapper,
             androidAppWidgetManagerWrapper = androidAppWidgetManagerWrapper,
             androidWallpaperManagerWrapper = androidWallpaperManagerWrapper,
-            experimentalSettings = experimentalSettings,
             iconKeyGenerator = iconKeyGenerator,
             onGetPinGridItem = onGetPinGridItem,
             onResetPinGridItem = onResetPinGridItem,
