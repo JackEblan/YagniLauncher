@@ -336,13 +336,11 @@ internal fun handleAppWidgetLauncherResult(
 
         onUpdateWidgetGridItem(movingGridItem.copy(data = newData))
     } else {
-        handleDeleteAppWidgetId(
-            androidAppWidgetHostWrapper = androidAppWidgetHostWrapper,
-            lastAppWidgetId = lastAppWidgetId,
-            moveGridItemResult = moveGridItemResult,
-            onResetGridAfterDeleteGridItem = onResetGridAfterDeleteGridItem,
-            onUpdateLastAppWidgetId = onUpdateLastAppWidgetId,
-        )
+        onResetGridAfterDeleteGridItem(movingGridItem)
+
+        androidAppWidgetHostWrapper.deleteAppWidgetId(appWidgetId = lastAppWidgetId)
+
+        onUpdateLastAppWidgetId(AppWidgetManager.INVALID_APPWIDGET_ID)
     }
 }
 
@@ -821,24 +819,4 @@ private fun calculateGridSize(
         width = safeDrawingWidth,
         height = gridHeight,
     )
-}
-
-private fun handleDeleteAppWidgetId(
-    androidAppWidgetHostWrapper: AndroidAppWidgetHostWrapper,
-    lastAppWidgetId: Int,
-    moveGridItemResult: State<MoveGridItemResult?>,
-    onResetGridAfterDeleteGridItem: (GridItem) -> Unit,
-    onUpdateLastAppWidgetId: (Int) -> Unit,
-) {
-    val movingGridItem = requireNotNull(moveGridItemResult.value?.movingGridItem)
-
-    val data = movingGridItem.data as GridItemData.Widget
-
-    val newData = data.copy(appWidgetId = lastAppWidgetId)
-
-    onResetGridAfterDeleteGridItem(movingGridItem.copy(data = newData))
-
-    androidAppWidgetHostWrapper.deleteAppWidgetId(appWidgetId = lastAppWidgetId)
-
-    onUpdateLastAppWidgetId(AppWidgetManager.INVALID_APPWIDGET_ID)
 }
