@@ -334,7 +334,6 @@ internal fun PagerScreen(
         contract = ActivityResultContracts.StartActivityForResult(),
     ) {
         handleAppWidgetLauncherResult(
-            androidAppWidgetHostWrapper = androidAppWidgetHostWrapper,
             androidAppWidgetManagerWrapper = androidAppWidgetManagerWrapper,
             moveGridItemResult = currentMoveGridItemResult,
             result = it,

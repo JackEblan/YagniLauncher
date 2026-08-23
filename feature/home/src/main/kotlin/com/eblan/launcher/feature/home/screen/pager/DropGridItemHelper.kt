@@ -284,7 +284,6 @@ internal suspend fun handleDropGridItem(
 }
 
 internal fun handleAppWidgetLauncherResult(
-    androidAppWidgetHostWrapper: AndroidAppWidgetHostWrapper,
     androidAppWidgetManagerWrapper: AndroidAppWidgetManagerWrapper,
     moveGridItemResult: State<MoveGridItemResult?>,
     result: ActivityResult,
@@ -336,12 +335,12 @@ internal fun handleAppWidgetLauncherResult(
 
         onUpdateWidgetGridItem(movingGridItem.copy(data = newData))
     } else {
-        onResetGridAfterDeleteGridItem(movingGridItem)
+        val newData = data.copy(appWidgetId = lastAppWidgetId)
 
-        androidAppWidgetHostWrapper.deleteAppWidgetId(appWidgetId = lastAppWidgetId)
-
-        onUpdateLastAppWidgetId(AppWidgetManager.INVALID_APPWIDGET_ID)
+        onResetGridAfterDeleteGridItem(movingGridItem.copy(data = newData))
     }
+
+    onUpdateLastAppWidgetId(AppWidgetManager.INVALID_APPWIDGET_ID)
 }
 
 internal fun handleConfigureLauncherResultEffect(
