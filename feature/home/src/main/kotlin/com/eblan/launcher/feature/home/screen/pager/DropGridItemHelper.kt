@@ -366,14 +366,15 @@ internal fun handleConfigureLauncherResultEffect(
 }
 
 internal fun handleDeleteAppWidgetId(
-    appWidgetId: Int,
+    androidAppWidgetHostWrapper: AndroidAppWidgetHostWrapper,
+    lastAppWidgetId: Int,
     deleteAppWidgetId: Boolean,
     moveGridItemResult: State<MoveGridItemResult?>,
     onResetGridAfterDeleteGridItem: (GridItem) -> Unit,
     onUpdateLastAppWidgetId: (Int) -> Unit,
     onUpdateDeleteAppWidgetId: (Boolean) -> Unit,
 ) {
-    if (appWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID ||
+    if (lastAppWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID ||
         !deleteAppWidgetId
     ) {
         return
@@ -381,9 +382,13 @@ internal fun handleDeleteAppWidgetId(
 
     val movingGridItem = requireNotNull(moveGridItemResult.value?.movingGridItem)
 
-    check(movingGridItem.data is GridItemData.Widget)
+    val data = movingGridItem.data as GridItemData.Widget
 
-    onResetGridAfterDeleteGridItem(movingGridItem)
+    val newData = data.copy(appWidgetId = lastAppWidgetId)
+
+    onResetGridAfterDeleteGridItem(movingGridItem.copy(data = newData))
+
+    androidAppWidgetHostWrapper.deleteAppWidgetId(appWidgetId = lastAppWidgetId)
 
     onUpdateLastAppWidgetId(AppWidgetManager.INVALID_APPWIDGET_ID)
 

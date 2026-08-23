@@ -44,6 +44,9 @@ interface AndroidAppWidgetHostWrapper {
         requestCode: Int,
         bundle: Bundle?,
     )
+
+    fun deleteAppWidgetId(appWidgetId: Int)
+
     companion object {
         const val CONFIGURE_REQUEST_CODE = 1
     }

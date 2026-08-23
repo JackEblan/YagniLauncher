@@ -158,7 +158,6 @@ internal fun PagerScreen(
     hasShortcutHostPermission: Boolean,
     hasSystemFeatureAppWidgets: Boolean,
     homeSettings: HomeSettings,
-    lockMovement: Boolean,
     moveGridItemResult: MoveGridItemResult?,
     paddingValues: PaddingValues,
     pinGridItem: GridItem?,
@@ -470,6 +469,7 @@ internal fun PagerScreen(
     LaunchedEffect(
         key1 = pagerScreenState.dragIntOffset,
         key2 = pagerScreenState,
+        key3 = experimentalSettings,
     ) {
         handleDragGridItem(
             columns = homeSettings.columns,
@@ -486,7 +486,7 @@ internal fun PagerScreen(
             isVisibleOverlay = currentIsVisibleOverlay,
             isGridScrollInProgress = gridHorizontalPagerState.isScrollInProgress,
             isDockScrollInProgress = dockGridHorizontalPagerState.isScrollInProgress,
-            lockMovement = lockMovement,
+            lockMovement = experimentalSettings.lockMovement,
             paddingValues = paddingValues,
             rows = homeSettings.rows,
             screenHeight = screenHeight,
@@ -502,6 +502,7 @@ internal fun PagerScreen(
     LaunchedEffect(
         key1 = pagerScreenState.drag,
         key2 = pagerScreenState,
+        key3 = experimentalSettings,
     ) {
         handleDropGridItem(
             androidAppWidgetHostWrapper = androidAppWidgetHostWrapper,
@@ -541,7 +542,8 @@ internal fun PagerScreen(
         key2 = pagerScreenState,
     ) {
         handleDeleteAppWidgetId(
-            appWidgetId = pagerScreenState.lastAppWidgetId,
+            androidAppWidgetHostWrapper = androidAppWidgetHostWrapper,
+            lastAppWidgetId = pagerScreenState.lastAppWidgetId,
             deleteAppWidgetId = pagerScreenState.deleteAppWidgetId,
             moveGridItemResult = currentMoveGridItemResult,
             onResetGridAfterDeleteGridItem = onResetGridAfterDeleteGridItem,
@@ -766,7 +768,7 @@ internal fun PagerScreen(
                             isVisibleOverlay = isVisibleOverlay,
                             isVisibleFolder = folderPopups.isNotEmpty(),
                             moveGridItemResult = moveGridItemResult,
-                            lockMovement = lockMovement,
+                            lockMovement = experimentalSettings.lockMovement,
                             isDragging = pagerScreenState.isDragging,
                             showGridItemPopup = pagerScreenState.showGridItemPopup,
                             previewFolderGridItems = previewFolderGridItems,
@@ -871,7 +873,7 @@ internal fun PagerScreen(
                                 isVisibleOverlay = isVisibleOverlay,
                                 isVisibleFolder = folderPopups.isNotEmpty(),
                                 moveGridItemResult = moveGridItemResult,
-                                lockMovement = lockMovement,
+                                lockMovement = experimentalSettings.lockMovement,
                                 isDragging = pagerScreenState.isDragging,
                                 showGridItemPopup = pagerScreenState.showGridItemPopup,
                                 previewFolderGridItems = previewFolderGridItems,
@@ -964,7 +966,7 @@ internal fun PagerScreen(
                 homeSettings = homeSettings,
                 isDragging = pagerScreenState.isDragging,
                 dragIntOffset = pagerScreenState.dragIntOffset,
-                lockMovement = lockMovement,
+                lockMovement = experimentalSettings.lockMovement,
                 folderCellWidth = homeSettings.folderCellWidth,
                 folderCellHeight = homeSettings.folderCellHeight,
                 screenWidth = screenWidth,
@@ -1138,7 +1140,7 @@ internal fun PagerScreen(
         if (pagerScreenState.isResizing && resizeGridItem != null) {
             ResizeScreen(
                 homeSettings = homeSettings,
-                lockMovement = lockMovement,
+                lockMovement = experimentalSettings.lockMovement,
                 resizeGridItem = resizeGridItem,
                 paddingValues = paddingValues,
                 textColor = textColor,
