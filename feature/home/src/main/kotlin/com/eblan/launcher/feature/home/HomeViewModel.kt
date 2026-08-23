@@ -20,6 +20,7 @@ package com.eblan.launcher.feature.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.eblan.launcher.domain.common.IconKeyGenerator
+import com.eblan.launcher.domain.framework.AppWidgetHostWrapper
 import com.eblan.launcher.domain.framework.FileManager
 import com.eblan.launcher.domain.framework.PackageManagerWrapper
 import com.eblan.launcher.domain.model.AppDrawerSettings
@@ -29,6 +30,7 @@ import com.eblan.launcher.domain.model.FolderPopup
 import com.eblan.launcher.domain.model.FolderPopupEntry
 import com.eblan.launcher.domain.model.GetEblanApplicationInfosByLabelAndTag
 import com.eblan.launcher.domain.model.GridItem
+import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.GridItemData.ShortcutInfo
 import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.domain.model.PageItem
@@ -109,6 +111,7 @@ internal class HomeViewModel @Inject constructor(
     private val deleteGridItemUseCase: DeleteGridItemUseCase,
     getTextColorUseCase: GetTextColorUseCase,
     getPreviewFolderGridItemsUseCase: GetPreviewFolderGridItemsUseCase,
+    private val appWidgetHostWrapper: AppWidgetHostWrapper,
 ) : ViewModel() {
     val homeUiState = getHomeDataUseCase().map(HomeUiState::Success).stateIn(
         scope = viewModelScope,
@@ -392,7 +395,15 @@ internal class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             moveGridItemJob?.cancelAndJoin()
 
-            gridRepository.deleteGridItemById(gridItem = gridItem)
+            when (val data = gridItem.data) {
+                is GridItemData.Widget -> {
+                    appWidgetHostWrapper.deleteAppWidgetId(appWidgetId = data.appWidgetId)
+
+                    gridRepository.deleteGridItemById(gridItem = gridItem)
+                }
+
+                else -> gridRepository.deleteGridItemById(gridItem = gridItem)
+            }
 
             _moveGridItemResult.update {
                 null
@@ -453,14 +464,14 @@ internal class HomeViewModel @Inject constructor(
 
             val eblanApplicationInfoIcon =
                 packageManagerWrapper.getComponentName(packageName = pinItemRequestType.packageName)
-                    ?.let { componentName ->
+                    ?.let {
                         val directory = fileManager.getFilesDirectory(FileManager.ICONS_DIR)
 
                         val file = File(
                             directory,
                             iconKeyGenerator.getActivityIconKey(
                                 serialNumber = pinItemRequestType.serialNumber,
-                                componentName = componentName,
+                                componentName = it,
                             ),
                         )
 

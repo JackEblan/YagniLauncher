@@ -22,7 +22,6 @@ import android.content.Intent
 import android.content.pm.LauncherApps.PinItemRequest
 import android.os.Build
 import android.os.IBinder
-import androidx.activity.result.ActivityResult
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -77,8 +76,6 @@ import com.eblan.launcher.framework.launcherapps.AndroidLauncherAppsWrapper
 import com.eblan.launcher.framework.launcherapps.PinItemRequestWrapper
 import com.eblan.launcher.framework.usermanager.AndroidUserManagerWrapper
 import com.eblan.launcher.framework.wallpapermanager.AndroidWallpaperManagerWrapper
-import com.eblan.launcher.framework.widgetmanager.AndroidAppWidgetManagerWrapper
-import com.eblan.launcher.ui.local.LocalAppWidgetManager
 import com.eblan.launcher.ui.local.LocalFileManager
 import com.eblan.launcher.ui.local.LocalIconKeyGenerator
 import com.eblan.launcher.ui.local.LocalImageSerializer
@@ -112,7 +109,6 @@ internal class PagerScreenState(
     private val pinItemRequestWrapper: PinItemRequestWrapper,
     private val gestureSettings: GestureSettings,
     private val homeSettings: HomeSettings,
-    private val androidAppWidgetManagerWrapper: AndroidAppWidgetManagerWrapper,
     private val androidWallpaperManagerWrapper: AndroidWallpaperManagerWrapper,
     private val iconKeyGenerator: IconKeyGenerator,
     private val onGetPinGridItem: (PinItemRequestType) -> Unit,
@@ -383,35 +379,6 @@ internal class PagerScreenState(
         )
 
         hasDoubleTap = false
-    }
-
-    fun handleAppWidgetLauncherResult(
-        moveGridItemResult: MoveGridItemResult?,
-        result: ActivityResult,
-        density: Density,
-        screenWidth: Int,
-        screenHeight: Int,
-        paddingValues: PaddingValues,
-        layoutDirection: LayoutDirection,
-        onResetGridAfterDeleteGridItem: (GridItem) -> Unit,
-    ) {
-        handleAppWidgetLauncherResult(
-            androidAppWidgetManagerWrapper = androidAppWidgetManagerWrapper,
-            moveGridItemResult = moveGridItemResult,
-            result = result,
-            columns = homeSettings.columns,
-            density = density,
-            rows = homeSettings.rows,
-            screenWidth = screenWidth,
-            screenHeight = screenHeight,
-            paddingValues = paddingValues,
-            layoutDirection = layoutDirection,
-            dockHeight = homeSettings.dockHeight,
-            onUpdateWidgetGridItem = {
-                updatedWidgetGridItem = it
-            },
-            onResetGridAfterDeleteGridItem = onResetGridAfterDeleteGridItem,
-        )
     }
 
     fun dragStart(offset: Offset) {
@@ -1150,8 +1117,6 @@ internal fun rememberPagerScreenState(
 
     val density = LocalDensity.current
 
-    val androidAppWidgetManagerWrapper = LocalAppWidgetManager.current
-
     val androidUserManagerWrapper = LocalUserManager.current
 
     val androidImageSerializer = LocalImageSerializer.current
@@ -1182,7 +1147,6 @@ internal fun rememberPagerScreenState(
             pinItemRequestWrapper = pinItemRequestWrapper,
             gestureSettings = gestureSettings,
             homeSettings = homeSettings,
-            androidAppWidgetManagerWrapper = androidAppWidgetManagerWrapper,
             androidWallpaperManagerWrapper = androidWallpaperManagerWrapper,
             iconKeyGenerator = iconKeyGenerator,
             onGetPinGridItem = onGetPinGridItem,

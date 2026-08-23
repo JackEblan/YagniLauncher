@@ -330,14 +330,19 @@ internal fun PagerScreen(
     val appWidgetLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
     ) {
-        pagerScreenState.handleAppWidgetLauncherResult(
-            moveGridItemResult = moveGridItemResult,
+        handleAppWidgetLauncherResult(
+            androidAppWidgetManagerWrapper = androidAppWidgetManagerWrapper,
             result = it,
+            columns = homeSettings.columns,
             density = density,
+            rows = homeSettings.rows,
             screenWidth = screenWidth,
             screenHeight = screenHeight,
             paddingValues = paddingValues,
             layoutDirection = layoutDirection,
+            dockHeight = homeSettings.dockHeight,
+            updatedWidgetGridItem = pagerScreenState.updatedWidgetGridItem,
+            onUpdateWidgetGridItem = pagerScreenState::updateUpdatedWidgetGridItem,
             onResetGridAfterDeleteGridItem = onResetGridAfterDeleteGridItem,
         )
     }

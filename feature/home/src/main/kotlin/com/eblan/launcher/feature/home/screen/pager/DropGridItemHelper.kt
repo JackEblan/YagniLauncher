@@ -282,7 +282,7 @@ internal suspend fun handleDropGridItem(
 
 internal fun handleAppWidgetLauncherResult(
     androidAppWidgetManagerWrapper: AndroidAppWidgetManagerWrapper,
-    moveGridItemResult: MoveGridItemResult?,
+    updatedWidgetGridItem: GridItem?,
     result: ActivityResult,
     columns: Int,
     density: Density,
@@ -295,9 +295,9 @@ internal fun handleAppWidgetLauncherResult(
     onUpdateWidgetGridItem: (GridItem) -> Unit,
     onResetGridAfterDeleteGridItem: (GridItem) -> Unit,
 ) {
-    val movingGridItem = requireNotNull(moveGridItemResult?.movingGridItem)
+    requireNotNull(updatedWidgetGridItem)
 
-    val data = movingGridItem.data as GridItemData.Widget
+    val data = updatedWidgetGridItem.data as GridItemData.Widget
 
     val gridSize = calculateGridSize(
         density = density,
@@ -306,7 +306,7 @@ internal fun handleAppWidgetLauncherResult(
         screenHeight = screenHeight,
         dockHeight = dockHeight,
         layoutDirection = layoutDirection,
-        associate = movingGridItem.associate,
+        associate = updatedWidgetGridItem.associate,
     )
 
     if (result.resultCode == Activity.RESULT_OK) {
@@ -324,13 +324,13 @@ internal fun handleAppWidgetLauncherResult(
             gridHeight = gridSize.height,
             gridWidth = gridSize.width,
             rows = rows,
-            startColumn = movingGridItem.startColumn,
-            startRow = movingGridItem.startRow,
+            startColumn = updatedWidgetGridItem.startColumn,
+            startRow = updatedWidgetGridItem.startRow,
         )
 
-        onUpdateWidgetGridItem(movingGridItem.copy(data = newData))
+        onUpdateWidgetGridItem(updatedWidgetGridItem.copy(data = newData))
     } else {
-        onResetGridAfterDeleteGridItem(movingGridItem)
+        onResetGridAfterDeleteGridItem(updatedWidgetGridItem)
     }
 }
 
@@ -590,9 +590,9 @@ private fun onDragEndWidget(
         provider = provider,
     )
 
-    if (bindAppWidgetIdIfAllowed) {
-        val newData = data.copy(appWidgetId = appWidgetId)
+    val newData = data.copy(appWidgetId = appWidgetId)
 
+    if (bindAppWidgetIdIfAllowed) {
         updateAppWidgetOptions(
             height = data.minWidth,
             width = data.minHeight,
@@ -606,8 +606,6 @@ private fun onDragEndWidget(
             startColumn = gridItem.startColumn,
             startRow = gridItem.startRow,
         )
-
-        onUpdateWidgetGridItem(gridItem.copy(data = newData))
     } else {
         val intent = Intent(AppWidgetManager.ACTION_APPWIDGET_BIND).apply {
             putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
@@ -617,6 +615,8 @@ private fun onDragEndWidget(
 
         onLaunchWidgetIntent(intent)
     }
+
+    onUpdateWidgetGridItem(gridItem.copy(data = newData))
 
     onUpdateIsDragging(false)
 
