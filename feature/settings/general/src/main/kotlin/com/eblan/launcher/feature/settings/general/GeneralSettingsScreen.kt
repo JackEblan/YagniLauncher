@@ -141,7 +141,7 @@ private fun Success(
 ) {
     val context = LocalContext.current
 
-    var showDarkThemeConfigDialog by remember { mutableStateOf(false) }
+    var showThemeDialog by remember { mutableStateOf(false) }
 
     var showImportIconPackDialog by remember { mutableStateOf(false) }
 
@@ -151,15 +151,9 @@ private fun Success(
         generalSettings = generalSettings,
         onImportIconPackClick = { showImportIconPackDialog = true },
         onSelectIconPackClick = { selectIconPackDialog = true },
-        onThemeClick = { showDarkThemeConfigDialog = true },
+        onThemeClick = { showThemeDialog = true },
         onDynamicThemeChange = {
             onUpdateGeneralSettings(generalSettings.copy(dynamicTheme = it))
-        },
-        onNotificationDotsClick = {
-            context.startActivity(
-                Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)
-                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
-            )
         },
     )
 
@@ -179,16 +173,16 @@ private fun Success(
         }
     }
 
-    if (showDarkThemeConfigDialog) {
+    if (showThemeDialog) {
         RadioOptionsDialog(
-            title = "Theme",
+            title = stringResource(R.string.theme),
             options = Theme.entries,
             selected = generalSettings.theme,
             label = {
-                it.getThemeTitle(context = context)
+                it.getTitle(context = context)
             },
             onDismissRequest = {
-                showDarkThemeConfigDialog = false
+                showThemeDialog = false
             },
             onUpdateClick = {
                 onUpdateGeneralSettings(generalSettings.copy(theme = it))
@@ -213,8 +207,6 @@ private fun Success(
                 } else {
                     context.startService(intent)
                 }
-
-                showImportIconPackDialog = false
             },
         )
     }
@@ -229,13 +221,9 @@ private fun Success(
             },
             onReset = {
                 onUpdateGeneralSettings(generalSettings.copy(iconPackInfoPackageName = ""))
-
-                selectIconPackDialog = false
             },
             onUpdateIconPackInfoPackageName = {
                 onUpdateGeneralSettings(generalSettings.copy(iconPackInfoPackageName = it))
-
-                selectIconPackDialog = false
             },
         )
     }
@@ -248,8 +236,9 @@ private fun buildGeneralSettingsItems(
     onSelectIconPackClick: () -> Unit,
     onThemeClick: () -> Unit,
     onDynamicThemeChange: (Boolean) -> Unit,
-    onNotificationDotsClick: () -> Unit,
 ): List<SettingsItem> {
+    val context = LocalContext.current
+
     val isNotificationAccessGranted by rememberIsNotificationAccessGranted()
 
     return buildList {
@@ -274,7 +263,7 @@ private fun buildGeneralSettingsItems(
         add(
             SettingsItem.Column(
                 title = stringResource(R.string.theme),
-                subtitle = generalSettings.theme.name,
+                subtitle = generalSettings.theme.getTitle(context = context),
                 onClick = onThemeClick,
             ),
         )
@@ -298,14 +287,19 @@ private fun buildGeneralSettingsItems(
                 SettingsItem.Column(
                     title = stringResource(R.string.notification_dots),
                     subtitle = stringResource(R.string.show_notification_dots),
-                    onClick = onNotificationDotsClick,
+                    onClick = {
+                        context.startActivity(
+                            Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)
+                                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+                        )
+                    },
                 ),
             )
         }
     }
 }
 
-private fun Theme.getThemeTitle(context: Context) = when (this) {
+private fun Theme.getTitle(context: Context) = when (this) {
     Theme.System -> context.getString(commonR.string.system)
     Theme.Light -> context.getString(commonR.string.light)
     Theme.Dark -> context.getString(commonR.string.dark)
