@@ -80,7 +80,7 @@ internal fun GridItemContent(
         getGridItemTextColor(
             gridItemCustomTextColor = currentGridItemSettings.customTextColor,
             gridItemTextColor = currentGridItemSettings.textColor,
-            systemCustomTextColor = currentGridItemSettings.customTextColor,
+            systemCustomTextColor = gridItemSettings.customTextColor,
             systemTextColor = textColor,
         )
     } else {
