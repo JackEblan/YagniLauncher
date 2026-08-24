@@ -68,8 +68,6 @@ internal class DefaultImageSerializer @Inject constructor(
                     val old = BitmapFactory.decodeFile(file.path)
 
                     isCreateNew = old == null || !bitmap.sameAs(old)
-
-                    old?.recycle()
                 }
 
                 if (isCreateNew) {

@@ -33,7 +33,6 @@ import com.eblan.launcher.domain.model.EblanApplicationInfo
 import com.eblan.launcher.domain.model.EblanShortcutConfig
 import com.eblan.launcher.domain.model.ExperimentalSettings
 import com.eblan.launcher.domain.model.FastAppWidgetManagerAppWidgetProviderInfo
-import com.eblan.launcher.domain.model.FastLauncherAppsActivityInfo
 import com.eblan.launcher.domain.model.FastLauncherAppsShortcutInfo
 import com.eblan.launcher.domain.model.GeneralSettings
 import com.eblan.launcher.domain.model.HomeSettings
@@ -85,14 +84,11 @@ class SyncDataUseCase @Inject constructor(
         withContext(ioDispatcher) {
             val userData = userDataRepository.userDataFlow.first()
 
-            val fastLauncherAppsActivityInfos = launcherAppsWrapper.getFastActivityList()
-
             launch {
                 updateEblanApplicationInfos(
                     experimentalSettings = userData.experimentalSettings,
                     homeSettings = userData.homeSettings,
                     generalSettings = userData.generalSettings,
-                    fastLauncherAppsActivityInfos = fastLauncherAppsActivityInfos,
                 )
             }
 
@@ -109,7 +105,7 @@ class SyncDataUseCase @Inject constructor(
                     iconPackInfoPackageName = userData.generalSettings.iconPackInfoPackageName,
                     fileManager = fileManager,
                     iconPackManager = iconPackManager,
-                    fastLauncherAppsActivityInfos = fastLauncherAppsActivityInfos,
+                    fastLauncherAppsActivityInfos = launcherAppsWrapper.getFastActivityList(),
                     iconKeyGenerator = iconKeyGenerator,
                 )
             }
@@ -121,15 +117,7 @@ class SyncDataUseCase @Inject constructor(
         experimentalSettings: ExperimentalSettings,
         homeSettings: HomeSettings,
         generalSettings: GeneralSettings,
-        fastLauncherAppsActivityInfos: List<FastLauncherAppsActivityInfo>,
     ) {
-        val oldFastEblanLauncherAppsActivityInfo =
-            eblanApplicationInfoRepository.getEblanApplicationInfos().map {
-                it.toFastLauncherAppsActivityInfo()
-            }
-
-        if (oldFastEblanLauncherAppsActivityInfo.toSet() == fastLauncherAppsActivityInfos.toSet()) return
-
         val newEblanShortcutConfigs = mutableSetOf<EblanShortcutConfig>()
 
         val newApplicationInfoGridItems = mutableListOf<ApplicationInfoGridItem>()
