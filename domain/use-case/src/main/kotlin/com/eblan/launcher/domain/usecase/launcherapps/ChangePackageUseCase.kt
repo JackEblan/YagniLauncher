@@ -188,6 +188,8 @@ class ChangePackageUseCase @Inject constructor(
 
         val newEblanAppWidgetProviderInfosByPackageName =
             appWidgetManagerAppWidgetProviderInfosByPackageName.map {
+                currentCoroutineContext().ensureActive()
+
                 it.toEblanAppWidgetProviderInfo(
                     fileManager = fileManager,
                     packageManagerWrapper = packageManagerWrapper,
@@ -249,8 +251,6 @@ class ChangePackageUseCase @Inject constructor(
 
         val newEblanShortcutInfosByPackageName =
             launcherAppsShortcutInfosByPackageName.map {
-                currentCoroutineContext().ensureActive()
-
                 it.toEblanShortcutInfo()
             }
 

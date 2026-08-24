@@ -180,6 +180,8 @@ class AddPackageUseCase @Inject constructor(
                 it.serialNumber == serialNumber &&
                     it.packageName == packageName
             }.map {
+                currentCoroutineContext().ensureActive()
+
                 it.toEblanAppWidgetProviderInfo(
                     fileManager = fileManager,
                     packageManagerWrapper = packageManagerWrapper,
