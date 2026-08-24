@@ -267,6 +267,8 @@ internal fun InteractiveFolderGridItem(
                 showFolderGridItemPopup = showFolderGridItemPopup,
                 previewFolderGridItems = previewFolderGridItems,
                 hasShortcutHostPermission = hasShortcutHostPermission,
+                padding = padding,
+                iconSize = iconSize,
                 isInProgress = isInProgress,
                 onUpdateIsCloseFolderGridItemPopup = onUpdateIsCloseFolderGridItemPopup,
                 onOpenAppDrawer = onOpenAppDrawer,
@@ -883,6 +885,8 @@ private fun InteractiveNestedFolderGridItem(
     showFolderGridItemPopup: Boolean,
     previewFolderGridItems: Map<String, PreviewFolder>,
     hasShortcutHostPermission: Boolean,
+    padding: Dp,
+    iconSize: Dp,
     isInProgress: Boolean,
     onUpdateIsCloseFolderGridItemPopup: (Boolean) -> Unit,
     onOpenAppDrawer: () -> Unit,
@@ -1002,7 +1006,7 @@ private fun InteractiveNestedFolderGridItem(
                 onOpenAppDrawer = onOpenAppDrawer,
             )
             .fillMaxSize()
-            .padding(gridItemSettings.padding.dp)
+            .padding(padding)
             .background(
                 color = Color(gridItemSettings.customBackgroundColor),
                 shape = RoundedCornerShape(size = gridItemSettings.cornerRadius.dp),
@@ -1012,7 +1016,7 @@ private fun InteractiveNestedFolderGridItem(
     ) {
         val commonModifier =
             Modifier
-                .size(gridItemSettings.iconSize.dp)
+                .size(iconSize)
                 .onGloballyPositioned { layoutCoordinates ->
                     intOffset = layoutCoordinates.positionInRoot().round()
 
