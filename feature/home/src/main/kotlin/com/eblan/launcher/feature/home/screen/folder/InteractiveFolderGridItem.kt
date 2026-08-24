@@ -79,6 +79,8 @@ import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.GridItemSettings
 import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.domain.model.PreviewFolder
+import com.eblan.launcher.domain.usecase.grid.FOLDER_PREVIEW_COLUMNS
+import com.eblan.launcher.domain.usecase.grid.FOLDER_PREVIEW_ROWS
 import com.eblan.launcher.feature.home.component.PreviewFolderGridLayout
 import com.eblan.launcher.feature.home.component.swipeGestures
 import com.eblan.launcher.feature.home.model.Drag
@@ -143,6 +145,12 @@ internal fun InteractiveFolderGridItem(
 
     val padding = lerp(1.dp, gridItemSettings.padding.dp, progress)
 
+    val iconSize = lerp(
+        gridItemSettings.iconSize.dp / maxOf(FOLDER_PREVIEW_COLUMNS, FOLDER_PREVIEW_ROWS),
+        gridItemSettings.iconSize.dp,
+        progress,
+    )
+
     val hasInteraction = isSelected && isVisibleOverlay
 
     val sourceBounds = getSourceBounds(
@@ -181,6 +189,7 @@ internal fun InteractiveFolderGridItem(
                 sharedElementKey = sharedElementKey,
                 statusBarNotifications = statusBarNotifications,
                 padding = padding,
+                iconSize = iconSize,
                 sourceBounds = sourceBounds,
                 isInProgress = isInProgress,
                 onOpenAppDrawer = onOpenAppDrawer,
@@ -206,6 +215,7 @@ internal fun InteractiveFolderGridItem(
                 isVisibleOverlay = isVisibleOverlay,
                 sharedElementKey = sharedElementKey,
                 padding = padding,
+                iconSize = iconSize,
                 sourceBounds = sourceBounds,
                 isInProgress = isInProgress,
                 onOpenAppDrawer = onOpenAppDrawer,
@@ -230,6 +240,7 @@ internal fun InteractiveFolderGridItem(
                 isVisibleOverlay = isVisibleOverlay,
                 sharedElementKey = sharedElementKey,
                 padding = padding,
+                iconSize = iconSize,
                 isInProgress = isInProgress,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
@@ -288,6 +299,7 @@ private fun InteractiveFolderApplicationInfoGridItem(
     sharedElementKey: SharedElementKey,
     statusBarNotifications: Map<String, Int>,
     padding: Dp,
+    iconSize: Dp,
     sourceBounds: Rect,
     isInProgress: Boolean,
     onOpenAppDrawer: () -> Unit,
@@ -409,7 +421,7 @@ private fun InteractiveFolderApplicationInfoGridItem(
     ) {
         Box(
             modifier = Modifier
-                .size(gridItemSettings.iconSize.dp)
+                .size(iconSize)
                 .alpha(alpha),
         ) {
             AsyncImage(
@@ -486,6 +498,7 @@ private fun InteractiveFolderShortcutInfoGridItem(
     isVisibleOverlay: Boolean,
     sharedElementKey: SharedElementKey,
     padding: Dp,
+    iconSize: Dp,
     sourceBounds: Rect,
     isInProgress: Boolean,
     onOpenAppDrawer: () -> Unit,
@@ -610,7 +623,7 @@ private fun InteractiveFolderShortcutInfoGridItem(
         verticalArrangement = verticalArrangement,
     ) {
         Box(
-            modifier = Modifier.size(gridItemSettings.iconSize.dp),
+            modifier = Modifier.size(iconSize),
         ) {
             AsyncImage(
                 model = Builder(context).data(customIcon).addLastModifiedToFileCacheKey(true)
@@ -687,6 +700,7 @@ private fun InteractiveFolderShortcutConfigGridItem(
     isVisibleOverlay: Boolean,
     sharedElementKey: SharedElementKey,
     padding: Dp,
+    iconSize: Dp,
     isInProgress: Boolean,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
@@ -807,7 +821,7 @@ private fun InteractiveFolderShortcutConfigGridItem(
                 .size(Size.ORIGINAL).build(),
             contentDescription = null,
             modifier = Modifier
-                .size(gridItemSettings.iconSize.dp)
+                .size(iconSize)
                 .onGloballyPositioned { layoutCoordinates ->
                     intOffset = layoutCoordinates.positionInRoot().round()
 
