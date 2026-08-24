@@ -394,7 +394,7 @@ internal fun FolderScreen(
                 HorizontalPager(
                     modifier = Modifier.weight(1f),
                     state = folderGridHorizontalPagerState,
-                    userScrollEnabled = !isVisibleOverlay,
+                    userScrollEnabled = !isVisibleOverlay && !isInProgress,
                 ) { index ->
                     FolderGridLayout(
                         modifier = Modifier.fillMaxSize(),

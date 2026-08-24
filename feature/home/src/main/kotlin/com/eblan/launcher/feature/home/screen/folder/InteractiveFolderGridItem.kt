@@ -342,9 +342,12 @@ private fun InteractiveFolderApplicationInfoGridItem(
 
     Column(
         modifier = modifier
-            .pointerInput(key1 = isVisibleOverlay) {
+            .pointerInput(
+                key1 = isVisibleOverlay,
+                key2 = isInProgress,
+            ) {
                 detectTapGestures(
-                    onDoubleTap = if (!isVisibleOverlay) {
+                    onDoubleTap = if (!isVisibleOverlay && !isInProgress) {
                         {
                             onDoubleTap(
                                 context = context,
@@ -356,7 +359,7 @@ private fun InteractiveFolderApplicationInfoGridItem(
                     } else {
                         null
                     },
-                    onLongPress = if (!isVisibleOverlay) {
+                    onLongPress = if (!isVisibleOverlay && !isInProgress) {
                         {
                             scope.launch {
                                 onLongPressFolderGridItem(
@@ -377,7 +380,7 @@ private fun InteractiveFolderApplicationInfoGridItem(
                     } else {
                         null
                     },
-                    onTap = if (!isVisibleOverlay) {
+                    onTap = if (!isVisibleOverlay && !isInProgress) {
                         {
                             androidLauncherAppsWrapper.startMainActivity(
                                 serialNumber = data.serialNumber,
@@ -533,9 +536,12 @@ private fun InteractiveFolderShortcutInfoGridItem(
 
     Column(
         modifier = modifier
-            .pointerInput(key1 = isVisibleOverlay) {
+            .pointerInput(
+                key1 = isVisibleOverlay,
+                key2 = isInProgress,
+            ) {
                 detectTapGestures(
-                    onDoubleTap = if (!isVisibleOverlay) {
+                    onDoubleTap = if (!isVisibleOverlay && !isInProgress) {
                         {
                             scope.launch {
                                 onDoubleTap(
@@ -549,7 +555,7 @@ private fun InteractiveFolderShortcutInfoGridItem(
                     } else {
                         null
                     },
-                    onLongPress = if (!isVisibleOverlay) {
+                    onLongPress = if (!isVisibleOverlay && !isInProgress) {
                         {
                             scope.launch {
                                 onLongPressFolderGridItem(
@@ -570,7 +576,7 @@ private fun InteractiveFolderShortcutInfoGridItem(
                     } else {
                         null
                     },
-                    onTap = if (!isVisibleOverlay) {
+                    onTap = if (!isVisibleOverlay && !isInProgress) {
                         {
                             if (hasShortcutHostPermission &&
                                 data.isEnabled &&
@@ -736,7 +742,7 @@ private fun InteractiveFolderShortcutConfigGridItem(
 
     Column(
         modifier = modifier
-            .pointerInput(key1 = isVisibleOverlay) {
+            .pointerInput(key1 = isVisibleOverlay && !isInProgress) {
                 detectTapGestures(
                     onDoubleTap = if (!isVisibleOverlay) {
                         {
@@ -750,7 +756,7 @@ private fun InteractiveFolderShortcutConfigGridItem(
                     } else {
                         null
                     },
-                    onLongPress = if (!isVisibleOverlay) {
+                    onLongPress = if (!isVisibleOverlay && !isInProgress) {
                         {
                             scope.launch {
                                 onLongPressFolderGridItem(
@@ -771,7 +777,7 @@ private fun InteractiveFolderShortcutConfigGridItem(
                     } else {
                         null
                     },
-                    onTap = if (!isVisibleOverlay) {
+                    onTap = if (!isVisibleOverlay && !isInProgress) {
                         {
                             data.shortcutIntentUri?.let {
                                 context.startActivity(parseUri(it, 0))
@@ -827,7 +833,8 @@ private fun InteractiveFolderShortcutConfigGridItem(
                     }
 
                     drawLayer(graphicsLayer)
-                }.alpha(alpha),
+                }
+                .alpha(alpha),
         )
 
         if (gridItemSettings.showLabel) {
@@ -915,9 +922,12 @@ private fun InteractiveNestedFolderGridItem(
 
     Column(
         modifier = modifier
-            .pointerInput(key1 = isVisibleOverlay) {
+            .pointerInput(
+                key1 = isVisibleOverlay,
+                key2 = isInProgress,
+            ) {
                 detectTapGestures(
-                    onDoubleTap = if (!isVisibleOverlay) {
+                    onDoubleTap = if (!isVisibleOverlay && !isInProgress) {
                         {
                             onDoubleTap(
                                 context = context,
@@ -929,7 +939,7 @@ private fun InteractiveNestedFolderGridItem(
                     } else {
                         null
                     },
-                    onLongPress = if (!isVisibleOverlay) {
+                    onLongPress = if (!isVisibleOverlay && !isInProgress) {
                         {
                             scope.launch {
                                 onLongPressFolderGridItem(
@@ -950,7 +960,7 @@ private fun InteractiveNestedFolderGridItem(
                     } else {
                         null
                     },
-                    onTap = if (!isVisibleOverlay) {
+                    onTap = if (!isVisibleOverlay && !isInProgress) {
                         {
                             onUpsertFolderPopupEntry(
                                 FolderPopupEntry(
@@ -1010,7 +1020,8 @@ private fun InteractiveNestedFolderGridItem(
                     }
 
                     drawLayer(graphicsLayer)
-                }.alpha(alpha)
+                }
+                .alpha(alpha)
 
         if (data.icon != null) {
             AsyncImage(
