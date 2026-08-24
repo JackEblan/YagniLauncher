@@ -143,11 +143,11 @@ internal fun InteractiveFolderGridItem(
         gridItemSettings
     }
 
-    val padding = lerp(1.dp, gridItemSettings.padding.dp, progress)
+    val padding = lerp(1.dp, currentGridItemSettings.padding.dp, progress)
 
     val iconSize = lerp(
-        gridItemSettings.iconSize.dp / maxOf(FOLDER_PREVIEW_COLUMNS, FOLDER_PREVIEW_ROWS),
-        gridItemSettings.iconSize.dp,
+        currentGridItemSettings.iconSize.dp / maxOf(FOLDER_PREVIEW_COLUMNS, FOLDER_PREVIEW_ROWS),
+        currentGridItemSettings.iconSize.dp,
         progress,
     )
 
