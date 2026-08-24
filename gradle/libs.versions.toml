@@ -16,6 +16,7 @@ apacheCommonsText = "1.15.0"
 coil = "3.4.0"
 hilt = "2.59.2"
 javaxInject = "1"
+junit-jupiter = "5.14.1"
 kotlin = "2.3.20"
 kotlinxCoroutines = "1.10.2"
 kotlinxSerializationJson = "1.10.0"
@@ -55,6 +56,8 @@ hilt-android-gradle-plugin = { group = "com.google.dagger", name = "hilt-android
 hilt-android-testing = { group = "com.google.dagger", name = "hilt-android-testing", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
 javax-inject = { group = "javax.inject", name = "javax.inject", version.ref = "javaxInject" }
+junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit-jupiter" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
 kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinxCoroutines" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 protobuf-kotlin-lite = { group = "com.google.protobuf", name = "protobuf-kotlin-lite", version.ref = "protobuf" }
