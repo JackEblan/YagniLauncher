@@ -215,6 +215,7 @@ internal fun FolderScreen(
     val currentIsVisibleOverlay = rememberUpdatedState(isVisibleOverlay)
     val currentMoveGridItemResult = rememberUpdatedState(moveGridItemResult)
     val currentLockMovement = rememberUpdatedState(lockMovement)
+
     val isInProgress by remember {
         derivedStateOf { progress.value < 1f }
     }
