@@ -40,10 +40,10 @@ import kotlin.time.Duration.Companion.milliseconds
 internal suspend fun handlePageDirection(
     pageDirection: PageDirection?,
     currentPage: Int,
-    progress: Float,
+    isInProgress: Boolean,
     onAnimateScrollToPage: suspend (Int) -> Unit,
 ) {
-    if (pageDirection == null || progress < 1f) return
+    if (pageDirection == null || isInProgress) return
 
     delay(500L.milliseconds)
 
@@ -112,7 +112,7 @@ internal fun handleAnimateScrollToPage(
     layoutDirection: LayoutDirection,
     folderCellWidth: Int,
     isLast: Boolean,
-    progress: Float,
+    isInProgress: Boolean,
     onUpdateFolderPageDirection: (PageDirection?) -> Unit,
 ) {
     if (drag != Drag.Dragging ||
@@ -121,7 +121,7 @@ internal fun handleAnimateScrollToPage(
         lockMovement.value ||
         moveGridItemResult == null ||
         !isLast ||
-        progress < 1f
+        isInProgress
     ) {
         return
     }
@@ -159,7 +159,7 @@ internal fun handleDragFolderGridItem(
     folderCellWidth: Int,
     folderCellHeight: Int,
     isLastFolderGridItem: Boolean,
-    progress: Float,
+    isInProgress: Boolean,
     onMoveFolderGridItem: (
         folderPopup: FolderPopup,
         movingFolderGridItem: GridItem,
@@ -179,7 +179,7 @@ internal fun handleDragFolderGridItem(
         lockMovement.value ||
         moveGridItemResult == null ||
         !isLastFolderGridItem ||
-        progress < 1f
+        isInProgress
     ) {
         return
     }

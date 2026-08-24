@@ -79,6 +79,8 @@ import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.GridItemSettings
 import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.domain.model.PreviewFolder
+import com.eblan.launcher.domain.usecase.grid.FOLDER_PREVIEW_COLUMNS
+import com.eblan.launcher.domain.usecase.grid.FOLDER_PREVIEW_ROWS
 import com.eblan.launcher.feature.home.component.PreviewFolderGridLayout
 import com.eblan.launcher.feature.home.component.swipeGestures
 import com.eblan.launcher.feature.home.model.Drag
@@ -110,6 +112,7 @@ internal fun InteractiveFolderGridItem(
     minCellHeightPx: Int,
     paddingValues: PaddingValues,
     sharedElementKey: SharedElementKey,
+    isInProgress: Boolean,
     onOpenAppDrawer: () -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
@@ -140,7 +143,13 @@ internal fun InteractiveFolderGridItem(
         gridItemSettings
     }
 
-    val padding = lerp(1.dp, gridItemSettings.padding.dp, progress)
+    val padding = lerp(1.dp, currentGridItemSettings.padding.dp, progress)
+
+    val iconSize = lerp(
+        currentGridItemSettings.iconSize.dp / maxOf(FOLDER_PREVIEW_COLUMNS, FOLDER_PREVIEW_ROWS),
+        currentGridItemSettings.iconSize.dp,
+        progress,
+    )
 
     val hasInteraction = isSelected && isVisibleOverlay
 
@@ -180,7 +189,9 @@ internal fun InteractiveFolderGridItem(
                 sharedElementKey = sharedElementKey,
                 statusBarNotifications = statusBarNotifications,
                 padding = padding,
+                iconSize = iconSize,
                 sourceBounds = sourceBounds,
+                isInProgress = isInProgress,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
                 onUpdateImageBitmap = onUpdateImageBitmap,
@@ -204,7 +215,9 @@ internal fun InteractiveFolderGridItem(
                 isVisibleOverlay = isVisibleOverlay,
                 sharedElementKey = sharedElementKey,
                 padding = padding,
+                iconSize = iconSize,
                 sourceBounds = sourceBounds,
+                isInProgress = isInProgress,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
                 onUpdateImageBitmap = onUpdateImageBitmap,
@@ -227,6 +240,8 @@ internal fun InteractiveFolderGridItem(
                 isVisibleOverlay = isVisibleOverlay,
                 sharedElementKey = sharedElementKey,
                 padding = padding,
+                iconSize = iconSize,
+                isInProgress = isInProgress,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
                 onUpdateImageBitmap = onUpdateImageBitmap,
@@ -252,6 +267,9 @@ internal fun InteractiveFolderGridItem(
                 showFolderGridItemPopup = showFolderGridItemPopup,
                 previewFolderGridItems = previewFolderGridItems,
                 hasShortcutHostPermission = hasShortcutHostPermission,
+                padding = padding,
+                iconSize = iconSize,
+                isInProgress = isInProgress,
                 onUpdateIsCloseFolderGridItemPopup = onUpdateIsCloseFolderGridItemPopup,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
@@ -283,7 +301,9 @@ private fun InteractiveFolderApplicationInfoGridItem(
     sharedElementKey: SharedElementKey,
     statusBarNotifications: Map<String, Int>,
     padding: Dp,
+    iconSize: Dp,
     sourceBounds: Rect,
+    isInProgress: Boolean,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
         intOffset: IntOffset,
@@ -336,9 +356,12 @@ private fun InteractiveFolderApplicationInfoGridItem(
 
     Column(
         modifier = modifier
-            .pointerInput(key1 = isVisibleOverlay) {
+            .pointerInput(
+                key1 = isVisibleOverlay,
+                key2 = isInProgress,
+            ) {
                 detectTapGestures(
-                    onDoubleTap = if (!isVisibleOverlay) {
+                    onDoubleTap = if (!isVisibleOverlay && !isInProgress) {
                         {
                             onDoubleTap(
                                 context = context,
@@ -350,7 +373,7 @@ private fun InteractiveFolderApplicationInfoGridItem(
                     } else {
                         null
                     },
-                    onLongPress = if (!isVisibleOverlay) {
+                    onLongPress = if (!isVisibleOverlay && !isInProgress) {
                         {
                             scope.launch {
                                 onLongPressFolderGridItem(
@@ -371,7 +394,7 @@ private fun InteractiveFolderApplicationInfoGridItem(
                     } else {
                         null
                     },
-                    onTap = if (!isVisibleOverlay) {
+                    onTap = if (!isVisibleOverlay && !isInProgress) {
                         {
                             androidLauncherAppsWrapper.startMainActivity(
                                 serialNumber = data.serialNumber,
@@ -387,6 +410,7 @@ private fun InteractiveFolderApplicationInfoGridItem(
             .swipeGestures(
                 swipeDown = gridItem.swipeDown,
                 swipeUp = gridItem.swipeUp,
+                enabled = !isInProgress,
                 onOpenAppDrawer = onOpenAppDrawer,
             )
             .fillMaxSize()
@@ -400,7 +424,7 @@ private fun InteractiveFolderApplicationInfoGridItem(
     ) {
         Box(
             modifier = Modifier
-                .size(gridItemSettings.iconSize.dp)
+                .size(iconSize)
                 .alpha(alpha),
         ) {
             AsyncImage(
@@ -415,7 +439,7 @@ private fun InteractiveFolderApplicationInfoGridItem(
                         intSize = layoutCoordinates.size
                     }
                     .run {
-                        if (!isScrollInProgress && !hasInteraction) {
+                        if (!isScrollInProgress && !hasInteraction && !isInProgress) {
                             with(sharedTransitionScope) {
                                 sharedElementWithCallerManagedVisibility(
                                     rememberSharedContentState(
@@ -440,7 +464,7 @@ private fun InteractiveFolderApplicationInfoGridItem(
             if (isNotificationAccessGranted && hasNotifications) {
                 Box(
                     modifier = Modifier
-                        .size((gridItemSettings.iconSize * 0.3).dp)
+                        .size(iconSize * 0.3f)
                         .align(Alignment.TopEnd)
                         .background(
                             color = MaterialTheme.colorScheme.primary,
@@ -477,7 +501,9 @@ private fun InteractiveFolderShortcutInfoGridItem(
     isVisibleOverlay: Boolean,
     sharedElementKey: SharedElementKey,
     padding: Dp,
+    iconSize: Dp,
     sourceBounds: Rect,
+    isInProgress: Boolean,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
         intOffset: IntOffset,
@@ -526,9 +552,12 @@ private fun InteractiveFolderShortcutInfoGridItem(
 
     Column(
         modifier = modifier
-            .pointerInput(key1 = isVisibleOverlay) {
+            .pointerInput(
+                key1 = isVisibleOverlay,
+                key2 = isInProgress,
+            ) {
                 detectTapGestures(
-                    onDoubleTap = if (!isVisibleOverlay) {
+                    onDoubleTap = if (!isVisibleOverlay && !isInProgress) {
                         {
                             scope.launch {
                                 onDoubleTap(
@@ -542,7 +571,7 @@ private fun InteractiveFolderShortcutInfoGridItem(
                     } else {
                         null
                     },
-                    onLongPress = if (!isVisibleOverlay) {
+                    onLongPress = if (!isVisibleOverlay && !isInProgress) {
                         {
                             scope.launch {
                                 onLongPressFolderGridItem(
@@ -563,7 +592,7 @@ private fun InteractiveFolderShortcutInfoGridItem(
                     } else {
                         null
                     },
-                    onTap = if (!isVisibleOverlay) {
+                    onTap = if (!isVisibleOverlay && !isInProgress) {
                         {
                             if (hasShortcutHostPermission &&
                                 data.isEnabled &&
@@ -585,6 +614,7 @@ private fun InteractiveFolderShortcutInfoGridItem(
             .swipeGestures(
                 swipeDown = gridItem.swipeDown,
                 swipeUp = gridItem.swipeUp,
+                enabled = !isInProgress,
                 onOpenAppDrawer = onOpenAppDrawer,
             )
             .fillMaxSize()
@@ -597,7 +627,7 @@ private fun InteractiveFolderShortcutInfoGridItem(
         verticalArrangement = verticalArrangement,
     ) {
         Box(
-            modifier = Modifier.size(gridItemSettings.iconSize.dp),
+            modifier = Modifier.size(iconSize),
         ) {
             AsyncImage(
                 model = Builder(context).data(customIcon).addLastModifiedToFileCacheKey(true)
@@ -610,7 +640,7 @@ private fun InteractiveFolderShortcutInfoGridItem(
                         intSize = layoutCoordinates.size
                     }
                     .run {
-                        if (!isScrollInProgress && !hasInteraction) {
+                        if (!isScrollInProgress && !hasInteraction && !isInProgress) {
                             with(sharedTransitionScope) {
                                 sharedElementWithCallerManagedVisibility(
                                     rememberSharedContentState(
@@ -674,6 +704,8 @@ private fun InteractiveFolderShortcutConfigGridItem(
     isVisibleOverlay: Boolean,
     sharedElementKey: SharedElementKey,
     padding: Dp,
+    iconSize: Dp,
+    isInProgress: Boolean,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
         intOffset: IntOffset,
@@ -728,9 +760,9 @@ private fun InteractiveFolderShortcutConfigGridItem(
 
     Column(
         modifier = modifier
-            .pointerInput(key1 = isVisibleOverlay) {
+            .pointerInput(key1 = isVisibleOverlay && !isInProgress) {
                 detectTapGestures(
-                    onDoubleTap = if (!isVisibleOverlay) {
+                    onDoubleTap = if (!isVisibleOverlay && !isInProgress) {
                         {
                             onDoubleTap(
                                 context = context,
@@ -742,7 +774,7 @@ private fun InteractiveFolderShortcutConfigGridItem(
                     } else {
                         null
                     },
-                    onLongPress = if (!isVisibleOverlay) {
+                    onLongPress = if (!isVisibleOverlay && !isInProgress) {
                         {
                             scope.launch {
                                 onLongPressFolderGridItem(
@@ -763,7 +795,7 @@ private fun InteractiveFolderShortcutConfigGridItem(
                     } else {
                         null
                     },
-                    onTap = if (!isVisibleOverlay) {
+                    onTap = if (!isVisibleOverlay && !isInProgress) {
                         {
                             data.shortcutIntentUri?.let {
                                 context.startActivity(parseUri(it, 0))
@@ -777,6 +809,7 @@ private fun InteractiveFolderShortcutConfigGridItem(
             .swipeGestures(
                 swipeDown = gridItem.swipeDown,
                 swipeUp = gridItem.swipeUp,
+                enabled = !isInProgress,
                 onOpenAppDrawer = onOpenAppDrawer,
             )
             .fillMaxSize()
@@ -793,14 +826,14 @@ private fun InteractiveFolderShortcutConfigGridItem(
                 .size(Size.ORIGINAL).build(),
             contentDescription = null,
             modifier = Modifier
-                .size(gridItemSettings.iconSize.dp)
+                .size(iconSize)
                 .onGloballyPositioned { layoutCoordinates ->
                     intOffset = layoutCoordinates.positionInRoot().round()
 
                     intSize = layoutCoordinates.size
                 }
                 .run {
-                    if (!isScrollInProgress && !hasInteraction) {
+                    if (!isScrollInProgress && !hasInteraction && !isInProgress) {
                         with(sharedTransitionScope) {
                             sharedElementWithCallerManagedVisibility(
                                 rememberSharedContentState(
@@ -819,7 +852,8 @@ private fun InteractiveFolderShortcutConfigGridItem(
                     }
 
                     drawLayer(graphicsLayer)
-                }.alpha(alpha),
+                }
+                .alpha(alpha),
         )
 
         if (gridItemSettings.showLabel) {
@@ -851,6 +885,9 @@ private fun InteractiveNestedFolderGridItem(
     showFolderGridItemPopup: Boolean,
     previewFolderGridItems: Map<String, PreviewFolder>,
     hasShortcutHostPermission: Boolean,
+    padding: Dp,
+    iconSize: Dp,
+    isInProgress: Boolean,
     onUpdateIsCloseFolderGridItemPopup: (Boolean) -> Unit,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
@@ -906,9 +943,12 @@ private fun InteractiveNestedFolderGridItem(
 
     Column(
         modifier = modifier
-            .pointerInput(key1 = isVisibleOverlay) {
+            .pointerInput(
+                key1 = isVisibleOverlay,
+                key2 = isInProgress,
+            ) {
                 detectTapGestures(
-                    onDoubleTap = if (!isVisibleOverlay) {
+                    onDoubleTap = if (!isVisibleOverlay && !isInProgress) {
                         {
                             onDoubleTap(
                                 context = context,
@@ -920,7 +960,7 @@ private fun InteractiveNestedFolderGridItem(
                     } else {
                         null
                     },
-                    onLongPress = if (!isVisibleOverlay) {
+                    onLongPress = if (!isVisibleOverlay && !isInProgress) {
                         {
                             scope.launch {
                                 onLongPressFolderGridItem(
@@ -941,7 +981,7 @@ private fun InteractiveNestedFolderGridItem(
                     } else {
                         null
                     },
-                    onTap = if (!isVisibleOverlay) {
+                    onTap = if (!isVisibleOverlay && !isInProgress) {
                         {
                             onUpsertFolderPopupEntry(
                                 FolderPopupEntry(
@@ -962,10 +1002,11 @@ private fun InteractiveNestedFolderGridItem(
             .swipeGestures(
                 swipeDown = gridItem.swipeDown,
                 swipeUp = gridItem.swipeUp,
+                enabled = !isInProgress,
                 onOpenAppDrawer = onOpenAppDrawer,
             )
             .fillMaxSize()
-            .padding(gridItemSettings.padding.dp)
+            .padding(padding)
             .background(
                 color = Color(gridItemSettings.customBackgroundColor),
                 shape = RoundedCornerShape(size = gridItemSettings.cornerRadius.dp),
@@ -975,14 +1016,14 @@ private fun InteractiveNestedFolderGridItem(
     ) {
         val commonModifier =
             Modifier
-                .size(gridItemSettings.iconSize.dp)
+                .size(iconSize)
                 .onGloballyPositioned { layoutCoordinates ->
                     intOffset = layoutCoordinates.positionInRoot().round()
 
                     intSize = layoutCoordinates.size
                 }
                 .run {
-                    if (!isScrollInProgress && !hasInteraction) {
+                    if (!isScrollInProgress && !hasInteraction && !isInProgress) {
                         with(sharedTransitionScope) {
                             sharedElementWithCallerManagedVisibility(
                                 rememberSharedContentState(
@@ -1001,7 +1042,8 @@ private fun InteractiveNestedFolderGridItem(
                     }
 
                     drawLayer(graphicsLayer)
-                }.alpha(alpha)
+                }
+                .alpha(alpha)
 
         if (data.icon != null) {
             AsyncImage(

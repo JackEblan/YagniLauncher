@@ -78,14 +78,14 @@ internal fun GridItemContent(
 
     val currentTextColor = if (gridItem.override) {
         getGridItemTextColor(
-            gridItemCustomTextColor = gridItem.gridItemSettings.customTextColor,
-            gridItemTextColor = gridItem.gridItemSettings.textColor,
+            gridItemCustomTextColor = currentGridItemSettings.customTextColor,
+            gridItemTextColor = currentGridItemSettings.textColor,
             systemCustomTextColor = gridItemSettings.customTextColor,
             systemTextColor = textColor,
         )
     } else {
         getTextColor(
-            customTextColor = gridItemSettings.customTextColor,
+            customTextColor = currentGridItemSettings.customTextColor,
             textColor = textColor,
         )
     }

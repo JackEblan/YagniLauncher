@@ -46,6 +46,7 @@ import kotlin.math.roundToInt
 internal fun Modifier.swipeGestures(
     swipeDown: EblanAction,
     swipeUp: EblanAction,
+    enabled: Boolean = true,
     onOpenAppDrawer: () -> Unit,
 ): Modifier {
     val context = LocalContext.current
@@ -56,8 +57,10 @@ internal fun Modifier.swipeGestures(
 
     val launcherApps = LocalLauncherApps.current
 
-    return if (swipeUp.eblanActionType != EblanActionType.None ||
-        swipeDown.eblanActionType != EblanActionType.None
+    return if ((
+            swipeUp.eblanActionType != EblanActionType.None ||
+                swipeDown.eblanActionType != EblanActionType.None
+            ) && enabled
     ) {
         val swipeY = remember { Animatable(0f) }
 
