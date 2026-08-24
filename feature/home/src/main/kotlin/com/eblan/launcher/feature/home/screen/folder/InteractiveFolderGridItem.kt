@@ -408,6 +408,7 @@ private fun InteractiveFolderApplicationInfoGridItem(
             .swipeGestures(
                 swipeDown = gridItem.swipeDown,
                 swipeUp = gridItem.swipeUp,
+                enabled = !isInProgress,
                 onOpenAppDrawer = onOpenAppDrawer,
             )
             .fillMaxSize()
@@ -611,6 +612,7 @@ private fun InteractiveFolderShortcutInfoGridItem(
             .swipeGestures(
                 swipeDown = gridItem.swipeDown,
                 swipeUp = gridItem.swipeUp,
+                enabled = !isInProgress,
                 onOpenAppDrawer = onOpenAppDrawer,
             )
             .fillMaxSize()
@@ -805,6 +807,7 @@ private fun InteractiveFolderShortcutConfigGridItem(
             .swipeGestures(
                 swipeDown = gridItem.swipeDown,
                 swipeUp = gridItem.swipeUp,
+                enabled = !isInProgress,
                 onOpenAppDrawer = onOpenAppDrawer,
             )
             .fillMaxSize()
@@ -995,6 +998,7 @@ private fun InteractiveNestedFolderGridItem(
             .swipeGestures(
                 swipeDown = gridItem.swipeDown,
                 swipeUp = gridItem.swipeUp,
+                enabled = !isInProgress,
                 onOpenAppDrawer = onOpenAppDrawer,
             )
             .fillMaxSize()
