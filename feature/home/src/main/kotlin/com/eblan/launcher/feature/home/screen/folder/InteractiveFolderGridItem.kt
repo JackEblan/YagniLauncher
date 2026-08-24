@@ -758,7 +758,7 @@ private fun InteractiveFolderShortcutConfigGridItem(
         modifier = modifier
             .pointerInput(key1 = isVisibleOverlay && !isInProgress) {
                 detectTapGestures(
-                    onDoubleTap = if (!isVisibleOverlay) {
+                    onDoubleTap = if (!isVisibleOverlay && !isInProgress) {
                         {
                             onDoubleTap(
                                 context = context,
