@@ -464,7 +464,7 @@ private fun InteractiveFolderApplicationInfoGridItem(
             if (isNotificationAccessGranted && hasNotifications) {
                 Box(
                     modifier = Modifier
-                        .size((gridItemSettings.iconSize * 0.3).dp)
+                        .size(iconSize * 0.3f)
                         .align(Alignment.TopEnd)
                         .background(
                             color = MaterialTheme.colorScheme.primary,

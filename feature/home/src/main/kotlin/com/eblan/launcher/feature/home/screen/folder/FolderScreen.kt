@@ -224,11 +224,19 @@ internal fun FolderScreen(
         progress.animateTo(targetValue = 1f)
     }
 
-    BackHandler(enabled = !folderPopup.folderPopupEntry.isCloseFolder && isLastFolderGridItem) {
+    BackHandler(
+        enabled = !folderPopup.folderPopupEntry.isCloseFolder &&
+            isLastFolderGridItem &&
+            !isInProgress,
+    ) {
         onUpsertFolderPopupEntry(folderPopup.folderPopupEntry.copy(isCloseFolder = true))
     }
 
-    HomeHandler(enabled = !folderPopup.folderPopupEntry.isCloseFolder && isLastFolderGridItem) {
+    HomeHandler(
+        enabled = !folderPopup.folderPopupEntry.isCloseFolder &&
+            isLastFolderGridItem &&
+            !isInProgress,
+    ) {
         onUpsertFolderPopupEntry(folderPopup.folderPopupEntry.copy(isCloseFolder = true))
     }
 
