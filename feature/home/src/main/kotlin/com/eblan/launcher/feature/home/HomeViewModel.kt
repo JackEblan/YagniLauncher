@@ -38,8 +38,6 @@ import com.eblan.launcher.domain.repository.EblanAppWidgetProviderInfoRepository
 import com.eblan.launcher.domain.repository.EblanApplicationInfoTagRepository
 import com.eblan.launcher.domain.repository.GridRepository
 import com.eblan.launcher.domain.repository.UserDataRepository
-import com.eblan.launcher.domain.usecase.GetHomeDataUseCase
-import com.eblan.launcher.domain.usecase.GetTextColorUseCase
 import com.eblan.launcher.domain.usecase.application.GetEblanAppWidgetProviderInfosByLabelUseCase
 import com.eblan.launcher.domain.usecase.application.GetEblanApplicationInfosByLabelAndTagUseCase
 import com.eblan.launcher.domain.usecase.application.GetEblanShortcutConfigsByLabelUseCase
@@ -52,6 +50,8 @@ import com.eblan.launcher.domain.usecase.grid.MoveFolderGridItemUseCase
 import com.eblan.launcher.domain.usecase.grid.MoveGridItemUseCase
 import com.eblan.launcher.domain.usecase.grid.ResizeGridItemUseCase
 import com.eblan.launcher.domain.usecase.grid.UpdateGridItemsAfterMoveUseCase
+import com.eblan.launcher.domain.usecase.home.GetHomeDataUseCase
+import com.eblan.launcher.domain.usecase.home.GetTextColorUseCase
 import com.eblan.launcher.domain.usecase.launcherapps.AddPackageUseCase
 import com.eblan.launcher.domain.usecase.launcherapps.ChangePackageUseCase
 import com.eblan.launcher.domain.usecase.launcherapps.ChangeShortcutsUseCase

@@ -15,10 +15,11 @@
  *   limitations under the License.
  *
  */
-package com.eblan.launcher.domain.framework
+package com.eblan.launcher.domain.model
 
-import com.eblan.launcher.domain.model.AppWidgetManagerAppWidgetProviderInfo
-
-interface AppWidgetManagerWrapper {
-    suspend fun getInstalledProvidersWithCacheIcons(): List<AppWidgetManagerAppWidgetProviderInfo>
-}
+data class FastLauncherAppsShortcutInfo(
+    val shortcutId: String,
+    val packageName: String,
+    val serialNumber: Long,
+    val lastChangedTimestamp: Long,
+)

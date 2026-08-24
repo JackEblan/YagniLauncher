@@ -53,7 +53,7 @@ internal class DefaultAppWidgetManagerWrapper @Inject constructor(
     AndroidAppWidgetManagerWrapper {
     private val appWidgetManager = AppWidgetManager.getInstance(context)
 
-    override suspend fun getInstalledProviders(): List<AppWidgetManagerAppWidgetProviderInfo> = withContext(ioDispatcher) {
+    override suspend fun getInstalledProvidersWithCacheIcons(): List<AppWidgetManagerAppWidgetProviderInfo> = withContext(ioDispatcher) {
         appWidgetManager.installedProviders.map {
             currentCoroutineContext().ensureActive()
 

@@ -75,7 +75,7 @@ class AddPackageUseCase @Inject constructor(
 
             val newApplicationInfoGridItems = mutableListOf<ApplicationInfoGridItem>()
 
-            val launcherAppsActivityInfosByPackageName = launcherAppsWrapper.getActivityList(
+            val launcherAppsActivityInfosByPackageName = launcherAppsWrapper.getActivityListWithCacheIcons(
                 serialNumber = serialNumber,
                 packageName = packageName,
             ).onEach {
@@ -175,7 +175,7 @@ class AddPackageUseCase @Inject constructor(
         serialNumber: Long,
         packageName: String,
     ) {
-        val eblanAppWidgetProviderInfos = appWidgetManagerWrapper.getInstalledProviders()
+        val eblanAppWidgetProviderInfos = appWidgetManagerWrapper.getInstalledProvidersWithCacheIcons()
             .filter {
                 it.serialNumber == serialNumber &&
                     it.packageName == packageName
@@ -197,7 +197,7 @@ class AddPackageUseCase @Inject constructor(
         packageName: String,
     ) {
         val eblanShortcutInfos =
-            launcherAppsWrapper.getShortcutsByPackageName(
+            launcherAppsWrapper.getShortcutsByPackageNameWithCacheIcons(
                 serialNumber = serialNumber,
                 packageName = packageName,
             )?.map {
@@ -215,7 +215,7 @@ class AddPackageUseCase @Inject constructor(
         serialNumber: Long,
         packageName: String,
     ) {
-        val eblanShortcutConfigs = launcherAppsWrapper.getShortcutConfigActivityList(
+        val eblanShortcutConfigs = launcherAppsWrapper.getShortcutConfigActivityListWithCacheIcons(
             serialNumber = serialNumber,
             packageName = packageName,
         ).map {

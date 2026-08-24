@@ -126,11 +126,11 @@ class SyncDataUseCase @Inject constructor(
             }
 
         val newSyncEblanApplicationInfos = buildList {
-            launcherAppsWrapper.getActivityList().forEach { launcherAppsActivityInfo ->
+            launcherAppsWrapper.getActivityListWithCacheIcons().forEach { launcherAppsActivityInfo ->
                 currentCoroutineContext().ensureActive()
 
                 newEblanShortcutConfigs.addAll(
-                    launcherAppsWrapper.getShortcutConfigActivityList(
+                    launcherAppsWrapper.getShortcutConfigActivityListWithCacheIcons(
                         serialNumber = launcherAppsActivityInfo.serialNumber,
                         packageName = launcherAppsActivityInfo.packageName,
                     ).map {
@@ -259,7 +259,7 @@ class SyncDataUseCase @Inject constructor(
     private suspend fun updateAppWidgetProviderInfos() {
         if (!packageManagerWrapper.hasSystemFeatureAppWidgets) return
 
-        val appWidgetManagerAppWidgetProviderInfos = appWidgetManagerWrapper.getInstalledProviders()
+        val appWidgetManagerAppWidgetProviderInfos = appWidgetManagerWrapper.getInstalledProvidersWithCacheIcons()
 
         val oldEblanAppWidgetProviderInfos =
             eblanAppWidgetProviderInfoRepository.getEblanAppWidgetProviderInfos()
@@ -312,7 +312,7 @@ class SyncDataUseCase @Inject constructor(
         if (!launcherAppsWrapper.hasShortcutHostPermission) return
 
         val launcherAppsShortcutInfos =
-            launcherAppsWrapper.getShortcuts(shortcutQuery = null) ?: return
+            launcherAppsWrapper.getShortcutsWithCacheIcons(shortcutQuery = null) ?: return
 
         val oldEblanShortcutInfos = eblanShortcutInfoRepository.getEblanShortcutInfos()
 

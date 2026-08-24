@@ -19,6 +19,7 @@ package com.eblan.launcher.domain.framework
 
 import com.eblan.launcher.domain.model.EblanUser
 import com.eblan.launcher.domain.model.FastLauncherAppsActivityInfo
+import com.eblan.launcher.domain.model.FastLauncherAppsShortcutInfo
 import com.eblan.launcher.domain.model.LauncherAppsActivityInfo
 import com.eblan.launcher.domain.model.LauncherAppsShortcutInfo
 import com.eblan.launcher.domain.model.ShortcutConfigActivityInfo
@@ -27,11 +28,11 @@ import com.eblan.launcher.domain.model.ShortcutQuery
 interface LauncherAppsWrapper {
     val hasShortcutHostPermission: Boolean
 
-    suspend fun getActivityList(): List<LauncherAppsActivityInfo>
+    suspend fun getActivityListWithCacheIcons(): List<LauncherAppsActivityInfo>
 
     suspend fun getFastActivityList(): List<FastLauncherAppsActivityInfo>
 
-    suspend fun getActivityList(
+    suspend fun getActivityListWithCacheIcons(
         serialNumber: Long,
         packageName: String,
     ): List<LauncherAppsActivityInfo>
@@ -41,14 +42,16 @@ interface LauncherAppsWrapper {
         packageName: String,
     ): List<FastLauncherAppsActivityInfo>
 
-    suspend fun getShortcuts(shortcutQuery: ShortcutQuery?): List<LauncherAppsShortcutInfo>?
+    suspend fun getShortcutsWithCacheIcons(shortcutQuery: ShortcutQuery?): List<LauncherAppsShortcutInfo>?
 
-    suspend fun getShortcutsByPackageName(
+    suspend fun getFastShortcuts(shortcutQuery: ShortcutQuery?): List<FastLauncherAppsShortcutInfo>?
+
+    suspend fun getShortcutsByPackageNameWithCacheIcons(
         serialNumber: Long,
         packageName: String,
     ): List<LauncherAppsShortcutInfo>?
 
-    suspend fun getShortcutConfigActivityList(
+    suspend fun getShortcutConfigActivityListWithCacheIcons(
         serialNumber: Long,
         packageName: String,
     ): List<ShortcutConfigActivityInfo>
