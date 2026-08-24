@@ -215,6 +215,9 @@ internal fun FolderScreen(
     val currentIsVisibleOverlay = rememberUpdatedState(isVisibleOverlay)
     val currentMoveGridItemResult = rememberUpdatedState(moveGridItemResult)
     val currentLockMovement = rememberUpdatedState(lockMovement)
+    val isInProgress by remember {
+        derivedStateOf { progress.value < 1f }
+    }
 
     LaunchedEffect(key1 = Unit) {
         progress.animateTo(targetValue = 1f)
@@ -249,7 +252,7 @@ internal fun FolderScreen(
         folderPopup,
         moveGridItemResult,
         isLastFolderGridItem,
-        progress.value,
+        isInProgress,
     ) {
         handleDragFolderGridItem(
             density = density,
@@ -270,7 +273,7 @@ internal fun FolderScreen(
             folderCellWidth = folderCellWidth,
             folderCellHeight = folderCellHeight,
             isLastFolderGridItem = isLastFolderGridItem,
-            progress = progress.value,
+            isInProgress = isInProgress,
             onMoveFolderGridItem = onMoveFolderGridItem,
             onUpdateSharedElementKey = onUpdateSharedElementKey,
             onUpsertFolderPopupEntry = onUpsertFolderPopupEntry,
@@ -296,12 +299,12 @@ internal fun FolderScreen(
 
     LaunchedEffect(
         key1 = pageDirection,
-        key2 = progress.value,
+        key2 = isInProgress,
     ) {
         handlePageDirection(
             pageDirection = pageDirection,
             currentPage = folderGridHorizontalPagerState.currentPage,
-            progress = progress.value,
+            isInProgress = isInProgress,
             onAnimateScrollToPage = folderGridHorizontalPagerState::animateScrollToPage,
         )
     }
@@ -318,7 +321,7 @@ internal fun FolderScreen(
         moveGridItemResult,
         folderPopup,
         isLastFolderGridItem,
-        progress.value,
+        isInProgress,
     ) {
         handleAnimateScrollToPage(
             density = density,
@@ -335,7 +338,7 @@ internal fun FolderScreen(
             layoutDirection = layoutDirection,
             folderCellWidth = folderCellWidth,
             isLast = isLastFolderGridItem,
-            progress = progress.value,
+            isInProgress = isInProgress,
             onUpdateFolderPageDirection = {
                 pageDirection = it
             },
@@ -417,12 +420,13 @@ internal fun FolderScreen(
                                 previewFolderGridItems = previewFolderGridItems,
                                 minCellWidthPx = folderPopupLayoutInfo.minCellWidthPx,
                                 minCellHeightPx = folderPopupLayoutInfo.minCellHeightPx,
-                                onOpenAppDrawer = onOpenAppDrawer,
                                 paddingValues = paddingValues,
                                 sharedElementKey = SharedElementKey(
                                     id = it.id,
                                     parent = SharedElementKey.Parent.Folder,
                                 ),
+                                isInProgress = isInProgress,
+                                onOpenAppDrawer = onOpenAppDrawer,
                                 onUpdateImageBitmap = onUpdateImageBitmap,
                                 onUpdateIsDragging = onUpdateIsDragging,
                                 onUpdateOverlayBounds = onUpdateOverlayBounds,

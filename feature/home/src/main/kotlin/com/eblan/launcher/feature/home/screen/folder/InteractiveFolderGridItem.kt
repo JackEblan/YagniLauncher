@@ -110,6 +110,7 @@ internal fun InteractiveFolderGridItem(
     minCellHeightPx: Int,
     paddingValues: PaddingValues,
     sharedElementKey: SharedElementKey,
+    isInProgress: Boolean,
     onOpenAppDrawer: () -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
@@ -181,6 +182,7 @@ internal fun InteractiveFolderGridItem(
                 statusBarNotifications = statusBarNotifications,
                 padding = padding,
                 sourceBounds = sourceBounds,
+                isInProgress = isInProgress,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
                 onUpdateImageBitmap = onUpdateImageBitmap,
@@ -205,6 +207,7 @@ internal fun InteractiveFolderGridItem(
                 sharedElementKey = sharedElementKey,
                 padding = padding,
                 sourceBounds = sourceBounds,
+                isInProgress = isInProgress,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
                 onUpdateImageBitmap = onUpdateImageBitmap,
@@ -227,6 +230,7 @@ internal fun InteractiveFolderGridItem(
                 isVisibleOverlay = isVisibleOverlay,
                 sharedElementKey = sharedElementKey,
                 padding = padding,
+                isInProgress = isInProgress,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
                 onUpdateImageBitmap = onUpdateImageBitmap,
@@ -252,6 +256,7 @@ internal fun InteractiveFolderGridItem(
                 showFolderGridItemPopup = showFolderGridItemPopup,
                 previewFolderGridItems = previewFolderGridItems,
                 hasShortcutHostPermission = hasShortcutHostPermission,
+                isInProgress = isInProgress,
                 onUpdateIsCloseFolderGridItemPopup = onUpdateIsCloseFolderGridItemPopup,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
@@ -284,6 +289,7 @@ private fun InteractiveFolderApplicationInfoGridItem(
     statusBarNotifications: Map<String, Int>,
     padding: Dp,
     sourceBounds: Rect,
+    isInProgress: Boolean,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
         intOffset: IntOffset,
@@ -415,7 +421,7 @@ private fun InteractiveFolderApplicationInfoGridItem(
                         intSize = layoutCoordinates.size
                     }
                     .run {
-                        if (!isScrollInProgress && !hasInteraction) {
+                        if (!isScrollInProgress && !hasInteraction && !isInProgress) {
                             with(sharedTransitionScope) {
                                 sharedElementWithCallerManagedVisibility(
                                     rememberSharedContentState(
@@ -478,6 +484,7 @@ private fun InteractiveFolderShortcutInfoGridItem(
     sharedElementKey: SharedElementKey,
     padding: Dp,
     sourceBounds: Rect,
+    isInProgress: Boolean,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
         intOffset: IntOffset,
@@ -610,7 +617,7 @@ private fun InteractiveFolderShortcutInfoGridItem(
                         intSize = layoutCoordinates.size
                     }
                     .run {
-                        if (!isScrollInProgress && !hasInteraction) {
+                        if (!isScrollInProgress && !hasInteraction && !isInProgress) {
                             with(sharedTransitionScope) {
                                 sharedElementWithCallerManagedVisibility(
                                     rememberSharedContentState(
@@ -674,6 +681,7 @@ private fun InteractiveFolderShortcutConfigGridItem(
     isVisibleOverlay: Boolean,
     sharedElementKey: SharedElementKey,
     padding: Dp,
+    isInProgress: Boolean,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
         intOffset: IntOffset,
@@ -800,7 +808,7 @@ private fun InteractiveFolderShortcutConfigGridItem(
                     intSize = layoutCoordinates.size
                 }
                 .run {
-                    if (!isScrollInProgress && !hasInteraction) {
+                    if (!isScrollInProgress && !hasInteraction && !isInProgress) {
                         with(sharedTransitionScope) {
                             sharedElementWithCallerManagedVisibility(
                                 rememberSharedContentState(
@@ -851,6 +859,7 @@ private fun InteractiveNestedFolderGridItem(
     showFolderGridItemPopup: Boolean,
     previewFolderGridItems: Map<String, PreviewFolder>,
     hasShortcutHostPermission: Boolean,
+    isInProgress: Boolean,
     onUpdateIsCloseFolderGridItemPopup: (Boolean) -> Unit,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
@@ -982,7 +991,7 @@ private fun InteractiveNestedFolderGridItem(
                     intSize = layoutCoordinates.size
                 }
                 .run {
-                    if (!isScrollInProgress && !hasInteraction) {
+                    if (!isScrollInProgress && !hasInteraction && !isInProgress) {
                         with(sharedTransitionScope) {
                             sharedElementWithCallerManagedVisibility(
                                 rememberSharedContentState(
