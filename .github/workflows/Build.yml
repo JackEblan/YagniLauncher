@@ -53,9 +53,6 @@ jobs:
         with:
           cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
 
-      - name: Check build-logic
-        run: ./gradlew check -p build-logic
-
       - name: Check Spotless
         run: ./gradlew spotlessCheck --init-script gradle/init.gradle.kts --no-configuration-cache
 

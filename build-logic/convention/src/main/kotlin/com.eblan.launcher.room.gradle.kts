@@ -1,5 +1,3 @@
-import gradle.kotlin.dsl.accessors._71af6c749ec1f5beefacf9f57cc645ab.room
-
 plugins {
     alias(libs.plugins.room)
     alias(libs.plugins.ksp)
