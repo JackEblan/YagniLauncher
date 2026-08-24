@@ -32,8 +32,6 @@ import com.eblan.launcher.domain.model.EblanActionType
 import com.eblan.launcher.domain.model.EblanApplicationInfo
 import com.eblan.launcher.domain.model.EblanShortcutConfig
 import com.eblan.launcher.domain.model.ExperimentalSettings
-import com.eblan.launcher.domain.model.FastAppWidgetManagerAppWidgetProviderInfo
-import com.eblan.launcher.domain.model.FastLauncherAppsShortcutInfo
 import com.eblan.launcher.domain.model.GeneralSettings
 import com.eblan.launcher.domain.model.HomeSettings
 import com.eblan.launcher.domain.model.SyncEblanApplicationInfo
@@ -261,34 +259,6 @@ class SyncDataUseCase @Inject constructor(
     private suspend fun updateAppWidgetProviderInfos() {
         if (!packageManagerWrapper.hasSystemFeatureAppWidgets) return
 
-        val oldFastAppWidgetManagerAppWidgetProviderInfos =
-            eblanAppWidgetProviderInfoRepository.getEblanAppWidgetProviderInfos()
-                .map {
-                    FastAppWidgetManagerAppWidgetProviderInfo(
-                        componentName = it.componentName,
-                        serialNumber = it.serialNumber,
-                        configure = it.configure,
-                        packageName = it.packageName,
-                        targetCellWidth = it.targetCellWidth,
-                        targetCellHeight = it.targetCellHeight,
-                        minWidth = it.minWidth,
-                        minHeight = it.minHeight,
-                        resizeMode = it.resizeMode,
-                        minResizeWidth = it.minResizeWidth,
-                        minResizeHeight = it.minResizeHeight,
-                        maxResizeWidth = it.maxResizeWidth,
-                        maxResizeHeight = it.maxResizeHeight,
-                        lastUpdateTime = it.lastUpdateTime,
-                        label = it.label,
-                        description = it.description,
-                    )
-                }
-
-        val newFastAppWidgetManagerAppWidgetProviderInfos =
-            appWidgetManagerWrapper.getFastInstalledProviders()
-
-        if (oldFastAppWidgetManagerAppWidgetProviderInfos.toSet() == newFastAppWidgetManagerAppWidgetProviderInfos.toSet()) return
-
         val appWidgetManagerAppWidgetProviderInfos = appWidgetManagerWrapper.getInstalledProviders()
 
         val oldEblanAppWidgetProviderInfos =
@@ -340,19 +310,6 @@ class SyncDataUseCase @Inject constructor(
 
     private suspend fun updateEblanLauncherShortcutInfos() {
         if (!launcherAppsWrapper.hasShortcutHostPermission) return
-
-        val oldFastLauncherAppsShortcutInfos =
-            eblanShortcutInfoRepository.getEblanShortcutInfos().map {
-                FastLauncherAppsShortcutInfo(
-                    packageName = it.packageName,
-                    serialNumber = it.serialNumber,
-                    lastChangedTimestamp = it.lastChangedTimestamp,
-                )
-            }
-
-        val newFastLauncherAppsShortcutInfos = launcherAppsWrapper.getFastShortcuts()
-
-        if (oldFastLauncherAppsShortcutInfos.toSet() == newFastLauncherAppsShortcutInfos?.toSet()) return
 
         val launcherAppsShortcutInfos =
             launcherAppsWrapper.getShortcuts(shortcutQuery = null) ?: return

@@ -19,7 +19,6 @@ package com.eblan.launcher.domain.framework
 
 import com.eblan.launcher.domain.model.EblanUser
 import com.eblan.launcher.domain.model.FastLauncherAppsActivityInfo
-import com.eblan.launcher.domain.model.FastLauncherAppsShortcutInfo
 import com.eblan.launcher.domain.model.LauncherAppsActivityInfo
 import com.eblan.launcher.domain.model.LauncherAppsShortcutInfo
 import com.eblan.launcher.domain.model.ShortcutConfigActivityInfo
@@ -43,8 +42,6 @@ interface LauncherAppsWrapper {
     ): List<FastLauncherAppsActivityInfo>
 
     suspend fun getShortcuts(shortcutQuery: ShortcutQuery?): List<LauncherAppsShortcutInfo>?
-
-    suspend fun getFastShortcuts(): List<FastLauncherAppsShortcutInfo>?
 
     suspend fun getShortcutsByPackageName(
         serialNumber: Long,

@@ -31,7 +31,6 @@ import com.eblan.launcher.domain.framework.AppWidgetManagerWrapper
 import com.eblan.launcher.domain.framework.FileManager
 import com.eblan.launcher.domain.framework.PackageManagerWrapper
 import com.eblan.launcher.domain.model.AppWidgetManagerAppWidgetProviderInfo
-import com.eblan.launcher.domain.model.FastAppWidgetManagerAppWidgetProviderInfo
 import com.eblan.launcher.framework.imageserializer.AndroidImageSerializer
 import com.eblan.launcher.framework.usermanager.AndroidUserManagerWrapper
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -56,13 +55,9 @@ internal class DefaultAppWidgetManagerWrapper @Inject constructor(
 
     override suspend fun getInstalledProviders(): List<AppWidgetManagerAppWidgetProviderInfo> = withContext(ioDispatcher) {
         appWidgetManager.installedProviders.map {
-            it.toEblanAppWidgetProviderInfo()
-        }
-    }
+            currentCoroutineContext().ensureActive()
 
-    override suspend fun getFastInstalledProviders(): List<FastAppWidgetManagerAppWidgetProviderInfo> = withContext(ioDispatcher) {
-        appWidgetManager.installedProviders.map {
-            it.toFastEblanAppWidgetProviderInfo()
+            it.toEblanAppWidgetProviderInfo()
         }
     }
 
@@ -86,8 +81,6 @@ internal class DefaultAppWidgetManagerWrapper @Inject constructor(
     }
 
     private suspend fun AppWidgetProviderInfo.toEblanAppWidgetProviderInfo(): AppWidgetManagerAppWidgetProviderInfo {
-        currentCoroutineContext().ensureActive()
-
         val serialNumber = userManagerWrapper.getSerialNumberForUser(userHandle = profile)
 
         val preview = loadPreviewImage(context, 0)?.let { drawable ->
@@ -139,52 +132,6 @@ internal class DefaultAppWidgetManagerWrapper @Inject constructor(
                 maxResizeWidth = 0,
                 maxResizeHeight = 0,
                 preview = preview,
-                lastUpdateTime = packageManagerWrapper.getLastUpdateTime(packageName = provider.packageName),
-                label = loadLabel(context.packageManager),
-                description = null,
-            )
-        }
-    }
-
-    private suspend fun AppWidgetProviderInfo.toFastEblanAppWidgetProviderInfo(): FastAppWidgetManagerAppWidgetProviderInfo {
-        currentCoroutineContext().ensureActive()
-
-        val serialNumber = userManagerWrapper.getSerialNumberForUser(userHandle = profile)
-
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            FastAppWidgetManagerAppWidgetProviderInfo(
-                serialNumber = serialNumber,
-                packageName = provider.packageName,
-                componentName = provider.flattenToString(),
-                configure = configure?.flattenToString(),
-                targetCellWidth = targetCellWidth,
-                targetCellHeight = targetCellHeight,
-                minWidth = minWidth,
-                minHeight = minHeight,
-                resizeMode = resizeMode,
-                minResizeWidth = minResizeWidth,
-                minResizeHeight = minResizeHeight,
-                maxResizeWidth = maxResizeWidth,
-                maxResizeHeight = maxResizeHeight,
-                lastUpdateTime = packageManagerWrapper.getLastUpdateTime(packageName = provider.packageName),
-                label = loadLabel(context.packageManager),
-                description = loadDescription(context)?.let(CharSequence::toString),
-            )
-        } else {
-            FastAppWidgetManagerAppWidgetProviderInfo(
-                serialNumber = serialNumber,
-                packageName = provider.packageName,
-                componentName = provider.flattenToString(),
-                configure = configure?.flattenToString(),
-                targetCellWidth = 0,
-                targetCellHeight = 0,
-                minWidth = minWidth,
-                minHeight = minHeight,
-                resizeMode = resizeMode,
-                minResizeWidth = minResizeWidth,
-                minResizeHeight = minResizeHeight,
-                maxResizeWidth = 0,
-                maxResizeHeight = 0,
                 lastUpdateTime = packageManagerWrapper.getLastUpdateTime(packageName = provider.packageName),
                 label = loadLabel(context.packageManager),
                 description = null,

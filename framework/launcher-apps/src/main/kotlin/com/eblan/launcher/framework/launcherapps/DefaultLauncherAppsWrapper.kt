@@ -44,7 +44,6 @@ import com.eblan.launcher.domain.framework.PackageManagerWrapper
 import com.eblan.launcher.domain.model.EblanUser
 import com.eblan.launcher.domain.model.EblanUserType
 import com.eblan.launcher.domain.model.FastLauncherAppsActivityInfo
-import com.eblan.launcher.domain.model.FastLauncherAppsShortcutInfo
 import com.eblan.launcher.domain.model.LauncherAppsActivityInfo
 import com.eblan.launcher.domain.model.LauncherAppsShortcutInfo
 import com.eblan.launcher.domain.model.ShortcutConfigActivityInfo
@@ -202,40 +201,6 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
                     currentCoroutineContext().ensureActive()
 
                     it.toLauncherAppsShortcutInfo()
-                }
-            }
-        } else {
-            null
-        }
-    }
-
-    override suspend fun getFastShortcuts(): List<FastLauncherAppsShortcutInfo>? = withContext(ioDispatcher) {
-        if (hasShortcutHostPermission) {
-            val shortcutQuery = LauncherApps.ShortcutQuery().apply {
-                setQueryFlags(
-                    LauncherApps.ShortcutQuery.FLAG_MATCH_DYNAMIC or LauncherApps.ShortcutQuery.FLAG_MATCH_MANIFEST or LauncherApps.ShortcutQuery.FLAG_MATCH_PINNED,
-                )
-            }
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                launcherApps.profiles.filter { userHandle ->
-                    currentCoroutineContext().ensureActive()
-
-                    isUserAvailable(userHandle = userHandle)
-                }.flatMap { userHandle ->
-                    currentCoroutineContext().ensureActive()
-
-                    launcherApps.getShortcuts(shortcutQuery, userHandle)?.map {
-                        currentCoroutineContext().ensureActive()
-
-                        it.toFastLauncherAppsShortcutInfo()
-                    }.orEmpty()
-                }
-            } else {
-                launcherApps.getShortcuts(shortcutQuery, myUserHandle())?.map {
-                    currentCoroutineContext().ensureActive()
-
-                    it.toFastLauncherAppsShortcutInfo()
                 }
             }
         } else {
@@ -570,11 +535,4 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
             lastChangedTimestamp = lastChangedTimestamp,
         )
     }
-
-    @RequiresApi(Build.VERSION_CODES.N_MR1)
-    private suspend fun ShortcutInfo.toFastLauncherAppsShortcutInfo(): FastLauncherAppsShortcutInfo = FastLauncherAppsShortcutInfo(
-        packageName = `package`,
-        serialNumber = userManagerWrapper.getSerialNumberForUser(userHandle = userHandle),
-        lastChangedTimestamp = packageManagerWrapper.getLastUpdateTime(packageName = `package`),
-    )
 }

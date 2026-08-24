@@ -26,7 +26,6 @@ import com.eblan.launcher.domain.framework.IconPackManager
 import com.eblan.launcher.domain.framework.LauncherAppsWrapper
 import com.eblan.launcher.domain.framework.PackageManagerWrapper
 import com.eblan.launcher.domain.model.EblanShortcutConfig
-import com.eblan.launcher.domain.model.FastLauncherAppsActivityInfo
 import com.eblan.launcher.domain.repository.ApplicationInfoGridItemRepository
 import com.eblan.launcher.domain.repository.EblanAppWidgetProviderInfoRepository
 import com.eblan.launcher.domain.repository.EblanApplicationInfoRepository
@@ -347,19 +346,6 @@ class ChangePackageUseCase @Inject constructor(
 
         if (iconPackInfoPackageName.isEmpty()) return
 
-        val oldFastEblanLauncherAppsActivityInfo =
-            eblanApplicationInfoRepository.getEblanApplicationInfosByPackageName(
-                serialNumber = serialNumber,
-                packageName = packageName,
-            ).map {
-                FastLauncherAppsActivityInfo(
-                    serialNumber = it.serialNumber,
-                    componentName = it.componentName,
-                    packageName = it.packageName,
-                    lastUpdateTime = it.lastUpdateTime,
-                )
-            }
-
         val fastLauncherAppsActivityInfos = launcherAppsWrapper.getFastActivityList(
             serialNumber = serialNumber,
             packageName = packageName,
@@ -394,16 +380,14 @@ class ChangePackageUseCase @Inject constructor(
             }
         }
 
-        if (oldFastEblanLauncherAppsActivityInfo.toSet() != fastLauncherAppsActivityInfos.toSet()) {
-            iconPackInfoDirectory.listFiles()
-                ?.filter {
-                    it.isFile && it.name !in installedComponentHashCodes
-                }
-                ?.forEach {
-                    currentCoroutineContext().ensureActive()
+        iconPackInfoDirectory.listFiles()
+            ?.filter {
+                it.isFile && it.name !in installedComponentHashCodes
+            }
+            ?.forEach {
+                currentCoroutineContext().ensureActive()
 
-                    it.delete()
-                }
-        }
+                it.delete()
+            }
     }
 }

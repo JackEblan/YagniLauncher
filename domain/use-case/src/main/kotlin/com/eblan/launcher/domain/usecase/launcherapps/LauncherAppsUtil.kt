@@ -35,7 +35,6 @@ import com.eblan.launcher.domain.model.EblanAppWidgetProviderInfo
 import com.eblan.launcher.domain.model.EblanApplicationInfo
 import com.eblan.launcher.domain.model.EblanShortcutConfig
 import com.eblan.launcher.domain.model.EblanShortcutInfo
-import com.eblan.launcher.domain.model.FastLauncherAppsActivityInfo
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.HomeSettings
@@ -409,13 +408,6 @@ internal suspend fun AppWidgetManagerAppWidgetProviderInfo.toEblanAppWidgetProvi
     lastUpdateTime = lastUpdateTime,
     label = label,
     description = description,
-)
-
-internal fun EblanApplicationInfo.toFastLauncherAppsActivityInfo(): FastLauncherAppsActivityInfo = FastLauncherAppsActivityInfo(
-    serialNumber = serialNumber,
-    componentName = componentName,
-    packageName = packageName,
-    lastUpdateTime = lastUpdateTime,
 )
 
 internal fun EblanApplicationInfo.toSyncEblanApplicationInfo() = SyncEblanApplicationInfo(
