@@ -16,7 +16,7 @@
  *
  */
 plugins {
-    alias(libs.plugins.com.eblan.launcher.application)
+    alias(libs.plugins.com.eblan.launcher.android.application)
     alias(libs.plugins.com.eblan.launcher.hilt)
     alias(libs.plugins.kotlin.serialization)
 }

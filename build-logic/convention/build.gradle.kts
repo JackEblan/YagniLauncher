@@ -44,52 +44,11 @@ dependencies {
     compileOnly(libs.kotlin.gradlePlugin)
     compileOnly(libs.ksp.gradlePlugin)
     compileOnly(libs.room.gradlePlugin)
-
-    implementation(files(libs.javaClass.superclass.protectionDomain.codeSource.location))
 }
 
 tasks {
     validatePlugins {
         enableStricterValidation = true
         failOnWarning = true
-    }
-}
-
-gradlePlugin {
-    plugins {
-        register("androidApplication") {
-            id = "com.eblan.launcher.application"
-            implementationClass = "AndroidApplicationConventionPlugin"
-        }
-
-        register("androidLibrary") {
-            id = "com.eblan.launcher.library"
-            implementationClass = "AndroidLibraryConventionPlugin"
-        }
-
-        register("androidLibraryCompose") {
-            id = "com.eblan.launcher.libraryCompose"
-            implementationClass = "AndroidLibraryComposeConventionPlugin"
-        }
-
-        register("androidFeature") {
-            id = "com.eblan.launcher.feature"
-            implementationClass = "AndroidFeatureConventionPlugin"
-        }
-
-        register("androidHilt") {
-            id = "com.eblan.launcher.hilt"
-            implementationClass = "AndroidHiltConventionPlugin"
-        }
-
-        register("androidRoom") {
-            id = "com.eblan.launcher.room"
-            implementationClass = "AndroidRoomConventionPlugin"
-        }
-
-        register("jvmLibrary") {
-            id = "com.eblan.launcher.jvmLibrary"
-            implementationClass = "JvmLibraryConventionPlugin"
-        }
     }
 }

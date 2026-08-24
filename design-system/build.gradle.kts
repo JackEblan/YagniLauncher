@@ -17,8 +17,8 @@
  */
 
 plugins {
-    alias(libs.plugins.com.eblan.launcher.library)
-    alias(libs.plugins.com.eblan.launcher.libraryCompose)
+    alias(libs.plugins.com.eblan.launcher.android.library)
+    alias(libs.plugins.com.eblan.launcher.android.library.compose)
 }
 
 android {

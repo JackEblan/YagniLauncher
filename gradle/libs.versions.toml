@@ -87,10 +87,10 @@ protobuf = { id = "com.google.protobuf", version.ref = "protobufPlugin" }
 room = { id = "androidx.room", version.ref = "room" }
 
 # Plugins defined by this project
-com-eblan-launcher-application = { id = "com.eblan.launcher.application" }
+com-eblan-launcher-android-application = { id = "com.eblan.launcher.android.application" }
+com-eblan-launcher-android-library = { id = "com.eblan.launcher.android.library" }
+com-eblan-launcher-android-library-compose = { id = "com.eblan.launcher.android.library.compose" }
 com-eblan-launcher-feature = { id = "com.eblan.launcher.feature" }
 com-eblan-launcher-hilt = { id = "com.eblan.launcher.hilt" }
-com-eblan-launcher-jvmLibrary = { id = "com.eblan.launcher.jvmLibrary" }
-com-eblan-launcher-library = { id = "com.eblan.launcher.library" }
-com-eblan-launcher-libraryCompose = { id = "com.eblan.launcher.libraryCompose" }
+com-eblan-launcher-jvm-library = { id = "com.eblan.launcher.jvm.library" }
 com-eblan-launcher-room = { id = "com.eblan.launcher.room" }
