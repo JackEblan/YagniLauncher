@@ -17,7 +17,12 @@
  */
 package com.eblan.launcher.domain.grid
 
+import com.eblan.launcher.domain.model.Associate
+import com.eblan.launcher.domain.model.GridItem
+import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.ResolveDirection
+import com.eblan.launcher.domain.model.getEblanAction
+import com.eblan.launcher.domain.model.getGridItemSettings
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
@@ -27,7 +32,7 @@ import org.junit.jupiter.api.Test
 class MoveGridItemTest {
     @Test
     fun `returns true when there are no conflicts`() {
-        val moving = gridItem(
+        val moving = getGridItem(
             id = "moving",
             startColumn = 0,
             startRow = 0,
@@ -35,7 +40,7 @@ class MoveGridItemTest {
             rowSpan = 1,
         )
 
-        val other = gridItem(
+        val other = getGridItem(
             id = "other",
             startColumn = 2,
             startRow = 0,
@@ -64,7 +69,7 @@ class MoveGridItemTest {
 
     @Test
     fun `moves conflicting item to the right`() {
-        val moving = gridItem(
+        val moving = getGridItem(
             id = "moving",
             startColumn = 0,
             startRow = 0,
@@ -72,7 +77,7 @@ class MoveGridItemTest {
             rowSpan = 1,
         )
 
-        val conflicting = gridItem(
+        val conflicting = getGridItem(
             id = "conflicting",
             startColumn = 0,
             startRow = 0,
@@ -105,7 +110,7 @@ class MoveGridItemTest {
 
     @Test
     fun `moves conflicting item to the left`() {
-        val moving = gridItem(
+        val moving = getGridItem(
             id = "moving",
             startColumn = 2,
             startRow = 0,
@@ -113,7 +118,7 @@ class MoveGridItemTest {
             rowSpan = 1,
         )
 
-        val conflicting = gridItem(
+        val conflicting = getGridItem(
             id = "conflicting",
             startColumn = 2,
             startRow = 0,
@@ -146,7 +151,7 @@ class MoveGridItemTest {
 
     @Test
     fun `returns false when conflicting item cannot move right`() {
-        val moving = gridItem(
+        val moving = getGridItem(
             id = "moving",
             startColumn = 4,
             startRow = 3,
@@ -154,7 +159,7 @@ class MoveGridItemTest {
             rowSpan = 1,
         )
 
-        val conflicting = gridItem(
+        val conflicting = getGridItem(
             id = "conflicting",
             startColumn = 4,
             startRow = 3,
@@ -179,7 +184,7 @@ class MoveGridItemTest {
 
     @Test
     fun `returns false when conflicting item cannot move left`() {
-        val moving = gridItem(
+        val moving = getGridItem(
             id = "moving",
             startColumn = 0,
             startRow = 0,
@@ -187,7 +192,7 @@ class MoveGridItemTest {
             rowSpan = 1,
         )
 
-        val conflicting = gridItem(
+        val conflicting = getGridItem(
             id = "conflicting",
             startColumn = 0,
             startRow = 0,
@@ -212,7 +217,7 @@ class MoveGridItemTest {
 
     @Test
     fun `moves conflicting item to next row when moving right exceeds column bounds`() {
-        val moving = gridItem(
+        val moving = getGridItem(
             id = "moving",
             startColumn = 4,
             startRow = 0,
@@ -220,7 +225,7 @@ class MoveGridItemTest {
             rowSpan = 1,
         )
 
-        val conflicting = gridItem(
+        val conflicting = getGridItem(
             id = "conflicting",
             startColumn = 4,
             startRow = 0,
@@ -253,7 +258,7 @@ class MoveGridItemTest {
 
     @Test
     fun `moves conflicting item to previous row when moving left exceeds column bounds`() {
-        val moving = gridItem(
+        val moving = getGridItem(
             id = "moving",
             startColumn = 0,
             startRow = 1,
@@ -261,7 +266,7 @@ class MoveGridItemTest {
             rowSpan = 1,
         )
 
-        val conflicting = gridItem(
+        val conflicting = getGridItem(
             id = "conflicting",
             startColumn = 0,
             startRow = 1,
@@ -291,4 +296,32 @@ class MoveGridItemTest {
             gridItems[1],
         )
     }
+
+    private fun getGridItem(
+        id: String = "Test",
+        page: Int = 0,
+        startColumn: Int,
+        startRow: Int,
+        columnSpan: Int,
+        rowSpan: Int,
+    ) = GridItem(
+        id = id,
+        page = page,
+        startColumn = startColumn,
+        startRow = startRow,
+        columnSpan = columnSpan,
+        rowSpan = rowSpan,
+        data = GridItemData.Folder(
+            label = "Test",
+            icon = null,
+            index = 0,
+            folderId = null,
+        ),
+        associate = Associate.Grid,
+        override = false,
+        gridItemSettings = getGridItemSettings(),
+        doubleTap = getEblanAction(),
+        swipeUp = getEblanAction(),
+        swipeDown = getEblanAction(),
+    )
 }

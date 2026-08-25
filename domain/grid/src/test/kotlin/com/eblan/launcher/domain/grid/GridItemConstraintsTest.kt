@@ -17,7 +17,12 @@
  */
 package com.eblan.launcher.domain.grid
 
+import com.eblan.launcher.domain.model.Associate
+import com.eblan.launcher.domain.model.GridItem
+import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.ResolveDirection
+import com.eblan.launcher.domain.model.getEblanAction
+import com.eblan.launcher.domain.model.getGridItemSettings
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
@@ -31,7 +36,7 @@ class GridItemConstraintsTest {
     inner class IsGridItemSpanWithinBounds {
         @Test
         fun `returns true when grid item is within bounds`() {
-            val gridItem = gridItem(
+            val gridItem = getGridItem(
                 startColumn = 1,
                 startRow = 1,
                 columnSpan = 2,
@@ -49,7 +54,7 @@ class GridItemConstraintsTest {
 
         @Test
         fun `returns true when grid item exactly reaches right boundary`() {
-            val gridItem = gridItem(
+            val gridItem = getGridItem(
                 startColumn = 3,
                 startRow = 0,
                 columnSpan = 2,
@@ -67,7 +72,7 @@ class GridItemConstraintsTest {
 
         @Test
         fun `returns true when grid item exactly reaches bottom boundary`() {
-            val gridItem = gridItem(
+            val gridItem = getGridItem(
                 startColumn = 0,
                 startRow = 2,
                 columnSpan = 1,
@@ -85,7 +90,7 @@ class GridItemConstraintsTest {
 
         @Test
         fun `returns false when start column is negative`() {
-            val gridItem = gridItem(
+            val gridItem = getGridItem(
                 startColumn = -1,
                 startRow = 0,
                 columnSpan = 1,
@@ -103,7 +108,7 @@ class GridItemConstraintsTest {
 
         @Test
         fun `returns false when start row is negative`() {
-            val gridItem = gridItem(
+            val gridItem = getGridItem(
                 startColumn = 0,
                 startRow = -1,
                 columnSpan = 1,
@@ -121,7 +126,7 @@ class GridItemConstraintsTest {
 
         @Test
         fun `returns false when column span exceeds right boundary`() {
-            val gridItem = gridItem(
+            val gridItem = getGridItem(
                 startColumn = 4,
                 startRow = 0,
                 columnSpan = 2,
@@ -139,7 +144,7 @@ class GridItemConstraintsTest {
 
         @Test
         fun `returns false when row span exceeds bottom boundary`() {
-            val gridItem = gridItem(
+            val gridItem = getGridItem(
                 startColumn = 0,
                 startRow = 3,
                 columnSpan = 1,
@@ -157,7 +162,7 @@ class GridItemConstraintsTest {
 
         @Test
         fun `returns false when grid item starts at column boundary`() {
-            val gridItem = gridItem(
+            val gridItem = getGridItem(
                 startColumn = 5,
                 startRow = 0,
                 columnSpan = 1,
@@ -178,14 +183,14 @@ class GridItemConstraintsTest {
     inner class RectanglesOverlap {
         @Test
         fun `returns true when rectangles overlap`() {
-            val moving = gridItem(
+            val moving = getGridItem(
                 startColumn = 1,
                 startRow = 1,
                 columnSpan = 2,
                 rowSpan = 2,
             )
 
-            val other = gridItem(
+            val other = getGridItem(
                 startColumn = 2,
                 startRow = 2,
                 columnSpan = 2,
@@ -202,14 +207,14 @@ class GridItemConstraintsTest {
 
         @Test
         fun `returns false when rectangles are separated horizontally`() {
-            val moving = gridItem(
+            val moving = getGridItem(
                 startColumn = 0,
                 startRow = 0,
                 columnSpan = 1,
                 rowSpan = 1,
             )
 
-            val other = gridItem(
+            val other = getGridItem(
                 startColumn = 1,
                 startRow = 0,
                 columnSpan = 1,
@@ -226,14 +231,14 @@ class GridItemConstraintsTest {
 
         @Test
         fun `returns false when rectangles are separated vertically`() {
-            val moving = gridItem(
+            val moving = getGridItem(
                 startColumn = 0,
                 startRow = 0,
                 columnSpan = 1,
                 rowSpan = 1,
             )
 
-            val other = gridItem(
+            val other = getGridItem(
                 startColumn = 0,
                 startRow = 1,
                 columnSpan = 1,
@@ -250,14 +255,14 @@ class GridItemConstraintsTest {
 
         @Test
         fun `returns false when rectangles only touch at a corner`() {
-            val moving = gridItem(
+            val moving = getGridItem(
                 startColumn = 0,
                 startRow = 0,
                 columnSpan = 1,
                 rowSpan = 1,
             )
 
-            val other = gridItem(
+            val other = getGridItem(
                 startColumn = 1,
                 startRow = 1,
                 columnSpan = 1,
@@ -274,14 +279,14 @@ class GridItemConstraintsTest {
 
         @Test
         fun `returns true when moving rectangle is completely inside other rectangle`() {
-            val moving = gridItem(
+            val moving = getGridItem(
                 startColumn = 1,
                 startRow = 1,
                 columnSpan = 1,
                 rowSpan = 1,
             )
 
-            val other = gridItem(
+            val other = getGridItem(
                 startColumn = 0,
                 startRow = 0,
                 columnSpan = 3,
@@ -298,14 +303,14 @@ class GridItemConstraintsTest {
 
         @Test
         fun `returns true when other rectangle is completely inside moving rectangle`() {
-            val moving = gridItem(
+            val moving = getGridItem(
                 startColumn = 0,
                 startRow = 0,
                 columnSpan = 3,
                 rowSpan = 3,
             )
 
-            val other = gridItem(
+            val other = getGridItem(
                 startColumn = 1,
                 startRow = 1,
                 columnSpan = 1,
@@ -322,14 +327,14 @@ class GridItemConstraintsTest {
 
         @Test
         fun `returns same result regardless of rectangle order`() {
-            val moving = gridItem(
+            val moving = getGridItem(
                 startColumn = 1,
                 startRow = 1,
                 columnSpan = 2,
                 rowSpan = 2,
             )
 
-            val other = gridItem(
+            val other = getGridItem(
                 startColumn = 2,
                 startRow = 2,
                 columnSpan = 2,
@@ -356,7 +361,7 @@ class GridItemConstraintsTest {
     inner class GetResolveDirectionByX {
         @Test
         fun `returns right when x is in first third of grid item`() {
-            val gridItem = gridItem(
+            val gridItem = getGridItem(
                 startColumn = 0,
                 startRow = 0,
                 columnSpan = 3,
@@ -376,7 +381,7 @@ class GridItemConstraintsTest {
 
         @Test
         fun `returns center when x is in middle third of grid item`() {
-            val gridItem = gridItem(
+            val gridItem = getGridItem(
                 startColumn = 0,
                 startRow = 0,
                 columnSpan = 3,
@@ -396,7 +401,7 @@ class GridItemConstraintsTest {
 
         @Test
         fun `returns left when x is in last third of grid item`() {
-            val gridItem = gridItem(
+            val gridItem = getGridItem(
                 startColumn = 0,
                 startRow = 0,
                 columnSpan = 3,
@@ -416,7 +421,7 @@ class GridItemConstraintsTest {
 
         @Test
         fun `returns center when x is exactly at first third boundary`() {
-            val gridItem = gridItem(
+            val gridItem = getGridItem(
                 startColumn = 0,
                 startRow = 0,
                 columnSpan = 3,
@@ -436,7 +441,7 @@ class GridItemConstraintsTest {
 
         @Test
         fun `returns left when x is exactly at second third boundary`() {
-            val gridItem = gridItem(
+            val gridItem = getGridItem(
                 startColumn = 0,
                 startRow = 0,
                 columnSpan = 3,
@@ -456,7 +461,7 @@ class GridItemConstraintsTest {
 
         @Test
         fun `accounts for grid item starting column`() {
-            val gridItem = gridItem(
+            val gridItem = getGridItem(
                 startColumn = 2,
                 startRow = 0,
                 columnSpan = 2,
@@ -479,7 +484,7 @@ class GridItemConstraintsTest {
     inner class GetGridItemByCoordinates {
         @Test
         fun `returns grid item when coordinates are inside its span`() {
-            val gridItem = gridItem(
+            val gridItem = getGridItem(
                 id = "target",
                 startColumn = 1,
                 startRow = 1,
@@ -503,7 +508,7 @@ class GridItemConstraintsTest {
 
         @Test
         fun `returns null when coordinates are outside grid item span`() {
-            val gridItem = gridItem(
+            val gridItem = getGridItem(
                 id = "target",
                 startColumn = 1,
                 startRow = 1,
@@ -527,7 +532,7 @@ class GridItemConstraintsTest {
 
         @Test
         fun `returns null when coordinates are inside item with same id`() {
-            val gridItem = gridItem(
+            val gridItem = getGridItem(
                 id = "target",
                 startColumn = 1,
                 startRow = 1,
@@ -551,7 +556,7 @@ class GridItemConstraintsTest {
 
         @Test
         fun `returns item when coordinates are inside second column of its span`() {
-            val gridItem = gridItem(
+            val gridItem = getGridItem(
                 id = "target",
                 startColumn = 1,
                 startRow = 1,
@@ -575,7 +580,7 @@ class GridItemConstraintsTest {
 
         @Test
         fun `returns item when coordinates are inside second row of its span`() {
-            val gridItem = gridItem(
+            val gridItem = getGridItem(
                 id = "target",
                 startColumn = 1,
                 startRow = 1,
@@ -599,7 +604,7 @@ class GridItemConstraintsTest {
 
         @Test
         fun `returns matching item when multiple grid items exist`() {
-            val firstItem = gridItem(
+            val firstItem = getGridItem(
                 id = "first",
                 startColumn = 0,
                 startRow = 0,
@@ -607,7 +612,7 @@ class GridItemConstraintsTest {
                 rowSpan = 1,
             )
 
-            val secondItem = gridItem(
+            val secondItem = getGridItem(
                 id = "second",
                 startColumn = 2,
                 startRow = 1,
@@ -634,14 +639,14 @@ class GridItemConstraintsTest {
     inner class GetRelativeResolveDirection {
         @Test
         fun `returns right when moving item is left of other`() {
-            val moving = gridItem(
+            val moving = getGridItem(
                 startColumn = 0,
                 startRow = 0,
                 columnSpan = 1,
                 rowSpan = 1,
             )
 
-            val other = gridItem(
+            val other = getGridItem(
                 startColumn = 1,
                 startRow = 0,
                 columnSpan = 1,
@@ -659,14 +664,14 @@ class GridItemConstraintsTest {
 
         @Test
         fun `returns left when moving item is right of other`() {
-            val moving = gridItem(
+            val moving = getGridItem(
                 startColumn = 2,
                 startRow = 0,
                 columnSpan = 1,
                 rowSpan = 1,
             )
 
-            val other = gridItem(
+            val other = getGridItem(
                 startColumn = 1,
                 startRow = 0,
                 columnSpan = 1,
@@ -684,14 +689,14 @@ class GridItemConstraintsTest {
 
         @Test
         fun `returns left when moving item is below other`() {
-            val moving = gridItem(
+            val moving = getGridItem(
                 startColumn = 0,
                 startRow = 1,
                 columnSpan = 1,
                 rowSpan = 1,
             )
 
-            val other = gridItem(
+            val other = getGridItem(
                 startColumn = 0,
                 startRow = 0,
                 columnSpan = 1,
@@ -709,14 +714,14 @@ class GridItemConstraintsTest {
 
         @Test
         fun `returns right when moving item is above other`() {
-            val moving = gridItem(
+            val moving = getGridItem(
                 startColumn = 0,
                 startRow = 0,
                 columnSpan = 1,
                 rowSpan = 1,
             )
 
-            val other = gridItem(
+            val other = getGridItem(
                 startColumn = 0,
                 startRow = 1,
                 columnSpan = 1,
@@ -734,14 +739,14 @@ class GridItemConstraintsTest {
 
         @Test
         fun `returns null when items have the same starting position`() {
-            val moving = gridItem(
+            val moving = getGridItem(
                 startColumn = 1,
                 startRow = 1,
                 columnSpan = 1,
                 rowSpan = 1,
             )
 
-            val other = gridItem(
+            val other = getGridItem(
                 startColumn = 1,
                 startRow = 1,
                 columnSpan = 1,
@@ -758,14 +763,14 @@ class GridItemConstraintsTest {
 
         @Test
         fun `prioritizes horizontal direction when both column and row differ`() {
-            val moving = gridItem(
+            val moving = getGridItem(
                 startColumn = 0,
                 startRow = 1,
                 columnSpan = 1,
                 rowSpan = 1,
             )
 
-            val other = gridItem(
+            val other = getGridItem(
                 startColumn = 1,
                 startRow = 0,
                 columnSpan = 1,
@@ -786,7 +791,7 @@ class GridItemConstraintsTest {
     inner class FindAvailableRegionByPage {
         @Test
         fun `returns first available region`() {
-            val gridItem = gridItem(
+            val gridItem = getGridItem(
                 startColumn = 0,
                 startRow = 0,
                 columnSpan = 1,
@@ -815,14 +820,14 @@ class GridItemConstraintsTest {
 
         @Test
         fun `skips occupied region`() {
-            val gridItem = gridItem(
+            val gridItem = getGridItem(
                 startColumn = 0,
                 startRow = 0,
                 columnSpan = 1,
                 rowSpan = 1,
             )
 
-            val occupiedItem = gridItem(
+            val occupiedItem = getGridItem(
                 id = "occupied",
                 startColumn = 0,
                 startRow = 0,
@@ -852,7 +857,7 @@ class GridItemConstraintsTest {
 
         @Test
         fun `searches columns from left to right before moving to next row`() {
-            val gridItem = gridItem(
+            val gridItem = getGridItem(
                 startColumn = 0,
                 startRow = 0,
                 columnSpan = 1,
@@ -860,14 +865,14 @@ class GridItemConstraintsTest {
             )
 
             val occupiedItems = listOf(
-                gridItem(
+                getGridItem(
                     id = "occupied-1",
                     startColumn = 0,
                     startRow = 0,
                     columnSpan = 1,
                     rowSpan = 1,
                 ),
-                gridItem(
+                getGridItem(
                     id = "occupied-2",
                     startColumn = 1,
                     startRow = 0,
@@ -898,7 +903,7 @@ class GridItemConstraintsTest {
 
         @Test
         fun `moves to next row when current row has no available region`() {
-            val gridItem = gridItem(
+            val gridItem = getGridItem(
                 startColumn = 0,
                 startRow = 0,
                 columnSpan = 1,
@@ -906,7 +911,7 @@ class GridItemConstraintsTest {
             )
 
             val occupiedItems = (0 until 5).map { column ->
-                gridItem(
+                getGridItem(
                     id = "occupied-$column",
                     startColumn = column,
                     startRow = 0,
@@ -937,7 +942,7 @@ class GridItemConstraintsTest {
 
         @Test
         fun `moves to next page when current page has no available region`() {
-            val gridItem = gridItem(
+            val gridItem = getGridItem(
                 startColumn = 0,
                 startRow = 0,
                 columnSpan = 1,
@@ -948,7 +953,7 @@ class GridItemConstraintsTest {
                 repeat(4) { row ->
                     repeat(5) { column ->
                         add(
-                            gridItem(
+                            getGridItem(
                                 id = "occupied-$row-$column",
                                 page = 0,
                                 startColumn = column,
@@ -983,7 +988,7 @@ class GridItemConstraintsTest {
 
         @Test
         fun `returns null when all pages are full`() {
-            val gridItem = gridItem(
+            val gridItem = getGridItem(
                 startColumn = 0,
                 startRow = 0,
                 columnSpan = 1,
@@ -995,7 +1000,7 @@ class GridItemConstraintsTest {
                     repeat(4) { row ->
                         repeat(5) { column ->
                             add(
-                                gridItem(
+                                getGridItem(
                                     id = "occupied-$page-$row-$column",
                                     page = page,
                                     startColumn = column,
@@ -1024,14 +1029,14 @@ class GridItemConstraintsTest {
 
         @Test
         fun `finds region large enough for multi-cell grid item`() {
-            val gridItem = gridItem(
+            val gridItem = getGridItem(
                 startColumn = 0,
                 startRow = 0,
                 columnSpan = 2,
                 rowSpan = 2,
             )
 
-            val occupiedItem = gridItem(
+            val occupiedItem = getGridItem(
                 id = "occupied",
                 startColumn = 0,
                 startRow = 0,
@@ -1061,14 +1066,14 @@ class GridItemConstraintsTest {
 
         @Test
         fun `ignores grid items on other pages`() {
-            val gridItem = gridItem(
+            val gridItem = getGridItem(
                 startColumn = 0,
                 startRow = 0,
                 columnSpan = 1,
                 rowSpan = 1,
             )
 
-            val occupiedItem = gridItem(
+            val occupiedItem = getGridItem(
                 id = "occupied",
                 page = 1,
                 startColumn = 0,
@@ -1097,4 +1102,32 @@ class GridItemConstraintsTest {
             )
         }
     }
+
+    private fun getGridItem(
+        id: String = "Test",
+        page: Int = 0,
+        startColumn: Int,
+        startRow: Int,
+        columnSpan: Int,
+        rowSpan: Int,
+    ) = GridItem(
+        id = id,
+        page = page,
+        startColumn = startColumn,
+        startRow = startRow,
+        columnSpan = columnSpan,
+        rowSpan = rowSpan,
+        data = GridItemData.Folder(
+            label = "Test",
+            icon = null,
+            index = 0,
+            folderId = null,
+        ),
+        associate = Associate.Grid,
+        override = false,
+        gridItemSettings = getGridItemSettings(),
+        doubleTap = getEblanAction(),
+        swipeUp = getEblanAction(),
+        swipeDown = getEblanAction(),
+    )
 }

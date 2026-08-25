@@ -17,14 +17,19 @@
  */
 package com.eblan.launcher.domain.grid
 
+import com.eblan.launcher.domain.model.Associate
+import com.eblan.launcher.domain.model.GridItem
+import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.SideAnchor
+import com.eblan.launcher.domain.model.getEblanAction
+import com.eblan.launcher.domain.model.getGridItemSettings
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
 class ResizeGridItemTest {
     @Test
     fun `converts pixel dimensions to grid spans`() {
-        val gridItem = gridItem(
+        val gridItem = getGridItem(
             startColumn = 1,
             startRow = 1,
             columnSpan = 2,
@@ -53,7 +58,7 @@ class ResizeGridItemTest {
 
     @Test
     fun `rounds pixel dimensions up to next grid cell`() {
-        val gridItem = gridItem(
+        val gridItem = getGridItem(
             startColumn = 1,
             startRow = 1,
             columnSpan = 1,
@@ -77,7 +82,7 @@ class ResizeGridItemTest {
 
     @Test
     fun `clamps zero pixel dimensions to one cell`() {
-        val gridItem = gridItem(
+        val gridItem = getGridItem(
             startColumn = 1,
             startRow = 1,
             columnSpan = 2,
@@ -101,7 +106,7 @@ class ResizeGridItemTest {
 
     @Test
     fun `keeps top anchor fixed while resizing`() {
-        val gridItem = gridItem(
+        val gridItem = getGridItem(
             startColumn = 2,
             startRow = 1,
             columnSpan = 2,
@@ -125,7 +130,7 @@ class ResizeGridItemTest {
 
     @Test
     fun `keeps bottom anchor fixed while resizing`() {
-        val gridItem = gridItem(
+        val gridItem = getGridItem(
             startColumn = 2,
             startRow = 1,
             columnSpan = 2,
@@ -151,7 +156,7 @@ class ResizeGridItemTest {
 
     @Test
     fun `keeps left anchor fixed while resizing`() {
-        val gridItem = gridItem(
+        val gridItem = getGridItem(
             startColumn = 2,
             startRow = 1,
             columnSpan = 2,
@@ -177,7 +182,7 @@ class ResizeGridItemTest {
 
     @Test
     fun `keeps right anchor fixed while resizing`() {
-        val gridItem = gridItem(
+        val gridItem = getGridItem(
             startColumn = 2,
             startRow = 1,
             columnSpan = 2,
@@ -200,4 +205,32 @@ class ResizeGridItemTest {
         assertEquals(1, result.columnSpan)
         assertEquals(1, result.rowSpan)
     }
+
+    private fun getGridItem(
+        id: String = "Test",
+        page: Int = 0,
+        startColumn: Int,
+        startRow: Int,
+        columnSpan: Int,
+        rowSpan: Int,
+    ) = GridItem(
+        id = id,
+        page = page,
+        startColumn = startColumn,
+        startRow = startRow,
+        columnSpan = columnSpan,
+        rowSpan = rowSpan,
+        data = GridItemData.Folder(
+            label = "Test",
+            icon = null,
+            index = 0,
+            folderId = null,
+        ),
+        associate = Associate.Grid,
+        override = false,
+        gridItemSettings = getGridItemSettings(),
+        doubleTap = getEblanAction(),
+        swipeUp = getEblanAction(),
+        swipeDown = getEblanAction(),
+    )
 }
