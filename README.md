@@ -4,7 +4,7 @@
 
 # Yagni Launcher
 
-Only 2 MB Android Launcher, total control, zero bloat, zero tracking
+Stock Android Launcher From Scratch
 
 ![GitHub Release](https://img.shields.io/github/v/release/JackEblan/YagniLauncher?style=for-the-badge&color=mediumseagreen)
 ![IzzyOnDroid Version](https://img.shields.io/f-droid/v/com.eblan.launcher?baseUrl=https%3A%2F%2Fapt.izzysoft.de%2Ffdroid&style=for-the-badge&label=IzzyOnDroid&color=mediumseagreen)
