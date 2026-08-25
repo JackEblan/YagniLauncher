@@ -21,13 +21,6 @@ plugins {
     alias(libs.plugins.jmh)
 }
 
-jmh {
-    fork = 1
-    warmupIterations = 2
-    iterations = 3
-    threads = 1
-}
-
 dependencies {
     implementation(projects.domain.grid)
     implementation(projects.domain.model)

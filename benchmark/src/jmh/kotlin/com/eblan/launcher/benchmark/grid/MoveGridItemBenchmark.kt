@@ -31,71 +31,100 @@ import com.eblan.launcher.domain.model.VerticalArrangement
 import kotlinx.coroutines.runBlocking
 import org.openjdk.jmh.annotations.Benchmark
 import org.openjdk.jmh.annotations.BenchmarkMode
+import org.openjdk.jmh.annotations.Fork
+import org.openjdk.jmh.annotations.Level
+import org.openjdk.jmh.annotations.Measurement
 import org.openjdk.jmh.annotations.Mode
 import org.openjdk.jmh.annotations.OutputTimeUnit
 import org.openjdk.jmh.annotations.Param
 import org.openjdk.jmh.annotations.Scope
 import org.openjdk.jmh.annotations.Setup
 import org.openjdk.jmh.annotations.State
+import org.openjdk.jmh.annotations.Warmup
 import java.util.concurrent.TimeUnit
 
-@State(Scope.Thread)
+@State(Scope.Benchmark)
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
+@Warmup(
+    iterations = 2,
+    time = 10,
+)
+@Measurement(
+    iterations = 3,
+    time = 10,
+)
+@Fork(1)
 open class MoveGridItemBenchmark {
-    @Param("100", "1000", "5000", "10000")
-    var itemCount: Int = 0
-
-    @Param("5")
-    var columns: Int = 0
-
-    private lateinit var originalGridItems: List<GridItem>
-
-    private var rows: Int = 0
-
-    @Setup
-    fun setup() {
-        rows = (itemCount + columns - 1) / columns
-
-        originalGridItems = buildGridItems()
-    }
-
     @Benchmark
-    fun resolveConflictsRight(): Boolean = runBlocking {
-        val gridItems = originalGridItems.toMutableList()
+    fun resolveConflictsRight(state: MoveGridItemBenchmarkState): Boolean = runBlocking {
+        val gridItems = state.gridItems
+        val movingGridItem = state.movingGridItem
 
         resolveConflicts(
             gridItems = gridItems,
             resolveDirection = ResolveDirection.Right,
-            movingGridItem = gridItems.first(),
-            columns = columns,
-            rows = rows,
+            movingGridItem = movingGridItem,
+            columns = COLUMNS,
+            rows = ROWS,
         )
     }
 
-    private fun buildGridItems(): List<GridItem> = buildList(itemCount) {
-            /*
-             * moving overlaps item-1 at (0, 0).
-             *
-             * [M/1][2][3][4][5]
-             * [6]  [7][8][9][10]
-             * ...
-             *
-             * Resolving:
-             *
-             * M conflicts with 1
-             * 1 moves right and conflicts with 2
-             * 2 moves right and conflicts with 3
-             * ...
-             *
-             * At the end of a row, the algorithm wraps:
-             *
-             * [1][2][3][4][5]
-             *       ↓
-             * [6][7][8][9][10]
-             *
-             * This continues until the final item.
-             */
+    companion object {
+        const val COLUMNS = 5
+        const val ROWS = 4
+    }
+}
+
+@State(Scope.Benchmark)
+open class MoveGridItemBenchmarkState {
+    @Param(
+        "100",
+        "1000",
+        "5000",
+        "10000",
+    )
+    var itemCount: Int = 0
+
+    lateinit var movingGridItem: GridItem
+
+    lateinit var gridItems: MutableList<GridItem>
+        private set
+
+    private lateinit var masterGridItems: List<GridItem>
+
+    @Setup(Level.Trial)
+    fun setup() {
+        masterGridItems = buildGridItems(itemCount)
+    }
+
+    /*
+     * Runs before every single invocation and is NOT included in JMH's
+     * measured time. This guarantees every invocation of resolveConflicts()
+     * sees the same congested starting grid, instead of the previous
+     * invocation's already-resolved (and therefore cheaper) output.
+     */
+    @Setup(Level.Invocation)
+    fun resetFixture() {
+        gridItems = masterGridItems.map { it.copy() }.toMutableList()
+        movingGridItem = gridItems.first()
+    }
+
+    private fun buildGridItems(
+        itemCount: Int,
+    ): List<GridItem> = buildList(itemCount) {
+        /*
+         * The moving item overlaps item-1 at (0, 0).
+         *
+         * [M/1][2][3][4][5]
+         * [ 6 ][7][8][9][10]
+         * [11 ][12][13][14][15]
+         * [16 ][17][18][19][20]
+         *
+         * With more than 20 items, positions intentionally repeat.
+         * This creates a highly congested grid and stresses conflict
+         * resolution with a large number of items.
+         */
 
         add(
             createGridItem(
@@ -112,8 +141,8 @@ open class MoveGridItemBenchmark {
             add(
                 createGridItem(
                     id = "item-$index",
-                    column = position % columns,
-                    row = position / columns,
+                    column = position % MoveGridItemBenchmark.COLUMNS,
+                    row = (position / MoveGridItemBenchmark.COLUMNS) % MoveGridItemBenchmark.ROWS,
                     index = index,
                 ),
             )
