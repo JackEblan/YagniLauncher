@@ -22,13 +22,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.ParentDataModifier
+import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.IntOffset
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.usecase.grid.FOLDER_PREVIEW_COLUMNS
 import com.eblan.launcher.domain.usecase.grid.FOLDER_PREVIEW_ROWS
@@ -39,18 +37,9 @@ internal fun PreviewFolderGridLayout(
     gridItems: List<GridItem>?,
     previewColumns: Int = FOLDER_PREVIEW_COLUMNS,
     previewRows: Int = FOLDER_PREVIEW_ROWS,
-    content: @Composable (GridItem) -> Unit,
+    content: @Composable BoxScope.(GridItem) -> Unit,
 ) {
-    Layout(
-        modifier = modifier,
-        content = {
-            gridItems?.forEach { gridItem ->
-                key(gridItem.id) {
-                    content(gridItem)
-                }
-            }
-        },
-    ) { measurables, constraints ->
+    SubcomposeLayout(modifier = modifier) { constraints ->
         val previewCellSize = minOf(
             constraints.maxWidth,
             constraints.maxHeight,
@@ -67,30 +56,39 @@ internal fun PreviewFolderGridLayout(
 
         val previewOffsetY = (constraints.maxHeight - previewGridHeight) / 2
 
-        val placeables = measurables.mapIndexed { index, measurable ->
-            val x = previewOffsetX +
-                (index % previewColumns) * previewCellSize
-
-            val y = previewOffsetY +
-                (index / previewColumns) * previewCellSize
-
-            measurable.measure(
-                Constraints.fixed(
-                    width = previewCellSize,
-                    height = previewCellSize,
-                ),
-            ) to IntOffset(x = x, y = y)
-        }
-
         layout(
             width = constraints.maxWidth,
             height = constraints.maxHeight,
         ) {
-            placeables.forEach { (placeable, intOffset) ->
-                placeable.placeRelative(
-                    x = intOffset.x,
-                    y = intOffset.y,
-                )
+            gridItems?.forEachIndexed { index, gridItem ->
+                subcompose(gridItem.id) {
+                    val x = previewOffsetX + (index % previewColumns) * previewCellSize
+
+                    val y = previewOffsetY + (index / previewColumns) * previewCellSize
+
+                    Box(
+                        modifier = Modifier.folderGridItem(
+                            x = x,
+                            y = y,
+                            width = previewCellSize,
+                            height = previewCellSize,
+                        ),
+                    ) {
+                        content(gridItem)
+                    }
+                }.forEach { measurable ->
+                    val parentData = measurable.parentData as FolderGridItemParentData
+
+                    measurable.measure(
+                        Constraints.fixed(
+                            width = parentData.width,
+                            height = parentData.height,
+                        ),
+                    ).placeRelative(
+                        x = parentData.x,
+                        y = parentData.y,
+                    )
+                }
             }
         }
     }
@@ -107,45 +105,38 @@ internal fun FolderGridLayout(
     animate: Boolean,
     content: @Composable BoxScope.(GridItem) -> Unit,
 ) {
-    Layout(
-        modifier = modifier,
-        content = {
-            gridItems?.forEachIndexed { index, gridItem ->
-                key(gridItem.id) {
-                    FolderGridLayoutContent(
-                        index = index,
-                        columns = columns,
-                        cellWidth = width / columns,
-                        cellHeight = height / rows,
-                        gridItem = gridItem,
-                        animate = animate,
-                        content = content,
-                    )
-                }
-            }
-        },
-    ) { measurables, constraints ->
-        val placeables = measurables.map { measurable ->
-            val parentData =
-                measurable.parentData as FolderGridItemParentData
-
-            measurable.measure(
-                Constraints.fixed(
-                    width = parentData.width,
-                    height = parentData.height,
-                ),
-            ) to parentData
-        }
+    SubcomposeLayout(modifier = modifier) { constraints ->
+        val cellWidth = width / columns
+        val cellHeight = height / rows
 
         layout(
             width = constraints.maxWidth,
             height = constraints.maxHeight,
         ) {
-            placeables.forEach { (placeable, parentData) ->
-                placeable.placeRelativeWithLayer(
-                    x = parentData.x,
-                    y = parentData.y,
-                )
+            gridItems?.forEachIndexed { index, gridItem ->
+                subcompose(gridItem.id) {
+                    FolderGridLayoutContent(
+                        index = index,
+                        columns = columns,
+                        cellWidth = cellWidth,
+                        cellHeight = cellHeight,
+                        gridItem = gridItem,
+                        animate = animate,
+                        content = content,
+                    )
+                }.forEach { measurable ->
+                    val parentData = measurable.parentData as FolderGridItemParentData
+
+                    measurable.measure(
+                        Constraints.fixed(
+                            width = parentData.width,
+                            height = parentData.height,
+                        ),
+                    ).placeRelativeWithLayer(
+                        x = parentData.x,
+                        y = parentData.y,
+                    )
+                }
             }
         }
     }
