@@ -50,11 +50,11 @@ class ResizeGridItemUseCaseTest {
 
     @Test
     fun `resizes grid item when there are no conflicts`() = runTest(dispatcher) {
-        val gridItem = getApplicationInfoGridItem()
+        val applicationInfoGridItem = getApplicationInfoGridItem()
 
         val gridRepository = FakeGridRepository(
             initialGridItems = getGridItems(
-                applicationInfoGridItems = listOf(gridItem),
+                applicationInfoGridItems = listOf(applicationInfoGridItem),
             ),
         )
 
@@ -69,31 +69,31 @@ class ResizeGridItemUseCaseTest {
         )
 
         val resizingGridItem = getGridItemsUseCase()
-            .first { it.id == gridItem.id }
+            .first { it.id == applicationInfoGridItem.id }
             .copy(
                 columnSpan = 2,
                 rowSpan = 2,
             )
 
-        val result = resizeGridItemUseCase(
+        val resizedGridItem = resizeGridItemUseCase(
             resizingGridItem = resizingGridItem,
             columns = 5,
             rows = 4,
         )
 
-        assertEquals(2, result.columnSpan)
-        assertEquals(2, result.rowSpan)
+        assertEquals(2, resizedGridItem.columnSpan)
+        assertEquals(2, resizedGridItem.rowSpan)
     }
 
     @Test
     fun `resizes grid item and resolves conflict`() = runTest(dispatcher) {
-        val gridItem = getApplicationInfoGridItem(
+        val applicationInfoGridItem = getApplicationInfoGridItem(
             id = "resizing",
             columnSpan = 1,
             rowSpan = 1,
         )
 
-        val conflictingGridItem = getApplicationInfoGridItem(
+        val conflictingApplicationInfoGridItem = getApplicationInfoGridItem(
             id = "conflicting",
             startColumn = 1,
             startRow = 0,
@@ -102,8 +102,8 @@ class ResizeGridItemUseCaseTest {
         val gridRepository = FakeGridRepository(
             initialGridItems = getGridItems(
                 applicationInfoGridItems = listOf(
-                    gridItem,
-                    conflictingGridItem,
+                    applicationInfoGridItem,
+                    conflictingApplicationInfoGridItem,
                 ),
             ),
         )
@@ -119,25 +119,25 @@ class ResizeGridItemUseCaseTest {
         )
 
         val resizingGridItem = getGridItemsUseCase()
-            .first { it.id == gridItem.id }
+            .first { it.id == applicationInfoGridItem.id }
             .copy(
                 columnSpan = 2,
                 rowSpan = 1,
             )
 
-        val result = resizeGridItemUseCase(
+        val resizedGridItem = resizeGridItemUseCase(
             resizingGridItem = resizingGridItem,
             columns = 5,
             rows = 4,
         )
 
-        assertEquals(0, result.startColumn)
-        assertEquals(0, result.startRow)
-        assertEquals(2, result.columnSpan)
-        assertEquals(1, result.rowSpan)
+        assertEquals(0, resizedGridItem.startColumn)
+        assertEquals(0, resizedGridItem.startRow)
+        assertEquals(2, resizedGridItem.columnSpan)
+        assertEquals(1, resizedGridItem.rowSpan)
 
         val resolvedGridItem = getGridItemsUseCase()
-            .first { it.id == conflictingGridItem.id }
+            .first { it.id == conflictingApplicationInfoGridItem.id }
 
         assertEquals(2, resolvedGridItem.startColumn)
         assertEquals(0, resolvedGridItem.startRow)
@@ -145,13 +145,13 @@ class ResizeGridItemUseCaseTest {
 
     @Test
     fun `does not resize grid item when conflict cannot be resolved`() = runTest(dispatcher) {
-        val gridItem = getApplicationInfoGridItem(
+        val applicationInfoGridItem = getApplicationInfoGridItem(
             id = "resizing",
             columnSpan = 1,
             rowSpan = 1,
         )
 
-        val conflictingGridItems = listOf(
+        val conflictingApplicationInfoGridItems = listOf(
             getApplicationInfoGridItem(
                 id = "conflicting-1",
                 startColumn = 1,
@@ -185,8 +185,8 @@ class ResizeGridItemUseCaseTest {
         val gridRepository = FakeGridRepository(
             initialGridItems = getGridItems(
                 applicationInfoGridItems = listOf(
-                    gridItem,
-                    *conflictingGridItems.toTypedArray(),
+                    applicationInfoGridItem,
+                    *conflictingApplicationInfoGridItems.toTypedArray(),
                 ),
             ),
         )
@@ -202,32 +202,32 @@ class ResizeGridItemUseCaseTest {
         )
 
         val resizingGridItem = getGridItemsUseCase()
-            .first { it.id == gridItem.id }
+            .first { it.id == applicationInfoGridItem.id }
             .copy(
                 columnSpan = 2,
                 rowSpan = 1,
             )
 
-        val result = resizeGridItemUseCase(
+        val resizedGridItem = resizeGridItemUseCase(
             resizingGridItem = resizingGridItem,
             columns = 5,
             rows = 4,
         )
 
-        assertEquals(0, result.startColumn)
-        assertEquals(0, result.startRow)
-        assertEquals(1, result.columnSpan)
-        assertEquals(1, result.rowSpan)
+        assertEquals(0, resizedGridItem.startColumn)
+        assertEquals(0, resizedGridItem.startRow)
+        assertEquals(1, resizedGridItem.columnSpan)
+        assertEquals(1, resizedGridItem.rowSpan)
     }
 
     @Test
     fun `ignores conflicting grid item on different page`() = runTest(dispatcher) {
-        val gridItem = getApplicationInfoGridItem(
+        val applicationInfoGridItem = getApplicationInfoGridItem(
             id = "resizing",
             page = 0,
         )
 
-        val otherPageGridItem = getApplicationInfoGridItem(
+        val otherPageApplicationInfoGridItem = getApplicationInfoGridItem(
             id = "other-page",
             page = 1,
             startColumn = 1,
@@ -237,8 +237,8 @@ class ResizeGridItemUseCaseTest {
         val gridRepository = FakeGridRepository(
             initialGridItems = getGridItems(
                 applicationInfoGridItems = listOf(
-                    gridItem,
-                    otherPageGridItem,
+                    applicationInfoGridItem,
+                    otherPageApplicationInfoGridItem,
                 ),
             ),
         )
@@ -254,32 +254,32 @@ class ResizeGridItemUseCaseTest {
         )
 
         val resizingGridItem = getGridItemsUseCase()
-            .first { it.id == gridItem.id }
+            .first { it.id == applicationInfoGridItem.id }
             .copy(
                 columnSpan = 2,
                 rowSpan = 1,
             )
 
-        val result = resizeGridItemUseCase(
+        val resizedGridItem = resizeGridItemUseCase(
             resizingGridItem = resizingGridItem,
             columns = 5,
             rows = 4,
         )
 
-        assertEquals(0, result.startColumn)
-        assertEquals(0, result.startRow)
-        assertEquals(2, result.columnSpan)
-        assertEquals(1, result.rowSpan)
+        assertEquals(0, resizedGridItem.startColumn)
+        assertEquals(0, resizedGridItem.startRow)
+        assertEquals(2, resizedGridItem.columnSpan)
+        assertEquals(1, resizedGridItem.rowSpan)
     }
 
     @Test
     fun `ignores conflicting grid item with different associate`() = runTest(dispatcher) {
-        val gridItem = getApplicationInfoGridItem(
+        val applicationInfoGridItem = getApplicationInfoGridItem(
             id = "resizing",
             associate = Associate.Grid,
         )
 
-        val dockGridItem = getApplicationInfoGridItem(
+        val dockApplicationInfoGridItem = getApplicationInfoGridItem(
             id = "dock",
             associate = Associate.Dock,
             startColumn = 1,
@@ -289,8 +289,8 @@ class ResizeGridItemUseCaseTest {
         val gridRepository = FakeGridRepository(
             initialGridItems = getGridItems(
                 applicationInfoGridItems = listOf(
-                    gridItem,
-                    dockGridItem,
+                    applicationInfoGridItem,
+                    dockApplicationInfoGridItem,
                 ),
             ),
         )
@@ -306,31 +306,31 @@ class ResizeGridItemUseCaseTest {
         )
 
         val resizingGridItem = getGridItemsUseCase()
-            .first { it.id == gridItem.id }
+            .first { it.id == applicationInfoGridItem.id }
             .copy(
                 columnSpan = 2,
                 rowSpan = 1,
             )
 
-        val result = resizeGridItemUseCase(
+        val resizedGridItem = resizeGridItemUseCase(
             resizingGridItem = resizingGridItem,
             columns = 5,
             rows = 4,
         )
 
-        assertEquals(0, result.startColumn)
-        assertEquals(0, result.startRow)
-        assertEquals(2, result.columnSpan)
-        assertEquals(1, result.rowSpan)
+        assertEquals(0, resizedGridItem.startColumn)
+        assertEquals(0, resizedGridItem.startRow)
+        assertEquals(2, resizedGridItem.columnSpan)
+        assertEquals(1, resizedGridItem.rowSpan)
     }
 
     @Test
     fun `ignores conflicting non top level grid item`() = runTest(dispatcher) {
-        val gridItem = getApplicationInfoGridItem(
+        val applicationInfoGridItem = getApplicationInfoGridItem(
             id = "resizing",
         )
 
-        val folderGridItem = getApplicationInfoGridItem(
+        val folderApplicationInfoGridItem = getApplicationInfoGridItem(
             id = "folder-item",
             startColumn = 1,
             startRow = 0,
@@ -340,8 +340,8 @@ class ResizeGridItemUseCaseTest {
         val gridRepository = FakeGridRepository(
             initialGridItems = getGridItems(
                 applicationInfoGridItems = listOf(
-                    gridItem,
-                    folderGridItem,
+                    applicationInfoGridItem,
+                    folderApplicationInfoGridItem,
                 ),
             ),
         )
@@ -357,22 +357,22 @@ class ResizeGridItemUseCaseTest {
         )
 
         val resizingGridItem = getGridItemsUseCase()
-            .first { it.id == gridItem.id }
+            .first { it.id == applicationInfoGridItem.id }
             .copy(
                 columnSpan = 2,
                 rowSpan = 1,
             )
 
-        val result = resizeGridItemUseCase(
+        val resizedGridItem = resizeGridItemUseCase(
             resizingGridItem = resizingGridItem,
             columns = 5,
             rows = 4,
         )
 
-        assertEquals(0, result.startColumn)
-        assertEquals(0, result.startRow)
-        assertEquals(2, result.columnSpan)
-        assertEquals(1, result.rowSpan)
+        assertEquals(0, resizedGridItem.startColumn)
+        assertEquals(0, resizedGridItem.startRow)
+        assertEquals(2, resizedGridItem.columnSpan)
+        assertEquals(1, resizedGridItem.rowSpan)
     }
 
     private fun getGridItems(

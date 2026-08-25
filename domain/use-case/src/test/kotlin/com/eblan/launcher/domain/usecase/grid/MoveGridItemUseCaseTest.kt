@@ -68,17 +68,7 @@ class MoveGridItemUseCaseTest {
             initialGridItems = gridItems,
         )
 
-        val getGridItemsUseCase = GetGridItemsUseCase(
-            userDataRepository = FakeUserDataRepository(
-                initialUserData = getUserData(),
-            ),
-            fileManager = FakeFileManager(
-                rootDirectory = tempDirectory.toFile(),
-            ),
-            iconKeyGenerator = FakeIconKeyGenerator(),
-            gridRepository = gridRepository,
-            ioDispatcher = dispatcher,
-        )
+        val getGridItemsUseCase = getGridItemsUseCase(gridRepository = gridRepository)
 
         val moveGridItemUseCase = MoveGridItemUseCase(
             gridRepository = gridRepository,
@@ -118,11 +108,11 @@ class MoveGridItemUseCaseTest {
 
     @Test
     fun `returns conflicting grid item when moving onto normal item at center`() = runTest(dispatcher) {
-        val movingItem = getApplicationInfoGridItem(
+        val applicationInfoGridItem = getApplicationInfoGridItem(
             id = "moving",
         )
 
-        val conflictingItem = getApplicationInfoGridItem(
+        val conflictingApplicationInfoGridItem = getApplicationInfoGridItem(
             id = "conflicting",
             startColumn = 2,
             startRow = 1,
@@ -131,8 +121,8 @@ class MoveGridItemUseCaseTest {
         val gridRepository = FakeGridRepository(
             initialGridItems = GridItems(
                 applicationInfoGridItems = listOf(
-                    movingItem,
-                    conflictingItem,
+                    applicationInfoGridItem,
+                    conflictingApplicationInfoGridItem,
                 ),
                 widgetGridItems = emptyList(),
                 shortcutInfoGridItems = emptyList(),
@@ -141,9 +131,7 @@ class MoveGridItemUseCaseTest {
             ),
         )
 
-        val getGridItemsUseCase = getGridItemsUseCase(
-            gridRepository = gridRepository,
-        )
+        val getGridItemsUseCase = getGridItemsUseCase(gridRepository = gridRepository)
 
         val moveGridItemUseCase = MoveGridItemUseCase(
             gridRepository = gridRepository,
@@ -151,15 +139,15 @@ class MoveGridItemUseCaseTest {
             defaultDispatcher = dispatcher,
         )
 
-        val movedItem = getGridItemsUseCase()
-            .first { it.id == movingItem.id }
+        val movingGridItem = getGridItemsUseCase()
+            .first { it.id == applicationInfoGridItem.id }
             .copy(
                 startColumn = 2,
                 startRow = 1,
             )
 
-        val result = moveGridItemUseCase(
-            movingGridItem = movedItem,
+        val moveGridItemResult = moveGridItemUseCase(
+            movingGridItem = movingGridItem,
             x = 250,
             y = 150,
             columns = 5,
@@ -168,22 +156,22 @@ class MoveGridItemUseCaseTest {
             gridHeight = 400,
         )
 
-        assertTrue(result.isSuccess)
-        assertEquals(movedItem, result.movingGridItem)
+        assertTrue(moveGridItemResult.isSuccess)
+        assertEquals(movingGridItem, moveGridItemResult.movingGridItem)
         assertEquals(
-            conflictingItem.id,
-            result.conflictingGridItem?.id,
+            conflictingApplicationInfoGridItem.id,
+            moveGridItemResult.conflictingGridItem?.id,
         )
     }
 
     @Test
     fun `ignores grid item from different page`() = runTest(dispatcher) {
-        val movingItem = getApplicationInfoGridItem(
+        val applicationInfoGridItem = getApplicationInfoGridItem(
             id = "moving",
             page = 0,
         )
 
-        val otherPageItem = getApplicationInfoGridItem(
+        val otherPageApplicationInfoGridItem = getApplicationInfoGridItem(
             id = "other-page",
             page = 1,
             startColumn = 2,
@@ -193,8 +181,8 @@ class MoveGridItemUseCaseTest {
         val gridRepository = FakeGridRepository(
             initialGridItems = GridItems(
                 applicationInfoGridItems = listOf(
-                    movingItem,
-                    otherPageItem,
+                    applicationInfoGridItem,
+                    otherPageApplicationInfoGridItem,
                 ),
                 widgetGridItems = emptyList(),
                 shortcutInfoGridItems = emptyList(),
@@ -213,15 +201,15 @@ class MoveGridItemUseCaseTest {
             defaultDispatcher = dispatcher,
         )
 
-        val movedItem = getGridItemsUseCase()
-            .first { it.id == movingItem.id }
+        val movingGridItem = getGridItemsUseCase()
+            .first { it.id == applicationInfoGridItem.id }
             .copy(
                 startColumn = 2,
                 startRow = 1,
             )
 
-        val result = moveGridItemUseCase(
-            movingGridItem = movedItem,
+        val moveGridItemResult = moveGridItemUseCase(
+            movingGridItem = movingGridItem,
             x = 250,
             y = 150,
             columns = 5,
@@ -230,8 +218,8 @@ class MoveGridItemUseCaseTest {
             gridHeight = 400,
         )
 
-        assertTrue(result.isSuccess)
-        assertNull(result.conflictingGridItem)
+        assertTrue(moveGridItemResult.isSuccess)
+        assertNull(moveGridItemResult.conflictingGridItem)
 
         val persistedGridItems = gridRepository
             .getGridItems()
@@ -240,40 +228,40 @@ class MoveGridItemUseCaseTest {
         assertEquals(
             2,
             persistedGridItems
-                .first { it.id == movingItem.id }
+                .first { it.id == applicationInfoGridItem.id }
                 .startColumn,
         )
 
         assertEquals(
             1,
             persistedGridItems
-                .first { it.id == movingItem.id }
+                .first { it.id == applicationInfoGridItem.id }
                 .startRow,
         )
 
         assertEquals(
             2,
             persistedGridItems
-                .first { it.id == otherPageItem.id }
+                .first { it.id == otherPageApplicationInfoGridItem.id }
                 .startColumn,
         )
 
         assertEquals(
             1,
             persistedGridItems
-                .first { it.id == otherPageItem.id }
+                .first { it.id == otherPageApplicationInfoGridItem.id }
                 .startRow,
         )
     }
 
     @Test
     fun `ignores grid item with different associate`() = runTest(dispatcher) {
-        val movingItem = getApplicationInfoGridItem(
+        val applicationInfoGridItem = getApplicationInfoGridItem(
             id = "moving",
             associate = Associate.Grid,
         )
 
-        val dockItem = getApplicationInfoGridItem(
+        val dockApplicationInfoGridItem = getApplicationInfoGridItem(
             id = "dock",
             startColumn = 2,
             startRow = 1,
@@ -283,8 +271,8 @@ class MoveGridItemUseCaseTest {
         val gridRepository = FakeGridRepository(
             initialGridItems = GridItems(
                 applicationInfoGridItems = listOf(
-                    movingItem,
-                    dockItem,
+                    applicationInfoGridItem,
+                    dockApplicationInfoGridItem,
                 ),
                 widgetGridItems = emptyList(),
                 shortcutInfoGridItems = emptyList(),
@@ -303,15 +291,15 @@ class MoveGridItemUseCaseTest {
             defaultDispatcher = dispatcher,
         )
 
-        val movedItem = getGridItemsUseCase()
-            .first { it.id == movingItem.id }
+        val movingGridItem = getGridItemsUseCase()
+            .first { it.id == applicationInfoGridItem.id }
             .copy(
                 startColumn = 2,
                 startRow = 1,
             )
 
-        val result = moveGridItemUseCase(
-            movingGridItem = movedItem,
+        val moveGridItemResult = moveGridItemUseCase(
+            movingGridItem = movingGridItem,
             x = 250,
             y = 150,
             columns = 5,
@@ -320,18 +308,18 @@ class MoveGridItemUseCaseTest {
             gridHeight = 400,
         )
 
-        assertTrue(result.isSuccess)
-        assertNull(result.conflictingGridItem)
+        assertTrue(moveGridItemResult.isSuccess)
+        assertNull(moveGridItemResult.conflictingGridItem)
 
         val persistedGridItems = gridRepository
             .getGridItems()
             .applicationInfoGridItems
 
         val persistedMovingItem = persistedGridItems
-            .first { it.id == movingItem.id }
+            .first { it.id == applicationInfoGridItem.id }
 
         val persistedDockItem = persistedGridItems
-            .first { it.id == dockItem.id }
+            .first { it.id == dockApplicationInfoGridItem.id }
 
         assertEquals(2, persistedMovingItem.startColumn)
         assertEquals(1, persistedMovingItem.startRow)
@@ -342,11 +330,11 @@ class MoveGridItemUseCaseTest {
 
     @Test
     fun `ignores grid item inside folder`() = runTest(dispatcher) {
-        val movingItem = getApplicationInfoGridItem(
+        val applicationInfoGridItem = getApplicationInfoGridItem(
             id = "moving",
         )
 
-        val folderChild = getApplicationInfoGridItem(
+        val folderApplicationInfoGridItem = getApplicationInfoGridItem(
             id = "folder-child",
             startColumn = 2,
             startRow = 1,
@@ -356,8 +344,8 @@ class MoveGridItemUseCaseTest {
         val gridRepository = FakeGridRepository(
             initialGridItems = GridItems(
                 applicationInfoGridItems = listOf(
-                    movingItem,
-                    folderChild,
+                    applicationInfoGridItem,
+                    folderApplicationInfoGridItem,
                 ),
                 widgetGridItems = emptyList(),
                 shortcutInfoGridItems = emptyList(),
@@ -376,15 +364,15 @@ class MoveGridItemUseCaseTest {
             defaultDispatcher = dispatcher,
         )
 
-        val movedItem = getGridItemsUseCase()
-            .first { it.id == movingItem.id }
+        val movingGridItem = getGridItemsUseCase()
+            .first { it.id == applicationInfoGridItem.id }
             .copy(
                 startColumn = 2,
                 startRow = 1,
             )
 
-        val result = moveGridItemUseCase(
-            movingGridItem = movedItem,
+        val moveGridItemResult = moveGridItemUseCase(
+            movingGridItem = movingGridItem,
             x = 250,
             y = 150,
             columns = 5,
@@ -393,18 +381,18 @@ class MoveGridItemUseCaseTest {
             gridHeight = 400,
         )
 
-        assertTrue(result.isSuccess)
-        assertNull(result.conflictingGridItem)
+        assertTrue(moveGridItemResult.isSuccess)
+        assertNull(moveGridItemResult.conflictingGridItem)
 
         val persistedGridItems = gridRepository
             .getGridItems()
             .applicationInfoGridItems
 
         val persistedMovingItem = persistedGridItems
-            .first { it.id == movingItem.id }
+            .first { it.id == applicationInfoGridItem.id }
 
         val persistedFolderChild = persistedGridItems
-            .first { it.id == folderChild.id }
+            .first { it.id == folderApplicationInfoGridItem.id }
 
         assertEquals(2, persistedMovingItem.startColumn)
         assertEquals(1, persistedMovingItem.startRow)
@@ -415,16 +403,16 @@ class MoveGridItemUseCaseTest {
 
     @Test
     fun `fails when moving grid item onto widget at center`() = runTest(dispatcher) {
-        val movingItem = getApplicationInfoGridItem(
+        val applicationInfoGridItem = getApplicationInfoGridItem(
             id = "moving",
         )
 
-        val widgetItem = getWidgetGridItem()
+        val widgetGridItem = getWidgetGridItem()
 
         val gridRepository = FakeGridRepository(
             initialGridItems = GridItems(
-                applicationInfoGridItems = listOf(movingItem),
-                widgetGridItems = listOf(widgetItem),
+                applicationInfoGridItems = listOf(applicationInfoGridItem),
+                widgetGridItems = listOf(widgetGridItem),
                 shortcutInfoGridItems = emptyList(),
                 shortcutConfigGridItems = emptyList(),
                 folderGridItems = emptyList(),
@@ -441,15 +429,15 @@ class MoveGridItemUseCaseTest {
             defaultDispatcher = dispatcher,
         )
 
-        val movedItem = getGridItemsUseCase()
-            .first { it.id == movingItem.id }
+        val movingGridItem = getGridItemsUseCase()
+            .first { it.id == applicationInfoGridItem.id }
             .copy(
                 startColumn = 2,
                 startRow = 1,
             )
 
-        val result = moveGridItemUseCase(
-            movingGridItem = movedItem,
+        val moveGridItemResult = moveGridItemUseCase(
+            movingGridItem = movingGridItem,
             x = 250,
             y = 150,
             columns = 5,
@@ -458,9 +446,9 @@ class MoveGridItemUseCaseTest {
             gridHeight = 400,
         )
 
-        assertFalse(result.isSuccess)
-        assertEquals(movedItem, result.movingGridItem)
-        assertNull(result.conflictingGridItem)
+        assertFalse(moveGridItemResult.isSuccess)
+        assertEquals(movingGridItem, moveGridItemResult.movingGridItem)
+        assertNull(moveGridItemResult.conflictingGridItem)
 
         val persistedMovingItem = gridRepository
             .getGridItems()
