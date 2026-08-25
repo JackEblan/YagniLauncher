@@ -80,7 +80,7 @@ import com.eblan.launcher.domain.model.EblanUser
 import com.eblan.launcher.domain.model.TextColor
 import com.eblan.launcher.feature.home.R
 import com.eblan.launcher.feature.home.util.getAppDrawerGridItemTextColor
-import com.eblan.launcher.feature.home.util.getApplicationScreenContentColor
+import com.eblan.launcher.feature.home.util.getApplicationScreenTextColor
 import com.eblan.launcher.feature.home.util.getHorizontalAlignment
 import com.eblan.launcher.feature.home.util.getVerticalArrangement
 import com.eblan.launcher.ui.local.LocalLauncherApps
@@ -163,7 +163,7 @@ internal fun PrivateSpaceStickyHeader(
 
     val isDefaultLauncher by rememberIsDefaultLauncher()
 
-    val contentColor = getApplicationScreenContentColor(
+    val contentColor = getApplicationScreenTextColor(
         backgroundColor = backgroundColor,
         customBackgroundColor = customBackgroundColor,
         systemCustomTextColor = systemCustomTextColor,

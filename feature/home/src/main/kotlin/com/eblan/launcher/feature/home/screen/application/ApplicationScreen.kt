@@ -98,7 +98,7 @@ import com.eblan.launcher.feature.home.model.SharedElementKey
 import com.eblan.launcher.feature.home.screen.application.horizontal.HorizontalApplicationScreen
 import com.eblan.launcher.feature.home.screen.application.list.ListApplicationScreen
 import com.eblan.launcher.feature.home.screen.application.vertical.VerticalApplicationScreen
-import com.eblan.launcher.feature.home.util.getApplicationScreenContentColor
+import com.eblan.launcher.feature.home.util.getApplicationScreenTextColor
 import com.eblan.launcher.ui.local.LocalUserManager
 import com.eblan.launcher.ui.settings.rememberIsDefaultLauncher
 import kotlinx.coroutines.FlowPreview
@@ -287,6 +287,10 @@ internal fun ApplicationScreen(
 internal fun QuiteModeScreen(
     modifier: Modifier = Modifier,
     userHandle: UserHandle?,
+    backgroundColor: BackgroundColor,
+    customBackgroundColor: Int,
+    systemCustomTextColor: Int,
+    systemTextColor: TextColor,
     onDragEnd: () -> Unit,
     onVerticalDrag: (Float) -> Unit,
 ) {
@@ -295,6 +299,14 @@ internal fun QuiteModeScreen(
     val userManager = LocalUserManager.current
 
     val isDefaultLauncher by rememberIsDefaultLauncher()
+
+    val textColor = getApplicationScreenTextColor(
+        backgroundColor = backgroundColor,
+        customBackgroundColor = customBackgroundColor,
+        systemCustomTextColor = systemCustomTextColor,
+        systemTextColor = systemTextColor,
+        defaultColor = MaterialTheme.colorScheme.onSurface,
+    )
 
     Column(
         modifier = modifier
@@ -312,6 +324,7 @@ internal fun QuiteModeScreen(
     ) {
         Text(
             text = stringResource(R.string.work_apps_are_paused),
+            color = textColor,
             style = MaterialTheme.typography.titleLarge,
         )
 
@@ -319,6 +332,7 @@ internal fun QuiteModeScreen(
 
         Text(
             text = stringResource(R.string.you_won_t_receive_notifications_from_your_work_apps),
+            color = textColor,
             textAlign = TextAlign.Center,
         )
 
@@ -408,7 +422,7 @@ internal fun EblanApplicationInfoTabRow(
         BackgroundColor.Custom -> Color(customBackgroundColor)
     }
 
-    val contentColor = getApplicationScreenContentColor(
+    val contentColor = getApplicationScreenTextColor(
         backgroundColor = backgroundColor,
         customBackgroundColor = customBackgroundColor,
         systemCustomTextColor = systemCustomTextColor,
@@ -429,10 +443,8 @@ internal fun EblanApplicationInfoTabRow(
         },
     ) {
         eblanUserPageKeys.forEach { eblanUserPageKey ->
-            val selected = currentEblanUserPageKey == eblanUserPageKey
-
             Tab(
-                selected = selected,
+                selected = currentEblanUserPageKey == eblanUserPageKey,
                 onClick = {
                     scope.launch {
                         onAnimateScrollToPage(

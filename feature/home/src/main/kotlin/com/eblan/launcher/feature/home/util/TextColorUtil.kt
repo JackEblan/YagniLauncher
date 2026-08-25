@@ -88,7 +88,7 @@ internal fun getAppDrawerGridItemTextColor(
     }
 }
 
-internal fun getApplicationScreenContentColor(
+internal fun getApplicationScreenTextColor(
     backgroundColor: BackgroundColor,
     customBackgroundColor: Int,
     systemCustomTextColor: Int,

@@ -427,6 +427,10 @@ private fun EblanApplicationInfosPage(
         if (isQuietModeEnabled) {
             QuiteModeScreen(
                 userHandle = userHandle,
+                backgroundColor = appDrawerSettings.backgroundColor,
+                customBackgroundColor = appDrawerSettings.customBackgroundColor,
+                systemCustomTextColor = systemCustomTextColor,
+                systemTextColor = systemTextColor,
                 onDragEnd = onDragEnd,
                 onVerticalDrag = onVerticalDrag,
             )

@@ -55,7 +55,7 @@ import com.eblan.launcher.domain.model.BackgroundColor
 import com.eblan.launcher.domain.model.EblanApplicationInfoOrder
 import com.eblan.launcher.domain.model.TextColor
 import com.eblan.launcher.feature.home.R
-import com.eblan.launcher.feature.home.util.getApplicationScreenContentColor
+import com.eblan.launcher.feature.home.util.getApplicationScreenTextColor
 import kotlinx.coroutines.launch
 import com.eblan.launcher.common.R as commonR
 
@@ -180,7 +180,7 @@ private fun getSearchBarColors(
         BackgroundColor.Custom -> Color(customBackgroundColor)
     }
 
-    val contentColor = getApplicationScreenContentColor(
+    val contentColor = getApplicationScreenTextColor(
         backgroundColor = backgroundColor,
         customBackgroundColor = customBackgroundColor,
         systemCustomTextColor = systemCustomTextColor,
