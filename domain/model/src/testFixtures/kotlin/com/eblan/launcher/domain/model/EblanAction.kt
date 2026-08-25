@@ -15,12 +15,10 @@
  *   limitations under the License.
  *
  */
+package com.eblan.launcher.domain.model
 
-plugins {
-    alias(libs.plugins.com.eblan.launcher.jvmLibrary)
-    `java-test-fixtures`
-}
-
-dependencies {
-    api(libs.javax.inject)
-}
+fun getEblanAction() = EblanAction(
+    eblanActionType = EblanActionType.None,
+    serialNumber = 0L,
+    componentName = "",
+)

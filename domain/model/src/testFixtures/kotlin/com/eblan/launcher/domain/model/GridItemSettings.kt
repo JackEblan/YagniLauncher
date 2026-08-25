@@ -15,12 +15,18 @@
  *   limitations under the License.
  *
  */
+package com.eblan.launcher.domain.model
 
-plugins {
-    alias(libs.plugins.com.eblan.launcher.jvmLibrary)
-    `java-test-fixtures`
-}
-
-dependencies {
-    api(libs.javax.inject)
-}
+fun getGridItemSettings() = GridItemSettings(
+    iconSize = 48,
+    textColor = TextColor.System,
+    textSize = 14,
+    showLabel = true,
+    singleLineLabel = true,
+    horizontalAlignment = HorizontalAlignment.CenterHorizontally,
+    verticalArrangement = VerticalArrangement.Center,
+    customTextColor = 0,
+    customBackgroundColor = 0,
+    padding = 0,
+    cornerRadius = 0,
+)

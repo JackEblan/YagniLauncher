@@ -15,12 +15,21 @@
  *   limitations under the License.
  *
  */
+package com.eblan.launcher.domain.common
 
-plugins {
-    alias(libs.plugins.com.eblan.launcher.jvmLibrary)
-    `java-test-fixtures`
-}
+class FakeIconKeyGenerator : IconKeyGenerator {
+    override suspend fun getActivityIconKey(
+        serialNumber: Long,
+        componentName: String,
+    ): String = "$serialNumber-$componentName"
 
-dependencies {
-    api(libs.javax.inject)
+    override suspend fun getShortcutIconKey(
+        serialNumber: Long,
+        packageName: String,
+        id: String,
+    ): String = "$serialNumber-$packageName-$id"
+
+    override suspend fun getHashedName(
+        name: String,
+    ): String = name.hashCode().toString()
 }

@@ -15,12 +15,25 @@
  *   limitations under the License.
  *
  */
+package com.eblan.launcher.domain.framework
 
-plugins {
-    alias(libs.plugins.com.eblan.launcher.jvmLibrary)
-    `java-test-fixtures`
-}
+import java.io.File
 
-dependencies {
-    api(libs.javax.inject)
+class FakeFileManager(private val rootDirectory: File) : FileManager {
+    override suspend fun getFilesDirectory(name: String): File = File(rootDirectory, name).apply {
+        mkdirs()
+    }
+
+    override suspend fun updateAndGetFilePath(
+        directory: File,
+        name: String,
+        byteArray: ByteArray,
+    ): String? {
+        val file = File(directory, name)
+
+        file.parentFile?.mkdirs()
+        file.writeBytes(byteArray)
+
+        return file.absolutePath
+    }
 }

@@ -22,6 +22,7 @@ plugins {
 
 dependencies {
     implementation(projects.domain.model)
-
     implementation(libs.kotlinx.coroutines.core)
+
+    testImplementation(testFixtures(projects.domain.model))
 }

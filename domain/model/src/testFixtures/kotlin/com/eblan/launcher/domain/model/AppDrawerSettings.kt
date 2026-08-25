@@ -15,12 +15,20 @@
  *   limitations under the License.
  *
  */
+package com.eblan.launcher.domain.model
 
-plugins {
-    alias(libs.plugins.com.eblan.launcher.jvmLibrary)
-    `java-test-fixtures`
-}
-
-dependencies {
-    api(libs.javax.inject)
-}
+fun getAppDrawerSettings() = AppDrawerSettings(
+    appDrawerColumns = 5,
+    appDrawerRowsHeight = 5,
+    gridItemSettings = getGridItemSettings(),
+    eblanApplicationInfoOrder = EblanApplicationInfoOrder.Alphabetical,
+    backgroundColor = BackgroundColor.System,
+    customBackgroundColor = 0,
+    appDrawerType = AppDrawerType.Vertical,
+    horizontalAppDrawerColumns = 5,
+    horizontalAppDrawerRows = 5,
+    excludeTaggedApps = false,
+    showKeyboard = false,
+    fuzzySearch = false,
+    blurBehind = false,
+)
