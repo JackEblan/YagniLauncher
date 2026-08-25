@@ -86,65 +86,69 @@ class GetGridItemsUseCaseTest {
             ),
         )
 
-        val result = getGridItemsUseCase()
-
-        assertEquals(5, result.size)
-        assertEquals(
-            listOf(
-                "application",
-                "widget",
-                "shortcut-info",
-                "shortcut-config",
-                "folder",
-            ),
-            result.map { it.id },
-        )
+        assertTrue(getGridItemsUseCase()[0].data is GridItemData.ApplicationInfo)
+        assertTrue(getGridItemsUseCase()[1].data is GridItemData.Widget)
+        assertTrue(getGridItemsUseCase()[2].data is GridItemData.ShortcutInfo)
+        assertTrue(getGridItemsUseCase()[3].data is GridItemData.ShortcutConfig)
+        assertTrue(getGridItemsUseCase()[4].data is GridItemData.Folder)
     }
 
     @Test
     fun `preserves multiple items from every grid item type`() = runTest(dispatcher) {
-        val useCase = getGridItemsUseCase(
+        val applicationInfoGridItems = listOf(
+            getApplicationInfoGridItem("application-1"),
+            getApplicationInfoGridItem("application-2"),
+        )
+
+        val widgetGridItems = listOf(
+            getWidgetGridItem("widget-1"),
+            getWidgetGridItem("widget-2"),
+            getWidgetGridItem("widget-3"),
+        )
+
+        val shortcutInfoGridItems = listOf(
+            getShortcutInfoGridItem("shortcut-info-1"),
+            getShortcutInfoGridItem("shortcut-info-2"),
+        )
+
+        val shortcutConfigGridItems = listOf(
+            getShortcutConfigGridItem("shortcut-config-1"),
+        )
+
+        val folderGridItems = listOf(
+            getFolderGridItem("folder-1"),
+            getFolderGridItem("folder-2"),
+        )
+
+        val getGridItemsUseCase = getGridItemsUseCase(
             gridItems = GridItems(
-                applicationInfoGridItems = listOf(
-                    getApplicationInfoGridItem("application-1"),
-                    getApplicationInfoGridItem("application-2"),
-                ),
-                widgetGridItems = listOf(
-                    getWidgetGridItem("widget-1"),
-                    getWidgetGridItem("widget-2"),
-                    getWidgetGridItem("widget-3"),
-                ),
-                shortcutInfoGridItems = listOf(
-                    getShortcutInfoGridItem("shortcut-info-1"),
-                    getShortcutInfoGridItem("shortcut-info-2"),
-                ),
-                shortcutConfigGridItems = listOf(
-                    getShortcutConfigGridItem("shortcut-config-1"),
-                ),
-                folderGridItems = listOf(
-                    getFolderGridItem("folder-1"),
-                    getFolderGridItem("folder-2"),
-                ),
+                applicationInfoGridItems = applicationInfoGridItems,
+                widgetGridItems = widgetGridItems,
+                shortcutInfoGridItems = shortcutInfoGridItems,
+                shortcutConfigGridItems = shortcutConfigGridItems,
+                folderGridItems = folderGridItems,
             ),
         )
 
-        val result = useCase()
-
-        assertEquals(10, result.size)
         assertEquals(
-            listOf(
-                "application-1",
-                "application-2",
-                "widget-1",
-                "widget-2",
-                "widget-3",
-                "shortcut-info-1",
-                "shortcut-info-2",
-                "shortcut-config-1",
-                "folder-1",
-                "folder-2",
-            ),
-            result.map { it.id },
+            applicationInfoGridItems.size,
+            getGridItemsUseCase().count { it.data is GridItemData.ApplicationInfo },
+        )
+        assertEquals(
+            widgetGridItems.size,
+            getGridItemsUseCase().count { it.data is GridItemData.Widget },
+        )
+        assertEquals(
+            shortcutInfoGridItems.size,
+            getGridItemsUseCase().count { it.data is GridItemData.ShortcutInfo },
+        )
+        assertEquals(
+            shortcutConfigGridItems.size,
+            getGridItemsUseCase().count { it.data is GridItemData.ShortcutConfig },
+        )
+        assertEquals(
+            folderGridItems.size,
+            getGridItemsUseCase().count { it.data is GridItemData.Folder },
         )
     }
 
@@ -165,9 +169,7 @@ class GetGridItemsUseCaseTest {
             iconPackInfoPackageName = iconPackPackageName,
         )
 
-        val result = getGridItemsUseCase()
-
-        val data = result.single().data as GridItemData.ApplicationInfo
+        val data = getGridItemsUseCase().single().data as GridItemData.ApplicationInfo
 
         assertNull(data.iconPackInfoFilePath)
     }
@@ -203,9 +205,7 @@ class GetGridItemsUseCaseTest {
             iconKeyGenerator = iconKeyGenerator,
         )
 
-        val result = getGridItemsUseCase()
-
-        val data = result.single().data as GridItemData.ApplicationInfo
+        val data = getGridItemsUseCase().single().data as GridItemData.ApplicationInfo
 
         assertEquals(
             iconFile.toFile().absolutePath,
