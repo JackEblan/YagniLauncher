@@ -18,6 +18,7 @@
 
 plugins {
     alias(libs.plugins.com.eblan.launcher.jvmLibrary)
+    `java-test-fixtures`
 }
 
 dependencies {

@@ -15,23 +15,25 @@
  *   limitations under the License.
  *
  */
-package com.eblan.launcher.domain.testing.common
+package com.eblan.launcher.domain.framework
 
-import com.eblan.launcher.domain.common.IconKeyGenerator
+import java.io.File
 
-class FakeIconKeyGenerator : IconKeyGenerator {
-    override suspend fun getActivityIconKey(
-        serialNumber: Long,
-        componentName: String,
-    ): String = "$serialNumber-$componentName"
+class FakeFileManager(private val rootDirectory: File) : FileManager {
+    override suspend fun getFilesDirectory(name: String): File = File(rootDirectory, name).apply {
+        mkdirs()
+    }
 
-    override suspend fun getShortcutIconKey(
-        serialNumber: Long,
-        packageName: String,
-        id: String,
-    ): String = "$serialNumber-$packageName-$id"
-
-    override suspend fun getHashedName(
+    override suspend fun updateAndGetFilePath(
+        directory: File,
         name: String,
-    ): String = name.hashCode().toString()
+        byteArray: ByteArray,
+    ): String? {
+        val file = File(directory, name)
+
+        file.parentFile?.mkdirs()
+        file.writeBytes(byteArray)
+
+        return file.absolutePath
+    }
 }

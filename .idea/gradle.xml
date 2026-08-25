@@ -37,7 +37,6 @@
             <option value="$PROJECT_DIR$/domain/grid" />
             <option value="$PROJECT_DIR$/domain/model" />
             <option value="$PROJECT_DIR$/domain/repository" />
-            <option value="$PROJECT_DIR$/domain/testing" />
             <option value="$PROJECT_DIR$/domain/use-case" />
             <option value="$PROJECT_DIR$/feature" />
             <option value="$PROJECT_DIR$/feature/action" />

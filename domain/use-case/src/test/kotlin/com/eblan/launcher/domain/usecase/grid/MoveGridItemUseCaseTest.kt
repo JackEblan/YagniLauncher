@@ -17,6 +17,8 @@
  */
 package com.eblan.launcher.domain.usecase.grid
 
+import com.eblan.launcher.domain.common.FakeIconKeyGenerator
+import com.eblan.launcher.domain.framework.FakeFileManager
 import com.eblan.launcher.domain.model.AppDrawerSettings
 import com.eblan.launcher.domain.model.AppDrawerType
 import com.eblan.launcher.domain.model.ApplicationInfoGridItem
@@ -37,10 +39,8 @@ import com.eblan.launcher.domain.model.Theme
 import com.eblan.launcher.domain.model.UserData
 import com.eblan.launcher.domain.model.VerticalArrangement
 import com.eblan.launcher.domain.model.WidgetGridItem
-import com.eblan.launcher.domain.testing.common.FakeIconKeyGenerator
-import com.eblan.launcher.domain.testing.framework.FakeFileManager
-import com.eblan.launcher.domain.testing.repository.FakeGridRepository
-import com.eblan.launcher.domain.testing.repository.FakeUserDataRepository
+import com.eblan.launcher.domain.repository.FakeGridRepository
+import com.eblan.launcher.domain.repository.FakeUserDataRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
