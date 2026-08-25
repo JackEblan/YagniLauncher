@@ -47,12 +47,12 @@ import java.util.concurrent.TimeUnit
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 @Warmup(
-    iterations = 2,
-    time = 10,
+    iterations = 1,
+    time = 3,
 )
 @Measurement(
-    iterations = 3,
-    time = 10,
+    iterations = 2,
+    time = 3,
 )
 @Fork(1)
 open class MoveGridItemBenchmark {
@@ -80,8 +80,6 @@ open class MoveGridItemBenchmark {
 open class MoveGridItemBenchmarkState {
     @Param(
         "100",
-        "1000",
-        "5000",
         "10000",
     )
     var itemCount: Int = 0
