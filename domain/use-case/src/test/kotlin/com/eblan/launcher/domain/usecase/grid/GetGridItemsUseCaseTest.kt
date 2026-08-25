@@ -86,11 +86,13 @@ class GetGridItemsUseCaseTest {
             ),
         )
 
-        assertTrue(getGridItemsUseCase()[0].data is GridItemData.ApplicationInfo)
-        assertTrue(getGridItemsUseCase()[1].data is GridItemData.Widget)
-        assertTrue(getGridItemsUseCase()[2].data is GridItemData.ShortcutInfo)
-        assertTrue(getGridItemsUseCase()[3].data is GridItemData.ShortcutConfig)
-        assertTrue(getGridItemsUseCase()[4].data is GridItemData.Folder)
+        val gridItems = getGridItemsUseCase()
+
+        assertTrue(gridItems[0].data is GridItemData.ApplicationInfo)
+        assertTrue(gridItems[1].data is GridItemData.Widget)
+        assertTrue(gridItems[2].data is GridItemData.ShortcutInfo)
+        assertTrue(gridItems[3].data is GridItemData.ShortcutConfig)
+        assertTrue(gridItems[4].data is GridItemData.Folder)
     }
 
     @Test
@@ -130,25 +132,27 @@ class GetGridItemsUseCaseTest {
             ),
         )
 
+        val gridItems = getGridItemsUseCase()
+
         assertEquals(
             applicationInfoGridItems.size,
-            getGridItemsUseCase().count { it.data is GridItemData.ApplicationInfo },
+            gridItems.count { it.data is GridItemData.ApplicationInfo },
         )
         assertEquals(
             widgetGridItems.size,
-            getGridItemsUseCase().count { it.data is GridItemData.Widget },
+            gridItems.count { it.data is GridItemData.Widget },
         )
         assertEquals(
             shortcutInfoGridItems.size,
-            getGridItemsUseCase().count { it.data is GridItemData.ShortcutInfo },
+            gridItems.count { it.data is GridItemData.ShortcutInfo },
         )
         assertEquals(
             shortcutConfigGridItems.size,
-            getGridItemsUseCase().count { it.data is GridItemData.ShortcutConfig },
+            gridItems.count { it.data is GridItemData.ShortcutConfig },
         )
         assertEquals(
             folderGridItems.size,
-            getGridItemsUseCase().count { it.data is GridItemData.Folder },
+            gridItems.count { it.data is GridItemData.Folder },
         )
     }
 
