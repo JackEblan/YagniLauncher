@@ -24,6 +24,7 @@ dependencyResolutionManagement {
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 rootProject.name = "YagniLauncher"
 include(":app")
+include(":benchmark")
 include(":common")
 include(":design-system")
 include(":data:datastore")
