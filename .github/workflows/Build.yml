@@ -72,6 +72,13 @@ jobs:
           name: Debug APK output
           path: '**/build/outputs/apk/**/*.apk'
 
+      - name: Upload JVM local results (XML)
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: local-test-results
+          path: '**/build/test-results/**/*.xml'
+
   android-test:
     name: "Android Test"
     runs-on: ubuntu-latest
