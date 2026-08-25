@@ -31,6 +31,7 @@ dependencies {
 
     testImplementation(testFixtures(projects.domain.common))
     testImplementation(testFixtures(projects.domain.framework))
+    testImplementation(testFixtures(projects.domain.model))
     testImplementation(testFixtures(projects.domain.repository))
     testImplementation(libs.kotlinx.coroutines.test)
 }

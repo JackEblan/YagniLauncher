@@ -19,26 +19,19 @@ package com.eblan.launcher.domain.usecase.grid
 
 import com.eblan.launcher.domain.common.FakeIconKeyGenerator
 import com.eblan.launcher.domain.framework.FakeFileManager
-import com.eblan.launcher.domain.model.AppDrawerSettings
-import com.eblan.launcher.domain.model.AppDrawerType
 import com.eblan.launcher.domain.model.ApplicationInfoGridItem
 import com.eblan.launcher.domain.model.Associate
-import com.eblan.launcher.domain.model.BackgroundColor
-import com.eblan.launcher.domain.model.EblanAction
-import com.eblan.launcher.domain.model.EblanActionType
-import com.eblan.launcher.domain.model.EblanApplicationInfoOrder
 import com.eblan.launcher.domain.model.ExperimentalSettings
 import com.eblan.launcher.domain.model.GeneralSettings
 import com.eblan.launcher.domain.model.GestureSettings
-import com.eblan.launcher.domain.model.GridItemSettings
 import com.eblan.launcher.domain.model.GridItems
-import com.eblan.launcher.domain.model.HomeSettings
-import com.eblan.launcher.domain.model.HorizontalAlignment
-import com.eblan.launcher.domain.model.TextColor
 import com.eblan.launcher.domain.model.Theme
 import com.eblan.launcher.domain.model.UserData
-import com.eblan.launcher.domain.model.VerticalArrangement
 import com.eblan.launcher.domain.model.WidgetGridItem
+import com.eblan.launcher.domain.model.getAppDrawerSettings
+import com.eblan.launcher.domain.model.getEblanAction
+import com.eblan.launcher.domain.model.getGridItemSettings
+import com.eblan.launcher.domain.model.getHomeSettings
 import com.eblan.launcher.domain.repository.FakeGridRepository
 import com.eblan.launcher.domain.repository.FakeUserDataRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -538,26 +531,6 @@ class MoveGridItemUseCaseTest {
         gridItemSettings = getGridItemSettings(),
     )
 
-    private fun getGridItemSettings() = GridItemSettings(
-        iconSize = 48,
-        textColor = TextColor.System,
-        textSize = 14,
-        showLabel = true,
-        singleLineLabel = true,
-        horizontalAlignment = HorizontalAlignment.CenterHorizontally,
-        verticalArrangement = VerticalArrangement.Center,
-        customTextColor = 0,
-        customBackgroundColor = 0,
-        padding = 0,
-        cornerRadius = 0,
-    )
-
-    private fun getEblanAction() = EblanAction(
-        eblanActionType = EblanActionType.None,
-        serialNumber = 0L,
-        componentName = "",
-    )
-
     private fun getUserData() = UserData(
         homeSettings = getHomeSettings(),
         appDrawerSettings = getAppDrawerSettings(),
@@ -576,51 +549,6 @@ class MoveGridItemUseCaseTest {
             firstLaunch = false,
             lockMovement = false,
         ),
-    )
-
-    private fun getHomeSettings() = HomeSettings(
-        columns = 5,
-        rows = 5,
-        pageCount = 1,
-        infiniteScroll = false,
-        dockColumns = 5,
-        dockRows = 1,
-        dockHeight = 1,
-        initialPage = 0,
-        wallpaperScroll = false,
-        gridItemSettings = getGridItemSettings(),
-        lockScreenOrientation = false,
-        dockPageCount = 1,
-        dockInfiniteScroll = false,
-        dockInitialPage = 0,
-        addNewAppsToHomeScreen = false,
-        folderCellWidth = 1,
-        folderCellHeight = 1,
-        maxFolderColumns = 4,
-        maxFolderRows = 4,
-        showPageIndicator = true,
-        dockCustomBackgroundColor = 0,
-        dockPadding = 0,
-        dockTopStartCornerRadius = 0,
-        dockTopEndCornerRadius = 0,
-        dockBottomStartCornerRadius = 0,
-        dockBottomEndCornerRadius = 0,
-    )
-
-    private fun getAppDrawerSettings() = AppDrawerSettings(
-        appDrawerColumns = 5,
-        appDrawerRowsHeight = 5,
-        gridItemSettings = getGridItemSettings(),
-        eblanApplicationInfoOrder = EblanApplicationInfoOrder.Alphabetical,
-        backgroundColor = BackgroundColor.System,
-        customBackgroundColor = 0,
-        appDrawerType = AppDrawerType.Vertical,
-        horizontalAppDrawerColumns = 5,
-        horizontalAppDrawerRows = 5,
-        excludeTaggedApps = false,
-        showKeyboard = false,
-        fuzzySearch = false,
-        blurBehind = false,
     )
 
     private fun getGridItemsUseCase(
