@@ -31,32 +31,26 @@ import com.eblan.launcher.data.room.entity.ShortcutConfigGridItemEntity
 import com.eblan.launcher.data.room.entity.ShortcutInfoGridItemEntity
 import com.eblan.launcher.data.room.entity.WidgetGridItemEntity
 import com.eblan.launcher.data.room.model.GridItemEntities
-import com.eblan.launcher.domain.common.Dispatcher
-import com.eblan.launcher.domain.common.EblanDispatchers
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.GridItems
 import com.eblan.launcher.domain.repository.ApplicationInfoGridItemRepository
-import com.eblan.launcher.domain.repository.EblanApplicationInfoRepository
 import com.eblan.launcher.domain.repository.FolderGridItemRepository
 import com.eblan.launcher.domain.repository.GridRepository
 import com.eblan.launcher.domain.repository.ShortcutConfigGridItemRepository
 import com.eblan.launcher.domain.repository.ShortcutInfoGridItemRepository
 import com.eblan.launcher.domain.repository.WidgetGridItemRepository
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 internal class DefaultGridRepository @Inject constructor(
-    private val eblanApplicationInfoRepository: EblanApplicationInfoRepository,
     private val applicationInfoGridItemRepository: ApplicationInfoGridItemRepository,
     private val widgetGridItemRepository: WidgetGridItemRepository,
     private val shortcutInfoGridItemRepository: ShortcutInfoGridItemRepository,
     private val folderGridItemRepository: FolderGridItemRepository,
     private val shortcutConfigGridItemRepository: ShortcutConfigGridItemRepository,
     private val gridItemTransaction: GridItemTransaction,
-    @param:Dispatcher(EblanDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) : GridRepository {
     override val gridItemsFlow: Flow<GridItems> =
         gridItemTransaction.gridItemEntitiesFlow.map { gridItemEntities ->

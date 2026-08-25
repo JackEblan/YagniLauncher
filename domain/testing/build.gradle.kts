@@ -21,13 +21,12 @@ plugins {
 }
 
 dependencies {
-    api(projects.domain.common)
-    api(projects.domain.model)
+    api(libs.kotlinx.coroutines.test)
 
+    implementation(projects.domain.common)
+    implementation(projects.domain.model)
     implementation(projects.domain.framework)
     implementation(projects.domain.grid)
     implementation(projects.domain.repository)
     implementation(libs.kotlinx.coroutines.core)
-
-    testImplementation(projects.domain.testing)
 }

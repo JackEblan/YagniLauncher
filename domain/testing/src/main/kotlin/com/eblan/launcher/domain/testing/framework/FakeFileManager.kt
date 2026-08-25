@@ -15,19 +15,26 @@
  *   limitations under the License.
  *
  */
+package com.eblan.launcher.domain.testing.framework
 
-plugins {
-    alias(libs.plugins.com.eblan.launcher.jvmLibrary)
-}
+import com.eblan.launcher.domain.framework.FileManager
+import java.io.File
 
-dependencies {
-    api(projects.domain.common)
-    api(projects.domain.model)
+class FakeFileManager(private val rootDirectory: File) : FileManager {
+    override suspend fun getFilesDirectory(name: String): File = File(rootDirectory, name).apply {
+        mkdirs()
+    }
 
-    implementation(projects.domain.framework)
-    implementation(projects.domain.grid)
-    implementation(projects.domain.repository)
-    implementation(libs.kotlinx.coroutines.core)
+    override suspend fun updateAndGetFilePath(
+        directory: File,
+        name: String,
+        byteArray: ByteArray,
+    ): String? {
+        val file = File(directory, name)
 
-    testImplementation(projects.domain.testing)
+        file.parentFile?.mkdirs()
+        file.writeBytes(byteArray)
+
+        return file.absolutePath
+    }
 }

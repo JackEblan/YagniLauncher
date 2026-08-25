@@ -15,19 +15,23 @@
  *   limitations under the License.
  *
  */
+package com.eblan.launcher.domain.testing.common
 
-plugins {
-    alias(libs.plugins.com.eblan.launcher.jvmLibrary)
-}
+import com.eblan.launcher.domain.common.IconKeyGenerator
 
-dependencies {
-    api(projects.domain.common)
-    api(projects.domain.model)
+class FakeIconKeyGenerator : IconKeyGenerator {
+    override suspend fun getActivityIconKey(
+        serialNumber: Long,
+        componentName: String,
+    ): String = "$serialNumber-$componentName"
 
-    implementation(projects.domain.framework)
-    implementation(projects.domain.grid)
-    implementation(projects.domain.repository)
-    implementation(libs.kotlinx.coroutines.core)
+    override suspend fun getShortcutIconKey(
+        serialNumber: Long,
+        packageName: String,
+        id: String,
+    ): String = "$serialNumber-$packageName-$id"
 
-    testImplementation(projects.domain.testing)
+    override suspend fun getHashedName(
+        name: String,
+    ): String = name.hashCode().toString()
 }
