@@ -76,7 +76,7 @@ open class MoveGridItemBenchmark {
     }
 }
 
-@State(Scope.Benchmark)
+@State(Scope.Thread)
 open class MoveGridItemBenchmarkState {
     @Param(
         "100",
