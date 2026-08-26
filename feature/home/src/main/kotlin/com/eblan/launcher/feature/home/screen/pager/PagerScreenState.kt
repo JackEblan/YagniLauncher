@@ -172,6 +172,9 @@ internal class PagerScreenState(
     var associate by mutableStateOf<Associate?>(null)
         private set
 
+    var isVisibleFolder by mutableStateOf(false)
+        private set
+
     val swipeUpY = Animatable(screenHeight.toFloat())
 
     val swipeDownY = Animatable(screenHeight.toFloat())
@@ -569,15 +572,6 @@ internal class PagerScreenState(
                 ),
             )
         }
-    }
-
-    fun resize(
-        resizeGridItem: GridItem,
-        onUpdateResizeGridItem: (GridItem) -> Unit,
-    ) {
-        isResizing = true
-
-        onUpdateResizeGridItem(resizeGridItem)
     }
 
     fun dismissApplicationScreen() {
@@ -1083,6 +1077,10 @@ internal class PagerScreenState(
 
     fun updateDockPageDirection(value: PageDirection?) {
         dockPageDirection = value
+    }
+
+    fun updateIsVisibleFolder(value: Boolean) {
+        isVisibleFolder = value
     }
 }
 

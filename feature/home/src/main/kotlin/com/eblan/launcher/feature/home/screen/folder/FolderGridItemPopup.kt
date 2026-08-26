@@ -84,7 +84,7 @@ internal fun FolderGridItemPopup(
     isVisibleOverlay: Boolean,
     paddingValues: PaddingValues,
     isCloseFolderGridItemPopup: Boolean,
-    lastFolderPopupEntry: FolderPopupEntry,
+    lastFolderPopupEntry: FolderPopupEntry?,
     onDeleteGridItem: (GridItem) -> Unit,
     onUpsertFolderPopupEntry: (FolderPopupEntry) -> Unit,
     onDeleteFolderPopupEntry: (FolderPopupEntry) -> Unit,
@@ -101,7 +101,10 @@ internal fun FolderGridItemPopup(
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onWidgets: (EblanApplicationInfoGroup) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
+    onResetFolderPopupEntries: () -> Unit,
 ) {
+    requireNotNull(lastFolderPopupEntry)
+
     requireNotNull(popupIntOffset)
 
     requireNotNull(popupIntSize)
@@ -236,6 +239,7 @@ internal fun FolderGridItemPopup(
                 onWidgets = onWidgets,
                 onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                 onDismissRequest = onDismissRequest,
+                onResetFolderPopupEntries = onResetFolderPopupEntries,
             )
         }
     }
@@ -274,6 +278,7 @@ private fun FolderGridItemPopupContent(
     onWidgets: (EblanApplicationInfoGroup) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
     onDismissRequest: () -> Unit,
+    onResetFolderPopupEntries: () -> Unit,
 ) {
     Surface(
         modifier = modifier.width(IntrinsicSize.Max),
@@ -307,6 +312,8 @@ private fun FolderGridItemPopupContent(
                         },
                         onEdit = {
                             onEdit(movingFolderGridItem.id)
+
+                            onResetFolderPopupEntries()
 
                             onUpdateTransitionState(false)
                         },
@@ -365,6 +372,8 @@ private fun FolderGridItemPopupContent(
                         },
                         onEdit = {
                             onEdit(movingFolderGridItem.id)
+
+                            onResetFolderPopupEntries()
 
                             onUpdateTransitionState(false)
                         },

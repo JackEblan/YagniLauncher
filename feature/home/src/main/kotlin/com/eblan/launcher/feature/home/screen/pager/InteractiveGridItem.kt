@@ -138,6 +138,7 @@ internal fun InteractiveGridItem(
         movingGridItem: GridItem,
     ) -> Unit,
     onResetGrid: () -> Unit,
+    onUpdateIsVisibleFolder: (Boolean) -> Unit,
 ) {
     val isSelected =
         moveGridItemResult != null && moveGridItemResult.movingGridItem.id == gridItem.id
@@ -297,6 +298,7 @@ internal fun InteractiveGridItem(
                 onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                 onShowFolderWhenDragging = onShowFolderWhenDragging,
                 onResetGrid = onResetGrid,
+                onUpdateIsVisibleFolder = onUpdateIsVisibleFolder,
             )
         }
 
@@ -925,6 +927,7 @@ private fun InteractiveFolderGridItem(
         movingGridItem: GridItem,
     ) -> Unit,
     onResetGrid: () -> Unit,
+    onUpdateIsVisibleFolder: (Boolean) -> Unit,
 ) {
     val launcherApps = LocalLauncherApps.current
 
@@ -1012,6 +1015,8 @@ private fun InteractiveFolderGridItem(
                     },
                     onTap = if (!isVisibleOverlay) {
                         {
+                            onUpdateIsVisibleFolder(true)
+
                             onUpsertFolderPopupEntry(
                                 FolderPopupEntry(
                                     id = gridItem.id,

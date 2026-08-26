@@ -106,7 +106,7 @@ internal fun FolderScreen(
     folderCellHeight: Int,
     screenHeight: Int,
     screenWidth: Int,
-    lastFolderPopup: FolderPopup?,
+    folderPopups: List<FolderPopup>,
     showFolderGridItemPopup: Boolean,
     previewFolderGridItems: Map<String, PreviewFolder>,
     onDeleteFolderPopupEntry: (FolderPopupEntry) -> Unit,
@@ -139,6 +139,7 @@ internal fun FolderScreen(
     onResetGrid: () -> Unit,
     onDragEndAfterMoveFolder: () -> Unit,
     onUpsertFolderPopupEntry: (FolderPopupEntry) -> Unit,
+    onUpdateIsVisibleFolder: (Boolean) -> Unit,
 ) {
     val folderPopupIntOffset = IntOffset(
         x = folderPopup.folderPopupEntry.x,
@@ -208,7 +209,10 @@ internal fun FolderScreen(
 
     var pageDirection by remember { mutableStateOf<PageDirection?>(null) }
 
-    val isLastFolderGridItem = lastFolderPopup?.gridItem == folderPopup.gridItem
+    val isFirstFolderGridItem = folderPopups.size == 1 &&
+        folderPopups.singleOrNull()?.gridItem == folderPopup.gridItem
+
+    val isLastFolderGridItem = folderPopups.lastOrNull()?.gridItem == folderPopup.gridItem
 
     val currentDrag = rememberUpdatedState(drag)
     val currentIsDragging = rememberUpdatedState(isDragging)
@@ -240,7 +244,10 @@ internal fun FolderScreen(
         onUpsertFolderPopupEntry(folderPopup.folderPopupEntry.copy(isCloseFolder = true))
     }
 
-    LaunchedEffect(key1 = folderPopup) {
+    LaunchedEffect(
+        key1 = folderPopup,
+        key2 = isFirstFolderGridItem,
+    ) {
         handleFolderPopup(
             drag = currentDrag,
             isDragging = currentIsDragging,
@@ -248,10 +255,12 @@ internal fun FolderScreen(
             moveGridItemResult = currentMoveGridItemResult,
             folderPopup = folderPopup,
             progress = progress,
+            isFirstFolderGridItem = isFirstFolderGridItem,
             onAnimateToScrollToPage = folderGridHorizontalPagerState::animateScrollToPage,
             onDeleteFolderPopupEntry = onDeleteFolderPopupEntry,
             onMoveFolderGridItemOutsideFolder = onMoveFolderGridItemOutsideFolder,
             onUpdateSharedElementKey = onUpdateSharedElementKey,
+            onUpdateIsVisibleFolder = onUpdateIsVisibleFolder,
         )
     }
 
@@ -298,7 +307,7 @@ internal fun FolderScreen(
             isDragging = currentIsDragging,
             lockMovement = currentLockMovement,
             isVisibleOverlay = currentIsVisibleOverlay,
-            isLast = isLastFolderGridItem,
+            isLastFolderGridItem = isLastFolderGridItem,
             onResetGrid = onResetGrid,
             onDragEndAfterMoveFolder = onDragEndAfterMoveFolder,
             onUpdateIsDragging = onUpdateIsDragging,
@@ -346,7 +355,7 @@ internal fun FolderScreen(
             screenWidth = screenWidth,
             layoutDirection = layoutDirection,
             folderCellWidth = folderCellWidth,
-            isLast = isLastFolderGridItem,
+            isLastFolderGridItem = isLastFolderGridItem,
             isInProgress = isInProgress,
             onUpdateFolderPageDirection = {
                 pageDirection = it
@@ -566,10 +575,12 @@ private suspend fun handleFolderPopup(
     moveGridItemResult: State<MoveGridItemResult?>,
     folderPopup: FolderPopup,
     progress: Animatable<Float, AnimationVector1D>,
+    isFirstFolderGridItem: Boolean,
     onAnimateToScrollToPage: suspend (Int) -> Unit,
     onDeleteFolderPopupEntry: (FolderPopupEntry) -> Unit,
     onMoveFolderGridItemOutsideFolder: (GridItem) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
+    onUpdateIsVisibleFolder: (Boolean) -> Unit,
 ) {
     if (!folderPopup.folderPopupEntry.isCloseFolder) return
 
@@ -647,6 +658,10 @@ private suspend fun handleFolderPopup(
         )
 
         onMoveFolderGridItemOutsideFolder(newGridItem)
+    }
+
+    if (isFirstFolderGridItem) {
+        onUpdateIsVisibleFolder(false)
     }
 
     onDeleteFolderPopupEntry(folderPopup.folderPopupEntry)
