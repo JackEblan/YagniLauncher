@@ -315,14 +315,14 @@ class MoveGridItemUseCaseTest {
             .getGridItems()
             .applicationInfoGridItems
 
-        val persistedMovingItem = persistedGridItems
+        val persistedMovingGridItem = persistedGridItems
             .first { it.id == applicationInfoGridItem.id }
 
         val persistedDockItem = persistedGridItems
             .first { it.id == dockApplicationInfoGridItem.id }
 
-        assertEquals(2, persistedMovingItem.startColumn)
-        assertEquals(1, persistedMovingItem.startRow)
+        assertEquals(2, persistedMovingGridItem.startColumn)
+        assertEquals(1, persistedMovingGridItem.startRow)
 
         assertEquals(2, persistedDockItem.startColumn)
         assertEquals(1, persistedDockItem.startRow)
@@ -388,14 +388,14 @@ class MoveGridItemUseCaseTest {
             .getGridItems()
             .applicationInfoGridItems
 
-        val persistedMovingItem = persistedGridItems
+        val persistedMovingGridItem = persistedGridItems
             .first { it.id == applicationInfoGridItem.id }
 
         val persistedFolderChild = persistedGridItems
             .first { it.id == folderApplicationInfoGridItem.id }
 
-        assertEquals(2, persistedMovingItem.startColumn)
-        assertEquals(1, persistedMovingItem.startRow)
+        assertEquals(2, persistedMovingGridItem.startColumn)
+        assertEquals(1, persistedMovingGridItem.startRow)
 
         assertEquals(2, persistedFolderChild.startColumn)
         assertEquals(1, persistedFolderChild.startRow)
@@ -450,13 +450,13 @@ class MoveGridItemUseCaseTest {
         assertEquals(movingGridItem, moveGridItemResult.movingGridItem)
         assertNull(moveGridItemResult.conflictingGridItem)
 
-        val persistedMovingItem = gridRepository
+        val persistedMovingGridItem = gridRepository
             .getGridItems()
             .applicationInfoGridItems
             .single()
 
-        assertEquals(0, persistedMovingItem.startColumn)
-        assertEquals(0, persistedMovingItem.startRow)
+        assertEquals(0, persistedMovingGridItem.startColumn)
+        assertEquals(0, persistedMovingGridItem.startRow)
     }
 
     private fun getApplicationInfoGridItem(

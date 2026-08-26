@@ -57,7 +57,15 @@ class GetGridItemsUseCaseTest {
 
     @Test
     fun `returns empty list when there are no grid items`() = runTest(dispatcher) {
-        val getGridItemsUseCase = getGridItemsUseCase(gridItems = emptyGridItems())
+        val getGridItemsUseCase = getGridItemsUseCase(
+            gridItems = GridItems(
+                applicationInfoGridItems = emptyList(),
+                widgetGridItems = emptyList(),
+                shortcutInfoGridItems = emptyList(),
+                shortcutConfigGridItems = emptyList(),
+                folderGridItems = emptyList(),
+            ),
+        )
 
         val result = getGridItemsUseCase()
 
@@ -235,14 +243,6 @@ class GetGridItemsUseCaseTest {
             initialGridItems = gridItems,
         ),
         ioDispatcher = dispatcher,
-    )
-
-    private fun emptyGridItems() = GridItems(
-        applicationInfoGridItems = emptyList(),
-        widgetGridItems = emptyList(),
-        shortcutInfoGridItems = emptyList(),
-        shortcutConfigGridItems = emptyList(),
-        folderGridItems = emptyList(),
     )
 
     private fun getApplicationInfoGridItem(
