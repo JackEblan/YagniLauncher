@@ -29,6 +29,7 @@ jobs:
 
     permissions:
       contents: read
+      pull-requests: write
 
     steps:
       - name: Checkout
@@ -54,10 +55,29 @@ jobs:
       - name: Run benchmarks
         run: ./gradlew benchmark
 
+      - name: Generate PR comment body
+        if: ${{ !cancelled() }}
+        run: |
+          echo "## 📊 Benchmark Results" > benchmark-comment.md
+          echo "" >> benchmark-comment.md
+          echo "| Module | Benchmark | itemCount | Score | Error | Unit |" >> benchmark-comment.md
+          echo "|---|---|---|---|---|---|" >> benchmark-comment.md
+          for f in $(find . -path "*/build/reports/benchmarks/main/*" -name "benchmarks.json"); do
+            module=$(echo "$f" | sed -E 's|^\./([^/]+(/[^/]+)*)/build/reports/benchmarks/.*|\1|')
+            jq -r --arg module "$module" '.[] | "| \($module) | \(.benchmark | split(".") | last) | \(.params.itemCount) | \(.primaryMetric.score | (. * 1000 | round) / 1000) | ±\(.primaryMetric.scoreError | (. * 1000 | round) / 1000) | \(.primaryMetric.scoreUnit) |"' "$f" >> benchmark-comment.md
+          done
+
+      - name: Post PR comment
+        if: ${{ !cancelled() && github.event_name == 'pull_request' }}
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: benchmark-results
+          path: benchmark-comment.md
+
       - name: Upload benchmark results
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v7
         with:
           name: benchmark-results
-          path: '**/build/reports/benchmarks/benchmarks/**/*.json'
+          path: '**/build/reports/benchmarks/main/**/benchmarks.json'
           retention-days: 90
