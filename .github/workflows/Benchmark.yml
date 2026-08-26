@@ -7,12 +7,14 @@ on:
     paths:
       - 'domain/grid/**'
       - 'build-logic/**'
-      - '.github/workflows/benchmark.yml'
+      - 'gradle/**'
+      - '.github/workflows/Benchmark.yml'
   pull_request:
     paths:
       - 'domain/grid/**'
       - 'build-logic/**'
-      - '.github/workflows/benchmark.yml'
+      - 'gradle/**'
+      - '.github/workflows/Benchmark.yml'
   workflow_dispatch:
 
 concurrency:
