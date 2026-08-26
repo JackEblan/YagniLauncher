@@ -25,8 +25,8 @@ import org.gradle.kotlin.dsl.dependencies
 class AndroidHiltConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {
-            apply(plugin = libs.plugins.ksp.get().pluginId)
-            apply(plugin = libs.plugins.hilt.get().pluginId)
+            pluginManager.apply(libs.plugins.ksp.get().pluginId)
+            pluginManager.apply(libs.plugins.hilt.get().pluginId)
 
             dependencies {
                 add("implementation", libs.hilt.android)

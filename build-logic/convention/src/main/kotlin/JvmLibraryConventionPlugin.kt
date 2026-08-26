@@ -34,7 +34,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 class JvmLibraryConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {
-            apply(plugin = libs.plugins.kotlin.jvm.get().pluginId)
+            pluginManager.apply(libs.plugins.kotlin.jvm.get().pluginId)
 
             extensions.configure<JavaPluginExtension> {
                 sourceCompatibility = JavaVersion.VERSION_11
