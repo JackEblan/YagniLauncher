@@ -469,7 +469,11 @@ internal fun PagerScreen(
         isVisibleSettingsPopup ||
         isVisibleFolder ||
         isVisibleFolderGridItemPopup ||
-        isResizing
+        isResizing ||
+        pagerScreenState.showApplicationScreen ||
+        pagerScreenState.showWidgetScreen ||
+        pagerScreenState.showShortcutConfigScreen ||
+        pagerScreenState.eblanApplicationInfoGroup != null
 
     LaunchedEffect(
         key1 = pinGridItem,
