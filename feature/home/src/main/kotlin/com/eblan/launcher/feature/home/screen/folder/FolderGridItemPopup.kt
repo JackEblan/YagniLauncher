@@ -59,7 +59,6 @@ import com.eblan.launcher.domain.model.EblanAppWidgetProviderInfo
 import com.eblan.launcher.domain.model.EblanApplicationInfoGroup
 import com.eblan.launcher.domain.model.EblanShortcutInfo
 import com.eblan.launcher.domain.model.EblanShortcutInfoByGroup
-import com.eblan.launcher.domain.model.FolderPopupEntry
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.GridItemSettings
@@ -84,10 +83,7 @@ internal fun FolderGridItemPopup(
     isVisibleOverlay: Boolean,
     paddingValues: PaddingValues,
     isCloseFolderGridItemPopup: Boolean,
-    lastFolderPopupEntry: FolderPopupEntry?,
     onDeleteGridItem: (GridItem) -> Unit,
-    onUpsertFolderPopupEntry: (FolderPopupEntry) -> Unit,
-    onDeleteFolderPopupEntry: (FolderPopupEntry) -> Unit,
     onDismissRequest: () -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
     onEdit: (String) -> Unit,
@@ -103,8 +99,6 @@ internal fun FolderGridItemPopup(
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
     onResetFolderPopupEntries: () -> Unit,
 ) {
-    requireNotNull(lastFolderPopupEntry)
-
     requireNotNull(popupIntOffset)
 
     requireNotNull(popupIntSize)
@@ -205,10 +199,7 @@ internal fun FolderGridItemPopup(
                 movingFolderGridItem = movingGridItem,
                 hasShortcutHostPermission = hasShortcutHostPermission,
                 isVisibleOverlay = isVisibleOverlay,
-                lastFolderPopupEntry = lastFolderPopupEntry,
                 onDeleteGridItem = onDeleteGridItem,
-                onUpsertFolderPopupEntry = onUpsertFolderPopupEntry,
-                onDeleteFolderPopupEntry = onDeleteFolderPopupEntry,
                 onUpdateTransitionState = {
                     transitionState.targetState = it
                 },
@@ -254,10 +245,7 @@ private fun FolderGridItemPopupContent(
     movingFolderGridItem: GridItem,
     hasShortcutHostPermission: Boolean,
     isVisibleOverlay: Boolean,
-    lastFolderPopupEntry: FolderPopupEntry,
     onDeleteGridItem: (GridItem) -> Unit,
-    onUpsertFolderPopupEntry: (FolderPopupEntry) -> Unit,
-    onDeleteFolderPopupEntry: (FolderPopupEntry) -> Unit,
     onUpdateTransitionState: (Boolean) -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
     onEdit: (String) -> Unit,
@@ -340,9 +328,7 @@ private fun FolderGridItemPopupContent(
                                 ),
                             )
 
-                            onUpsertFolderPopupEntry(lastFolderPopupEntry.copy(isCloseFolder = true))
-
-                            onDeleteFolderPopupEntry(lastFolderPopupEntry)
+                            onResetFolderPopupEntries()
 
                             onDismissRequest()
                         },

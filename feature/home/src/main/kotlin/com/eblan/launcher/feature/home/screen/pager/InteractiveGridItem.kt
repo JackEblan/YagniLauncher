@@ -972,6 +972,7 @@ private fun InteractiveFolderGridItem(
             folderGridItems = currentFolderGridItems,
             onShowFolderWhenDragging = onShowFolderWhenDragging,
             onUpdateSharedElementKey = onUpdateSharedElementKey,
+            onUpdateIsVisibleFolder = onUpdateIsVisibleFolder,
         )
     }
 
