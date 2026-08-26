@@ -18,6 +18,7 @@
 
 plugins {
     alias(libs.plugins.com.eblan.launcher.jvmLibrary)
+    alias(libs.plugins.com.eblan.launcher.jvmBenchmarkLibrary)
 }
 
 dependencies {
