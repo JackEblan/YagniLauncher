@@ -111,7 +111,7 @@ internal fun handleAnimateScrollToPage(
     screenWidth: Int,
     layoutDirection: LayoutDirection,
     folderCellWidth: Int,
-    isLast: Boolean,
+    isLastFolderGridItem: Boolean,
     isInProgress: Boolean,
     onUpdateFolderPageDirection: (PageDirection?) -> Unit,
 ) {
@@ -120,7 +120,7 @@ internal fun handleAnimateScrollToPage(
         !isDragging.value ||
         lockMovement.value ||
         moveGridItemResult == null ||
-        !isLast ||
+        !isLastFolderGridItem ||
         isInProgress
     ) {
         return

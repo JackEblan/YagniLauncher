@@ -720,4 +720,8 @@ internal class HomeViewModel @Inject constructor(
             )
         }
     }
+
+    fun resetFolderPopupEntries() {
+        _folderPopupEntries.update { emptyList() }
+    }
 }

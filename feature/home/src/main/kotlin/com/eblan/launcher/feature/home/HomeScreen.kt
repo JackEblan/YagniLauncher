@@ -22,10 +22,8 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
-import android.content.pm.ActivityInfo
 import android.os.Build
 import android.os.IBinder
-import androidx.activity.compose.LocalActivity
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.layout.Box
@@ -191,6 +189,7 @@ internal fun HomeRoute(
         onPackageAdded = viewModel::packageAdded,
         onPackageChanged = viewModel::packageChanged,
         onShortcutsChanged = viewModel::shortcutsChanged,
+        onResetFolderPopupEntries = viewModel::resetFolderPopupEntries,
     )
 }
 
@@ -304,6 +303,7 @@ internal fun HomeScreen(
         serialNumber: Long,
         packageName: String,
     ) -> Unit,
+    onResetFolderPopupEntries: () -> Unit,
 ) {
     val paddingValues = WindowInsets.safeDrawing.asPaddingValues()
 
@@ -378,6 +378,7 @@ internal fun HomeScreen(
                 onPackageAdded = onPackageAdded,
                 onPackageChanged = onPackageChanged,
                 onShortcutsChanged = onShortcutsChanged,
+                onResetFolderPopupEntries = onResetFolderPopupEntries,
             )
         }
     }
@@ -496,16 +497,9 @@ private fun Success(
         serialNumber: Long,
         packageName: String,
     ) -> Unit,
+    onResetFolderPopupEntries: () -> Unit,
 ) {
-    val activity = LocalActivity.current
-
     val statusBarNotifications by rememberStatusBarNotifications()
-
-    LaunchedEffect(key1 = homeData.userData.homeSettings.lockScreenOrientation) {
-        if (homeData.userData.homeSettings.lockScreenOrientation) {
-            activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LOCKED
-        }
-    }
 
     AnimatedContent(
         modifier = modifier,
@@ -580,6 +574,7 @@ private fun Success(
                     onPackageAdded = onPackageAdded,
                     onPackageChanged = onPackageChanged,
                     onShortcutsChanged = onShortcutsChanged,
+                    onResetFolderPopupEntries = onResetFolderPopupEntries,
                 )
             }
 

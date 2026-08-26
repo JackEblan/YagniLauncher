@@ -94,6 +94,7 @@ internal fun GridItemPopup(
     onWidgets: (EblanApplicationInfoGroup) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
+    onUpdateIsResizing: (Boolean) -> Unit,
 ) {
     requireNotNull(popupIntOffset)
 
@@ -220,6 +221,7 @@ internal fun GridItemPopup(
                 onWidgets = onWidgets,
                 onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                 onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                onUpdateIsResizing = onUpdateIsResizing,
             )
         }
     }
@@ -258,6 +260,7 @@ private fun GridItemPopupContent(
     onWidgets: (EblanApplicationInfoGroup) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
+    onUpdateIsResizing: (Boolean) -> Unit,
 ) {
     Surface(
         modifier = modifier.padding(5.dp),
@@ -289,9 +292,9 @@ private fun GridItemPopupContent(
                             onUpdateTransitionState(false)
                         },
                         onEdit = {
-                            onUpdateTransitionState(false)
-
                             onEdit(gridItem.id)
+
+                            onUpdateTransitionState(false)
                         },
                         onInfo = {
                             onInfo(
@@ -303,6 +306,8 @@ private fun GridItemPopupContent(
                         },
                         onResize = {
                             onResize(gridItem)
+
+                            onUpdateIsResizing(true)
 
                             onUpdateTransitionState(false)
                         },
@@ -352,6 +357,8 @@ private fun GridItemPopupContent(
                         onResize = {
                             onResize(gridItem)
 
+                            onUpdateIsResizing(true)
+
                             onUpdateTransitionState(false)
                         },
                     )
@@ -369,6 +376,8 @@ private fun GridItemPopupContent(
                         },
                         onResize = {
                             onResize(gridItem)
+
+                            onUpdateIsResizing(true)
 
                             onUpdateTransitionState(false)
                         },

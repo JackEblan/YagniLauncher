@@ -25,7 +25,7 @@ internal fun handleDropFolderGridItem(
     isDragging: State<Boolean>,
     lockMovement: State<Boolean>,
     isVisibleOverlay: State<Boolean>,
-    isLast: Boolean,
+    isLastFolderGridItem: Boolean,
     onResetGrid: () -> Unit,
     onDragEndAfterMoveFolder: () -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
@@ -34,7 +34,7 @@ internal fun handleDropFolderGridItem(
     if (drag == Drag.None ||
         drag == Drag.Start ||
         drag == Drag.Dragging ||
-        !isLast
+        !isLastFolderGridItem
     ) {
         return
     }
