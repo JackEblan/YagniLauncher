@@ -23,6 +23,7 @@ import android.content.Intent
 import android.content.pm.LauncherApps.PinItemRequest
 import android.os.Build
 import android.os.IBinder
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -710,127 +711,137 @@ internal class PagerScreenState(
     }
 
     suspend fun handlePinItemRequest(pinItemRequest: PinItemRequest?) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && pinItemRequest != null) {
-            when (pinItemRequest.requestType) {
-                PinItemRequest.REQUEST_TYPE_APPWIDGET -> {
-                    val appWidgetProviderInfo = pinItemRequest.getAppWidgetProviderInfo(context)
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O ||
+            pinItemRequest == null
+        ) {
+            return
+        }
 
-                    if (appWidgetProviderInfo != null) {
-                        val componentName = appWidgetProviderInfo.provider.flattenToString()
-
-                        val preview =
-                            appWidgetProviderInfo.loadPreviewImage(context, 0)?.let { drawable ->
-                                val directory =
-                                    fileManager.getFilesDirectory(FileManager.WIDGETS_DIR)
-
-                                val file = File(
-                                    directory,
-                                    iconKeyGenerator.getHashedName(name = componentName),
-                                )
-
-                                androidImageSerializer.createDrawablePath(
-                                    drawable = drawable,
-                                    file = file,
-                                )
-
-                                file.absolutePath
-                            }
-
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                            onGetPinGridItem(
-                                PinItemRequestType.Widget(
-                                    appWidgetId = 0,
-                                    componentName = componentName,
-                                    packageName = appWidgetProviderInfo.provider.packageName,
-                                    serialNumber = androidUserManagerWrapper.getSerialNumberForUser(
-                                        userHandle = appWidgetProviderInfo.profile,
-                                    ),
-                                    configure = appWidgetProviderInfo.configure.flattenToString(),
-                                    minWidth = appWidgetProviderInfo.minWidth,
-                                    minHeight = appWidgetProviderInfo.minHeight,
-                                    resizeMode = appWidgetProviderInfo.resizeMode,
-                                    minResizeWidth = appWidgetProviderInfo.minResizeWidth,
-                                    minResizeHeight = appWidgetProviderInfo.minResizeHeight,
-                                    maxResizeWidth = appWidgetProviderInfo.maxResizeWidth,
-                                    maxResizeHeight = appWidgetProviderInfo.maxResizeHeight,
-                                    targetCellHeight = appWidgetProviderInfo.targetCellHeight,
-                                    targetCellWidth = appWidgetProviderInfo.targetCellWidth,
-                                    preview = preview,
-                                ),
-                            )
-                        } else {
-                            onGetPinGridItem(
-                                PinItemRequestType.Widget(
-                                    appWidgetId = 0,
-                                    componentName = appWidgetProviderInfo.provider.flattenToString(),
-                                    packageName = appWidgetProviderInfo.provider.packageName,
-                                    serialNumber = androidUserManagerWrapper.getSerialNumberForUser(
-                                        userHandle = appWidgetProviderInfo.profile,
-                                    ),
-                                    configure = appWidgetProviderInfo.configure.flattenToString(),
-                                    minWidth = appWidgetProviderInfo.minWidth,
-                                    minHeight = appWidgetProviderInfo.minHeight,
-                                    resizeMode = appWidgetProviderInfo.resizeMode,
-                                    minResizeWidth = appWidgetProviderInfo.minResizeWidth,
-                                    minResizeHeight = appWidgetProviderInfo.minResizeHeight,
-                                    maxResizeWidth = 0,
-                                    maxResizeHeight = 0,
-                                    targetCellHeight = 0,
-                                    targetCellWidth = 0,
-                                    preview = preview,
-                                ),
-                            )
-                        }
-                    }
-                }
-
-                PinItemRequest.REQUEST_TYPE_SHORTCUT -> {
-                    val shortcutInfo = pinItemRequest.shortcutInfo
-
-                    if (shortcutInfo != null) {
-                        val serialNumber =
-                            androidUserManagerWrapper.getSerialNumberForUser(userHandle = shortcutInfo.userHandle)
-
-                        val icon = androidLauncherAppsWrapper.getShortcutBadgedIconDrawable(
-                            shortcutInfo = shortcutInfo,
-                            density = 0,
-                        )?.let { drawable ->
-                            val directory = fileManager.getFilesDirectory(FileManager.SHORTCUTS_DIR)
-
-                            val file = File(
-                                directory,
-                                iconKeyGenerator.getShortcutIconKey(
-                                    serialNumber = serialNumber,
-                                    packageName = shortcutInfo.`package`,
-                                    id = shortcutInfo.id,
-                                ),
-                            )
-
-                            androidImageSerializer.createDrawablePath(
-                                drawable = drawable,
-                                file = file,
-                            )
-
-                            file.absolutePath
-                        }
-
-                        onGetPinGridItem(
-                            PinItemRequestType.ShortcutInfo(
-                                serialNumber = androidUserManagerWrapper.getSerialNumberForUser(
-                                    userHandle = shortcutInfo.userHandle,
-                                ),
-                                shortcutId = shortcutInfo.id,
-                                packageName = shortcutInfo.`package`,
-                                shortLabel = shortcutInfo.shortLabel.toString(),
-                                longLabel = shortcutInfo.longLabel.toString(),
-                                isEnabled = shortcutInfo.isEnabled,
-                                disabledMessage = shortcutInfo.disabledMessage?.toString(),
-                                icon = icon,
-                            ),
-                        )
-                    }
-                }
+        when (pinItemRequest.requestType) {
+            PinItemRequest.REQUEST_TYPE_APPWIDGET -> {
+                pinItemRequest.handleAppWidgetRequestType()
             }
+
+            PinItemRequest.REQUEST_TYPE_SHORTCUT -> {
+                pinItemRequest.handleRequestTypeShortcut()
+            }
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private suspend fun PinItemRequest.handleRequestTypeShortcut() {
+        val shortcutInfo = shortcutInfo ?: return
+
+        val serialNumber =
+            androidUserManagerWrapper.getSerialNumberForUser(userHandle = shortcutInfo.userHandle)
+
+        val icon = androidLauncherAppsWrapper.getShortcutBadgedIconDrawable(
+            shortcutInfo = shortcutInfo,
+            density = 0,
+        )?.let {
+            val directory = fileManager.getFilesDirectory(FileManager.SHORTCUTS_DIR)
+
+            val file = File(
+                directory,
+                iconKeyGenerator.getShortcutIconKey(
+                    serialNumber = serialNumber,
+                    packageName = shortcutInfo.`package`,
+                    id = shortcutInfo.id,
+                ),
+            )
+
+            androidImageSerializer.createDrawablePath(
+                drawable = it,
+                file = file,
+            )
+
+            file.absolutePath
+        }
+
+        onGetPinGridItem(
+            PinItemRequestType.ShortcutInfo(
+                serialNumber = androidUserManagerWrapper.getSerialNumberForUser(
+                    userHandle = shortcutInfo.userHandle,
+                ),
+                shortcutId = shortcutInfo.id,
+                packageName = shortcutInfo.`package`,
+                shortLabel = shortcutInfo.shortLabel.toString(),
+                longLabel = shortcutInfo.longLabel.toString(),
+                isEnabled = shortcutInfo.isEnabled,
+                disabledMessage = shortcutInfo.disabledMessage?.toString(),
+                icon = icon,
+            ),
+        )
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private suspend fun PinItemRequest.handleAppWidgetRequestType() {
+        val appWidgetProviderInfo = getAppWidgetProviderInfo(context) ?: return
+
+        val componentName = appWidgetProviderInfo.provider.flattenToString()
+
+        val preview =
+            appWidgetProviderInfo.loadPreviewImage(context, 0)?.let {
+                val directory =
+                    fileManager.getFilesDirectory(FileManager.WIDGETS_DIR)
+
+                val file = File(
+                    directory,
+                    iconKeyGenerator.getHashedName(name = componentName),
+                )
+
+                androidImageSerializer.createDrawablePath(
+                    drawable = it,
+                    file = file,
+                )
+
+                file.absolutePath
+            }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            onGetPinGridItem(
+                PinItemRequestType.Widget(
+                    appWidgetId = 0,
+                    componentName = componentName,
+                    packageName = appWidgetProviderInfo.provider.packageName,
+                    serialNumber = androidUserManagerWrapper.getSerialNumberForUser(
+                        userHandle = appWidgetProviderInfo.profile,
+                    ),
+                    configure = appWidgetProviderInfo.configure.flattenToString(),
+                    minWidth = appWidgetProviderInfo.minWidth,
+                    minHeight = appWidgetProviderInfo.minHeight,
+                    resizeMode = appWidgetProviderInfo.resizeMode,
+                    minResizeWidth = appWidgetProviderInfo.minResizeWidth,
+                    minResizeHeight = appWidgetProviderInfo.minResizeHeight,
+                    maxResizeWidth = appWidgetProviderInfo.maxResizeWidth,
+                    maxResizeHeight = appWidgetProviderInfo.maxResizeHeight,
+                    targetCellHeight = appWidgetProviderInfo.targetCellHeight,
+                    targetCellWidth = appWidgetProviderInfo.targetCellWidth,
+                    preview = preview,
+                ),
+            )
+        } else {
+            onGetPinGridItem(
+                PinItemRequestType.Widget(
+                    appWidgetId = 0,
+                    componentName = appWidgetProviderInfo.provider.flattenToString(),
+                    packageName = appWidgetProviderInfo.provider.packageName,
+                    serialNumber = androidUserManagerWrapper.getSerialNumberForUser(
+                        userHandle = appWidgetProviderInfo.profile,
+                    ),
+                    configure = appWidgetProviderInfo.configure.flattenToString(),
+                    minWidth = appWidgetProviderInfo.minWidth,
+                    minHeight = appWidgetProviderInfo.minHeight,
+                    resizeMode = appWidgetProviderInfo.resizeMode,
+                    minResizeWidth = appWidgetProviderInfo.minResizeWidth,
+                    minResizeHeight = appWidgetProviderInfo.minResizeHeight,
+                    maxResizeWidth = 0,
+                    maxResizeHeight = 0,
+                    targetCellHeight = 0,
+                    targetCellWidth = 0,
+                    preview = preview,
+                ),
+            )
         }
     }
 
