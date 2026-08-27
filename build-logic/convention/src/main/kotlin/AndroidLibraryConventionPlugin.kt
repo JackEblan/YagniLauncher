@@ -31,7 +31,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
 class AndroidLibraryConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {
-            apply(plugin = libs.plugins.android.library.get().pluginId)
+            pluginManager.apply(libs.plugins.android.library.get().pluginId)
 
             extensions.configure<LibraryExtension> {
                 configureAndroid()
