@@ -48,12 +48,12 @@ jobs:
           distribution: 'zulu'
           java-version: 17
 
-      - name: Setup Gradle for pull requests
-        if: ${{ github.event_name == 'pull_request' }}
+      - name: Setup Gradle for untrusted runs
+        if: ${{ github.event_name != 'push' || github.ref != 'refs/heads/master' }}
         uses: gradle/actions/setup-gradle@v5
 
-      - name: Setup Gradle for trusted runs
-        if: ${{ github.event_name != 'pull_request' }}
+      - name: Setup Gradle for trusted master pushes
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
         uses: gradle/actions/setup-gradle@v5
         with:
           cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
