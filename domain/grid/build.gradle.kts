@@ -25,5 +25,5 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
 
     testImplementation(testFixtures(projects.domain.model))
-    benchmarksImplementation(testFixtures(projects.domain.model))
+    benchmarkImplementation(testFixtures(projects.domain.model))
 }

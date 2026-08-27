@@ -50,9 +50,9 @@ class JvmBenchmarkLibraryConventionPlugin : Plugin<Project> {
             }
 
             val sourceSets = extensions.getByType<SourceSetContainer>()
-            sourceSets.create("benchmarks")
+            sourceSets.create("benchmark")
 
-            sourceSets.named("benchmarks").configure {
+            sourceSets.named("benchmark").configure {
                 val kotlinSrc = extensions.getByName("kotlin") as SourceDirectorySet
                 kotlinSrc.setSrcDirs(listOf(project.file("src/$name/src")))
                 java.setSrcDirs(listOf(project.file("src/$name/src")))
@@ -60,16 +60,16 @@ class JvmBenchmarkLibraryConventionPlugin : Plugin<Project> {
             }
 
             extensions.configure<KotlinJvmProjectExtension> {
-                this.target.compilations.getByName("benchmarks")
+                this.target.compilations.getByName("benchmark")
                     .associateWith(this.target.compilations.getByName("main"))
             }
 
             dependencies {
-                add("benchmarksImplementation", libs.kotlinx.benchmark.runtime)
+                add("benchmarkImplementation", libs.kotlinx.benchmark.runtime)
             }
 
             extensions.configure<BenchmarksExtension> {
-                targets.register("benchmarks") {
+                targets.register("benchmark") {
                     if (this is JvmBenchmarkTarget) {
                         jmhVersion = libs.versions.jmh.get()
                     }
