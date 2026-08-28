@@ -130,8 +130,6 @@ internal fun HomeRoute(
 
     val previewFolderGridItems by viewModel.previewFolderGridItems.collectAsStateWithLifecycle()
 
-    val gridItemsIconPackInfoFilePaths by viewModel.gridItemsIconPackInfoFilePaths.collectAsStateWithLifecycle()
-
     HomeScreen(
         modifier = modifier,
         configureResultCode = configureResultCode,
@@ -152,7 +150,6 @@ internal fun HomeRoute(
         isVisibleOverlay = isVisibleOverlay,
         textColor = textColor,
         previewFolderGridItems = previewFolderGridItems,
-        gridItemsIconPackInfoFilePaths = gridItemsIconPackInfoFilePaths,
         onResetGrid = viewModel::resetGrid,
         onDeleteGridItem = viewModel::deleteGridItem,
         onResetGridAfterDeleteGridItem = viewModel::resetGridAfterDeleteGridItem,
@@ -218,7 +215,6 @@ internal fun HomeScreen(
     isVisibleOverlay: Boolean,
     textColor: TextColor,
     previewFolderGridItems: Map<String, PreviewFolder>,
-    gridItemsIconPackInfoFilePaths: Map<String, String?>,
     onResetGrid: () -> Unit,
     onDeleteGridItem: (GridItem) -> Unit,
     onResetGridAfterDeleteGridItem: (GridItem) -> Unit,
@@ -343,7 +339,6 @@ internal fun HomeScreen(
                 isVisibleOverlay = isVisibleOverlay,
                 textColor = textColor,
                 previewFolderGridItems = previewFolderGridItems,
-                gridItemsIconPackInfoFilePaths = gridItemsIconPackInfoFilePaths,
                 onResetGrid = onResetGrid,
                 onDeleteGridItem = onDeleteGridItem,
                 onResetGridAfterDeleteGridItem = onResetGridAfterDeleteGridItem,
@@ -414,7 +409,6 @@ private fun Success(
     isVisibleOverlay: Boolean,
     textColor: TextColor,
     previewFolderGridItems: Map<String, PreviewFolder>,
-    gridItemsIconPackInfoFilePaths: Map<String, String?>,
     onResetGrid: () -> Unit,
     onDeleteGridItem: (GridItem) -> Unit,
     onResetGridAfterDeleteGridItem: (GridItem) -> Unit,
@@ -542,7 +536,7 @@ private fun Success(
                     isVisibleOverlay = isVisibleOverlay,
                     previewFolderGridItems = previewFolderGridItems,
                     statusBarNotifications = statusBarNotifications,
-                    gridItemsIconPackInfoFilePaths = gridItemsIconPackInfoFilePaths,
+                    gridItemsIconPackInfoFilePaths = homeData.iconPackInfoFilePaths,
                     onDeleteGridItem = onDeleteGridItem,
                     onResetGridAfterDeleteGridItem = onResetGridAfterDeleteGridItem,
                     onUpdateGridItemsAfterMove = onUpdateGridItemsAfterMove,
@@ -598,7 +592,7 @@ private fun Success(
                     textColor = textColor,
                     previewFolderGridItems = previewFolderGridItems,
                     statusBarNotifications = statusBarNotifications,
-                    gridItemsIconPackInfoFilePaths = gridItemsIconPackInfoFilePaths,
+                    gridItemsIconPackInfoFilePaths = homeData.iconPackInfoFilePaths,
                     onSaveEditPage = onSaveEditPage,
                     onUpdateScreen = onUpdateScreen,
                 )
@@ -613,7 +607,7 @@ private fun Success(
                     textColor = textColor,
                     previewFolderGridItems = previewFolderGridItems,
                     statusBarNotifications = statusBarNotifications,
-                    gridItemsIconPackInfoFilePaths = gridItemsIconPackInfoFilePaths,
+                    gridItemsIconPackInfoFilePaths = homeData.iconPackInfoFilePaths,
                     onSaveEditPage = onSaveEditPage,
                     onUpdateScreen = onUpdateScreen,
                 )

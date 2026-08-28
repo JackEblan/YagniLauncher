@@ -19,11 +19,15 @@ package com.eblan.launcher.domain.usecase.home
 
 import com.eblan.launcher.domain.common.Dispatcher
 import com.eblan.launcher.domain.common.EblanDispatchers
+import com.eblan.launcher.domain.common.IconKeyGenerator
+import com.eblan.launcher.domain.framework.FileManager
 import com.eblan.launcher.domain.framework.LauncherAppsWrapper
 import com.eblan.launcher.domain.framework.PackageManagerWrapper
 import com.eblan.launcher.domain.grid.isGridItemSpanWithinBounds
+import com.eblan.launcher.domain.model.ApplicationInfoGridItem
 import com.eblan.launcher.domain.model.Associate
 import com.eblan.launcher.domain.model.GridItem
+import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.GridItems
 import com.eblan.launcher.domain.model.HomeData
 import com.eblan.launcher.domain.repository.GridRepository
@@ -34,6 +38,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
+import java.io.File
 import javax.inject.Inject
 
 class GetHomeDataUseCase @Inject constructor(
@@ -41,6 +46,8 @@ class GetHomeDataUseCase @Inject constructor(
     private val launcherAppsWrapper: LauncherAppsWrapper,
     private val packageManagerWrapper: PackageManagerWrapper,
     private val gridRepository: GridRepository,
+    private val fileManager: FileManager,
+    private val iconKeyGenerator: IconKeyGenerator,
     @param:Dispatcher(EblanDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) {
     operator fun invoke(): Flow<HomeData> = combine(
@@ -72,8 +79,43 @@ class GetHomeDataUseCase @Inject constructor(
             dockGridItemsByPage = dockGridItemsByPage,
             hasShortcutHostPermission = launcherAppsWrapper.hasShortcutHostPermission,
             hasSystemFeatureAppWidgets = packageManagerWrapper.hasSystemFeatureAppWidgets,
+            iconPackInfoFilePaths = getIconPackInfoFilePaths(
+                iconPackInfoPackageName = userData.generalSettings.iconPackInfoPackageName,
+                applicationInfoGridItems = gridItems.applicationInfoGridItems,
+            ),
         )
     }.flowOn(ioDispatcher)
+
+    private suspend fun getIconPackInfoFilePaths(
+        iconPackInfoPackageName: String,
+        applicationInfoGridItems: List<ApplicationInfoGridItem>,
+    ): Map<String, String?> {
+        if (iconPackInfoPackageName.isEmpty()) {
+            return emptyMap()
+        }
+
+        val iconPacksDirectory = fileManager.getFilesDirectory(
+            FileManager.ICON_PACKS_DIR,
+        )
+
+        val iconPackDirectory = File(
+            iconPacksDirectory,
+            iconPackInfoPackageName,
+        )
+
+        return applicationInfoGridItems.associate {
+            val iconPackInfoFile = File(
+                iconPackDirectory,
+                iconKeyGenerator.getHashedName(
+                    name = it.componentName,
+                ),
+            )
+
+            it.id to iconPackInfoFile
+                .takeIf(File::exists)
+                ?.absolutePath
+        }.toMap()
+    }
 
     private fun GridItems.toGridItems(): List<GridItem> = buildList {
         addAll(

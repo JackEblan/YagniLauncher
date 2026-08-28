@@ -110,7 +110,6 @@ internal class HomeViewModel @Inject constructor(
     private val deleteGridItemUseCase: DeleteGridItemUseCase,
     getTextColorUseCase: GetTextColorUseCase,
     getPreviewFolderGridItemsUseCase: GetPreviewFolderGridItemsUseCase,
-    getGridItemsIconPackInfoFilePathUseCase: GetGridItemsIconPackInfoFilePathUseCase,
 ) : ViewModel() {
     val homeUiState = getHomeDataUseCase().map(HomeUiState::Success).stateIn(
         scope = viewModelScope,
@@ -238,13 +237,6 @@ internal class HomeViewModel @Inject constructor(
         started = SharingStarted.WhileSubscribed(5_000),
         initialValue = emptyMap(),
     )
-
-    val gridItemsIconPackInfoFilePaths =
-        getGridItemsIconPackInfoFilePathUseCase().stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = emptyMap(),
-        )
 
     fun moveGridItem(
         movingGridItem: GridItem,
