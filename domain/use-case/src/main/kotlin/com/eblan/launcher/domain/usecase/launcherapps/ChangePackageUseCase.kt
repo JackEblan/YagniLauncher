@@ -22,7 +22,6 @@ import com.eblan.launcher.domain.common.EblanDispatchers
 import com.eblan.launcher.domain.common.IconKeyGenerator
 import com.eblan.launcher.domain.framework.AppWidgetManagerWrapper
 import com.eblan.launcher.domain.framework.FileManager
-import com.eblan.launcher.domain.framework.IconPackManager
 import com.eblan.launcher.domain.framework.LauncherAppsWrapper
 import com.eblan.launcher.domain.framework.PackageManagerWrapper
 import com.eblan.launcher.domain.model.EblanShortcutConfig
@@ -33,19 +32,14 @@ import com.eblan.launcher.domain.repository.EblanShortcutConfigRepository
 import com.eblan.launcher.domain.repository.EblanShortcutInfoRepository
 import com.eblan.launcher.domain.repository.ShortcutConfigGridItemRepository
 import com.eblan.launcher.domain.repository.ShortcutInfoGridItemRepository
-import com.eblan.launcher.domain.repository.UserDataRepository
 import com.eblan.launcher.domain.repository.WidgetGridItemRepository
-import com.eblan.launcher.domain.usecase.util.cacheIconPackFile
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
-import java.io.File
 import javax.inject.Inject
 
 class ChangePackageUseCase @Inject constructor(
-    private val userDataRepository: UserDataRepository,
     private val packageManagerWrapper: PackageManagerWrapper,
     private val eblanApplicationInfoRepository: EblanApplicationInfoRepository,
     private val applicationInfoGridItemRepository: ApplicationInfoGridItemRepository,
@@ -57,7 +51,6 @@ class ChangePackageUseCase @Inject constructor(
     private val shortcutConfigGridItemRepository: ShortcutConfigGridItemRepository,
     private val eblanShortcutConfigRepository: EblanShortcutConfigRepository,
     private val fileManager: FileManager,
-    private val iconPackManager: IconPackManager,
     private val widgetGridItemRepository: WidgetGridItemRepository,
     private val iconKeyGenerator: IconKeyGenerator,
     @param:Dispatcher(EblanDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
@@ -78,11 +71,6 @@ class ChangePackageUseCase @Inject constructor(
             )
 
             updateEblanShortcutInfo(
-                serialNumber = serialNumber,
-                packageName = packageName,
-            )
-
-            updateIconPackInfos(
                 serialNumber = serialNumber,
                 packageName = packageName,
             )
@@ -327,59 +315,5 @@ class ChangePackageUseCase @Inject constructor(
             packageManagerWrapper = packageManagerWrapper,
             iconKeyGenerator = iconKeyGenerator,
         )
-    }
-
-    private suspend fun updateIconPackInfos(
-        serialNumber: Long,
-        packageName: String,
-    ) {
-        val iconPackInfoPackageName =
-            userDataRepository.userDataFlow.first().generalSettings.iconPackInfoPackageName
-
-        if (iconPackInfoPackageName.isEmpty()) return
-
-        val fastLauncherAppsActivityInfos = launcherAppsWrapper.getFastActivityList(
-            serialNumber = serialNumber,
-            packageName = packageName,
-        )
-
-        val iconPackInfoDirectory = File(
-            fileManager.getFilesDirectory(name = FileManager.ICON_PACKS_DIR),
-            iconPackInfoPackageName,
-        ).apply { if (!exists()) mkdirs() }
-
-        val appFilter =
-            iconPackManager.getIconPackInfoComponents(packageName = iconPackInfoPackageName)
-
-        val installedComponentHashCodes = buildSet {
-            fastLauncherAppsActivityInfos.forEach {
-                currentCoroutineContext().ensureActive()
-
-                val file = File(
-                    iconPackInfoDirectory,
-                    iconKeyGenerator.getHashedName(name = it.componentName),
-                )
-
-                cacheIconPackFile(
-                    iconPackManager = iconPackManager,
-                    appFilter = appFilter,
-                    iconPackInfoPackageName = iconPackInfoPackageName,
-                    file = file,
-                    componentName = it.componentName,
-                )
-
-                add(iconKeyGenerator.getHashedName(name = it.componentName))
-            }
-        }
-
-        iconPackInfoDirectory.listFiles()
-            ?.filter {
-                it.isFile && it.name !in installedComponentHashCodes
-            }
-            ?.forEach {
-                currentCoroutineContext().ensureActive()
-
-                it.delete()
-            }
     }
 }

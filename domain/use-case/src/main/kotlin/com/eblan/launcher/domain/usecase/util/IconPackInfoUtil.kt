@@ -42,7 +42,7 @@ internal suspend fun updateIconPackInfos(
 
     val appFilter = iconPackManager.getIconPackInfoComponents(packageName = iconPackInfoPackageName)
 
-    val installedComponentHashCodes = buildSet {
+    val installedComponentHashedNames = buildSet {
         fastLauncherAppsActivityInfos.forEach {
             currentCoroutineContext().ensureActive()
 
@@ -65,7 +65,9 @@ internal suspend fun updateIconPackInfos(
 
     iconPackInfoDirectory.listFiles()
         ?.filter {
-            it.isFile && it.name !in installedComponentHashCodes
+            currentCoroutineContext().ensureActive()
+
+            it.isFile && it.name !in installedComponentHashedNames
         }
         ?.forEach {
             currentCoroutineContext().ensureActive()

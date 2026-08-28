@@ -106,6 +106,8 @@ internal fun SelectIconPackInfoDialog(
                                     onUpdateIconPackInfoPackageName(
                                         eblanIconPackInfo.packageName,
                                     )
+
+                                    onDismissRequest()
                                 }
                                 .fillMaxWidth(),
                         )
