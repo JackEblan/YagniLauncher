@@ -17,9 +17,11 @@
  */
 package com.eblan.launcher.feature.home.screen.pager
 
+import android.content.Context
 import android.content.Intent.parseUri
 import android.graphics.Rect
 import android.os.Build
+import android.widget.Toast
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
@@ -75,6 +77,7 @@ import com.eblan.launcher.domain.model.GridItemSettings
 import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.domain.model.PreviewFolder
 import com.eblan.launcher.domain.model.TextColor
+import com.eblan.launcher.feature.home.R
 import com.eblan.launcher.feature.home.component.PreviewFolderGridLayout
 import com.eblan.launcher.feature.home.component.swipeGestures
 import com.eblan.launcher.feature.home.component.whiteBox
@@ -116,6 +119,7 @@ internal fun InteractiveGridItem(
     leftPadding: Int,
     topOffset: Int,
     sharedElementKey: SharedElementKey,
+    isSyncingData: Boolean,
     onOpenAppDrawer: () -> Unit,
     onUpsertFolderPopupEntry: (FolderPopupEntry) -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
@@ -140,6 +144,8 @@ internal fun InteractiveGridItem(
     onResetGrid: () -> Unit,
     onUpdateIsVisibleFolder: (Boolean) -> Unit,
 ) {
+    val context = LocalContext.current
+
     val isSelected =
         moveGridItemResult != null && moveGridItemResult.movingGridItem.id == gridItem.id
 
@@ -168,18 +174,20 @@ internal fun InteractiveGridItem(
     val isVisibleWhiteBox = hasInteraction && drag == Drag.Dragging
 
     LaunchedEffect(
-        key1 = drag,
-        key2 = hasInteraction,
-        key3 = showGridItemPopup,
+        drag,
+        hasInteraction,
+        showGridItemPopup,
+        isSyncingData,
     ) {
-        if (drag == Drag.Dragging &&
-            hasInteraction &&
-            showGridItemPopup
-        ) {
-            onUpdateIsDragging(true)
-
-            onUpdateIsCloseGridItemPopup(true)
-        }
+        handleDrag(
+            context = context,
+            drag = drag,
+            hasInteraction = hasInteraction,
+            isSyncingData = isSyncingData,
+            showGridItemPopup = showGridItemPopup,
+            onUpdateIsCloseGridItemPopup = onUpdateIsCloseGridItemPopup,
+            onUpdateIsDragging = onUpdateIsDragging,
+        )
     }
 
     val sourceBounds = getSourceBounds(
@@ -1492,4 +1500,33 @@ private fun getSourceBounds(
         left + width,
         top + height,
     )
+}
+
+private fun handleDrag(
+    context: Context,
+    drag: Drag,
+    hasInteraction: Boolean,
+    isSyncingData: Boolean,
+    showGridItemPopup: Boolean,
+    onUpdateIsCloseGridItemPopup: (Boolean) -> Unit,
+    onUpdateIsDragging: (Boolean) -> Unit,
+) {
+    if (drag != Drag.Dragging ||
+        !hasInteraction ||
+        !showGridItemPopup
+    ) {
+        return
+    }
+
+    if (isSyncingData) {
+        Toast.makeText(
+            context,
+            context.getString(R.string.please_wait_until_the_syncing_data_is_finished),
+            Toast.LENGTH_LONG,
+        ).show()
+    } else {
+        onUpdateIsDragging(true)
+    }
+
+    onUpdateIsCloseGridItemPopup(true)
 }
