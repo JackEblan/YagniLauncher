@@ -94,3 +94,34 @@ internal suspend fun cacheIconPackFile(
         )
     }
 }
+
+internal suspend fun getIconPackInfoFilePaths(
+    iconPackInfoPackageName: String,
+    componentNames: List<String>,
+    fileManager: FileManager,
+    iconKeyGenerator: IconKeyGenerator,
+): Map<String, String?> {
+    if (iconPackInfoPackageName.isEmpty()) {
+        return emptyMap()
+    }
+
+    val iconPacksDirectory = fileManager.getFilesDirectory(
+        FileManager.ICON_PACKS_DIR,
+    )
+
+    val iconPackDirectory = File(
+        iconPacksDirectory,
+        iconPackInfoPackageName,
+    )
+
+    return componentNames.associateWith {
+        val iconPackInfoFile = File(
+            iconPackDirectory,
+            iconKeyGenerator.getHashedName(name = it),
+        )
+
+        iconPackInfoFile
+            .takeIf(File::exists)
+            ?.absolutePath
+    }.toMap()
+}

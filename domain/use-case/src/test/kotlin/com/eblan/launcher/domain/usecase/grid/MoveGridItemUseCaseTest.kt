@@ -24,6 +24,7 @@ import com.eblan.launcher.domain.model.WidgetGridItem
 import com.eblan.launcher.domain.model.getEblanAction
 import com.eblan.launcher.domain.model.getGridItemSettings
 import com.eblan.launcher.domain.repository.FakeGridRepository
+import com.eblan.launcher.domain.usecase.util.toGridItems
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
@@ -53,18 +54,12 @@ class MoveGridItemUseCaseTest {
             initialGridItems = gridItems,
         )
 
-        val getGridItemsUseCase = GetGridItemsUseCase(
-            gridRepository = gridRepository,
-            ioDispatcher = dispatcher,
-        )
-
         val moveGridItemUseCase = MoveGridItemUseCase(
             gridRepository = gridRepository,
-            getGridItemsUseCase = getGridItemsUseCase,
             defaultDispatcher = dispatcher,
         )
 
-        val movingGridItem = getGridItemsUseCase()
+        val movingGridItem = gridItems.toGridItems()
             .single()
             .copy(
                 startColumn = 2,
@@ -106,31 +101,27 @@ class MoveGridItemUseCaseTest {
             startRow = 1,
         )
 
-        val gridRepository = FakeGridRepository(
-            initialGridItems = GridItems(
-                applicationInfoGridItems = listOf(
-                    applicationInfoGridItem,
-                    conflictingApplicationInfoGridItem,
-                ),
-                widgetGridItems = emptyList(),
-                shortcutInfoGridItems = emptyList(),
-                shortcutConfigGridItems = emptyList(),
-                folderGridItems = emptyList(),
+        val gridItems = GridItems(
+            applicationInfoGridItems = listOf(
+                applicationInfoGridItem,
+                conflictingApplicationInfoGridItem,
             ),
+            widgetGridItems = emptyList(),
+            shortcutInfoGridItems = emptyList(),
+            shortcutConfigGridItems = emptyList(),
+            folderGridItems = emptyList(),
         )
 
-        val getGridItemsUseCase = GetGridItemsUseCase(
-            gridRepository = gridRepository,
-            ioDispatcher = dispatcher,
+        val gridRepository = FakeGridRepository(
+            initialGridItems = gridItems,
         )
 
         val moveGridItemUseCase = MoveGridItemUseCase(
             gridRepository = gridRepository,
-            getGridItemsUseCase = getGridItemsUseCase,
             defaultDispatcher = dispatcher,
         )
 
-        val movingGridItem = getGridItemsUseCase()
+        val movingGridItem = gridItems.toGridItems()
             .first { it.id == applicationInfoGridItem.id }
             .copy(
                 startColumn = 2,
@@ -169,31 +160,27 @@ class MoveGridItemUseCaseTest {
             startRow = 1,
         )
 
-        val gridRepository = FakeGridRepository(
-            initialGridItems = GridItems(
-                applicationInfoGridItems = listOf(
-                    applicationInfoGridItem,
-                    otherPageApplicationInfoGridItem,
-                ),
-                widgetGridItems = emptyList(),
-                shortcutInfoGridItems = emptyList(),
-                shortcutConfigGridItems = emptyList(),
-                folderGridItems = emptyList(),
+        val gridItems = GridItems(
+            applicationInfoGridItems = listOf(
+                applicationInfoGridItem,
+                otherPageApplicationInfoGridItem,
             ),
+            widgetGridItems = emptyList(),
+            shortcutInfoGridItems = emptyList(),
+            shortcutConfigGridItems = emptyList(),
+            folderGridItems = emptyList(),
         )
 
-        val getGridItemsUseCase = GetGridItemsUseCase(
-            gridRepository = gridRepository,
-            ioDispatcher = dispatcher,
+        val gridRepository = FakeGridRepository(
+            initialGridItems = gridItems,
         )
 
         val moveGridItemUseCase = MoveGridItemUseCase(
             gridRepository = gridRepository,
-            getGridItemsUseCase = getGridItemsUseCase,
             defaultDispatcher = dispatcher,
         )
 
-        val movingGridItem = getGridItemsUseCase()
+        val movingGridItem = gridItems.toGridItems()
             .first { it.id == applicationInfoGridItem.id }
             .copy(
                 startColumn = 2,
@@ -260,31 +247,27 @@ class MoveGridItemUseCaseTest {
             associate = Associate.Dock,
         )
 
-        val gridRepository = FakeGridRepository(
-            initialGridItems = GridItems(
-                applicationInfoGridItems = listOf(
-                    applicationInfoGridItem,
-                    dockApplicationInfoGridItem,
-                ),
-                widgetGridItems = emptyList(),
-                shortcutInfoGridItems = emptyList(),
-                shortcutConfigGridItems = emptyList(),
-                folderGridItems = emptyList(),
+        val gridItems = GridItems(
+            applicationInfoGridItems = listOf(
+                applicationInfoGridItem,
+                dockApplicationInfoGridItem,
             ),
+            widgetGridItems = emptyList(),
+            shortcutInfoGridItems = emptyList(),
+            shortcutConfigGridItems = emptyList(),
+            folderGridItems = emptyList(),
         )
 
-        val getGridItemsUseCase = GetGridItemsUseCase(
-            gridRepository = gridRepository,
-            ioDispatcher = dispatcher,
+        val gridRepository = FakeGridRepository(
+            initialGridItems = gridItems,
         )
 
         val moveGridItemUseCase = MoveGridItemUseCase(
             gridRepository = gridRepository,
-            getGridItemsUseCase = getGridItemsUseCase,
             defaultDispatcher = dispatcher,
         )
 
-        val movingGridItem = getGridItemsUseCase()
+        val movingGridItem = gridItems.toGridItems()
             .first { it.id == applicationInfoGridItem.id }
             .copy(
                 startColumn = 2,
@@ -334,31 +317,27 @@ class MoveGridItemUseCaseTest {
             folderId = "folder",
         )
 
-        val gridRepository = FakeGridRepository(
-            initialGridItems = GridItems(
-                applicationInfoGridItems = listOf(
-                    applicationInfoGridItem,
-                    folderApplicationInfoGridItem,
-                ),
-                widgetGridItems = emptyList(),
-                shortcutInfoGridItems = emptyList(),
-                shortcutConfigGridItems = emptyList(),
-                folderGridItems = emptyList(),
+        val gridItems = GridItems(
+            applicationInfoGridItems = listOf(
+                applicationInfoGridItem,
+                folderApplicationInfoGridItem,
             ),
+            widgetGridItems = emptyList(),
+            shortcutInfoGridItems = emptyList(),
+            shortcutConfigGridItems = emptyList(),
+            folderGridItems = emptyList(),
         )
 
-        val getGridItemsUseCase = GetGridItemsUseCase(
-            gridRepository = gridRepository,
-            ioDispatcher = dispatcher,
+        val gridRepository = FakeGridRepository(
+            initialGridItems = gridItems,
         )
 
         val moveGridItemUseCase = MoveGridItemUseCase(
             gridRepository = gridRepository,
-            getGridItemsUseCase = getGridItemsUseCase,
             defaultDispatcher = dispatcher,
         )
 
-        val movingGridItem = getGridItemsUseCase()
+        val movingGridItem = gridItems.toGridItems()
             .first { it.id == applicationInfoGridItem.id }
             .copy(
                 startColumn = 2,
@@ -403,28 +382,24 @@ class MoveGridItemUseCaseTest {
 
         val widgetGridItem = getWidgetGridItem()
 
-        val gridRepository = FakeGridRepository(
-            initialGridItems = GridItems(
-                applicationInfoGridItems = listOf(applicationInfoGridItem),
-                widgetGridItems = listOf(widgetGridItem),
-                shortcutInfoGridItems = emptyList(),
-                shortcutConfigGridItems = emptyList(),
-                folderGridItems = emptyList(),
-            ),
+        val gridItems = GridItems(
+            applicationInfoGridItems = listOf(applicationInfoGridItem),
+            widgetGridItems = listOf(widgetGridItem),
+            shortcutInfoGridItems = emptyList(),
+            shortcutConfigGridItems = emptyList(),
+            folderGridItems = emptyList(),
         )
 
-        val getGridItemsUseCase = GetGridItemsUseCase(
-            gridRepository = gridRepository,
-            ioDispatcher = dispatcher,
+        val gridRepository = FakeGridRepository(
+            initialGridItems = gridItems,
         )
 
         val moveGridItemUseCase = MoveGridItemUseCase(
             gridRepository = gridRepository,
-            getGridItemsUseCase = getGridItemsUseCase,
             defaultDispatcher = dispatcher,
         )
 
-        val movingGridItem = getGridItemsUseCase()
+        val movingGridItem = gridItems.toGridItems()
             .first { it.id == applicationInfoGridItem.id }
             .copy(
                 startColumn = 2,

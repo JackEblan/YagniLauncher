@@ -23,6 +23,7 @@ import com.eblan.launcher.domain.model.GridItems
 import com.eblan.launcher.domain.model.getEblanAction
 import com.eblan.launcher.domain.model.getGridItemSettings
 import com.eblan.launcher.domain.repository.FakeGridRepository
+import com.eblan.launcher.domain.usecase.util.toGridItems
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
@@ -37,24 +38,24 @@ class ResizeGridItemUseCaseTest {
     fun `resizes grid item when there are no conflicts`() = runTest(dispatcher) {
         val applicationInfoGridItem = getApplicationInfoGridItem()
 
-        val gridRepository = FakeGridRepository(
-            initialGridItems = getGridItems(
-                applicationInfoGridItems = listOf(applicationInfoGridItem),
-            ),
+        val gridItems = GridItems(
+            applicationInfoGridItems = listOf(applicationInfoGridItem),
+            widgetGridItems = emptyList(),
+            shortcutInfoGridItems = emptyList(),
+            shortcutConfigGridItems = emptyList(),
+            folderGridItems = emptyList(),
         )
 
-        val getGridItemsUseCase = GetGridItemsUseCase(
-            gridRepository = gridRepository,
-            ioDispatcher = dispatcher,
+        val gridRepository = FakeGridRepository(
+            initialGridItems = gridItems,
         )
 
         val resizeGridItemUseCase = ResizeGridItemUseCase(
             gridRepository = gridRepository,
-            getGridItemsUseCase = getGridItemsUseCase,
             defaultDispatcher = dispatcher,
         )
 
-        val resizingGridItem = getGridItemsUseCase()
+        val resizingGridItem = gridItems.toGridItems()
             .first { it.id == applicationInfoGridItem.id }
             .copy(
                 columnSpan = 2,
@@ -85,27 +86,27 @@ class ResizeGridItemUseCaseTest {
             startRow = 0,
         )
 
-        val gridRepository = FakeGridRepository(
-            initialGridItems = getGridItems(
-                applicationInfoGridItems = listOf(
-                    applicationInfoGridItem,
-                    conflictingApplicationInfoGridItem,
-                ),
+        val gridItems = GridItems(
+            applicationInfoGridItems = listOf(
+                applicationInfoGridItem,
+                conflictingApplicationInfoGridItem,
             ),
+            widgetGridItems = emptyList(),
+            shortcutInfoGridItems = emptyList(),
+            shortcutConfigGridItems = emptyList(),
+            folderGridItems = emptyList(),
         )
 
-        val getGridItemsUseCase = GetGridItemsUseCase(
-            gridRepository = gridRepository,
-            ioDispatcher = dispatcher,
+        val gridRepository = FakeGridRepository(
+            initialGridItems = gridItems,
         )
 
         val resizeGridItemUseCase = ResizeGridItemUseCase(
             gridRepository = gridRepository,
-            getGridItemsUseCase = getGridItemsUseCase,
             defaultDispatcher = dispatcher,
         )
 
-        val resizingGridItem = getGridItemsUseCase()
+        val resizingGridItem = gridItems.toGridItems()
             .first { it.id == applicationInfoGridItem.id }
             .copy(
                 columnSpan = 2,
@@ -123,11 +124,13 @@ class ResizeGridItemUseCaseTest {
         assertEquals(2, resizedGridItem.columnSpan)
         assertEquals(1, resizedGridItem.rowSpan)
 
-        val resolvedGridItem = getGridItemsUseCase()
+        val persistedGridItem = gridRepository
+            .getGridItems()
+            .applicationInfoGridItems
             .first { it.id == conflictingApplicationInfoGridItem.id }
 
-        assertEquals(2, resolvedGridItem.startColumn)
-        assertEquals(0, resolvedGridItem.startRow)
+        assertEquals(2, persistedGridItem.startColumn)
+        assertEquals(0, persistedGridItem.startRow)
     }
 
     @Test
@@ -169,27 +172,27 @@ class ResizeGridItemUseCaseTest {
             ),
         )
 
-        val gridRepository = FakeGridRepository(
-            initialGridItems = getGridItems(
-                applicationInfoGridItems = listOf(
-                    applicationInfoGridItem,
-                    *conflictingApplicationInfoGridItems.toTypedArray(),
-                ),
+        val gridItems = GridItems(
+            applicationInfoGridItems = listOf(
+                applicationInfoGridItem,
+                *conflictingApplicationInfoGridItems.toTypedArray(),
             ),
+            widgetGridItems = emptyList(),
+            shortcutInfoGridItems = emptyList(),
+            shortcutConfigGridItems = emptyList(),
+            folderGridItems = emptyList(),
         )
 
-        val getGridItemsUseCase = GetGridItemsUseCase(
-            gridRepository = gridRepository,
-            ioDispatcher = dispatcher,
+        val gridRepository = FakeGridRepository(
+            initialGridItems = gridItems,
         )
 
         val resizeGridItemUseCase = ResizeGridItemUseCase(
             gridRepository = gridRepository,
-            getGridItemsUseCase = getGridItemsUseCase,
             defaultDispatcher = dispatcher,
         )
 
-        val resizingGridItem = getGridItemsUseCase()
+        val resizingGridItem = gridItems.toGridItems()
             .first { it.id == applicationInfoGridItem.id }
             .copy(
                 columnSpan = 2,
@@ -222,27 +225,27 @@ class ResizeGridItemUseCaseTest {
             startRow = 0,
         )
 
-        val gridRepository = FakeGridRepository(
-            initialGridItems = getGridItems(
-                applicationInfoGridItems = listOf(
-                    applicationInfoGridItem,
-                    otherPageApplicationInfoGridItem,
-                ),
+        val gridItems = GridItems(
+            applicationInfoGridItems = listOf(
+                applicationInfoGridItem,
+                otherPageApplicationInfoGridItem,
             ),
+            widgetGridItems = emptyList(),
+            shortcutInfoGridItems = emptyList(),
+            shortcutConfigGridItems = emptyList(),
+            folderGridItems = emptyList(),
         )
 
-        val getGridItemsUseCase = GetGridItemsUseCase(
-            gridRepository = gridRepository,
-            ioDispatcher = dispatcher,
+        val gridRepository = FakeGridRepository(
+            initialGridItems = gridItems,
         )
 
         val resizeGridItemUseCase = ResizeGridItemUseCase(
             gridRepository = gridRepository,
-            getGridItemsUseCase = getGridItemsUseCase,
             defaultDispatcher = dispatcher,
         )
 
-        val resizingGridItem = getGridItemsUseCase()
+        val resizingGridItem = gridItems.toGridItems()
             .first { it.id == applicationInfoGridItem.id }
             .copy(
                 columnSpan = 2,
@@ -275,27 +278,26 @@ class ResizeGridItemUseCaseTest {
             startRow = 0,
         )
 
-        val gridRepository = FakeGridRepository(
-            initialGridItems = getGridItems(
-                applicationInfoGridItems = listOf(
-                    applicationInfoGridItem,
-                    dockApplicationInfoGridItem,
-                ),
+        val gridItems = GridItems(
+            applicationInfoGridItems = listOf(
+                applicationInfoGridItem,
+                dockApplicationInfoGridItem,
             ),
+            widgetGridItems = emptyList(),
+            shortcutInfoGridItems = emptyList(),
+            shortcutConfigGridItems = emptyList(),
+            folderGridItems = emptyList(),
         )
-
-        val getGridItemsUseCase = GetGridItemsUseCase(
-            gridRepository = gridRepository,
-            ioDispatcher = dispatcher,
+        val gridRepository = FakeGridRepository(
+            initialGridItems = gridItems,
         )
 
         val resizeGridItemUseCase = ResizeGridItemUseCase(
             gridRepository = gridRepository,
-            getGridItemsUseCase = getGridItemsUseCase,
             defaultDispatcher = dispatcher,
         )
 
-        val resizingGridItem = getGridItemsUseCase()
+        val resizingGridItem = gridItems.toGridItems()
             .first { it.id == applicationInfoGridItem.id }
             .copy(
                 columnSpan = 2,
@@ -327,27 +329,26 @@ class ResizeGridItemUseCaseTest {
             folderId = "folder",
         )
 
-        val gridRepository = FakeGridRepository(
-            initialGridItems = getGridItems(
-                applicationInfoGridItems = listOf(
-                    applicationInfoGridItem,
-                    folderApplicationInfoGridItem,
-                ),
+        val gridItems = GridItems(
+            applicationInfoGridItems = listOf(
+                applicationInfoGridItem,
+                folderApplicationInfoGridItem,
             ),
+            widgetGridItems = emptyList(),
+            shortcutInfoGridItems = emptyList(),
+            shortcutConfigGridItems = emptyList(),
+            folderGridItems = emptyList(),
         )
-
-        val getGridItemsUseCase = GetGridItemsUseCase(
-            gridRepository = gridRepository,
-            ioDispatcher = dispatcher,
+        val gridRepository = FakeGridRepository(
+            initialGridItems = gridItems,
         )
 
         val resizeGridItemUseCase = ResizeGridItemUseCase(
             gridRepository = gridRepository,
-            getGridItemsUseCase = getGridItemsUseCase,
             defaultDispatcher = dispatcher,
         )
 
-        val resizingGridItem = getGridItemsUseCase()
+        val resizingGridItem = gridItems.toGridItems()
             .first { it.id == applicationInfoGridItem.id }
             .copy(
                 columnSpan = 2,
@@ -365,16 +366,6 @@ class ResizeGridItemUseCaseTest {
         assertEquals(2, resizedGridItem.columnSpan)
         assertEquals(1, resizedGridItem.rowSpan)
     }
-
-    private fun getGridItems(
-        applicationInfoGridItems: List<ApplicationInfoGridItem> = emptyList(),
-    ) = GridItems(
-        applicationInfoGridItems = applicationInfoGridItems,
-        widgetGridItems = emptyList(),
-        shortcutInfoGridItems = emptyList(),
-        shortcutConfigGridItems = emptyList(),
-        folderGridItems = emptyList(),
-    )
 
     private fun getApplicationInfoGridItem(
         id: String = "app",
