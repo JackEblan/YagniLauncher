@@ -75,7 +75,6 @@ import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.AppDrawerSettings
 import com.eblan.launcher.domain.model.BackgroundColor
 import com.eblan.launcher.domain.model.EblanApplicationInfo
-import com.eblan.launcher.domain.model.EblanApplicationInfoWithIconPackInfo
 import com.eblan.launcher.domain.model.EblanUser
 import com.eblan.launcher.domain.model.TextColor
 import com.eblan.launcher.feature.home.R
@@ -93,13 +92,14 @@ internal fun LazyGridScope.privateSpace(
     appDrawerSettings: AppDrawerSettings,
     isQuietModeEnabled: Boolean,
     paddingValues: PaddingValues,
-    privateEblanApplicationInfoWithIconPackInfos: List<EblanApplicationInfoWithIconPackInfo>,
+    privateEblanApplicationInfos: List<EblanApplicationInfo>,
     privateEblanUser: EblanUser?,
     isVisibleOverlay: Boolean,
     backgroundColor: BackgroundColor,
     customBackgroundColor: Int,
     systemCustomTextColor: Int,
     systemTextColor: TextColor,
+    iconPackInfoFilePaths: Map<String, String?>,
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
@@ -122,14 +122,15 @@ internal fun LazyGridScope.privateSpace(
     }
 
     if (!isQuietModeEnabled) {
-        items(privateEblanApplicationInfoWithIconPackInfos) { eblanApplicationInfo ->
+        items(privateEblanApplicationInfos) { eblanApplicationInfo ->
             PrivateSpaceEblanApplicationInfoItem(
                 appDrawerSettings = appDrawerSettings,
-                eblanApplicationInfoWithIconPackInfo = eblanApplicationInfo,
+                eblanApplicationInfo = eblanApplicationInfo,
                 paddingValues = paddingValues,
                 isVisibleOverlay = isVisibleOverlay,
                 systemTextColor = systemTextColor,
                 systemCustomTextColor = systemCustomTextColor,
+                iconPackInfoFilePaths = iconPackInfoFilePaths,
                 onUpdateOverlayBounds = onUpdateOverlayBounds,
                 onUpdatePopupMenu = onUpdatePopupMenu,
                 onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
@@ -233,11 +234,12 @@ internal fun PrivateSpaceStickyHeader(
 internal fun PrivateSpaceEblanApplicationInfoItem(
     modifier: Modifier = Modifier,
     appDrawerSettings: AppDrawerSettings,
-    eblanApplicationInfoWithIconPackInfo: EblanApplicationInfoWithIconPackInfo,
+    eblanApplicationInfo: EblanApplicationInfo,
     paddingValues: PaddingValues,
     isVisibleOverlay: Boolean,
     systemCustomTextColor: Int,
     systemTextColor: TextColor,
+    iconPackInfoFilePaths: Map<String, String?>,
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
@@ -270,8 +272,8 @@ internal fun PrivateSpaceEblanApplicationInfoItem(
 
     val maxLines = if (appDrawerSettings.gridItemSettings.singleLineLabel) 1 else Int.MAX_VALUE
 
-    val icon = eblanApplicationInfoWithIconPackInfo.iconPackInfoFilePath
-        ?: eblanApplicationInfoWithIconPackInfo.eblanApplicationInfo.icon
+    val icon = iconPackInfoFilePaths[eblanApplicationInfo.componentName]
+        ?: eblanApplicationInfo.icon
 
     val horizontalAlignment =
         getHorizontalAlignment(horizontalAlignment = appDrawerSettings.gridItemSettings.horizontalAlignment)
@@ -303,7 +305,7 @@ internal fun PrivateSpaceEblanApplicationInfoItem(
                         {
                             scope.launch {
                                 handleOnTapEblanApplicationInfoItem(
-                                    eblanApplicationInfoWithIconPackInfo = eblanApplicationInfoWithIconPackInfo,
+                                    eblanApplicationInfo = eblanApplicationInfo,
                                     intOffset = intOffset,
                                     intSize = intSize,
                                     keyboardController = keyboardController,
@@ -321,7 +323,7 @@ internal fun PrivateSpaceEblanApplicationInfoItem(
                             scope.launch {
                                 handleOnLongPressPrivateSpaceEblanApplicationInfoItem(
                                     onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
-                                    eblanApplicationInfo = eblanApplicationInfoWithIconPackInfo.eblanApplicationInfo,
+                                    eblanApplicationInfo = eblanApplicationInfo,
                                     onUpdateOverlayBounds = onUpdateOverlayBounds,
                                     intOffset = intOffset,
                                     intSize = intSize,
@@ -346,7 +348,7 @@ internal fun PrivateSpaceEblanApplicationInfoItem(
     ) {
         AsyncImage(
             model = ImageRequest.Builder(context)
-                .data(eblanApplicationInfoWithIconPackInfo.eblanApplicationInfo.customIcon ?: icon)
+                .data(eblanApplicationInfo.customIcon ?: icon)
                 .addLastModifiedToFileCacheKey(true)
                 .size(iconSizePx)
                 .crossfade(false)
@@ -366,8 +368,8 @@ internal fun PrivateSpaceEblanApplicationInfoItem(
         Spacer(modifier = Modifier.height(10.dp))
 
         Text(
-            text = eblanApplicationInfoWithIconPackInfo.eblanApplicationInfo.customLabel
-                ?: eblanApplicationInfoWithIconPackInfo.eblanApplicationInfo.label,
+            text = eblanApplicationInfo.customLabel
+                ?: eblanApplicationInfo.label,
             color = textColor,
             textAlign = TextAlign.Center,
             maxLines = maxLines,

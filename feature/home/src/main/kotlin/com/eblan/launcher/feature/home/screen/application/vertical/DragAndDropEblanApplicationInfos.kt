@@ -73,7 +73,6 @@ import coil3.request.addLastModifiedToFileCacheKey
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.AppDrawerSettings
 import com.eblan.launcher.domain.model.EblanApplicationInfo
-import com.eblan.launcher.domain.model.EblanApplicationInfoWithIconPackInfo
 import com.eblan.launcher.domain.model.EblanUserPageKey
 import com.eblan.launcher.domain.model.GetEblanApplicationInfosByLabelAndTag
 import com.eblan.launcher.domain.model.TextColor
@@ -164,17 +163,18 @@ internal fun DragAndDropEblanApplicationInfos(
         ) {
             itemsIndexed(
                 items = currentEblanApplicationInfos,
-                key = { _, eblanApplicationInfoWithIconPackInfo -> eblanApplicationInfoWithIconPackInfo.eblanApplicationInfo.componentName },
+                key = { _, eblanApplicationInfoWithIconPackInfo -> eblanApplicationInfoWithIconPackInfo.componentName },
             ) { index, eblanApplicationInfo ->
                 DraggableItem(
                     dragDropState = gridDragDropState,
                     index = index,
                 ) {
                     EblanApplicationInfoItem(
-                        eblanApplicationInfoWithIconPackInfo = eblanApplicationInfo,
+                        eblanApplicationInfo = eblanApplicationInfo,
                         appDrawerSettings = appDrawerSettings,
                         systemTextColor = systemTextColor,
                         systemCustomTextColor = systemCustomTextColor,
+                        eblanApplicationInfoIconPackInfoFilePaths = getEblanApplicationInfosByLabelAndTag.iconPackInfoFilePaths,
                     )
                 }
             }
@@ -204,7 +204,7 @@ internal fun DragAndDropEblanApplicationInfos(
             onSave = {
                 onUpdateEblanApplicationInfos(
                     currentEblanApplicationInfos.map {
-                        it.eblanApplicationInfo
+                        it
                     },
                 )
 
@@ -219,10 +219,11 @@ internal fun DragAndDropEblanApplicationInfos(
 @Composable
 private fun EblanApplicationInfoItem(
     modifier: Modifier = Modifier,
-    eblanApplicationInfoWithIconPackInfo: EblanApplicationInfoWithIconPackInfo,
+    eblanApplicationInfo: EblanApplicationInfo,
     appDrawerSettings: AppDrawerSettings,
     systemCustomTextColor: Int,
     systemTextColor: TextColor,
+    eblanApplicationInfoIconPackInfoFilePaths: Map<String, String?>,
 ) {
     val textColor = getAppDrawerGridItemTextColor(
         backgroundColor = appDrawerSettings.backgroundColor,
@@ -237,8 +238,8 @@ private fun EblanApplicationInfoItem(
 
     val maxLines = if (appDrawerSettings.gridItemSettings.singleLineLabel) 1 else Int.MAX_VALUE
 
-    val icon = eblanApplicationInfoWithIconPackInfo.iconPackInfoFilePath
-        ?: eblanApplicationInfoWithIconPackInfo.eblanApplicationInfo.icon
+    val icon = eblanApplicationInfoIconPackInfoFilePaths[eblanApplicationInfo.componentName]
+        ?: eblanApplicationInfo.icon
 
     val horizontalAlignment =
         getHorizontalAlignment(horizontalAlignment = appDrawerSettings.gridItemSettings.horizontalAlignment)
@@ -263,7 +264,7 @@ private fun EblanApplicationInfoItem(
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(
-                        eblanApplicationInfoWithIconPackInfo.eblanApplicationInfo.customIcon
+                        eblanApplicationInfo.customIcon
                             ?: icon,
                     )
                     .addLastModifiedToFileCacheKey(true).build(),
@@ -271,7 +272,7 @@ private fun EblanApplicationInfoItem(
                 modifier = Modifier.matchParentSize(),
             )
 
-            if (eblanApplicationInfoWithIconPackInfo.eblanApplicationInfo.serialNumber != 0L) {
+            if (eblanApplicationInfo.serialNumber != 0L) {
                 ElevatedCard(
                     modifier = Modifier
                         .size((appDrawerSettings.gridItemSettings.iconSize * 0.40).dp)
@@ -290,8 +291,8 @@ private fun EblanApplicationInfoItem(
             Spacer(modifier = Modifier.height(10.dp))
 
             Text(
-                text = eblanApplicationInfoWithIconPackInfo.eblanApplicationInfo.customLabel
-                    ?: eblanApplicationInfoWithIconPackInfo.eblanApplicationInfo.label,
+                text = eblanApplicationInfo.customLabel
+                    ?: eblanApplicationInfo.label,
                 color = textColor,
                 textAlign = TextAlign.Center,
                 maxLines = maxLines,

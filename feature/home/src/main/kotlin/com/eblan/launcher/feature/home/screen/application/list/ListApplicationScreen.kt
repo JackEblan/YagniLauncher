@@ -94,7 +94,6 @@ import com.eblan.launcher.domain.model.EblanAppWidgetProviderInfo
 import com.eblan.launcher.domain.model.EblanApplicationInfo
 import com.eblan.launcher.domain.model.EblanApplicationInfoGroup
 import com.eblan.launcher.domain.model.EblanApplicationInfoTag
-import com.eblan.launcher.domain.model.EblanApplicationInfoWithIconPackInfo
 import com.eblan.launcher.domain.model.EblanShortcutInfo
 import com.eblan.launcher.domain.model.EblanShortcutInfoByGroup
 import com.eblan.launcher.domain.model.EblanUser
@@ -589,20 +588,21 @@ private fun EblanApplicationInfos(
                     items(
                         items = getEblanApplicationInfosByLabelAndTag.eblanApplicationInfoWithIconPackInfos[eblanUserPageKey].orEmpty(),
                         key = {
-                            it.eblanApplicationInfo.serialNumber to it.eblanApplicationInfo.componentName
+                            it.serialNumber to it.componentName
                         },
                     ) {
                         EblanApplicationInfoListItem(
                             sharedTransitionScope = sharedTransitionScope,
                             appDrawerSettings = appDrawerSettings,
                             drag = drag,
-                            eblanApplicationInfoWithIconPackInfo = it,
+                            eblanApplicationInfo = it,
                             paddingValues = paddingValues,
                             isVisibleOverlay = isVisibleOverlay,
                             isSwiping = swipeY > 0f,
                             isScrollInProgress = lazyListState.isScrollInProgress,
                             systemTextColor = systemTextColor,
                             systemCustomTextColor = systemCustomTextColor,
+                            iconPackInfoFilePaths = getEblanApplicationInfosByLabelAndTag.iconPackInfoFilePaths,
                             onDismiss = onDismiss,
                             onUpdateGridItemSource = onUpdateGridItemSource,
                             onUpdateImageBitmap = onUpdateImageBitmap,
@@ -627,6 +627,7 @@ private fun EblanApplicationInfos(
                         customBackgroundColor = appDrawerSettings.customBackgroundColor,
                         systemTextColor = systemTextColor,
                         systemCustomTextColor = systemCustomTextColor,
+                        iconPackInfoFilePaths = getEblanApplicationInfosByLabelAndTag.iconPackInfoFilePaths,
                         onUpdateOverlayBounds = onUpdateOverlayBounds,
                         onUpdatePopupMenu = onUpdatePrivatePopupMenu,
                         onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
@@ -637,20 +638,21 @@ private fun EblanApplicationInfos(
                     items(
                         getEblanApplicationInfosByLabelAndTag.eblanApplicationInfoWithIconPackInfos[eblanUserPageKey].orEmpty(),
                         key = {
-                            it.eblanApplicationInfo.serialNumber to it.eblanApplicationInfo.componentName
+                            it.serialNumber to it.componentName
                         },
                     ) {
                         EblanApplicationInfoListItem(
                             sharedTransitionScope = sharedTransitionScope,
                             appDrawerSettings = appDrawerSettings,
                             drag = drag,
-                            eblanApplicationInfoWithIconPackInfo = it,
+                            eblanApplicationInfo = it,
                             paddingValues = paddingValues,
                             isVisibleOverlay = isVisibleOverlay,
                             isSwiping = swipeY > 0f,
                             isScrollInProgress = lazyListState.isScrollInProgress,
                             systemTextColor = systemTextColor,
                             systemCustomTextColor = systemCustomTextColor,
+                            iconPackInfoFilePaths = getEblanApplicationInfosByLabelAndTag.iconPackInfoFilePaths,
                             onDismiss = onDismiss,
                             onUpdateGridItemSource = onUpdateGridItemSource,
                             onUpdateImageBitmap = onUpdateImageBitmap,
@@ -691,13 +693,14 @@ private fun EblanApplicationInfoListItem(
     sharedTransitionScope: SharedTransitionScope,
     appDrawerSettings: AppDrawerSettings,
     drag: Drag,
-    eblanApplicationInfoWithIconPackInfo: EblanApplicationInfoWithIconPackInfo,
+    eblanApplicationInfo: EblanApplicationInfo,
     paddingValues: PaddingValues,
     isVisibleOverlay: Boolean,
     isSwiping: Boolean,
     isScrollInProgress: Boolean,
     systemCustomTextColor: Int,
     systemTextColor: TextColor,
+    iconPackInfoFilePaths: Map<String, String?>,
     onDismiss: () -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
@@ -737,8 +740,8 @@ private fun EblanApplicationInfoListItem(
 
     val maxLines = if (appDrawerSettings.gridItemSettings.singleLineLabel) 1 else Int.MAX_VALUE
 
-    val icon = eblanApplicationInfoWithIconPackInfo.iconPackInfoFilePath
-        ?: eblanApplicationInfoWithIconPackInfo.eblanApplicationInfo.icon
+    val icon = iconPackInfoFilePaths[eblanApplicationInfo.componentName]
+        ?: eblanApplicationInfo.icon
 
     val leftPadding = with(density) {
         paddingValues.calculateLeftPadding(layoutDirection).roundToPx()
@@ -761,7 +764,7 @@ private fun EblanApplicationInfoListItem(
     }
 
     val sharedElementKey = SharedElementKey(
-        id = "${eblanApplicationInfoWithIconPackInfo.eblanApplicationInfo.serialNumber} ${eblanApplicationInfoWithIconPackInfo.eblanApplicationInfo.packageName} ${eblanApplicationInfoWithIconPackInfo.eblanApplicationInfo.componentName}",
+        id = "${eblanApplicationInfo.serialNumber} ${eblanApplicationInfo.packageName} ${eblanApplicationInfo.componentName}",
         parent = SharedElementKey.Parent.SwipeY,
     )
 
@@ -772,7 +775,7 @@ private fun EblanApplicationInfoListItem(
         handleDragEblanApplicationInfoItem(
             appDrawerSettings = appDrawerSettings,
             drag = drag,
-            eblanApplicationInfoWithIconPackInfo = eblanApplicationInfoWithIconPackInfo,
+            eblanApplicationInfo = eblanApplicationInfo,
             isLongPress = isLongPress,
             isSwiping = isSwiping,
             onDismiss = onDismiss,
@@ -795,7 +798,7 @@ private fun EblanApplicationInfoListItem(
                         {
                             scope.launch {
                                 handleOnTapEblanApplicationInfoItem(
-                                    eblanApplicationInfoWithIconPackInfo = eblanApplicationInfoWithIconPackInfo,
+                                    eblanApplicationInfo = eblanApplicationInfo,
                                     intOffset = intOffset,
                                     intSize = intSize,
                                     keyboardController = keyboardController,
@@ -813,7 +816,7 @@ private fun EblanApplicationInfoListItem(
                             scope.launch {
                                 handleOnLongPressEblanApplicationInfoItem(
                                     sharedElementKey = sharedElementKey,
-                                    eblanApplicationInfo = eblanApplicationInfoWithIconPackInfo.eblanApplicationInfo,
+                                    eblanApplicationInfo = eblanApplicationInfo,
                                     graphicsLayer = graphicsLayer,
                                     intOffset = intOffset,
                                     intSize = intSize,
@@ -843,7 +846,7 @@ private fun EblanApplicationInfoListItem(
     ) {
         AsyncImage(
             model = ImageRequest.Builder(context)
-                .data(eblanApplicationInfoWithIconPackInfo.eblanApplicationInfo.customIcon ?: icon)
+                .data(eblanApplicationInfo.customIcon ?: icon)
                 .addLastModifiedToFileCacheKey(true).size(iconSizePx).crossfade(false).build(),
             contentDescription = null,
             modifier = Modifier.size(appDrawerSettings.gridItemSettings.iconSize.dp).alpha(alpha)
@@ -878,8 +881,8 @@ private fun EblanApplicationInfoListItem(
 
             Text(
                 modifier = Modifier.alpha(alpha),
-                text = eblanApplicationInfoWithIconPackInfo.eblanApplicationInfo.customLabel
-                    ?: eblanApplicationInfoWithIconPackInfo.eblanApplicationInfo.label,
+                text = eblanApplicationInfo.customLabel
+                    ?: eblanApplicationInfo.label,
                 color = textColor,
                 textAlign = TextAlign.Center,
                 maxLines = maxLines,

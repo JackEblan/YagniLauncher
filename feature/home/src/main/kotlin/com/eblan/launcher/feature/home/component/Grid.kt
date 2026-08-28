@@ -27,7 +27,7 @@ import androidx.compose.ui.layout.ParentDataModifier
 import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Density
-import com.eblan.launcher.domain.model.EblanApplicationInfoWithIconPackInfo
+import com.eblan.launcher.domain.model.EblanApplicationInfo
 import com.eblan.launcher.domain.model.GridItem
 
 @Composable
@@ -76,9 +76,9 @@ internal fun GridLayout(
 internal fun HorizontalAppDrawerGridLayout(
     modifier: Modifier = Modifier,
     columns: Int,
-    eblanApplicationInfoWithIconPackInfos: List<EblanApplicationInfoWithIconPackInfo>?,
+    eblanApplicationInfoWithIconPackInfos: List<EblanApplicationInfo>?,
     rows: Int,
-    content: @Composable BoxScope.(EblanApplicationInfoWithIconPackInfo) -> Unit,
+    content: @Composable BoxScope.(EblanApplicationInfo) -> Unit,
 ) {
     SubcomposeLayout(modifier = modifier) { constraints ->
         val cellWidth = constraints.maxWidth / columns
@@ -92,8 +92,8 @@ internal fun HorizontalAppDrawerGridLayout(
                 val column = index % columns
 
                 subcompose(
-                    eblanApplicationInfoWithIconPackInfo.eblanApplicationInfo.serialNumber to
-                        eblanApplicationInfoWithIconPackInfo.eblanApplicationInfo.componentName,
+                    eblanApplicationInfoWithIconPackInfo.serialNumber to
+                        eblanApplicationInfoWithIconPackInfo.componentName,
                 ) {
                     Box(
                         modifier = Modifier.gridItem(
