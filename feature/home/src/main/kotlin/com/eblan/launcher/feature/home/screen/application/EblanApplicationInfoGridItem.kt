@@ -384,7 +384,6 @@ internal fun handleDragEblanApplicationInfoItem(
                 customLabel = eblanApplicationInfoWithIconPackInfo.eblanApplicationInfo.customLabel,
                 index = -1,
                 folderId = null,
-                iconPackInfoFilePath = eblanApplicationInfoWithIconPackInfo.iconPackInfoFilePath,
             )
 
             val eblanAction = EblanAction(

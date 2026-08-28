@@ -19,8 +19,6 @@ package com.eblan.launcher.domain.usecase.home
 
 import com.eblan.launcher.domain.common.Dispatcher
 import com.eblan.launcher.domain.common.EblanDispatchers
-import com.eblan.launcher.domain.common.IconKeyGenerator
-import com.eblan.launcher.domain.framework.FileManager
 import com.eblan.launcher.domain.framework.LauncherAppsWrapper
 import com.eblan.launcher.domain.framework.PackageManagerWrapper
 import com.eblan.launcher.domain.grid.isGridItemSpanWithinBounds
@@ -42,8 +40,6 @@ class GetHomeDataUseCase @Inject constructor(
     private val userDataRepository: UserDataRepository,
     private val launcherAppsWrapper: LauncherAppsWrapper,
     private val packageManagerWrapper: PackageManagerWrapper,
-    private val fileManager: FileManager,
-    private val iconKeyGenerator: IconKeyGenerator,
     private val gridRepository: GridRepository,
     @param:Dispatcher(EblanDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) {
@@ -51,9 +47,7 @@ class GetHomeDataUseCase @Inject constructor(
         userDataRepository.userDataFlow,
         gridRepository.gridItemsFlow,
     ) { userData, gridItems ->
-        val currentGridItems = gridItems.toGridItems(
-            iconPackInfoPackageName = userData.generalSettings.iconPackInfoPackageName,
-        )
+        val currentGridItems = gridItems.toGridItems()
 
         val gridItemsByPage = currentGridItems.filter {
             isGridItemSpanWithinBounds(
@@ -81,14 +75,10 @@ class GetHomeDataUseCase @Inject constructor(
         )
     }.flowOn(ioDispatcher)
 
-    private suspend fun GridItems.toGridItems(iconPackInfoPackageName: String): List<GridItem> = buildList {
+    private fun GridItems.toGridItems(): List<GridItem> = buildList {
         addAll(
             applicationInfoGridItems.map {
-                it.asGridItem(
-                    fileManager = fileManager,
-                    iconKeyGenerator = iconKeyGenerator,
-                    iconPackInfoPackageName = iconPackInfoPackageName,
-                )
+                it.asGridItem()
             },
         )
         addAll(widgetGridItems.map { it.asGridItem() })

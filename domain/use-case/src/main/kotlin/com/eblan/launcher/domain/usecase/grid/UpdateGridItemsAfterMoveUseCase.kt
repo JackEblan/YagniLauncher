@@ -19,34 +19,25 @@ package com.eblan.launcher.domain.usecase.grid
 
 import com.eblan.launcher.domain.common.Dispatcher
 import com.eblan.launcher.domain.common.EblanDispatchers
-import com.eblan.launcher.domain.common.IconKeyGenerator
-import com.eblan.launcher.domain.framework.FileManager
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.domain.repository.FolderGridItemRepository
 import com.eblan.launcher.domain.repository.GridRepository
-import com.eblan.launcher.domain.repository.UserDataRepository
 import com.eblan.launcher.domain.usecase.util.getFolderGridItemsById
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 class UpdateGridItemsAfterMoveUseCase @Inject constructor(
-    private val userDataRepository: UserDataRepository,
     private val gridRepository: GridRepository,
     private val folderGridItemRepository: FolderGridItemRepository,
-    private val fileManager: FileManager,
-    private val iconKeyGenerator: IconKeyGenerator,
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke(moveGridItemResult: MoveGridItemResult) {
         withContext(defaultDispatcher) {
-            val userData = userDataRepository.userDataFlow.first()
-
             val conflictingGridItem = moveGridItemResult.conflictingGridItem
 
             val movingGridItem = moveGridItemResult.movingGridItem
@@ -56,9 +47,6 @@ class UpdateGridItemsAfterMoveUseCase @Inject constructor(
                     is GridItemData.Folder -> {
                         val folderGridItems = getFolderGridItemsById(
                             folderGridItemRepository = folderGridItemRepository,
-                            fileManager = fileManager,
-                            iconKeyGenerator = iconKeyGenerator,
-                            iconPackInfoPackageName = userData.generalSettings.iconPackInfoPackageName,
                             folderId = conflictingGridItem.id,
                         )
 

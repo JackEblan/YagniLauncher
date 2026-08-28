@@ -19,8 +19,6 @@ package com.eblan.launcher.domain.usecase.grid
 
 import com.eblan.launcher.domain.common.Dispatcher
 import com.eblan.launcher.domain.common.EblanDispatchers
-import com.eblan.launcher.domain.common.IconKeyGenerator
-import com.eblan.launcher.domain.framework.FileManager
 import com.eblan.launcher.domain.model.FolderPopup
 import com.eblan.launcher.domain.model.FolderPopupEntry
 import com.eblan.launcher.domain.repository.FolderGridItemRepository
@@ -34,8 +32,6 @@ import javax.inject.Inject
 class GetFolderGridItemsByIdUseCase @Inject constructor(
     private val folderGridItemRepository: FolderGridItemRepository,
     private val userDataRepository: UserDataRepository,
-    private val fileManager: FileManager,
-    private val iconKeyGenerator: IconKeyGenerator,
     @param:Dispatcher(EblanDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) {
     operator fun invoke(
@@ -53,9 +49,6 @@ class GetFolderGridItemsByIdUseCase @Inject constructor(
                 folderPopupEntry = folderPopupEntry,
                 maxFolderColumns = userData.homeSettings.maxFolderColumns,
                 maxFolderRows = userData.homeSettings.maxFolderRows,
-                fileManager = fileManager,
-                iconKeyGenerator = iconKeyGenerator,
-                iconPackInfoPackageName = userData.generalSettings.iconPackInfoPackageName,
             )
         }
     }.flowOn(ioDispatcher)

@@ -19,8 +19,11 @@ package com.eblan.launcher.domain.repository
 
 import com.eblan.launcher.domain.model.ApplicationInfoGridItem
 import com.eblan.launcher.domain.model.PartialApplicationInfoGridItem
+import kotlinx.coroutines.flow.Flow
 
 interface ApplicationInfoGridItemRepository {
+    val applicationInfoGridItemsFlow : Flow<List<ApplicationInfoGridItem>>
+
     suspend fun getApplicationInfoGridItems(): List<ApplicationInfoGridItem>
 
     suspend fun updateApplicationInfoGridItem(applicationInfoGridItem: ApplicationInfoGridItem)

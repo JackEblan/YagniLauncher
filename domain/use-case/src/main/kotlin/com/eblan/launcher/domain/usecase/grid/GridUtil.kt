@@ -17,8 +17,6 @@
  */
 package com.eblan.launcher.domain.usecase.grid
 
-import com.eblan.launcher.domain.common.IconKeyGenerator
-import com.eblan.launcher.domain.framework.FileManager
 import com.eblan.launcher.domain.model.ApplicationInfoGridItem
 import com.eblan.launcher.domain.model.EblanAction
 import com.eblan.launcher.domain.model.EblanActionType
@@ -42,25 +40,7 @@ import kotlin.math.sqrt
 const val FOLDER_PREVIEW_COLUMNS = 2
 const val FOLDER_PREVIEW_ROWS = 2
 
-internal suspend fun ApplicationInfoGridItem.asGridItem(
-    fileManager: FileManager,
-    iconKeyGenerator: IconKeyGenerator,
-    iconPackInfoPackageName: String,
-): GridItem {
-    val iconPacksDirectory = fileManager.getFilesDirectory(
-        FileManager.ICON_PACKS_DIR,
-    )
-
-    val iconPackDirectory = File(
-        iconPacksDirectory,
-        iconPackInfoPackageName,
-    )
-
-    val iconPackInfoFilePath = File(
-        iconPackDirectory,
-        iconKeyGenerator.getHashedName(name = componentName),
-    )
-
+internal fun ApplicationInfoGridItem.asGridItem(): GridItem {
     return GridItem(
         id = id,
         page = page,
@@ -78,11 +58,6 @@ internal suspend fun ApplicationInfoGridItem.asGridItem(
             customLabel = customLabel,
             index = index,
             folderId = folderId,
-            iconPackInfoFilePath = if (iconPackInfoFilePath.exists()) {
-                iconPackInfoFilePath.absolutePath
-            } else {
-                null
-            },
         ),
         associate = associate,
         override = override,
@@ -225,9 +200,6 @@ internal suspend fun FolderGridItemWrapper.asFolderPopup(
     folderPopupEntry: FolderPopupEntry,
     maxFolderColumns: Int,
     maxFolderRows: Int,
-    fileManager: FileManager,
-    iconKeyGenerator: IconKeyGenerator,
-    iconPackInfoPackageName: String,
 ): FolderPopup {
     val childFolderGridItems = folderGridItems.map {
         folderGridItemRepository.getFolderGridItemWrapper(
@@ -237,11 +209,7 @@ internal suspend fun FolderGridItemWrapper.asFolderPopup(
 
     val gridItems = (
         applicationInfoGridItems.map {
-            it.asGridItem(
-                fileManager = fileManager,
-                iconKeyGenerator = iconKeyGenerator,
-                iconPackInfoPackageName = iconPackInfoPackageName,
-            )
+            it.asGridItem()
         } + shortcutInfoGridItems.map {
             it.asGridItem()
         } + shortcutConfigGridItems.map {

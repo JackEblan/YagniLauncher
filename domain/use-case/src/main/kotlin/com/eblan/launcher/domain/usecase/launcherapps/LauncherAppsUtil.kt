@@ -503,9 +503,6 @@ internal suspend fun addNewApplicationToHomeScreen(
     homeSettings: HomeSettings,
     applicationInfoGridItems: MutableList<ApplicationInfoGridItem>,
     folderGridItemRepository: FolderGridItemRepository,
-    fileManager: FileManager,
-    iconKeyGenerator: IconKeyGenerator,
-    iconPackInfoPackageName: String,
 ) {
     val alreadyOnHome = gridItems.any {
         when (val data = it.data) {
@@ -516,9 +513,6 @@ internal suspend fun addNewApplicationToHomeScreen(
             is GridItemData.Folder -> {
                 val folderGridItems = getFolderGridItemsById(
                     folderGridItemRepository = folderGridItemRepository,
-                    fileManager = fileManager,
-                    iconKeyGenerator = iconKeyGenerator,
-                    iconPackInfoPackageName = iconPackInfoPackageName,
                     folderId = it.id,
                 )
 
@@ -556,7 +550,6 @@ internal suspend fun addNewApplicationToHomeScreen(
         customLabel = null,
         index = -1,
         folderId = null,
-        iconPackInfoFilePath = null,
     )
 
     val gridItem = GridItem(
