@@ -27,7 +27,6 @@ import com.eblan.launcher.domain.grid.isGridItemSpanWithinBounds
 import com.eblan.launcher.domain.model.ApplicationInfoGridItem
 import com.eblan.launcher.domain.model.Associate
 import com.eblan.launcher.domain.model.GridItem
-import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.GridItems
 import com.eblan.launcher.domain.model.HomeData
 import com.eblan.launcher.domain.repository.GridRepository

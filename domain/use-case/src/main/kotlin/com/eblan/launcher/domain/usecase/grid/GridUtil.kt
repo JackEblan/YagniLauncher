@@ -40,33 +40,31 @@ import kotlin.math.sqrt
 const val FOLDER_PREVIEW_COLUMNS = 2
 const val FOLDER_PREVIEW_ROWS = 2
 
-internal fun ApplicationInfoGridItem.asGridItem(): GridItem {
-    return GridItem(
-        id = id,
-        page = page,
-        startColumn = startColumn,
-        startRow = startRow,
-        columnSpan = columnSpan,
-        rowSpan = rowSpan,
-        data = GridItemData.ApplicationInfo(
-            serialNumber = serialNumber,
-            componentName = componentName,
-            packageName = packageName,
-            icon = icon,
-            label = label,
-            customIcon = customIcon,
-            customLabel = customLabel,
-            index = index,
-            folderId = folderId,
-        ),
-        associate = associate,
-        override = override,
-        gridItemSettings = gridItemSettings,
-        doubleTap = doubleTap,
-        swipeUp = swipeUp,
-        swipeDown = swipeDown,
-    )
-}
+internal fun ApplicationInfoGridItem.asGridItem(): GridItem = GridItem(
+    id = id,
+    page = page,
+    startColumn = startColumn,
+    startRow = startRow,
+    columnSpan = columnSpan,
+    rowSpan = rowSpan,
+    data = GridItemData.ApplicationInfo(
+        serialNumber = serialNumber,
+        componentName = componentName,
+        packageName = packageName,
+        icon = icon,
+        label = label,
+        customIcon = customIcon,
+        customLabel = customLabel,
+        index = index,
+        folderId = folderId,
+    ),
+    associate = associate,
+    override = override,
+    gridItemSettings = gridItemSettings,
+    doubleTap = doubleTap,
+    swipeUp = swipeUp,
+    swipeDown = swipeDown,
+)
 
 internal fun WidgetGridItem.asGridItem(): GridItem = GridItem(
     id = id,

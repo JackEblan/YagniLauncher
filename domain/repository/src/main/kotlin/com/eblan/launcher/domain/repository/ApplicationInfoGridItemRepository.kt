@@ -22,7 +22,7 @@ import com.eblan.launcher.domain.model.PartialApplicationInfoGridItem
 import kotlinx.coroutines.flow.Flow
 
 interface ApplicationInfoGridItemRepository {
-    val applicationInfoGridItemsFlow : Flow<List<ApplicationInfoGridItem>>
+    val applicationInfoGridItemsFlow: Flow<List<ApplicationInfoGridItem>>
 
     suspend fun getApplicationInfoGridItems(): List<ApplicationInfoGridItem>
 

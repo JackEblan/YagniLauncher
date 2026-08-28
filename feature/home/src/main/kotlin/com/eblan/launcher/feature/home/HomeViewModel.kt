@@ -45,7 +45,6 @@ import com.eblan.launcher.domain.usecase.application.GetEblanShortcutInfosUseCas
 import com.eblan.launcher.domain.usecase.application.UpdateEblanApplicationInfosIndexesUseCase
 import com.eblan.launcher.domain.usecase.grid.DeleteGridItemUseCase
 import com.eblan.launcher.domain.usecase.grid.GetFolderGridItemsByIdUseCase
-import com.eblan.launcher.domain.usecase.grid.GetGridItemsIconPackInfoFilePathUseCase
 import com.eblan.launcher.domain.usecase.grid.GetPreviewFolderGridItemsUseCase
 import com.eblan.launcher.domain.usecase.grid.MoveFolderGridItemUseCase
 import com.eblan.launcher.domain.usecase.grid.MoveGridItemUseCase

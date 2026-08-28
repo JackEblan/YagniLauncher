@@ -37,10 +37,9 @@ internal class DefaultApplicationInfoGridItemRepository @Inject constructor(
             }
         }
 
-    override suspend fun getApplicationInfoGridItems(): List<ApplicationInfoGridItem> =
-        applicationInfoGridItemDao.getApplicationInfoGridItemEntities().map {
-            it.asModel()
-        }
+    override suspend fun getApplicationInfoGridItems(): List<ApplicationInfoGridItem> = applicationInfoGridItemDao.getApplicationInfoGridItemEntities().map {
+        it.asModel()
+    }
 
     override suspend fun updateApplicationInfoGridItem(applicationInfoGridItem: ApplicationInfoGridItem) {
         applicationInfoGridItemDao.updateApplicationInfoGridItemEntity(
@@ -63,13 +62,12 @@ internal class DefaultApplicationInfoGridItemRepository @Inject constructor(
     override suspend fun getApplicationInfoGridItemsByPackageName(
         serialNumber: Long,
         packageName: String,
-    ): List<ApplicationInfoGridItem> =
-        applicationInfoGridItemDao.getApplicationInfoGridItemEntitiesByPackageName(
-            serialNumber = serialNumber,
-            packageName = packageName,
-        ).map {
-            it.asModel()
-        }
+    ): List<ApplicationInfoGridItem> = applicationInfoGridItemDao.getApplicationInfoGridItemEntitiesByPackageName(
+        serialNumber = serialNumber,
+        packageName = packageName,
+    ).map {
+        it.asModel()
+    }
 
     override suspend fun deleteApplicationInfoGridItem(
         serialNumber: Long,
