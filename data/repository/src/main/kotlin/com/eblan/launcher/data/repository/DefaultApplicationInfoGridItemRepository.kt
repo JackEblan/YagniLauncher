@@ -23,20 +23,11 @@ import com.eblan.launcher.data.room.dao.ApplicationInfoGridItemDao
 import com.eblan.launcher.domain.model.ApplicationInfoGridItem
 import com.eblan.launcher.domain.model.PartialApplicationInfoGridItem
 import com.eblan.launcher.domain.repository.ApplicationInfoGridItemRepository
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 internal class DefaultApplicationInfoGridItemRepository @Inject constructor(
     private val applicationInfoGridItemDao: ApplicationInfoGridItemDao,
 ) : ApplicationInfoGridItemRepository {
-    override val applicationInfoGridItemsFlow: Flow<List<ApplicationInfoGridItem>> =
-        applicationInfoGridItemDao.getApplicationInfoGridItemEntitiesFlow().map { entities ->
-            entities.map {
-                it.asModel()
-            }
-        }
-
     override suspend fun getApplicationInfoGridItems(): List<ApplicationInfoGridItem> = applicationInfoGridItemDao.getApplicationInfoGridItemEntities().map {
         it.asModel()
     }
