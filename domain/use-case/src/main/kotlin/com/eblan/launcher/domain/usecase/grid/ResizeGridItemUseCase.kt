@@ -24,13 +24,13 @@ import com.eblan.launcher.domain.grid.rectanglesOverlap
 import com.eblan.launcher.domain.grid.resolveConflicts
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.repository.GridRepository
+import com.eblan.launcher.domain.usecase.util.toGridItems
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class ResizeGridItemUseCase @Inject constructor(
     private val gridRepository: GridRepository,
-    private val getGridItemsUseCase: GetGridItemsUseCase,
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke(
@@ -39,7 +39,7 @@ class ResizeGridItemUseCase @Inject constructor(
         rows: Int,
     ): GridItem = withContext(defaultDispatcher) {
         val gridItems =
-            getGridItemsUseCase().filter {
+            gridRepository.getGridItems().toGridItems().filter {
                 it.isTopLevel() && it.page == resizingGridItem.page &&
                     it.associate == resizingGridItem.associate
             }.toMutableList()

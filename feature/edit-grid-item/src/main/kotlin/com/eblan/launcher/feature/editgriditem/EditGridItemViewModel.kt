@@ -31,7 +31,7 @@ import com.eblan.launcher.domain.model.PackageManagerIconPackInfo
 import com.eblan.launcher.domain.repository.GridRepository
 import com.eblan.launcher.domain.usecase.application.GetEblanApplicationInfosUseCase
 import com.eblan.launcher.domain.usecase.grid.DeleteGridItemCustomIconUseCase
-import com.eblan.launcher.domain.usecase.grid.GetGridItemsUseCase
+import com.eblan.launcher.domain.usecase.grid.GetGridItemByIdUseCase
 import com.eblan.launcher.domain.usecase.grid.UpdateGridItemCustomIconUseCase
 import com.eblan.launcher.feature.editgriditem.model.EditGridItemUiState
 import com.eblan.launcher.feature.editgriditem.navigation.EditGridItemRouteData
@@ -54,9 +54,9 @@ internal class EditGridItemViewModel @Inject constructor(
     packageManagerWrapper: PackageManagerWrapper,
     private val gridRepository: GridRepository,
     getEblanApplicationInfosUseCase: GetEblanApplicationInfosUseCase,
-    private val getGridItemsUseCase: GetGridItemsUseCase,
     private val updateGridItemCustomIconUseCase: UpdateGridItemCustomIconUseCase,
     private val deleteGridItemCustomIconUseCase: DeleteGridItemCustomIconUseCase,
+    private val getGridItemByIdUseCase: GetGridItemByIdUseCase,
     @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) : ViewModel() {
     private val editGridItemRouteData = savedStateHandle.toRoute<EditGridItemRouteData>()
@@ -169,9 +169,7 @@ internal class EditGridItemViewModel @Inject constructor(
         viewModelScope.launch(defaultDispatcher) {
             _editGridItemUiState.update {
                 EditGridItemUiState.Success(
-                    gridItem = getGridItemsUseCase().find {
-                        it.id == editGridItemRouteData.id
-                    },
+                    gridItem = getGridItemByIdUseCase(id = editGridItemRouteData.id),
                 )
             }
         }

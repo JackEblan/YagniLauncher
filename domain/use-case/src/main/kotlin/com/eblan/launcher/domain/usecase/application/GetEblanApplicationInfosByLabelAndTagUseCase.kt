@@ -31,13 +31,13 @@ import com.eblan.launcher.domain.model.EblanUserType
 import com.eblan.launcher.domain.model.GetEblanApplicationInfosByLabelAndTag
 import com.eblan.launcher.domain.repository.EblanApplicationInfoRepository
 import com.eblan.launcher.domain.repository.UserDataRepository
+import com.eblan.launcher.domain.usecase.util.getIconPackInfoFilePaths
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
-import java.io.File
 import java.text.Normalizer
 import javax.inject.Inject
 
@@ -107,14 +107,18 @@ class GetEblanApplicationInfosByLabelAndTagUseCase @Inject constructor(
             it.eblanUser.eblanUserType == EblanUserType.Private
         }
 
+        val iconPackInfoFilePaths = getIconPackInfoFilePaths(
+            iconPackInfoPackageName = iconPackInfoPackageName,
+            componentNames = eblanApplicationInfos.map { it.componentName },
+            fileManager = fileManager,
+            iconKeyGenerator = iconKeyGenerator,
+        )
+
         return GetEblanApplicationInfosByLabelAndTag(
             eblanApplicationInfoWithIconPackInfos = groupedEblanApplicationInfos.filterKeys { it != privateEblanUserPageKey },
             privateEblanUser = privateEblanUserPageKey?.eblanUser,
             privateEblanApplicationInfoWithIconPackInfos = groupedEblanApplicationInfos[privateEblanUserPageKey].orEmpty(),
-            iconPackInfoFilePaths = getIconPackInfoFilePaths(
-                iconPackInfoPackageName = iconPackInfoPackageName,
-                eblanApplicationInfos = eblanApplicationInfos,
-            ),
+            iconPackInfoFilePaths = iconPackInfoFilePaths,
         )
     }
 
@@ -137,14 +141,18 @@ class GetEblanApplicationInfosByLabelAndTagUseCase @Inject constructor(
                     }
             }.toMap()
 
+        val iconPackInfoFilePaths = getIconPackInfoFilePaths(
+            iconPackInfoPackageName = iconPackInfoPackageName,
+            componentNames = eblanApplicationInfos.map { it.componentName },
+            fileManager = fileManager,
+            iconKeyGenerator = iconKeyGenerator,
+        )
+
         return GetEblanApplicationInfosByLabelAndTag(
             eblanApplicationInfoWithIconPackInfos = groupedEblanApplicationInfos,
             privateEblanUser = null,
             privateEblanApplicationInfoWithIconPackInfos = emptyList(),
-            iconPackInfoFilePaths = getIconPackInfoFilePaths(
-                iconPackInfoPackageName = iconPackInfoPackageName,
-                eblanApplicationInfos = eblanApplicationInfos,
-            ),
+            iconPackInfoFilePaths = iconPackInfoFilePaths,
         )
     }
 
@@ -223,37 +231,6 @@ class GetEblanApplicationInfosByLabelAndTagUseCase @Inject constructor(
         Normalizer.normalize(text, Normalizer.Form.NFD)
             .replace("\\p{M}+".toRegex(), "")
             .lowercase()
-    }
-
-    private suspend fun getIconPackInfoFilePaths(
-        iconPackInfoPackageName: String,
-        eblanApplicationInfos: List<EblanApplicationInfo>,
-    ): Map<String, String?> {
-        if (iconPackInfoPackageName.isEmpty()) {
-            return emptyMap()
-        }
-
-        val iconPacksDirectory = fileManager.getFilesDirectory(
-            FileManager.ICON_PACKS_DIR,
-        )
-
-        val iconPackDirectory = File(
-            iconPacksDirectory,
-            iconPackInfoPackageName,
-        )
-
-        return eblanApplicationInfos.associate {
-            val iconPackInfoFile = File(
-                iconPackDirectory,
-                iconKeyGenerator.getHashedName(
-                    name = it.componentName,
-                ),
-            )
-
-            it.componentName to iconPackInfoFile
-                .takeIf(File::exists)
-                ?.absolutePath
-        }.toMap()
     }
 }
 

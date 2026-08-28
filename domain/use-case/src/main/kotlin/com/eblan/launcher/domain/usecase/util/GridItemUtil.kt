@@ -23,6 +23,7 @@ import com.eblan.launcher.domain.framework.FileManager
 import com.eblan.launcher.domain.framework.LauncherAppsWrapper
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
+import com.eblan.launcher.domain.model.GridItems
 import com.eblan.launcher.domain.model.ShortcutQuery
 import com.eblan.launcher.domain.model.ShortcutQueryFlag
 import com.eblan.launcher.domain.repository.FolderGridItemRepository
@@ -96,6 +97,18 @@ suspend fun getFolderGridItemsById(
             else -> error("Unsupported folder grid item")
         }
     }
+}
+
+internal fun GridItems.toGridItems(): List<GridItem> = buildList {
+    addAll(
+        applicationInfoGridItems.map {
+            it.asGridItem()
+        },
+    )
+    addAll(widgetGridItems.map { it.asGridItem() })
+    addAll(shortcutInfoGridItems.map { it.asGridItem() })
+    addAll(shortcutConfigGridItems.map { it.asGridItem() })
+    addAll(folderGridItems.map { it.asGridItem() })
 }
 
 private suspend fun updatePinShortcutsByPackageName(

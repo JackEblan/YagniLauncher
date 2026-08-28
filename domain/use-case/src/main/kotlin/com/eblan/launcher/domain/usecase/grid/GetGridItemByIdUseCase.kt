@@ -21,43 +21,16 @@ import com.eblan.launcher.domain.common.Dispatcher
 import com.eblan.launcher.domain.common.EblanDispatchers
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.repository.GridRepository
+import com.eblan.launcher.domain.usecase.util.toGridItems
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class GetGridItemsUseCase @Inject constructor(
+class GetGridItemByIdUseCase @Inject constructor(
     private val gridRepository: GridRepository,
-    @param:Dispatcher(EblanDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
+    @param:Dispatcher(EblanDispatchers.Default) private val defaultDispatcher: CoroutineDispatcher,
 ) {
-    suspend operator fun invoke(): List<GridItem> = withContext(ioDispatcher) {
-        val gridItems = gridRepository.getGridItems()
-
-        buildList {
-            addAll(
-                gridItems.applicationInfoGridItems.map {
-                    it.asGridItem()
-                },
-            )
-            addAll(
-                gridItems.widgetGridItems.map {
-                    it.asGridItem()
-                },
-            )
-            addAll(
-                gridItems.shortcutInfoGridItems.map {
-                    it.asGridItem()
-                },
-            )
-            addAll(
-                gridItems.shortcutConfigGridItems.map {
-                    it.asGridItem()
-                },
-            )
-            addAll(
-                gridItems.folderGridItems.map {
-                    it.asGridItem()
-                },
-            )
-        }
+    suspend operator fun invoke(id: String): GridItem? = withContext(defaultDispatcher) {
+        gridRepository.getGridItems().toGridItems().firstOrNull { it.id == id }
     }
 }

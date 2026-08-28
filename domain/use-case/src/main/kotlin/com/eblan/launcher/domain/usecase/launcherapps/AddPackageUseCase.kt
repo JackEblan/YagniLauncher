@@ -36,10 +36,11 @@ import com.eblan.launcher.domain.repository.EblanApplicationInfoRepository
 import com.eblan.launcher.domain.repository.EblanShortcutConfigRepository
 import com.eblan.launcher.domain.repository.EblanShortcutInfoRepository
 import com.eblan.launcher.domain.repository.FolderGridItemRepository
+import com.eblan.launcher.domain.repository.GridRepository
 import com.eblan.launcher.domain.repository.UserDataRepository
-import com.eblan.launcher.domain.usecase.grid.GetGridItemsUseCase
 import com.eblan.launcher.domain.usecase.grid.isTopLevel
 import com.eblan.launcher.domain.usecase.util.cacheIconPackFile
+import com.eblan.launcher.domain.usecase.util.toGridItems
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
@@ -62,8 +63,8 @@ class AddPackageUseCase @Inject constructor(
     private val iconPackManager: IconPackManager,
     private val iconKeyGenerator: IconKeyGenerator,
     private val applicationInfoGridItemRepository: ApplicationInfoGridItemRepository,
-    private val getGridItemsUseCase: GetGridItemsUseCase,
     private val folderGridItemRepository: FolderGridItemRepository,
+    private val gridRepository: GridRepository,
     @param:Dispatcher(EblanDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke(
@@ -148,7 +149,7 @@ class AddPackageUseCase @Inject constructor(
 
         if (!homeSettings.addNewAppsToHomeScreen) return
 
-        val gridItems = getGridItemsUseCase()
+        val gridItems = gridRepository.getGridItems().toGridItems()
             .filter {
                 it.isTopLevel() && it.associate == Associate.Grid
             }
