@@ -113,7 +113,7 @@ internal fun InteractiveFolderGridItem(
     paddingValues: PaddingValues,
     sharedElementKey: SharedElementKey,
     isInProgress: Boolean,
-    gridItemsIconPackInfoFilePaths: Map<String, String?>,
+    iconPackInfoFilePaths: Map<String, String?>,
     onOpenAppDrawer: () -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
@@ -193,7 +193,7 @@ internal fun InteractiveFolderGridItem(
                 iconSize = iconSize,
                 sourceBounds = sourceBounds,
                 isInProgress = isInProgress,
-                gridItemsIconPackInfoFilePaths = gridItemsIconPackInfoFilePaths,
+                iconPackInfoFilePaths = iconPackInfoFilePaths,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
                 onUpdateImageBitmap = onUpdateImageBitmap,
@@ -272,7 +272,7 @@ internal fun InteractiveFolderGridItem(
                 padding = padding,
                 iconSize = iconSize,
                 isInProgress = isInProgress,
-                gridItemsIconPackInfoFilePaths = gridItemsIconPackInfoFilePaths,
+                iconPackInfoFilePaths = iconPackInfoFilePaths,
                 onUpdateIsCloseFolderGridItemPopup = onUpdateIsCloseFolderGridItemPopup,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
@@ -307,7 +307,7 @@ private fun InteractiveFolderApplicationInfoGridItem(
     iconSize: Dp,
     sourceBounds: Rect,
     isInProgress: Boolean,
-    gridItemsIconPackInfoFilePaths: Map<String, String?>,
+    iconPackInfoFilePaths: Map<String, String?>,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
         intOffset: IntOffset,
@@ -344,7 +344,7 @@ private fun InteractiveFolderApplicationInfoGridItem(
 
     val maxLines = if (gridItemSettings.singleLineLabel) 1 else Int.MAX_VALUE
 
-    val icon = gridItemsIconPackInfoFilePaths[gridItem.id] ?: data.icon
+    val icon = iconPackInfoFilePaths[gridItem.id] ?: data.icon
 
     val hasNotifications =
         statusBarNotifications[data.packageName] != null && (
@@ -892,7 +892,7 @@ private fun InteractiveNestedFolderGridItem(
     padding: Dp,
     iconSize: Dp,
     isInProgress: Boolean,
-    gridItemsIconPackInfoFilePaths: Map<String, String?>,
+    iconPackInfoFilePaths: Map<String, String?>,
     onUpdateIsCloseFolderGridItemPopup: (Boolean) -> Unit,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
@@ -1071,7 +1071,7 @@ private fun InteractiveNestedFolderGridItem(
                             alpha = alpha,
                             gridItem = it,
                             hasShortcutHostPermission = hasShortcutHostPermission,
-                            gridItemsIconPackInfoFilePaths = gridItemsIconPackInfoFilePaths,
+                            iconPackInfoFilePaths = iconPackInfoFilePaths,
                         )
                     },
                 )
@@ -1097,7 +1097,7 @@ private fun PreviewNestedFolderGridItem(
     alpha: Float,
     gridItem: GridItem,
     hasShortcutHostPermission: Boolean,
-    gridItemsIconPackInfoFilePaths: Map<String, String?>,
+    iconPackInfoFilePaths: Map<String, String?>,
 ) {
     val context = LocalContext.current
 
@@ -1120,7 +1120,7 @@ private fun PreviewNestedFolderGridItem(
 
         when (val data = gridItem.data) {
             is GridItemData.ApplicationInfo -> {
-                val icon = gridItemsIconPackInfoFilePaths[gridItem.id] ?: data.icon
+                val icon = iconPackInfoFilePaths[gridItem.id] ?: data.icon
 
                 AsyncImage(
                     model = Builder(context).data(data.customIcon ?: icon)

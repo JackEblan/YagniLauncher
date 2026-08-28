@@ -96,7 +96,7 @@ internal fun EditGridPageScreen(
     textColor: TextColor,
     previewFolderGridItems: Map<String, PreviewFolder>,
     statusBarNotifications: Map<String, Int>,
-    gridItemsIconPackInfoFilePaths: Map<String, String?>,
+    iconPackInfoFilePaths: Map<String, String?>,
     onSaveEditPage: (
         id: Int,
         pageItems: List<PageItem>,
@@ -213,7 +213,7 @@ internal fun EditGridPageScreen(
                                 statusBarNotifications = statusBarNotifications,
                                 textColor = textColor,
                                 previewFolderGridItems = previewFolderGridItems,
-                                gridItemsIconPackInfoFilePaths = gridItemsIconPackInfoFilePaths,
+                                iconPackInfoFilePaths = iconPackInfoFilePaths,
                             )
                         },
                     )
@@ -321,7 +321,7 @@ internal fun EditDockGridPageScreen(
     textColor: TextColor,
     previewFolderGridItems: Map<String, PreviewFolder>,
     statusBarNotifications: Map<String, Int>,
-    gridItemsIconPackInfoFilePaths: Map<String, String?>,
+    iconPackInfoFilePaths: Map<String, String?>,
     onSaveEditPage: (
         id: Int,
         pageItems: List<PageItem>,
@@ -432,7 +432,7 @@ internal fun EditDockGridPageScreen(
                                     statusBarNotifications = statusBarNotifications,
                                     textColor = textColor,
                                     previewFolderGridItems = previewFolderGridItems,
-                                    gridItemsIconPackInfoFilePaths = gridItemsIconPackInfoFilePaths,
+                                    iconPackInfoFilePaths = iconPackInfoFilePaths,
                                 )
                             },
                         )
