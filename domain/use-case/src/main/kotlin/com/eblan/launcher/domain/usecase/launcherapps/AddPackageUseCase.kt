@@ -89,7 +89,6 @@ class AddPackageUseCase @Inject constructor(
                     lastUpdateTime = it.lastUpdateTime,
                     flags = it.flags,
                     applicationInfoGridItems = newApplicationInfoGridItems,
-                    iconPackInfoPackageName = userData.generalSettings.iconPackInfoPackageName,
                 )
             }
 
@@ -130,7 +129,6 @@ class AddPackageUseCase @Inject constructor(
         lastUpdateTime: Long,
         flags: Int,
         applicationInfoGridItems: MutableList<ApplicationInfoGridItem>,
-        iconPackInfoPackageName: String,
     ) {
         eblanApplicationInfoRepository.upsertEblanApplicationInfo(
             eblanApplicationInfo = EblanApplicationInfo(
@@ -165,9 +163,6 @@ class AddPackageUseCase @Inject constructor(
             homeSettings = homeSettings,
             applicationInfoGridItems = applicationInfoGridItems,
             folderGridItemRepository = folderGridItemRepository,
-            fileManager = fileManager,
-            iconKeyGenerator = iconKeyGenerator,
-            iconPackInfoPackageName = iconPackInfoPackageName,
         )
     }
 

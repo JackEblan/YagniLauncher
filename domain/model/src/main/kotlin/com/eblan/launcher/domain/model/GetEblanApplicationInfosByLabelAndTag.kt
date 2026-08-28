@@ -18,7 +18,8 @@
 package com.eblan.launcher.domain.model
 
 data class GetEblanApplicationInfosByLabelAndTag(
-    val eblanApplicationInfoWithIconPackInfos: Map<EblanUserPageKey, List<EblanApplicationInfoWithIconPackInfo>>,
+    val eblanApplicationInfoWithIconPackInfos: Map<EblanUserPageKey, List<EblanApplicationInfo>>,
     val privateEblanUser: EblanUser?,
-    val privateEblanApplicationInfoWithIconPackInfos: List<EblanApplicationInfoWithIconPackInfo>,
+    val privateEblanApplicationInfoWithIconPackInfos: List<EblanApplicationInfo>,
+    val iconPackInfoFilePaths: Map<String, String?>,
 )

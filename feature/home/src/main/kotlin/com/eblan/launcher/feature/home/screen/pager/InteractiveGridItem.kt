@@ -116,6 +116,7 @@ internal fun InteractiveGridItem(
     leftPadding: Int,
     topOffset: Int,
     sharedElementKey: SharedElementKey,
+    gridItemsIconPackInfoFilePaths: Map<String, String?>,
     onOpenAppDrawer: () -> Unit,
     onUpsertFolderPopupEntry: (FolderPopupEntry) -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
@@ -207,6 +208,7 @@ internal fun InteractiveGridItem(
                 hasInteraction = hasInteraction,
                 isVisibleWhiteBox = isVisibleWhiteBox,
                 sourceBounds = sourceBounds,
+                gridItemsIconPackInfoFilePaths = gridItemsIconPackInfoFilePaths,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
                 onUpdateGridItemSource = onUpdateGridItemSource,
@@ -287,6 +289,7 @@ internal fun InteractiveGridItem(
                 isVisibleWhiteBox = isVisibleWhiteBox,
                 previewFolderGridItems = previewFolderGridItems,
                 hasShortcutHostPermission = hasShortcutHostPermission,
+                gridItemsIconPackInfoFilePaths = gridItemsIconPackInfoFilePaths,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
                 onUpsertFolderPopupEntry = onUpsertFolderPopupEntry,
@@ -346,6 +349,7 @@ private fun InteractiveApplicationInfoGridItem(
     hasInteraction: Boolean,
     isVisibleWhiteBox: Boolean,
     sourceBounds: Rect,
+    gridItemsIconPackInfoFilePaths: Map<String, String?>,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
         intOffset: IntOffset,
@@ -383,7 +387,7 @@ private fun InteractiveApplicationInfoGridItem(
 
     val maxLines = if (gridItemSettings.singleLineLabel) 1 else Int.MAX_VALUE
 
-    val icon = data.iconPackInfoFilePath ?: data.icon
+    val icon = gridItemsIconPackInfoFilePaths[gridItem.id] ?: data.icon
 
     val hasNotifications =
         statusBarNotifications[data.packageName] != null && (
@@ -907,6 +911,7 @@ private fun InteractiveFolderGridItem(
     isVisibleWhiteBox: Boolean,
     previewFolderGridItems: Map<String, PreviewFolder>,
     hasShortcutHostPermission: Boolean,
+    gridItemsIconPackInfoFilePaths: Map<String, String?>,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
         intOffset: IntOffset,
@@ -1111,6 +1116,7 @@ private fun InteractiveFolderGridItem(
                             folderGridItems = previewFolderGridItems[gridItem.id]?.folderGridItems,
                             isVisibleFolder = isVisibleFolder,
                             hasShortcutHostPermission = hasShortcutHostPermission,
+                            gridItemsIconPackInfoFilePaths = gridItemsIconPackInfoFilePaths,
                             onResetGrid = onResetGrid,
                         )
                     },
@@ -1331,6 +1337,7 @@ private fun PreviewFolderGridItem(
     folderGridItems: List<GridItem>?,
     isVisibleFolder: Boolean,
     hasShortcutHostPermission: Boolean,
+    gridItemsIconPackInfoFilePaths: Map<String, String?>,
     onResetGrid: () -> Unit,
 ) {
     val context = LocalContext.current
@@ -1400,7 +1407,7 @@ private fun PreviewFolderGridItem(
 
         when (val data = gridItem.data) {
             is GridItemData.ApplicationInfo -> {
-                val icon = data.iconPackInfoFilePath ?: data.icon
+                val icon = gridItemsIconPackInfoFilePaths[gridItem.id] ?: data.icon
 
                 AsyncImage(
                     model = Builder(context)

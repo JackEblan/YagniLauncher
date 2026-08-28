@@ -19,8 +19,6 @@ package com.eblan.launcher.domain.usecase.grid
 
 import com.eblan.launcher.domain.common.Dispatcher
 import com.eblan.launcher.domain.common.EblanDispatchers
-import com.eblan.launcher.domain.common.IconKeyGenerator
-import com.eblan.launcher.domain.framework.FileManager
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.PreviewFolder
 import com.eblan.launcher.domain.repository.FolderGridItemRepository
@@ -34,8 +32,6 @@ import javax.inject.Inject
 class GetPreviewFolderGridItemsUseCase @Inject constructor(
     private val folderGridItemRepository: FolderGridItemRepository,
     private val userDataRepository: UserDataRepository,
-    private val fileManager: FileManager,
-    private val iconKeyGenerator: IconKeyGenerator,
     @param:Dispatcher(EblanDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) {
     operator fun invoke(): Flow<Map<String, PreviewFolder>> = combine(
@@ -45,11 +41,7 @@ class GetPreviewFolderGridItemsUseCase @Inject constructor(
         folderGridItemWrappers.associate { folderGridItemWrapper ->
             val folderGridItems = (
                 folderGridItemWrapper.applicationInfoGridItems.map {
-                    it.asGridItem(
-                        fileManager = fileManager,
-                        iconKeyGenerator = iconKeyGenerator,
-                        iconPackInfoPackageName = userData.generalSettings.iconPackInfoPackageName,
-                    )
+                    it.asGridItem()
                 } + folderGridItemWrapper.shortcutInfoGridItems.map { it.asGridItem() } +
                     folderGridItemWrapper.shortcutConfigGridItems.map { it.asGridItem() } +
                     folderGridItemWrapper.folderGridItems.map { it.asGridItem() }

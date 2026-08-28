@@ -73,14 +73,14 @@ internal fun ImportIconPackInfoDialog(
                             fill = false,
                         ),
                     ) {
-                        items(packageManagerIconPackInfos) { packageManagerIconPackInfo ->
+                        items(packageManagerIconPackInfos) {
                             ListItem(
                                 headlineContent = {
-                                    Text(text = packageManagerIconPackInfo.label)
+                                    Text(text = it.label)
                                 },
                                 leadingContent = {
                                     AsyncImage(
-                                        model = packageManagerIconPackInfo.icon,
+                                        model = it.icon,
                                         contentDescription = null,
                                         modifier = Modifier.size(40.dp),
                                     )
@@ -88,9 +88,11 @@ internal fun ImportIconPackInfoDialog(
                                 modifier = Modifier
                                     .clickable {
                                         onUpdateIconPackInfo(
-                                            packageManagerIconPackInfo.packageName,
-                                            packageManagerIconPackInfo.label,
+                                            it.packageName,
+                                            it.label,
                                         )
+
+                                        onDismissRequest()
                                     }
                                     .fillMaxWidth(),
                             )

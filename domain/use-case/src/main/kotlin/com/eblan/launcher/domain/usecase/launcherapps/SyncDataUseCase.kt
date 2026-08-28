@@ -32,7 +32,6 @@ import com.eblan.launcher.domain.model.EblanActionType
 import com.eblan.launcher.domain.model.EblanApplicationInfo
 import com.eblan.launcher.domain.model.EblanShortcutConfig
 import com.eblan.launcher.domain.model.ExperimentalSettings
-import com.eblan.launcher.domain.model.GeneralSettings
 import com.eblan.launcher.domain.model.HomeSettings
 import com.eblan.launcher.domain.model.SyncEblanApplicationInfo
 import com.eblan.launcher.domain.repository.ApplicationInfoGridItemRepository
@@ -86,7 +85,6 @@ class SyncDataUseCase @Inject constructor(
                 updateEblanApplicationInfos(
                     experimentalSettings = userData.experimentalSettings,
                     homeSettings = userData.homeSettings,
-                    generalSettings = userData.generalSettings,
                 )
             }
 
@@ -114,7 +112,6 @@ class SyncDataUseCase @Inject constructor(
     private suspend fun updateEblanApplicationInfos(
         experimentalSettings: ExperimentalSettings,
         homeSettings: HomeSettings,
-        generalSettings: GeneralSettings,
     ) {
         val newEblanShortcutConfigs = mutableSetOf<EblanShortcutConfig>()
 
@@ -151,7 +148,6 @@ class SyncDataUseCase @Inject constructor(
         addNewApplicationsToHomeScreen(
             homeSettings = homeSettings,
             experimentalSettings = experimentalSettings,
-            generalSettings = generalSettings,
             newSyncEblanApplicationInfos = newSyncEblanApplicationInfos,
             oldSyncEblanApplicationInfos = oldSyncEblanApplicationInfos,
             applicationInfoGridItems = newApplicationInfoGridItems,
@@ -203,7 +199,6 @@ class SyncDataUseCase @Inject constructor(
     private suspend fun addNewApplicationsToHomeScreen(
         homeSettings: HomeSettings,
         experimentalSettings: ExperimentalSettings,
-        generalSettings: GeneralSettings,
         newSyncEblanApplicationInfos: List<SyncEblanApplicationInfo>,
         oldSyncEblanApplicationInfos: List<SyncEblanApplicationInfo>,
         applicationInfoGridItems: MutableList<ApplicationInfoGridItem>,
@@ -249,9 +244,6 @@ class SyncDataUseCase @Inject constructor(
                 homeSettings = homeSettings,
                 applicationInfoGridItems = applicationInfoGridItems,
                 folderGridItemRepository = folderGridItemRepository,
-                fileManager = fileManager,
-                iconKeyGenerator = iconKeyGenerator,
-                iconPackInfoPackageName = generalSettings.iconPackInfoPackageName,
             )
         }
     }

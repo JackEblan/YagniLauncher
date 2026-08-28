@@ -536,6 +536,7 @@ private fun Success(
                     isVisibleOverlay = isVisibleOverlay,
                     previewFolderGridItems = previewFolderGridItems,
                     statusBarNotifications = statusBarNotifications,
+                    gridItemsIconPackInfoFilePaths = homeData.iconPackInfoFilePaths,
                     onDeleteGridItem = onDeleteGridItem,
                     onResetGridAfterDeleteGridItem = onResetGridAfterDeleteGridItem,
                     onUpdateGridItemsAfterMove = onUpdateGridItemsAfterMove,
@@ -591,6 +592,7 @@ private fun Success(
                     textColor = textColor,
                     previewFolderGridItems = previewFolderGridItems,
                     statusBarNotifications = statusBarNotifications,
+                    gridItemsIconPackInfoFilePaths = homeData.iconPackInfoFilePaths,
                     onSaveEditPage = onSaveEditPage,
                     onUpdateScreen = onUpdateScreen,
                 )
@@ -605,6 +607,7 @@ private fun Success(
                     textColor = textColor,
                     previewFolderGridItems = previewFolderGridItems,
                     statusBarNotifications = statusBarNotifications,
+                    gridItemsIconPackInfoFilePaths = homeData.iconPackInfoFilePaths,
                     onSaveEditPage = onSaveEditPage,
                     onUpdateScreen = onUpdateScreen,
                 )

@@ -17,35 +17,20 @@
  */
 package com.eblan.launcher.domain.usecase.grid
 
-import com.eblan.launcher.domain.common.FakeIconKeyGenerator
-import com.eblan.launcher.domain.framework.FakeFileManager
 import com.eblan.launcher.domain.model.ApplicationInfoGridItem
 import com.eblan.launcher.domain.model.Associate
-import com.eblan.launcher.domain.model.ExperimentalSettings
-import com.eblan.launcher.domain.model.GeneralSettings
-import com.eblan.launcher.domain.model.GestureSettings
 import com.eblan.launcher.domain.model.GridItems
-import com.eblan.launcher.domain.model.Theme
-import com.eblan.launcher.domain.model.UserData
-import com.eblan.launcher.domain.model.getAppDrawerSettings
 import com.eblan.launcher.domain.model.getEblanAction
 import com.eblan.launcher.domain.model.getGridItemSettings
-import com.eblan.launcher.domain.model.getHomeSettings
 import com.eblan.launcher.domain.repository.FakeGridRepository
-import com.eblan.launcher.domain.repository.FakeUserDataRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.io.TempDir
-import java.nio.file.Path
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ResizeGridItemUseCaseTest {
-    @TempDir
-    lateinit var tempDirectory: Path
-
     private val dispatcher = StandardTestDispatcher()
 
     @Test
@@ -58,8 +43,9 @@ class ResizeGridItemUseCaseTest {
             ),
         )
 
-        val getGridItemsUseCase = getGridItemsUseCase(
+        val getGridItemsUseCase = GetGridItemsUseCase(
             gridRepository = gridRepository,
+            ioDispatcher = dispatcher,
         )
 
         val resizeGridItemUseCase = ResizeGridItemUseCase(
@@ -108,8 +94,9 @@ class ResizeGridItemUseCaseTest {
             ),
         )
 
-        val getGridItemsUseCase = getGridItemsUseCase(
+        val getGridItemsUseCase = GetGridItemsUseCase(
             gridRepository = gridRepository,
+            ioDispatcher = dispatcher,
         )
 
         val resizeGridItemUseCase = ResizeGridItemUseCase(
@@ -191,8 +178,9 @@ class ResizeGridItemUseCaseTest {
             ),
         )
 
-        val getGridItemsUseCase = getGridItemsUseCase(
+        val getGridItemsUseCase = GetGridItemsUseCase(
             gridRepository = gridRepository,
+            ioDispatcher = dispatcher,
         )
 
         val resizeGridItemUseCase = ResizeGridItemUseCase(
@@ -243,8 +231,9 @@ class ResizeGridItemUseCaseTest {
             ),
         )
 
-        val getGridItemsUseCase = getGridItemsUseCase(
+        val getGridItemsUseCase = GetGridItemsUseCase(
             gridRepository = gridRepository,
+            ioDispatcher = dispatcher,
         )
 
         val resizeGridItemUseCase = ResizeGridItemUseCase(
@@ -295,8 +284,9 @@ class ResizeGridItemUseCaseTest {
             ),
         )
 
-        val getGridItemsUseCase = getGridItemsUseCase(
+        val getGridItemsUseCase = GetGridItemsUseCase(
             gridRepository = gridRepository,
+            ioDispatcher = dispatcher,
         )
 
         val resizeGridItemUseCase = ResizeGridItemUseCase(
@@ -346,8 +336,9 @@ class ResizeGridItemUseCaseTest {
             ),
         )
 
-        val getGridItemsUseCase = getGridItemsUseCase(
+        val getGridItemsUseCase = GetGridItemsUseCase(
             gridRepository = gridRepository,
+            ioDispatcher = dispatcher,
         )
 
         val resizeGridItemUseCase = ResizeGridItemUseCase(
@@ -416,40 +407,5 @@ class ResizeGridItemUseCaseTest {
         swipeDown = getEblanAction(),
         index = 0,
         folderId = folderId,
-    )
-
-    private fun getUserData() = UserData(
-        homeSettings = getHomeSettings(),
-        appDrawerSettings = getAppDrawerSettings(),
-        generalSettings = GeneralSettings(
-            theme = Theme.System,
-            dynamicTheme = false,
-            iconPackInfoPackageName = "",
-        ),
-        gestureSettings = GestureSettings(
-            doubleTap = getEblanAction(),
-            swipeUp = getEblanAction(),
-            swipeDown = getEblanAction(),
-        ),
-        experimentalSettings = ExperimentalSettings(
-            syncData = false,
-            firstLaunch = false,
-            lockMovement = false,
-        ),
-    )
-
-    private fun getGridItemsUseCase(
-        gridRepository: FakeGridRepository,
-        iconKeyGenerator: FakeIconKeyGenerator = FakeIconKeyGenerator(),
-    ): GetGridItemsUseCase = GetGridItemsUseCase(
-        userDataRepository = FakeUserDataRepository(
-            initialUserData = getUserData(),
-        ),
-        fileManager = FakeFileManager(
-            rootDirectory = tempDirectory.toFile(),
-        ),
-        iconKeyGenerator = iconKeyGenerator,
-        gridRepository = gridRepository,
-        ioDispatcher = dispatcher,
     )
 }

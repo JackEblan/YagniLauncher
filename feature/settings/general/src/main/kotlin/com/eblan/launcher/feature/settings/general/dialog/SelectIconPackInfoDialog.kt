@@ -106,6 +106,8 @@ internal fun SelectIconPackInfoDialog(
                                     onUpdateIconPackInfoPackageName(
                                         eblanIconPackInfo.packageName,
                                     )
+
+                                    onDismissRequest()
                                 }
                                 .fillMaxWidth(),
                         )
@@ -125,7 +127,11 @@ internal fun SelectIconPackInfoDialog(
             }
 
             TextButton(
-                onClick = onReset,
+                onClick = {
+                    onReset()
+
+                    onDismissRequest()
+                },
             ) {
                 Text(text = stringResource(R.string.reset))
             }

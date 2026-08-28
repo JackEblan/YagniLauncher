@@ -597,13 +597,13 @@ private fun EblanApplicationInfos(
                 EblanUserType.Personal -> {
                     items(
                         items = getEblanApplicationInfosByLabelAndTag.eblanApplicationInfoWithIconPackInfos[eblanUserPageKey].orEmpty(),
-                        key = { it.eblanApplicationInfo.serialNumber to it.eblanApplicationInfo.componentName },
+                        key = { it.serialNumber to it.componentName },
                     ) {
                         EblanApplicationInfoGridItem(
                             sharedTransitionScope = sharedTransitionScope,
                             appDrawerSettings = appDrawerSettings,
                             drag = drag,
-                            eblanApplicationInfoWithIconPackInfo = it,
+                            eblanApplicationInfo = it,
                             paddingValues = paddingValues,
                             isVisibleOverlay = isVisibleOverlay,
                             appDrawerType = appDrawerSettings.appDrawerType,
@@ -611,6 +611,7 @@ private fun EblanApplicationInfos(
                             isScrollInProgress = lazyGridState.isScrollInProgress,
                             systemTextColor = systemTextColor,
                             systemCustomTextColor = systemCustomTextColor,
+                            iconPackInfoFilePaths = getEblanApplicationInfosByLabelAndTag.iconPackInfoFilePaths,
                             onDismiss = onDismiss,
                             onUpdateGridItemSource = onUpdateGridItemSource,
                             onUpdateImageBitmap = onUpdateImageBitmap,
@@ -628,13 +629,14 @@ private fun EblanApplicationInfos(
                         appDrawerSettings = appDrawerSettings,
                         isQuietModeEnabled = privateIsQuiteModeEnabled,
                         paddingValues = paddingValues,
-                        privateEblanApplicationInfoWithIconPackInfos = getEblanApplicationInfosByLabelAndTag.privateEblanApplicationInfoWithIconPackInfos,
+                        privateEblanApplicationInfos = getEblanApplicationInfosByLabelAndTag.privateEblanApplicationInfoWithIconPackInfos,
                         privateEblanUser = getEblanApplicationInfosByLabelAndTag.privateEblanUser,
                         isVisibleOverlay = isVisibleOverlay,
                         backgroundColor = appDrawerSettings.backgroundColor,
                         customBackgroundColor = appDrawerSettings.customBackgroundColor,
                         systemCustomTextColor = systemCustomTextColor,
                         systemTextColor = systemTextColor,
+                        iconPackInfoFilePaths = getEblanApplicationInfosByLabelAndTag.iconPackInfoFilePaths,
                         onUpdateOverlayBounds = onUpdateOverlayBounds,
                         onUpdatePopupMenu = onUpdatePrivatePopupMenu,
                         onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
@@ -645,15 +647,15 @@ private fun EblanApplicationInfos(
                     items(
                         items = getEblanApplicationInfosByLabelAndTag.eblanApplicationInfoWithIconPackInfos[eblanUserPageKey].orEmpty(),
                         key = {
-                            it.eblanApplicationInfo.serialNumber to
-                                it.eblanApplicationInfo.componentName
+                            it.serialNumber to
+                                it.componentName
                         },
                     ) {
                         EblanApplicationInfoGridItem(
                             sharedTransitionScope = sharedTransitionScope,
                             appDrawerSettings = appDrawerSettings,
                             drag = drag,
-                            eblanApplicationInfoWithIconPackInfo = it,
+                            eblanApplicationInfo = it,
                             paddingValues = paddingValues,
                             isVisibleOverlay = isVisibleOverlay,
                             appDrawerType = appDrawerSettings.appDrawerType,
@@ -661,6 +663,7 @@ private fun EblanApplicationInfos(
                             isSwiping = swipeY > 0f,
                             systemTextColor = systemTextColor,
                             systemCustomTextColor = systemCustomTextColor,
+                            iconPackInfoFilePaths = getEblanApplicationInfosByLabelAndTag.iconPackInfoFilePaths,
                             onDismiss = onDismiss,
                             onUpdateGridItemSource = onUpdateGridItemSource,
                             onUpdateImageBitmap = onUpdateImageBitmap,

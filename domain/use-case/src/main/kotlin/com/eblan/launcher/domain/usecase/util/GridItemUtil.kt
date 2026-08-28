@@ -45,9 +45,6 @@ internal suspend fun deleteGridItemData(
         is GridItemData.Folder -> {
             val folderGridItems = getFolderGridItemsById(
                 folderGridItemRepository = folderGridItemRepository,
-                fileManager = fileManager,
-                iconKeyGenerator = iconKeyGenerator,
-                iconPackInfoPackageName = iconPackInfoPackageName,
                 folderId = gridItem.id,
             )
 
@@ -70,9 +67,6 @@ internal suspend fun deleteGridItemData(
 
 suspend fun getFolderGridItemsById(
     folderGridItemRepository: FolderGridItemRepository,
-    fileManager: FileManager,
-    iconKeyGenerator: IconKeyGenerator,
-    iconPackInfoPackageName: String,
     folderId: String,
 ): List<GridItem> {
     val folderGridItemWrapper = folderGridItemRepository.getFolderGridItemWrapper(
@@ -87,11 +81,7 @@ suspend fun getFolderGridItemsById(
 
     return (
         folderGridItemWrapper.applicationInfoGridItems.map {
-            it.asGridItem(
-                fileManager = fileManager,
-                iconKeyGenerator = iconKeyGenerator,
-                iconPackInfoPackageName = iconPackInfoPackageName,
-            )
+            it.asGridItem()
         } + folderGridItemWrapper.shortcutInfoGridItems.map {
             it.asGridItem()
         } + folderGridItemWrapper.shortcutConfigGridItems.map {

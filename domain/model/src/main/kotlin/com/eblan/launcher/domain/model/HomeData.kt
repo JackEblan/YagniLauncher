@@ -24,4 +24,5 @@ data class HomeData(
     val dockGridItemsByPage: Map<Int, List<GridItem>>,
     val hasShortcutHostPermission: Boolean,
     val hasSystemFeatureAppWidgets: Boolean,
+    val iconPackInfoFilePaths: Map<String, String?>,
 )

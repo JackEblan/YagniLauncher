@@ -62,20 +62,20 @@ internal class DefaultImageSerializer @Inject constructor(
     ) {
         withContext(ioDispatcher) {
             drawable.toBitmap()?.let { bitmap ->
-                var isCreateNew = true
+                val createNew = if (file.exists()) {
+                    val oldBitmap = BitmapFactory.decodeFile(file.path)
 
-                if (file.exists()) {
-                    val old = BitmapFactory.decodeFile(file.path)
-
-                    isCreateNew = old == null || !bitmap.sameAs(old)
+                    oldBitmap == null || !bitmap.sameAs(oldBitmap)
+                } else {
+                    true
                 }
 
-                if (isCreateNew) {
-                    FileOutputStream(file).use { out ->
+                if (createNew) {
+                    FileOutputStream(file).use {
                         bitmap.compress(
                             Bitmap.CompressFormat.PNG,
                             100,
-                            out,
+                            it,
                         )
                     }
                 }
