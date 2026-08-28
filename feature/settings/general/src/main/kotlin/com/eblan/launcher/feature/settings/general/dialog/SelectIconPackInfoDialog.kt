@@ -125,7 +125,11 @@ internal fun SelectIconPackInfoDialog(
             }
 
             TextButton(
-                onClick = onReset,
+                onClick = {
+                    onReset()
+
+                    onDismissRequest()
+                },
             ) {
                 Text(text = stringResource(R.string.reset))
             }
