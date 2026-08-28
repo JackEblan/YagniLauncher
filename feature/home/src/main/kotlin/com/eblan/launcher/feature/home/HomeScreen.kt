@@ -130,6 +130,8 @@ internal fun HomeRoute(
 
     val previewFolderGridItems by viewModel.previewFolderGridItems.collectAsStateWithLifecycle()
 
+    val isSyncingData by viewModel.isSyncingData.collectAsStateWithLifecycle()
+
     HomeScreen(
         modifier = modifier,
         configureResultCode = configureResultCode,
@@ -150,6 +152,7 @@ internal fun HomeRoute(
         isVisibleOverlay = isVisibleOverlay,
         textColor = textColor,
         previewFolderGridItems = previewFolderGridItems,
+        isSyncingData = isSyncingData,
         onResetGrid = viewModel::resetGrid,
         onDeleteGridItem = viewModel::deleteGridItem,
         onResetGridAfterDeleteGridItem = viewModel::resetGridAfterDeleteGridItem,
@@ -215,6 +218,7 @@ internal fun HomeScreen(
     isVisibleOverlay: Boolean,
     textColor: TextColor,
     previewFolderGridItems: Map<String, PreviewFolder>,
+    isSyncingData: Boolean,
     onResetGrid: () -> Unit,
     onDeleteGridItem: (GridItem) -> Unit,
     onResetGridAfterDeleteGridItem: (GridItem) -> Unit,
@@ -339,6 +343,7 @@ internal fun HomeScreen(
                 isVisibleOverlay = isVisibleOverlay,
                 textColor = textColor,
                 previewFolderGridItems = previewFolderGridItems,
+                isSyncingData = isSyncingData,
                 onResetGrid = onResetGrid,
                 onDeleteGridItem = onDeleteGridItem,
                 onResetGridAfterDeleteGridItem = onResetGridAfterDeleteGridItem,
@@ -409,6 +414,7 @@ private fun Success(
     isVisibleOverlay: Boolean,
     textColor: TextColor,
     previewFolderGridItems: Map<String, PreviewFolder>,
+    isSyncingData: Boolean,
     onResetGrid: () -> Unit,
     onDeleteGridItem: (GridItem) -> Unit,
     onResetGridAfterDeleteGridItem: (GridItem) -> Unit,
@@ -536,6 +542,7 @@ private fun Success(
                     isVisibleOverlay = isVisibleOverlay,
                     previewFolderGridItems = previewFolderGridItems,
                     statusBarNotifications = statusBarNotifications,
+                    isSyncingData = isSyncingData,
                     onDeleteGridItem = onDeleteGridItem,
                     onResetGridAfterDeleteGridItem = onResetGridAfterDeleteGridItem,
                     onUpdateGridItemsAfterMove = onUpdateGridItemsAfterMove,

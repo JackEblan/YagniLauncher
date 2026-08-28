@@ -44,6 +44,7 @@ import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -116,6 +117,7 @@ internal fun VerticalApplicationScreen(
     swipeY: Float,
     isVisibleOverlay: Boolean,
     systemTextColor: TextColor,
+    isSyncingData: Boolean,
     systemCustomTextColor: Int,
     onDismiss: () -> Unit,
     onDragEnd: () -> Unit,
@@ -216,6 +218,10 @@ internal fun VerticalApplicationScreen(
                 isRearrangeEblanApplicationInfo = it
             },
         )
+
+        if (isSyncingData) {
+            LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+        }
 
         if (eblanApplicationInfoTags.isNotEmpty()) {
             LazyRow(modifier = Modifier.fillMaxWidth()) {

@@ -36,6 +36,7 @@ import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -104,6 +105,7 @@ internal fun HorizontalApplicationScreen(
     isVisibleOverlay: Boolean,
     systemTextColor: TextColor,
     systemCustomTextColor: Int,
+    isSyncingData: Boolean,
     onDismiss: () -> Unit,
     onDragEnd: () -> Unit,
     onEditApplicationInfo: (
@@ -185,6 +187,10 @@ internal fun HorizontalApplicationScreen(
             systemTextColor = systemTextColor,
             systemCustomTextColor = systemCustomTextColor,
         )
+
+        if (isSyncingData) {
+            LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+        }
 
         if (eblanApplicationInfoTags.isNotEmpty()) {
             LazyRow(modifier = Modifier.fillMaxWidth()) {

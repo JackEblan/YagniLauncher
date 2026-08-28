@@ -237,6 +237,10 @@ internal class HomeViewModel @Inject constructor(
         initialValue = emptyMap(),
     )
 
+    private val _isSyncingData = MutableStateFlow(false)
+
+    val isSyncingData = _isSyncingData.asStateFlow()
+
     fun moveGridItem(
         movingGridItem: GridItem,
         x: Int,
@@ -498,7 +502,15 @@ internal class HomeViewModel @Inject constructor(
 
     fun startSyncData() {
         syncDataJob = viewModelScope.launch {
+            _isSyncingData.update {
+                true
+            }
+
             syncDataUseCase()
+
+            _isSyncingData.update {
+                false
+            }
         }
     }
 
@@ -514,6 +526,10 @@ internal class HomeViewModel @Inject constructor(
         packageAddedJob = null
         packageChangedJob = null
         shortcutsChangedJob = null
+
+        _isSyncingData.update {
+            false
+        }
     }
 
     fun updateAppDrawerSettings(appDrawerSettings: AppDrawerSettings) {
