@@ -17,9 +17,12 @@
  */
 package com.eblan.launcher.feature.home.screen.application
 
+import android.R.attr.scaleX
+import android.R.attr.scaleY
 import android.graphics.Rect
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Column
@@ -44,6 +47,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.rememberGraphicsLayer
@@ -181,6 +185,14 @@ internal fun EblanApplicationInfoGridItem(
         parent = SharedElementKey.Parent.SwipeY,
     )
 
+    val scale = remember { Animatable(1f) }
+
+    LaunchedEffect(key1 = isVisibleOverlay) {
+        if (isVisibleOverlay) {
+            scale.snapTo(targetValue = 1f)
+        }
+    }
+
     LaunchedEffect(
         key1 = drag,
         key2 = isLongPress,
@@ -247,6 +259,15 @@ internal fun EblanApplicationInfoGridItem(
                     } else {
                         null
                     },
+                    onPress = {
+                        scale.animateTo(targetValue = 0.85f)
+
+                        try {
+                            awaitRelease()
+                        } finally {
+                            scale.animateTo(targetValue = 1f)
+                        }
+                    },
                 )
             }
             .run {
@@ -272,15 +293,9 @@ internal fun EblanApplicationInfoGridItem(
                 .crossfade(false)
                 .build(),
             contentDescription = null,
-            modifier = Modifier.size(appDrawerSettings.gridItemSettings.iconSize.dp)
-                .alpha(alpha)
-                .drawWithContent {
-                    graphicsLayer.record {
-                        this@drawWithContent.drawContent()
-                    }
-
-                    drawLayer(graphicsLayer)
-                }.onGloballyPositioned { layoutCoordinates ->
+            modifier = Modifier
+                .size(appDrawerSettings.gridItemSettings.iconSize.dp)
+                .onGloballyPositioned { layoutCoordinates ->
                     intOffset = layoutCoordinates.positionInRoot().round()
 
                     intSize = layoutCoordinates.size
@@ -302,7 +317,19 @@ internal fun EblanApplicationInfoGridItem(
                     } else {
                         this
                     }
-                },
+                }
+                .graphicsLayer {
+                    scaleX = scale.value
+                    scaleY = scale.value
+                }
+                .drawWithContent {
+                    graphicsLayer.record {
+                        this@drawWithContent.drawContent()
+                    }
+
+                    drawLayer(graphicsLayer)
+                }
+                .alpha(alpha),
         )
 
         if (appDrawerSettings.gridItemSettings.showLabel) {
@@ -445,7 +472,10 @@ internal suspend fun handleOnLongPressEblanApplicationInfoItem(
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
     onUpdateIsLongPress: (Boolean) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
-    onUpdateOverlayBounds: (IntOffset, IntSize) -> Unit,
+    onUpdateOverlayBounds: (
+        intOffset: IntOffset,
+        intSize: IntSize,
+    ) -> Unit,
     onUpdatePopupMenu: (Boolean) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
 ) {

@@ -249,7 +249,10 @@ private suspend fun handleOnLongPress(
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
     graphicsLayer: GraphicsLayer,
-    onUpdateOverlayBounds: (IntOffset, IntSize) -> Unit,
+    onUpdateOverlayBounds: (
+        intOffset: IntOffset,
+        intSize: IntSize,
+    ) -> Unit,
     intOffset: IntOffset,
     intSize: IntSize,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,

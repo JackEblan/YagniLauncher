@@ -22,6 +22,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -42,6 +43,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -50,6 +52,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -297,6 +300,14 @@ internal fun PrivateSpaceEblanApplicationInfoItem(
         appDrawerSettings.gridItemSettings.iconSize.dp.roundToPx()
     }
 
+    val scale = remember { Animatable(1f) }
+
+    LaunchedEffect(key1 = isVisibleOverlay) {
+        if (isVisibleOverlay) {
+            scale.snapTo(targetValue = 1f)
+        }
+    }
+
     Column(
         modifier = modifier
             .pointerInput(key1 = isVisibleOverlay) {
@@ -335,6 +346,15 @@ internal fun PrivateSpaceEblanApplicationInfoItem(
                     } else {
                         null
                     },
+                    onPress = {
+                        scale.animateTo(targetValue = 0.85f)
+
+                        try {
+                            awaitRelease()
+                        } finally {
+                            scale.animateTo(targetValue = 1f)
+                        }
+                    },
                 )
             }
             .height(appDrawerRowsHeight)
@@ -355,12 +375,16 @@ internal fun PrivateSpaceEblanApplicationInfoItem(
                 .build(),
             contentDescription = null,
             modifier = Modifier
+                .size(appDrawerSettings.gridItemSettings.iconSize.dp)
                 .onGloballyPositioned { layoutCoordinates ->
                     intOffset = layoutCoordinates.positionInRoot().round()
 
                     intSize = layoutCoordinates.size
                 }
-                .size(appDrawerSettings.gridItemSettings.iconSize.dp),
+                .graphicsLayer {
+                    scaleX = scale.value
+                    scaleY = scale.value
+                },
             placeholder = ColorPainter(Color.Transparent),
             error = ColorPainter(Color.Transparent),
         )
@@ -382,7 +406,10 @@ internal fun PrivateSpaceEblanApplicationInfoItem(
 internal fun handleOnLongPressPrivateSpaceEblanApplicationInfoItem(
     onUpdateEblanApplicationInfo: (EblanApplicationInfo) -> Unit,
     eblanApplicationInfo: EblanApplicationInfo,
-    onUpdateOverlayBounds: (IntOffset, IntSize) -> Unit,
+    onUpdateOverlayBounds: (
+        intOffset: IntOffset,
+        intSize: IntSize,
+    ) -> Unit,
     intOffset: IntOffset,
     intSize: IntSize,
     onUpdatePopupMenu: (Boolean) -> Unit,

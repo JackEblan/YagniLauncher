@@ -291,7 +291,10 @@ private fun EblanShortcutConfigsPage(
     paddingValues: PaddingValues,
     swipeY: Float,
     onDragEnd: () -> Unit,
-    onUpdateOverlayBounds: (IntOffset, IntSize) -> Unit,
+    onUpdateOverlayBounds: (
+        intOffset: IntOffset,
+        intSize: IntSize,
+    ) -> Unit,
     onVerticalDrag: (Float) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
@@ -538,7 +541,10 @@ private suspend fun handleOnLongPress(
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
     graphicsLayer: GraphicsLayer,
-    onUpdateOverlayBounds: (IntOffset, IntSize) -> Unit,
+    onUpdateOverlayBounds: (
+        intOffset: IntOffset,
+        intSize: IntSize,
+    ) -> Unit,
     intOffset: IntOffset,
     intSize: IntSize,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,

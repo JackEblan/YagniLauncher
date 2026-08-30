@@ -22,6 +22,7 @@ import android.graphics.Rect
 import android.os.Build
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
@@ -49,6 +50,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
@@ -168,6 +170,14 @@ internal fun InteractiveGridItem(
 
     val isVisibleWhiteBox = hasInteraction && drag == Drag.Dragging
 
+    val sourceBounds = getSourceBounds(
+        gridItem = gridItem,
+        cellWidth = cellWidth,
+        cellHeight = cellHeight,
+        leftPadding = leftPadding,
+        topOffset = topOffset,
+    )
+
     LaunchedEffect(
         key1 = drag,
         key2 = hasInteraction,
@@ -182,14 +192,6 @@ internal fun InteractiveGridItem(
             onUpdateIsCloseGridItemPopup(true)
         }
     }
-
-    val sourceBounds = getSourceBounds(
-        gridItem = gridItem,
-        cellWidth = cellWidth,
-        cellHeight = cellHeight,
-        leftPadding = leftPadding,
-        topOffset = topOffset,
-    )
 
     when (val data = gridItem.data) {
         is GridItemData.ApplicationInfo -> {
@@ -399,6 +401,14 @@ private fun InteractiveApplicationInfoGridItem(
 
     val isNotificationAccessGranted by rememberIsNotificationAccessGranted()
 
+    val scale = remember { Animatable(1f) }
+
+    LaunchedEffect(key1 = isVisibleOverlay) {
+        if (isVisibleOverlay) {
+            scale.snapTo(targetValue = 1f)
+        }
+    }
+
     Column(
         modifier = modifier
             .pointerInput(key1 = isVisibleOverlay) {
@@ -447,6 +457,15 @@ private fun InteractiveApplicationInfoGridItem(
                         }
                     } else {
                         null
+                    },
+                    onPress = {
+                        scale.animateTo(targetValue = 0.85f)
+
+                        try {
+                            awaitRelease()
+                        } finally {
+                            scale.animateTo(targetValue = 1f)
+                        }
                     },
                 )
             }
@@ -499,6 +518,10 @@ private fun InteractiveApplicationInfoGridItem(
                         } else {
                             this
                         }
+                    }
+                    .graphicsLayer {
+                        scaleX = scale.value
+                        scaleY = scale.value
                     }
                     .drawWithContent {
                         graphicsLayer.record {
@@ -745,6 +768,14 @@ private fun InteractiveShortcutInfoGridItem(
 
     val alpha = if (hasInteraction) 0f else defaultAlpha
 
+    val scale = remember { Animatable(1f) }
+
+    LaunchedEffect(key1 = isVisibleOverlay) {
+        if (isVisibleOverlay) {
+            scale.snapTo(targetValue = 1f)
+        }
+    }
+
     Column(
         modifier = modifier
             .pointerInput(key1 = isVisibleOverlay) {
@@ -800,6 +831,15 @@ private fun InteractiveShortcutInfoGridItem(
                     } else {
                         null
                     },
+                    onPress = {
+                        scale.animateTo(targetValue = 0.85f)
+
+                        try {
+                            awaitRelease()
+                        } finally {
+                            scale.animateTo(targetValue = 1f)
+                        }
+                    },
                 )
             }
             .swipeGestures(
@@ -849,6 +889,10 @@ private fun InteractiveShortcutInfoGridItem(
                         } else {
                             this
                         }
+                    }
+                    .graphicsLayer {
+                        scaleX = scale.value
+                        scaleY = scale.value
                     }
                     .drawWithContent {
                         graphicsLayer.apply {
@@ -964,6 +1008,14 @@ private fun InteractiveFolderGridItem(
     val currentFolderGridItems =
         rememberUpdatedState(previewFolderGridItems[gridItem.id]?.folderGridItems)
 
+    val scale = remember { Animatable(1f) }
+
+    LaunchedEffect(key1 = isVisibleOverlay) {
+        if (isVisibleOverlay) {
+            scale.snapTo(targetValue = 1f)
+        }
+    }
+
     LaunchedEffect(key1 = moveGridItemResult) {
         handleConflictingGridItem(
             drag = currentDrag,
@@ -1037,6 +1089,15 @@ private fun InteractiveFolderGridItem(
                     } else {
                         null
                     },
+                    onPress = {
+                        scale.animateTo(targetValue = 0.85f)
+
+                        try {
+                            awaitRelease()
+                        } finally {
+                            scale.animateTo(targetValue = 1f)
+                        }
+                    },
                 )
             }
             .swipeGestures(
@@ -1077,6 +1138,10 @@ private fun InteractiveFolderGridItem(
                 } else {
                     this
                 }
+            }
+            .graphicsLayer {
+                scaleX = scale.value
+                scaleY = scale.value
             }
             .drawWithContent {
                 graphicsLayer.record {
@@ -1204,6 +1269,14 @@ private fun InteractiveShortcutConfigGridItem(
 
     val alpha = if (hasInteraction) 0f else 1f
 
+    val scale = remember { Animatable(1f) }
+
+    LaunchedEffect(key1 = isVisibleOverlay) {
+        if (isVisibleOverlay) {
+            scale.snapTo(targetValue = 1f)
+        }
+    }
+
     Column(
         modifier = modifier
             .pointerInput(key1 = isVisibleOverlay) {
@@ -1250,6 +1323,15 @@ private fun InteractiveShortcutConfigGridItem(
                         }
                     } else {
                         null
+                    },
+                    onPress = {
+                        scale.animateTo(targetValue = 0.85f)
+
+                        try {
+                            awaitRelease()
+                        } finally {
+                            scale.animateTo(targetValue = 1f)
+                        }
                     },
                 )
             }
@@ -1298,6 +1380,10 @@ private fun InteractiveShortcutConfigGridItem(
                     } else {
                         this
                     }
+                }
+                .graphicsLayer {
+                    scaleX = scale.value
+                    scaleY = scale.value
                 }
                 .drawWithContent {
                     graphicsLayer.record {

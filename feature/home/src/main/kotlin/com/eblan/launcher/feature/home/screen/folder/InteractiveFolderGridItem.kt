@@ -17,11 +17,14 @@
  */
 package com.eblan.launcher.feature.home.screen.folder
 
+import android.R.attr.scaleX
+import android.R.attr.scaleY
 import android.content.Intent.parseUri
 import android.graphics.Rect
 import android.os.Build
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
@@ -49,6 +52,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
@@ -358,6 +362,14 @@ private fun InteractiveFolderApplicationInfoGridItem(
 
     val isNotificationAccessGranted by rememberIsNotificationAccessGranted()
 
+    val scale = remember { Animatable(1f) }
+
+    LaunchedEffect(key1 = isVisibleOverlay) {
+        if (isVisibleOverlay) {
+            scale.snapTo(targetValue = 1f)
+        }
+    }
+
     Column(
         modifier = modifier
             .pointerInput(
@@ -409,6 +421,15 @@ private fun InteractiveFolderApplicationInfoGridItem(
                     } else {
                         null
                     },
+                    onPress = {
+                        scale.animateTo(targetValue = 0.85f)
+
+                        try {
+                            awaitRelease()
+                        } finally {
+                            scale.animateTo(targetValue = 1f)
+                        }
+                    },
                 )
             }
             .swipeGestures(
@@ -455,6 +476,10 @@ private fun InteractiveFolderApplicationInfoGridItem(
                         } else {
                             this
                         }
+                    }
+                    .graphicsLayer {
+                        scaleX = scale.value
+                        scaleY = scale.value
                     }
                     .drawWithContent {
                         graphicsLayer.record {
@@ -554,6 +579,14 @@ private fun InteractiveFolderShortcutInfoGridItem(
 
     val alpha = if (hasInteraction) 0f else defaultAlpha
 
+    val scale = remember { Animatable(1f) }
+
+    LaunchedEffect(key1 = isVisibleOverlay) {
+        if (isVisibleOverlay) {
+            scale.snapTo(targetValue = 1f)
+        }
+    }
+
     Column(
         modifier = modifier
             .pointerInput(
@@ -613,6 +646,15 @@ private fun InteractiveFolderShortcutInfoGridItem(
                     } else {
                         null
                     },
+                    onPress = {
+                        scale.animateTo(targetValue = 0.85f)
+
+                        try {
+                            awaitRelease()
+                        } finally {
+                            scale.animateTo(targetValue = 1f)
+                        }
+                    },
                 )
             }
             .swipeGestures(
@@ -656,6 +698,10 @@ private fun InteractiveFolderShortcutInfoGridItem(
                         } else {
                             this
                         }
+                    }
+                    .graphicsLayer {
+                        scaleX = scale.value
+                        scaleY = scale.value
                     }
                     .drawWithContent {
                         graphicsLayer.apply {
@@ -762,6 +808,14 @@ private fun InteractiveFolderShortcutConfigGridItem(
 
     val alpha = if (hasInteraction) 0f else 1f
 
+    val scale = remember { Animatable(1f) }
+
+    LaunchedEffect(key1 = isVisibleOverlay) {
+        if (isVisibleOverlay) {
+            scale.snapTo(targetValue = 1f)
+        }
+    }
+
     Column(
         modifier = modifier
             .pointerInput(key1 = isVisibleOverlay && !isInProgress) {
@@ -808,6 +862,15 @@ private fun InteractiveFolderShortcutConfigGridItem(
                     } else {
                         null
                     },
+                    onPress = {
+                        scale.animateTo(targetValue = 0.85f)
+
+                        try {
+                            awaitRelease()
+                        } finally {
+                            scale.animateTo(targetValue = 1f)
+                        }
+                    },
                 )
             }
             .swipeGestures(
@@ -849,6 +912,10 @@ private fun InteractiveFolderShortcutConfigGridItem(
                     } else {
                         this
                     }
+                }
+                .graphicsLayer {
+                    scaleX = scale.value
+                    scaleY = scale.value
                 }
                 .drawWithContent {
                     graphicsLayer.record {
@@ -934,6 +1001,14 @@ private fun InteractiveNestedFolderGridItem(
 
     val alpha = if (hasInteraction) 0f else 1f
 
+    val scale = remember { Animatable(1f) }
+
+    LaunchedEffect(key1 = isVisibleOverlay) {
+        if (isVisibleOverlay) {
+            scale.snapTo(targetValue = 1f)
+        }
+    }
+
     LaunchedEffect(
         key1 = drag,
         key2 = hasInteraction,
@@ -1002,6 +1077,15 @@ private fun InteractiveNestedFolderGridItem(
                     } else {
                         null
                     },
+                    onPress = {
+                        scale.animateTo(targetValue = 0.85f)
+
+                        try {
+                            awaitRelease()
+                        } finally {
+                            scale.animateTo(targetValue = 1f)
+                        }
+                    },
                 )
             }
             .swipeGestures(
@@ -1040,6 +1124,10 @@ private fun InteractiveNestedFolderGridItem(
                     } else {
                         this
                     }
+                }
+                .graphicsLayer {
+                    scaleX = scale.value
+                    scaleY = scale.value
                 }
                 .drawWithContent {
                     graphicsLayer.record {
