@@ -185,4 +185,26 @@ private fun buildExperimentalSettingsItems(
             },
         ),
     )
+
+    add(
+        SettingsItem.Switch(
+            checked = experimentalSettings.animations,
+            title = stringResource(R.string.animations),
+            subtitle = stringResource(R.string.enable_or_disable_animations),
+            onClick = {
+                onUpdateExperimentalSettings(
+                    experimentalSettings.copy(
+                        animations = !experimentalSettings.animations,
+                    ),
+                )
+            },
+            onCheckedChange = {
+                onUpdateExperimentalSettings(
+                    experimentalSettings.copy(
+                        animations = it,
+                    ),
+                )
+            },
+        ),
+    )
 }

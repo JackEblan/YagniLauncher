@@ -404,10 +404,10 @@ private fun EblanAppWidgetProviderInfoItem(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(100.dp)
-                .onGloballyPositioned { layoutCoordinates ->
-                    intOffset = layoutCoordinates.positionInRoot().round()
+                .onGloballyPositioned {
+                    intOffset = it.positionInRoot().round()
 
-                    intSize = layoutCoordinates.size
+                    intSize = it.size
                 }
                 .graphicsLayer {
                     scaleX = scale.value

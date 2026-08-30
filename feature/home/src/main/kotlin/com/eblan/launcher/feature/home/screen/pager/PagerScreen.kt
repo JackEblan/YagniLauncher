@@ -788,7 +788,7 @@ internal fun PagerScreen(
                     columns = homeSettings.columns,
                     gridItems = gridItemsByPage[page],
                     rows = homeSettings.rows,
-                    animate = isVisibleOverlay || isResizing,
+                    animate = (isVisibleOverlay || isResizing) && experimentalSettings.animations,
                     content = {
                         InteractiveGridItem(
                             sharedTransitionScope = this@SharedTransitionLayout,
@@ -815,6 +815,7 @@ internal fun PagerScreen(
                                 parent = SharedElementKey.Parent.Grid,
                             ),
                             iconPackInfoFilePaths = iconPackInfoFilePaths,
+                            animations = experimentalSettings.animations,
                             onOpenAppDrawer = pagerScreenState::openApplicationScreen,
                             onUpsertFolderPopupEntry = onUpsertFolderPopupEntry,
                             onUpdateGridItemSource = onUpdateGridItemSource,
@@ -895,7 +896,7 @@ internal fun PagerScreen(
                         columns = homeSettings.dockColumns,
                         gridItems = dockGridItemsByPage[page],
                         rows = homeSettings.dockRows,
-                        animate = isVisibleOverlay || isResizing,
+                        animate = (isVisibleOverlay || isResizing) && experimentalSettings.animations,
                         content = {
                             InteractiveGridItem(
                                 sharedTransitionScope = this@SharedTransitionLayout,
@@ -922,6 +923,7 @@ internal fun PagerScreen(
                                     parent = SharedElementKey.Parent.Dock,
                                 ),
                                 iconPackInfoFilePaths = iconPackInfoFilePaths,
+                                animations = experimentalSettings.animations,
                                 onOpenAppDrawer = pagerScreenState::openApplicationScreen,
                                 onUpsertFolderPopupEntry = onUpsertFolderPopupEntry,
                                 onUpdateGridItemSource = onUpdateGridItemSource,
@@ -1010,6 +1012,7 @@ internal fun PagerScreen(
                     showFolderGridItemPopup = pagerScreenState.showFolderGridItemPopup,
                     previewFolderGridItems = previewFolderGridItems,
                     iconPackInfoFilePaths = iconPackInfoFilePaths,
+                    animations = experimentalSettings.animations,
                     onDeleteFolderPopupEntry = onDeleteFolderPopupEntry,
                     onMoveFolderGridItemOutsideFolder = onMoveFolderGridItemOutsideFolder,
                     onOpenAppDrawer = pagerScreenState::openApplicationScreen,
@@ -1188,6 +1191,7 @@ internal fun PagerScreen(
         }
 
         OverlayImage(
+            animations = experimentalSettings.animations,
             overlayImageBitmap = pagerScreenState.overlayImageBitmap,
             overlayIntOffset = pagerScreenState.overlayIntOffset,
             overlayIntSize = pagerScreenState.overlayIntSize,
@@ -1203,6 +1207,7 @@ internal fun PagerScreen(
 @Composable
 private fun SharedTransitionScope.OverlayImage(
     modifier: Modifier = Modifier,
+    animations: Boolean = true,
     overlayImageBitmap: ImageBitmap?,
     overlayIntOffset: IntOffset?,
     overlayIntSize: IntSize?,
@@ -1227,12 +1232,17 @@ private fun SharedTransitionScope.OverlayImage(
         DpSize(width = overlayIntSize.width.toDp(), height = overlayIntSize.height.toDp())
     }
 
-    val overlayScale = remember { Animatable(SCALE) }
+    val scale = remember { Animatable(SCALE) }
 
-    LaunchedEffect(key1 = isVisibleOverlay) {
-        if (isVisibleOverlay) {
-            overlayScale.animateTo(targetValue = 1f)
-        } else {
+    LaunchedEffect(
+        key1 = isVisibleOverlay,
+        key2 = animations,
+    ) {
+        if (isVisibleOverlay && animations) {
+            scale.animateTo(targetValue = 1f)
+        }
+
+        if (!isVisibleOverlay) {
             onResetOverlay()
         }
     }
@@ -1250,14 +1260,26 @@ private fun SharedTransitionScope.OverlayImage(
                 }
             }
             .size(size)
-            .sharedElementWithCallerManagedVisibility(
-                rememberSharedContentState(key = sharedElementKey),
-                visible = isVisibleOverlay,
+            .then(
+                if (animations) {
+                    Modifier.sharedElementWithCallerManagedVisibility(
+                        rememberSharedContentState(key = sharedElementKey),
+                        visible = isVisibleOverlay,
+                    )
+                } else {
+                    Modifier
+                },
             )
-            .graphicsLayer {
-                scaleX = overlayScale.value
-                scaleY = overlayScale.value
-            },
+            .then(
+                if (animations) {
+                    Modifier.graphicsLayer {
+                        scaleX = scale.value
+                        scaleY = scale.value
+                    }
+                } else {
+                    Modifier
+                },
+            ),
         bitmap = overlayImageBitmap,
         contentDescription = null,
     )

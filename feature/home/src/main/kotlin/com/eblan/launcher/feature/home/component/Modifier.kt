@@ -18,7 +18,9 @@
 package com.eblan.launcher.feature.home.component
 
 import android.graphics.Paint
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.offset
 import androidx.compose.runtime.Composable
@@ -26,7 +28,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.layer.GraphicsLayer
+import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.pointerInput
@@ -37,6 +43,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.eblan.launcher.domain.model.EblanAction
 import com.eblan.launcher.domain.model.EblanActionType
+import com.eblan.launcher.feature.home.model.SharedElementKey
 import com.eblan.launcher.feature.home.util.handleEblanAction
 import com.eblan.launcher.ui.local.LocalLauncherApps
 import kotlinx.coroutines.launch
@@ -184,3 +191,49 @@ internal fun Modifier.popup(
         )
     }
 }
+
+@Composable
+internal fun Modifier.gridItemAnimation(
+    alpha: Float = 1f,
+    enabled: Boolean = true,
+    graphicsLayer: GraphicsLayer,
+    scale: Animatable<Float, AnimationVector1D>,
+    sharedElementKey: SharedElementKey,
+    sharedTransitionScope: SharedTransitionScope,
+    visible: Boolean,
+): Modifier = this
+    .then(
+        if (enabled) {
+            Modifier.graphicsLayer {
+                scaleX = scale.value
+                scaleY = scale.value
+            }
+        } else {
+            Modifier
+        },
+    )
+    .then(
+        if (enabled && visible) {
+            with(sharedTransitionScope) {
+                Modifier.sharedElementWithCallerManagedVisibility(
+                    rememberSharedContentState(
+                        key = sharedElementKey,
+                    ),
+                    visible = true,
+                )
+            }
+        } else {
+            Modifier
+        },
+    )
+    .drawWithContent {
+        graphicsLayer.apply {
+            this.alpha = alpha
+        }
+
+        graphicsLayer.record {
+            this@drawWithContent.drawContent()
+        }
+
+        drawLayer(graphicsLayer)
+    }

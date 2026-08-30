@@ -47,11 +47,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -84,12 +81,13 @@ import com.eblan.launcher.domain.model.PreviewFolder
 import com.eblan.launcher.domain.usecase.grid.FOLDER_PREVIEW_COLUMNS
 import com.eblan.launcher.domain.usecase.grid.FOLDER_PREVIEW_ROWS
 import com.eblan.launcher.feature.home.component.PreviewFolderGridLayout
+import com.eblan.launcher.feature.home.component.gridItemAnimation
 import com.eblan.launcher.feature.home.component.swipeGestures
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.SharedElementKey
-import com.eblan.launcher.feature.home.util.SCALE
 import com.eblan.launcher.feature.home.util.getHorizontalAlignment
 import com.eblan.launcher.feature.home.util.getVerticalArrangement
+import com.eblan.launcher.feature.home.util.handleOnPress
 import com.eblan.launcher.feature.home.util.onDoubleTap
 import com.eblan.launcher.ui.local.LocalLauncherApps
 import com.eblan.launcher.ui.settings.rememberIsNotificationAccessGranted
@@ -117,6 +115,7 @@ internal fun InteractiveFolderGridItem(
     sharedElementKey: SharedElementKey,
     isInProgress: Boolean,
     iconPackInfoFilePaths: Map<String, String?>,
+    animations: Boolean,
     onOpenAppDrawer: () -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
@@ -147,13 +146,24 @@ internal fun InteractiveFolderGridItem(
         gridItemSettings
     }
 
-    val padding = lerp(1.dp, currentGridItemSettings.padding.dp, progress)
+    val padding = if (animations) {
+        lerp(1.dp, currentGridItemSettings.padding.dp, progress)
+    } else {
+        currentGridItemSettings.padding.dp
+    }
 
-    val iconSize = lerp(
-        currentGridItemSettings.iconSize.dp / maxOf(FOLDER_PREVIEW_COLUMNS, FOLDER_PREVIEW_ROWS),
-        currentGridItemSettings.iconSize.dp,
-        progress,
-    )
+    val iconSize = if (animations) {
+        lerp(
+            currentGridItemSettings.iconSize.dp / maxOf(
+                FOLDER_PREVIEW_COLUMNS,
+                FOLDER_PREVIEW_ROWS,
+            ),
+            currentGridItemSettings.iconSize.dp,
+            progress,
+        )
+    } else {
+        currentGridItemSettings.iconSize.dp
+    }
 
     val hasInteraction = isSelected && isVisibleOverlay
 
@@ -197,6 +207,7 @@ internal fun InteractiveFolderGridItem(
                 sourceBounds = sourceBounds,
                 isInProgress = isInProgress,
                 iconPackInfoFilePaths = iconPackInfoFilePaths,
+                animations = animations,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
                 onUpdateImageBitmap = onUpdateImageBitmap,
@@ -223,6 +234,7 @@ internal fun InteractiveFolderGridItem(
                 iconSize = iconSize,
                 sourceBounds = sourceBounds,
                 isInProgress = isInProgress,
+                animations = animations,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
                 onUpdateImageBitmap = onUpdateImageBitmap,
@@ -247,6 +259,7 @@ internal fun InteractiveFolderGridItem(
                 padding = padding,
                 iconSize = iconSize,
                 isInProgress = isInProgress,
+                animations = animations,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
                 onUpdateImageBitmap = onUpdateImageBitmap,
@@ -276,6 +289,7 @@ internal fun InteractiveFolderGridItem(
                 iconSize = iconSize,
                 isInProgress = isInProgress,
                 iconPackInfoFilePaths = iconPackInfoFilePaths,
+                animations = animations,
                 onUpdateIsCloseFolderGridItemPopup = onUpdateIsCloseFolderGridItemPopup,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
@@ -311,6 +325,7 @@ private fun InteractiveFolderApplicationInfoGridItem(
     sourceBounds: Rect,
     isInProgress: Boolean,
     iconPackInfoFilePaths: Map<String, String?>,
+    animations: Boolean,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
         intOffset: IntOffset,
@@ -363,8 +378,11 @@ private fun InteractiveFolderApplicationInfoGridItem(
 
     val scale = remember { Animatable(1f) }
 
-    LaunchedEffect(key1 = isVisibleOverlay) {
-        if (isVisibleOverlay) {
+    LaunchedEffect(
+        key1 = isVisibleOverlay,
+        key2 = animations,
+    ) {
+        if (isVisibleOverlay && animations) {
             scale.snapTo(targetValue = 1f)
         }
     }
@@ -427,13 +445,10 @@ private fun InteractiveFolderApplicationInfoGridItem(
                         null
                     },
                     onPress = {
-                        scale.animateTo(targetValue = SCALE)
-
-                        try {
-                            awaitRelease()
-                        } finally {
-                            scale.animateTo(targetValue = 1f)
-                        }
+                        handleOnPress(
+                            animations = animations,
+                            scale = scale,
+                        )
                     },
                 )
             }
@@ -457,36 +472,19 @@ private fun InteractiveFolderApplicationInfoGridItem(
                 contentDescription = null,
                 modifier = Modifier
                     .matchParentSize()
-                    .onGloballyPositioned { layoutCoordinates ->
-                        intOffset = layoutCoordinates.positionInRoot().round()
+                    .onGloballyPositioned {
+                        intOffset = it.positionInRoot().round()
 
-                        intSize = layoutCoordinates.size
+                        intSize = it.size
                     }
-                    .graphicsLayer {
-                        scaleX = scale.value
-                        scaleY = scale.value
-                    }
-                    .run {
-                        if (!isScrollInProgress && !hasInteraction && !isInProgress) {
-                            with(sharedTransitionScope) {
-                                sharedElementWithCallerManagedVisibility(
-                                    rememberSharedContentState(
-                                        key = sharedElementKey,
-                                    ),
-                                    visible = true,
-                                )
-                            }
-                        } else {
-                            this
-                        }
-                    }
-                    .drawWithContent {
-                        graphicsLayer.record {
-                            this@drawWithContent.drawContent()
-                        }
-
-                        drawLayer(graphicsLayer)
-                    },
+                    .gridItemAnimation(
+                        enabled = animations,
+                        graphicsLayer = graphicsLayer,
+                        scale = scale,
+                        sharedElementKey = sharedElementKey,
+                        sharedTransitionScope = sharedTransitionScope,
+                        visible = !isScrollInProgress && !hasInteraction && !isInProgress,
+                    ),
             )
 
             if (isNotificationAccessGranted && hasNotifications) {
@@ -532,6 +530,7 @@ private fun InteractiveFolderShortcutInfoGridItem(
     iconSize: Dp,
     sourceBounds: Rect,
     isInProgress: Boolean,
+    animations: Boolean,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
         intOffset: IntOffset,
@@ -580,8 +579,11 @@ private fun InteractiveFolderShortcutInfoGridItem(
 
     val scale = remember { Animatable(1f) }
 
-    LaunchedEffect(key1 = isVisibleOverlay) {
-        if (isVisibleOverlay) {
+    LaunchedEffect(
+        key1 = isVisibleOverlay,
+        key2 = animations,
+    ) {
+        if (isVisibleOverlay && animations) {
             scale.snapTo(targetValue = 1f)
         }
     }
@@ -653,13 +655,10 @@ private fun InteractiveFolderShortcutInfoGridItem(
                         null
                     },
                     onPress = {
-                        scale.animateTo(targetValue = 0.85f)
-
-                        try {
-                            awaitRelease()
-                        } finally {
-                            scale.animateTo(targetValue = 1f)
-                        }
+                        handleOnPress(
+                            animations = animations,
+                            scale = scale,
+                        )
                     },
                 )
             }
@@ -680,40 +679,20 @@ private fun InteractiveFolderShortcutInfoGridItem(
                     .size(Size.ORIGINAL).build(),
                 modifier = Modifier
                     .matchParentSize()
-                    .onGloballyPositioned { layoutCoordinates ->
-                        intOffset = layoutCoordinates.positionInRoot().round()
+                    .onGloballyPositioned {
+                        intOffset = it.positionInRoot().round()
 
-                        intSize = layoutCoordinates.size
+                        intSize = it.size
                     }
-                    .graphicsLayer {
-                        scaleX = scale.value
-                        scaleY = scale.value
-                    }
-                    .run {
-                        if (!isScrollInProgress && !hasInteraction && !isInProgress) {
-                            with(sharedTransitionScope) {
-                                sharedElementWithCallerManagedVisibility(
-                                    rememberSharedContentState(
-                                        key = sharedElementKey,
-                                    ),
-                                    visible = true,
-                                )
-                            }
-                        } else {
-                            this
-                        }
-                    }
-                    .drawWithContent {
-                        graphicsLayer.apply {
-                            this.alpha = alpha
-                        }
-
-                        graphicsLayer.record {
-                            this@drawWithContent.drawContent()
-                        }
-
-                        drawLayer(graphicsLayer)
-                    },
+                    .gridItemAnimation(
+                        enabled = animations,
+                        alpha = alpha,
+                        graphicsLayer = graphicsLayer,
+                        scale = scale,
+                        sharedElementKey = sharedElementKey,
+                        sharedTransitionScope = sharedTransitionScope,
+                        visible = !isScrollInProgress && !hasInteraction && !isInProgress,
+                    ),
                 contentDescription = null,
             )
 
@@ -756,6 +735,7 @@ private fun InteractiveFolderShortcutConfigGridItem(
     padding: Dp,
     iconSize: Dp,
     isInProgress: Boolean,
+    animations: Boolean,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
         intOffset: IntOffset,
@@ -810,8 +790,11 @@ private fun InteractiveFolderShortcutConfigGridItem(
 
     val scale = remember { Animatable(1f) }
 
-    LaunchedEffect(key1 = isVisibleOverlay) {
-        if (isVisibleOverlay) {
+    LaunchedEffect(
+        key1 = isVisibleOverlay,
+        key2 = animations,
+    ) {
+        if (isVisibleOverlay && animations) {
             scale.snapTo(targetValue = 1f)
         }
     }
@@ -869,13 +852,10 @@ private fun InteractiveFolderShortcutConfigGridItem(
                         null
                     },
                     onPress = {
-                        scale.animateTo(targetValue = SCALE)
-
-                        try {
-                            awaitRelease()
-                        } finally {
-                            scale.animateTo(targetValue = 1f)
-                        }
+                        handleOnPress(
+                            animations = animations,
+                            scale = scale,
+                        )
                     },
                 )
             }
@@ -894,36 +874,19 @@ private fun InteractiveFolderShortcutConfigGridItem(
             contentDescription = null,
             modifier = Modifier
                 .size(iconSize)
-                .onGloballyPositioned { layoutCoordinates ->
-                    intOffset = layoutCoordinates.positionInRoot().round()
+                .onGloballyPositioned {
+                    intOffset = it.positionInRoot().round()
 
-                    intSize = layoutCoordinates.size
+                    intSize = it.size
                 }
-                .graphicsLayer {
-                    scaleX = scale.value
-                    scaleY = scale.value
-                }
-                .run {
-                    if (!isScrollInProgress && !hasInteraction && !isInProgress) {
-                        with(sharedTransitionScope) {
-                            sharedElementWithCallerManagedVisibility(
-                                rememberSharedContentState(
-                                    key = sharedElementKey,
-                                ),
-                                visible = true,
-                            )
-                        }
-                    } else {
-                        this
-                    }
-                }
-                .drawWithContent {
-                    graphicsLayer.record {
-                        this@drawWithContent.drawContent()
-                    }
-
-                    drawLayer(graphicsLayer)
-                }
+                .gridItemAnimation(
+                    enabled = animations,
+                    graphicsLayer = graphicsLayer,
+                    scale = scale,
+                    sharedElementKey = sharedElementKey,
+                    sharedTransitionScope = sharedTransitionScope,
+                    visible = !isScrollInProgress && !hasInteraction && !isInProgress,
+                )
                 .alpha(alpha),
         )
 
@@ -960,6 +923,7 @@ private fun InteractiveNestedFolderGridItem(
     iconSize: Dp,
     isInProgress: Boolean,
     iconPackInfoFilePaths: Map<String, String?>,
+    animations: Boolean,
     onUpdateIsCloseFolderGridItemPopup: (Boolean) -> Unit,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
@@ -1003,8 +967,11 @@ private fun InteractiveNestedFolderGridItem(
 
     val scale = remember { Animatable(1f) }
 
-    LaunchedEffect(key1 = isVisibleOverlay) {
-        if (isVisibleOverlay) {
+    LaunchedEffect(
+        key1 = isVisibleOverlay,
+        key2 = animations,
+    ) {
+        if (isVisibleOverlay && animations) {
             scale.snapTo(targetValue = 1f)
         }
     }
@@ -1084,13 +1051,10 @@ private fun InteractiveNestedFolderGridItem(
                         null
                     },
                     onPress = {
-                        scale.animateTo(targetValue = 0.85f)
-
-                        try {
-                            awaitRelease()
-                        } finally {
-                            scale.animateTo(targetValue = 1f)
-                        }
+                        handleOnPress(
+                            animations = animations,
+                            scale = scale,
+                        )
                     },
                 )
             }
@@ -1105,35 +1069,19 @@ private fun InteractiveNestedFolderGridItem(
     ) {
         val commonModifier = Modifier
             .size(iconSize)
-            .onGloballyPositioned { layoutCoordinates ->
-                intOffset = layoutCoordinates.positionInRoot().round()
-                intSize = layoutCoordinates.size
-            }
-            .graphicsLayer {
-                scaleX = scale.value
-                scaleY = scale.value
-            }
-            .run {
-                if (!isScrollInProgress && !hasInteraction && !isInProgress) {
-                    with(sharedTransitionScope) {
-                        sharedElementWithCallerManagedVisibility(
-                            rememberSharedContentState(
-                                key = sharedElementKey,
-                            ),
-                            visible = true,
-                        )
-                    }
-                } else {
-                    this
-                }
-            }
-            .drawWithContent {
-                graphicsLayer.record {
-                    this@drawWithContent.drawContent()
-                }
+            .onGloballyPositioned {
+                intOffset = it.positionInRoot().round()
 
-                drawLayer(graphicsLayer)
+                intSize = it.size
             }
+            .gridItemAnimation(
+                enabled = animations,
+                graphicsLayer = graphicsLayer,
+                scale = scale,
+                sharedElementKey = sharedElementKey,
+                sharedTransitionScope = sharedTransitionScope,
+                visible = !isScrollInProgress && !hasInteraction && !isInProgress,
+            )
             .alpha(alpha)
 
         if (data.icon != null) {

@@ -189,12 +189,14 @@ internal fun ExperimentalSettings.toExperimentalSettingsProto(): ExperimentalSet
     builder.syncData = syncData
     builder.firstLaunch = firstLaunch
     builder.lockMovement = lockMovement
+    builder.animations = animations
 }.build()
 
 internal fun ExperimentalSettingsProto.toExperimentalSettings(): ExperimentalSettings = ExperimentalSettings(
     syncData = syncData,
     firstLaunch = firstLaunch,
     lockMovement = lockMovement,
+    animations = animations,
 )
 
 internal fun EblanAction.toEblanActionProto(): EblanActionProto = EblanActionProto.newBuilder().also { builder ->

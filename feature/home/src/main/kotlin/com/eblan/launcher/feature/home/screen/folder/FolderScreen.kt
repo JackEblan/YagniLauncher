@@ -110,6 +110,7 @@ internal fun FolderScreen(
     showFolderGridItemPopup: Boolean,
     previewFolderGridItems: Map<String, PreviewFolder>,
     iconPackInfoFilePaths: Map<String, String?>,
+    animations: Boolean,
     onDeleteFolderPopupEntry: (FolderPopupEntry) -> Unit,
     onMoveFolderGridItemOutsideFolder: (GridItem) -> Unit,
     onOpenAppDrawer: () -> Unit,
@@ -170,35 +171,59 @@ internal fun FolderScreen(
 
     val progress = remember { Animatable(0f) }
 
-    val animatedFolderRect by remember(key1 = folderPopupLayoutInfo) {
+    val animatedFolderRect by remember(
+        key1 = folderPopupLayoutInfo,
+        key2 = animations,
+    ) {
         derivedStateOf {
-            getAnimatedRect(
-                progress = progress.value,
-                startWidth = folderPopupLayoutInfo.startWidth,
-                startHeight = folderPopupLayoutInfo.startHeight,
-                endWidth = folderPopupLayoutInfo.folderGridWidthPx.toFloat(),
-                endHeight = folderPopupLayoutInfo.endHeight.toFloat(),
-                startCenterX = folderPopupLayoutInfo.startCenterX,
-                startCenterY = folderPopupLayoutInfo.startCenterY,
-                endCenterX = folderPopupLayoutInfo.endCenterX,
-                endCenterY = folderPopupLayoutInfo.endCenterY,
-            )
+            if (animations) {
+                getAnimatedRect(
+                    progress = progress.value,
+                    startWidth = folderPopupLayoutInfo.startWidth,
+                    startHeight = folderPopupLayoutInfo.startHeight,
+                    endWidth = folderPopupLayoutInfo.folderGridWidthPx.toFloat(),
+                    endHeight = folderPopupLayoutInfo.endHeight.toFloat(),
+                    startCenterX = folderPopupLayoutInfo.startCenterX,
+                    startCenterY = folderPopupLayoutInfo.startCenterY,
+                    endCenterX = folderPopupLayoutInfo.endCenterX,
+                    endCenterY = folderPopupLayoutInfo.endCenterY,
+                )
+            } else {
+                getRect(
+                    endWidth = folderPopupLayoutInfo.folderGridWidthPx.toFloat(),
+                    endHeight = folderPopupLayoutInfo.endHeight.toFloat(),
+                    endCenterX = folderPopupLayoutInfo.endCenterX,
+                    endCenterY = folderPopupLayoutInfo.endCenterY,
+                )
+            }
         }
     }
 
-    val animatedPreviewRect by remember(key1 = folderPopupLayoutInfo) {
+    val animatedPreviewRect by remember(
+        key1 = folderPopupLayoutInfo,
+        key2 = animations,
+    ) {
         derivedStateOf {
-            getAnimatedRect(
-                progress = progress.value,
-                startWidth = folderPopupLayoutInfo.startPreviewWidth,
-                startHeight = folderPopupLayoutInfo.startPreviewHeight,
-                endWidth = folderPopupLayoutInfo.folderGridWidthPx.toFloat(),
-                endHeight = folderPopupLayoutInfo.folderGridHeightPx.toFloat(),
-                startCenterX = folderPopupLayoutInfo.startCenterX,
-                startCenterY = folderPopupLayoutInfo.startCenterY,
-                endCenterX = folderPopupLayoutInfo.endCenterX,
-                endCenterY = folderPopupLayoutInfo.endCenterY,
-            )
+            if (animations) {
+                getAnimatedRect(
+                    progress = progress.value,
+                    startWidth = folderPopupLayoutInfo.startPreviewWidth,
+                    startHeight = folderPopupLayoutInfo.startPreviewHeight,
+                    endWidth = folderPopupLayoutInfo.folderGridWidthPx.toFloat(),
+                    endHeight = folderPopupLayoutInfo.folderGridHeightPx.toFloat(),
+                    startCenterX = folderPopupLayoutInfo.startCenterX,
+                    startCenterY = folderPopupLayoutInfo.startCenterY,
+                    endCenterX = folderPopupLayoutInfo.endCenterX,
+                    endCenterY = folderPopupLayoutInfo.endCenterY,
+                )
+            } else {
+                getRect(
+                    endWidth = folderPopupLayoutInfo.folderGridWidthPx.toFloat(),
+                    endHeight = folderPopupLayoutInfo.folderGridHeightPx.toFloat(),
+                    endCenterX = folderPopupLayoutInfo.endCenterX,
+                    endCenterY = folderPopupLayoutInfo.endCenterY,
+                )
+            }
         }
     }
 
@@ -422,7 +447,7 @@ internal fun FolderScreen(
                         rows = folderPopup.rows,
                         width = animatedPreviewRect.width().roundToInt(),
                         height = animatedPreviewRect.height().roundToInt(),
-                        animate = isVisibleOverlay,
+                        animate = isVisibleOverlay && animations,
                         content = {
                             InteractiveFolderGridItem(
                                 sharedTransitionScope = sharedTransitionScope,
@@ -446,6 +471,7 @@ internal fun FolderScreen(
                                 ),
                                 isInProgress = isInProgress,
                                 iconPackInfoFilePaths = iconPackInfoFilePaths,
+                                animations = animations,
                                 onOpenAppDrawer = onOpenAppDrawer,
                                 onUpdateImageBitmap = onUpdateImageBitmap,
                                 onUpdateIsDragging = onUpdateIsDragging,
@@ -538,35 +564,53 @@ private fun getAnimatedRect(
     endCenterX: Float,
     endCenterY: Float,
 ): RectF {
-    val currentWidth = lerp(
+    val width = lerp(
         startWidth,
         endWidth,
         progress,
     )
 
-    val currentHeight = lerp(
+    val height = lerp(
         startHeight,
         endHeight,
         progress,
     )
 
-    val currentX = lerp(
+    val left = lerp(
         startCenterX,
         endCenterX,
         progress,
-    ) - currentWidth / 2f
+    ) - width / 2f
 
-    val currentY = lerp(
+    val top = lerp(
         startCenterY,
         endCenterY,
         progress,
-    ) - currentHeight / 2f
+    ) - height / 2f
 
     return RectF(
-        currentX,
-        currentY,
-        currentX + currentWidth,
-        currentY + currentHeight,
+        left,
+        top,
+        left + width,
+        top + height,
+    )
+}
+
+private fun getRect(
+    endWidth: Float,
+    endHeight: Float,
+    endCenterX: Float,
+    endCenterY: Float,
+): RectF {
+    val left = endCenterX - endWidth / 2f
+
+    val top = endCenterY - endHeight / 2f
+
+    return RectF(
+        left,
+        top,
+        left + endWidth,
+        top + endHeight,
     )
 }
 

@@ -326,10 +326,10 @@ private fun EblanAppWidgetProviderInfoItem(
 
         AsyncImage(
             modifier = Modifier
-                .onGloballyPositioned { layoutCoordinates ->
-                    intOffset = layoutCoordinates.positionInRoot().round()
+                .onGloballyPositioned {
+                    intOffset = it.positionInRoot().round()
 
-                    intSize = layoutCoordinates.size
+                    intSize = it.size
                 }
                 .graphicsLayer {
                     scaleX = scale.value
