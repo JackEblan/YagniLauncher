@@ -23,7 +23,7 @@ import com.eblan.launcher.data.datastore.proto.copy
 import com.eblan.launcher.data.datastore.proto.home.homeSettingsProto
 
 internal class DataStoreMigration2 : DataMigration<UserDataProto> {
-    override suspend fun shouldMigrate(currentData: UserDataProto): Boolean = !currentData.homeSettingsProto.showPageIndicator
+    override suspend fun shouldMigrate(currentData: UserDataProto): Boolean = !currentData.homeSettingsProto.hasShowPageIndicator()
 
     override suspend fun migrate(currentData: UserDataProto): UserDataProto = currentData.copy {
         homeSettingsProto {
