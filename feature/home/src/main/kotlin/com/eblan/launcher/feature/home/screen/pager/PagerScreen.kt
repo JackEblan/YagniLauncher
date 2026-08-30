@@ -17,6 +17,8 @@
  */
 package com.eblan.launcher.feature.home.screen.pager
 
+import android.R.attr.scaleX
+import android.R.attr.scaleY
 import android.content.BroadcastReceiver
 import android.content.ClipDescription
 import android.content.Context
@@ -37,6 +39,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.draganddrop.dragAndDropTarget
@@ -73,6 +76,7 @@ import androidx.compose.ui.draganddrop.mimeTypes
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -125,6 +129,7 @@ import com.eblan.launcher.feature.home.screen.shortcutconfig.ShortcutConfigScree
 import com.eblan.launcher.feature.home.screen.widget.AppWidgetScreen
 import com.eblan.launcher.feature.home.screen.widget.WidgetScreen
 import com.eblan.launcher.feature.home.util.PAGE_INDICATOR_HEIGHT
+import com.eblan.launcher.feature.home.util.SCALE
 import com.eblan.launcher.feature.home.util.calculatePage
 import com.eblan.launcher.feature.home.util.getTextColor
 import com.eblan.launcher.framework.usermanager.AndroidUserManagerWrapper
@@ -1224,8 +1229,12 @@ private fun SharedTransitionScope.OverlayImage(
         DpSize(width = overlayIntSize.width.toDp(), height = overlayIntSize.height.toDp())
     }
 
+    val overlayScale = remember { Animatable(SCALE) }
+
     LaunchedEffect(key1 = isVisibleOverlay) {
-        if (!isVisibleOverlay) {
+        if (isVisibleOverlay) {
+            overlayScale.animateTo(targetValue = 1f)
+        } else {
             onResetOverlay()
         }
     }
@@ -1246,7 +1255,11 @@ private fun SharedTransitionScope.OverlayImage(
             .sharedElementWithCallerManagedVisibility(
                 rememberSharedContentState(key = sharedElementKey),
                 visible = isVisibleOverlay,
-            ),
+            )
+            .graphicsLayer {
+                scaleX = overlayScale.value
+                scaleY = overlayScale.value
+            },
         bitmap = overlayImageBitmap,
         contentDescription = null,
     )

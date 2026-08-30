@@ -18,6 +18,7 @@
 package com.eblan.launcher.feature.home.screen.application.list
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -33,6 +34,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,7 +43,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.ColorPainter
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
@@ -187,8 +189,24 @@ private fun PrivateSpaceEblanApplicationInfoItem(
         appDrawerSettings.gridItemSettings.iconSize.dp.roundToPx()
     }
 
+    val scale = remember { Animatable(1f) }
+
+    LaunchedEffect(key1 = isVisibleOverlay) {
+        if (isVisibleOverlay) {
+            scale.snapTo(targetValue = 1f)
+        }
+    }
+
     Row(
         modifier = modifier
+            .fillMaxWidth()
+            .padding(10.dp)
+            .background(
+                color = Color(appDrawerSettings.gridItemSettings.customBackgroundColor),
+                shape = RoundedCornerShape(
+                    size = appDrawerSettings.gridItemSettings.cornerRadius.dp,
+                ),
+            )
             .pointerInput(key1 = isVisibleOverlay) {
                 detectTapGestures(
                     onTap = if (!isVisibleOverlay) {
@@ -225,14 +243,17 @@ private fun PrivateSpaceEblanApplicationInfoItem(
                     } else {
                         null
                     },
+                    onPress = {
+                        scale.animateTo(targetValue = 0.85f)
+
+                        try {
+                            awaitRelease()
+                        } finally {
+                            scale.animateTo(targetValue = 1f)
+                        }
+                    },
                 )
-            }
-            .fillMaxWidth()
-            .padding(10.dp)
-            .background(
-                color = Color(appDrawerSettings.gridItemSettings.customBackgroundColor),
-                shape = RoundedCornerShape(size = appDrawerSettings.gridItemSettings.cornerRadius.dp),
-            ),
+            },
         verticalAlignment = Alignment.CenterVertically,
     ) {
         AsyncImage(
@@ -241,14 +262,16 @@ private fun PrivateSpaceEblanApplicationInfoItem(
                 .addLastModifiedToFileCacheKey(true).size(iconSizePx).crossfade(false).build(),
             contentDescription = null,
             modifier = Modifier
+                .size(appDrawerSettings.gridItemSettings.iconSize.dp)
                 .onGloballyPositioned { layoutCoordinates ->
                     intOffset = layoutCoordinates.positionInRoot().round()
 
                     intSize = layoutCoordinates.size
                 }
-                .size(appDrawerSettings.gridItemSettings.iconSize.dp),
-            placeholder = ColorPainter(Color.Transparent),
-            error = ColorPainter(Color.Transparent),
+                .graphicsLayer {
+                    scaleX = scale.value
+                    scaleY = scale.value
+                },
         )
 
         Spacer(modifier = Modifier.width(10.dp))

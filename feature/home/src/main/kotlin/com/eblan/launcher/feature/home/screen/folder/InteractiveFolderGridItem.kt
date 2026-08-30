@@ -22,6 +22,7 @@ import android.graphics.Rect
 import android.os.Build
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
@@ -49,6 +50,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
@@ -85,6 +87,7 @@ import com.eblan.launcher.feature.home.component.PreviewFolderGridLayout
 import com.eblan.launcher.feature.home.component.swipeGestures
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.SharedElementKey
+import com.eblan.launcher.feature.home.util.SCALE
 import com.eblan.launcher.feature.home.util.getHorizontalAlignment
 import com.eblan.launcher.feature.home.util.getVerticalArrangement
 import com.eblan.launcher.feature.home.util.onDoubleTap
@@ -358,8 +361,22 @@ private fun InteractiveFolderApplicationInfoGridItem(
 
     val isNotificationAccessGranted by rememberIsNotificationAccessGranted()
 
+    val scale = remember { Animatable(1f) }
+
+    LaunchedEffect(key1 = isVisibleOverlay) {
+        if (isVisibleOverlay) {
+            scale.snapTo(targetValue = 1f)
+        }
+    }
+
     Column(
         modifier = modifier
+            .fillMaxSize()
+            .padding(padding)
+            .background(
+                color = Color(gridItemSettings.customBackgroundColor),
+                shape = RoundedCornerShape(size = gridItemSettings.cornerRadius.dp),
+            )
             .pointerInput(
                 key1 = isVisibleOverlay,
                 key2 = isInProgress,
@@ -409,6 +426,15 @@ private fun InteractiveFolderApplicationInfoGridItem(
                     } else {
                         null
                     },
+                    onPress = {
+                        scale.animateTo(targetValue = SCALE)
+
+                        try {
+                            awaitRelease()
+                        } finally {
+                            scale.animateTo(targetValue = 1f)
+                        }
+                    },
                 )
             }
             .swipeGestures(
@@ -416,12 +442,6 @@ private fun InteractiveFolderApplicationInfoGridItem(
                 swipeUp = gridItem.swipeUp,
                 enabled = !isInProgress,
                 onOpenAppDrawer = onOpenAppDrawer,
-            )
-            .fillMaxSize()
-            .padding(padding)
-            .background(
-                color = Color(gridItemSettings.customBackgroundColor),
-                shape = RoundedCornerShape(size = gridItemSettings.cornerRadius.dp),
             ),
         horizontalAlignment = horizontalAlignment,
         verticalArrangement = verticalArrangement,
@@ -441,6 +461,10 @@ private fun InteractiveFolderApplicationInfoGridItem(
                         intOffset = layoutCoordinates.positionInRoot().round()
 
                         intSize = layoutCoordinates.size
+                    }
+                    .graphicsLayer {
+                        scaleX = scale.value
+                        scaleY = scale.value
                     }
                     .run {
                         if (!isScrollInProgress && !hasInteraction && !isInProgress) {
@@ -554,8 +578,22 @@ private fun InteractiveFolderShortcutInfoGridItem(
 
     val alpha = if (hasInteraction) 0f else defaultAlpha
 
+    val scale = remember { Animatable(1f) }
+
+    LaunchedEffect(key1 = isVisibleOverlay) {
+        if (isVisibleOverlay) {
+            scale.snapTo(targetValue = 1f)
+        }
+    }
+
     Column(
         modifier = modifier
+            .fillMaxSize()
+            .padding(padding)
+            .background(
+                color = Color(gridItemSettings.customBackgroundColor),
+                shape = RoundedCornerShape(size = gridItemSettings.cornerRadius.dp),
+            )
             .pointerInput(
                 key1 = isVisibleOverlay,
                 key2 = isInProgress,
@@ -598,7 +636,8 @@ private fun InteractiveFolderShortcutInfoGridItem(
                     },
                     onTap = if (!isVisibleOverlay && !isInProgress) {
                         {
-                            if (hasShortcutHostPermission &&
+                            if (
+                                hasShortcutHostPermission &&
                                 data.isEnabled &&
                                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1
                             ) {
@@ -613,6 +652,15 @@ private fun InteractiveFolderShortcutInfoGridItem(
                     } else {
                         null
                     },
+                    onPress = {
+                        scale.animateTo(targetValue = 0.85f)
+
+                        try {
+                            awaitRelease()
+                        } finally {
+                            scale.animateTo(targetValue = 1f)
+                        }
+                    },
                 )
             }
             .swipeGestures(
@@ -620,12 +668,6 @@ private fun InteractiveFolderShortcutInfoGridItem(
                 swipeUp = gridItem.swipeUp,
                 enabled = !isInProgress,
                 onOpenAppDrawer = onOpenAppDrawer,
-            )
-            .fillMaxSize()
-            .padding(padding)
-            .background(
-                color = Color(gridItemSettings.customBackgroundColor),
-                shape = RoundedCornerShape(size = gridItemSettings.cornerRadius.dp),
             ),
         horizontalAlignment = horizontalAlignment,
         verticalArrangement = verticalArrangement,
@@ -642,6 +684,10 @@ private fun InteractiveFolderShortcutInfoGridItem(
                         intOffset = layoutCoordinates.positionInRoot().round()
 
                         intSize = layoutCoordinates.size
+                    }
+                    .graphicsLayer {
+                        scaleX = scale.value
+                        scaleY = scale.value
                     }
                     .run {
                         if (!isScrollInProgress && !hasInteraction && !isInProgress) {
@@ -762,8 +808,22 @@ private fun InteractiveFolderShortcutConfigGridItem(
 
     val alpha = if (hasInteraction) 0f else 1f
 
+    val scale = remember { Animatable(1f) }
+
+    LaunchedEffect(key1 = isVisibleOverlay) {
+        if (isVisibleOverlay) {
+            scale.snapTo(targetValue = 1f)
+        }
+    }
+
     Column(
         modifier = modifier
+            .fillMaxSize()
+            .padding(padding)
+            .background(
+                color = Color(gridItemSettings.customBackgroundColor),
+                shape = RoundedCornerShape(size = gridItemSettings.cornerRadius.dp),
+            )
             .pointerInput(key1 = isVisibleOverlay && !isInProgress) {
                 detectTapGestures(
                     onDoubleTap = if (!isVisibleOverlay && !isInProgress) {
@@ -808,6 +868,15 @@ private fun InteractiveFolderShortcutConfigGridItem(
                     } else {
                         null
                     },
+                    onPress = {
+                        scale.animateTo(targetValue = SCALE)
+
+                        try {
+                            awaitRelease()
+                        } finally {
+                            scale.animateTo(targetValue = 1f)
+                        }
+                    },
                 )
             }
             .swipeGestures(
@@ -815,12 +884,6 @@ private fun InteractiveFolderShortcutConfigGridItem(
                 swipeUp = gridItem.swipeUp,
                 enabled = !isInProgress,
                 onOpenAppDrawer = onOpenAppDrawer,
-            )
-            .fillMaxSize()
-            .padding(padding)
-            .background(
-                color = Color(gridItemSettings.customBackgroundColor),
-                shape = RoundedCornerShape(size = gridItemSettings.cornerRadius.dp),
             ),
         horizontalAlignment = horizontalAlignment,
         verticalArrangement = verticalArrangement,
@@ -835,6 +898,10 @@ private fun InteractiveFolderShortcutConfigGridItem(
                     intOffset = layoutCoordinates.positionInRoot().round()
 
                     intSize = layoutCoordinates.size
+                }
+                .graphicsLayer {
+                    scaleX = scale.value
+                    scaleY = scale.value
                 }
                 .run {
                     if (!isScrollInProgress && !hasInteraction && !isInProgress) {
@@ -934,6 +1001,14 @@ private fun InteractiveNestedFolderGridItem(
 
     val alpha = if (hasInteraction) 0f else 1f
 
+    val scale = remember { Animatable(1f) }
+
+    LaunchedEffect(key1 = isVisibleOverlay) {
+        if (isVisibleOverlay) {
+            scale.snapTo(targetValue = 1f)
+        }
+    }
+
     LaunchedEffect(
         key1 = drag,
         key2 = hasInteraction,
@@ -948,6 +1023,12 @@ private fun InteractiveNestedFolderGridItem(
 
     Column(
         modifier = modifier
+            .fillMaxSize()
+            .padding(padding)
+            .background(
+                color = Color(gridItemSettings.customBackgroundColor),
+                shape = RoundedCornerShape(size = gridItemSettings.cornerRadius.dp),
+            )
             .pointerInput(
                 key1 = isVisibleOverlay,
                 key2 = isInProgress,
@@ -1002,6 +1083,15 @@ private fun InteractiveNestedFolderGridItem(
                     } else {
                         null
                     },
+                    onPress = {
+                        scale.animateTo(targetValue = 0.85f)
+
+                        try {
+                            awaitRelease()
+                        } finally {
+                            scale.animateTo(targetValue = 1f)
+                        }
+                    },
                 )
             }
             .swipeGestures(
@@ -1009,46 +1099,42 @@ private fun InteractiveNestedFolderGridItem(
                 swipeUp = gridItem.swipeUp,
                 enabled = !isInProgress,
                 onOpenAppDrawer = onOpenAppDrawer,
-            )
-            .fillMaxSize()
-            .padding(padding)
-            .background(
-                color = Color(gridItemSettings.customBackgroundColor),
-                shape = RoundedCornerShape(size = gridItemSettings.cornerRadius.dp),
             ),
         horizontalAlignment = horizontalAlignment,
         verticalArrangement = verticalArrangement,
     ) {
-        val commonModifier =
-            Modifier
-                .size(iconSize)
-                .onGloballyPositioned { layoutCoordinates ->
-                    intOffset = layoutCoordinates.positionInRoot().round()
-
-                    intSize = layoutCoordinates.size
-                }
-                .run {
-                    if (!isScrollInProgress && !hasInteraction && !isInProgress) {
-                        with(sharedTransitionScope) {
-                            sharedElementWithCallerManagedVisibility(
-                                rememberSharedContentState(
-                                    key = sharedElementKey,
-                                ),
-                                visible = true,
-                            )
-                        }
-                    } else {
-                        this
+        val commonModifier = Modifier
+            .size(iconSize)
+            .onGloballyPositioned { layoutCoordinates ->
+                intOffset = layoutCoordinates.positionInRoot().round()
+                intSize = layoutCoordinates.size
+            }
+            .graphicsLayer {
+                scaleX = scale.value
+                scaleY = scale.value
+            }
+            .run {
+                if (!isScrollInProgress && !hasInteraction && !isInProgress) {
+                    with(sharedTransitionScope) {
+                        sharedElementWithCallerManagedVisibility(
+                            rememberSharedContentState(
+                                key = sharedElementKey,
+                            ),
+                            visible = true,
+                        )
                     }
+                } else {
+                    this
                 }
-                .drawWithContent {
-                    graphicsLayer.record {
-                        this@drawWithContent.drawContent()
-                    }
+            }
+            .drawWithContent {
+                graphicsLayer.record {
+                    this@drawWithContent.drawContent()
+                }
 
-                    drawLayer(graphicsLayer)
-                }
-                .alpha(alpha)
+                drawLayer(graphicsLayer)
+            }
+            .alpha(alpha)
 
         if (data.icon != null) {
             AsyncImage(

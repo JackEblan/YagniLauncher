@@ -184,3 +184,4 @@ internal fun updateAppWidgetOptions(
 
 internal val PAGE_INDICATOR_HEIGHT = 30.dp
 internal val DRAG_HANDLE_SIZE = 30.dp
+internal val SCALE = 0.85f

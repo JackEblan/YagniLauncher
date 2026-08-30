@@ -190,6 +190,11 @@ private fun ShortcutInfoMenuItem(
         leadingContent = {
             Box(
                 modifier = Modifier
+                    .size(30.dp)
+                    .onGloballyPositioned { layoutCoordinates ->
+                        intOffset = layoutCoordinates.positionInRoot().round()
+                        intSize = layoutCoordinates.size
+                    }
                     .drawWithContent {
                         graphicsLayer.record {
                             this@drawWithContent.drawContent()
@@ -220,13 +225,7 @@ private fun ShortcutInfoMenuItem(
                                 }
                             },
                         )
-                    }
-                    .onGloballyPositioned { layoutCoordinates ->
-                        intOffset = layoutCoordinates.positionInRoot().round()
-
-                        intSize = layoutCoordinates.size
-                    }
-                    .size(30.dp),
+                    },
             ) {
                 if (!isLongPress) {
                     AsyncImage(
@@ -249,7 +248,10 @@ private suspend fun handleOnLongPress(
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
     graphicsLayer: GraphicsLayer,
-    onUpdateOverlayBounds: (IntOffset, IntSize) -> Unit,
+    onUpdateOverlayBounds: (
+        intOffset: IntOffset,
+        intSize: IntSize,
+    ) -> Unit,
     intOffset: IntOffset,
     intSize: IntSize,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,

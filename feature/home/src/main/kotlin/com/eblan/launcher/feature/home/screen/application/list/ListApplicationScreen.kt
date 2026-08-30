@@ -20,6 +20,7 @@ package com.eblan.launcher.feature.home.screen.application.list
 import android.os.Build
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
@@ -67,6 +68,7 @@ import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -118,6 +120,7 @@ import com.eblan.launcher.feature.home.screen.application.handleDragEblanApplica
 import com.eblan.launcher.feature.home.screen.application.handleOnLongPressEblanApplicationInfoItem
 import com.eblan.launcher.feature.home.screen.application.handleOnTapEblanApplicationInfoItem
 import com.eblan.launcher.feature.home.screen.application.rememberIsQuietModeEnabled
+import com.eblan.launcher.feature.home.util.SCALE
 import com.eblan.launcher.feature.home.util.getAppDrawerGridItemTextColor
 import com.eblan.launcher.ui.local.LocalLauncherApps
 import com.eblan.launcher.ui.local.LocalUserManager
@@ -768,6 +771,14 @@ private fun EblanApplicationInfoListItem(
         parent = SharedElementKey.Parent.SwipeY,
     )
 
+    val scale = remember { Animatable(1f) }
+
+    LaunchedEffect(key1 = isVisibleOverlay) {
+        if (isVisibleOverlay) {
+            scale.snapTo(targetValue = 1f)
+        }
+    }
+
     LaunchedEffect(
         key1 = drag,
         key2 = isLongPress,
@@ -792,6 +803,14 @@ private fun EblanApplicationInfoListItem(
 
     Row(
         modifier = modifier
+            .fillMaxWidth()
+            .padding(10.dp)
+            .background(
+                color = Color(appDrawerSettings.gridItemSettings.customBackgroundColor),
+                shape = RoundedCornerShape(
+                    size = appDrawerSettings.gridItemSettings.cornerRadius.dp,
+                ),
+            )
             .pointerInput(key1 = isVisibleOverlay) {
                 detectTapGestures(
                     onTap = if (!isVisibleOverlay) {
@@ -834,14 +853,17 @@ private fun EblanApplicationInfoListItem(
                     } else {
                         null
                     },
+                    onPress = {
+                        scale.animateTo(targetValue = SCALE)
+
+                        try {
+                            awaitRelease()
+                        } finally {
+                            scale.animateTo(targetValue = 1f)
+                        }
+                    },
                 )
-            }
-            .fillMaxWidth()
-            .padding(10.dp)
-            .background(
-                color = Color(appDrawerSettings.gridItemSettings.customBackgroundColor),
-                shape = RoundedCornerShape(size = appDrawerSettings.gridItemSettings.cornerRadius.dp),
-            ),
+            },
         verticalAlignment = Alignment.CenterVertically,
     ) {
         AsyncImage(
@@ -849,18 +871,18 @@ private fun EblanApplicationInfoListItem(
                 .data(eblanApplicationInfo.customIcon ?: icon)
                 .addLastModifiedToFileCacheKey(true).size(iconSizePx).crossfade(false).build(),
             contentDescription = null,
-            modifier = Modifier.size(appDrawerSettings.gridItemSettings.iconSize.dp).alpha(alpha)
-                .drawWithContent {
-                    graphicsLayer.record {
-                        this@drawWithContent.drawContent()
-                    }
-
-                    drawLayer(graphicsLayer)
-                }.onGloballyPositioned { layoutCoordinates ->
+            modifier = Modifier
+                .size(appDrawerSettings.gridItemSettings.iconSize.dp)
+                .onGloballyPositioned { layoutCoordinates ->
                     intOffset = layoutCoordinates.positionInRoot().round()
 
                     intSize = layoutCoordinates.size
-                }.run {
+                }
+                .graphicsLayer {
+                    scaleX = scale.value
+                    scaleY = scale.value
+                }
+                .run {
                     if (!isScrollInProgress && !isLongPress && !isVisibleOverlay) {
                         with(sharedTransitionScope) {
                             sharedElementWithCallerManagedVisibility(
@@ -873,7 +895,15 @@ private fun EblanApplicationInfoListItem(
                     } else {
                         this
                     }
-                },
+                }
+                .drawWithContent {
+                    graphicsLayer.record {
+                        this@drawWithContent.drawContent()
+                    }
+
+                    drawLayer(graphicsLayer)
+                }
+                .alpha(alpha),
         )
 
         if (appDrawerSettings.gridItemSettings.showLabel) {
