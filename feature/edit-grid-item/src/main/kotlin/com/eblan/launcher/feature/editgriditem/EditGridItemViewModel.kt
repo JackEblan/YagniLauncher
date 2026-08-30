@@ -166,7 +166,7 @@ internal class EditGridItemViewModel @Inject constructor(
     }
 
     private fun getGridItem() {
-        viewModelScope.launch(defaultDispatcher) {
+        viewModelScope.launch {
             _editGridItemUiState.update {
                 EditGridItemUiState.Success(
                     gridItem = getGridItemByIdUseCase(id = editGridItemRouteData.id),
