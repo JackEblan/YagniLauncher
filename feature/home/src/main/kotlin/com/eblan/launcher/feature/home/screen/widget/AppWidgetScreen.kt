@@ -20,6 +20,8 @@ package com.eblan.launcher.feature.home.screen.widget
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -40,6 +42,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -50,6 +53,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.rememberGraphicsLayer
@@ -67,9 +71,9 @@ import com.eblan.launcher.domain.model.EblanApplicationInfoGroup
 import com.eblan.launcher.domain.model.GridItemSettings
 import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.feature.home.component.HomeHandler
-import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
+import com.eblan.launcher.feature.home.util.SCALE
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 import kotlin.uuid.ExperimentalUuidApi
@@ -80,7 +84,6 @@ import kotlin.uuid.Uuid
 internal fun AppWidgetScreen(
     modifier: Modifier = Modifier,
     columns: Int,
-    drag: Drag,
     eblanAppWidgetProviderInfosGroup: Map<String, List<EblanAppWidgetProviderInfo>>,
     eblanApplicationInfoGroup: EblanApplicationInfoGroup?,
     gridItemSettings: GridItemSettings,
@@ -89,6 +92,7 @@ internal fun AppWidgetScreen(
     screenHeight: Int,
     screenWidth: Int,
     swipeY: Float,
+    isVisibleOverlay: Boolean,
     onDismiss: () -> Unit,
     onDismissApplicationScreen: () -> Unit,
     onUpdateOverlayBounds: (
@@ -173,12 +177,12 @@ internal fun AppWidgetScreen(
                     items(items = eblanAppWidgetProviderInfosGroup[eblanApplicationInfoGroup.packageName].orEmpty()) { eblanAppWidgetProviderInfo ->
                         EblanAppWidgetProviderInfoItem(
                             columns = columns,
-                            drag = drag,
                             eblanAppWidgetProviderInfo = eblanAppWidgetProviderInfo,
                             gridItemSettings = gridItemSettings,
                             rows = rows,
                             screenHeight = screenHeight,
                             screenWidth = screenWidth,
+                            isVisibleOverlay = isVisibleOverlay,
                             onUpdateOverlayBounds = onUpdateOverlayBounds,
                             onUpdateImageBitmap = onUpdateImageBitmap,
                             onUpdateGridItemSource = onUpdateGridItemSource,
@@ -201,12 +205,12 @@ internal fun AppWidgetScreen(
 private fun EblanAppWidgetProviderInfoItem(
     modifier: Modifier = Modifier,
     columns: Int,
-    drag: Drag,
     eblanAppWidgetProviderInfo: EblanAppWidgetProviderInfo,
     gridItemSettings: GridItemSettings,
     rows: Int,
     screenHeight: Int,
     screenWidth: Int,
+    isVisibleOverlay: Boolean,
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
@@ -232,30 +236,39 @@ private fun EblanAppWidgetProviderInfoItem(
 
     val id = remember { Uuid.random().toHexString() }
 
+    val scale = remember { Animatable(1f) }
+
+    LaunchedEffect(key1 = isVisibleOverlay) {
+        if (isVisibleOverlay) {
+            scale.snapTo(targetValue = 1f)
+        }
+    }
+
     Column(
         modifier = modifier
             .size(200.dp)
             .padding(20.dp)
-            .pointerInput(key1 = drag) {
+            .pointerInput(key1 = isVisibleOverlay) {
                 detectTapGestures(
                     onLongPress = {
                         scope.launch {
                             handleOnLongPress(
                                 eblanAppWidgetProviderInfo = eblanAppWidgetProviderInfo,
+                                graphicsLayer = graphicsLayer,
                                 gridItemSettings = gridItemSettings,
                                 id = id,
-                                onUpdateGridItemSource = onUpdateGridItemSource,
-                                onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
-                                onUpdateImageBitmap = onUpdateImageBitmap,
-                                graphicsLayer = graphicsLayer,
-                                onUpdateOverlayBounds = onUpdateOverlayBounds,
                                 intOffset = intOffset,
                                 intSize = intSize,
-                                onUpdateSharedElementKey = onUpdateSharedElementKey,
-                                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                                scale = scale,
                                 onDismiss = onDismiss,
                                 onDismissApplicationScreen = onDismissApplicationScreen,
+                                onUpdateGridItemSource = onUpdateGridItemSource,
+                                onUpdateImageBitmap = onUpdateImageBitmap,
                                 onUpdateIsDragging = onUpdateIsDragging,
+                                onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                                onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                                onUpdateOverlayBounds = onUpdateOverlayBounds,
+                                onUpdateSharedElementKey = onUpdateSharedElementKey,
                             )
                         }
                     },
@@ -313,17 +326,21 @@ private fun EblanAppWidgetProviderInfoItem(
 
         AsyncImage(
             modifier = Modifier
+                .onGloballyPositioned { layoutCoordinates ->
+                    intOffset = layoutCoordinates.positionInRoot().round()
+
+                    intSize = layoutCoordinates.size
+                }
+                .graphicsLayer {
+                    scaleX = scale.value
+                    scaleY = scale.value
+                }
                 .drawWithContent {
                     graphicsLayer.record {
                         this@drawWithContent.drawContent()
                     }
 
                     drawLayer(graphicsLayer)
-                }
-                .onGloballyPositioned { layoutCoordinates ->
-                    intOffset = layoutCoordinates.positionInRoot().round()
-
-                    intSize = layoutCoordinates.size
                 },
             model = preview,
             contentDescription = null,
@@ -333,23 +350,24 @@ private fun EblanAppWidgetProviderInfoItem(
 
 private suspend fun handleOnLongPress(
     eblanAppWidgetProviderInfo: EblanAppWidgetProviderInfo,
+    graphicsLayer: GraphicsLayer,
     gridItemSettings: GridItemSettings,
     id: String,
+    intOffset: IntOffset,
+    intSize: IntSize,
+    scale: Animatable<Float, AnimationVector1D>,
+    onDismiss: () -> Unit,
+    onDismissApplicationScreen: () -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
-    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
-    graphicsLayer: GraphicsLayer,
+    onUpdateIsDragging: (Boolean) -> Unit,
+    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
     ) -> Unit,
-    intOffset: IntOffset,
-    intSize: IntSize,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
-    onDismiss: () -> Unit,
-    onDismissApplicationScreen: () -> Unit,
-    onUpdateIsDragging: (Boolean) -> Unit,
 ) {
     val gridItem = getWidgetGridItem(
         componentName = eblanAppWidgetProviderInfo.componentName,
@@ -372,6 +390,8 @@ private suspend fun handleOnLongPress(
         targetCellHeight = eblanAppWidgetProviderInfo.targetCellHeight,
         targetCellWidth = eblanAppWidgetProviderInfo.targetCellWidth,
     )
+
+    scale.animateTo(SCALE)
 
     onUpdateGridItemSource(GridItemSource.New)
 

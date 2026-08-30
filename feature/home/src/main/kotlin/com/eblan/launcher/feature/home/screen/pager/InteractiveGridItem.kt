@@ -603,6 +603,14 @@ private fun InteractiveWidgetGridItem(
 
     var intSize by remember { mutableStateOf(IntSize.Zero) }
 
+    val scale = remember { Animatable(1f) }
+
+    LaunchedEffect(key1 = isVisibleOverlay) {
+        if (isVisibleOverlay) {
+            scale.snapTo(targetValue = 1f)
+        }
+    }
+
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -613,6 +621,10 @@ private fun InteractiveWidgetGridItem(
             .onGloballyPositioned { layoutCoordinates ->
                 intOffset = layoutCoordinates.positionInRoot().round()
                 intSize = layoutCoordinates.size
+            }
+            .graphicsLayer {
+                scaleX = scale.value
+                scaleY = scale.value
             }
             .run {
                 if (!isScrollInProgress && !hasInteraction) {
@@ -650,6 +662,8 @@ private fun InteractiveWidgetGridItem(
                     if (!isVisibleOverlay) {
                         it.setOnLongClickListener {
                             scope.launch {
+                                scale.animateTo(targetValue = SCALE)
+
                                 onLongPress(
                                     graphicsLayer = graphicsLayer,
                                     intOffset = intOffset,
@@ -698,6 +712,15 @@ private fun InteractiveWidgetGridItem(
                             }
                         } else {
                             null
+                        },
+                        onPress = {
+                            scale.animateTo(targetValue = SCALE)
+
+                            try {
+                                awaitRelease()
+                            } finally {
+                                scale.animateTo(targetValue = 1f)
+                            }
                         },
                     )
                 },

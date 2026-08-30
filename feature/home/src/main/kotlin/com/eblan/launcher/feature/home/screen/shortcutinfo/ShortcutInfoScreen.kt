@@ -17,6 +17,8 @@
  */
 package com.eblan.launcher.feature.home.screen.shortcutinfo
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
@@ -37,6 +39,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.rememberGraphicsLayer
@@ -59,6 +62,7 @@ import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
+import com.eblan.launcher.feature.home.util.SCALE
 import kotlinx.coroutines.launch
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -169,11 +173,17 @@ private fun ShortcutInfoMenuItem(
 
     val scope = rememberCoroutineScope()
 
-    var isLongPress by remember { mutableStateOf(false) }
-
     var intOffset by remember { mutableStateOf(IntOffset.Zero) }
 
     var intSize by remember { mutableStateOf(IntSize.Zero) }
+
+    val scale = remember { Animatable(1f) }
+
+    LaunchedEffect(key1 = isVisibleOverlay) {
+        if (isVisibleOverlay) {
+            scale.snapTo(targetValue = 1f)
+        }
+    }
 
     ListItem(
         modifier = modifier
@@ -188,12 +198,18 @@ private fun ShortcutInfoMenuItem(
             Text(text = eblanShortcutInfo.shortLabel)
         },
         leadingContent = {
-            Box(
+            AsyncImage(
+                model = eblanShortcutInfo.icon,
+                contentDescription = null,
                 modifier = Modifier
                     .size(30.dp)
                     .onGloballyPositioned { layoutCoordinates ->
                         intOffset = layoutCoordinates.positionInRoot().round()
                         intSize = layoutCoordinates.size
+                    }
+                    .graphicsLayer {
+                        scaleX = scale.value
+                        scaleY = scale.value
                     }
                     .drawWithContent {
                         graphicsLayer.record {
@@ -208,33 +224,26 @@ private fun ShortcutInfoMenuItem(
                                 scope.launch {
                                     handleOnLongPress(
                                         eblanShortcutInfo = eblanShortcutInfo,
+                                        graphicsLayer = graphicsLayer,
                                         gridItemSettings = gridItemSettings,
                                         icon = icon,
-                                        onUpdateGridItemSource = onUpdateGridItemSource,
-                                        onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
-                                        onUpdateImageBitmap = onUpdateImageBitmap,
-                                        graphicsLayer = graphicsLayer,
-                                        onUpdateOverlayBounds = onUpdateOverlayBounds,
                                         intOffset = intOffset,
                                         intSize = intSize,
-                                        onUpdateSharedElementKey = onUpdateSharedElementKey,
-                                        onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
-                                        onUpdateTransitionState = onUpdateTransitionState,
+                                        scale = scale,
+                                        onUpdateGridItemSource = onUpdateGridItemSource,
+                                        onUpdateImageBitmap = onUpdateImageBitmap,
                                         onUpdateIsDragging = onUpdateIsDragging,
+                                        onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
+                                        onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
+                                        onUpdateOverlayBounds = onUpdateOverlayBounds,
+                                        onUpdateSharedElementKey = onUpdateSharedElementKey,
+                                        onUpdateTransitionState = onUpdateTransitionState,
                                     )
                                 }
                             },
                         )
                     },
-            ) {
-                if (!isLongPress) {
-                    AsyncImage(
-                        model = eblanShortcutInfo.icon,
-                        contentDescription = null,
-                        modifier = Modifier.matchParentSize(),
-                    )
-                }
-            }
+            )
         },
     )
 }
@@ -242,22 +251,23 @@ private fun ShortcutInfoMenuItem(
 @OptIn(ExperimentalUuidApi::class)
 private suspend fun handleOnLongPress(
     eblanShortcutInfo: EblanShortcutInfo,
+    graphicsLayer: GraphicsLayer,
     gridItemSettings: GridItemSettings,
     icon: String?,
+    intOffset: IntOffset,
+    intSize: IntSize,
+    scale: Animatable<Float, AnimationVector1D>,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
-    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
-    graphicsLayer: GraphicsLayer,
+    onUpdateIsDragging: (Boolean) -> Unit,
+    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
+    onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
     ) -> Unit,
-    intOffset: IntOffset,
-    intSize: IntSize,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
     onUpdateTransitionState: (Boolean) -> Unit,
-    onUpdateIsDragging: (Boolean) -> Unit,
 ) {
     val id = Uuid.random().toHexString()
 
@@ -267,6 +277,8 @@ private suspend fun handleOnLongPress(
         icon = icon,
         id = id,
     )
+
+    scale.animateTo(SCALE)
 
     onUpdateGridItemSource(GridItemSource.New)
 

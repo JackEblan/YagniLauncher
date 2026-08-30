@@ -17,8 +17,6 @@
  */
 package com.eblan.launcher.feature.home.screen.pager
 
-import android.R.attr.scaleX
-import android.R.attr.scaleY
 import android.content.BroadcastReceiver
 import android.content.ClipDescription
 import android.content.Context
@@ -1101,7 +1099,6 @@ internal fun PagerScreen(
         if (pagerScreenState.showWidgetScreen) {
             WidgetScreen(
                 columns = homeSettings.columns,
-                drag = pagerScreenState.drag,
                 eblanAppWidgetProviderInfos = eblanAppWidgetProviderInfos,
                 gridItemSettings = homeSettings.gridItemSettings,
                 paddingValues = paddingValues,
@@ -1111,6 +1108,7 @@ internal fun PagerScreen(
                 swipeY = pagerScreenState.widgetScreenSwipeY.value,
                 alpha = pagerScreenState.widgetScreenAlpha,
                 cornerSize = pagerScreenState.widgetScreenCornerSize,
+                isVisibleOverlay = isVisibleOverlay,
                 onDismiss = pagerScreenState::dismissWidgetScreen,
                 onGetEblanAppWidgetProviderInfosByLabel = onGetEblanAppWidgetProviderInfosByLabel,
                 onUpdateOverlayBounds = pagerScreenState::updateOverlayBounds,
@@ -1127,7 +1125,6 @@ internal fun PagerScreen(
 
         if (pagerScreenState.showShortcutConfigScreen) {
             ShortcutConfigScreen(
-                drag = pagerScreenState.drag,
                 eblanShortcutConfigs = eblanShortcutConfigs,
                 gridItemSettings = homeSettings.gridItemSettings,
                 paddingValues = paddingValues,
@@ -1135,6 +1132,7 @@ internal fun PagerScreen(
                 swipeY = pagerScreenState.shortcutConfigScreenSwipeY.value,
                 alpha = pagerScreenState.shortcutConfigScreenAlpha,
                 cornerSize = pagerScreenState.shortcutConfigScreenCornerSize,
+                isVisibleOverlay = isVisibleOverlay,
                 onDismiss = pagerScreenState::dismissShortcutConfigScreen,
                 onGetEblanShortcutConfigsByLabel = onGetEblanShortcutConfigsByLabel,
                 onUpdateOverlayBounds = pagerScreenState::updateOverlayBounds,
@@ -1152,7 +1150,6 @@ internal fun PagerScreen(
         if (pagerScreenState.eblanApplicationInfoGroup != null) {
             AppWidgetScreen(
                 columns = homeSettings.columns,
-                drag = pagerScreenState.drag,
                 eblanAppWidgetProviderInfosGroup = eblanAppWidgetProviderInfosGroup,
                 eblanApplicationInfoGroup = pagerScreenState.eblanApplicationInfoGroup,
                 gridItemSettings = homeSettings.gridItemSettings,
@@ -1161,6 +1158,7 @@ internal fun PagerScreen(
                 screenHeight = screenHeight,
                 screenWidth = screenWidth,
                 swipeY = pagerScreenState.appWidgetScreenSwipeY.value,
+                isVisibleOverlay = isVisibleOverlay,
                 onDismiss = pagerScreenState::dismissAppWidgetScreen,
                 onDismissApplicationScreen = pagerScreenState::dismissApplicationScreen,
                 onUpdateOverlayBounds = pagerScreenState::updateOverlayBounds,
