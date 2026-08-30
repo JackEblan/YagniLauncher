@@ -201,7 +201,6 @@ internal fun Modifier.dragContainer(gridDragDropState: GridDragDropState): Modif
 internal fun LazyGridItemScope.DraggableItem(
     modifier: Modifier = Modifier,
     dragDropState: GridDragDropState,
-    enabled: Boolean,
     index: Int,
     content: @Composable (isDragging: Boolean) -> Unit,
 ) {
@@ -226,13 +225,7 @@ internal fun LazyGridItemScope.DraggableItem(
         }
 
     Box(
-        modifier = modifier.then(
-            if (enabled) {
-                draggingModifier
-            } else {
-                Modifier
-            },
-        ),
+        modifier = modifier.then(draggingModifier),
         propagateMinConstraints = true,
     ) {
         content(dragging)

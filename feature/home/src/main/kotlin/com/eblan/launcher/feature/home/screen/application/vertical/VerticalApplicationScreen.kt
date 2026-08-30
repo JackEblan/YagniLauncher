@@ -441,7 +441,6 @@ private fun EblanApplicationInfosPage(
                 screenHeight = screenHeight,
                 systemTextColor = systemTextColor,
                 systemCustomTextColor = systemCustomTextColor,
-                animations = animations,
                 onDismissDragAndDrop = onDismissDragAndDrop,
                 onUpdateEblanApplicationInfos = onUpdateEblanApplicationInfos,
             )

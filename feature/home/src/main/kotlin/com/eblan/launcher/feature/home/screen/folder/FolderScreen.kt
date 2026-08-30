@@ -265,7 +265,6 @@ internal fun FolderScreen(
             isFirstFolderGridItem = isFirstFolderGridItem,
             animations = animations,
             onAnimateToScrollToPage = folderGridHorizontalPagerState::animateScrollToPage,
-            onScrollToPage = folderGridHorizontalPagerState::scrollToPage,
             onDeleteFolderPopupEntry = onDeleteFolderPopupEntry,
             onMoveFolderGridItemOutsideFolder = onMoveFolderGridItemOutsideFolder,
             onUpdateSharedElementKey = onUpdateSharedElementKey,
@@ -589,7 +588,6 @@ private suspend fun handleFolderPopup(
     isFirstFolderGridItem: Boolean,
     animations: Boolean,
     onAnimateToScrollToPage: suspend (Int) -> Unit,
-    onScrollToPage: suspend (Int) -> Unit,
     onDeleteFolderPopupEntry: (FolderPopupEntry) -> Unit,
     onMoveFolderGridItemOutsideFolder: (GridItem) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
@@ -597,13 +595,11 @@ private suspend fun handleFolderPopup(
 ) {
     if (!folderPopup.folderPopupEntry.isCloseFolder) return
 
-    if (animations) {
-        onAnimateToScrollToPage(0)
+    onAnimateToScrollToPage(0)
 
+    if (animations) {
         progress.animateTo(targetValue = 0f)
     } else {
-        onScrollToPage(0)
-
         progress.snapTo(targetValue = 0f)
     }
 

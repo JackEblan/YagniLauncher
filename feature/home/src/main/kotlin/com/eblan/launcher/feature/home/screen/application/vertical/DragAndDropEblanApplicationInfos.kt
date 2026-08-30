@@ -95,7 +95,6 @@ internal fun DragAndDropEblanApplicationInfos(
     screenHeight: Int,
     systemCustomTextColor: Int,
     systemTextColor: TextColor,
-    animations: Boolean,
     onDismissDragAndDrop: () -> Unit,
     onUpdateEblanApplicationInfos: (List<EblanApplicationInfo>) -> Unit,
 ) {
@@ -167,7 +166,6 @@ internal fun DragAndDropEblanApplicationInfos(
                 key = { _, eblanApplicationInfoWithIconPackInfo -> eblanApplicationInfoWithIconPackInfo.componentName },
             ) { index, eblanApplicationInfo ->
                 DraggableItem(
-                    enabled = animations,
                     dragDropState = gridDragDropState,
                     index = index,
                 ) {
