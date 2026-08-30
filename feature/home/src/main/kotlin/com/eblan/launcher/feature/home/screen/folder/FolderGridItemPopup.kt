@@ -93,6 +93,7 @@ internal fun FolderGridItemPopup(
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
+        scale: Float,
     ) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onWidgets: (EblanApplicationInfoGroup) -> Unit,
@@ -261,6 +262,7 @@ private fun FolderGridItemPopupContent(
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
+        scale: Float,
     ) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onWidgets: (EblanApplicationInfoGroup) -> Unit,
@@ -394,6 +396,7 @@ private fun ApplicationInfoFolderGridItemPopupContent(
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
+        scale: Float,
     ) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onWidgets: () -> Unit,

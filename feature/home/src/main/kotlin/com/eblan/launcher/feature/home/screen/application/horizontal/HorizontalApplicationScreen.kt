@@ -118,6 +118,7 @@ internal fun HorizontalApplicationScreen(
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
+        scale: Float,
     ) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onVerticalDrag: (Float) -> Unit,
@@ -237,8 +238,12 @@ internal fun HorizontalApplicationScreen(
                 onUpdateGridItemSource = onUpdateGridItemSource,
                 onUpdateImageBitmap = onUpdateImageBitmap,
                 onUpdateIsDragging = onUpdateIsDragging,
-                onUpdateOverlayBounds = { intOffset, intSize ->
-                    onUpdateOverlayBounds(intOffset, intSize)
+                onUpdateOverlayBounds = { intOffset, intSize, scale ->
+                    onUpdateOverlayBounds(
+                        intOffset,
+                        intSize,
+                        scale,
+                    )
 
                     popupIntOffset = intOffset
 
@@ -334,6 +339,7 @@ private fun EblanApplicationInfosPage(
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
+        scale: Float,
     ) -> Unit,
     onUpdatePopupMenu: (Boolean) -> Unit,
     onUpdatePrivatePopupMenu: (Boolean) -> Unit,
@@ -465,6 +471,7 @@ private fun EblanApplicationInfos(
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
+        scale: Float,
     ) -> Unit,
     onUpdatePopupMenu: (Boolean) -> Unit,
     onUpdatePrivatePopupMenu: (Boolean) -> Unit,

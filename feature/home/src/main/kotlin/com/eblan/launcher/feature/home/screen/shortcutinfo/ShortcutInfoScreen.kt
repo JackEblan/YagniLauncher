@@ -81,6 +81,7 @@ internal fun ShortcutInfoScreen(
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
+        scale: Float,
     ) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
@@ -159,6 +160,7 @@ private fun ShortcutInfoMenuItem(
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
+        scale: Float,
     ) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onUpdateIsVisibleOverlay: (Boolean) -> Unit,
@@ -168,8 +170,6 @@ private fun ShortcutInfoMenuItem(
     val graphicsLayer = rememberGraphicsLayer()
 
     val scope = rememberCoroutineScope()
-
-    var isLongPress by remember { mutableStateOf(false) }
 
     var intOffset by remember { mutableStateOf(IntOffset.Zero) }
 
@@ -228,13 +228,11 @@ private fun ShortcutInfoMenuItem(
                     }
                     .size(30.dp),
             ) {
-                if (!isLongPress) {
-                    AsyncImage(
-                        model = eblanShortcutInfo.icon,
-                        contentDescription = null,
-                        modifier = Modifier.matchParentSize(),
-                    )
-                }
+                AsyncImage(
+                    model = eblanShortcutInfo.icon,
+                    contentDescription = null,
+                    modifier = Modifier.matchParentSize(),
+                )
             }
         },
     )
@@ -249,7 +247,11 @@ private suspend fun handleOnLongPress(
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
     graphicsLayer: GraphicsLayer,
-    onUpdateOverlayBounds: (IntOffset, IntSize) -> Unit,
+    onUpdateOverlayBounds: (
+        intOffset: IntOffset,
+        intSize: IntSize,
+        scale: Float,
+    ) -> Unit,
     intOffset: IntOffset,
     intSize: IntSize,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
@@ -281,6 +283,7 @@ private suspend fun handleOnLongPress(
     onUpdateOverlayBounds(
         intOffset,
         intSize,
+        1f,
     )
 
     onUpdateSharedElementKey(

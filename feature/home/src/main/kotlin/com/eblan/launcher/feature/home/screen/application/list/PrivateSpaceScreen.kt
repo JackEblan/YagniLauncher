@@ -18,6 +18,7 @@
 package com.eblan.launcher.feature.home.screen.application.list
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -41,6 +42,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -88,6 +90,7 @@ internal fun LazyListScope.privateSpace(
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
+        scale: Float,
     ) -> Unit,
     onUpdatePopupMenu: (Boolean) -> Unit,
     onUpdateEblanApplicationInfo: (EblanApplicationInfo) -> Unit,
@@ -141,6 +144,7 @@ private fun PrivateSpaceEblanApplicationInfoItem(
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
+        scale: Float,
     ) -> Unit,
     onUpdatePopupMenu: (Boolean) -> Unit,
     onUpdateEblanApplicationInfo: (EblanApplicationInfo) -> Unit,
@@ -187,6 +191,8 @@ private fun PrivateSpaceEblanApplicationInfoItem(
         appDrawerSettings.gridItemSettings.iconSize.dp.roundToPx()
     }
 
+    val scale = remember { Animatable(1f) }
+
     Row(
         modifier = modifier
             .pointerInput(key1 = isVisibleOverlay) {
@@ -212,18 +218,28 @@ private fun PrivateSpaceEblanApplicationInfoItem(
                         {
                             scope.launch {
                                 handleOnLongPressPrivateSpaceEblanApplicationInfoItem(
-                                    onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
                                     eblanApplicationInfo = eblanApplicationInfo,
-                                    onUpdateOverlayBounds = onUpdateOverlayBounds,
                                     intOffset = intOffset,
                                     intSize = intSize,
-                                    onUpdatePopupMenu = onUpdatePopupMenu,
                                     keyboardController = keyboardController,
+                                    scale = scale,
+                                    onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
+                                    onUpdateOverlayBounds = onUpdateOverlayBounds,
+                                    onUpdatePopupMenu = onUpdatePopupMenu,
                                 )
                             }
                         }
                     } else {
                         null
+                    },
+                    onPress = {
+                        scale.animateTo(targetValue = 0.85f)
+
+                        try {
+                            awaitRelease()
+                        } finally {
+                            scale.animateTo(targetValue = 1f)
+                        }
                     },
                 )
             }
@@ -246,7 +262,11 @@ private fun PrivateSpaceEblanApplicationInfoItem(
 
                     intSize = layoutCoordinates.size
                 }
-                .size(appDrawerSettings.gridItemSettings.iconSize.dp),
+                .size(appDrawerSettings.gridItemSettings.iconSize.dp)
+                .graphicsLayer {
+                    scaleX = scale.value
+                    scaleY = scale.value
+                },
             placeholder = ColorPainter(Color.Transparent),
             error = ColorPainter(Color.Transparent),
         )

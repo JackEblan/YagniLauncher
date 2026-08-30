@@ -94,6 +94,7 @@ internal fun AppWidgetScreen(
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
+        scale: Float,
     ) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
@@ -210,6 +211,7 @@ private fun EblanAppWidgetProviderInfoItem(
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
+        scale: Float,
     ) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
@@ -339,7 +341,11 @@ private suspend fun handleOnLongPress(
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
     graphicsLayer: GraphicsLayer,
-    onUpdateOverlayBounds: (IntOffset, IntSize) -> Unit,
+    onUpdateOverlayBounds: (
+        intOffset: IntOffset,
+        intSize: IntSize,
+        scale: Float,
+    ) -> Unit,
     intOffset: IntOffset,
     intSize: IntSize,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
@@ -385,6 +391,7 @@ private suspend fun handleOnLongPress(
     onUpdateOverlayBounds(
         intOffset,
         intSize,
+        1f,
     )
 
     onUpdateSharedElementKey(

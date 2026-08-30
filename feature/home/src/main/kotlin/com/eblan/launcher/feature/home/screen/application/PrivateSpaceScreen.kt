@@ -22,6 +22,8 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -103,6 +105,7 @@ internal fun LazyGridScope.privateSpace(
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
+        scale: Float,
     ) -> Unit,
     onUpdatePopupMenu: (Boolean) -> Unit,
     onUpdateEblanApplicationInfo: (EblanApplicationInfo) -> Unit,
@@ -243,6 +246,7 @@ internal fun PrivateSpaceEblanApplicationInfoItem(
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
+        scale: Float,
     ) -> Unit,
     onUpdatePopupMenu: (Boolean) -> Unit,
     onUpdateEblanApplicationInfo: (EblanApplicationInfo) -> Unit,
@@ -297,6 +301,8 @@ internal fun PrivateSpaceEblanApplicationInfoItem(
         appDrawerSettings.gridItemSettings.iconSize.dp.roundToPx()
     }
 
+    val scale = remember { Animatable(1f) }
+
     Column(
         modifier = modifier
             .pointerInput(key1 = isVisibleOverlay) {
@@ -322,18 +328,28 @@ internal fun PrivateSpaceEblanApplicationInfoItem(
                         {
                             scope.launch {
                                 handleOnLongPressPrivateSpaceEblanApplicationInfoItem(
-                                    onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
                                     eblanApplicationInfo = eblanApplicationInfo,
-                                    onUpdateOverlayBounds = onUpdateOverlayBounds,
                                     intOffset = intOffset,
                                     intSize = intSize,
-                                    onUpdatePopupMenu = onUpdatePopupMenu,
                                     keyboardController = keyboardController,
+                                    scale = scale,
+                                    onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
+                                    onUpdateOverlayBounds = onUpdateOverlayBounds,
+                                    onUpdatePopupMenu = onUpdatePopupMenu,
                                 )
                             }
                         }
                     } else {
                         null
+                    },
+                    onPress = {
+                        scale.animateTo(targetValue = 0.85f)
+
+                        try {
+                            awaitRelease()
+                        } finally {
+                            scale.animateTo(targetValue = 1f)
+                        }
                     },
                 )
             }
@@ -380,19 +396,25 @@ internal fun PrivateSpaceEblanApplicationInfoItem(
 }
 
 internal fun handleOnLongPressPrivateSpaceEblanApplicationInfoItem(
-    onUpdateEblanApplicationInfo: (EblanApplicationInfo) -> Unit,
     eblanApplicationInfo: EblanApplicationInfo,
-    onUpdateOverlayBounds: (IntOffset, IntSize) -> Unit,
     intOffset: IntOffset,
     intSize: IntSize,
-    onUpdatePopupMenu: (Boolean) -> Unit,
     keyboardController: SoftwareKeyboardController?,
+    scale: Animatable<Float, AnimationVector1D>,
+    onUpdateEblanApplicationInfo: (EblanApplicationInfo) -> Unit,
+    onUpdateOverlayBounds: (
+        intOffset: IntOffset,
+        intSize: IntSize,
+        scale: Float,
+    ) -> Unit,
+    onUpdatePopupMenu: (Boolean) -> Unit,
 ) {
     onUpdateEblanApplicationInfo(eblanApplicationInfo)
 
     onUpdateOverlayBounds(
         intOffset,
         intSize,
+        scale.value,
     )
 
     onUpdatePopupMenu(true)

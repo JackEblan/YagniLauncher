@@ -22,6 +22,7 @@ import android.graphics.Rect
 import android.os.Build
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
@@ -49,6 +50,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
@@ -125,6 +127,7 @@ internal fun InteractiveGridItem(
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
+        scale: Float,
     ) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onShowGridItemPopup: (
@@ -361,6 +364,7 @@ private fun InteractiveApplicationInfoGridItem(
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
+        scale: Float,
     ) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
@@ -399,6 +403,8 @@ private fun InteractiveApplicationInfoGridItem(
 
     val isNotificationAccessGranted by rememberIsNotificationAccessGranted()
 
+    val scale = remember { Animatable(1f) }
+
     Column(
         modifier = modifier
             .pointerInput(key1 = isVisibleOverlay) {
@@ -424,6 +430,7 @@ private fun InteractiveApplicationInfoGridItem(
                                     intSize = intSize,
                                     sharedElementKey = sharedElementKey,
                                     gridItem = gridItem,
+                                    scale = scale,
                                     onUpdateGridItemSource = onUpdateGridItemSource,
                                     onUpdateImageBitmap = onUpdateImageBitmap,
                                     onUpdateOverlayBounds = onUpdateOverlayBounds,
@@ -447,6 +454,15 @@ private fun InteractiveApplicationInfoGridItem(
                         }
                     } else {
                         null
+                    },
+                    onPress = {
+                        scale.animateTo(targetValue = 0.85f)
+
+                        try {
+                            awaitRelease()
+                        } finally {
+                            scale.animateTo(targetValue = 1f)
+                        }
                     },
                 )
             }
@@ -499,6 +515,10 @@ private fun InteractiveApplicationInfoGridItem(
                         } else {
                             this
                         }
+                    }
+                    .graphicsLayer {
+                        scaleX = scale.value
+                        scaleY = scale.value
                     }
                     .drawWithContent {
                         graphicsLayer.record {
@@ -559,6 +579,7 @@ private fun InteractiveWidgetGridItem(
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
+        scale: Float,
     ) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
@@ -578,6 +599,14 @@ private fun InteractiveWidgetGridItem(
     var intOffset by remember { mutableStateOf(IntOffset.Zero) }
 
     var intSize by remember { mutableStateOf(IntSize.Zero) }
+
+    val scale = remember { Animatable(1f) }
+
+    LaunchedEffect(key1 = isVisibleOverlay) {
+        if (isVisibleOverlay) {
+            scale.animateTo(targetValue = 1f)
+        }
+    }
 
     Box(
         modifier = modifier
@@ -605,6 +634,10 @@ private fun InteractiveWidgetGridItem(
                     this
                 }
             }
+            .graphicsLayer {
+                scaleX = scale.value
+                scaleY = scale.value
+            }
             .drawWithContent {
                 graphicsLayer.record {
                     this@drawWithContent.drawContent()
@@ -627,12 +660,15 @@ private fun InteractiveWidgetGridItem(
                     if (!isVisibleOverlay) {
                         it.setOnLongClickListener {
                             scope.launch {
+                                scale.animateTo(0.85f)
+
                                 onLongPress(
                                     graphicsLayer = graphicsLayer,
                                     intOffset = intOffset,
                                     intSize = intSize,
                                     sharedElementKey = sharedElementKey,
                                     gridItem = gridItem,
+                                    scale = scale,
                                     onUpdateGridItemSource = onUpdateGridItemSource,
                                     onUpdateImageBitmap = onUpdateImageBitmap,
                                     onUpdateOverlayBounds = onUpdateOverlayBounds,
@@ -663,6 +699,7 @@ private fun InteractiveWidgetGridItem(
                                         intSize = intSize,
                                         sharedElementKey = sharedElementKey,
                                         gridItem = gridItem,
+                                        scale = scale,
                                         onUpdateGridItemSource = onUpdateGridItemSource,
                                         onUpdateImageBitmap = onUpdateImageBitmap,
                                         onUpdateOverlayBounds = onUpdateOverlayBounds,
@@ -675,6 +712,16 @@ private fun InteractiveWidgetGridItem(
                             }
                         } else {
                             null
+                        },
+
+                        onPress = {
+                            scale.animateTo(targetValue = 0.85f)
+
+                            try {
+                                awaitRelease()
+                            } finally {
+                                scale.animateTo(targetValue = 1f)
+                            }
                         },
                     )
                 },
@@ -711,6 +758,7 @@ private fun InteractiveShortcutInfoGridItem(
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
+        scale: Float,
     ) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
@@ -745,6 +793,8 @@ private fun InteractiveShortcutInfoGridItem(
 
     val alpha = if (hasInteraction) 0f else defaultAlpha
 
+    val scale = remember { Animatable(1f) }
+
     Column(
         modifier = modifier
             .pointerInput(key1 = isVisibleOverlay) {
@@ -770,6 +820,7 @@ private fun InteractiveShortcutInfoGridItem(
                                     intSize = intSize,
                                     sharedElementKey = sharedElementKey,
                                     gridItem = gridItem,
+                                    scale = scale,
                                     onUpdateGridItemSource = onUpdateGridItemSource,
                                     onUpdateImageBitmap = onUpdateImageBitmap,
                                     onUpdateOverlayBounds = onUpdateOverlayBounds,
@@ -799,6 +850,15 @@ private fun InteractiveShortcutInfoGridItem(
                         }
                     } else {
                         null
+                    },
+                    onPress = {
+                        scale.animateTo(targetValue = 0.85f)
+
+                        try {
+                            awaitRelease()
+                        } finally {
+                            scale.animateTo(targetValue = 1f)
+                        }
                     },
                 )
             }
@@ -849,6 +909,10 @@ private fun InteractiveShortcutInfoGridItem(
                         } else {
                             this
                         }
+                    }
+                    .graphicsLayer {
+                        scaleX = scale.value
+                        scaleY = scale.value
                     }
                     .drawWithContent {
                         graphicsLayer.apply {
@@ -924,6 +988,7 @@ private fun InteractiveFolderGridItem(
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
+        scale: Float,
     ) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
@@ -963,6 +1028,8 @@ private fun InteractiveFolderGridItem(
     val currentLockMovement = rememberUpdatedState(lockMovement)
     val currentFolderGridItems =
         rememberUpdatedState(previewFolderGridItems[gridItem.id]?.folderGridItems)
+
+    val scale = remember { Animatable(1f) }
 
     LaunchedEffect(key1 = moveGridItemResult) {
         handleConflictingGridItem(
@@ -1006,6 +1073,7 @@ private fun InteractiveFolderGridItem(
                                     intSize = intSize,
                                     sharedElementKey = sharedElementKey,
                                     gridItem = gridItem,
+                                    scale = scale,
                                     onUpdateGridItemSource = onUpdateGridItemSource,
                                     onUpdateImageBitmap = onUpdateImageBitmap,
                                     onUpdateOverlayBounds = onUpdateOverlayBounds,
@@ -1036,6 +1104,15 @@ private fun InteractiveFolderGridItem(
                         }
                     } else {
                         null
+                    },
+                    onPress = {
+                        scale.animateTo(targetValue = 0.85f)
+
+                        try {
+                            awaitRelease()
+                        } finally {
+                            scale.animateTo(targetValue = 1f)
+                        }
                     },
                 )
             }
@@ -1077,6 +1154,10 @@ private fun InteractiveFolderGridItem(
                 } else {
                     this
                 }
+            }
+            .graphicsLayer {
+                scaleX = scale.value
+                scaleY = scale.value
             }
             .drawWithContent {
                 graphicsLayer.record {
@@ -1164,6 +1245,7 @@ private fun InteractiveShortcutConfigGridItem(
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
+        scale: Float,
     ) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
@@ -1204,6 +1286,8 @@ private fun InteractiveShortcutConfigGridItem(
 
     val alpha = if (hasInteraction) 0f else 1f
 
+    val scale = remember { Animatable(1f) }
+
     Column(
         modifier = modifier
             .pointerInput(key1 = isVisibleOverlay) {
@@ -1229,6 +1313,7 @@ private fun InteractiveShortcutConfigGridItem(
                                     intSize = intSize,
                                     sharedElementKey = sharedElementKey,
                                     gridItem = gridItem,
+                                    scale = scale,
                                     onUpdateGridItemSource = onUpdateGridItemSource,
                                     onUpdateImageBitmap = onUpdateImageBitmap,
                                     onUpdateOverlayBounds = onUpdateOverlayBounds,
@@ -1250,6 +1335,15 @@ private fun InteractiveShortcutConfigGridItem(
                         }
                     } else {
                         null
+                    },
+                    onPress = {
+                        scale.animateTo(targetValue = 0.85f)
+
+                        try {
+                            awaitRelease()
+                        } finally {
+                            scale.animateTo(targetValue = 1f)
+                        }
                     },
                 )
             }
@@ -1298,6 +1392,10 @@ private fun InteractiveShortcutConfigGridItem(
                     } else {
                         this
                     }
+                }
+                .graphicsLayer {
+                    scaleX = scale.value
+                    scaleY = scale.value
                 }
                 .drawWithContent {
                     graphicsLayer.record {

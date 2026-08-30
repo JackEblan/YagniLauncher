@@ -37,6 +37,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.draganddrop.dragAndDropTarget
@@ -73,6 +74,7 @@ import androidx.compose.ui.draganddrop.mimeTypes
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -1191,6 +1193,7 @@ internal fun PagerScreen(
             sharedElementKey = pagerScreenState.sharedElementKey,
             isVisibleOverlay = isVisibleOverlay,
             screenWidth = screenWidth,
+            scale = pagerScreenState.overlayScale,
             onResetOverlay = pagerScreenState::resetOverlay,
         )
     }
@@ -1206,6 +1209,7 @@ private fun SharedTransitionScope.OverlayImage(
     sharedElementKey: SharedElementKey?,
     isVisibleOverlay: Boolean,
     screenWidth: Int,
+    scale: Float,
     onResetOverlay: () -> Unit,
 ) {
     if (overlayImageBitmap == null ||
@@ -1224,8 +1228,12 @@ private fun SharedTransitionScope.OverlayImage(
         DpSize(width = overlayIntSize.width.toDp(), height = overlayIntSize.height.toDp())
     }
 
+    val scale = remember { Animatable(scale) }
+
     LaunchedEffect(key1 = isVisibleOverlay) {
-        if (!isVisibleOverlay) {
+        if (isVisibleOverlay) {
+            scale.animateTo(targetValue = 1f)
+        } else {
             onResetOverlay()
         }
     }
@@ -1243,6 +1251,10 @@ private fun SharedTransitionScope.OverlayImage(
                 }
             }
             .size(size)
+            .graphicsLayer {
+                scaleX = scale.value
+                scaleY = scale.value
+            }
             .sharedElementWithCallerManagedVisibility(
                 rememberSharedContentState(key = sharedElementKey),
                 visible = isVisibleOverlay,

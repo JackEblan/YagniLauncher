@@ -35,6 +35,7 @@ import androidx.compose.foundation.pager.PagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -307,6 +308,9 @@ internal class PagerScreenState(
             !showFolderGridItemPopup &&
             eblanApplicationInfoGroup == null
 
+    var overlayScale by mutableFloatStateOf(1f)
+        private set
+
     private val touchSlop = with(density) {
         50.dp.toPx()
     }
@@ -385,10 +389,13 @@ internal class PagerScreenState(
     fun updateOverlayBounds(
         intOffset: IntOffset,
         intSize: IntSize,
+        scale: Float,
     ) {
         overlayIntOffset = intOffset
 
         overlayIntSize = intSize
+
+        overlayScale = scale
     }
 
     fun resetOverlay() {

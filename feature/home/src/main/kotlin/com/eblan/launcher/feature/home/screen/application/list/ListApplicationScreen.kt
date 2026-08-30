@@ -20,6 +20,7 @@ package com.eblan.launcher.feature.home.screen.application.list
 import android.os.Build
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
@@ -159,6 +160,7 @@ internal fun ListApplicationScreen(
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
+        scale: Float,
     ) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
     onVerticalDrag: (Float) -> Unit,
@@ -284,8 +286,12 @@ internal fun ListApplicationScreen(
                 onUpdateGridItemSource = onUpdateGridItemSource,
                 onUpdateImageBitmap = onUpdateImageBitmap,
                 onUpdateIsDragging = onUpdateIsDragging,
-                onUpdateOverlayBounds = { intOffset, intSize ->
-                    onUpdateOverlayBounds(intOffset, intSize)
+                onUpdateOverlayBounds = { intOffset, intSize, scale ->
+                    onUpdateOverlayBounds(
+                        intOffset,
+                        intSize,
+                        scale,
+                    )
 
                     popupIntOffset = intOffset
 
@@ -382,6 +388,7 @@ private fun EblanApplicationInfosPage(
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
+        scale: Float,
     ) -> Unit,
     onUpdatePopupMenu: (Boolean) -> Unit,
     onUpdatePrivatePopupMenu: (Boolean) -> Unit,
@@ -515,6 +522,7 @@ private fun EblanApplicationInfos(
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
+        scale: Float,
     ) -> Unit,
     onUpdatePopupMenu: (Boolean) -> Unit,
     onUpdatePrivatePopupMenu: (Boolean) -> Unit,
@@ -708,6 +716,7 @@ private fun EblanApplicationInfoListItem(
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
+        scale: Float,
     ) -> Unit,
     onUpdatePopupMenu: (Boolean) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
@@ -768,6 +777,8 @@ private fun EblanApplicationInfoListItem(
         parent = SharedElementKey.Parent.SwipeY,
     )
 
+    val scale = remember { Animatable(1f) }
+
     LaunchedEffect(
         key1 = drag,
         key2 = isLongPress,
@@ -821,6 +832,7 @@ private fun EblanApplicationInfoListItem(
                                     intOffset = intOffset,
                                     intSize = intSize,
                                     keyboardController = keyboardController,
+                                    scale = scale,
                                     onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
                                     onUpdateImageBitmap = onUpdateImageBitmap,
                                     onUpdateIsLongPress = { isLongPress = it },
