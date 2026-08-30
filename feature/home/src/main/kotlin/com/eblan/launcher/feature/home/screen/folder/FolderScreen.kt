@@ -171,59 +171,35 @@ internal fun FolderScreen(
 
     val progress = remember { Animatable(0f) }
 
-    val animatedFolderRect by remember(
-        key1 = folderPopupLayoutInfo,
-        key2 = animations,
-    ) {
+    val animatedFolderRect by remember(key1 = folderPopupLayoutInfo) {
         derivedStateOf {
-            if (animations) {
-                getAnimatedRect(
-                    progress = progress.value,
-                    startWidth = folderPopupLayoutInfo.startWidth,
-                    startHeight = folderPopupLayoutInfo.startHeight,
-                    endWidth = folderPopupLayoutInfo.folderGridWidthPx.toFloat(),
-                    endHeight = folderPopupLayoutInfo.endHeight.toFloat(),
-                    startCenterX = folderPopupLayoutInfo.startCenterX,
-                    startCenterY = folderPopupLayoutInfo.startCenterY,
-                    endCenterX = folderPopupLayoutInfo.endCenterX,
-                    endCenterY = folderPopupLayoutInfo.endCenterY,
-                )
-            } else {
-                getRect(
-                    endWidth = folderPopupLayoutInfo.folderGridWidthPx.toFloat(),
-                    endHeight = folderPopupLayoutInfo.endHeight.toFloat(),
-                    endCenterX = folderPopupLayoutInfo.endCenterX,
-                    endCenterY = folderPopupLayoutInfo.endCenterY,
-                )
-            }
+            getAnimatedRect(
+                progress = progress.value,
+                startWidth = folderPopupLayoutInfo.startWidth,
+                startHeight = folderPopupLayoutInfo.startHeight,
+                endWidth = folderPopupLayoutInfo.folderGridWidthPx.toFloat(),
+                endHeight = folderPopupLayoutInfo.endHeight.toFloat(),
+                startCenterX = folderPopupLayoutInfo.startCenterX,
+                startCenterY = folderPopupLayoutInfo.startCenterY,
+                endCenterX = folderPopupLayoutInfo.endCenterX,
+                endCenterY = folderPopupLayoutInfo.endCenterY,
+            )
         }
     }
 
-    val animatedPreviewRect by remember(
-        key1 = folderPopupLayoutInfo,
-        key2 = animations,
-    ) {
+    val animatedPreviewRect by remember(key1 = folderPopupLayoutInfo) {
         derivedStateOf {
-            if (animations) {
-                getAnimatedRect(
-                    progress = progress.value,
-                    startWidth = folderPopupLayoutInfo.startPreviewWidth,
-                    startHeight = folderPopupLayoutInfo.startPreviewHeight,
-                    endWidth = folderPopupLayoutInfo.folderGridWidthPx.toFloat(),
-                    endHeight = folderPopupLayoutInfo.folderGridHeightPx.toFloat(),
-                    startCenterX = folderPopupLayoutInfo.startCenterX,
-                    startCenterY = folderPopupLayoutInfo.startCenterY,
-                    endCenterX = folderPopupLayoutInfo.endCenterX,
-                    endCenterY = folderPopupLayoutInfo.endCenterY,
-                )
-            } else {
-                getRect(
-                    endWidth = folderPopupLayoutInfo.folderGridWidthPx.toFloat(),
-                    endHeight = folderPopupLayoutInfo.folderGridHeightPx.toFloat(),
-                    endCenterX = folderPopupLayoutInfo.endCenterX,
-                    endCenterY = folderPopupLayoutInfo.endCenterY,
-                )
-            }
+            getAnimatedRect(
+                progress = progress.value,
+                startWidth = folderPopupLayoutInfo.startPreviewWidth,
+                startHeight = folderPopupLayoutInfo.startPreviewHeight,
+                endWidth = folderPopupLayoutInfo.folderGridWidthPx.toFloat(),
+                endHeight = folderPopupLayoutInfo.folderGridHeightPx.toFloat(),
+                startCenterX = folderPopupLayoutInfo.startCenterX,
+                startCenterY = folderPopupLayoutInfo.startCenterY,
+                endCenterX = folderPopupLayoutInfo.endCenterX,
+                endCenterY = folderPopupLayoutInfo.endCenterY,
+            )
         }
     }
 
@@ -236,7 +212,7 @@ internal fun FolderScreen(
     var pageDirection by remember { mutableStateOf<PageDirection?>(null) }
 
     val isFirstFolderGridItem = folderPopups.size == 1 &&
-        folderPopups.singleOrNull()?.gridItem == folderPopup.gridItem
+            folderPopups.singleOrNull()?.gridItem == folderPopup.gridItem
 
     val isLastFolderGridItem = folderPopups.lastOrNull()?.gridItem == folderPopup.gridItem
 
@@ -250,22 +226,26 @@ internal fun FolderScreen(
         derivedStateOf { progress.value < 1f }
     }
 
-    LaunchedEffect(key1 = Unit) {
-        progress.animateTo(targetValue = 1f)
+    LaunchedEffect(key1 = animations) {
+        if (animations) {
+            progress.animateTo(targetValue = 1f)
+        } else {
+            progress.snapTo(targetValue = 1f)
+        }
     }
 
     BackHandler(
         enabled = !folderPopup.folderPopupEntry.isCloseFolder &&
-            isLastFolderGridItem &&
-            !isInProgress,
+                isLastFolderGridItem &&
+                !isInProgress,
     ) {
         onUpsertFolderPopupEntry(folderPopup.folderPopupEntry.copy(isCloseFolder = true))
     }
 
     HomeHandler(
         enabled = !folderPopup.folderPopupEntry.isCloseFolder &&
-            isLastFolderGridItem &&
-            !isInProgress,
+                isLastFolderGridItem &&
+                !isInProgress,
     ) {
         onUpsertFolderPopupEntry(folderPopup.folderPopupEntry.copy(isCloseFolder = true))
     }
@@ -273,6 +253,7 @@ internal fun FolderScreen(
     LaunchedEffect(
         key1 = folderPopup,
         key2 = isFirstFolderGridItem,
+        key3 = animations,
     ) {
         handleFolderPopup(
             drag = currentDrag,
@@ -282,7 +263,9 @@ internal fun FolderScreen(
             folderPopup = folderPopup,
             progress = progress,
             isFirstFolderGridItem = isFirstFolderGridItem,
+            animations = animations,
             onAnimateToScrollToPage = folderGridHorizontalPagerState::animateScrollToPage,
+            onScrollToPage = folderGridHorizontalPagerState::scrollToPage,
             onDeleteFolderPopupEntry = onDeleteFolderPopupEntry,
             onMoveFolderGridItemOutsideFolder = onMoveFolderGridItemOutsideFolder,
             onUpdateSharedElementKey = onUpdateSharedElementKey,
@@ -596,24 +579,6 @@ private fun getAnimatedRect(
     )
 }
 
-private fun getRect(
-    endWidth: Float,
-    endHeight: Float,
-    endCenterX: Float,
-    endCenterY: Float,
-): RectF {
-    val left = endCenterX - endWidth / 2f
-
-    val top = endCenterY - endHeight / 2f
-
-    return RectF(
-        left,
-        top,
-        left + endWidth,
-        top + endHeight,
-    )
-}
-
 private suspend fun handleFolderPopup(
     drag: State<Drag>,
     isDragging: State<Boolean>,
@@ -622,7 +587,9 @@ private suspend fun handleFolderPopup(
     folderPopup: FolderPopup,
     progress: Animatable<Float, AnimationVector1D>,
     isFirstFolderGridItem: Boolean,
+    animations: Boolean,
     onAnimateToScrollToPage: suspend (Int) -> Unit,
+    onScrollToPage: suspend (Int) -> Unit,
     onDeleteFolderPopupEntry: (FolderPopupEntry) -> Unit,
     onMoveFolderGridItemOutsideFolder: (GridItem) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
@@ -630,9 +597,15 @@ private suspend fun handleFolderPopup(
 ) {
     if (!folderPopup.folderPopupEntry.isCloseFolder) return
 
-    onAnimateToScrollToPage(0)
+    if(animations){
+        onAnimateToScrollToPage(0)
 
-    progress.animateTo(targetValue = 0f)
+        progress.animateTo(targetValue = 0f)
+    }else {
+        onScrollToPage(0)
+
+        progress.snapTo(targetValue = 0f)
+    }
 
     val gridItem = moveGridItemResult.value?.movingGridItem
 

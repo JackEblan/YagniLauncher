@@ -95,6 +95,7 @@ internal fun DragAndDropEblanApplicationInfos(
     screenHeight: Int,
     systemCustomTextColor: Int,
     systemTextColor: TextColor,
+    animations: Boolean,
     onDismissDragAndDrop: () -> Unit,
     onUpdateEblanApplicationInfos: (List<EblanApplicationInfo>) -> Unit,
 ) {
@@ -109,7 +110,7 @@ internal fun DragAndDropEblanApplicationInfos(
 
     var currentEblanApplicationInfos by remember { mutableStateOf(eblanApplicationInfos) }
 
-    val gridDragDropState = rememberGridDragDropState(lazyGridState) { from, to ->
+    val gridDragDropState = rememberGridDragDropState(lazyGridState = lazyGridState) { from, to ->
         currentEblanApplicationInfos = currentEblanApplicationInfos.toMutableList().apply {
             add(
                 index = to,
@@ -166,9 +167,9 @@ internal fun DragAndDropEblanApplicationInfos(
                 key = { _, eblanApplicationInfoWithIconPackInfo -> eblanApplicationInfoWithIconPackInfo.componentName },
             ) { index, eblanApplicationInfo ->
                 DraggableItem(
+                    enabled = animations,
                     dragDropState = gridDragDropState,
-                    index = index,
-                ) {
+                    index = index) {
                     EblanApplicationInfoItem(
                         eblanApplicationInfo = eblanApplicationInfo,
                         appDrawerSettings = appDrawerSettings,
