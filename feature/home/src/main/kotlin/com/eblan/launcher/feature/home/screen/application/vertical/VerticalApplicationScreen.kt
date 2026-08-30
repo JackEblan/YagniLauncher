@@ -117,6 +117,7 @@ internal fun VerticalApplicationScreen(
     isVisibleOverlay: Boolean,
     systemTextColor: TextColor,
     systemCustomTextColor: Int,
+    animations: Boolean,
     onDismiss: () -> Unit,
     onDragEnd: () -> Unit,
     onEditApplicationInfo: (
@@ -265,6 +266,7 @@ internal fun VerticalApplicationScreen(
                 screenHeight = screenHeight,
                 systemTextColor = systemTextColor,
                 systemCustomTextColor = systemCustomTextColor,
+                animations = animations,
                 onDismiss = onDismiss,
                 onDismissDragAndDrop = {
                     isRearrangeEblanApplicationInfo = false
@@ -309,6 +311,7 @@ internal fun VerticalApplicationScreen(
             popupIntSize = popupIntSize,
             isVisibleOverlay = isVisibleOverlay,
             paddingValues = paddingValues,
+            animations = animations,
             onDismissRequest = {
                 showPopupApplicationMenu = false
             },
@@ -366,6 +369,7 @@ private fun EblanApplicationInfosPage(
     screenHeight: Int,
     systemTextColor: TextColor,
     systemCustomTextColor: Int,
+    animations: Boolean,
     onDismiss: () -> Unit,
     onDismissDragAndDrop: () -> Unit,
     onDragEnd: () -> Unit,
@@ -455,6 +459,7 @@ private fun EblanApplicationInfosPage(
                 screenHeight = screenHeight,
                 systemTextColor = systemTextColor,
                 systemCustomTextColor = systemCustomTextColor,
+                animations = animations,
                 onDismiss = onDismiss,
                 onDragEnd = onDragEnd,
                 onUpdateGridItemSource = onUpdateGridItemSource,
@@ -516,6 +521,7 @@ private fun EblanApplicationInfos(
     screenHeight: Int,
     systemTextColor: TextColor,
     systemCustomTextColor: Int,
+    animations: Boolean,
     onDismiss: () -> Unit,
     onDragEnd: () -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
@@ -612,6 +618,7 @@ private fun EblanApplicationInfos(
                             systemTextColor = systemTextColor,
                             systemCustomTextColor = systemCustomTextColor,
                             iconPackInfoFilePaths = getEblanApplicationInfosByLabelAndTag.iconPackInfoFilePaths,
+                            animations = animations,
                             onDismiss = onDismiss,
                             onUpdateGridItemSource = onUpdateGridItemSource,
                             onUpdateImageBitmap = onUpdateImageBitmap,
@@ -637,6 +644,7 @@ private fun EblanApplicationInfos(
                         systemCustomTextColor = systemCustomTextColor,
                         systemTextColor = systemTextColor,
                         iconPackInfoFilePaths = getEblanApplicationInfosByLabelAndTag.iconPackInfoFilePaths,
+                        animations = animations,
                         onUpdateOverlayBounds = onUpdateOverlayBounds,
                         onUpdatePopupMenu = onUpdatePrivatePopupMenu,
                         onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
@@ -664,6 +672,7 @@ private fun EblanApplicationInfos(
                             systemTextColor = systemTextColor,
                             systemCustomTextColor = systemCustomTextColor,
                             iconPackInfoFilePaths = getEblanApplicationInfosByLabelAndTag.iconPackInfoFilePaths,
+                            animations = animations,
                             onDismiss = onDismiss,
                             onUpdateGridItemSource = onUpdateGridItemSource,
                             onUpdateImageBitmap = onUpdateImageBitmap,

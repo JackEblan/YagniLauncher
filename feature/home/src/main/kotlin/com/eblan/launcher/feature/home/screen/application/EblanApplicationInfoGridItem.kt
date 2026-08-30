@@ -42,12 +42,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.layer.GraphicsLayer
-import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -78,13 +75,14 @@ import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.domain.model.TextColor
+import com.eblan.launcher.feature.home.component.gridItemAnimation
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
-import com.eblan.launcher.feature.home.util.SCALE
 import com.eblan.launcher.feature.home.util.getAppDrawerGridItemTextColor
 import com.eblan.launcher.feature.home.util.getHorizontalAlignment
 import com.eblan.launcher.feature.home.util.getVerticalArrangement
+import com.eblan.launcher.feature.home.util.handleOnPress
 import com.eblan.launcher.framework.launcherapps.AndroidLauncherAppsWrapper
 import com.eblan.launcher.ui.local.LocalLauncherApps
 import kotlinx.coroutines.launch
@@ -111,6 +109,7 @@ internal fun EblanApplicationInfoGridItem(
     systemTextColor: TextColor,
     systemCustomTextColor: Int,
     iconPackInfoFilePaths: Map<String, String?>,
+    animations: Boolean,
     onDismiss: () -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
@@ -186,8 +185,11 @@ internal fun EblanApplicationInfoGridItem(
 
     val scale = remember { Animatable(1f) }
 
-    LaunchedEffect(key1 = isVisibleOverlay) {
-        if (isVisibleOverlay) {
+    LaunchedEffect(
+        key1 = isVisibleOverlay,
+        key2 = animations,
+    ) {
+        if (isVisibleOverlay && animations) {
             scale.snapTo(targetValue = 1f)
         }
     }
@@ -273,13 +275,10 @@ internal fun EblanApplicationInfoGridItem(
                         null
                     },
                     onPress = {
-                        scale.animateTo(targetValue = SCALE)
-
-                        try {
-                            awaitRelease()
-                        } finally {
-                            scale.animateTo(targetValue = 1f)
-                        }
+                        handleOnPress(
+                            animations = animations,
+                            scale = scale,
+                        )
                     },
                 )
             },
@@ -301,35 +300,18 @@ internal fun EblanApplicationInfoGridItem(
 
                     intSize = it.size
                 }
-                .graphicsLayer {
-                    scaleX = scale.value
-                    scaleY = scale.value
-                }
-                .run {
-                    if (!isSwiping &&
+                .gridItemAnimation(
+                    alpha = alpha,
+                    enabled = animations,
+                    graphicsLayer = graphicsLayer,
+                    scale = scale,
+                    sharedElementKey = sharedElementKey,
+                    sharedTransitionScope = sharedTransitionScope,
+                    visible = !isSwiping &&
                         !isScrollInProgress &&
                         !isLongPress &&
-                        !isVisibleOverlay
-                    ) {
-                        with(sharedTransitionScope) {
-                            sharedElementWithCallerManagedVisibility(
-                                rememberSharedContentState(
-                                    key = sharedElementKey,
-                                ),
-                                visible = true,
-                            )
-                        }
-                    } else {
-                        this
-                    }
-                }
-                .drawWithContent {
-                    graphicsLayer.record {
-                        this@drawWithContent.drawContent()
-                    }
-
-                    drawLayer(graphicsLayer)
-                }
+                        !isVisibleOverlay,
+                )
                 .alpha(alpha),
         )
 

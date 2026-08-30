@@ -74,6 +74,7 @@ internal fun ShortcutInfoScreen(
     gridItemSettings: GridItemSettings,
     icon: String?,
     isVisibleOverlay: Boolean,
+    animations: Boolean,
     onUpdateIsDragging: (Boolean) -> Unit,
     onTapShortcutInfo: (
         serialNumber: Long,
@@ -105,6 +106,7 @@ internal fun ShortcutInfoScreen(
                 gridItemSettings = gridItemSettings,
                 icon = icon,
                 isVisibleOverlay = isVisibleOverlay,
+                animations = animations,
                 onUpdateIsDragging = onUpdateIsDragging,
                 onTapShortcutInfo = onTapShortcutInfo,
                 onUpdateGridItemSource = onUpdateGridItemSource,
@@ -156,6 +158,7 @@ private fun ShortcutInfoMenuItem(
     gridItemSettings: GridItemSettings,
     icon: String?,
     isVisibleOverlay: Boolean,
+    animations: Boolean,
     onUpdateIsDragging: (Boolean) -> Unit,
     onTapShortcutInfo: (Long, String, String) -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
@@ -179,8 +182,11 @@ private fun ShortcutInfoMenuItem(
 
     val scale = remember { Animatable(1f) }
 
-    LaunchedEffect(key1 = isVisibleOverlay) {
-        if (isVisibleOverlay) {
+    LaunchedEffect(
+        key1 = isVisibleOverlay,
+        key2 = animations,
+    ) {
+        if (isVisibleOverlay && animations) {
             scale.snapTo(targetValue = 1f)
         }
     }
@@ -203,14 +209,21 @@ private fun ShortcutInfoMenuItem(
                 contentDescription = null,
                 modifier = Modifier
                     .size(30.dp)
-                    .onGloballyPositioned { layoutCoordinates ->
-                        intOffset = layoutCoordinates.positionInRoot().round()
-                        intSize = layoutCoordinates.size
+                    .onGloballyPositioned {
+                        intOffset = it.positionInRoot().round()
+
+                        intSize = it.size
                     }
-                    .graphicsLayer {
-                        scaleX = scale.value
-                        scaleY = scale.value
-                    }
+                    .then(
+                        if (animations) {
+                            Modifier.graphicsLayer {
+                                scaleX = scale.value
+                                scaleY = scale.value
+                            }
+                        } else {
+                            Modifier
+                        },
+                    )
                     .drawWithContent {
                         graphicsLayer.record {
                             this@drawWithContent.drawContent()

@@ -112,6 +112,7 @@ internal fun WidgetScreen(
     alpha: Float,
     cornerSize: Dp,
     isVisibleOverlay: Boolean,
+    animations: Boolean,
     onDismiss: () -> Unit,
     onGetEblanAppWidgetProviderInfosByLabel: (String) -> Unit,
     onUpdateOverlayBounds: (
@@ -218,6 +219,7 @@ internal fun WidgetScreen(
                             screenHeight = screenHeight,
                             screenWidth = screenWidth,
                             isVisibleOverlay = isVisibleOverlay,
+                            animations = animations,
                             onUpdateOverlayBounds = onUpdateOverlayBounds,
                             onUpdateImageBitmap = onUpdateImageBitmap,
                             onUpdateGridItemSource = onUpdateGridItemSource,
@@ -246,6 +248,7 @@ private fun EblanApplicationInfoItem(
     screenHeight: Int,
     screenWidth: Int,
     isVisibleOverlay: Boolean,
+    animations: Boolean,
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
@@ -310,6 +313,7 @@ private fun EblanApplicationInfoItem(
                         screenHeight = screenHeight,
                         screenWidth = screenWidth,
                         isVisibleOverlay = isVisibleOverlay,
+                        animations = animations,
                         onUpdateOverlayBounds = onUpdateOverlayBounds,
                         onUpdateImageBitmap = onUpdateImageBitmap,
                         onUpdateGridItemSource = onUpdateGridItemSource,
@@ -336,6 +340,7 @@ private fun EblanAppWidgetProviderInfoItem(
     screenHeight: Int,
     screenWidth: Int,
     isVisibleOverlay: Boolean,
+    animations: Boolean,
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
@@ -362,8 +367,11 @@ private fun EblanAppWidgetProviderInfoItem(
 
     val scale = remember { Animatable(1f) }
 
-    LaunchedEffect(key1 = isVisibleOverlay) {
-        if (isVisibleOverlay) {
+    LaunchedEffect(
+        key1 = isVisibleOverlay,
+        key2 = animations,
+    ) {
+        if (isVisibleOverlay && animations) {
             scale.snapTo(targetValue = 1f)
         }
     }
@@ -409,10 +417,16 @@ private fun EblanAppWidgetProviderInfoItem(
 
                     intSize = it.size
                 }
-                .graphicsLayer {
-                    scaleX = scale.value
-                    scaleY = scale.value
-                }
+                .then(
+                    if (animations) {
+                        Modifier.graphicsLayer {
+                            scaleX = scale.value
+                            scaleY = scale.value
+                        }
+                    } else {
+                        Modifier
+                    },
+                )
                 .drawWithContent {
                     graphicsLayer.record {
                         this@drawWithContent.drawContent()

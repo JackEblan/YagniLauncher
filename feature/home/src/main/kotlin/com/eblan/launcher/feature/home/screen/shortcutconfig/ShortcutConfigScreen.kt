@@ -120,6 +120,7 @@ internal fun ShortcutConfigScreen(
     alpha: Float,
     cornerSize: Dp,
     isVisibleOverlay: Boolean,
+    animations: Boolean,
     onDismiss: () -> Unit,
     onGetEblanShortcutConfigsByLabel: (String) -> Unit,
     onUpdateOverlayBounds: (
@@ -218,6 +219,7 @@ internal fun ShortcutConfigScreen(
                         paddingValues = paddingValues,
                         swipeY = swipeY,
                         isVisibleOverlay = isVisibleOverlay,
+                        animations = animations,
                         onDragEnd = onDragEnd,
                         onUpdateOverlayBounds = onUpdateOverlayBounds,
                         onVerticalDrag = onVerticalDrag,
@@ -238,6 +240,7 @@ internal fun ShortcutConfigScreen(
                     paddingValues = paddingValues,
                     swipeY = swipeY,
                     isVisibleOverlay = isVisibleOverlay,
+                    animations = animations,
                     onDragEnd = onDragEnd,
                     onUpdateOverlayBounds = onUpdateOverlayBounds,
                     onVerticalDrag = onVerticalDrag,
@@ -293,6 +296,7 @@ private fun EblanShortcutConfigsPage(
     paddingValues: PaddingValues,
     swipeY: Float,
     isVisibleOverlay: Boolean,
+    animations: Boolean,
     onDragEnd: () -> Unit,
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
@@ -349,6 +353,7 @@ private fun EblanShortcutConfigsPage(
                         eblanShortcutConfigs = eblanShortcutConfigs[serialNumber].orEmpty(),
                         gridItemSettings = gridItemSettings,
                         isVisibleOverlay = isVisibleOverlay,
+                        animations = animations,
                         onUpdateOverlayBounds = onUpdateOverlayBounds,
                         onUpdateImageBitmap = onUpdateImageBitmap,
                         onUpdateGridItemSource = onUpdateGridItemSource,
@@ -372,6 +377,7 @@ private fun EblanApplicationInfoItem(
     eblanShortcutConfigs: Map<EblanApplicationInfoGroup, List<EblanShortcutConfig>>,
     gridItemSettings: GridItemSettings,
     isVisibleOverlay: Boolean,
+    animations: Boolean,
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
@@ -432,6 +438,7 @@ private fun EblanApplicationInfoItem(
                         eblanShortcutConfig = eblanShortcutConfig,
                         gridItemSettings = gridItemSettings,
                         isVisibleOverlay = isVisibleOverlay,
+                        animations = animations,
                         onUpdateOverlayBounds = onUpdateOverlayBounds,
                         onUpdateImageBitmap = onUpdateImageBitmap,
                         onUpdateGridItemSource = onUpdateGridItemSource,
@@ -454,6 +461,7 @@ private fun EblanShortcutConfigItem(
     eblanShortcutConfig: EblanShortcutConfig,
     gridItemSettings: GridItemSettings,
     isVisibleOverlay: Boolean,
+    animations: Boolean,
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
@@ -478,8 +486,11 @@ private fun EblanShortcutConfigItem(
 
     val scale = remember { Animatable(1f) }
 
-    LaunchedEffect(key1 = isVisibleOverlay) {
-        if (isVisibleOverlay) {
+    LaunchedEffect(
+        key1 = isVisibleOverlay,
+        key2 = animations,
+    ) {
+        if (isVisibleOverlay && animations) {
             scale.snapTo(targetValue = 1f)
         }
     }
@@ -526,10 +537,16 @@ private fun EblanShortcutConfigItem(
 
                     intSize = it.size
                 }
-                .graphicsLayer {
-                    scaleX = scale.value
-                    scaleY = scale.value
-                }
+                .then(
+                    if (animations) {
+                        Modifier.graphicsLayer {
+                            scaleX = scale.value
+                            scaleY = scale.value
+                        }
+                    } else {
+                        Modifier
+                    },
+                )
                 .drawWithContent {
                     graphicsLayer.record {
                         this@drawWithContent.drawContent()

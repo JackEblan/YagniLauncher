@@ -82,6 +82,7 @@ internal fun GridItemPopup(
     isVisibleOverlay: Boolean,
     paddingValues: PaddingValues,
     isCloseGridItemPopup: Boolean,
+    animations: Boolean,
     onDeleteGridItem: (GridItem) -> Unit,
     onDismissRequest: () -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
@@ -190,6 +191,7 @@ internal fun GridItemPopup(
                 gridItemSettings = gridItemSettings,
                 hasShortcutHostPermission = hasShortcutHostPermission,
                 isVisibleOverlay = isVisibleOverlay,
+                animations = animations,
                 onDeleteGridItem = onDeleteGridItem,
                 onUpdateTransitionState = {
                     transitionState.targetState = it
@@ -236,6 +238,7 @@ private fun GridItemPopupContent(
     gridItemSettings: GridItemSettings,
     hasShortcutHostPermission: Boolean,
     isVisibleOverlay: Boolean,
+    animations: Boolean,
     onDeleteGridItem: (GridItem) -> Unit,
     onUpdateTransitionState: (Boolean) -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
@@ -281,6 +284,7 @@ private fun GridItemPopupContent(
                         hasShortcutHostPermission = hasShortcutHostPermission,
                         icon = data.icon,
                         isVisibleOverlay = isVisibleOverlay,
+                        animations = animations,
                         onDelete = {
                             onDeleteGridItem(gridItem)
 
@@ -397,6 +401,7 @@ private fun ApplicationInfoGridItemMenu(
     hasShortcutHostPermission: Boolean,
     icon: String?,
     isVisibleOverlay: Boolean,
+    animations: Boolean,
     onDelete: () -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
     onEdit: () -> Unit,
@@ -432,6 +437,7 @@ private fun ApplicationInfoGridItemMenu(
                 gridItemSettings = gridItemSettings,
                 icon = icon,
                 isVisibleOverlay = isVisibleOverlay,
+                animations = animations,
                 onUpdateIsDragging = onUpdateIsDragging,
                 onTapShortcutInfo = onTapShortcutInfo,
                 onUpdateGridItemSource = onUpdateGridItemSource,
