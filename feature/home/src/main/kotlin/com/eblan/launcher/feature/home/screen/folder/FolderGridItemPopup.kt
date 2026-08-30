@@ -83,6 +83,7 @@ internal fun FolderGridItemPopup(
     isVisibleOverlay: Boolean,
     paddingValues: PaddingValues,
     isCloseFolderGridItemPopup: Boolean,
+    animations: Boolean,
     onDeleteGridItem: (GridItem) -> Unit,
     onDismissRequest: () -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
@@ -199,6 +200,7 @@ internal fun FolderGridItemPopup(
                 movingFolderGridItem = movingGridItem,
                 hasShortcutHostPermission = hasShortcutHostPermission,
                 isVisibleOverlay = isVisibleOverlay,
+                animations = animations,
                 onDeleteGridItem = onDeleteGridItem,
                 onUpdateTransitionState = {
                     transitionState.targetState = it
@@ -245,6 +247,7 @@ private fun FolderGridItemPopupContent(
     movingFolderGridItem: GridItem,
     hasShortcutHostPermission: Boolean,
     isVisibleOverlay: Boolean,
+    animations: Boolean,
     onDeleteGridItem: (GridItem) -> Unit,
     onUpdateTransitionState: (Boolean) -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
@@ -288,6 +291,7 @@ private fun FolderGridItemPopupContent(
                         hasShortcutHostPermission = hasShortcutHostPermission,
                         icon = data.icon,
                         isVisibleOverlay = isVisibleOverlay,
+                        animations = animations,
                         onUpdateIsDragging = {
                             onUpdateIsDragging(it)
 
@@ -381,6 +385,7 @@ private fun ApplicationInfoFolderGridItemPopupContent(
     hasShortcutHostPermission: Boolean,
     icon: String?,
     isVisibleOverlay: Boolean,
+    animations: Boolean,
     onDelete: () -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
     onEdit: () -> Unit,
@@ -418,6 +423,7 @@ private fun ApplicationInfoFolderGridItemPopupContent(
                         gridItemSettings = gridItemSettings,
                         icon = icon,
                         isVisibleOverlay = isVisibleOverlay,
+                        animations = animations,
                         onUpdateIsDragging = onUpdateIsDragging,
                         onTapShortcutInfo = onTapShortcutInfo,
                         onUpdateGridItemSource = onUpdateGridItemSource,

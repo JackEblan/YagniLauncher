@@ -71,6 +71,7 @@ import com.eblan.launcher.feature.home.screen.application.PrivateSpaceStickyHead
 import com.eblan.launcher.feature.home.screen.application.handleOnLongPressPrivateSpaceEblanApplicationInfoItem
 import com.eblan.launcher.feature.home.screen.application.handleOnTapEblanApplicationInfoItem
 import com.eblan.launcher.feature.home.util.getAppDrawerGridItemTextColor
+import com.eblan.launcher.feature.home.util.handleOnPress
 import com.eblan.launcher.ui.local.LocalLauncherApps
 import kotlinx.coroutines.launch
 import kotlin.uuid.ExperimentalUuidApi
@@ -87,6 +88,7 @@ internal fun LazyListScope.privateSpace(
     systemCustomTextColor: Int,
     systemTextColor: TextColor,
     iconPackInfoFilePaths: Map<String, String?>,
+    animations: Boolean,
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
@@ -117,6 +119,7 @@ internal fun LazyListScope.privateSpace(
                 systemTextColor = systemTextColor,
                 systemCustomTextColor = systemCustomTextColor,
                 iconPackInfoFilePaths = iconPackInfoFilePaths,
+                animations = animations,
                 onUpdateOverlayBounds = onUpdateOverlayBounds,
                 onUpdatePopupMenu = onUpdatePopupMenu,
                 onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
@@ -140,6 +143,7 @@ private fun PrivateSpaceEblanApplicationInfoItem(
     systemCustomTextColor: Int,
     systemTextColor: TextColor,
     iconPackInfoFilePaths: Map<String, String?>,
+    animations: Boolean,
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
@@ -191,8 +195,11 @@ private fun PrivateSpaceEblanApplicationInfoItem(
 
     val scale = remember { Animatable(1f) }
 
-    LaunchedEffect(key1 = isVisibleOverlay) {
-        if (isVisibleOverlay) {
+    LaunchedEffect(
+        key1 = isVisibleOverlay,
+        key2 = animations,
+    ) {
+        if (isVisibleOverlay && animations) {
             scale.snapTo(targetValue = 1f)
         }
     }
@@ -244,13 +251,10 @@ private fun PrivateSpaceEblanApplicationInfoItem(
                         null
                     },
                     onPress = {
-                        scale.animateTo(targetValue = 0.85f)
-
-                        try {
-                            awaitRelease()
-                        } finally {
-                            scale.animateTo(targetValue = 1f)
-                        }
+                        handleOnPress(
+                            animations = animations,
+                            scale = scale,
+                        )
                     },
                 )
             },
@@ -263,15 +267,21 @@ private fun PrivateSpaceEblanApplicationInfoItem(
             contentDescription = null,
             modifier = Modifier
                 .size(appDrawerSettings.gridItemSettings.iconSize.dp)
-                .onGloballyPositioned { layoutCoordinates ->
-                    intOffset = layoutCoordinates.positionInRoot().round()
+                .onGloballyPositioned {
+                    intOffset = it.positionInRoot().round()
 
-                    intSize = layoutCoordinates.size
+                    intSize = it.size
                 }
-                .graphicsLayer {
-                    scaleX = scale.value
-                    scaleY = scale.value
-                },
+                .then(
+                    if (animations) {
+                        Modifier.graphicsLayer {
+                            scaleX = scale.value
+                            scaleY = scale.value
+                        }
+                    } else {
+                        Modifier
+                    },
+                ),
         )
 
         Spacer(modifier = Modifier.width(10.dp))

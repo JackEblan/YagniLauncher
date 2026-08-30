@@ -120,6 +120,7 @@ internal fun ShortcutConfigScreen(
     alpha: Float,
     cornerSize: Dp,
     isVisibleOverlay: Boolean,
+    animations: Boolean,
     onDismiss: () -> Unit,
     onGetEblanShortcutConfigsByLabel: (String) -> Unit,
     onUpdateOverlayBounds: (
@@ -218,6 +219,7 @@ internal fun ShortcutConfigScreen(
                         paddingValues = paddingValues,
                         swipeY = swipeY,
                         isVisibleOverlay = isVisibleOverlay,
+                        animations = animations,
                         onDragEnd = onDragEnd,
                         onUpdateOverlayBounds = onUpdateOverlayBounds,
                         onVerticalDrag = onVerticalDrag,
@@ -238,6 +240,7 @@ internal fun ShortcutConfigScreen(
                     paddingValues = paddingValues,
                     swipeY = swipeY,
                     isVisibleOverlay = isVisibleOverlay,
+                    animations = animations,
                     onDragEnd = onDragEnd,
                     onUpdateOverlayBounds = onUpdateOverlayBounds,
                     onVerticalDrag = onVerticalDrag,
@@ -293,6 +296,7 @@ private fun EblanShortcutConfigsPage(
     paddingValues: PaddingValues,
     swipeY: Float,
     isVisibleOverlay: Boolean,
+    animations: Boolean,
     onDragEnd: () -> Unit,
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
@@ -349,6 +353,7 @@ private fun EblanShortcutConfigsPage(
                         eblanShortcutConfigs = eblanShortcutConfigs[serialNumber].orEmpty(),
                         gridItemSettings = gridItemSettings,
                         isVisibleOverlay = isVisibleOverlay,
+                        animations = animations,
                         onUpdateOverlayBounds = onUpdateOverlayBounds,
                         onUpdateImageBitmap = onUpdateImageBitmap,
                         onUpdateGridItemSource = onUpdateGridItemSource,
@@ -372,6 +377,7 @@ private fun EblanApplicationInfoItem(
     eblanShortcutConfigs: Map<EblanApplicationInfoGroup, List<EblanShortcutConfig>>,
     gridItemSettings: GridItemSettings,
     isVisibleOverlay: Boolean,
+    animations: Boolean,
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
@@ -432,6 +438,7 @@ private fun EblanApplicationInfoItem(
                         eblanShortcutConfig = eblanShortcutConfig,
                         gridItemSettings = gridItemSettings,
                         isVisibleOverlay = isVisibleOverlay,
+                        animations = animations,
                         onUpdateOverlayBounds = onUpdateOverlayBounds,
                         onUpdateImageBitmap = onUpdateImageBitmap,
                         onUpdateGridItemSource = onUpdateGridItemSource,
@@ -454,6 +461,7 @@ private fun EblanShortcutConfigItem(
     eblanShortcutConfig: EblanShortcutConfig,
     gridItemSettings: GridItemSettings,
     isVisibleOverlay: Boolean,
+    animations: Boolean,
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
@@ -478,8 +486,11 @@ private fun EblanShortcutConfigItem(
 
     val scale = remember { Animatable(1f) }
 
-    LaunchedEffect(key1 = isVisibleOverlay) {
-        if (isVisibleOverlay) {
+    LaunchedEffect(
+        key1 = isVisibleOverlay,
+        key2 = animations,
+    ) {
+        if (isVisibleOverlay && animations) {
             scale.snapTo(targetValue = 1f)
         }
     }
@@ -488,7 +499,11 @@ private fun EblanShortcutConfigItem(
         modifier = modifier
             .fillMaxWidth()
             .padding(20.dp)
-            .pointerInput(key1 = isVisibleOverlay) {
+            .pointerInput(
+                isVisibleOverlay,
+                gridItemSettings,
+                animations,
+            ) {
                 detectTapGestures(
                     onLongPress = {
                         scope.launch {
@@ -500,6 +515,7 @@ private fun EblanShortcutConfigItem(
                                 intSize = intSize,
                                 keyboardController = keyboardController,
                                 scale = scale,
+                                animations = animations,
                                 onDismiss = onDismiss,
                                 onUpdateGridItemSource = onUpdateGridItemSource,
                                 onUpdateImageBitmap = onUpdateImageBitmap,
@@ -521,15 +537,21 @@ private fun EblanShortcutConfigItem(
             contentDescription = null,
             modifier = Modifier
                 .size(gridItemSettings.iconSize.dp)
-                .onGloballyPositioned { layoutCoordinates ->
-                    intOffset = layoutCoordinates.positionInRoot().round()
+                .onGloballyPositioned {
+                    intOffset = it.positionInRoot().round()
 
-                    intSize = layoutCoordinates.size
+                    intSize = it.size
                 }
-                .graphicsLayer {
-                    scaleX = scale.value
-                    scaleY = scale.value
-                }
+                .then(
+                    if (animations) {
+                        Modifier.graphicsLayer {
+                            scaleX = scale.value
+                            scaleY = scale.value
+                        }
+                    } else {
+                        Modifier
+                    },
+                )
                 .drawWithContent {
                     graphicsLayer.record {
                         this@drawWithContent.drawContent()
@@ -558,6 +580,7 @@ private suspend fun handleOnLongPress(
     intSize: IntSize,
     keyboardController: SoftwareKeyboardController?,
     scale: Animatable<Float, AnimationVector1D>,
+    animations: Boolean,
     onDismiss: () -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
@@ -578,7 +601,9 @@ private suspend fun handleOnLongPress(
         id = id,
     )
 
-    scale.animateTo(SCALE)
+    if (animations) {
+        scale.animateTo(SCALE)
+    }
 
     onUpdateGridItemSource(GridItemSource.New)
 

@@ -81,11 +81,11 @@ import com.eblan.launcher.domain.model.EblanApplicationInfo
 import com.eblan.launcher.domain.model.EblanUser
 import com.eblan.launcher.domain.model.TextColor
 import com.eblan.launcher.feature.home.R
-import com.eblan.launcher.feature.home.util.SCALE
 import com.eblan.launcher.feature.home.util.getAppDrawerGridItemTextColor
 import com.eblan.launcher.feature.home.util.getApplicationScreenTextColor
 import com.eblan.launcher.feature.home.util.getHorizontalAlignment
 import com.eblan.launcher.feature.home.util.getVerticalArrangement
+import com.eblan.launcher.feature.home.util.handleOnPress
 import com.eblan.launcher.ui.local.LocalLauncherApps
 import com.eblan.launcher.ui.local.LocalUserManager
 import com.eblan.launcher.ui.settings.rememberIsDefaultLauncher
@@ -104,6 +104,7 @@ internal fun LazyGridScope.privateSpace(
     systemCustomTextColor: Int,
     systemTextColor: TextColor,
     iconPackInfoFilePaths: Map<String, String?>,
+    animations: Boolean,
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
@@ -135,6 +136,7 @@ internal fun LazyGridScope.privateSpace(
                 systemTextColor = systemTextColor,
                 systemCustomTextColor = systemCustomTextColor,
                 iconPackInfoFilePaths = iconPackInfoFilePaths,
+                animations = animations,
                 onUpdateOverlayBounds = onUpdateOverlayBounds,
                 onUpdatePopupMenu = onUpdatePopupMenu,
                 onUpdateEblanApplicationInfo = onUpdateEblanApplicationInfo,
@@ -244,6 +246,7 @@ internal fun PrivateSpaceEblanApplicationInfoItem(
     systemCustomTextColor: Int,
     systemTextColor: TextColor,
     iconPackInfoFilePaths: Map<String, String?>,
+    animations: Boolean,
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
@@ -303,8 +306,11 @@ internal fun PrivateSpaceEblanApplicationInfoItem(
 
     val scale = remember { Animatable(1f) }
 
-    LaunchedEffect(key1 = isVisibleOverlay) {
-        if (isVisibleOverlay) {
+    LaunchedEffect(
+        key1 = isVisibleOverlay,
+        key2 = animations,
+    ) {
+        if (isVisibleOverlay && animations) {
             scale.snapTo(targetValue = 1f)
         }
     }
@@ -356,13 +362,10 @@ internal fun PrivateSpaceEblanApplicationInfoItem(
                         null
                     },
                     onPress = {
-                        scale.animateTo(targetValue = SCALE)
-
-                        try {
-                            awaitRelease()
-                        } finally {
-                            scale.animateTo(targetValue = 1f)
-                        }
+                        handleOnPress(
+                            animations = animations,
+                            scale = scale,
+                        )
                     },
                 )
             },
@@ -379,15 +382,21 @@ internal fun PrivateSpaceEblanApplicationInfoItem(
             contentDescription = null,
             modifier = Modifier
                 .size(appDrawerSettings.gridItemSettings.iconSize.dp)
-                .onGloballyPositioned { layoutCoordinates ->
-                    intOffset = layoutCoordinates.positionInRoot().round()
+                .onGloballyPositioned {
+                    intOffset = it.positionInRoot().round()
 
-                    intSize = layoutCoordinates.size
+                    intSize = it.size
                 }
-                .graphicsLayer {
-                    scaleX = scale.value
-                    scaleY = scale.value
-                },
+                .then(
+                    if (animations) {
+                        Modifier.graphicsLayer {
+                            scaleX = scale.value
+                            scaleY = scale.value
+                        }
+                    } else {
+                        Modifier
+                    },
+                ),
             placeholder = ColorPainter(Color.Transparent),
             error = ColorPainter(Color.Transparent),
         )

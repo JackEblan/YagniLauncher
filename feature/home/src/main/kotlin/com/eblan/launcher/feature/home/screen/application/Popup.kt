@@ -81,6 +81,7 @@ internal fun ApplicationInfoPopup(
     popupIntSize: IntSize,
     isVisibleOverlay: Boolean,
     paddingValues: PaddingValues,
+    animations: Boolean,
     onDismissRequest: () -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
     onEditApplicationInfo: (
@@ -186,6 +187,7 @@ internal fun ApplicationInfoPopup(
                 hasShortcutHostPermission = hasShortcutHostPermission,
                 icon = eblanApplicationInfo.icon,
                 isVisibleOverlay = isVisibleOverlay,
+                animations = animations,
                 onApplicationInfo = {
                     launcherApps.startAppDetailsActivity(
                         serialNumber = eblanApplicationInfo.serialNumber,
@@ -404,6 +406,7 @@ private fun ApplicationInfoMenu(
     hasShortcutHostPermission: Boolean,
     icon: String?,
     isVisibleOverlay: Boolean,
+    animations: Boolean,
     onApplicationInfo: () -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
     onEdit: () -> Unit,
@@ -439,6 +442,7 @@ private fun ApplicationInfoMenu(
                         gridItemSettings = gridItemSettings,
                         icon = icon,
                         isVisibleOverlay = isVisibleOverlay,
+                        animations = animations,
                         onUpdateIsDragging = onUpdateIsDragging,
                         onTapShortcutInfo = onTapShortcutInfo,
                         onUpdateGridItemSource = onUpdateGridItemSource,

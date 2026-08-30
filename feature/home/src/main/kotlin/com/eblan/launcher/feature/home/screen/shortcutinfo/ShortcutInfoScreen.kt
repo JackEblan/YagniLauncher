@@ -74,6 +74,7 @@ internal fun ShortcutInfoScreen(
     gridItemSettings: GridItemSettings,
     icon: String?,
     isVisibleOverlay: Boolean,
+    animations: Boolean,
     onUpdateIsDragging: (Boolean) -> Unit,
     onTapShortcutInfo: (
         serialNumber: Long,
@@ -105,6 +106,7 @@ internal fun ShortcutInfoScreen(
                 gridItemSettings = gridItemSettings,
                 icon = icon,
                 isVisibleOverlay = isVisibleOverlay,
+                animations = animations,
                 onUpdateIsDragging = onUpdateIsDragging,
                 onTapShortcutInfo = onTapShortcutInfo,
                 onUpdateGridItemSource = onUpdateGridItemSource,
@@ -156,6 +158,7 @@ private fun ShortcutInfoMenuItem(
     gridItemSettings: GridItemSettings,
     icon: String?,
     isVisibleOverlay: Boolean,
+    animations: Boolean,
     onUpdateIsDragging: (Boolean) -> Unit,
     onTapShortcutInfo: (Long, String, String) -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
@@ -179,8 +182,11 @@ private fun ShortcutInfoMenuItem(
 
     val scale = remember { Animatable(1f) }
 
-    LaunchedEffect(key1 = isVisibleOverlay) {
-        if (isVisibleOverlay) {
+    LaunchedEffect(
+        key1 = isVisibleOverlay,
+        key2 = animations,
+    ) {
+        if (isVisibleOverlay && animations) {
             scale.snapTo(targetValue = 1f)
         }
     }
@@ -203,14 +209,21 @@ private fun ShortcutInfoMenuItem(
                 contentDescription = null,
                 modifier = Modifier
                     .size(30.dp)
-                    .onGloballyPositioned { layoutCoordinates ->
-                        intOffset = layoutCoordinates.positionInRoot().round()
-                        intSize = layoutCoordinates.size
+                    .onGloballyPositioned {
+                        intOffset = it.positionInRoot().round()
+
+                        intSize = it.size
                     }
-                    .graphicsLayer {
-                        scaleX = scale.value
-                        scaleY = scale.value
-                    }
+                    .then(
+                        if (animations) {
+                            Modifier.graphicsLayer {
+                                scaleX = scale.value
+                                scaleY = scale.value
+                            }
+                        } else {
+                            Modifier
+                        },
+                    )
                     .drawWithContent {
                         graphicsLayer.record {
                             this@drawWithContent.drawContent()
@@ -218,7 +231,11 @@ private fun ShortcutInfoMenuItem(
 
                         drawLayer(graphicsLayer)
                     }
-                    .pointerInput(key1 = isVisibleOverlay) {
+                    .pointerInput(
+                        isVisibleOverlay,
+                        gridItemSettings,
+                        animations,
+                    ) {
                         detectTapGestures(
                             onLongPress = {
                                 scope.launch {
@@ -230,6 +247,7 @@ private fun ShortcutInfoMenuItem(
                                         intOffset = intOffset,
                                         intSize = intSize,
                                         scale = scale,
+                                        animations = animations,
                                         onUpdateGridItemSource = onUpdateGridItemSource,
                                         onUpdateImageBitmap = onUpdateImageBitmap,
                                         onUpdateIsDragging = onUpdateIsDragging,
@@ -257,6 +275,7 @@ private suspend fun handleOnLongPress(
     intOffset: IntOffset,
     intSize: IntSize,
     scale: Animatable<Float, AnimationVector1D>,
+    animations: Boolean,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
@@ -278,7 +297,9 @@ private suspend fun handleOnLongPress(
         id = id,
     )
 
-    scale.animateTo(SCALE)
+    if (animations) {
+        scale.animateTo(SCALE)
+    }
 
     onUpdateGridItemSource(GridItemSource.New)
 

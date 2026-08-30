@@ -109,7 +109,7 @@ internal fun DragAndDropEblanApplicationInfos(
 
     var currentEblanApplicationInfos by remember { mutableStateOf(eblanApplicationInfos) }
 
-    val gridDragDropState = rememberGridDragDropState(lazyGridState) { from, to ->
+    val gridDragDropState = rememberGridDragDropState(lazyGridState = lazyGridState) { from, to ->
         currentEblanApplicationInfos = currentEblanApplicationInfos.toMutableList().apply {
             add(
                 index = to,

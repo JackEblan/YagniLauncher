@@ -21,4 +21,5 @@ data class ExperimentalSettings(
     val syncData: Boolean,
     val firstLaunch: Boolean,
     val lockMovement: Boolean,
+    val gridItemAnimation: Boolean,
 )

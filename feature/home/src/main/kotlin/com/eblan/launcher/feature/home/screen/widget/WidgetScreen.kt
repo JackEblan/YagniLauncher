@@ -112,6 +112,7 @@ internal fun WidgetScreen(
     alpha: Float,
     cornerSize: Dp,
     isVisibleOverlay: Boolean,
+    animations: Boolean,
     onDismiss: () -> Unit,
     onGetEblanAppWidgetProviderInfosByLabel: (String) -> Unit,
     onUpdateOverlayBounds: (
@@ -218,6 +219,7 @@ internal fun WidgetScreen(
                             screenHeight = screenHeight,
                             screenWidth = screenWidth,
                             isVisibleOverlay = isVisibleOverlay,
+                            animations = animations,
                             onUpdateOverlayBounds = onUpdateOverlayBounds,
                             onUpdateImageBitmap = onUpdateImageBitmap,
                             onUpdateGridItemSource = onUpdateGridItemSource,
@@ -246,6 +248,7 @@ private fun EblanApplicationInfoItem(
     screenHeight: Int,
     screenWidth: Int,
     isVisibleOverlay: Boolean,
+    animations: Boolean,
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
@@ -310,6 +313,7 @@ private fun EblanApplicationInfoItem(
                         screenHeight = screenHeight,
                         screenWidth = screenWidth,
                         isVisibleOverlay = isVisibleOverlay,
+                        animations = animations,
                         onUpdateOverlayBounds = onUpdateOverlayBounds,
                         onUpdateImageBitmap = onUpdateImageBitmap,
                         onUpdateGridItemSource = onUpdateGridItemSource,
@@ -336,6 +340,7 @@ private fun EblanAppWidgetProviderInfoItem(
     screenHeight: Int,
     screenWidth: Int,
     isVisibleOverlay: Boolean,
+    animations: Boolean,
     onUpdateOverlayBounds: (
         intOffset: IntOffset,
         intSize: IntSize,
@@ -362,8 +367,11 @@ private fun EblanAppWidgetProviderInfoItem(
 
     val scale = remember { Animatable(1f) }
 
-    LaunchedEffect(key1 = isVisibleOverlay) {
-        if (isVisibleOverlay) {
+    LaunchedEffect(
+        key1 = isVisibleOverlay,
+        key2 = animations,
+    ) {
+        if (isVisibleOverlay && animations) {
             scale.snapTo(targetValue = 1f)
         }
     }
@@ -372,7 +380,11 @@ private fun EblanAppWidgetProviderInfoItem(
         modifier = modifier
             .fillMaxWidth()
             .padding(20.dp)
-            .pointerInput(key1 = isVisibleOverlay) {
+            .pointerInput(
+                isVisibleOverlay,
+                gridItemSettings,
+                animations,
+            ) {
                 detectTapGestures(
                     onLongPress = {
                         scope.launch {
@@ -384,6 +396,7 @@ private fun EblanAppWidgetProviderInfoItem(
                                 intSize = intSize,
                                 keyboardController = keyboardController,
                                 scale = scale,
+                                animations = animations,
                                 onDismiss = onDismiss,
                                 onUpdateGridItemSource = onUpdateGridItemSource,
                                 onUpdateImageBitmap = onUpdateImageBitmap,
@@ -404,15 +417,21 @@ private fun EblanAppWidgetProviderInfoItem(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(100.dp)
-                .onGloballyPositioned { layoutCoordinates ->
-                    intOffset = layoutCoordinates.positionInRoot().round()
+                .onGloballyPositioned {
+                    intOffset = it.positionInRoot().round()
 
-                    intSize = layoutCoordinates.size
+                    intSize = it.size
                 }
-                .graphicsLayer {
-                    scaleX = scale.value
-                    scaleY = scale.value
-                }
+                .then(
+                    if (animations) {
+                        Modifier.graphicsLayer {
+                            scaleX = scale.value
+                            scaleY = scale.value
+                        }
+                    } else {
+                        Modifier
+                    },
+                )
                 .drawWithContent {
                     graphicsLayer.record {
                         this@drawWithContent.drawContent()
@@ -482,6 +501,7 @@ private suspend fun handleOnLongPress(
     intSize: IntSize,
     keyboardController: SoftwareKeyboardController?,
     scale: Animatable<Float, AnimationVector1D>,
+    animations: Boolean,
     onDismiss: () -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
@@ -518,7 +538,9 @@ private suspend fun handleOnLongPress(
         targetCellWidth = eblanAppWidgetProviderInfo.targetCellWidth,
     )
 
-    scale.animateTo(SCALE)
+    if (animations) {
+        scale.animateTo(SCALE)
+    }
 
     onUpdateGridItemSource(GridItemSource.New)
 

@@ -788,7 +788,7 @@ internal fun PagerScreen(
                     columns = homeSettings.columns,
                     gridItems = gridItemsByPage[page],
                     rows = homeSettings.rows,
-                    animate = isVisibleOverlay || isResizing,
+                    animate = (isVisibleOverlay || isResizing) && experimentalSettings.gridItemAnimation,
                     content = {
                         InteractiveGridItem(
                             sharedTransitionScope = this@SharedTransitionLayout,
@@ -815,6 +815,7 @@ internal fun PagerScreen(
                                 parent = SharedElementKey.Parent.Grid,
                             ),
                             iconPackInfoFilePaths = iconPackInfoFilePaths,
+                            animations = experimentalSettings.gridItemAnimation,
                             onOpenAppDrawer = pagerScreenState::openApplicationScreen,
                             onUpsertFolderPopupEntry = onUpsertFolderPopupEntry,
                             onUpdateGridItemSource = onUpdateGridItemSource,
@@ -895,7 +896,7 @@ internal fun PagerScreen(
                         columns = homeSettings.dockColumns,
                         gridItems = dockGridItemsByPage[page],
                         rows = homeSettings.dockRows,
-                        animate = isVisibleOverlay || isResizing,
+                        animate = (isVisibleOverlay || isResizing) && experimentalSettings.gridItemAnimation,
                         content = {
                             InteractiveGridItem(
                                 sharedTransitionScope = this@SharedTransitionLayout,
@@ -922,6 +923,7 @@ internal fun PagerScreen(
                                     parent = SharedElementKey.Parent.Dock,
                                 ),
                                 iconPackInfoFilePaths = iconPackInfoFilePaths,
+                                animations = experimentalSettings.gridItemAnimation,
                                 onOpenAppDrawer = pagerScreenState::openApplicationScreen,
                                 onUpsertFolderPopupEntry = onUpsertFolderPopupEntry,
                                 onUpdateGridItemSource = onUpdateGridItemSource,
@@ -955,6 +957,7 @@ internal fun PagerScreen(
                 isVisibleOverlay = isVisibleOverlay,
                 paddingValues = paddingValues,
                 isCloseGridItemPopup = pagerScreenState.isCloseGridItemPopup,
+                animations = experimentalSettings.gridItemAnimation,
                 onDeleteGridItem = onDeleteGridItem,
                 onDismissRequest = pagerScreenState::dismissGridItemPopup,
                 onUpdateIsDragging = pagerScreenState::updateIsDragging,
@@ -1010,6 +1013,7 @@ internal fun PagerScreen(
                     showFolderGridItemPopup = pagerScreenState.showFolderGridItemPopup,
                     previewFolderGridItems = previewFolderGridItems,
                     iconPackInfoFilePaths = iconPackInfoFilePaths,
+                    animations = experimentalSettings.gridItemAnimation,
                     onDeleteFolderPopupEntry = onDeleteFolderPopupEntry,
                     onMoveFolderGridItemOutsideFolder = onMoveFolderGridItemOutsideFolder,
                     onOpenAppDrawer = pagerScreenState::openApplicationScreen,
@@ -1043,6 +1047,7 @@ internal fun PagerScreen(
                 isVisibleOverlay = isVisibleOverlay,
                 paddingValues = paddingValues,
                 isCloseFolderGridItemPopup = pagerScreenState.isCloseFolderGridItemPopup,
+                animations = experimentalSettings.gridItemAnimation,
                 onDeleteGridItem = onDeleteGridItem,
                 onDismissRequest = pagerScreenState::dismissFolderGridItemPopup,
                 onUpdateIsDragging = pagerScreenState::updateIsDragging,
@@ -1077,6 +1082,7 @@ internal fun PagerScreen(
                 isVisibleOverlay = isVisibleOverlay,
                 systemTextColor = textColor,
                 systemCustomTextColor = homeSettings.gridItemSettings.customTextColor,
+                animations = experimentalSettings.gridItemAnimation,
                 onDismiss = pagerScreenState::dismissApplicationScreen,
                 onDragEnd = pagerScreenState::handleOnDragEndApplicationScreen,
                 onEditApplicationInfo = onEditApplicationInfo,
@@ -1109,6 +1115,7 @@ internal fun PagerScreen(
                 alpha = pagerScreenState.widgetScreenAlpha,
                 cornerSize = pagerScreenState.widgetScreenCornerSize,
                 isVisibleOverlay = isVisibleOverlay,
+                animations = experimentalSettings.gridItemAnimation,
                 onDismiss = pagerScreenState::dismissWidgetScreen,
                 onGetEblanAppWidgetProviderInfosByLabel = onGetEblanAppWidgetProviderInfosByLabel,
                 onUpdateOverlayBounds = pagerScreenState::updateOverlayBounds,
@@ -1133,6 +1140,7 @@ internal fun PagerScreen(
                 alpha = pagerScreenState.shortcutConfigScreenAlpha,
                 cornerSize = pagerScreenState.shortcutConfigScreenCornerSize,
                 isVisibleOverlay = isVisibleOverlay,
+                animations = experimentalSettings.gridItemAnimation,
                 onDismiss = pagerScreenState::dismissShortcutConfigScreen,
                 onGetEblanShortcutConfigsByLabel = onGetEblanShortcutConfigsByLabel,
                 onUpdateOverlayBounds = pagerScreenState::updateOverlayBounds,
@@ -1159,6 +1167,7 @@ internal fun PagerScreen(
                 screenWidth = screenWidth,
                 swipeY = pagerScreenState.appWidgetScreenSwipeY.value,
                 isVisibleOverlay = isVisibleOverlay,
+                animations = experimentalSettings.gridItemAnimation,
                 onDismiss = pagerScreenState::dismissAppWidgetScreen,
                 onDismissApplicationScreen = pagerScreenState::dismissApplicationScreen,
                 onUpdateOverlayBounds = pagerScreenState::updateOverlayBounds,
@@ -1188,6 +1197,7 @@ internal fun PagerScreen(
         }
 
         OverlayImage(
+            animations = experimentalSettings.gridItemAnimation,
             overlayImageBitmap = pagerScreenState.overlayImageBitmap,
             overlayIntOffset = pagerScreenState.overlayIntOffset,
             overlayIntSize = pagerScreenState.overlayIntSize,
@@ -1203,6 +1213,7 @@ internal fun PagerScreen(
 @Composable
 private fun SharedTransitionScope.OverlayImage(
     modifier: Modifier = Modifier,
+    animations: Boolean = true,
     overlayImageBitmap: ImageBitmap?,
     overlayIntOffset: IntOffset?,
     overlayIntSize: IntSize?,
@@ -1227,12 +1238,17 @@ private fun SharedTransitionScope.OverlayImage(
         DpSize(width = overlayIntSize.width.toDp(), height = overlayIntSize.height.toDp())
     }
 
-    val overlayScale = remember { Animatable(SCALE) }
+    val scale = remember { Animatable(SCALE) }
 
-    LaunchedEffect(key1 = isVisibleOverlay) {
-        if (isVisibleOverlay) {
-            overlayScale.animateTo(targetValue = 1f)
-        } else {
+    LaunchedEffect(
+        key1 = isVisibleOverlay,
+        key2 = animations,
+    ) {
+        if (isVisibleOverlay && animations) {
+            scale.animateTo(targetValue = 1f)
+        }
+
+        if (!isVisibleOverlay) {
             onResetOverlay()
         }
     }
@@ -1250,14 +1266,26 @@ private fun SharedTransitionScope.OverlayImage(
                 }
             }
             .size(size)
-            .sharedElementWithCallerManagedVisibility(
-                rememberSharedContentState(key = sharedElementKey),
-                visible = isVisibleOverlay,
+            .then(
+                if (animations) {
+                    Modifier.sharedElementWithCallerManagedVisibility(
+                        rememberSharedContentState(key = sharedElementKey),
+                        visible = isVisibleOverlay,
+                    )
+                } else {
+                    Modifier
+                },
             )
-            .graphicsLayer {
-                scaleX = overlayScale.value
-                scaleY = overlayScale.value
-            },
+            .then(
+                if (animations) {
+                    Modifier.graphicsLayer {
+                        scaleX = scale.value
+                        scaleY = scale.value
+                    }
+                } else {
+                    Modifier
+                },
+            ),
         bitmap = overlayImageBitmap,
         contentDescription = null,
     )

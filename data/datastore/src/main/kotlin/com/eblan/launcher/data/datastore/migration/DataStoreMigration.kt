@@ -19,7 +19,9 @@ package com.eblan.launcher.data.datastore.migration
 
 import androidx.datastore.core.DataMigration
 import com.eblan.launcher.data.datastore.proto.UserDataProto
+import com.eblan.launcher.data.datastore.proto.appdrawer.appDrawerSettingsProto
 import com.eblan.launcher.data.datastore.proto.copy
+import com.eblan.launcher.data.datastore.proto.home.homeSettingsProto
 
 internal class DataStoreMigration : DataMigration<UserDataProto> {
     override suspend fun shouldMigrate(currentData: UserDataProto): Boolean = currentData.homeSettingsProto.dockPageCount == 0 ||
@@ -31,18 +33,18 @@ internal class DataStoreMigration : DataMigration<UserDataProto> {
         currentData.homeSettingsProto.maxFolderRows == 0
 
     override suspend fun migrate(currentData: UserDataProto): UserDataProto = currentData.copy {
-        homeSettingsProto = homeSettingsProto.toBuilder()
-            .setDockPageCount(1)
-            .setFolderCellWidth(64)
-            .setFolderCellHeight(96)
-            .setMaxFolderColumns(5)
-            .setMaxFolderRows(4)
-            .build()
+        homeSettingsProto {
+            dockPageCount = 1
+            folderCellWidth = 64
+            folderCellHeight = 96
+            maxFolderColumns = 5
+            maxFolderRows = 4
+        }
 
-        appDrawerSettingsProto = appDrawerSettingsProto.toBuilder()
-            .setHorizontalAppDrawerColumns(5)
-            .setHorizontalAppDrawerRows(5)
-            .build()
+        appDrawerSettingsProto {
+            horizontalAppDrawerColumns = 5
+            horizontalAppDrawerRows = 5
+        }
     }
 
     override suspend fun cleanUp() {}

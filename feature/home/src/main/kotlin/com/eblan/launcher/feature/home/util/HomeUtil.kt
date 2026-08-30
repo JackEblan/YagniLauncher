@@ -22,6 +22,9 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Rect
 import android.os.Bundle
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.AnimationVector1D
+import androidx.compose.foundation.gestures.PressGestureScope
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.Density
@@ -182,6 +185,21 @@ internal fun updateAppWidgetOptions(
     )
 }
 
+suspend fun PressGestureScope.handleOnPress(
+    animations: Boolean,
+    scale: Animatable<Float, AnimationVector1D>,
+) {
+    if (!animations) return
+
+    scale.animateTo(targetValue = SCALE)
+
+    try {
+        awaitRelease()
+    } finally {
+        scale.animateTo(targetValue = 1f)
+    }
+}
+
 internal val PAGE_INDICATOR_HEIGHT = 30.dp
 internal val DRAG_HANDLE_SIZE = 30.dp
-internal val SCALE = 0.85f
+internal const val SCALE = 0.85f

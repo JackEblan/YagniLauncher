@@ -199,9 +199,9 @@ internal fun Modifier.dragContainer(gridDragDropState: GridDragDropState): Modif
 
 @Composable
 internal fun LazyGridItemScope.DraggableItem(
+    modifier: Modifier = Modifier,
     dragDropState: GridDragDropState,
     index: Int,
-    modifier: Modifier = Modifier,
     content: @Composable (isDragging: Boolean) -> Unit,
 ) {
     val dragging = index == dragDropState.draggingItemIndex
@@ -224,7 +224,10 @@ internal fun LazyGridItemScope.DraggableItem(
             Modifier.animateItem(fadeInSpec = null, fadeOutSpec = null)
         }
 
-    Box(modifier = modifier.then(draggingModifier), propagateMinConstraints = true) {
+    Box(
+        modifier = modifier.then(draggingModifier),
+        propagateMinConstraints = true,
+    ) {
         content(dragging)
     }
 }

@@ -20,14 +20,14 @@ package com.eblan.launcher.data.datastore.migration
 import androidx.datastore.core.DataMigration
 import com.eblan.launcher.data.datastore.proto.UserDataProto
 import com.eblan.launcher.data.datastore.proto.copy
-import com.eblan.launcher.data.datastore.proto.home.homeSettingsProto
+import com.eblan.launcher.data.datastore.proto.experimental.experimentalSettingsProto
 
-internal class DataStoreMigration2 : DataMigration<UserDataProto> {
-    override suspend fun shouldMigrate(currentData: UserDataProto): Boolean = !currentData.homeSettingsProto.hasShowPageIndicator()
+internal class DataStoreMigration3 : DataMigration<UserDataProto> {
+    override suspend fun shouldMigrate(currentData: UserDataProto): Boolean = !currentData.experimentalSettingsProto.hasGridItemAnimation()
 
     override suspend fun migrate(currentData: UserDataProto): UserDataProto = currentData.copy {
-        homeSettingsProto {
-            showPageIndicator = true
+        experimentalSettingsProto {
+            gridItemAnimation = true
         }
     }
 

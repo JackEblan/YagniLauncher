@@ -110,6 +110,7 @@ internal fun FolderScreen(
     showFolderGridItemPopup: Boolean,
     previewFolderGridItems: Map<String, PreviewFolder>,
     iconPackInfoFilePaths: Map<String, String?>,
+    animations: Boolean,
     onDeleteFolderPopupEntry: (FolderPopupEntry) -> Unit,
     onMoveFolderGridItemOutsideFolder: (GridItem) -> Unit,
     onOpenAppDrawer: () -> Unit,
@@ -225,8 +226,12 @@ internal fun FolderScreen(
         derivedStateOf { progress.value < 1f }
     }
 
-    LaunchedEffect(key1 = Unit) {
-        progress.animateTo(targetValue = 1f)
+    LaunchedEffect(key1 = animations) {
+        if (animations) {
+            progress.animateTo(targetValue = 1f)
+        } else {
+            progress.snapTo(targetValue = 1f)
+        }
     }
 
     BackHandler(
@@ -248,6 +253,7 @@ internal fun FolderScreen(
     LaunchedEffect(
         key1 = folderPopup,
         key2 = isFirstFolderGridItem,
+        key3 = animations,
     ) {
         handleFolderPopup(
             drag = currentDrag,
@@ -257,6 +263,7 @@ internal fun FolderScreen(
             folderPopup = folderPopup,
             progress = progress,
             isFirstFolderGridItem = isFirstFolderGridItem,
+            animations = animations,
             onAnimateToScrollToPage = folderGridHorizontalPagerState::animateScrollToPage,
             onDeleteFolderPopupEntry = onDeleteFolderPopupEntry,
             onMoveFolderGridItemOutsideFolder = onMoveFolderGridItemOutsideFolder,
@@ -422,7 +429,7 @@ internal fun FolderScreen(
                         rows = folderPopup.rows,
                         width = animatedPreviewRect.width().roundToInt(),
                         height = animatedPreviewRect.height().roundToInt(),
-                        animate = isVisibleOverlay,
+                        animate = isVisibleOverlay && animations,
                         content = {
                             InteractiveFolderGridItem(
                                 sharedTransitionScope = sharedTransitionScope,
@@ -446,6 +453,7 @@ internal fun FolderScreen(
                                 ),
                                 isInProgress = isInProgress,
                                 iconPackInfoFilePaths = iconPackInfoFilePaths,
+                                animations = animations,
                                 onOpenAppDrawer = onOpenAppDrawer,
                                 onUpdateImageBitmap = onUpdateImageBitmap,
                                 onUpdateIsDragging = onUpdateIsDragging,
@@ -538,35 +546,35 @@ private fun getAnimatedRect(
     endCenterX: Float,
     endCenterY: Float,
 ): RectF {
-    val currentWidth = lerp(
+    val width = lerp(
         startWidth,
         endWidth,
         progress,
     )
 
-    val currentHeight = lerp(
+    val height = lerp(
         startHeight,
         endHeight,
         progress,
     )
 
-    val currentX = lerp(
+    val left = lerp(
         startCenterX,
         endCenterX,
         progress,
-    ) - currentWidth / 2f
+    ) - width / 2f
 
-    val currentY = lerp(
+    val top = lerp(
         startCenterY,
         endCenterY,
         progress,
-    ) - currentHeight / 2f
+    ) - height / 2f
 
     return RectF(
-        currentX,
-        currentY,
-        currentX + currentWidth,
-        currentY + currentHeight,
+        left,
+        top,
+        left + width,
+        top + height,
     )
 }
 
@@ -578,6 +586,7 @@ private suspend fun handleFolderPopup(
     folderPopup: FolderPopup,
     progress: Animatable<Float, AnimationVector1D>,
     isFirstFolderGridItem: Boolean,
+    animations: Boolean,
     onAnimateToScrollToPage: suspend (Int) -> Unit,
     onDeleteFolderPopupEntry: (FolderPopupEntry) -> Unit,
     onMoveFolderGridItemOutsideFolder: (GridItem) -> Unit,
@@ -588,7 +597,11 @@ private suspend fun handleFolderPopup(
 
     onAnimateToScrollToPage(0)
 
-    progress.animateTo(targetValue = 0f)
+    if (animations) {
+        progress.animateTo(targetValue = 0f)
+    } else {
+        progress.snapTo(targetValue = 0f)
+    }
 
     val gridItem = moveGridItemResult.value?.movingGridItem
 
