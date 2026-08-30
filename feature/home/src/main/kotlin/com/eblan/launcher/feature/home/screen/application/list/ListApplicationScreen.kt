@@ -17,8 +17,6 @@
  */
 package com.eblan.launcher.feature.home.screen.application.list
 
-import android.R.attr.scaleX
-import android.R.attr.scaleY
 import android.os.Build
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
@@ -804,6 +802,14 @@ private fun EblanApplicationInfoListItem(
 
     Row(
         modifier = modifier
+            .fillMaxWidth()
+            .padding(10.dp)
+            .background(
+                color = Color(appDrawerSettings.gridItemSettings.customBackgroundColor),
+                shape = RoundedCornerShape(
+                    size = appDrawerSettings.gridItemSettings.cornerRadius.dp,
+                ),
+            )
             .pointerInput(key1 = isVisibleOverlay) {
                 detectTapGestures(
                     onTap = if (!isVisibleOverlay) {
@@ -856,13 +862,7 @@ private fun EblanApplicationInfoListItem(
                         }
                     },
                 )
-            }
-            .fillMaxWidth()
-            .padding(10.dp)
-            .background(
-                color = Color(appDrawerSettings.gridItemSettings.customBackgroundColor),
-                shape = RoundedCornerShape(size = appDrawerSettings.gridItemSettings.cornerRadius.dp),
-            ),
+            },
         verticalAlignment = Alignment.CenterVertically,
     ) {
         AsyncImage(
@@ -872,11 +872,14 @@ private fun EblanApplicationInfoListItem(
             contentDescription = null,
             modifier = Modifier
                 .size(appDrawerSettings.gridItemSettings.iconSize.dp)
-                .alpha(alpha)
                 .onGloballyPositioned { layoutCoordinates ->
                     intOffset = layoutCoordinates.positionInRoot().round()
 
                     intSize = layoutCoordinates.size
+                }
+                .graphicsLayer {
+                    scaleX = scale.value
+                    scaleY = scale.value
                 }
                 .run {
                     if (!isScrollInProgress && !isLongPress && !isVisibleOverlay) {
@@ -892,17 +895,14 @@ private fun EblanApplicationInfoListItem(
                         this
                     }
                 }
-                .graphicsLayer {
-                    scaleX = scale.value
-                    scaleY = scale.value
-                }
                 .drawWithContent {
                     graphicsLayer.record {
                         this@drawWithContent.drawContent()
                     }
 
                     drawLayer(graphicsLayer)
-                },
+                }
+                .alpha(alpha),
         )
 
         if (appDrawerSettings.gridItemSettings.showLabel) {

@@ -234,6 +234,8 @@ private fun EblanAppWidgetProviderInfoItem(
 
     Column(
         modifier = modifier
+            .size(200.dp)
+            .padding(20.dp)
             .pointerInput(key1 = drag) {
                 detectTapGestures(
                     onLongPress = {
@@ -258,9 +260,7 @@ private fun EblanAppWidgetProviderInfoItem(
                         }
                     },
                 )
-            }
-            .size(200.dp)
-            .padding(20.dp),
+            },
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {

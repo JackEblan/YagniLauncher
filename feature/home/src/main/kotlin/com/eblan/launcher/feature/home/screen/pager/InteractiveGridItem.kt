@@ -411,6 +411,16 @@ private fun InteractiveApplicationInfoGridItem(
 
     Column(
         modifier = modifier
+            .fillMaxSize()
+            .padding(gridItemSettings.padding.dp)
+            .background(
+                color = Color(gridItemSettings.customBackgroundColor),
+                shape = RoundedCornerShape(size = gridItemSettings.cornerRadius.dp),
+            )
+            .whiteBox(
+                textColor = textColor,
+                visible = isVisibleWhiteBox && !isVisibleFolder,
+            )
             .pointerInput(key1 = isVisibleOverlay) {
                 detectTapGestures(
                     onDoubleTap = if (!isVisibleOverlay) {
@@ -473,16 +483,6 @@ private fun InteractiveApplicationInfoGridItem(
                 swipeDown = gridItem.swipeDown,
                 swipeUp = gridItem.swipeUp,
                 onOpenAppDrawer = onOpenAppDrawer,
-            )
-            .fillMaxSize()
-            .padding(gridItemSettings.padding.dp)
-            .background(
-                color = Color(gridItemSettings.customBackgroundColor),
-                shape = RoundedCornerShape(size = gridItemSettings.cornerRadius.dp),
-            )
-            .whiteBox(
-                textColor = textColor,
-                visible = isVisibleWhiteBox && !isVisibleFolder,
             ),
         horizontalAlignment = horizontalAlignment,
         verticalArrangement = verticalArrangement,
@@ -505,6 +505,10 @@ private fun InteractiveApplicationInfoGridItem(
 
                         intSize = layoutCoordinates.size
                     }
+                    .graphicsLayer {
+                        scaleX = scale.value
+                        scaleY = scale.value
+                    }
                     .run {
                         if (!isScrollInProgress && !hasInteraction) {
                             with(sharedTransitionScope) {
@@ -518,10 +522,6 @@ private fun InteractiveApplicationInfoGridItem(
                         } else {
                             this
                         }
-                    }
-                    .graphicsLayer {
-                        scaleX = scale.value
-                        scaleY = scale.value
                     }
                     .drawWithContent {
                         graphicsLayer.record {
@@ -611,7 +611,6 @@ private fun InteractiveWidgetGridItem(
             .matchParentSize()
             .onGloballyPositioned { layoutCoordinates ->
                 intOffset = layoutCoordinates.positionInRoot().round()
-
                 intSize = layoutCoordinates.size
             }
             .run {
@@ -778,6 +777,16 @@ private fun InteractiveShortcutInfoGridItem(
 
     Column(
         modifier = modifier
+            .fillMaxSize()
+            .padding(gridItemSettings.padding.dp)
+            .background(
+                color = Color(gridItemSettings.customBackgroundColor),
+                shape = RoundedCornerShape(size = gridItemSettings.cornerRadius.dp),
+            )
+            .whiteBox(
+                textColor = textColor,
+                visible = isVisibleWhiteBox && !isVisibleFolder,
+            )
             .pointerInput(key1 = isVisibleOverlay) {
                 detectTapGestures(
                     onDoubleTap = if (!isVisibleOverlay) {
@@ -816,7 +825,8 @@ private fun InteractiveShortcutInfoGridItem(
                     },
                     onTap = if (!isVisibleOverlay) {
                         {
-                            if (hasShortcutHostPermission &&
+                            if (
+                                hasShortcutHostPermission &&
                                 data.isEnabled &&
                                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1
                             ) {
@@ -846,17 +856,6 @@ private fun InteractiveShortcutInfoGridItem(
                 swipeDown = gridItem.swipeDown,
                 swipeUp = gridItem.swipeUp,
                 onOpenAppDrawer = onOpenAppDrawer,
-            )
-            .fillMaxSize()
-            .padding(gridItemSettings.padding.dp)
-            .background(
-                color = Color(gridItemSettings.customBackgroundColor),
-                shape = RoundedCornerShape(size = gridItemSettings.cornerRadius.dp),
-            )
-            .whiteBox(
-                textColor = textColor,
-
-                visible = isVisibleWhiteBox && !isVisibleFolder,
             ),
         horizontalAlignment = horizontalAlignment,
         verticalArrangement = verticalArrangement,
@@ -876,6 +875,10 @@ private fun InteractiveShortcutInfoGridItem(
 
                         intSize = layoutCoordinates.size
                     }
+                    .graphicsLayer {
+                        scaleX = scale.value
+                        scaleY = scale.value
+                    }
                     .run {
                         if (!isScrollInProgress && !hasInteraction) {
                             with(sharedTransitionScope) {
@@ -889,10 +892,6 @@ private fun InteractiveShortcutInfoGridItem(
                         } else {
                             this
                         }
-                    }
-                    .graphicsLayer {
-                        scaleX = scale.value
-                        scaleY = scale.value
                     }
                     .drawWithContent {
                         graphicsLayer.apply {
@@ -1035,6 +1034,16 @@ private fun InteractiveFolderGridItem(
 
     Column(
         modifier = modifier
+            .fillMaxSize()
+            .padding(gridItemSettings.padding.dp)
+            .background(
+                color = Color(gridItemSettings.customBackgroundColor),
+                shape = RoundedCornerShape(size = gridItemSettings.cornerRadius.dp),
+            )
+            .whiteBox(
+                textColor = textColor,
+                visible = isVisibleWhiteBox && !isVisibleFolder,
+            )
             .pointerInput(key1 = isVisibleOverlay) {
                 detectTapGestures(
                     onDoubleTap = if (!isVisibleOverlay) {
@@ -1104,16 +1113,6 @@ private fun InteractiveFolderGridItem(
                 swipeDown = gridItem.swipeDown,
                 swipeUp = gridItem.swipeUp,
                 onOpenAppDrawer = onOpenAppDrawer,
-            )
-            .fillMaxSize()
-            .padding(gridItemSettings.padding.dp)
-            .background(
-                color = Color(gridItemSettings.customBackgroundColor),
-                shape = RoundedCornerShape(size = gridItemSettings.cornerRadius.dp),
-            )
-            .whiteBox(
-                textColor = textColor,
-                visible = isVisibleWhiteBox && !isVisibleFolder,
             ),
         horizontalAlignment = horizontalAlignment,
         verticalArrangement = verticalArrangement,
@@ -1124,6 +1123,10 @@ private fun InteractiveFolderGridItem(
                 intOffset = layoutCoordinates.positionInRoot().round()
 
                 intSize = layoutCoordinates.size
+            }
+            .graphicsLayer {
+                scaleX = scale.value
+                scaleY = scale.value
             }
             .run {
                 if (!isScrollInProgress && !hasInteraction) {
@@ -1138,10 +1141,6 @@ private fun InteractiveFolderGridItem(
                 } else {
                     this
                 }
-            }
-            .graphicsLayer {
-                scaleX = scale.value
-                scaleY = scale.value
             }
             .drawWithContent {
                 graphicsLayer.record {
@@ -1279,6 +1278,16 @@ private fun InteractiveShortcutConfigGridItem(
 
     Column(
         modifier = modifier
+            .fillMaxSize()
+            .padding(gridItemSettings.padding.dp)
+            .background(
+                color = Color(gridItemSettings.customBackgroundColor),
+                shape = RoundedCornerShape(size = gridItemSettings.cornerRadius.dp),
+            )
+            .whiteBox(
+                textColor = textColor,
+                visible = isVisibleWhiteBox && !isVisibleFolder,
+            )
             .pointerInput(key1 = isVisibleOverlay) {
                 detectTapGestures(
                     onDoubleTap = if (!isVisibleOverlay) {
@@ -1339,16 +1348,6 @@ private fun InteractiveShortcutConfigGridItem(
                 swipeDown = gridItem.swipeDown,
                 swipeUp = gridItem.swipeUp,
                 onOpenAppDrawer = onOpenAppDrawer,
-            )
-            .fillMaxSize()
-            .padding(gridItemSettings.padding.dp)
-            .background(
-                color = Color(gridItemSettings.customBackgroundColor),
-                shape = RoundedCornerShape(size = gridItemSettings.cornerRadius.dp),
-            )
-            .whiteBox(
-                textColor = textColor,
-                visible = isVisibleWhiteBox && !isVisibleFolder,
             ),
         horizontalAlignment = horizontalAlignment,
         verticalArrangement = verticalArrangement,
@@ -1367,6 +1366,10 @@ private fun InteractiveShortcutConfigGridItem(
 
                     intSize = layoutCoordinates.size
                 }
+                .graphicsLayer {
+                    scaleX = scale.value
+                    scaleY = scale.value
+                }
                 .run {
                     if (!isScrollInProgress && !hasInteraction) {
                         with(sharedTransitionScope) {
@@ -1380,10 +1383,6 @@ private fun InteractiveShortcutConfigGridItem(
                     } else {
                         this
                     }
-                }
-                .graphicsLayer {
-                    scaleX = scale.value
-                    scaleY = scale.value
                 }
                 .drawWithContent {
                     graphicsLayer.record {

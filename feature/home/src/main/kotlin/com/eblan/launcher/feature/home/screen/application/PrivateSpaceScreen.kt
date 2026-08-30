@@ -310,6 +310,14 @@ internal fun PrivateSpaceEblanApplicationInfoItem(
 
     Column(
         modifier = modifier
+            .height(appDrawerRowsHeight)
+            .padding(appDrawerSettings.gridItemSettings.padding.dp)
+            .background(
+                color = Color(appDrawerSettings.gridItemSettings.customBackgroundColor),
+                shape = RoundedCornerShape(
+                    size = appDrawerSettings.gridItemSettings.cornerRadius.dp,
+                ),
+            )
             .pointerInput(key1 = isVisibleOverlay) {
                 detectTapGestures(
                     onTap = if (!isVisibleOverlay) {
@@ -356,13 +364,7 @@ internal fun PrivateSpaceEblanApplicationInfoItem(
                         }
                     },
                 )
-            }
-            .height(appDrawerRowsHeight)
-            .padding(appDrawerSettings.gridItemSettings.padding.dp)
-            .background(
-                color = Color(appDrawerSettings.gridItemSettings.customBackgroundColor),
-                shape = RoundedCornerShape(size = appDrawerSettings.gridItemSettings.cornerRadius.dp),
-            ),
+            },
         horizontalAlignment = horizontalAlignment,
         verticalArrangement = verticalArrangement,
     ) {

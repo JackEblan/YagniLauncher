@@ -17,8 +17,6 @@
  */
 package com.eblan.launcher.feature.home.screen.folder
 
-import android.R.attr.scaleX
-import android.R.attr.scaleY
 import android.content.Intent.parseUri
 import android.graphics.Rect
 import android.os.Build
@@ -372,6 +370,12 @@ private fun InteractiveFolderApplicationInfoGridItem(
 
     Column(
         modifier = modifier
+            .fillMaxSize()
+            .padding(padding)
+            .background(
+                color = Color(gridItemSettings.customBackgroundColor),
+                shape = RoundedCornerShape(size = gridItemSettings.cornerRadius.dp),
+            )
             .pointerInput(
                 key1 = isVisibleOverlay,
                 key2 = isInProgress,
@@ -437,12 +441,6 @@ private fun InteractiveFolderApplicationInfoGridItem(
                 swipeUp = gridItem.swipeUp,
                 enabled = !isInProgress,
                 onOpenAppDrawer = onOpenAppDrawer,
-            )
-            .fillMaxSize()
-            .padding(padding)
-            .background(
-                color = Color(gridItemSettings.customBackgroundColor),
-                shape = RoundedCornerShape(size = gridItemSettings.cornerRadius.dp),
             ),
         horizontalAlignment = horizontalAlignment,
         verticalArrangement = verticalArrangement,
@@ -463,6 +461,10 @@ private fun InteractiveFolderApplicationInfoGridItem(
 
                         intSize = layoutCoordinates.size
                     }
+                    .graphicsLayer {
+                        scaleX = scale.value
+                        scaleY = scale.value
+                    }
                     .run {
                         if (!isScrollInProgress && !hasInteraction && !isInProgress) {
                             with(sharedTransitionScope) {
@@ -476,10 +478,6 @@ private fun InteractiveFolderApplicationInfoGridItem(
                         } else {
                             this
                         }
-                    }
-                    .graphicsLayer {
-                        scaleX = scale.value
-                        scaleY = scale.value
                     }
                     .drawWithContent {
                         graphicsLayer.record {
@@ -589,6 +587,12 @@ private fun InteractiveFolderShortcutInfoGridItem(
 
     Column(
         modifier = modifier
+            .fillMaxSize()
+            .padding(padding)
+            .background(
+                color = Color(gridItemSettings.customBackgroundColor),
+                shape = RoundedCornerShape(size = gridItemSettings.cornerRadius.dp),
+            )
             .pointerInput(
                 key1 = isVisibleOverlay,
                 key2 = isInProgress,
@@ -631,7 +635,8 @@ private fun InteractiveFolderShortcutInfoGridItem(
                     },
                     onTap = if (!isVisibleOverlay && !isInProgress) {
                         {
-                            if (hasShortcutHostPermission &&
+                            if (
+                                hasShortcutHostPermission &&
                                 data.isEnabled &&
                                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1
                             ) {
@@ -662,12 +667,6 @@ private fun InteractiveFolderShortcutInfoGridItem(
                 swipeUp = gridItem.swipeUp,
                 enabled = !isInProgress,
                 onOpenAppDrawer = onOpenAppDrawer,
-            )
-            .fillMaxSize()
-            .padding(padding)
-            .background(
-                color = Color(gridItemSettings.customBackgroundColor),
-                shape = RoundedCornerShape(size = gridItemSettings.cornerRadius.dp),
             ),
         horizontalAlignment = horizontalAlignment,
         verticalArrangement = verticalArrangement,
@@ -685,6 +684,10 @@ private fun InteractiveFolderShortcutInfoGridItem(
 
                         intSize = layoutCoordinates.size
                     }
+                    .graphicsLayer {
+                        scaleX = scale.value
+                        scaleY = scale.value
+                    }
                     .run {
                         if (!isScrollInProgress && !hasInteraction && !isInProgress) {
                             with(sharedTransitionScope) {
@@ -698,10 +701,6 @@ private fun InteractiveFolderShortcutInfoGridItem(
                         } else {
                             this
                         }
-                    }
-                    .graphicsLayer {
-                        scaleX = scale.value
-                        scaleY = scale.value
                     }
                     .drawWithContent {
                         graphicsLayer.apply {
@@ -818,6 +817,12 @@ private fun InteractiveFolderShortcutConfigGridItem(
 
     Column(
         modifier = modifier
+            .fillMaxSize()
+            .padding(padding)
+            .background(
+                color = Color(gridItemSettings.customBackgroundColor),
+                shape = RoundedCornerShape(size = gridItemSettings.cornerRadius.dp),
+            )
             .pointerInput(key1 = isVisibleOverlay && !isInProgress) {
                 detectTapGestures(
                     onDoubleTap = if (!isVisibleOverlay && !isInProgress) {
@@ -878,12 +883,6 @@ private fun InteractiveFolderShortcutConfigGridItem(
                 swipeUp = gridItem.swipeUp,
                 enabled = !isInProgress,
                 onOpenAppDrawer = onOpenAppDrawer,
-            )
-            .fillMaxSize()
-            .padding(padding)
-            .background(
-                color = Color(gridItemSettings.customBackgroundColor),
-                shape = RoundedCornerShape(size = gridItemSettings.cornerRadius.dp),
             ),
         horizontalAlignment = horizontalAlignment,
         verticalArrangement = verticalArrangement,
@@ -899,6 +898,10 @@ private fun InteractiveFolderShortcutConfigGridItem(
 
                     intSize = layoutCoordinates.size
                 }
+                .graphicsLayer {
+                    scaleX = scale.value
+                    scaleY = scale.value
+                }
                 .run {
                     if (!isScrollInProgress && !hasInteraction && !isInProgress) {
                         with(sharedTransitionScope) {
@@ -912,10 +915,6 @@ private fun InteractiveFolderShortcutConfigGridItem(
                     } else {
                         this
                     }
-                }
-                .graphicsLayer {
-                    scaleX = scale.value
-                    scaleY = scale.value
                 }
                 .drawWithContent {
                     graphicsLayer.record {
@@ -1023,6 +1022,12 @@ private fun InteractiveNestedFolderGridItem(
 
     Column(
         modifier = modifier
+            .fillMaxSize()
+            .padding(padding)
+            .background(
+                color = Color(gridItemSettings.customBackgroundColor),
+                shape = RoundedCornerShape(size = gridItemSettings.cornerRadius.dp),
+            )
             .pointerInput(
                 key1 = isVisibleOverlay,
                 key2 = isInProgress,
@@ -1093,50 +1098,42 @@ private fun InteractiveNestedFolderGridItem(
                 swipeUp = gridItem.swipeUp,
                 enabled = !isInProgress,
                 onOpenAppDrawer = onOpenAppDrawer,
-            )
-            .fillMaxSize()
-            .padding(padding)
-            .background(
-                color = Color(gridItemSettings.customBackgroundColor),
-                shape = RoundedCornerShape(size = gridItemSettings.cornerRadius.dp),
             ),
         horizontalAlignment = horizontalAlignment,
         verticalArrangement = verticalArrangement,
     ) {
-        val commonModifier =
-            Modifier
-                .size(iconSize)
-                .onGloballyPositioned { layoutCoordinates ->
-                    intOffset = layoutCoordinates.positionInRoot().round()
-
-                    intSize = layoutCoordinates.size
-                }
-                .run {
-                    if (!isScrollInProgress && !hasInteraction && !isInProgress) {
-                        with(sharedTransitionScope) {
-                            sharedElementWithCallerManagedVisibility(
-                                rememberSharedContentState(
-                                    key = sharedElementKey,
-                                ),
-                                visible = true,
-                            )
-                        }
-                    } else {
-                        this
+        val commonModifier = Modifier
+            .size(iconSize)
+            .onGloballyPositioned { layoutCoordinates ->
+                intOffset = layoutCoordinates.positionInRoot().round()
+                intSize = layoutCoordinates.size
+            }
+            .graphicsLayer {
+                scaleX = scale.value
+                scaleY = scale.value
+            }
+            .run {
+                if (!isScrollInProgress && !hasInteraction && !isInProgress) {
+                    with(sharedTransitionScope) {
+                        sharedElementWithCallerManagedVisibility(
+                            rememberSharedContentState(
+                                key = sharedElementKey,
+                            ),
+                            visible = true,
+                        )
                     }
+                } else {
+                    this
                 }
-                .graphicsLayer {
-                    scaleX = scale.value
-                    scaleY = scale.value
+            }
+            .drawWithContent {
+                graphicsLayer.record {
+                    this@drawWithContent.drawContent()
                 }
-                .drawWithContent {
-                    graphicsLayer.record {
-                        this@drawWithContent.drawContent()
-                    }
 
-                    drawLayer(graphicsLayer)
-                }
-                .alpha(alpha)
+                drawLayer(graphicsLayer)
+            }
+            .alpha(alpha)
 
         if (data.icon != null) {
             AsyncImage(

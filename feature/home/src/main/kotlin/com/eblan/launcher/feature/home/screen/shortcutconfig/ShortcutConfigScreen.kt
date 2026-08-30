@@ -475,6 +475,8 @@ private fun EblanShortcutConfigItem(
 
     Column(
         modifier = modifier
+            .fillMaxWidth()
+            .padding(20.dp)
             .pointerInput(key1 = drag) {
                 detectTapGestures(
                     onLongPress = {
@@ -498,9 +500,7 @@ private fun EblanShortcutConfigItem(
                         }
                     },
                 )
-            }
-            .fillMaxWidth()
-            .padding(20.dp),
+            },
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {

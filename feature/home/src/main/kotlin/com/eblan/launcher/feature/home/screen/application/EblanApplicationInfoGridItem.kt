@@ -17,8 +17,6 @@
  */
 package com.eblan.launcher.feature.home.screen.application
 
-import android.R.attr.scaleX
-import android.R.attr.scaleY
 import android.graphics.Rect
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
@@ -217,6 +215,20 @@ internal fun EblanApplicationInfoGridItem(
 
     Column(
         modifier = modifier
+            .run {
+                if (appDrawerType == AppDrawerType.Vertical) {
+                    height(appDrawerSettings.appDrawerRowsHeight.dp)
+                } else {
+                    fillMaxSize()
+                }
+            }
+            .padding(appDrawerSettings.gridItemSettings.padding.dp)
+            .background(
+                color = Color(appDrawerSettings.gridItemSettings.customBackgroundColor),
+                shape = RoundedCornerShape(
+                    size = appDrawerSettings.gridItemSettings.cornerRadius.dp,
+                ),
+            )
             .pointerInput(key1 = isVisibleOverlay) {
                 detectTapGestures(
                     onTap = if (!isVisibleOverlay) {
@@ -269,19 +281,7 @@ internal fun EblanApplicationInfoGridItem(
                         }
                     },
                 )
-            }
-            .run {
-                if (appDrawerType == AppDrawerType.Vertical) {
-                    height(appDrawerSettings.appDrawerRowsHeight.dp)
-                } else {
-                    fillMaxSize()
-                }
-            }
-            .padding(appDrawerSettings.gridItemSettings.padding.dp)
-            .background(
-                color = Color(appDrawerSettings.gridItemSettings.customBackgroundColor),
-                shape = RoundedCornerShape(size = appDrawerSettings.gridItemSettings.cornerRadius.dp),
-            ),
+            },
         horizontalAlignment = horizontalAlignment,
         verticalArrangement = verticalArrangement,
     ) {
@@ -300,6 +300,10 @@ internal fun EblanApplicationInfoGridItem(
 
                     intSize = layoutCoordinates.size
                 }
+                .graphicsLayer {
+                    scaleX = scale.value
+                    scaleY = scale.value
+                }
                 .run {
                     if (!isSwiping &&
                         !isScrollInProgress &&
@@ -317,10 +321,6 @@ internal fun EblanApplicationInfoGridItem(
                     } else {
                         this
                     }
-                }
-                .graphicsLayer {
-                    scaleX = scale.value
-                    scaleY = scale.value
                 }
                 .drawWithContent {
                     graphicsLayer.record {
