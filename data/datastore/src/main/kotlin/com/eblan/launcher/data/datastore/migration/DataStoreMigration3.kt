@@ -23,7 +23,7 @@ import com.eblan.launcher.data.datastore.proto.copy
 import com.eblan.launcher.data.datastore.proto.experimental.experimentalSettingsProto
 
 internal class DataStoreMigration3 : DataMigration<UserDataProto> {
-    override suspend fun shouldMigrate(currentData: UserDataProto): Boolean = !currentData.experimentalSettingsProto.animations
+    override suspend fun shouldMigrate(currentData: UserDataProto): Boolean = !currentData.experimentalSettingsProto.gridItemAnimation
 
     override suspend fun migrate(currentData: UserDataProto): UserDataProto = currentData.copy {
         experimentalSettingsProto {
