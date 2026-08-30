@@ -83,6 +83,7 @@ import com.eblan.launcher.feature.home.component.whiteBox
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
+import com.eblan.launcher.feature.home.util.SCALE
 import com.eblan.launcher.feature.home.util.getGridItemTextColor
 import com.eblan.launcher.feature.home.util.getHorizontalAlignment
 import com.eblan.launcher.feature.home.util.getTextColor
@@ -469,7 +470,7 @@ private fun InteractiveApplicationInfoGridItem(
                         null
                     },
                     onPress = {
-                        scale.animateTo(targetValue = 0.85f)
+                        scale.animateTo(targetValue = SCALE)
 
                         try {
                             awaitRelease()
@@ -842,7 +843,7 @@ private fun InteractiveShortcutInfoGridItem(
                         null
                     },
                     onPress = {
-                        scale.animateTo(targetValue = 0.85f)
+                        scale.animateTo(targetValue = SCALE)
 
                         try {
                             awaitRelease()
@@ -1099,7 +1100,7 @@ private fun InteractiveFolderGridItem(
                         null
                     },
                     onPress = {
-                        scale.animateTo(targetValue = 0.85f)
+                        scale.animateTo(targetValue = SCALE)
 
                         try {
                             awaitRelease()
@@ -1334,7 +1335,7 @@ private fun InteractiveShortcutConfigGridItem(
                         null
                     },
                     onPress = {
-                        scale.animateTo(targetValue = 0.85f)
+                        scale.animateTo(targetValue = SCALE)
 
                         try {
                             awaitRelease()

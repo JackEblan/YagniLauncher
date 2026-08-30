@@ -81,6 +81,7 @@ import com.eblan.launcher.domain.model.TextColor
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
+import com.eblan.launcher.feature.home.util.SCALE
 import com.eblan.launcher.feature.home.util.getAppDrawerGridItemTextColor
 import com.eblan.launcher.feature.home.util.getHorizontalAlignment
 import com.eblan.launcher.feature.home.util.getVerticalArrangement
@@ -272,7 +273,7 @@ internal fun EblanApplicationInfoGridItem(
                         null
                     },
                     onPress = {
-                        scale.animateTo(targetValue = 0.85f)
+                        scale.animateTo(targetValue = SCALE)
 
                         try {
                             awaitRelease()

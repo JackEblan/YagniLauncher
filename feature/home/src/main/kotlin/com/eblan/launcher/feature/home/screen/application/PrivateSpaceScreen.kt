@@ -81,6 +81,7 @@ import com.eblan.launcher.domain.model.EblanApplicationInfo
 import com.eblan.launcher.domain.model.EblanUser
 import com.eblan.launcher.domain.model.TextColor
 import com.eblan.launcher.feature.home.R
+import com.eblan.launcher.feature.home.util.SCALE
 import com.eblan.launcher.feature.home.util.getAppDrawerGridItemTextColor
 import com.eblan.launcher.feature.home.util.getApplicationScreenTextColor
 import com.eblan.launcher.feature.home.util.getHorizontalAlignment
@@ -355,7 +356,7 @@ internal fun PrivateSpaceEblanApplicationInfoItem(
                         null
                     },
                     onPress = {
-                        scale.animateTo(targetValue = 0.85f)
+                        scale.animateTo(targetValue = SCALE)
 
                         try {
                             awaitRelease()

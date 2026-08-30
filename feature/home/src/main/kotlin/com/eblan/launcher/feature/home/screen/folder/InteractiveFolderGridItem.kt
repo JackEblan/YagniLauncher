@@ -87,6 +87,7 @@ import com.eblan.launcher.feature.home.component.PreviewFolderGridLayout
 import com.eblan.launcher.feature.home.component.swipeGestures
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.SharedElementKey
+import com.eblan.launcher.feature.home.util.SCALE
 import com.eblan.launcher.feature.home.util.getHorizontalAlignment
 import com.eblan.launcher.feature.home.util.getVerticalArrangement
 import com.eblan.launcher.feature.home.util.onDoubleTap
@@ -426,7 +427,7 @@ private fun InteractiveFolderApplicationInfoGridItem(
                         null
                     },
                     onPress = {
-                        scale.animateTo(targetValue = 0.85f)
+                        scale.animateTo(targetValue = SCALE)
 
                         try {
                             awaitRelease()
@@ -868,7 +869,7 @@ private fun InteractiveFolderShortcutConfigGridItem(
                         null
                     },
                     onPress = {
-                        scale.animateTo(targetValue = 0.85f)
+                        scale.animateTo(targetValue = SCALE)
 
                         try {
                             awaitRelease()

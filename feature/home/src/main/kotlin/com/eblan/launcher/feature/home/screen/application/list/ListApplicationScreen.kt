@@ -120,6 +120,7 @@ import com.eblan.launcher.feature.home.screen.application.handleDragEblanApplica
 import com.eblan.launcher.feature.home.screen.application.handleOnLongPressEblanApplicationInfoItem
 import com.eblan.launcher.feature.home.screen.application.handleOnTapEblanApplicationInfoItem
 import com.eblan.launcher.feature.home.screen.application.rememberIsQuietModeEnabled
+import com.eblan.launcher.feature.home.util.SCALE
 import com.eblan.launcher.feature.home.util.getAppDrawerGridItemTextColor
 import com.eblan.launcher.ui.local.LocalLauncherApps
 import com.eblan.launcher.ui.local.LocalUserManager
@@ -853,7 +854,7 @@ private fun EblanApplicationInfoListItem(
                         null
                     },
                     onPress = {
-                        scale.animateTo(targetValue = 0.85f)
+                        scale.animateTo(targetValue = SCALE)
 
                         try {
                             awaitRelease()
