@@ -27,7 +27,7 @@ internal class DataStoreMigration3 : DataMigration<UserDataProto> {
 
     override suspend fun migrate(currentData: UserDataProto): UserDataProto = currentData.copy {
         experimentalSettingsProto {
-            animations = true
+            gridItemAnimation = true
         }
     }
 

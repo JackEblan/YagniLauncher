@@ -130,7 +130,7 @@ class UserDataSerializer @Inject constructor() : Serializer<UserDataProto> {
         syncData = true
         firstLaunch = true
         lockMovement = false
-        animations = true
+        gridItemAnimation = true
     }.build()
 
     override val defaultValue: UserDataProto = UserDataProto.newBuilder().apply {

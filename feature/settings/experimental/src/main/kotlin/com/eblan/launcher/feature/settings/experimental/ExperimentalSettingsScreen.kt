@@ -188,20 +188,20 @@ private fun buildExperimentalSettingsItems(
 
     add(
         SettingsItem.Switch(
-            checked = experimentalSettings.animations,
-            title = stringResource(R.string.animations),
+            checked = experimentalSettings.gridItemAnimation,
+            title = stringResource(R.string.grid_item_animation),
             subtitle = stringResource(R.string.enable_or_disable_animations),
             onClick = {
                 onUpdateExperimentalSettings(
                     experimentalSettings.copy(
-                        animations = !experimentalSettings.animations,
+                        gridItemAnimation = !experimentalSettings.gridItemAnimation,
                     ),
                 )
             },
             onCheckedChange = {
                 onUpdateExperimentalSettings(
                     experimentalSettings.copy(
-                        animations = it,
+                        gridItemAnimation = it,
                     ),
                 )
             },
