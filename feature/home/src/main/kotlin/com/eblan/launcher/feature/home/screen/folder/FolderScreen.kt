@@ -212,7 +212,7 @@ internal fun FolderScreen(
     var pageDirection by remember { mutableStateOf<PageDirection?>(null) }
 
     val isFirstFolderGridItem = folderPopups.size == 1 &&
-            folderPopups.singleOrNull()?.gridItem == folderPopup.gridItem
+        folderPopups.singleOrNull()?.gridItem == folderPopup.gridItem
 
     val isLastFolderGridItem = folderPopups.lastOrNull()?.gridItem == folderPopup.gridItem
 
@@ -236,16 +236,16 @@ internal fun FolderScreen(
 
     BackHandler(
         enabled = !folderPopup.folderPopupEntry.isCloseFolder &&
-                isLastFolderGridItem &&
-                !isInProgress,
+            isLastFolderGridItem &&
+            !isInProgress,
     ) {
         onUpsertFolderPopupEntry(folderPopup.folderPopupEntry.copy(isCloseFolder = true))
     }
 
     HomeHandler(
         enabled = !folderPopup.folderPopupEntry.isCloseFolder &&
-                isLastFolderGridItem &&
-                !isInProgress,
+            isLastFolderGridItem &&
+            !isInProgress,
     ) {
         onUpsertFolderPopupEntry(folderPopup.folderPopupEntry.copy(isCloseFolder = true))
     }
@@ -597,11 +597,11 @@ private suspend fun handleFolderPopup(
 ) {
     if (!folderPopup.folderPopupEntry.isCloseFolder) return
 
-    if(animations){
+    if (animations) {
         onAnimateToScrollToPage(0)
 
         progress.animateTo(targetValue = 0f)
-    }else {
+    } else {
         onScrollToPage(0)
 
         progress.snapTo(targetValue = 0f)

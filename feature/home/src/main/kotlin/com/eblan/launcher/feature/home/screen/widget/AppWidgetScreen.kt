@@ -254,7 +254,11 @@ private fun EblanAppWidgetProviderInfoItem(
         modifier = modifier
             .size(200.dp)
             .padding(20.dp)
-            .pointerInput(key1 = isVisibleOverlay) {
+            .pointerInput(
+                isVisibleOverlay,
+                gridItemSettings,
+                animations,
+            ) {
                 detectTapGestures(
                     onLongPress = {
                         scope.launch {
@@ -266,6 +270,7 @@ private fun EblanAppWidgetProviderInfoItem(
                                 intOffset = intOffset,
                                 intSize = intSize,
                                 scale = scale,
+                                animations = animations,
                                 onDismiss = onDismiss,
                                 onDismissApplicationScreen = onDismissApplicationScreen,
                                 onUpdateGridItemSource = onUpdateGridItemSource,
@@ -368,6 +373,7 @@ private suspend fun handleOnLongPress(
     intOffset: IntOffset,
     intSize: IntSize,
     scale: Animatable<Float, AnimationVector1D>,
+    animations: Boolean,
     onDismiss: () -> Unit,
     onDismissApplicationScreen: () -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
@@ -403,7 +409,9 @@ private suspend fun handleOnLongPress(
         targetCellWidth = eblanAppWidgetProviderInfo.targetCellWidth,
     )
 
-    scale.animateTo(SCALE)
+    if (animations) {
+        scale.animateTo(SCALE)
+    }
 
     onUpdateGridItemSource(GridItemSource.New)
 

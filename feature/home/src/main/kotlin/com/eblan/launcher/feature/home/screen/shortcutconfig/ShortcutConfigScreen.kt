@@ -499,7 +499,11 @@ private fun EblanShortcutConfigItem(
         modifier = modifier
             .fillMaxWidth()
             .padding(20.dp)
-            .pointerInput(key1 = isVisibleOverlay) {
+            .pointerInput(
+                isVisibleOverlay,
+                gridItemSettings,
+                animations,
+            ) {
                 detectTapGestures(
                     onLongPress = {
                         scope.launch {
@@ -511,6 +515,7 @@ private fun EblanShortcutConfigItem(
                                 intSize = intSize,
                                 keyboardController = keyboardController,
                                 scale = scale,
+                                animations = animations,
                                 onDismiss = onDismiss,
                                 onUpdateGridItemSource = onUpdateGridItemSource,
                                 onUpdateImageBitmap = onUpdateImageBitmap,
@@ -575,6 +580,7 @@ private suspend fun handleOnLongPress(
     intSize: IntSize,
     keyboardController: SoftwareKeyboardController?,
     scale: Animatable<Float, AnimationVector1D>,
+    animations: Boolean,
     onDismiss: () -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
@@ -595,7 +601,9 @@ private suspend fun handleOnLongPress(
         id = id,
     )
 
-    scale.animateTo(SCALE)
+    if (animations) {
+        scale.animateTo(SCALE)
+    }
 
     onUpdateGridItemSource(GridItemSource.New)
 

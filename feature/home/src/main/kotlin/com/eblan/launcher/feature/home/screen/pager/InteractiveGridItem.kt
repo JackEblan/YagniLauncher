@@ -639,7 +639,9 @@ private fun InteractiveWidgetGridItem(
                     if (!isVisibleOverlay) {
                         it.setOnLongClickListener {
                             scope.launch {
-                                scale.animateTo(targetValue = SCALE)
+                                if (animations) {
+                                    scale.animateTo(targetValue = SCALE)
+                                }
 
                                 onLongPress(
                                     graphicsLayer = graphicsLayer,

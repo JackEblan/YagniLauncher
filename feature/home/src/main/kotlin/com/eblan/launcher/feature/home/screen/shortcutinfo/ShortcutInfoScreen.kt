@@ -231,7 +231,11 @@ private fun ShortcutInfoMenuItem(
 
                         drawLayer(graphicsLayer)
                     }
-                    .pointerInput(key1 = isVisibleOverlay) {
+                    .pointerInput(
+                        isVisibleOverlay,
+                        gridItemSettings,
+                        animations,
+                    ) {
                         detectTapGestures(
                             onLongPress = {
                                 scope.launch {
@@ -243,6 +247,7 @@ private fun ShortcutInfoMenuItem(
                                         intOffset = intOffset,
                                         intSize = intSize,
                                         scale = scale,
+                                        animations = animations,
                                         onUpdateGridItemSource = onUpdateGridItemSource,
                                         onUpdateImageBitmap = onUpdateImageBitmap,
                                         onUpdateIsDragging = onUpdateIsDragging,
@@ -270,6 +275,7 @@ private suspend fun handleOnLongPress(
     intOffset: IntOffset,
     intSize: IntSize,
     scale: Animatable<Float, AnimationVector1D>,
+    animations: Boolean,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
@@ -291,7 +297,9 @@ private suspend fun handleOnLongPress(
         id = id,
     )
 
-    scale.animateTo(SCALE)
+    if (animations) {
+        scale.animateTo(SCALE)
+    }
 
     onUpdateGridItemSource(GridItemSource.New)
 

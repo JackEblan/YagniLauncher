@@ -169,7 +169,8 @@ internal fun DragAndDropEblanApplicationInfos(
                 DraggableItem(
                     enabled = animations,
                     dragDropState = gridDragDropState,
-                    index = index) {
+                    index = index,
+                ) {
                     EblanApplicationInfoItem(
                         eblanApplicationInfo = eblanApplicationInfo,
                         appDrawerSettings = appDrawerSettings,

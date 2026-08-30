@@ -105,7 +105,7 @@ internal class GridDragDropState(
         state.layoutInfo.visibleItemsInfo
             .firstOrNull { item ->
                 offset.x.toInt() in item.offset.x..item.offsetEnd.x &&
-                        offset.y.toInt() in item.offset.y..item.offsetEnd.y
+                    offset.y.toInt() in item.offset.y..item.offsetEnd.y
             }
             ?.also {
                 draggingItemIndex = it.index
@@ -145,8 +145,8 @@ internal class GridDragDropState(
         val targetItem =
             state.layoutInfo.visibleItemsInfo.find { item ->
                 middleOffset.x.toInt() in item.offset.x..item.offsetEnd.x &&
-                        middleOffset.y.toInt() in item.offset.y..item.offsetEnd.y &&
-                        draggingItem.index != item.index
+                    middleOffset.y.toInt() in item.offset.y..item.offsetEnd.y &&
+                    draggingItem.index != item.index
             }
         if (targetItem != null) {
             if (
@@ -181,23 +181,21 @@ internal class GridDragDropState(
         get() = this.offset + this.size
 }
 
-private operator fun IntOffset.plus(size: IntSize): IntOffset =
-    IntOffset(x + size.width, y + size.height)
+private operator fun IntOffset.plus(size: IntSize): IntOffset = IntOffset(x + size.width, y + size.height)
 
 private operator fun Offset.plus(size: Size): Offset = Offset(x + size.width, y + size.height)
 
-internal fun Modifier.dragContainer(gridDragDropState: GridDragDropState): Modifier =
-    pointerInput(key1 = gridDragDropState) {
-        detectDragGesturesAfterLongPress(
-            onDrag = { change, offset ->
-                change.consume()
-                gridDragDropState.onDrag(offset = offset)
-            },
-            onDragStart = { gridDragDropState.onDragStart(it) },
-            onDragEnd = { gridDragDropState.onDragInterrupted() },
-            onDragCancel = { gridDragDropState.onDragInterrupted() },
-        )
-    }
+internal fun Modifier.dragContainer(gridDragDropState: GridDragDropState): Modifier = pointerInput(key1 = gridDragDropState) {
+    detectDragGesturesAfterLongPress(
+        onDrag = { change, offset ->
+            change.consume()
+            gridDragDropState.onDrag(offset = offset)
+        },
+        onDragStart = { gridDragDropState.onDragStart(it) },
+        onDragEnd = { gridDragDropState.onDragInterrupted() },
+        onDragCancel = { gridDragDropState.onDragInterrupted() },
+    )
+}
 
 @Composable
 internal fun LazyGridItemScope.DraggableItem(
@@ -205,7 +203,7 @@ internal fun LazyGridItemScope.DraggableItem(
     dragDropState: GridDragDropState,
     enabled: Boolean,
     index: Int,
-    content: @Composable (isDragging: Boolean) -> Unit
+    content: @Composable (isDragging: Boolean) -> Unit,
 ) {
     val dragging = index == dragDropState.draggingItemIndex
     val draggingModifier =
