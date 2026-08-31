@@ -15,18 +15,10 @@
  *   limitations under the License.
  *
  */
+package com.eblan.launcher.domain.model
 
-plugins {
-    alias(libs.plugins.com.eblan.launcher.library)
-    alias(libs.plugins.com.eblan.launcher.hilt)
-}
-
-android {
-    namespace = "com.eblan.launcher.data.repository"
-}
-
-dependencies {
-    implementation(projects.data.datastore)
-    implementation(projects.data.room)
-    implementation(projects.domain.repository)
-}
+data class FolderEblanApplicationInfoWrapper(
+    val folderEblanApplicationInfo: FolderEblanApplicationInfo,
+    val eblanApplicationInfos: List<EblanApplicationInfo>,
+    val folderEblanApplicationInfos: List<FolderEblanApplicationInfo>,
+)

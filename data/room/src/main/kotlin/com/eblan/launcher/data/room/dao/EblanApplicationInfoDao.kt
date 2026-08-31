@@ -34,7 +34,7 @@ interface EblanApplicationInfoDao {
     fun getEblanApplicationInfoEntitiesFlow(): Flow<List<EblanApplicationInfoEntity>>
 
     @Query("SELECT * FROM EblanApplicationInfoEntity")
-    fun getEblanApplicationInfoEntity(): List<EblanApplicationInfoEntity>
+    fun getEblanApplicationInfoEntities(): List<EblanApplicationInfoEntity>
 
     @Update
     suspend fun updateEblanApplicationInfoEntities(entities: List<EblanApplicationInfoEntity>)
@@ -86,21 +86,6 @@ interface EblanApplicationInfoDao {
         serialNumber: Long,
         componentName: String,
     ): Flow<List<EblanApplicationInfoTagEntity>>
-
-    @Query(
-        """
-        SELECT tag.*
-        FROM EblanApplicationInfoTagEntity AS tag
-        INNER JOIN EblanApplicationInfoTagCrossRefEntity AS ref
-            ON tag.id = ref.id
-        WHERE ref.componentName = :componentName
-          AND ref.serialNumber = :serialNumber
-    """,
-    )
-    fun getEblanApplicationInfoTagEntities(
-        serialNumber: Long,
-        componentName: String,
-    ): List<EblanApplicationInfoTagEntity>
 
     @Query(
         """

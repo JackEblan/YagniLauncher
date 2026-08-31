@@ -15,18 +15,11 @@
  *   limitations under the License.
  *
  */
+package com.eblan.launcher.domain.repository
 
-plugins {
-    alias(libs.plugins.com.eblan.launcher.library)
-    alias(libs.plugins.com.eblan.launcher.hilt)
-}
+import com.eblan.launcher.domain.model.FolderEblanApplicationInfoWrapper
+import kotlinx.coroutines.flow.Flow
 
-android {
-    namespace = "com.eblan.launcher.data.repository"
-}
-
-dependencies {
-    implementation(projects.data.datastore)
-    implementation(projects.data.room)
-    implementation(projects.domain.repository)
+interface FolderEblanApplicationInfoRepository {
+    val folderEblanApplicationInfoWrappers: Flow<List<FolderEblanApplicationInfoWrapper>>
 }

@@ -15,18 +15,30 @@
  *   limitations under the License.
  *
  */
+package com.eblan.launcher.data.room.entity
 
-plugins {
-    alias(libs.plugins.com.eblan.launcher.library)
-    alias(libs.plugins.com.eblan.launcher.hilt)
-}
+import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.Index
+import androidx.room.PrimaryKey
 
-android {
-    namespace = "com.eblan.launcher.data.repository"
-}
-
-dependencies {
-    implementation(projects.data.datastore)
-    implementation(projects.data.room)
-    implementation(projects.domain.repository)
-}
+@Entity(
+    foreignKeys = [
+        ForeignKey(
+            entity = FolderEblanApplicationInfoEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["folderId"],
+            onDelete = ForeignKey.CASCADE,
+        ),
+    ],
+    indices = [
+        Index("folderId"),
+    ],
+)
+data class FolderEblanApplicationInfoEntity(
+    @PrimaryKey
+    val id: String,
+    val icon: String?,
+    val label: String,
+    val folderId: String?,
+)

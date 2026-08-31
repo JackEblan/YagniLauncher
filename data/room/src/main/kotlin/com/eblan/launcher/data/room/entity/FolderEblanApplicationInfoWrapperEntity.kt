@@ -15,18 +15,23 @@
  *   limitations under the License.
  *
  */
+package com.eblan.launcher.data.room.entity
 
-plugins {
-    alias(libs.plugins.com.eblan.launcher.library)
-    alias(libs.plugins.com.eblan.launcher.hilt)
-}
+import androidx.room.Embedded
+import androidx.room.Relation
 
-android {
-    namespace = "com.eblan.launcher.data.repository"
-}
+data class FolderEblanApplicationInfoWrapperEntity(
+    @Embedded val folderEblanApplicationInfoEntity: FolderEblanApplicationInfoEntity,
 
-dependencies {
-    implementation(projects.data.datastore)
-    implementation(projects.data.room)
-    implementation(projects.domain.repository)
-}
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "folderId",
+    )
+    val eblanApplicationInfoEntities: List<EblanApplicationInfoEntity>,
+
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "folderId",
+    )
+    val folderEblanApplicationInfoEntities: List<FolderEblanApplicationInfoEntity>,
+)

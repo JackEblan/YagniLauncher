@@ -32,6 +32,7 @@ fun EblanApplicationInfo.asEntity(): EblanApplicationInfoEntity = EblanApplicati
     lastUpdateTime = lastUpdateTime,
     index = index,
     flags = flags,
+    folderId = folderId,
 )
 
 fun EblanApplicationInfoEntity.asModel(): EblanApplicationInfo = EblanApplicationInfo(
@@ -46,4 +47,5 @@ fun EblanApplicationInfoEntity.asModel(): EblanApplicationInfo = EblanApplicatio
     lastUpdateTime = lastUpdateTime,
     index = index,
     flags = flags,
+    folderId = folderId,
 )

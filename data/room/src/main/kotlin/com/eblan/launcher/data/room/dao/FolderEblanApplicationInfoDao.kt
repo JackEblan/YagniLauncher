@@ -15,18 +15,17 @@
  *   limitations under the License.
  *
  */
+package com.eblan.launcher.data.room.dao
 
-plugins {
-    alias(libs.plugins.com.eblan.launcher.library)
-    alias(libs.plugins.com.eblan.launcher.hilt)
-}
+import androidx.room.Dao
+import androidx.room.Query
+import androidx.room.Transaction
+import com.eblan.launcher.data.room.entity.FolderEblanApplicationInfoWrapperEntity
+import kotlinx.coroutines.flow.Flow
 
-android {
-    namespace = "com.eblan.launcher.data.repository"
-}
-
-dependencies {
-    implementation(projects.data.datastore)
-    implementation(projects.data.room)
-    implementation(projects.domain.repository)
+@Dao
+interface FolderEblanApplicationInfoDao {
+    @Transaction
+    @Query("SELECT * FROM FolderEblanApplicationInfoEntity")
+    fun getFolderEblanApplicationInfoWrapperEntitiesFlow(): Flow<List<FolderEblanApplicationInfoWrapperEntity>>
 }
