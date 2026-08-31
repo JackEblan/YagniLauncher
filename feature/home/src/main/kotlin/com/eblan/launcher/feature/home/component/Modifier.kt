@@ -17,7 +17,6 @@
  */
 package com.eblan.launcher.feature.home.component
 
-import android.graphics.Paint
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationVector1D
@@ -27,19 +26,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.compose.ui.graphics.layer.drawLayer
-import androidx.compose.ui.graphics.nativeCanvas
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.eblan.launcher.domain.model.EblanAction
@@ -130,43 +124,6 @@ internal fun Modifier.swipeGestures(
     } else {
         this
     }
-}
-
-internal fun Modifier.whiteBox(
-    textColor: Color,
-    visible: Boolean,
-    cornerRadius: Dp = 10.dp,
-    alpha: Float = 0.3f,
-): Modifier = if (visible) {
-    drawWithCache {
-        val cornerRadiusPx = cornerRadius.toPx()
-
-        val paint = Paint().apply {
-            isAntiAlias = true
-            style = Paint.Style.FILL
-            color = textColor.copy(alpha = alpha).toArgb()
-            setShadowLayer(
-                12.dp.toPx(),
-                0f,
-                0f,
-                textColor.toArgb(),
-            )
-        }
-
-        onDrawBehind {
-            drawContext.canvas.nativeCanvas.drawRoundRect(
-                0f,
-                0f,
-                size.width,
-                size.height,
-                cornerRadiusPx,
-                cornerRadiusPx,
-                paint,
-            )
-        }
-    }
-} else {
-    this
 }
 
 internal fun Modifier.popup(

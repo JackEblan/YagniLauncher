@@ -346,7 +346,6 @@ internal fun ListApplicationScreen(
 
     if (showPrivatePopupApplicationMenu && selectedEblanApplicationInfo != null) {
         PrivateApplicationInfoPopup(
-            drag = drag,
             eblanShortcutInfosGroup = eblanShortcutInfosGroup,
             eblanApplicationInfo = selectedEblanApplicationInfo,
             hasShortcutHostPermission = hasShortcutHostPermission,
