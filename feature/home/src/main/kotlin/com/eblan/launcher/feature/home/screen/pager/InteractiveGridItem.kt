@@ -398,9 +398,9 @@ private fun InteractiveApplicationInfoGridItem(
 
     val hasNotifications =
         statusBarNotifications[data.packageName] != null && (
-                statusBarNotifications[data.packageName]
-                    ?: 0
-                ) > 0
+            statusBarNotifications[data.packageName]
+                ?: 0
+            ) > 0
 
     val alpha = if (hasInteraction) 0f else 1f
 
@@ -1389,7 +1389,7 @@ private fun PreviewFolderGridItem(
             is GridItemData.Folder,
             is GridItemData.ShortcutConfig,
             is GridItemData.Widget,
-                -> if (hasInteraction) 0f else 1f
+            -> if (hasInteraction) 0f else 1f
 
             is GridItemData.ShortcutInfo -> {
                 if (hasInteraction) {

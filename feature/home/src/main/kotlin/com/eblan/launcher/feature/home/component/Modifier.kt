@@ -66,9 +66,9 @@ internal fun Modifier.swipeGestures(
     val launcherApps = LocalLauncherApps.current
 
     return if ((
-                swipeUp.eblanActionType != EblanActionType.None ||
-                        swipeDown.eblanActionType != EblanActionType.None
-                ) && enabled
+            swipeUp.eblanActionType != EblanActionType.None ||
+                swipeDown.eblanActionType != EblanActionType.None
+            ) && enabled
     ) {
         val swipeY = remember { Animatable(0f) }
 

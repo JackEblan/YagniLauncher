@@ -267,6 +267,48 @@ private fun ShortcutInfoMenuItem(
 }
 
 @OptIn(ExperimentalUuidApi::class)
+@Composable
+private fun PrivateShortcutInfoMenuItem(
+    modifier: Modifier = Modifier,
+    drag: Drag,
+    eblanShortcutInfo: EblanShortcutInfo,
+    onTapShortcutInfo: (Long, String, String) -> Unit,
+) {
+    var isLongPress by remember { mutableStateOf(false) }
+
+    LaunchedEffect(key1 = drag) {
+        if (drag == Drag.End || drag == Drag.Cancel) {
+            isLongPress = false
+        }
+    }
+
+    ListItem(
+        modifier = modifier
+            .clickable {
+                onTapShortcutInfo(
+                    eblanShortcutInfo.serialNumber,
+                    eblanShortcutInfo.packageName,
+                    eblanShortcutInfo.shortcutId,
+                )
+            },
+        headlineContent = {
+            Text(text = eblanShortcutInfo.shortLabel)
+        },
+        leadingContent = {
+            Box(modifier = Modifier.size(30.dp)) {
+                if (!isLongPress) {
+                    AsyncImage(
+                        model = eblanShortcutInfo.icon,
+                        contentDescription = null,
+                        modifier = Modifier.matchParentSize(),
+                    )
+                }
+            }
+        },
+    )
+}
+
+@OptIn(ExperimentalUuidApi::class)
 private suspend fun handleOnLongPress(
     eblanShortcutInfo: EblanShortcutInfo,
     graphicsLayer: GraphicsLayer,
@@ -327,9 +369,9 @@ private suspend fun handleOnLongPress(
 
     onUpdateIsVisibleOverlay(true)
 
-    onUpdateTransitionState(false)
-
     onUpdateIsDragging(true)
+
+    onUpdateTransitionState(false)
 }
 
 private fun getShortcutInfoGridItem(
@@ -375,46 +417,4 @@ private fun getShortcutInfoGridItem(
         swipeDown = eblanAction,
     )
     return gridItem
-}
-
-@OptIn(ExperimentalUuidApi::class)
-@Composable
-private fun PrivateShortcutInfoMenuItem(
-    modifier: Modifier = Modifier,
-    drag: Drag,
-    eblanShortcutInfo: EblanShortcutInfo,
-    onTapShortcutInfo: (Long, String, String) -> Unit,
-) {
-    var isLongPress by remember { mutableStateOf(false) }
-
-    LaunchedEffect(key1 = drag) {
-        if (drag == Drag.End || drag == Drag.Cancel) {
-            isLongPress = false
-        }
-    }
-
-    ListItem(
-        modifier = modifier
-            .clickable {
-                onTapShortcutInfo(
-                    eblanShortcutInfo.serialNumber,
-                    eblanShortcutInfo.packageName,
-                    eblanShortcutInfo.shortcutId,
-                )
-            },
-        headlineContent = {
-            Text(text = eblanShortcutInfo.shortLabel)
-        },
-        leadingContent = {
-            Box(modifier = Modifier.size(30.dp)) {
-                if (!isLongPress) {
-                    AsyncImage(
-                        model = eblanShortcutInfo.icon,
-                        contentDescription = null,
-                        modifier = Modifier.matchParentSize(),
-                    )
-                }
-            }
-        },
-    )
 }

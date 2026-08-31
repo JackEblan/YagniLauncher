@@ -25,6 +25,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.platform.SoftwareKeyboardController
 import com.eblan.launcher.feature.home.component.HomeHandler
+import com.eblan.launcher.feature.home.model.Drag
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.debounce
@@ -34,12 +35,15 @@ import kotlin.time.Duration.Companion.milliseconds
 @Composable
 @OptIn(ExperimentalMaterial3Api::class, FlowPreview::class)
 internal fun ScreenEffect(
-    swipeY: Float,
-    screenHeight: Int,
-    onDismiss: () -> Unit,
+    drag: Drag,
+    isVisibleOverlay: Boolean,
     keyboardController: SoftwareKeyboardController?,
+    screenHeight: Int,
+    swipeY: Float,
     textFieldState: TextFieldState,
     onChangeLabel: (String) -> Unit,
+    onDismiss: () -> Unit,
+    onUpdateIsVisibleOverlay: (Boolean) -> Unit,
 ) {
     LaunchedEffect(key1 = textFieldState) {
         snapshotFlow { textFieldState.text }.debounce(500L.milliseconds).onEach {
@@ -50,6 +54,15 @@ internal fun ScreenEffect(
     LaunchedEffect(key1 = swipeY) {
         if (swipeY == screenHeight.toFloat()) {
             keyboardController?.hide()
+        }
+    }
+
+    LaunchedEffect(
+        key1 = isVisibleOverlay,
+        key2 = drag,
+    ) {
+        if (isVisibleOverlay && (drag == Drag.Cancel || drag == Drag.End)) {
+            onUpdateIsVisibleOverlay(false)
         }
     }
 
