@@ -47,7 +47,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
@@ -209,7 +211,6 @@ internal fun InteractiveGridItem(
                 statusBarNotifications = statusBarNotifications,
                 textColor = currentTextColor,
                 hasInteraction = hasInteraction,
-                isVisibleWhiteBox = isVisibleWhiteBox,
                 sourceBounds = sourceBounds,
                 gridItemsIconPackInfoFilePaths = iconPackInfoFilePaths,
                 animations = animations,
@@ -261,7 +262,6 @@ internal fun InteractiveGridItem(
                 sharedElementKey = sharedElementKey,
                 textColor = currentTextColor,
                 hasInteraction = hasInteraction,
-                isVisibleWhiteBox = isVisibleWhiteBox,
                 sourceBounds = sourceBounds,
                 animations = animations,
                 onOpenAppDrawer = onOpenAppDrawer,
@@ -325,7 +325,6 @@ internal fun InteractiveGridItem(
                 sharedElementKey = sharedElementKey,
                 textColor = currentTextColor,
                 hasInteraction = hasInteraction,
-                isVisibleWhiteBox = isVisibleWhiteBox,
                 animations = animations,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
@@ -355,7 +354,6 @@ private fun InteractiveApplicationInfoGridItem(
     statusBarNotifications: Map<String, Int>,
     textColor: Color,
     hasInteraction: Boolean,
-    isVisibleWhiteBox: Boolean,
     sourceBounds: Rect,
     gridItemsIconPackInfoFilePaths: Map<String, String?>,
     animations: Boolean,
@@ -400,9 +398,9 @@ private fun InteractiveApplicationInfoGridItem(
 
     val hasNotifications =
         statusBarNotifications[data.packageName] != null && (
-            statusBarNotifications[data.packageName]
-                ?: 0
-            ) > 0
+                statusBarNotifications[data.packageName]
+                    ?: 0
+                ) > 0
 
     val alpha = if (hasInteraction) 0f else 1f
 
@@ -426,10 +424,6 @@ private fun InteractiveApplicationInfoGridItem(
             .background(
                 color = Color(gridItemSettings.customBackgroundColor),
                 shape = RoundedCornerShape(size = gridItemSettings.cornerRadius.dp),
-            )
-            .whiteBox(
-                textColor = textColor,
-                visible = isVisibleWhiteBox && !isVisibleFolder,
             )
             .pointerInput(key1 = isVisibleOverlay) {
                 detectTapGestures(
@@ -494,11 +488,7 @@ private fun InteractiveApplicationInfoGridItem(
         horizontalAlignment = horizontalAlignment,
         verticalArrangement = verticalArrangement,
     ) {
-        Box(
-            modifier = Modifier
-                .size(gridItemSettings.iconSize.dp)
-                .alpha(alpha),
-        ) {
+        Box(modifier = Modifier.size(gridItemSettings.iconSize.dp)) {
             AsyncImage(
                 model = Builder(context).data(data.customIcon ?: icon)
                     .addLastModifiedToFileCacheKey(true)
@@ -520,6 +510,14 @@ private fun InteractiveApplicationInfoGridItem(
                         sharedTransitionScope = sharedTransitionScope,
                         visible = !isScrollInProgress && !hasInteraction,
                     ),
+                colorFilter = if (hasInteraction && !isVisibleFolder) {
+                    ColorFilter.tint(
+                        color = textColor.copy(alpha = 0.5f),
+                        blendMode = BlendMode.SrcIn,
+                    )
+                } else {
+                    null
+                },
             )
 
             if (isNotificationAccessGranted && hasNotifications) {
@@ -530,7 +528,8 @@ private fun InteractiveApplicationInfoGridItem(
                         .background(
                             color = MaterialTheme.colorScheme.primary,
                             shape = CircleShape,
-                        ),
+                        )
+                        .alpha(alpha),
                 )
             }
         }
@@ -720,7 +719,6 @@ private fun InteractiveShortcutInfoGridItem(
     sharedElementKey: SharedElementKey,
     textColor: Color,
     hasInteraction: Boolean,
-    isVisibleWhiteBox: Boolean,
     sourceBounds: Rect,
     animations: Boolean,
     onOpenAppDrawer: () -> Unit,
@@ -786,10 +784,6 @@ private fun InteractiveShortcutInfoGridItem(
             .background(
                 color = Color(gridItemSettings.customBackgroundColor),
                 shape = RoundedCornerShape(size = gridItemSettings.cornerRadius.dp),
-            )
-            .whiteBox(
-                textColor = textColor,
-                visible = isVisibleWhiteBox && !isVisibleFolder,
             )
             .pointerInput(key1 = isVisibleOverlay) {
                 detectTapGestures(
@@ -861,9 +855,7 @@ private fun InteractiveShortcutInfoGridItem(
         horizontalAlignment = horizontalAlignment,
         verticalArrangement = verticalArrangement,
     ) {
-        Box(
-            modifier = Modifier.size(gridItemSettings.iconSize.dp),
-        ) {
+        Box(modifier = Modifier.size(gridItemSettings.iconSize.dp)) {
             AsyncImage(
                 model = Builder(context).data(customIcon)
                     .addLastModifiedToFileCacheKey(true)
@@ -877,7 +869,7 @@ private fun InteractiveShortcutInfoGridItem(
                         intSize = it.size
                     }
                     .gridItemAnimation(
-                        alpha = alpha,
+                        alpha = defaultAlpha,
                         enabled = animations,
                         graphicsLayer = graphicsLayer,
                         scale = scale,
@@ -886,6 +878,14 @@ private fun InteractiveShortcutInfoGridItem(
                         visible = !isScrollInProgress && !hasInteraction,
                     ),
                 contentDescription = null,
+                colorFilter = if (hasInteraction && !isVisibleFolder) {
+                    ColorFilter.tint(
+                        color = textColor.copy(alpha = 0.5f),
+                        blendMode = BlendMode.SrcIn,
+                    )
+                } else {
+                    null
+                },
             )
 
             AsyncImage(
@@ -1181,7 +1181,6 @@ private fun InteractiveShortcutConfigGridItem(
     sharedElementKey: SharedElementKey,
     textColor: Color,
     hasInteraction: Boolean,
-    isVisibleWhiteBox: Boolean,
     animations: Boolean,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
@@ -1252,10 +1251,6 @@ private fun InteractiveShortcutConfigGridItem(
             .background(
                 color = Color(gridItemSettings.customBackgroundColor),
                 shape = RoundedCornerShape(size = gridItemSettings.cornerRadius.dp),
-            )
-            .whiteBox(
-                textColor = textColor,
-                visible = isVisibleWhiteBox && !isVisibleFolder,
             )
             .pointerInput(key1 = isVisibleOverlay) {
                 detectTapGestures(
@@ -1339,8 +1334,15 @@ private fun InteractiveShortcutConfigGridItem(
                     sharedElementKey = sharedElementKey,
                     sharedTransitionScope = sharedTransitionScope,
                     visible = !isScrollInProgress && !hasInteraction,
+                ),
+            colorFilter = if (hasInteraction && !isVisibleFolder) {
+                ColorFilter.tint(
+                    color = textColor.copy(alpha = 0.5f),
+                    blendMode = BlendMode.SrcIn,
                 )
-                .alpha(alpha),
+            } else {
+                null
+            },
         )
 
         if (gridItemSettings.showLabel) {
@@ -1387,7 +1389,7 @@ private fun PreviewFolderGridItem(
             is GridItemData.Folder,
             is GridItemData.ShortcutConfig,
             is GridItemData.Widget,
-            -> if (hasInteraction) 0f else 1f
+                -> if (hasInteraction) 0f else 1f
 
             is GridItemData.ShortcutInfo -> {
                 if (hasInteraction) {

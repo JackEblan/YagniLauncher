@@ -39,6 +39,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.eblan.launcher.domain.model.EblanAction
@@ -65,9 +66,9 @@ internal fun Modifier.swipeGestures(
     val launcherApps = LocalLauncherApps.current
 
     return if ((
-            swipeUp.eblanActionType != EblanActionType.None ||
-                swipeDown.eblanActionType != EblanActionType.None
-            ) && enabled
+                swipeUp.eblanActionType != EblanActionType.None ||
+                        swipeDown.eblanActionType != EblanActionType.None
+                ) && enabled
     ) {
         val swipeY = remember { Animatable(0f) }
 
@@ -134,30 +135,32 @@ internal fun Modifier.swipeGestures(
 internal fun Modifier.whiteBox(
     textColor: Color,
     visible: Boolean,
+    cornerRadius: Dp = 10.dp,
+    alpha: Float = 0.3f,
 ): Modifier = if (visible) {
     drawWithCache {
-        val strokeWidth = 2.dp.toPx()
-
-        val cornerRadius = 5.dp.toPx()
-
-        val inset = strokeWidth / 2f
+        val cornerRadiusPx = cornerRadius.toPx()
 
         val paint = Paint().apply {
             isAntiAlias = true
-            style = Paint.Style.STROKE
-            this.strokeWidth = strokeWidth
-            color = textColor.copy(alpha = 0.3f).toArgb()
-            setShadowLayer(12.dp.toPx(), 0f, 0f, textColor.toArgb())
+            style = Paint.Style.FILL
+            color = textColor.copy(alpha = alpha).toArgb()
+            setShadowLayer(
+                12.dp.toPx(),
+                0f,
+                0f,
+                textColor.toArgb(),
+            )
         }
 
         onDrawBehind {
             drawContext.canvas.nativeCanvas.drawRoundRect(
-                inset,
-                inset,
-                size.width - inset,
-                size.height - inset,
-                cornerRadius,
-                cornerRadius,
+                0f,
+                0f,
+                size.width,
+                size.height,
+                cornerRadiusPx,
+                cornerRadiusPx,
                 paint,
             )
         }
