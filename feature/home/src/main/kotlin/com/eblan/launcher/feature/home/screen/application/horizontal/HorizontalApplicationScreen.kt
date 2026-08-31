@@ -298,7 +298,6 @@ internal fun HorizontalApplicationScreen(
 
     if (showPrivatePopupApplicationMenu && selectedEblanApplicationInfo != null) {
         PrivateApplicationInfoPopup(
-            drag = drag,
             eblanShortcutInfosGroup = eblanShortcutInfosGroup,
             eblanApplicationInfo = selectedEblanApplicationInfo,
             hasShortcutHostPermission = hasShortcutHostPermission,

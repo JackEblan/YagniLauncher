@@ -88,6 +88,7 @@ import com.eblan.launcher.domain.model.GridItemSettings
 import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.feature.home.R
 import com.eblan.launcher.feature.home.component.OffsetNestedScrollConnection
+import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
 import com.eblan.launcher.feature.home.screen.ScreenEffect
@@ -113,6 +114,7 @@ internal fun WidgetScreen(
     cornerSize: Dp,
     isVisibleOverlay: Boolean,
     animations: Boolean,
+    drag: Drag,
     onDismiss: () -> Unit,
     onGetEblanAppWidgetProviderInfosByLabel: (String) -> Unit,
     onUpdateOverlayBounds: (
@@ -154,12 +156,15 @@ internal fun WidgetScreen(
     val textFieldState = rememberTextFieldState()
 
     ScreenEffect(
-        swipeY = swipeY,
-        screenHeight = screenHeight,
-        onDismiss = onDismiss,
+        drag = drag,
+        isVisibleOverlay = isVisibleOverlay,
         keyboardController = keyboardController,
+        screenHeight = screenHeight,
+        swipeY = swipeY,
         textFieldState = textFieldState,
         onChangeLabel = onGetEblanAppWidgetProviderInfosByLabel,
+        onDismiss = onDismiss,
+        onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
     )
 
     Surface(
@@ -570,7 +575,7 @@ private suspend fun handleOnLongPress(
 
     onUpdateIsVisibleOverlay(true)
 
-    onDismiss()
-
     onUpdateIsDragging(true)
+
+    onDismiss()
 }

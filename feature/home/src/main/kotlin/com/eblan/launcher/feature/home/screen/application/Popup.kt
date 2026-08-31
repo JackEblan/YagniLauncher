@@ -62,7 +62,6 @@ import com.eblan.launcher.domain.model.GridItemSettings
 import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.feature.home.component.HomeHandler
 import com.eblan.launcher.feature.home.component.popup
-import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
 import com.eblan.launcher.feature.home.screen.shortcutinfo.PrivateShortcutInfoMenu
@@ -257,7 +256,6 @@ internal fun ApplicationInfoPopup(
 @Composable
 internal fun PrivateApplicationInfoPopup(
     modifier: Modifier = Modifier,
-    drag: Drag,
     eblanShortcutInfosGroup: Map<EblanShortcutInfoByGroup, List<EblanShortcutInfo>>,
     eblanApplicationInfo: EblanApplicationInfo?,
     hasShortcutHostPermission: Boolean,
@@ -345,7 +343,6 @@ internal fun PrivateApplicationInfoPopup(
             ),
         ) {
             PrivateApplicationInfoMenu(
-                drag = drag,
                 eblanShortcutInfosGroup = eblanShortcutInfosGroup[
                     EblanShortcutInfoByGroup(
                         serialNumber = eblanApplicationInfo.serialNumber,
@@ -495,7 +492,6 @@ private fun ApplicationInfoMenu(
 @Composable
 private fun PrivateApplicationInfoMenu(
     modifier: Modifier = Modifier,
-    drag: Drag,
     eblanShortcutInfosGroup: List<EblanShortcutInfo>?,
     hasShortcutHostPermission: Boolean,
     onApplicationInfo: () -> Unit,
@@ -517,7 +513,6 @@ private fun PrivateApplicationInfoMenu(
                 if (hasShortcutHostPermission && !eblanShortcutInfosGroup.isNullOrEmpty()) {
                     PrivateShortcutInfoMenu(
                         modifier = modifier,
-                        drag = drag,
                         eblanShortcutInfosGroup = eblanShortcutInfosGroup,
                         onTapShortcutInfo = onTapShortcutInfo,
                     )

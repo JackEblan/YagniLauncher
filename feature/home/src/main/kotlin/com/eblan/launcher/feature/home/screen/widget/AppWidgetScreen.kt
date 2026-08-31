@@ -439,9 +439,9 @@ private suspend fun handleOnLongPress(
 
     onUpdateIsVisibleOverlay(true)
 
+    onUpdateIsDragging(true)
+
     onDismiss()
 
     onDismissApplicationScreen()
-
-    onUpdateIsDragging(true)
 }

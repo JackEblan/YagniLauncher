@@ -18,6 +18,7 @@
 package com.eblan.launcher.feature.home.screen.pager
 
 import android.content.Intent.parseUri
+import android.graphics.Paint
 import android.graphics.Rect
 import android.os.Build
 import androidx.compose.animation.ExperimentalSharedTransitionApi
@@ -47,9 +48,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.rememberGraphicsLayer
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
@@ -77,7 +81,6 @@ import com.eblan.launcher.domain.model.TextColor
 import com.eblan.launcher.feature.home.component.PreviewFolderGridLayout
 import com.eblan.launcher.feature.home.component.gridItemAnimation
 import com.eblan.launcher.feature.home.component.swipeGestures
-import com.eblan.launcher.feature.home.component.whiteBox
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
@@ -1533,4 +1536,39 @@ private fun getSourceBounds(
         left + width,
         top + height,
     )
+}
+
+private fun Modifier.whiteBox(
+    textColor: Color,
+    visible: Boolean,
+): Modifier = if (visible) {
+    drawWithCache {
+        val strokeWidth = 3.dp.toPx()
+
+        val cornerRadius = 5.dp.toPx()
+
+        val inset = strokeWidth / 2f
+
+        val paint = Paint().apply {
+            isAntiAlias = true
+            style = Paint.Style.STROKE
+            this.strokeWidth = strokeWidth
+            color = textColor.copy(alpha = 0.3f).toArgb()
+            setShadowLayer(12.dp.toPx(), 0f, 0f, textColor.toArgb())
+        }
+
+        onDrawBehind {
+            drawContext.canvas.nativeCanvas.drawRoundRect(
+                inset,
+                inset,
+                size.width - inset,
+                size.height - inset,
+                cornerRadius,
+                cornerRadius,
+                paint,
+            )
+        }
+    }
+} else {
+    this
 }

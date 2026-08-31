@@ -335,7 +335,6 @@ internal fun VerticalApplicationScreen(
 
     if (showPrivatePopupApplicationMenu && selectedEblanApplicationInfo != null) {
         PrivateApplicationInfoPopup(
-            drag = drag,
             eblanShortcutInfosGroup = eblanShortcutInfosGroup,
             eblanApplicationInfo = selectedEblanApplicationInfo,
             hasShortcutHostPermission = hasShortcutHostPermission,

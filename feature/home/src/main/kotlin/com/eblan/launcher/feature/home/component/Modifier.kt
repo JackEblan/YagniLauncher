@@ -17,7 +17,6 @@
  */
 package com.eblan.launcher.feature.home.component
 
-import android.graphics.Paint
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationVector1D
@@ -27,14 +26,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.compose.ui.graphics.layer.drawLayer
-import androidx.compose.ui.graphics.nativeCanvas
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalContext
@@ -129,41 +124,6 @@ internal fun Modifier.swipeGestures(
     } else {
         this
     }
-}
-
-internal fun Modifier.whiteBox(
-    textColor: Color,
-    visible: Boolean,
-): Modifier = if (visible) {
-    drawWithCache {
-        val strokeWidth = 2.dp.toPx()
-
-        val cornerRadius = 5.dp.toPx()
-
-        val inset = strokeWidth / 2f
-
-        val paint = Paint().apply {
-            isAntiAlias = true
-            style = Paint.Style.STROKE
-            this.strokeWidth = strokeWidth
-            color = textColor.copy(alpha = 0.3f).toArgb()
-            setShadowLayer(12.dp.toPx(), 0f, 0f, textColor.toArgb())
-        }
-
-        onDrawBehind {
-            drawContext.canvas.nativeCanvas.drawRoundRect(
-                inset,
-                inset,
-                size.width - inset,
-                size.height - inset,
-                cornerRadius,
-                cornerRadius,
-                paint,
-            )
-        }
-    }
-} else {
-    this
 }
 
 internal fun Modifier.popup(

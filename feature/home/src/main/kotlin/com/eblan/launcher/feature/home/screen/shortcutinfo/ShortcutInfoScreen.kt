@@ -21,7 +21,6 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
@@ -59,7 +58,6 @@ import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.GridItemSettings
 import com.eblan.launcher.domain.model.MoveGridItemResult
-import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
 import com.eblan.launcher.feature.home.util.SCALE
@@ -124,7 +122,6 @@ internal fun ShortcutInfoScreen(
 @Composable
 internal fun PrivateShortcutInfoMenu(
     modifier: Modifier = Modifier,
-    drag: Drag,
     eblanShortcutInfosGroup: List<EblanShortcutInfo>,
     onTapShortcutInfo: (
         serialNumber: Long,
@@ -142,7 +139,6 @@ internal fun PrivateShortcutInfoMenu(
     ) {
         eblanShortcutInfosGroup.forEach { eblanShortcutInfo ->
             PrivateShortcutInfoMenuItem(
-                drag = drag,
                 eblanShortcutInfo = eblanShortcutInfo,
                 onTapShortcutInfo = onTapShortcutInfo,
             )
@@ -267,6 +263,35 @@ private fun ShortcutInfoMenuItem(
 }
 
 @OptIn(ExperimentalUuidApi::class)
+@Composable
+private fun PrivateShortcutInfoMenuItem(
+    modifier: Modifier = Modifier,
+    eblanShortcutInfo: EblanShortcutInfo,
+    onTapShortcutInfo: (Long, String, String) -> Unit,
+) {
+    ListItem(
+        modifier = modifier
+            .clickable {
+                onTapShortcutInfo(
+                    eblanShortcutInfo.serialNumber,
+                    eblanShortcutInfo.packageName,
+                    eblanShortcutInfo.shortcutId,
+                )
+            },
+        headlineContent = {
+            Text(text = eblanShortcutInfo.shortLabel)
+        },
+        leadingContent = {
+            AsyncImage(
+                model = eblanShortcutInfo.icon,
+                contentDescription = null,
+                modifier = Modifier.size(30.dp),
+            )
+        },
+    )
+}
+
+@OptIn(ExperimentalUuidApi::class)
 private suspend fun handleOnLongPress(
     eblanShortcutInfo: EblanShortcutInfo,
     graphicsLayer: GraphicsLayer,
@@ -327,9 +352,9 @@ private suspend fun handleOnLongPress(
 
     onUpdateIsVisibleOverlay(true)
 
-    onUpdateTransitionState(false)
-
     onUpdateIsDragging(true)
+
+    onUpdateTransitionState(false)
 }
 
 private fun getShortcutInfoGridItem(
@@ -375,46 +400,4 @@ private fun getShortcutInfoGridItem(
         swipeDown = eblanAction,
     )
     return gridItem
-}
-
-@OptIn(ExperimentalUuidApi::class)
-@Composable
-private fun PrivateShortcutInfoMenuItem(
-    modifier: Modifier = Modifier,
-    drag: Drag,
-    eblanShortcutInfo: EblanShortcutInfo,
-    onTapShortcutInfo: (Long, String, String) -> Unit,
-) {
-    var isLongPress by remember { mutableStateOf(false) }
-
-    LaunchedEffect(key1 = drag) {
-        if (drag == Drag.End || drag == Drag.Cancel) {
-            isLongPress = false
-        }
-    }
-
-    ListItem(
-        modifier = modifier
-            .clickable {
-                onTapShortcutInfo(
-                    eblanShortcutInfo.serialNumber,
-                    eblanShortcutInfo.packageName,
-                    eblanShortcutInfo.shortcutId,
-                )
-            },
-        headlineContent = {
-            Text(text = eblanShortcutInfo.shortLabel)
-        },
-        leadingContent = {
-            Box(modifier = Modifier.size(30.dp)) {
-                if (!isLongPress) {
-                    AsyncImage(
-                        model = eblanShortcutInfo.icon,
-                        contentDescription = null,
-                        modifier = Modifier.matchParentSize(),
-                    )
-                }
-            }
-        },
-    )
 }
