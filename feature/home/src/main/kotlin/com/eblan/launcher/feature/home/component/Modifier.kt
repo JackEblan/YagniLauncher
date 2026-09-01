@@ -23,8 +23,10 @@ import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.offset
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.graphicsLayer
@@ -58,6 +60,8 @@ internal fun Modifier.swipeGestures(
     val scope = rememberCoroutineScope()
 
     val launcherApps = LocalLauncherApps.current
+
+    val currentOnOpenAppDrawer by rememberUpdatedState(onOpenAppDrawer)
 
     return if ((
             swipeUp.eblanActionType != EblanActionType.None ||
@@ -99,7 +103,7 @@ internal fun Modifier.swipeGestures(
                                     context = context,
                                     eblanAction = swipeUp,
                                     launcherApps = launcherApps,
-                                    onOpenAppDrawer = onOpenAppDrawer,
+                                    onOpenAppDrawer = currentOnOpenAppDrawer,
                                 )
                             }
 
@@ -108,7 +112,7 @@ internal fun Modifier.swipeGestures(
                                     context = context,
                                     eblanAction = swipeDown,
                                     launcherApps = launcherApps,
-                                    onOpenAppDrawer = onOpenAppDrawer,
+                                    onOpenAppDrawer = currentOnOpenAppDrawer,
                                 )
                             }
                         }
