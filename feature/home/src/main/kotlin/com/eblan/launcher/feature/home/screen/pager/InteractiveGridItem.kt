@@ -413,6 +413,12 @@ private fun InteractiveApplicationInfoGridItem(
 
     val scale = remember { Animatable(1f) }
 
+    val currentOnOpenAppDrawer by rememberUpdatedState(onOpenAppDrawer)
+    val currentOnShowGridItemPopup by rememberUpdatedState(onShowGridItemPopup)
+    val currentOnUpdateImageBitmap by rememberUpdatedState(onUpdateImageBitmap)
+    val currentOnUpdateOverlayBounds by rememberUpdatedState(onUpdateOverlayBounds)
+    val currentOnUpdateSharedElementKey by rememberUpdatedState(onUpdateSharedElementKey)
+
     LaunchedEffect(
         key1 = isVisibleOverlay,
         key2 = animations,
@@ -442,7 +448,7 @@ private fun InteractiveApplicationInfoGridItem(
                                 context = context,
                                 doubleTap = gridItem.doubleTap,
                                 launcherApps = launcherApps,
-                                onOpenAppDrawer = onOpenAppDrawer,
+                                onOpenAppDrawer = currentOnOpenAppDrawer,
                             )
                         }
                     } else {
@@ -458,10 +464,10 @@ private fun InteractiveApplicationInfoGridItem(
                                     sharedElementKey = sharedElementKey,
                                     gridItem = gridItem,
                                     onUpdateGridItemSource = onUpdateGridItemSource,
-                                    onUpdateImageBitmap = onUpdateImageBitmap,
-                                    onUpdateOverlayBounds = onUpdateOverlayBounds,
-                                    onUpdateSharedElementKey = onUpdateSharedElementKey,
-                                    onShowGridItemPopup = onShowGridItemPopup,
+                                    onUpdateImageBitmap = currentOnUpdateImageBitmap,
+                                    onUpdateOverlayBounds = currentOnUpdateOverlayBounds,
+                                    onUpdateSharedElementKey = currentOnUpdateSharedElementKey,
+                                    onShowGridItemPopup = currentOnShowGridItemPopup,
                                     onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                                     onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                                 )
@@ -598,6 +604,11 @@ private fun InteractiveWidgetGridItem(
 
     val scale = remember { Animatable(1f) }
 
+    val currentOnShowGridItemPopup by rememberUpdatedState(onShowGridItemPopup)
+    val currentOnUpdateImageBitmap by rememberUpdatedState(onUpdateImageBitmap)
+    val currentOnUpdateOverlayBounds by rememberUpdatedState(onUpdateOverlayBounds)
+    val currentOnUpdateSharedElementKey by rememberUpdatedState(onUpdateSharedElementKey)
+
     LaunchedEffect(
         key1 = isVisibleOverlay,
         key2 = animations,
@@ -653,10 +664,10 @@ private fun InteractiveWidgetGridItem(
                                     sharedElementKey = sharedElementKey,
                                     gridItem = gridItem,
                                     onUpdateGridItemSource = onUpdateGridItemSource,
-                                    onUpdateImageBitmap = onUpdateImageBitmap,
-                                    onUpdateOverlayBounds = onUpdateOverlayBounds,
-                                    onUpdateSharedElementKey = onUpdateSharedElementKey,
-                                    onShowGridItemPopup = onShowGridItemPopup,
+                                    onUpdateImageBitmap = currentOnUpdateImageBitmap,
+                                    onUpdateOverlayBounds = currentOnUpdateOverlayBounds,
+                                    onUpdateSharedElementKey = currentOnUpdateSharedElementKey,
+                                    onShowGridItemPopup = currentOnShowGridItemPopup,
                                     onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                                     onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                                 )
@@ -683,10 +694,10 @@ private fun InteractiveWidgetGridItem(
                                         sharedElementKey = sharedElementKey,
                                         gridItem = gridItem,
                                         onUpdateGridItemSource = onUpdateGridItemSource,
-                                        onUpdateImageBitmap = onUpdateImageBitmap,
-                                        onUpdateOverlayBounds = onUpdateOverlayBounds,
-                                        onUpdateSharedElementKey = onUpdateSharedElementKey,
-                                        onShowGridItemPopup = onShowGridItemPopup,
+                                        onUpdateImageBitmap = currentOnUpdateImageBitmap,
+                                        onUpdateOverlayBounds = currentOnUpdateOverlayBounds,
+                                        onUpdateSharedElementKey = currentOnUpdateSharedElementKey,
+                                        onShowGridItemPopup = currentOnShowGridItemPopup,
                                         onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                                         onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                                     )
@@ -773,6 +784,12 @@ private fun InteractiveShortcutInfoGridItem(
 
     val scale = remember { Animatable(1f) }
 
+    val currentOnOpenAppDrawer by rememberUpdatedState(onOpenAppDrawer)
+    val currentOnShowGridItemPopup by rememberUpdatedState(onShowGridItemPopup)
+    val currentOnUpdateImageBitmap by rememberUpdatedState(onUpdateImageBitmap)
+    val currentOnUpdateOverlayBounds by rememberUpdatedState(onUpdateOverlayBounds)
+    val currentOnUpdateSharedElementKey by rememberUpdatedState(onUpdateSharedElementKey)
+
     LaunchedEffect(
         key1 = isVisibleOverlay,
         key2 = animations,
@@ -802,7 +819,7 @@ private fun InteractiveShortcutInfoGridItem(
                                 context = context,
                                 doubleTap = gridItem.doubleTap,
                                 launcherApps = launcherApps,
-                                onOpenAppDrawer = onOpenAppDrawer,
+                                onOpenAppDrawer = currentOnOpenAppDrawer,
                             )
                         }
                     } else {
@@ -818,10 +835,10 @@ private fun InteractiveShortcutInfoGridItem(
                                     sharedElementKey = sharedElementKey,
                                     gridItem = gridItem,
                                     onUpdateGridItemSource = onUpdateGridItemSource,
-                                    onUpdateImageBitmap = onUpdateImageBitmap,
-                                    onUpdateOverlayBounds = onUpdateOverlayBounds,
-                                    onUpdateSharedElementKey = onUpdateSharedElementKey,
-                                    onShowGridItemPopup = onShowGridItemPopup,
+                                    onUpdateImageBitmap = currentOnUpdateImageBitmap,
+                                    onUpdateOverlayBounds = currentOnUpdateOverlayBounds,
+                                    onUpdateSharedElementKey = currentOnUpdateSharedElementKey,
+                                    onShowGridItemPopup = currentOnShowGridItemPopup,
                                     onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                                     onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                                 )
@@ -991,6 +1008,12 @@ private fun InteractiveFolderGridItem(
     val currentLockMovement = rememberUpdatedState(lockMovement)
     val currentFolderGridItems =
         rememberUpdatedState(previewFolderGridItems[gridItem.id]?.folderGridItems)
+    val currentOnOpenAppDrawer by rememberUpdatedState(onOpenAppDrawer)
+    val currentOnShowGridItemPopup by rememberUpdatedState(onShowGridItemPopup)
+    val currentOnUpdateImageBitmap by rememberUpdatedState(onUpdateImageBitmap)
+    val currentOnUpdateOverlayBounds by rememberUpdatedState(onUpdateOverlayBounds)
+    val currentOnUpdateSharedElementKey by rememberUpdatedState(onUpdateSharedElementKey)
+    val currentOnUpdateIsVisibleFolder by rememberUpdatedState(onUpdateIsVisibleFolder)
 
     val scale = remember { Animatable(1f) }
 
@@ -1015,8 +1038,8 @@ private fun InteractiveFolderGridItem(
             gridItem = currentGridItem,
             folderGridItems = currentFolderGridItems,
             onShowFolderWhenDragging = onShowFolderWhenDragging,
-            onUpdateSharedElementKey = onUpdateSharedElementKey,
-            onUpdateIsVisibleFolder = onUpdateIsVisibleFolder,
+            onUpdateSharedElementKey = currentOnUpdateSharedElementKey,
+            onUpdateIsVisibleFolder = currentOnUpdateIsVisibleFolder,
         )
     }
 
@@ -1040,7 +1063,7 @@ private fun InteractiveFolderGridItem(
                                 context = context,
                                 doubleTap = gridItem.doubleTap,
                                 launcherApps = launcherApps,
-                                onOpenAppDrawer = onOpenAppDrawer,
+                                onOpenAppDrawer = currentOnOpenAppDrawer,
                             )
                         }
                     } else {
@@ -1056,10 +1079,10 @@ private fun InteractiveFolderGridItem(
                                     sharedElementKey = sharedElementKey,
                                     gridItem = gridItem,
                                     onUpdateGridItemSource = onUpdateGridItemSource,
-                                    onUpdateImageBitmap = onUpdateImageBitmap,
-                                    onUpdateOverlayBounds = onUpdateOverlayBounds,
-                                    onUpdateSharedElementKey = onUpdateSharedElementKey,
-                                    onShowGridItemPopup = onShowGridItemPopup,
+                                    onUpdateImageBitmap = currentOnUpdateImageBitmap,
+                                    onUpdateOverlayBounds = currentOnUpdateOverlayBounds,
+                                    onUpdateSharedElementKey = currentOnUpdateSharedElementKey,
+                                    onShowGridItemPopup = currentOnShowGridItemPopup,
                                     onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                                     onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                                 )
@@ -1070,7 +1093,7 @@ private fun InteractiveFolderGridItem(
                     },
                     onTap = if (!isVisibleOverlay) {
                         {
-                            onUpdateIsVisibleFolder(true)
+                            currentOnUpdateIsVisibleFolder(true)
 
                             onUpsertFolderPopupEntry(
                                 FolderPopupEntry(
@@ -1235,6 +1258,12 @@ private fun InteractiveShortcutConfigGridItem(
 
     val scale = remember { Animatable(1f) }
 
+    val currentOnOpenAppDrawer by rememberUpdatedState(onOpenAppDrawer)
+    val currentOnShowGridItemPopup by rememberUpdatedState(onShowGridItemPopup)
+    val currentOnUpdateImageBitmap by rememberUpdatedState(onUpdateImageBitmap)
+    val currentOnUpdateOverlayBounds by rememberUpdatedState(onUpdateOverlayBounds)
+    val currentOnUpdateSharedElementKey by rememberUpdatedState(onUpdateSharedElementKey)
+
     LaunchedEffect(
         key1 = isVisibleOverlay,
         key2 = animations,
@@ -1264,7 +1293,7 @@ private fun InteractiveShortcutConfigGridItem(
                                 context = context,
                                 doubleTap = gridItem.doubleTap,
                                 launcherApps = launcherApps,
-                                onOpenAppDrawer = onOpenAppDrawer,
+                                onOpenAppDrawer = currentOnOpenAppDrawer,
                             )
                         }
                     } else {
@@ -1280,10 +1309,10 @@ private fun InteractiveShortcutConfigGridItem(
                                     sharedElementKey = sharedElementKey,
                                     gridItem = gridItem,
                                     onUpdateGridItemSource = onUpdateGridItemSource,
-                                    onUpdateImageBitmap = onUpdateImageBitmap,
-                                    onUpdateOverlayBounds = onUpdateOverlayBounds,
-                                    onUpdateSharedElementKey = onUpdateSharedElementKey,
-                                    onShowGridItemPopup = onShowGridItemPopup,
+                                    onUpdateImageBitmap = currentOnUpdateImageBitmap,
+                                    onUpdateOverlayBounds = currentOnUpdateOverlayBounds,
+                                    onUpdateSharedElementKey = currentOnUpdateSharedElementKey,
+                                    onShowGridItemPopup = currentOnShowGridItemPopup,
                                     onUpdateIsVisibleOverlay = onUpdateIsVisibleOverlay,
                                     onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                                 )
@@ -1373,9 +1402,9 @@ private fun PreviewFolderGridItem(
     iconPackInfoFilePaths: Map<String, String?>,
     onResetGrid: () -> Unit,
 ) {
-    val context = LocalContext.current
-
     key(gridItem.id) {
+        val context = LocalContext.current
+
         val isSelected =
             moveGridItemResult != null && moveGridItemResult.movingGridItem.id == gridItem.id
 
