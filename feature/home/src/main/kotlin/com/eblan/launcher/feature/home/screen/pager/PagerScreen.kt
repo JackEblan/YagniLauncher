@@ -1268,26 +1268,26 @@ private fun SharedTransitionScope.OverlayImage(
                 }
             }
             .size(size)
-            .then(
+            .run {
                 if (animations) {
-                    Modifier.sharedElementWithCallerManagedVisibility(
+                    sharedElementWithCallerManagedVisibility(
                         rememberSharedContentState(key = sharedElementKey),
                         visible = isVisibleOverlay,
                     )
                 } else {
-                    Modifier
-                },
-            )
-            .then(
+                    this
+                }
+            }
+            .run {
                 if (animations) {
-                    Modifier.graphicsLayer {
+                    graphicsLayer {
                         scaleX = scale.value
                         scaleY = scale.value
                     }
                 } else {
-                    Modifier
-                },
-            ),
+                    this
+                }
+            },
         bitmap = overlayImageBitmap,
         contentDescription = null,
     )

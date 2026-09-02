@@ -451,16 +451,16 @@ private fun EblanAppWidgetProviderInfoItem(
 
                     intSize = it.size
                 }
-                .then(
+                .run {
                     if (animations) {
-                        Modifier.graphicsLayer {
+                        graphicsLayer {
                             scaleX = scale.value
                             scaleY = scale.value
                         }
                     } else {
-                        Modifier
-                    },
-                )
+                        this
+                    }
+                }
                 .drawWithContent {
                     graphicsLayer.record {
                         this@drawWithContent.drawContent()

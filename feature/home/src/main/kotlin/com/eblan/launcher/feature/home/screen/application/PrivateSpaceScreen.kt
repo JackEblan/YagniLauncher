@@ -387,16 +387,16 @@ internal fun PrivateSpaceEblanApplicationInfoItem(
 
                     intSize = it.size
                 }
-                .then(
+                .run {
                     if (animations) {
-                        Modifier.graphicsLayer {
+                        graphicsLayer {
                             scaleX = scale.value
                             scaleY = scale.value
                         }
                     } else {
-                        Modifier
-                    },
-                ),
+                        this
+                    }
+                },
             placeholder = ColorPainter(Color.Transparent),
             error = ColorPainter(Color.Transparent),
         )

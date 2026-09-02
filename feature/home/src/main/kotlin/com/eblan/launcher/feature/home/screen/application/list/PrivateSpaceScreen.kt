@@ -272,16 +272,16 @@ private fun PrivateSpaceEblanApplicationInfoItem(
 
                     intSize = it.size
                 }
-                .then(
+                .run {
                     if (animations) {
-                        Modifier.graphicsLayer {
+                        graphicsLayer {
                             scaleX = scale.value
                             scaleY = scale.value
                         }
                     } else {
-                        Modifier
-                    },
-                ),
+                        this
+                    }
+                },
         )
 
         Spacer(modifier = Modifier.width(10.dp))

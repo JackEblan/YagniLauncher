@@ -166,30 +166,28 @@ internal fun Modifier.gridItemAnimation(
     sharedTransitionScope: SharedTransitionScope,
     visible: Boolean,
 ): Modifier = this
-    .then(
+    .run {
         if (enabled) {
-            Modifier.graphicsLayer {
+            graphicsLayer {
                 scaleX = scale.value
                 scaleY = scale.value
             }
         } else {
-            Modifier
-        },
-    )
-    .then(
+            this
+        }
+    }
+    .run {
         if (enabled && visible) {
             with(sharedTransitionScope) {
-                Modifier.sharedElementWithCallerManagedVisibility(
-                    rememberSharedContentState(
-                        key = sharedElementKey,
-                    ),
+                sharedElementWithCallerManagedVisibility(
+                    rememberSharedContentState(key = sharedElementKey),
                     visible = true,
                 )
             }
         } else {
-            Modifier
-        },
-    )
+            this
+        }
+    }
     .drawWithContent {
         graphicsLayer.apply {
             this.alpha = alpha
