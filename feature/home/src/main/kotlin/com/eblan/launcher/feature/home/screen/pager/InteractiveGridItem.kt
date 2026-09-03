@@ -35,6 +35,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -405,9 +406,9 @@ private fun InteractiveApplicationInfoGridItem(
 
     val hasNotifications =
         statusBarNotifications[data.packageName] != null && (
-                statusBarNotifications[data.packageName]
-                    ?: 0
-                ) > 0
+            statusBarNotifications[data.packageName]
+                ?: 0
+            ) > 0
 
     val alpha = if (hasInteraction) 0f else 1f
 
@@ -1152,30 +1153,32 @@ private fun InteractiveFolderGridItem(
                 modifier = commonModifier,
             )
         } else {
-            PreviewFolderGridLayout(
-                modifier = commonModifier.background(
-                    color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
-                    shape = RoundedCornerShape(folderCornerRadius.dp),
-                ),
-                gridItems = previewFolderGridItems[gridItem.id]?.previewFolderGridItems,
-                content = {
-                    PreviewFolderGridItem(
-                        sharedTransitionScope = sharedTransitionScope,
-                        gridItem = it,
-                        isScrollInProgress = isScrollInProgress,
-                        isVisibleOverlay = isVisibleOverlay,
-                        parent = sharedElementKey.parent,
-                        moveGridItemResult = moveGridItemResult,
-                        textColor = textColor,
-                        drag = drag,
-                        folderGridItems = previewFolderGridItems[gridItem.id]?.folderGridItems,
-                        isVisibleFolder = isVisibleFolder,
-                        hasShortcutHostPermission = hasShortcutHostPermission,
-                        iconPackInfoFilePaths = iconPackInfoFilePaths,
-                        onResetGrid = onResetGrid,
-                    )
-                },
-            )
+            Surface(
+                modifier = commonModifier,
+                shape = RoundedCornerShape(folderCornerRadius.dp),
+            ) {
+                PreviewFolderGridLayout(
+                    modifier = Modifier.fillMaxSize(),
+                    gridItems = previewFolderGridItems[gridItem.id]?.previewFolderGridItems,
+                    content = {
+                        PreviewFolderGridItem(
+                            sharedTransitionScope = sharedTransitionScope,
+                            gridItem = it,
+                            isScrollInProgress = isScrollInProgress,
+                            isVisibleOverlay = isVisibleOverlay,
+                            parent = sharedElementKey.parent,
+                            moveGridItemResult = moveGridItemResult,
+                            textColor = textColor,
+                            drag = drag,
+                            folderGridItems = previewFolderGridItems[gridItem.id]?.folderGridItems,
+                            isVisibleFolder = isVisibleFolder,
+                            hasShortcutHostPermission = hasShortcutHostPermission,
+                            iconPackInfoFilePaths = iconPackInfoFilePaths,
+                            onResetGrid = onResetGrid,
+                        )
+                    },
+                )
+            }
         }
 
         if (gridItemSettings.showLabel) {
@@ -1418,7 +1421,7 @@ private fun PreviewFolderGridItem(
             is GridItemData.Folder,
             is GridItemData.ShortcutConfig,
             is GridItemData.Widget,
-                -> if (hasInteraction) 0f else 1f
+            -> if (hasInteraction) 0f else 1f
 
             is GridItemData.ShortcutInfo -> {
                 if (hasInteraction) {

@@ -176,8 +176,8 @@ private fun Success(
             showFolderMaxGridDialog = true
         },
         onFolderCornerRadiusClick = {
-
-        }
+            showFolderCornerRadiusGridDialog = true
+        },
     )
 
     Column(

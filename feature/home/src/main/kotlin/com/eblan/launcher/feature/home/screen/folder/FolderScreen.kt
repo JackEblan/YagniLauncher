@@ -408,7 +408,7 @@ internal fun FolderScreen(
                     height = with(density) { animatedFolderRect.height().toDp() },
                 )
                 .clipToBounds(),
-            shape = RoundedCornerShape(homeSettings.folderCornerRadius),
+            shape = RoundedCornerShape(homeSettings.folderCornerRadius.dp),
             shadowElevation = 2.dp,
         ) {
             Column(

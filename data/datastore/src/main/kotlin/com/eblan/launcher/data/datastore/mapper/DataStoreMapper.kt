@@ -19,7 +19,6 @@ package com.eblan.launcher.data.datastore.mapper
 
 import com.eblan.launcher.data.datastore.proto.appdrawer.AppDrawerSettingsProto
 import com.eblan.launcher.data.datastore.proto.appdrawer.AppDrawerTypeProto
-import com.eblan.launcher.data.datastore.proto.model.BackgroundColorProto
 import com.eblan.launcher.data.datastore.proto.appdrawer.EblanApplicationInfoOrderProto
 import com.eblan.launcher.data.datastore.proto.experimental.ExperimentalSettingsProto
 import com.eblan.launcher.data.datastore.proto.general.GeneralSettingsProto
@@ -32,6 +31,7 @@ import com.eblan.launcher.data.datastore.proto.home.HomeSettingsProto
 import com.eblan.launcher.data.datastore.proto.home.HorizontalAlignmentProto
 import com.eblan.launcher.data.datastore.proto.home.TextColorProto
 import com.eblan.launcher.data.datastore.proto.home.VerticalArrangementProto
+import com.eblan.launcher.data.datastore.proto.model.BackgroundColorProto
 import com.eblan.launcher.domain.model.AppDrawerSettings
 import com.eblan.launcher.domain.model.AppDrawerType
 import com.eblan.launcher.domain.model.BackgroundColor
