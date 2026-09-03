@@ -271,7 +271,7 @@ internal suspend fun handleConflictingGridItem(
         movingGridItem: GridItem,
     ) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onUpdateIsVisibleFolder: (Boolean) -> Unit,
+    onUpdateIsVisibleFolders: (Boolean) -> Unit,
 ) {
     delay(1000L.milliseconds)
 
@@ -300,7 +300,7 @@ internal suspend fun handleConflictingGridItem(
         ),
     )
 
-    onUpdateIsVisibleFolder(true)
+    onUpdateIsVisibleFolders(true)
 
     onShowFolderWhenDragging(
         FolderPopupEntry(

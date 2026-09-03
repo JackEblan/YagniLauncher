@@ -19,7 +19,6 @@ package com.eblan.launcher.data.datastore.mapper
 
 import com.eblan.launcher.data.datastore.proto.appdrawer.AppDrawerSettingsProto
 import com.eblan.launcher.data.datastore.proto.appdrawer.AppDrawerTypeProto
-import com.eblan.launcher.data.datastore.proto.appdrawer.BackgroundColorProto
 import com.eblan.launcher.data.datastore.proto.appdrawer.EblanApplicationInfoOrderProto
 import com.eblan.launcher.data.datastore.proto.experimental.ExperimentalSettingsProto
 import com.eblan.launcher.data.datastore.proto.general.GeneralSettingsProto
@@ -32,6 +31,7 @@ import com.eblan.launcher.data.datastore.proto.home.HomeSettingsProto
 import com.eblan.launcher.data.datastore.proto.home.HorizontalAlignmentProto
 import com.eblan.launcher.data.datastore.proto.home.TextColorProto
 import com.eblan.launcher.data.datastore.proto.home.VerticalArrangementProto
+import com.eblan.launcher.data.datastore.proto.model.BackgroundColorProto
 import com.eblan.launcher.domain.model.AppDrawerSettings
 import com.eblan.launcher.domain.model.AppDrawerType
 import com.eblan.launcher.domain.model.BackgroundColor
@@ -75,6 +75,9 @@ internal fun HomeSettingsProto.toHomeSettings(): HomeSettings = HomeSettings(
     dockTopEndCornerRadius = dockTopEndCornerRadius,
     dockBottomStartCornerRadius = dockBottomStartCornerRadius,
     dockBottomEndCornerRadius = dockBottomEndCornerRadius,
+    folderCornerRadius = if (hasFolderCornerRadius()) folderCornerRadius else 5,
+    folderBackgroundColor = folderBackgroundColorProto.toBackgroundColor(),
+    customFolderBackgroundColor = customFolderBackgroundColor,
 )
 
 internal fun AppDrawerSettingsProto.toAppDrawerSettings(): AppDrawerSettings = AppDrawerSettings(
@@ -154,6 +157,9 @@ internal fun HomeSettings.toHomeSettingsProto(): HomeSettingsProto = HomeSetting
     builder.dockTopEndCornerRadius = dockTopEndCornerRadius
     builder.dockBottomStartCornerRadius = dockBottomStartCornerRadius
     builder.dockBottomEndCornerRadius = dockBottomEndCornerRadius
+    builder.folderCornerRadius = folderCornerRadius
+    builder.folderBackgroundColorProto = folderBackgroundColor.toBackgroundColorProto()
+    builder.customFolderBackgroundColor = customFolderBackgroundColor
 }.build()
 
 internal fun AppDrawerSettings.toAppDrawerSettingsProto(): AppDrawerSettingsProto = AppDrawerSettingsProto.newBuilder().also { builder ->
@@ -196,7 +202,7 @@ internal fun ExperimentalSettingsProto.toExperimentalSettings(): ExperimentalSet
     syncData = syncData,
     firstLaunch = firstLaunch,
     lockMovement = lockMovement,
-    gridItemAnimation = gridItemAnimation,
+    gridItemAnimation = if (hasGridItemAnimation()) gridItemAnimation else true,
 )
 
 internal fun EblanAction.toEblanActionProto(): EblanActionProto = EblanActionProto.newBuilder().also { builder ->

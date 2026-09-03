@@ -73,6 +73,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.util.Consumer
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.Associate
+import com.eblan.launcher.domain.model.BackgroundColor
 import com.eblan.launcher.domain.model.HomeSettings
 import com.eblan.launcher.domain.model.PageItem
 import com.eblan.launcher.domain.model.PreviewFolder
@@ -95,8 +96,11 @@ internal fun EditGridPageScreen(
     screenHeight: Int,
     textColor: TextColor,
     previewFolderGridItems: Map<String, PreviewFolder>,
-    statusBarNotifications: Map<String, Int>,
     iconPackInfoFilePaths: Map<String, String?>,
+    folderBackgroundColor: BackgroundColor,
+    customFolderBackgroundColor: Int,
+    systemTextColor: TextColor,
+    systemCustomTextColor: Int,
     onSaveEditPage: (
         id: Int,
         pageItems: List<PageItem>,
@@ -210,10 +214,13 @@ internal fun EditGridPageScreen(
                                 gridItem = it,
                                 gridItemSettings = homeSettings.gridItemSettings,
                                 hasShortcutHostPermission = hasShortcutHostPermission,
-                                statusBarNotifications = statusBarNotifications,
                                 textColor = textColor,
                                 previewFolderGridItems = previewFolderGridItems,
                                 iconPackInfoFilePaths = iconPackInfoFilePaths,
+                                folderBackgroundColor = folderBackgroundColor,
+                                customFolderBackgroundColor = customFolderBackgroundColor,
+                                systemTextColor = systemTextColor,
+                                systemCustomTextColor = systemCustomTextColor,
                             )
                         },
                     )
@@ -320,8 +327,11 @@ internal fun EditDockGridPageScreen(
     paddingValues: PaddingValues,
     textColor: TextColor,
     previewFolderGridItems: Map<String, PreviewFolder>,
-    statusBarNotifications: Map<String, Int>,
     iconPackInfoFilePaths: Map<String, String?>,
+    folderBackgroundColor: BackgroundColor,
+    customFolderBackgroundColor: Int,
+    systemTextColor: TextColor,
+    systemCustomTextColor: Int,
     onSaveEditPage: (
         id: Int,
         pageItems: List<PageItem>,
@@ -429,10 +439,13 @@ internal fun EditDockGridPageScreen(
                                     gridItem = it,
                                     gridItemSettings = homeSettings.gridItemSettings,
                                     hasShortcutHostPermission = hasShortcutHostPermission,
-                                    statusBarNotifications = statusBarNotifications,
                                     textColor = textColor,
                                     previewFolderGridItems = previewFolderGridItems,
                                     iconPackInfoFilePaths = iconPackInfoFilePaths,
+                                    folderBackgroundColor = folderBackgroundColor,
+                                    customFolderBackgroundColor = customFolderBackgroundColor,
+                                    systemTextColor = systemTextColor,
+                                    systemCustomTextColor = systemCustomTextColor,
                                 )
                             },
                         )

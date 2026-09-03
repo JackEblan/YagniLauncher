@@ -19,14 +19,17 @@ package com.eblan.launcher.feature.home.screen.pager
 
 import android.content.BroadcastReceiver
 import android.content.ClipDescription
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.ServiceConnection
 import android.content.pm.ActivityInfo
 import android.content.pm.LauncherApps
 import android.content.pm.ShortcutInfo
 import android.os.Build
 import android.os.Handler
+import android.os.IBinder
 import android.os.Looper
 import android.os.UserHandle
 import androidx.activity.ComponentActivity
@@ -91,6 +94,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.eblan.launcher.domain.model.AppDrawerSettings
 import com.eblan.launcher.domain.model.Associate
 import com.eblan.launcher.domain.model.EblanAppWidgetProviderInfo
@@ -131,6 +135,7 @@ import com.eblan.launcher.feature.home.util.SCALE
 import com.eblan.launcher.feature.home.util.calculatePage
 import com.eblan.launcher.feature.home.util.getTextColor
 import com.eblan.launcher.framework.usermanager.AndroidUserManagerWrapper
+import com.eblan.launcher.service.EblanNotificationListenerService
 import com.eblan.launcher.ui.local.LocalAppWidgetHost
 import com.eblan.launcher.ui.local.LocalAppWidgetManager
 import com.eblan.launcher.ui.local.LocalFileManager
@@ -172,7 +177,6 @@ internal fun PagerScreen(
     gridItemSource: GridItemSource?,
     isVisibleOverlay: Boolean,
     previewFolderGridItems: Map<String, PreviewFolder>,
-    statusBarNotifications: Map<String, Int>,
     iconPackInfoFilePaths: Map<String, String?>,
     onDeleteGridItem: (GridItem) -> Unit,
     onResetGridAfterDeleteGridItem: (GridItem) -> Unit,
@@ -459,7 +463,7 @@ internal fun PagerScreen(
     val isVisibleSettingsPopup =
         pagerScreenState.showSettingsPopup && pagerScreenState.settingsPopupIntOffset != null
 
-    val isVisibleFolder = pagerScreenState.isVisibleFolder && folderPopups.isNotEmpty()
+    val isVisibleFolder = pagerScreenState.isVisibleFolders && folderPopups.isNotEmpty()
 
     val isVisibleFolderGridItemPopup = pagerScreenState.showFolderGridItemPopup &&
         pagerScreenState.popupIntOffset != null &&
@@ -478,6 +482,8 @@ internal fun PagerScreen(
         pagerScreenState.showWidgetScreen ||
         pagerScreenState.showShortcutConfigScreen ||
         pagerScreenState.eblanApplicationInfoGroup != null
+
+    val statusBarNotifications by rememberStatusBarNotifications()
 
     LaunchedEffect(
         key1 = pinGridItem,
@@ -800,7 +806,7 @@ internal fun PagerScreen(
                             statusBarNotifications = statusBarNotifications,
                             textColor = textColor,
                             isVisibleOverlay = isVisibleOverlay,
-                            isVisibleFolder = folderPopups.isNotEmpty(),
+                            isVisibleFolders = pagerScreenState.isVisibleFolders,
                             moveGridItemResult = moveGridItemResult,
                             lockMovement = experimentalSettings.lockMovement,
                             isDragging = pagerScreenState.isDragging,
@@ -816,6 +822,11 @@ internal fun PagerScreen(
                             ),
                             iconPackInfoFilePaths = iconPackInfoFilePaths,
                             animations = experimentalSettings.gridItemAnimation,
+                            folderCornerRadius = homeSettings.folderCornerRadius,
+                            folderBackgroundColor = homeSettings.folderBackgroundColor,
+                            customFolderBackgroundColor = homeSettings.customFolderBackgroundColor,
+                            systemCustomTextColor = homeSettings.gridItemSettings.customTextColor,
+                            folderPopups = folderPopups,
                             onOpenAppDrawer = pagerScreenState::openApplicationScreen,
                             onUpsertFolderPopupEntry = onUpsertFolderPopupEntry,
                             onUpdateGridItemSource = onUpdateGridItemSource,
@@ -829,7 +840,7 @@ internal fun PagerScreen(
                             onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                             onShowFolderWhenDragging = onShowFolderWhenDragging,
                             onResetGrid = onResetGrid,
-                            onUpdateIsVisibleFolder = pagerScreenState::updateIsVisibleFolder,
+                            onUpdateIsVisibleFolders = pagerScreenState::updateIsVisibleFolders,
                         )
                     },
                 )
@@ -908,7 +919,7 @@ internal fun PagerScreen(
                                 statusBarNotifications = statusBarNotifications,
                                 textColor = textColor,
                                 isVisibleOverlay = isVisibleOverlay,
-                                isVisibleFolder = folderPopups.isNotEmpty(),
+                                isVisibleFolders = pagerScreenState.isVisibleFolders,
                                 moveGridItemResult = moveGridItemResult,
                                 lockMovement = experimentalSettings.lockMovement,
                                 isDragging = pagerScreenState.isDragging,
@@ -924,6 +935,11 @@ internal fun PagerScreen(
                                 ),
                                 iconPackInfoFilePaths = iconPackInfoFilePaths,
                                 animations = experimentalSettings.gridItemAnimation,
+                                folderCornerRadius = homeSettings.folderCornerRadius,
+                                folderBackgroundColor = homeSettings.folderBackgroundColor,
+                                customFolderBackgroundColor = homeSettings.customFolderBackgroundColor,
+                                systemCustomTextColor = homeSettings.gridItemSettings.customTextColor,
+                                folderPopups = folderPopups,
                                 onOpenAppDrawer = pagerScreenState::openApplicationScreen,
                                 onUpsertFolderPopupEntry = onUpsertFolderPopupEntry,
                                 onUpdateGridItemSource = onUpdateGridItemSource,
@@ -937,7 +953,7 @@ internal fun PagerScreen(
                                 onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                                 onShowFolderWhenDragging = onShowFolderWhenDragging,
                                 onResetGrid = onResetGrid,
-                                onUpdateIsVisibleFolder = pagerScreenState::updateIsVisibleFolder,
+                                onUpdateIsVisibleFolders = pagerScreenState::updateIsVisibleFolders,
                             )
                         },
                     )
@@ -1014,6 +1030,8 @@ internal fun PagerScreen(
                     previewFolderGridItems = previewFolderGridItems,
                     iconPackInfoFilePaths = iconPackInfoFilePaths,
                     animations = experimentalSettings.gridItemAnimation,
+                    systemTextColor = textColor,
+                    systemCustomTextColor = homeSettings.gridItemSettings.customTextColor,
                     onDeleteFolderPopupEntry = onDeleteFolderPopupEntry,
                     onMoveFolderGridItemOutsideFolder = onMoveFolderGridItemOutsideFolder,
                     onOpenAppDrawer = pagerScreenState::openApplicationScreen,
@@ -1030,7 +1048,7 @@ internal fun PagerScreen(
                     onDismissFolderGridItemPopup = pagerScreenState::dismissFolderGridItemPopup,
                     onResetGrid = onResetGrid,
                     onDragEndAfterMoveFolder = onDragEndAfterMoveFolder,
-                    onUpdateIsVisibleFolder = pagerScreenState::updateIsVisibleFolder,
+                    onUpdateIsVisibleFolders = pagerScreenState::updateIsVisibleFolders,
                 )
             }
         }
@@ -1443,6 +1461,52 @@ private fun rememberManagedProfileResult(): State<ManagedProfileResult?> {
 
         awaitDispose {
             context.unregisterReceiver(receiver)
+        }
+    }
+}
+
+@Composable
+private fun rememberStatusBarNotifications(): State<Map<String, Int>> {
+    val context = LocalContext.current
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    return produceState(
+        initialValue = emptyMap(),
+        key1 = context,
+        key2 = lifecycleOwner,
+    ) {
+        val serviceConnection = object : ServiceConnection {
+            override fun onServiceConnected(
+                name: ComponentName,
+                service: IBinder,
+            ) {
+                val listener =
+                    (service as EblanNotificationListenerService.LocalBinder).getService()
+
+                launch {
+                    lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                        listener.statusBarNotifications.collect {
+                            value = it
+                        }
+                    }
+                }
+            }
+
+            override fun onServiceDisconnected(name: ComponentName) = Unit
+        }
+
+        context.bindService(
+            Intent(
+                context,
+                EblanNotificationListenerService::class.java,
+            ),
+            serviceConnection,
+            Context.BIND_AUTO_CREATE,
+        )
+
+        awaitDispose {
+            context.unbindService(serviceConnection)
         }
     }
 }

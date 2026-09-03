@@ -1,9 +1,9 @@
 syntax = "proto3";
 
-import "com/eblan/launcher/data/datastore/proto/home/grid_item_settings.proto";
+import "com/eblan/launcher/data/datastore/proto/model/grid_item_settings.proto";
 import "com/eblan/launcher/data/datastore/proto/appdrawer/eblan_application_info_order.proto";
 import "com/eblan/launcher/data/datastore/proto/appdrawer/app_drawer_type.proto";
-import "com/eblan/launcher/data/datastore/proto/appdrawer/background_color.proto";
+import "com/eblan/launcher/data/datastore/proto/model/background_color.proto";
 
 option java_package = "com.eblan.launcher.data.datastore.proto.appdrawer";
 option java_multiple_files = true;

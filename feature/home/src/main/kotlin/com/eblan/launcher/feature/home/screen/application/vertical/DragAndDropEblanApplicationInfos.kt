@@ -77,8 +77,8 @@ import com.eblan.launcher.domain.model.EblanUserPageKey
 import com.eblan.launcher.domain.model.GetEblanApplicationInfosByLabelAndTag
 import com.eblan.launcher.domain.model.TextColor
 import com.eblan.launcher.feature.home.R
-import com.eblan.launcher.feature.home.util.getAppDrawerGridItemTextColor
 import com.eblan.launcher.feature.home.util.getHorizontalAlignment
+import com.eblan.launcher.feature.home.util.getTextColorFromBackgroundColor
 import com.eblan.launcher.feature.home.util.getVerticalArrangement
 import kotlin.uuid.ExperimentalUuidApi
 import com.eblan.launcher.common.R as commonR
@@ -225,7 +225,7 @@ private fun EblanApplicationInfoItem(
     systemTextColor: TextColor,
     iconPackInfoFilePaths: Map<String, String?>,
 ) {
-    val textColor = getAppDrawerGridItemTextColor(
+    val textColor = getTextColorFromBackgroundColor(
         backgroundColor = appDrawerSettings.backgroundColor,
         customBackgroundColor = appDrawerSettings.customBackgroundColor,
         textColor = appDrawerSettings.gridItemSettings.textColor,

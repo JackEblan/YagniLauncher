@@ -44,4 +44,7 @@ fun getHomeSettings() = HomeSettings(
     dockTopEndCornerRadius = 0,
     dockBottomStartCornerRadius = 0,
     dockBottomEndCornerRadius = 0,
+    folderCornerRadius = 0,
+    folderBackgroundColor = BackgroundColor.System,
+    customFolderBackgroundColor = 0,
 )

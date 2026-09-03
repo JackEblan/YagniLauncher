@@ -54,6 +54,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
@@ -65,6 +66,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import com.eblan.launcher.domain.model.Associate
+import com.eblan.launcher.domain.model.BackgroundColor
 import com.eblan.launcher.domain.model.FolderPopup
 import com.eblan.launcher.domain.model.FolderPopupEntry
 import com.eblan.launcher.domain.model.GridItem
@@ -73,6 +75,7 @@ import com.eblan.launcher.domain.model.GridItemSettings
 import com.eblan.launcher.domain.model.HomeSettings
 import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.domain.model.PreviewFolder
+import com.eblan.launcher.domain.model.TextColor
 import com.eblan.launcher.domain.usecase.grid.FOLDER_PREVIEW_COLUMNS
 import com.eblan.launcher.domain.usecase.grid.FOLDER_PREVIEW_ROWS
 import com.eblan.launcher.feature.home.component.FolderGridLayout
@@ -82,6 +85,7 @@ import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.PageDirection
 import com.eblan.launcher.feature.home.model.SharedElementKey
 import com.eblan.launcher.feature.home.util.PAGE_INDICATOR_HEIGHT
+import com.eblan.launcher.feature.home.util.getTextColorFromBackgroundColor
 import kotlin.math.roundToInt
 
 @Composable
@@ -111,6 +115,8 @@ internal fun FolderScreen(
     previewFolderGridItems: Map<String, PreviewFolder>,
     iconPackInfoFilePaths: Map<String, String?>,
     animations: Boolean,
+    systemTextColor: TextColor,
+    systemCustomTextColor: Int,
     onDeleteFolderPopupEntry: (FolderPopupEntry) -> Unit,
     onMoveFolderGridItemOutsideFolder: (GridItem) -> Unit,
     onOpenAppDrawer: () -> Unit,
@@ -141,7 +147,7 @@ internal fun FolderScreen(
     onResetGrid: () -> Unit,
     onDragEndAfterMoveFolder: () -> Unit,
     onUpsertFolderPopupEntry: (FolderPopupEntry) -> Unit,
-    onUpdateIsVisibleFolder: (Boolean) -> Unit,
+    onUpdateIsVisibleFolders: (Boolean) -> Unit,
 ) {
     val folderPopupIntOffset = IntOffset(
         x = folderPopup.folderPopupEntry.x,
@@ -234,22 +240,6 @@ internal fun FolderScreen(
         }
     }
 
-    BackHandler(
-        enabled = !folderPopup.folderPopupEntry.isCloseFolder &&
-            isLastFolderGridItem &&
-            !isInProgress,
-    ) {
-        onUpsertFolderPopupEntry(folderPopup.folderPopupEntry.copy(isCloseFolder = true))
-    }
-
-    HomeHandler(
-        enabled = !folderPopup.folderPopupEntry.isCloseFolder &&
-            isLastFolderGridItem &&
-            !isInProgress,
-    ) {
-        onUpsertFolderPopupEntry(folderPopup.folderPopupEntry.copy(isCloseFolder = true))
-    }
-
     LaunchedEffect(
         key1 = folderPopup,
         key2 = isFirstFolderGridItem,
@@ -268,7 +258,7 @@ internal fun FolderScreen(
             onDeleteFolderPopupEntry = onDeleteFolderPopupEntry,
             onMoveFolderGridItemOutsideFolder = onMoveFolderGridItemOutsideFolder,
             onUpdateSharedElementKey = onUpdateSharedElementKey,
-            onUpdateIsVisibleFolder = onUpdateIsVisibleFolder,
+            onUpdateIsVisibleFolders = onUpdateIsVisibleFolders,
         )
     }
 
@@ -371,6 +361,22 @@ internal fun FolderScreen(
         )
     }
 
+    BackHandler(
+        enabled = !folderPopup.folderPopupEntry.isCloseFolder &&
+            isLastFolderGridItem &&
+            !isInProgress,
+    ) {
+        onUpsertFolderPopupEntry(folderPopup.folderPopupEntry.copy(isCloseFolder = true))
+    }
+
+    HomeHandler(
+        enabled = !folderPopup.folderPopupEntry.isCloseFolder &&
+            isLastFolderGridItem &&
+            !isInProgress,
+    ) {
+        onUpsertFolderPopupEntry(folderPopup.folderPopupEntry.copy(isCloseFolder = true))
+    }
+
     Box(
         modifier = modifier
             .pointerInput(key1 = isLastFolderGridItem) {
@@ -408,7 +414,13 @@ internal fun FolderScreen(
                     height = with(density) { animatedFolderRect.height().toDp() },
                 )
                 .clipToBounds(),
-            shape = RoundedCornerShape(5.dp),
+            shape = RoundedCornerShape(homeSettings.folderCornerRadius.dp),
+            color = when (homeSettings.folderBackgroundColor) {
+                BackgroundColor.System -> MaterialTheme.colorScheme.surface
+                BackgroundColor.Light -> Color.White
+                BackgroundColor.Dark -> Color.Black
+                BackgroundColor.Custom -> Color(homeSettings.customFolderBackgroundColor)
+            },
             shadowElevation = 2.dp,
         ) {
             Column(
@@ -454,6 +466,12 @@ internal fun FolderScreen(
                                 isInProgress = isInProgress,
                                 iconPackInfoFilePaths = iconPackInfoFilePaths,
                                 animations = animations,
+                                systemTextColor = systemTextColor,
+                                systemCustomTextColor = systemCustomTextColor,
+                                folderCornerRadius = homeSettings.folderCornerRadius,
+                                folderBackgroundColor = homeSettings.folderBackgroundColor,
+                                customFolderBackgroundColor = homeSettings.customFolderBackgroundColor,
+                                folderPopups = folderPopups,
                                 onOpenAppDrawer = onOpenAppDrawer,
                                 onUpdateImageBitmap = onUpdateImageBitmap,
                                 onUpdateIsDragging = onUpdateIsDragging,
@@ -474,6 +492,12 @@ internal fun FolderScreen(
                     gridItemsByPage = folderPopup.gridItemsByPage,
                     folderGridHorizontalPagerState = folderGridHorizontalPagerState,
                     progress = progress.value,
+                    folderBackgroundColor = homeSettings.folderBackgroundColor,
+                    customFolderBackgroundColor = homeSettings.customFolderBackgroundColor,
+                    textColor = gridItemSettings.textColor,
+                    customTextColor = gridItemSettings.customTextColor,
+                    systemCustomTextColor = systemCustomTextColor,
+                    systemTextColor = systemTextColor,
                 )
             }
         }
@@ -487,7 +511,22 @@ internal fun FolderTitle(
     gridItemsByPage: Map<Int, List<GridItem>>,
     folderGridHorizontalPagerState: PagerState,
     progress: Float,
+    folderBackgroundColor: BackgroundColor,
+    customFolderBackgroundColor: Int,
+    textColor: TextColor,
+    customTextColor: Int,
+    systemCustomTextColor: Int,
+    systemTextColor: TextColor,
 ) {
+    val color = getTextColorFromBackgroundColor(
+        backgroundColor = folderBackgroundColor,
+        customBackgroundColor = customFolderBackgroundColor,
+        textColor = textColor,
+        customTextColor = customTextColor,
+        systemTextColor = systemTextColor,
+        systemCustomTextColor = systemCustomTextColor,
+    )
+
     Row(
         modifier = modifier
             .alpha(if (progress > 0.5) 1f else 0f)
@@ -503,13 +542,14 @@ internal fun FolderTitle(
     ) {
         Text(
             text = label,
+            color = color,
             style = MaterialTheme.typography.bodySmall,
         )
 
         if (gridItemsByPage.size > 1) {
             Box(contentAlignment = Alignment.Center) {
                 PageIndicator(
-                    color = MaterialTheme.colorScheme.onSurface,
+                    color = color,
                     gridHorizontalPagerState = folderGridHorizontalPagerState,
                     infiniteScroll = false,
                     pageCount = gridItemsByPage.size,
@@ -591,7 +631,7 @@ private suspend fun handleFolderPopup(
     onDeleteFolderPopupEntry: (FolderPopupEntry) -> Unit,
     onMoveFolderGridItemOutsideFolder: (GridItem) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onUpdateIsVisibleFolder: (Boolean) -> Unit,
+    onUpdateIsVisibleFolders: (Boolean) -> Unit,
 ) {
     if (!folderPopup.folderPopupEntry.isCloseFolder) return
 
@@ -676,7 +716,7 @@ private suspend fun handleFolderPopup(
     }
 
     if (isFirstFolderGridItem) {
-        onUpdateIsVisibleFolder(false)
+        onUpdateIsVisibleFolders(false)
     }
 
     onDeleteFolderPopupEntry(folderPopup.folderPopupEntry)

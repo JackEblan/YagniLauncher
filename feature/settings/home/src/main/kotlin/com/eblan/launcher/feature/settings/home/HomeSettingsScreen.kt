@@ -50,7 +50,10 @@ import com.eblan.launcher.feature.settings.home.dialog.EditFolderCellDimensionDi
 import com.eblan.launcher.feature.settings.home.dialog.EditFolderMaxGridDialog
 import com.eblan.launcher.feature.settings.home.dialog.EditGridDialog
 import com.eblan.launcher.feature.settings.home.model.HomeSettingsUiState
+import com.eblan.launcher.ui.dialog.BackgroundColorDialog
 import com.eblan.launcher.ui.dialog.ColorPickerDialog
+import com.eblan.launcher.ui.dialog.EditCornerRadiusDialog
+import com.eblan.launcher.ui.dialog.getBackgroundColorTitle
 import com.eblan.launcher.ui.model.SettingsItem
 import com.eblan.launcher.ui.settings.GridItemSettings
 import com.eblan.launcher.ui.settings.SettingsCategoryText
@@ -130,6 +133,10 @@ private fun Success(
 
     var showFolderMaxGridDialog by remember { mutableStateOf(false) }
 
+    var showFolderCornerRadiusGridDialog by remember { mutableStateOf(false) }
+
+    var showFolderBackgroundColorDialog by remember { mutableStateOf(false) }
+
     var showDockCustomBackgroundColorDialog by remember { mutableStateOf(false) }
 
     var showDockPaddingDialog by remember { mutableStateOf(false) }
@@ -171,6 +178,12 @@ private fun Success(
         },
         onFolderMaxGridClick = {
             showFolderMaxGridDialog = true
+        },
+        onFolderCornerRadiusClick = {
+            showFolderCornerRadiusGridDialog = true
+        },
+        onFolderBackgroundColorClick = {
+            showFolderBackgroundColorDialog = true
         },
     )
 
@@ -303,6 +316,41 @@ private fun Success(
                     homeSettings.copy(
                         maxFolderColumns = maxFolderColumns,
                         maxFolderRows = maxFolderRows,
+                    ),
+                )
+            },
+        )
+    }
+
+    if (showFolderCornerRadiusGridDialog) {
+        EditCornerRadiusDialog(
+            cornerRadius = homeSettings.folderCornerRadius,
+            onDismissRequest = {
+                showFolderCornerRadiusGridDialog = false
+            },
+            onUpdateCornerRadius = {
+                onUpdateHomeSettings(
+                    homeSettings.copy(
+                        folderCornerRadius = it,
+                    ),
+                )
+            },
+        )
+    }
+
+    if (showFolderBackgroundColorDialog) {
+        BackgroundColorDialog(
+            title = stringResource(commonR.string.background_color),
+            backgroundColor = homeSettings.folderBackgroundColor,
+            customBackgroundColor = homeSettings.customFolderBackgroundColor,
+            onDismissRequest = {
+                showFolderBackgroundColorDialog = false
+            },
+            onUpdateClick = { backgroundColor, customColor ->
+                onUpdateHomeSettings(
+                    homeSettings.copy(
+                        folderBackgroundColor = backgroundColor,
+                        customFolderBackgroundColor = customColor,
                     ),
                 )
             },
@@ -541,6 +589,8 @@ private fun buildFolderHomeSettingsItems(
     homeSettings: HomeSettings,
     onFolderCellDimensionClick: () -> Unit,
     onFolderMaxGridClick: () -> Unit,
+    onFolderCornerRadiusClick: () -> Unit,
+    onFolderBackgroundColorClick: () -> Unit,
 ): List<SettingsItem> = buildList {
     add(
         SettingsItem.Column(
@@ -555,6 +605,22 @@ private fun buildFolderHomeSettingsItems(
             title = stringResource(R.string.folder_max_grid),
             subtitle = "${homeSettings.maxFolderColumns}x${homeSettings.maxFolderRows}",
             onClick = onFolderMaxGridClick,
+        ),
+    )
+
+    add(
+        SettingsItem.Column(
+            title = stringResource(R.string.folder_corner_radius),
+            subtitle = "${homeSettings.folderCornerRadius}",
+            onClick = onFolderCornerRadiusClick,
+        ),
+    )
+
+    add(
+        SettingsItem.Column(
+            title = stringResource(R.string.folder_background_color),
+            subtitle = homeSettings.folderBackgroundColor.getBackgroundColorTitle(),
+            onClick = onFolderBackgroundColorClick,
         ),
     )
 }

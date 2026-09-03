@@ -173,7 +173,7 @@ internal class PagerScreenState(
     var associate by mutableStateOf<Associate?>(null)
         private set
 
-    var isVisibleFolder by mutableStateOf(false)
+    var isVisibleFolders by mutableStateOf(false)
         private set
 
     val swipeUpY = Animatable(screenHeight.toFloat())
@@ -1090,8 +1090,8 @@ internal class PagerScreenState(
         dockPageDirection = value
     }
 
-    fun updateIsVisibleFolder(value: Boolean) {
-        isVisibleFolder = value
+    fun updateIsVisibleFolders(value: Boolean) {
+        isVisibleFolders = value
     }
 }
 
