@@ -72,6 +72,7 @@ import coil3.request.ImageRequest.Builder
 import coil3.request.addLastModifiedToFileCacheKey
 import coil3.size.Size
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
+import com.eblan.launcher.domain.model.BackgroundColor
 import com.eblan.launcher.domain.model.FolderPopupEntry
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
@@ -125,6 +126,8 @@ internal fun InteractiveGridItem(
     iconPackInfoFilePaths: Map<String, String?>,
     animations: Boolean,
     folderCornerRadius: Int,
+    folderBackgroundColor: BackgroundColor,
+    customFolderBackgroundColor: Int,
     onOpenAppDrawer: () -> Unit,
     onUpsertFolderPopupEntry: (FolderPopupEntry) -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
@@ -303,6 +306,8 @@ internal fun InteractiveGridItem(
                 iconPackInfoFilePaths = iconPackInfoFilePaths,
                 animations = animations,
                 folderCornerRadius = folderCornerRadius,
+                folderBackgroundColor = folderBackgroundColor,
+                customFolderBackgroundColor = customFolderBackgroundColor,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
                 onUpsertFolderPopupEntry = onUpsertFolderPopupEntry,
@@ -961,6 +966,8 @@ private fun InteractiveFolderGridItem(
     iconPackInfoFilePaths: Map<String, String?>,
     animations: Boolean,
     folderCornerRadius: Int,
+    folderBackgroundColor: BackgroundColor,
+    customFolderBackgroundColor: Int,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
         intOffset: IntOffset,
@@ -1156,6 +1163,12 @@ private fun InteractiveFolderGridItem(
             Surface(
                 modifier = commonModifier,
                 shape = RoundedCornerShape(folderCornerRadius.dp),
+                color = when (folderBackgroundColor) {
+                    BackgroundColor.System -> MaterialTheme.colorScheme.surface
+                    BackgroundColor.Light -> Color.White
+                    BackgroundColor.Dark -> Color.Black
+                    BackgroundColor.Custom -> Color(customFolderBackgroundColor)
+                },
             ) {
                 PreviewFolderGridLayout(
                     modifier = Modifier.fillMaxSize(),

@@ -54,6 +54,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
@@ -65,6 +66,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import com.eblan.launcher.domain.model.Associate
+import com.eblan.launcher.domain.model.BackgroundColor
 import com.eblan.launcher.domain.model.FolderPopup
 import com.eblan.launcher.domain.model.FolderPopupEntry
 import com.eblan.launcher.domain.model.GridItem
@@ -409,6 +411,12 @@ internal fun FolderScreen(
                 )
                 .clipToBounds(),
             shape = RoundedCornerShape(homeSettings.folderCornerRadius.dp),
+            color = when (homeSettings.folderBackgroundColor) {
+                BackgroundColor.System -> MaterialTheme.colorScheme.surface
+                BackgroundColor.Light -> Color.White
+                BackgroundColor.Dark -> Color.Black
+                BackgroundColor.Custom -> Color(homeSettings.customFolderBackgroundColor)
+            },
             shadowElevation = 2.dp,
         ) {
             Column(
