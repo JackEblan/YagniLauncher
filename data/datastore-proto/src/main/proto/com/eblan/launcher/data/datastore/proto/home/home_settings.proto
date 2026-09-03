@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 import "com/eblan/launcher/data/datastore/proto/model/grid_item_settings.proto";
+import "com/eblan/launcher/data/datastore/proto/model/background_color.proto";
 
 option java_package = "com.eblan.launcher.data.datastore.proto.home";
 option java_multiple_files = true;
@@ -33,4 +34,6 @@ message HomeSettingsProto {
   int32 dockBottomStartCornerRadius = 27;
   int32 dockBottomEndCornerRadius = 28;
   int32 folderCornerRadius = 29;
+  BackgroundColorProto folderBackgroundColorProto = 30;
+  int32 customFolderBackgroundColor = 31;
 }

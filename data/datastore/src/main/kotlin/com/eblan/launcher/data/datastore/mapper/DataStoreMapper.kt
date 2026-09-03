@@ -76,6 +76,8 @@ internal fun HomeSettingsProto.toHomeSettings(): HomeSettings = HomeSettings(
     dockBottomStartCornerRadius = dockBottomStartCornerRadius,
     dockBottomEndCornerRadius = dockBottomEndCornerRadius,
     folderCornerRadius = folderCornerRadius,
+    folderBackgroundColor = folderBackgroundColorProto.toBackgroundColor(),
+    customFolderBackgroundColor = customFolderBackgroundColor,
 )
 
 internal fun AppDrawerSettingsProto.toAppDrawerSettings(): AppDrawerSettings = AppDrawerSettings(
@@ -156,6 +158,8 @@ internal fun HomeSettings.toHomeSettingsProto(): HomeSettingsProto = HomeSetting
     builder.dockBottomStartCornerRadius = dockBottomStartCornerRadius
     builder.dockBottomEndCornerRadius = dockBottomEndCornerRadius
     builder.folderCornerRadius = folderCornerRadius
+    builder.folderBackgroundColorProto = folderBackgroundColor.toBackgroundColorProto()
+    builder.customFolderBackgroundColor = customFolderBackgroundColor
 }.build()
 
 internal fun AppDrawerSettings.toAppDrawerSettingsProto(): AppDrawerSettingsProto = AppDrawerSettingsProto.newBuilder().also { builder ->

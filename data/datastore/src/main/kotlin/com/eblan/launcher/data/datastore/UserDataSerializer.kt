@@ -89,6 +89,8 @@ class UserDataSerializer @Inject constructor() : Serializer<UserDataProto> {
         dockTopEndCornerRadius = 0
         dockBottomStartCornerRadius = 0
         dockBottomEndCornerRadius = 0
+        folderBackgroundColorProto = BackgroundColorProto.BackgroundColorSystem
+        customFolderBackgroundColor = 0x00000000
     }.build()
 
     private val defaultAppDrawerSettingsProto = AppDrawerSettingsProto.newBuilder().apply {
@@ -97,6 +99,7 @@ class UserDataSerializer @Inject constructor() : Serializer<UserDataProto> {
         gridItemSettingsProto = defaultGridItemSettingsProto
         eblanApplicationInfoOrderProto = EblanApplicationInfoOrderProto.Alphabetical
         backgroundColorProto = BackgroundColorProto.BackgroundColorSystem
+        customBackgroundColor = 0x00000000
         appDrawerTypeProto = AppDrawerTypeProto.Vertical
         horizontalAppDrawerColumns = 5
         horizontalAppDrawerRows = 5

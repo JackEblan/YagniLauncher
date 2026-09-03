@@ -134,7 +134,7 @@ private fun Success(
 
     var showHiddenEblanApplicationInfosDialog by remember { mutableStateOf(false) }
 
-    var showTextColorDialog by remember { mutableStateOf(false) }
+    var showBackgroundColorDialog by remember { mutableStateOf(false) }
 
     val items = buildAppDrawerSettingsItems(
         appDrawerSettings = appDrawerSettings,
@@ -148,7 +148,7 @@ private fun Success(
             showHorizontalGridDialog = true
         },
         onBackgroundColorClick = {
-            showTextColorDialog = true
+            showBackgroundColorDialog = true
         },
         onHiddenApplicationsClick = {
             showHiddenEblanApplicationInfosDialog = true
@@ -246,18 +246,18 @@ private fun Success(
         )
     }
 
-    if (showTextColorDialog) {
+    if (showBackgroundColorDialog) {
         BackgroundColorDialog(
             title = stringResource(commonR.string.background_color),
             backgroundColor = appDrawerSettings.backgroundColor,
             customBackgroundColor = appDrawerSettings.customBackgroundColor,
             onDismissRequest = {
-                showTextColorDialog = false
+                showBackgroundColorDialog = false
             },
-            onUpdateClick = { textColor, customColor ->
+            onUpdateClick = { backgroundColor, customColor ->
                 onUpdateAppDrawerSettings(
                     appDrawerSettings.copy(
-                        backgroundColor = textColor,
+                        backgroundColor = backgroundColor,
                         customBackgroundColor = customColor,
                     ),
                 )

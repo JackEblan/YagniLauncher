@@ -45,4 +45,6 @@ data class HomeSettings(
     val dockBottomStartCornerRadius: Int,
     val dockBottomEndCornerRadius: Int,
     val folderCornerRadius: Int,
+    val folderBackgroundColor: BackgroundColor,
+    val customFolderBackgroundColor: Int,
 )
