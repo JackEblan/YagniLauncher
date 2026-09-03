@@ -114,7 +114,7 @@ internal fun InteractiveGridItem(
     statusBarNotifications: Map<String, Int>,
     textColor: TextColor,
     isVisibleOverlay: Boolean,
-    isVisibleFolder: Boolean,
+    isVisibleFolders: Boolean,
     moveGridItemResult: MoveGridItemResult?,
     lockMovement: Boolean,
     isDragging: Boolean,
@@ -154,7 +154,7 @@ internal fun InteractiveGridItem(
         movingGridItem: GridItem,
     ) -> Unit,
     onResetGrid: () -> Unit,
-    onUpdateIsVisibleFolder: (Boolean) -> Unit,
+    onUpdateIsVisibleFolders: (Boolean) -> Unit,
 ) {
     val isSelected =
         moveGridItemResult != null && moveGridItemResult.movingGridItem.id == gridItem.id
@@ -184,12 +184,12 @@ internal fun InteractiveGridItem(
         topOffset = topOffset,
     )
 
-    val isFolderSelected = remember(
+    val isVisibleFolder = remember(
         key1 = gridItem,
         key2 = folderPopups,
-        key3 = isVisibleFolder,
+        key3 = isVisibleFolders,
     ) {
-        isVisibleFolder && folderPopups.any { it.folderPopupEntry.id == gridItem.id }
+        isVisibleFolders && folderPopups.any { it.folderPopupEntry.id == gridItem.id }
     }
 
     val horizontalAlignment =
@@ -224,7 +224,7 @@ internal fun InteractiveGridItem(
                 gridItem = gridItem,
                 gridItemSettings = currentGridItemSettings,
                 isScrollInProgress = isScrollInProgress,
-                isVisibleFolder = isVisibleFolder,
+                isVisibleFolders = isVisibleFolders,
                 isVisibleOverlay = isVisibleOverlay,
                 sharedElementKey = sharedElementKey,
                 statusBarNotifications = statusBarNotifications,
@@ -280,7 +280,7 @@ internal fun InteractiveGridItem(
                 gridItemSettings = currentGridItemSettings,
                 hasShortcutHostPermission = hasShortcutHostPermission,
                 isScrollInProgress = isScrollInProgress,
-                isVisibleFolder = isVisibleFolder,
+                isVisibleFolders = isVisibleFolders,
                 isVisibleOverlay = isVisibleOverlay,
                 sharedElementKey = sharedElementKey,
                 textColor = currentTextColor,
@@ -311,7 +311,7 @@ internal fun InteractiveGridItem(
                 gridItem = gridItem,
                 gridItemSettings = currentGridItemSettings,
                 isScrollInProgress = isScrollInProgress,
-                isFolderSelected = isFolderSelected,
+                isVisibleFolder = isVisibleFolder,
                 isVisibleOverlay = isVisibleOverlay,
                 sharedElementKey = sharedElementKey,
                 textColor = currentTextColor,
@@ -343,7 +343,7 @@ internal fun InteractiveGridItem(
                 onUpdateMoveGridItemResult = onUpdateMoveGridItemResult,
                 onShowFolderWhenDragging = onShowFolderWhenDragging,
                 onResetGrid = onResetGrid,
-                onUpdateIsVisibleFolder = onUpdateIsVisibleFolder,
+                onUpdateIsVisibleFolders = onUpdateIsVisibleFolders,
             )
         }
 
@@ -355,7 +355,7 @@ internal fun InteractiveGridItem(
                 gridItem = gridItem,
                 gridItemSettings = currentGridItemSettings,
                 isScrollInProgress = isScrollInProgress,
-                isVisibleFolder = isVisibleFolder,
+                isVisibleFolders = isVisibleFolders,
                 isVisibleOverlay = isVisibleOverlay,
                 sharedElementKey = sharedElementKey,
                 textColor = currentTextColor,
@@ -387,7 +387,7 @@ private fun InteractiveApplicationInfoGridItem(
     gridItem: GridItem,
     gridItemSettings: GridItemSettings,
     isScrollInProgress: Boolean,
-    isVisibleFolder: Boolean,
+    isVisibleFolders: Boolean,
     isVisibleOverlay: Boolean,
     sharedElementKey: SharedElementKey,
     statusBarNotifications: Map<String, Int>,
@@ -465,7 +465,7 @@ private fun InteractiveApplicationInfoGridItem(
             )
             .whiteBox(
                 textColor = textColor,
-                visible = isVisibleWhiteBox && !isVisibleFolder,
+                visible = isVisibleWhiteBox && !isVisibleFolders,
             )
             .pointerInput(key1 = isVisibleOverlay) {
                 detectTapGestures(
@@ -756,7 +756,7 @@ private fun InteractiveShortcutInfoGridItem(
     gridItemSettings: GridItemSettings,
     hasShortcutHostPermission: Boolean,
     isScrollInProgress: Boolean,
-    isVisibleFolder: Boolean,
+    isVisibleFolders: Boolean,
     isVisibleOverlay: Boolean,
     sharedElementKey: SharedElementKey,
     textColor: Color,
@@ -831,7 +831,7 @@ private fun InteractiveShortcutInfoGridItem(
             )
             .whiteBox(
                 textColor = textColor,
-                visible = isVisibleWhiteBox && !isVisibleFolder,
+                visible = isVisibleWhiteBox && !isVisibleFolders,
             )
             .pointerInput(key1 = isVisibleOverlay) {
                 detectTapGestures(
@@ -966,7 +966,7 @@ private fun InteractiveFolderGridItem(
     gridItem: GridItem,
     gridItemSettings: GridItemSettings,
     isScrollInProgress: Boolean,
-    isFolderSelected: Boolean,
+    isVisibleFolder: Boolean,
     isVisibleOverlay: Boolean,
     sharedElementKey: SharedElementKey,
     textColor: Color,
@@ -1007,7 +1007,7 @@ private fun InteractiveFolderGridItem(
         movingGridItem: GridItem,
     ) -> Unit,
     onResetGrid: () -> Unit,
-    onUpdateIsVisibleFolder: (Boolean) -> Unit,
+    onUpdateIsVisibleFolders: (Boolean) -> Unit,
 ) {
     val launcherApps = LocalLauncherApps.current
 
@@ -1021,7 +1021,7 @@ private fun InteractiveFolderGridItem(
 
     val scope = rememberCoroutineScope()
 
-    val alpha = if (hasInteraction || isFolderSelected) 0f else 1f
+    val alpha = if (hasInteraction || isVisibleFolder) 0f else 1f
 
     val currentDrag = rememberUpdatedState(drag)
     val currentIsDragging = rememberUpdatedState(isDragging)
@@ -1035,7 +1035,7 @@ private fun InteractiveFolderGridItem(
     val currentOnUpdateImageBitmap by rememberUpdatedState(onUpdateImageBitmap)
     val currentOnUpdateOverlayBounds by rememberUpdatedState(onUpdateOverlayBounds)
     val currentOnUpdateSharedElementKey by rememberUpdatedState(onUpdateSharedElementKey)
-    val currentOnUpdateIsVisibleFolder by rememberUpdatedState(onUpdateIsVisibleFolder)
+    val currentOnUpdateIsVisibleFolders by rememberUpdatedState(onUpdateIsVisibleFolders)
 
     val scale = remember { Animatable(1f) }
 
@@ -1061,7 +1061,7 @@ private fun InteractiveFolderGridItem(
             folderGridItems = currentFolderGridItems,
             onShowFolderWhenDragging = onShowFolderWhenDragging,
             onUpdateSharedElementKey = currentOnUpdateSharedElementKey,
-            onUpdateIsVisibleFolder = currentOnUpdateIsVisibleFolder,
+            onUpdateIsVisibleFolders = currentOnUpdateIsVisibleFolders,
         )
     }
 
@@ -1075,7 +1075,7 @@ private fun InteractiveFolderGridItem(
             )
             .whiteBox(
                 textColor = textColor,
-                visible = isVisibleWhiteBox && !isFolderSelected,
+                visible = isVisibleWhiteBox && !isVisibleFolder,
             )
             .pointerInput(key1 = isVisibleOverlay) {
                 detectTapGestures(
@@ -1115,7 +1115,7 @@ private fun InteractiveFolderGridItem(
                     },
                     onTap = if (!isVisibleOverlay) {
                         {
-                            currentOnUpdateIsVisibleFolder(true)
+                            currentOnUpdateIsVisibleFolders(true)
 
                             onUpsertFolderPopupEntry(
                                 FolderPopupEntry(
@@ -1194,7 +1194,7 @@ private fun InteractiveFolderGridItem(
                             moveGridItemResult = moveGridItemResult,
                             drag = drag,
                             folderGridItems = previewFolderGridItems[gridItem.id]?.folderGridItems,
-                            isVisibleFolder = isFolderSelected,
+                            isVisibleFolders = isVisibleFolder,
                             hasShortcutHostPermission = hasShortcutHostPermission,
                             iconPackInfoFilePaths = iconPackInfoFilePaths,
                             gridItemSettings = gridItemSettings,
@@ -1232,7 +1232,7 @@ private fun InteractiveShortcutConfigGridItem(
     gridItem: GridItem,
     gridItemSettings: GridItemSettings,
     isScrollInProgress: Boolean,
-    isVisibleFolder: Boolean,
+    isVisibleFolders: Boolean,
     isVisibleOverlay: Boolean,
     sharedElementKey: SharedElementKey,
     textColor: Color,
@@ -1312,7 +1312,7 @@ private fun InteractiveShortcutConfigGridItem(
             )
             .whiteBox(
                 textColor = textColor,
-                visible = isVisibleWhiteBox && !isVisibleFolder,
+                visible = isVisibleWhiteBox && !isVisibleFolders,
             )
             .pointerInput(key1 = isVisibleOverlay) {
                 detectTapGestures(
@@ -1425,7 +1425,7 @@ private fun PreviewFolderGridItem(
     moveGridItemResult: MoveGridItemResult?,
     drag: Drag,
     folderGridItems: List<GridItem>?,
-    isVisibleFolder: Boolean,
+    isVisibleFolders: Boolean,
     hasShortcutHostPermission: Boolean,
     gridItemSettings: GridItemSettings,
     folderBackgroundColor: BackgroundColor,
@@ -1437,6 +1437,12 @@ private fun PreviewFolderGridItem(
 ) {
     key(gridItem.id) {
         val context = LocalContext.current
+
+        val currentGridItemSettings = if (gridItem.override) {
+            gridItem.gridItemSettings
+        } else {
+            gridItemSettings
+        }
 
         val isSelected =
             moveGridItemResult != null && moveGridItemResult.movingGridItem.id == gridItem.id
@@ -1464,8 +1470,8 @@ private fun PreviewFolderGridItem(
         val folderIconTint = getTextColorFromBackgroundColor(
             backgroundColor = folderBackgroundColor,
             customBackgroundColor = customFolderBackgroundColor,
-            textColor = gridItemSettings.textColor,
-            customTextColor = gridItemSettings.customTextColor,
+            textColor = currentGridItemSettings.textColor,
+            customTextColor = currentGridItemSettings.customTextColor,
             systemTextColor = systemTextColor,
             systemCustomTextColor = systemCustomTextColor,
             defaultColor = MaterialTheme.colorScheme.onSurface,
@@ -1496,7 +1502,7 @@ private fun PreviewFolderGridItem(
             drag,
             folderGridItems,
             moveGridItemResult?.movingGridItem?.id,
-            isVisibleFolder,
+            isVisibleFolders,
         ) {
             val id = moveGridItemResult?.movingGridItem?.id
 
@@ -1504,7 +1510,7 @@ private fun PreviewFolderGridItem(
                 id != null &&
                 folderGridItems != null &&
                 folderGridItems.any { it.id == id } &&
-                !isVisibleFolder
+                !isVisibleFolders
             ) {
                 onResetGrid()
             }

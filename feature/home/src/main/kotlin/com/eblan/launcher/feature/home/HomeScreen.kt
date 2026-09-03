@@ -576,6 +576,10 @@ private fun Success(
                     textColor = textColor,
                     previewFolderGridItems = previewFolderGridItems,
                     iconPackInfoFilePaths = homeData.iconPackInfoFilePaths,
+                    folderBackgroundColor = homeData.userData.homeSettings.folderBackgroundColor,
+                    customFolderBackgroundColor = homeData.userData.homeSettings.customFolderBackgroundColor,
+                    systemTextColor = textColor,
+                    systemCustomTextColor = homeData.userData.homeSettings.gridItemSettings.customTextColor,
                     onSaveEditPage = onSaveEditPage,
                     onUpdateScreen = onUpdateScreen,
                 )
@@ -590,6 +594,10 @@ private fun Success(
                     textColor = textColor,
                     previewFolderGridItems = previewFolderGridItems,
                     iconPackInfoFilePaths = homeData.iconPackInfoFilePaths,
+                    folderBackgroundColor = homeData.userData.homeSettings.folderBackgroundColor,
+                    customFolderBackgroundColor = homeData.userData.homeSettings.customFolderBackgroundColor,
+                    systemTextColor = textColor,
+                    systemCustomTextColor = homeData.userData.homeSettings.gridItemSettings.customTextColor,
                     onSaveEditPage = onSaveEditPage,
                     onUpdateScreen = onUpdateScreen,
                 )

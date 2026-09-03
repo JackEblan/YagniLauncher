@@ -75,6 +75,7 @@ import coil3.request.addLastModifiedToFileCacheKey
 import coil3.size.Size
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.BackgroundColor
+import com.eblan.launcher.domain.model.FolderPopup
 import com.eblan.launcher.domain.model.FolderPopupEntry
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
@@ -126,6 +127,7 @@ internal fun InteractiveFolderGridItem(
     folderCornerRadius: Int,
     folderBackgroundColor: BackgroundColor,
     customFolderBackgroundColor: Int,
+    folderPopups: List<FolderPopup>,
     onOpenAppDrawer: () -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
@@ -195,6 +197,13 @@ internal fun InteractiveFolderGridItem(
         cellWidth = minCellWidthPx,
         cellHeight = minCellHeightPx,
     )
+
+    val isVisibleFolder = remember(
+        key1 = gridItem,
+        key2 = folderPopups,
+    ) {
+        folderPopups.any { it.folderPopupEntry.id == gridItem.id }
+    }
 
     val horizontalAlignment =
         getHorizontalAlignment(horizontalAlignment = currentGridItemSettings.horizontalAlignment)
@@ -338,6 +347,7 @@ internal fun InteractiveFolderGridItem(
                 maxLines = maxLines,
                 systemTextColor = systemTextColor,
                 systemCustomTextColor = systemCustomTextColor,
+                isVisibleFolder = isVisibleFolder,
                 onUpdateIsCloseFolderGridItemPopup = onUpdateIsCloseFolderGridItemPopup,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
@@ -969,6 +979,7 @@ private fun InteractiveNestedFolderGridItem(
     maxLines: Int,
     systemTextColor: TextColor,
     systemCustomTextColor: Int,
+    isVisibleFolder: Boolean,
     onUpdateIsCloseFolderGridItemPopup: (Boolean) -> Unit,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
@@ -1000,7 +1011,7 @@ private fun InteractiveNestedFolderGridItem(
 
     val hasInteraction = isSelected && isVisibleOverlay
 
-    val alpha = if (hasInteraction) 0f else 1f
+    val alpha = if (hasInteraction || isVisibleFolder) 0f else 1f
 
     val scale = remember { Animatable(1f) }
 
@@ -1188,6 +1199,12 @@ private fun PreviewNestedFolderGridItem(
     val context = LocalContext.current
 
     key(gridItem.id) {
+        val currentGridItemSettings = if (gridItem.override) {
+            gridItem.gridItemSettings
+        } else {
+            gridItemSettings
+        }
+
         val alpha = when (val data = gridItem.data) {
             is GridItemData.ApplicationInfo,
             is GridItemData.Folder,
@@ -1199,11 +1216,12 @@ private fun PreviewNestedFolderGridItem(
                 if (hasShortcutHostPermission && data.isEnabled) 1f else 0.3f
             }
         }
+
         val folderIconTint = getTextColorFromBackgroundColor(
             backgroundColor = folderBackgroundColor,
             customBackgroundColor = customFolderBackgroundColor,
-            textColor = gridItemSettings.textColor,
-            customTextColor = gridItemSettings.customTextColor,
+            textColor = currentGridItemSettings.textColor,
+            customTextColor = currentGridItemSettings.customTextColor,
             systemTextColor = systemTextColor,
             systemCustomTextColor = systemCustomTextColor,
             defaultColor = MaterialTheme.colorScheme.onSurface,

@@ -73,6 +73,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.util.Consumer
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.Associate
+import com.eblan.launcher.domain.model.BackgroundColor
 import com.eblan.launcher.domain.model.HomeSettings
 import com.eblan.launcher.domain.model.PageItem
 import com.eblan.launcher.domain.model.PreviewFolder
@@ -96,6 +97,10 @@ internal fun EditGridPageScreen(
     textColor: TextColor,
     previewFolderGridItems: Map<String, PreviewFolder>,
     iconPackInfoFilePaths: Map<String, String?>,
+    folderBackgroundColor: BackgroundColor,
+    customFolderBackgroundColor: Int,
+    systemTextColor: TextColor,
+    systemCustomTextColor: Int,
     onSaveEditPage: (
         id: Int,
         pageItems: List<PageItem>,
@@ -212,6 +217,10 @@ internal fun EditGridPageScreen(
                                 textColor = textColor,
                                 previewFolderGridItems = previewFolderGridItems,
                                 iconPackInfoFilePaths = iconPackInfoFilePaths,
+                                folderBackgroundColor = folderBackgroundColor,
+                                customFolderBackgroundColor = customFolderBackgroundColor,
+                                systemTextColor = systemTextColor,
+                                systemCustomTextColor = systemCustomTextColor,
                             )
                         },
                     )
@@ -319,6 +328,10 @@ internal fun EditDockGridPageScreen(
     textColor: TextColor,
     previewFolderGridItems: Map<String, PreviewFolder>,
     iconPackInfoFilePaths: Map<String, String?>,
+    folderBackgroundColor: BackgroundColor,
+    customFolderBackgroundColor: Int,
+    systemTextColor: TextColor,
+    systemCustomTextColor: Int,
     onSaveEditPage: (
         id: Int,
         pageItems: List<PageItem>,
@@ -429,6 +442,10 @@ internal fun EditDockGridPageScreen(
                                     textColor = textColor,
                                     previewFolderGridItems = previewFolderGridItems,
                                     iconPackInfoFilePaths = iconPackInfoFilePaths,
+                                    folderBackgroundColor = folderBackgroundColor,
+                                    customFolderBackgroundColor = customFolderBackgroundColor,
+                                    systemTextColor = systemTextColor,
+                                    systemCustomTextColor = systemCustomTextColor,
                                 )
                             },
                         )

@@ -147,7 +147,7 @@ internal fun FolderScreen(
     onResetGrid: () -> Unit,
     onDragEndAfterMoveFolder: () -> Unit,
     onUpsertFolderPopupEntry: (FolderPopupEntry) -> Unit,
-    onUpdateIsVisibleFolder: (Boolean) -> Unit,
+    onUpdateIsVisibleFolders: (Boolean) -> Unit,
 ) {
     val folderPopupIntOffset = IntOffset(
         x = folderPopup.folderPopupEntry.x,
@@ -258,7 +258,7 @@ internal fun FolderScreen(
             onDeleteFolderPopupEntry = onDeleteFolderPopupEntry,
             onMoveFolderGridItemOutsideFolder = onMoveFolderGridItemOutsideFolder,
             onUpdateSharedElementKey = onUpdateSharedElementKey,
-            onUpdateIsVisibleFolder = onUpdateIsVisibleFolder,
+            onUpdateIsVisibleFolders = onUpdateIsVisibleFolders,
         )
     }
 
@@ -471,6 +471,7 @@ internal fun FolderScreen(
                                 folderCornerRadius = homeSettings.folderCornerRadius,
                                 folderBackgroundColor = homeSettings.folderBackgroundColor,
                                 customFolderBackgroundColor = homeSettings.customFolderBackgroundColor,
+                                folderPopups = folderPopups,
                                 onOpenAppDrawer = onOpenAppDrawer,
                                 onUpdateImageBitmap = onUpdateImageBitmap,
                                 onUpdateIsDragging = onUpdateIsDragging,
@@ -630,7 +631,7 @@ private suspend fun handleFolderPopup(
     onDeleteFolderPopupEntry: (FolderPopupEntry) -> Unit,
     onMoveFolderGridItemOutsideFolder: (GridItem) -> Unit,
     onUpdateSharedElementKey: (SharedElementKey?) -> Unit,
-    onUpdateIsVisibleFolder: (Boolean) -> Unit,
+    onUpdateIsVisibleFolders: (Boolean) -> Unit,
 ) {
     if (!folderPopup.folderPopupEntry.isCloseFolder) return
 
@@ -715,7 +716,7 @@ private suspend fun handleFolderPopup(
     }
 
     if (isFirstFolderGridItem) {
-        onUpdateIsVisibleFolder(false)
+        onUpdateIsVisibleFolders(false)
     }
 
     onDeleteFolderPopupEntry(folderPopup.folderPopupEntry)

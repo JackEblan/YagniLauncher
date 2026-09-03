@@ -46,6 +46,7 @@ import coil3.request.ImageRequest.Builder
 import coil3.request.addLastModifiedToFileCacheKey
 import coil3.size.Size
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
+import com.eblan.launcher.domain.model.BackgroundColor
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.GridItemSettings
@@ -54,6 +55,7 @@ import com.eblan.launcher.domain.model.TextColor
 import com.eblan.launcher.feature.home.component.PreviewFolderGridLayout
 import com.eblan.launcher.feature.home.util.getGridItemTextColor
 import com.eblan.launcher.feature.home.util.getHorizontalAlignment
+import com.eblan.launcher.feature.home.util.getTextColorFromBackgroundColor
 import com.eblan.launcher.feature.home.util.getVerticalArrangement
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -66,6 +68,10 @@ internal fun GridItemContent(
     textColor: TextColor,
     previewFolderGridItems: Map<String, PreviewFolder>,
     iconPackInfoFilePaths: Map<String, String?>,
+    folderBackgroundColor: BackgroundColor,
+    customFolderBackgroundColor: Int,
+    systemTextColor: TextColor,
+    systemCustomTextColor: Int,
 ) {
     val currentGridItemSettings = if (gridItem.override) {
         gridItem.gridItemSettings
@@ -132,6 +138,10 @@ internal fun GridItemContent(
                 horizontalAlignment = horizontalAlignment,
                 verticalArrangement = verticalArrangement,
                 maxLines = maxLines,
+                folderBackgroundColor = folderBackgroundColor,
+                customFolderBackgroundColor = customFolderBackgroundColor,
+                systemTextColor = systemTextColor,
+                systemCustomTextColor = systemCustomTextColor,
             )
 
         is GridItemData.ShortcutConfig ->
@@ -287,6 +297,10 @@ private fun FolderGridItem(
     horizontalAlignment: Alignment.Horizontal,
     verticalArrangement: Arrangement.Vertical,
     maxLines: Int,
+    folderBackgroundColor: BackgroundColor,
+    customFolderBackgroundColor: Int,
+    systemTextColor: TextColor,
+    systemCustomTextColor: Int,
 ) {
     val commonModifier = Modifier.size(gridItemSettings.iconSize.dp)
 
@@ -320,9 +334,13 @@ private fun FolderGridItem(
                     content = {
                         PreviewFolderGridItemContent(
                             gridItem = it,
-                            textColor = textColor,
                             hasShortcutHostPermission = hasShortcutHostPermission,
                             iconPackInfoFilePaths = iconPackInfoFilePaths,
+                            gridItemSettings = gridItemSettings,
+                            folderBackgroundColor = folderBackgroundColor,
+                            customFolderBackgroundColor = customFolderBackgroundColor,
+                            systemTextColor = systemTextColor,
+                            systemCustomTextColor = systemCustomTextColor,
                         )
                     },
                 )
@@ -428,13 +446,23 @@ private fun ShortcutConfigGridItem(
 private fun PreviewFolderGridItemContent(
     modifier: Modifier = Modifier,
     gridItem: GridItem,
-    textColor: Color,
     hasShortcutHostPermission: Boolean,
     iconPackInfoFilePaths: Map<String, String?>,
+    gridItemSettings: GridItemSettings,
+    folderBackgroundColor: BackgroundColor,
+    customFolderBackgroundColor: Int,
+    systemTextColor: TextColor,
+    systemCustomTextColor: Int,
 ) {
     val context = LocalContext.current
 
     key(gridItem.id) {
+        val currentGridItemSettings = if (gridItem.override) {
+            gridItem.gridItemSettings
+        } else {
+            gridItemSettings
+        }
+
         val alpha = when (val data = gridItem.data) {
             is GridItemData.ApplicationInfo,
             is GridItemData.Folder,
@@ -446,6 +474,16 @@ private fun PreviewFolderGridItemContent(
                 if (hasShortcutHostPermission && data.isEnabled) 1f else 0.3f
             }
         }
+
+        val folderIconTint = getTextColorFromBackgroundColor(
+            backgroundColor = folderBackgroundColor,
+            customBackgroundColor = customFolderBackgroundColor,
+            textColor = currentGridItemSettings.textColor,
+            customTextColor = currentGridItemSettings.customTextColor,
+            systemTextColor = systemTextColor,
+            systemCustomTextColor = systemCustomTextColor,
+            defaultColor = MaterialTheme.colorScheme.onSurface,
+        )
 
         val commonModifier = modifier
             .padding(1.dp)
@@ -506,7 +544,7 @@ private fun PreviewFolderGridItemContent(
                     Icon(
                         imageVector = EblanLauncherIcons.Folder,
                         contentDescription = null,
-                        tint = textColor,
+                        tint = folderIconTint,
                         modifier = commonModifier,
                     )
                 }
