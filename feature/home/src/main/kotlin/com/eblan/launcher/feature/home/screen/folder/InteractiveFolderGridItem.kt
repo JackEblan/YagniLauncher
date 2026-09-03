@@ -336,6 +336,8 @@ internal fun InteractiveFolderGridItem(
                 horizontalAlignment = horizontalAlignment,
                 verticalArrangement = verticalArrangement,
                 maxLines = maxLines,
+                systemTextColor = systemTextColor,
+                systemCustomTextColor = systemCustomTextColor,
                 onUpdateIsCloseFolderGridItemPopup = onUpdateIsCloseFolderGridItemPopup,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
@@ -965,6 +967,8 @@ private fun InteractiveNestedFolderGridItem(
     horizontalAlignment: Alignment.Horizontal,
     verticalArrangement: Arrangement.Vertical,
     maxLines: Int,
+    systemTextColor: TextColor,
+    systemCustomTextColor: Int,
     onUpdateIsCloseFolderGridItemPopup: (Boolean) -> Unit,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
@@ -1143,7 +1147,11 @@ private fun InteractiveNestedFolderGridItem(
                             gridItem = it,
                             hasShortcutHostPermission = hasShortcutHostPermission,
                             iconPackInfoFilePaths = iconPackInfoFilePaths,
-                            textColor = textColor,
+                            gridItemSettings = gridItemSettings,
+                            folderBackgroundColor = folderBackgroundColor,
+                            customFolderBackgroundColor = customFolderBackgroundColor,
+                            systemTextColor = systemTextColor,
+                            systemCustomTextColor = systemCustomTextColor,
                         )
                     },
                 )
@@ -1171,7 +1179,11 @@ private fun PreviewNestedFolderGridItem(
     gridItem: GridItem,
     hasShortcutHostPermission: Boolean,
     iconPackInfoFilePaths: Map<String, String?>,
-    textColor: Color,
+    gridItemSettings: GridItemSettings,
+    folderBackgroundColor: BackgroundColor,
+    customFolderBackgroundColor: Int,
+    systemTextColor: TextColor,
+    systemCustomTextColor: Int,
 ) {
     val context = LocalContext.current
 
@@ -1187,6 +1199,15 @@ private fun PreviewNestedFolderGridItem(
                 if (hasShortcutHostPermission && data.isEnabled) 1f else 0.3f
             }
         }
+        val folderIconTint = getTextColorFromBackgroundColor(
+            backgroundColor = folderBackgroundColor,
+            customBackgroundColor = customFolderBackgroundColor,
+            textColor = gridItemSettings.textColor,
+            customTextColor = gridItemSettings.customTextColor,
+            systemTextColor = systemTextColor,
+            systemCustomTextColor = systemCustomTextColor,
+            defaultColor = MaterialTheme.colorScheme.onSurface,
+        )
 
         val commonModifier = modifier
             .padding(1.dp)
@@ -1242,7 +1263,7 @@ private fun PreviewNestedFolderGridItem(
                         imageVector = EblanLauncherIcons.Folder,
                         contentDescription = null,
                         modifier = commonModifier,
-                        tint = textColor,
+                        tint = folderIconTint,
                     )
                 }
             }

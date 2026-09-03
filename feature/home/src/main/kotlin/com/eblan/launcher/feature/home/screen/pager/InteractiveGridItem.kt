@@ -1468,6 +1468,7 @@ private fun PreviewFolderGridItem(
             customTextColor = gridItemSettings.customTextColor,
             systemTextColor = systemTextColor,
             systemCustomTextColor = systemCustomTextColor,
+            defaultColor = MaterialTheme.colorScheme.onSurface,
         )
 
         val commonModifier = modifier
