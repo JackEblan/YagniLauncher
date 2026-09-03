@@ -95,7 +95,6 @@ internal fun EditGridPageScreen(
     screenHeight: Int,
     textColor: TextColor,
     previewFolderGridItems: Map<String, PreviewFolder>,
-    statusBarNotifications: Map<String, Int>,
     iconPackInfoFilePaths: Map<String, String?>,
     onSaveEditPage: (
         id: Int,
@@ -210,7 +209,6 @@ internal fun EditGridPageScreen(
                                 gridItem = it,
                                 gridItemSettings = homeSettings.gridItemSettings,
                                 hasShortcutHostPermission = hasShortcutHostPermission,
-                                statusBarNotifications = statusBarNotifications,
                                 textColor = textColor,
                                 previewFolderGridItems = previewFolderGridItems,
                                 iconPackInfoFilePaths = iconPackInfoFilePaths,
@@ -320,7 +318,6 @@ internal fun EditDockGridPageScreen(
     paddingValues: PaddingValues,
     textColor: TextColor,
     previewFolderGridItems: Map<String, PreviewFolder>,
-    statusBarNotifications: Map<String, Int>,
     iconPackInfoFilePaths: Map<String, String?>,
     onSaveEditPage: (
         id: Int,
@@ -429,7 +426,6 @@ internal fun EditDockGridPageScreen(
                                     gridItem = it,
                                     gridItemSettings = homeSettings.gridItemSettings,
                                     hasShortcutHostPermission = hasShortcutHostPermission,
-                                    statusBarNotifications = statusBarNotifications,
                                     textColor = textColor,
                                     previewFolderGridItems = previewFolderGridItems,
                                     iconPackInfoFilePaths = iconPackInfoFilePaths,

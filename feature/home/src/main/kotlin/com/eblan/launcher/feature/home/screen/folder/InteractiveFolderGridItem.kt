@@ -25,6 +25,7 @@ import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -195,6 +196,14 @@ internal fun InteractiveFolderGridItem(
         cellHeight = minCellHeightPx,
     )
 
+    val horizontalAlignment =
+        getHorizontalAlignment(horizontalAlignment = currentGridItemSettings.horizontalAlignment)
+
+    val verticalArrangement =
+        getVerticalArrangement(verticalArrangement = currentGridItemSettings.verticalArrangement)
+
+    val maxLines = if (currentGridItemSettings.singleLineLabel) 1 else Int.MAX_VALUE
+
     LaunchedEffect(
         key1 = drag,
         key2 = hasInteraction,
@@ -227,6 +236,9 @@ internal fun InteractiveFolderGridItem(
                 iconPackInfoFilePaths = iconPackInfoFilePaths,
                 animations = animations,
                 textColor = currentTextColor,
+                horizontalAlignment = horizontalAlignment,
+                verticalArrangement = verticalArrangement,
+                maxLines = maxLines,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
                 onUpdateImageBitmap = onUpdateImageBitmap,
@@ -255,6 +267,9 @@ internal fun InteractiveFolderGridItem(
                 isInProgress = isInProgress,
                 animations = animations,
                 textColor = currentTextColor,
+                horizontalAlignment = horizontalAlignment,
+                verticalArrangement = verticalArrangement,
+                maxLines = maxLines,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
                 onUpdateImageBitmap = onUpdateImageBitmap,
@@ -281,6 +296,9 @@ internal fun InteractiveFolderGridItem(
                 isInProgress = isInProgress,
                 animations = animations,
                 textColor = currentTextColor,
+                horizontalAlignment = horizontalAlignment,
+                verticalArrangement = verticalArrangement,
+                maxLines = maxLines,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
                 onUpdateImageBitmap = onUpdateImageBitmap,
@@ -315,6 +333,9 @@ internal fun InteractiveFolderGridItem(
                 folderCornerRadius = folderCornerRadius,
                 folderBackgroundColor = folderBackgroundColor,
                 customFolderBackgroundColor = customFolderBackgroundColor,
+                horizontalAlignment = horizontalAlignment,
+                verticalArrangement = verticalArrangement,
+                maxLines = maxLines,
                 onUpdateIsCloseFolderGridItemPopup = onUpdateIsCloseFolderGridItemPopup,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
@@ -352,6 +373,9 @@ private fun InteractiveFolderApplicationInfoGridItem(
     iconPackInfoFilePaths: Map<String, String?>,
     animations: Boolean,
     textColor: Color,
+    horizontalAlignment: Alignment.Horizontal,
+    verticalArrangement: Arrangement.Vertical,
+    maxLines: Int,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
         intOffset: IntOffset,
@@ -380,21 +404,10 @@ private fun InteractiveFolderApplicationInfoGridItem(
 
     val scope = rememberCoroutineScope()
 
-    val horizontalAlignment =
-        getHorizontalAlignment(horizontalAlignment = gridItemSettings.horizontalAlignment)
-
-    val verticalArrangement =
-        getVerticalArrangement(verticalArrangement = gridItemSettings.verticalArrangement)
-
-    val maxLines = if (gridItemSettings.singleLineLabel) 1 else Int.MAX_VALUE
-
     val icon = iconPackInfoFilePaths[gridItem.id] ?: data.icon
 
     val hasNotifications =
-        statusBarNotifications[data.packageName] != null && (
-            statusBarNotifications[data.packageName]
-                ?: 0
-            ) > 0
+        (statusBarNotifications[data.packageName] ?: 0) > 0
 
     val hasInteraction = isSelected && isVisibleOverlay
 
@@ -559,6 +572,9 @@ private fun InteractiveFolderShortcutInfoGridItem(
     isInProgress: Boolean,
     animations: Boolean,
     textColor: Color,
+    horizontalAlignment: Alignment.Horizontal,
+    verticalArrangement: Arrangement.Vertical,
+    maxLines: Int,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
         intOffset: IntOffset,
@@ -586,14 +602,6 @@ private fun InteractiveFolderShortcutInfoGridItem(
     val graphicsLayer = rememberGraphicsLayer()
 
     val scope = rememberCoroutineScope()
-
-    val horizontalAlignment =
-        getHorizontalAlignment(horizontalAlignment = gridItemSettings.horizontalAlignment)
-
-    val verticalArrangement =
-        getVerticalArrangement(verticalArrangement = gridItemSettings.verticalArrangement)
-
-    val maxLines = if (gridItemSettings.singleLineLabel) 1 else Int.MAX_VALUE
 
     val customIcon = data.customIcon ?: data.icon
 
@@ -766,6 +774,9 @@ private fun InteractiveFolderShortcutConfigGridItem(
     isInProgress: Boolean,
     animations: Boolean,
     textColor: Color,
+    horizontalAlignment: Alignment.Horizontal,
+    verticalArrangement: Arrangement.Vertical,
+    maxLines: Int,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
         intOffset: IntOffset,
@@ -791,14 +802,6 @@ private fun InteractiveFolderShortcutConfigGridItem(
     val graphicsLayer = rememberGraphicsLayer()
 
     val scope = rememberCoroutineScope()
-
-    val horizontalAlignment =
-        getHorizontalAlignment(horizontalAlignment = gridItemSettings.horizontalAlignment)
-
-    val verticalArrangement =
-        getVerticalArrangement(verticalArrangement = gridItemSettings.verticalArrangement)
-
-    val maxLines = if (gridItemSettings.singleLineLabel) 1 else Int.MAX_VALUE
 
     val icon = when {
         data.customIcon != null -> data.customIcon
@@ -959,6 +962,9 @@ private fun InteractiveNestedFolderGridItem(
     folderCornerRadius: Int,
     folderBackgroundColor: BackgroundColor,
     customFolderBackgroundColor: Int,
+    horizontalAlignment: Alignment.Horizontal,
+    verticalArrangement: Arrangement.Vertical,
+    maxLines: Int,
     onUpdateIsCloseFolderGridItemPopup: (Boolean) -> Unit,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
@@ -987,14 +993,6 @@ private fun InteractiveNestedFolderGridItem(
     val graphicsLayer = rememberGraphicsLayer()
 
     val scope = rememberCoroutineScope()
-
-    val horizontalAlignment =
-        getHorizontalAlignment(horizontalAlignment = gridItemSettings.horizontalAlignment)
-
-    val verticalArrangement =
-        getVerticalArrangement(verticalArrangement = gridItemSettings.verticalArrangement)
-
-    val maxLines = if (gridItemSettings.singleLineLabel) 1 else Int.MAX_VALUE
 
     val hasInteraction = isSelected && isVisibleOverlay
 
