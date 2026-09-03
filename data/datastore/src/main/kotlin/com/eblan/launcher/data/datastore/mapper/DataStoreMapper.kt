@@ -75,7 +75,7 @@ internal fun HomeSettingsProto.toHomeSettings(): HomeSettings = HomeSettings(
     dockTopEndCornerRadius = dockTopEndCornerRadius,
     dockBottomStartCornerRadius = dockBottomStartCornerRadius,
     dockBottomEndCornerRadius = dockBottomEndCornerRadius,
-    folderCornerRadius = folderCornerRadius,
+    folderCornerRadius = if (hasFolderCornerRadius()) folderCornerRadius else 5,
     folderBackgroundColor = folderBackgroundColorProto.toBackgroundColor(),
     customFolderBackgroundColor = customFolderBackgroundColor,
 )
@@ -202,7 +202,7 @@ internal fun ExperimentalSettingsProto.toExperimentalSettings(): ExperimentalSet
     syncData = syncData,
     firstLaunch = firstLaunch,
     lockMovement = lockMovement,
-    gridItemAnimation = gridItemAnimation,
+    gridItemAnimation = if (hasGridItemAnimation()) gridItemAnimation else true,
 )
 
 internal fun EblanAction.toEblanActionProto(): EblanActionProto = EblanActionProto.newBuilder().also { builder ->

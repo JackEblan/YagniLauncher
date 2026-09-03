@@ -33,7 +33,7 @@ message HomeSettingsProto {
   int32 dockTopEndCornerRadius = 26;
   int32 dockBottomStartCornerRadius = 27;
   int32 dockBottomEndCornerRadius = 28;
-  int32 folderCornerRadius = 29;
+  optional int32 folderCornerRadius = 29;
   BackgroundColorProto folderBackgroundColorProto = 30;
   int32 customFolderBackgroundColor = 31;
 }
