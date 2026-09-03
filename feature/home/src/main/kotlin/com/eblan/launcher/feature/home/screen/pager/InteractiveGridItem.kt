@@ -17,6 +17,7 @@
  */
 package com.eblan.launcher.feature.home.screen.pager
 
+import android.R.attr.textColor
 import android.content.Intent.parseUri
 import android.graphics.Paint
 import android.graphics.Rect
@@ -128,7 +129,6 @@ internal fun InteractiveGridItem(
     folderCornerRadius: Int,
     folderBackgroundColor: BackgroundColor,
     customFolderBackgroundColor: Int,
-    systemTextColor: TextColor,
     systemCustomTextColor: Int,
     onOpenAppDrawer: () -> Unit,
     onUpsertFolderPopupEntry: (FolderPopupEntry) -> Unit,
@@ -303,7 +303,7 @@ internal fun InteractiveGridItem(
                 folderCornerRadius = folderCornerRadius,
                 folderBackgroundColor = folderBackgroundColor,
                 customFolderBackgroundColor = customFolderBackgroundColor,
-                systemTextColor = systemTextColor,
+                systemTextColor = textColor,
                 systemCustomTextColor = systemCustomTextColor,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
@@ -1180,7 +1180,6 @@ private fun InteractiveFolderGridItem(
                             isVisibleOverlay = isVisibleOverlay,
                             parent = sharedElementKey.parent,
                             moveGridItemResult = moveGridItemResult,
-                            textColor = textColor,
                             drag = drag,
                             folderGridItems = previewFolderGridItems[gridItem.id]?.folderGridItems,
                             isVisibleFolder = isVisibleFolder,
@@ -1417,7 +1416,6 @@ private fun PreviewFolderGridItem(
     isVisibleOverlay: Boolean,
     parent: SharedElementKey.Parent,
     moveGridItemResult: MoveGridItemResult?,
-    textColor: Color,
     drag: Drag,
     folderGridItems: List<GridItem>?,
     isVisibleFolder: Boolean,
@@ -1456,7 +1454,7 @@ private fun PreviewFolderGridItem(
             }
         }
 
-        getTextColorFromBackgroundColor(
+        val folderIconTint = getTextColorFromBackgroundColor(
             backgroundColor = folderBackgroundColor,
             customBackgroundColor = customFolderBackgroundColor,
             textColor = gridItemSettings.textColor,
@@ -1566,7 +1564,7 @@ private fun PreviewFolderGridItem(
                         modifier = commonModifier,
                         imageVector = EblanLauncherIcons.Folder,
                         contentDescription = null,
-                        tint = textColor,
+                        tint = folderIconTint,
                     )
                 }
             }
