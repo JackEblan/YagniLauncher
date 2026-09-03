@@ -240,22 +240,6 @@ internal fun FolderScreen(
         }
     }
 
-    BackHandler(
-        enabled = !folderPopup.folderPopupEntry.isCloseFolder &&
-            isLastFolderGridItem &&
-            !isInProgress,
-    ) {
-        onUpsertFolderPopupEntry(folderPopup.folderPopupEntry.copy(isCloseFolder = true))
-    }
-
-    HomeHandler(
-        enabled = !folderPopup.folderPopupEntry.isCloseFolder &&
-            isLastFolderGridItem &&
-            !isInProgress,
-    ) {
-        onUpsertFolderPopupEntry(folderPopup.folderPopupEntry.copy(isCloseFolder = true))
-    }
-
     LaunchedEffect(
         key1 = folderPopup,
         key2 = isFirstFolderGridItem,
@@ -375,6 +359,22 @@ internal fun FolderScreen(
                 pageDirection = it
             },
         )
+    }
+
+    BackHandler(
+        enabled = !folderPopup.folderPopupEntry.isCloseFolder &&
+            isLastFolderGridItem &&
+            !isInProgress,
+    ) {
+        onUpsertFolderPopupEntry(folderPopup.folderPopupEntry.copy(isCloseFolder = true))
+    }
+
+    HomeHandler(
+        enabled = !folderPopup.folderPopupEntry.isCloseFolder &&
+            isLastFolderGridItem &&
+            !isInProgress,
+    ) {
+        onUpsertFolderPopupEntry(folderPopup.folderPopupEntry.copy(isCloseFolder = true))
     }
 
     Box(
