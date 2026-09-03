@@ -156,21 +156,14 @@ internal fun InteractiveFolderGridItem(
         gridItemSettings
     }
 
-    val currentTextColor = if (gridItem.override) {
-        getTextColorFromBackgroundColor(
-            backgroundColor = folderBackgroundColor,
-            customBackgroundColor = customFolderBackgroundColor,
-            textColor = currentGridItemSettings.textColor,
-            customTextColor = currentGridItemSettings.customTextColor,
-            systemTextColor = systemTextColor,
-            systemCustomTextColor = systemCustomTextColor,
-        )
-    } else {
-        getTextColor(
-            customTextColor = currentGridItemSettings.customTextColor,
-            textColor = systemTextColor,
-        )
-    }
+    val currentTextColor = getTextColorFromBackgroundColor(
+        backgroundColor = folderBackgroundColor,
+        customBackgroundColor = customFolderBackgroundColor,
+        textColor = currentGridItemSettings.textColor,
+        customTextColor = currentGridItemSettings.customTextColor,
+        systemTextColor = systemTextColor,
+        systemCustomTextColor = systemCustomTextColor,
+    )
 
     val padding = if (animations) {
         lerp(1.dp, currentGridItemSettings.padding.dp, progress)

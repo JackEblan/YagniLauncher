@@ -89,7 +89,6 @@ import com.eblan.launcher.feature.home.model.SharedElementKey
 import com.eblan.launcher.feature.home.util.SCALE
 import com.eblan.launcher.feature.home.util.getGridItemTextColor
 import com.eblan.launcher.feature.home.util.getHorizontalAlignment
-import com.eblan.launcher.feature.home.util.getTextColor
 import com.eblan.launcher.feature.home.util.getVerticalArrangement
 import com.eblan.launcher.feature.home.util.handleOnPress
 import com.eblan.launcher.feature.home.util.onDoubleTap
@@ -161,19 +160,12 @@ internal fun InteractiveGridItem(
         gridItemSettings
     }
 
-    val currentTextColor = if (gridItem.override) {
-        getGridItemTextColor(
-            gridItemCustomTextColor = currentGridItemSettings.customTextColor,
-            gridItemTextColor = currentGridItemSettings.textColor,
-            systemCustomTextColor = gridItemSettings.customTextColor,
-            systemTextColor = textColor,
-        )
-    } else {
-        getTextColor(
-            customTextColor = currentGridItemSettings.customTextColor,
-            textColor = textColor,
-        )
-    }
+    val currentTextColor = getGridItemTextColor(
+        gridItemCustomTextColor = currentGridItemSettings.customTextColor,
+        gridItemTextColor = currentGridItemSettings.textColor,
+        systemCustomTextColor = gridItemSettings.customTextColor,
+        systemTextColor = textColor,
+    )
 
     val hasInteraction = isSelected && isVisibleOverlay
 

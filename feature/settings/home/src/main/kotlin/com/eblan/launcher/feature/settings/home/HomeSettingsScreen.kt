@@ -618,7 +618,7 @@ private fun buildFolderHomeSettingsItems(
 
     add(
         SettingsItem.Column(
-            title = stringResource(commonR.string.background_color),
+            title = stringResource(R.string.folder_background_color),
             subtitle = homeSettings.folderBackgroundColor.getBackgroundColorTitle(),
             onClick = onFolderBackgroundColorClick,
         ),

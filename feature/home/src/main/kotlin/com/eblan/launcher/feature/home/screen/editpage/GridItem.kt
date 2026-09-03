@@ -55,7 +55,6 @@ import com.eblan.launcher.domain.model.TextColor
 import com.eblan.launcher.feature.home.component.PreviewFolderGridLayout
 import com.eblan.launcher.feature.home.util.getGridItemTextColor
 import com.eblan.launcher.feature.home.util.getHorizontalAlignment
-import com.eblan.launcher.feature.home.util.getTextColor
 import com.eblan.launcher.feature.home.util.getVerticalArrangement
 import com.eblan.launcher.ui.settings.rememberIsNotificationAccessGranted
 
@@ -77,19 +76,12 @@ internal fun GridItemContent(
         gridItemSettings
     }
 
-    val currentTextColor = if (gridItem.override) {
-        getGridItemTextColor(
-            gridItemCustomTextColor = currentGridItemSettings.customTextColor,
-            gridItemTextColor = currentGridItemSettings.textColor,
-            systemCustomTextColor = gridItemSettings.customTextColor,
-            systemTextColor = textColor,
-        )
-    } else {
-        getTextColor(
-            customTextColor = currentGridItemSettings.customTextColor,
-            textColor = textColor,
-        )
-    }
+    val currentTextColor = getGridItemTextColor(
+        gridItemCustomTextColor = currentGridItemSettings.customTextColor,
+        gridItemTextColor = currentGridItemSettings.textColor,
+        systemCustomTextColor = gridItemSettings.customTextColor,
+        systemTextColor = textColor,
+    )
 
     when (val data = gridItem.data) {
         is GridItemData.ApplicationInfo ->

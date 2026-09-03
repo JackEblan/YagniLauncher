@@ -85,6 +85,7 @@ import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.PageDirection
 import com.eblan.launcher.feature.home.model.SharedElementKey
 import com.eblan.launcher.feature.home.util.PAGE_INDICATOR_HEIGHT
+import com.eblan.launcher.feature.home.util.getTextColorFromBackgroundColor
 import kotlin.math.roundToInt
 
 @Composable
@@ -490,6 +491,12 @@ internal fun FolderScreen(
                     gridItemsByPage = folderPopup.gridItemsByPage,
                     folderGridHorizontalPagerState = folderGridHorizontalPagerState,
                     progress = progress.value,
+                    folderBackgroundColor = homeSettings.folderBackgroundColor,
+                    customFolderBackgroundColor = homeSettings.customFolderBackgroundColor,
+                    textColor = gridItemSettings.textColor,
+                    customTextColor = gridItemSettings.customTextColor,
+                    systemCustomTextColor = systemCustomTextColor,
+                    systemTextColor = systemTextColor,
                 )
             }
         }
@@ -503,7 +510,22 @@ internal fun FolderTitle(
     gridItemsByPage: Map<Int, List<GridItem>>,
     folderGridHorizontalPagerState: PagerState,
     progress: Float,
+    folderBackgroundColor: BackgroundColor,
+    customFolderBackgroundColor: Int,
+    textColor: TextColor,
+    customTextColor: Int,
+    systemCustomTextColor: Int,
+    systemTextColor: TextColor,
 ) {
+    val color = getTextColorFromBackgroundColor(
+        backgroundColor = folderBackgroundColor,
+        customBackgroundColor = customFolderBackgroundColor,
+        textColor = textColor,
+        customTextColor = customTextColor,
+        systemTextColor = systemTextColor,
+        systemCustomTextColor = systemCustomTextColor,
+    )
+
     Row(
         modifier = modifier
             .alpha(if (progress > 0.5) 1f else 0f)
@@ -519,13 +541,14 @@ internal fun FolderTitle(
     ) {
         Text(
             text = label,
+            color = color,
             style = MaterialTheme.typography.bodySmall,
         )
 
         if (gridItemsByPage.size > 1) {
             Box(contentAlignment = Alignment.Center) {
                 PageIndicator(
-                    color = MaterialTheme.colorScheme.onSurface,
+                    color = color,
                     gridHorizontalPagerState = folderGridHorizontalPagerState,
                     infiniteScroll = false,
                     pageCount = gridItemsByPage.size,
