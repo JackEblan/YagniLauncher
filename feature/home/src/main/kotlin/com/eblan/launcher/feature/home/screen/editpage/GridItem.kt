@@ -95,7 +95,10 @@ internal fun GridItemContent(
                 iconPackInfoFilePaths = iconPackInfoFilePaths,
             )
 
-        is GridItemData.Widget -> WidgetGridItem(modifier = modifier, data = data)
+        is GridItemData.Widget -> WidgetGridItem(
+            modifier = modifier,
+            data = data,
+        )
 
         is GridItemData.ShortcutInfo ->
             ShortcutInfoGridItem(

@@ -89,7 +89,6 @@ import com.eblan.launcher.feature.home.component.swipeGestures
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.SharedElementKey
 import com.eblan.launcher.feature.home.util.getHorizontalAlignment
-import com.eblan.launcher.feature.home.util.getTextColor
 import com.eblan.launcher.feature.home.util.getTextColorFromBackgroundColor
 import com.eblan.launcher.feature.home.util.getVerticalArrangement
 import com.eblan.launcher.feature.home.util.handleOnPress
@@ -1146,6 +1145,7 @@ private fun InteractiveNestedFolderGridItem(
                             gridItem = it,
                             hasShortcutHostPermission = hasShortcutHostPermission,
                             iconPackInfoFilePaths = iconPackInfoFilePaths,
+                            textColor = textColor,
                         )
                     },
                 )
@@ -1173,6 +1173,7 @@ private fun PreviewNestedFolderGridItem(
     gridItem: GridItem,
     hasShortcutHostPermission: Boolean,
     iconPackInfoFilePaths: Map<String, String?>,
+    textColor: Color,
 ) {
     val context = LocalContext.current
 
@@ -1243,6 +1244,7 @@ private fun PreviewNestedFolderGridItem(
                         imageVector = EblanLauncherIcons.Folder,
                         contentDescription = null,
                         modifier = commonModifier,
+                        tint = textColor,
                     )
                 }
             }
