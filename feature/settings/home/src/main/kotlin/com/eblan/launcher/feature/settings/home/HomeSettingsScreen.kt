@@ -42,10 +42,9 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.HomeSettings
-import com.eblan.launcher.feature.settings.home.dialog.EditDockCornerRadiusDialog
+import com.eblan.launcher.feature.settings.home.dialog.EditCornerDialog
 import com.eblan.launcher.feature.settings.home.dialog.EditDockGridDialog
 import com.eblan.launcher.feature.settings.home.dialog.EditDockHeightDialog
-import com.eblan.launcher.feature.settings.home.dialog.EditDockPaddingDialog
 import com.eblan.launcher.feature.settings.home.dialog.EditFolderCellDimensionDialog
 import com.eblan.launcher.feature.settings.home.dialog.EditFolderMaxGridDialog
 import com.eblan.launcher.feature.settings.home.dialog.EditGridDialog
@@ -132,7 +131,7 @@ private fun Success(
 
     var showDockCustomBackgroundColorDialog by remember { mutableStateOf(false) }
 
-    var showDockPaddingDialog by remember { mutableStateOf(false) }
+    var showDockCornerPaddingDialog by remember { mutableStateOf(false) }
 
     var showDockCornerRadiusDialog by remember { mutableStateOf(false) }
 
@@ -157,7 +156,7 @@ private fun Success(
             showDockCustomBackgroundColorDialog = true
         },
         onDockPaddingClick = {
-            showDockPaddingDialog = true
+            showDockCornerPaddingDialog = true
         },
         onDockCornerRadiusClick = {
             showDockCornerRadiusDialog = true
@@ -322,42 +321,47 @@ private fun Success(
         )
     }
 
-    if (showDockPaddingDialog) {
-        EditDockPaddingDialog(
-            padding = homeSettings.dockPadding,
+    if (showDockCornerRadiusDialog) {
+        EditCornerDialog(
+            top = homeSettings.dockTopStartCornerRadius,
+            start = homeSettings.dockTopEndCornerRadius,
+            bottom = homeSettings.dockBottomStartCornerRadius,
+            end = homeSettings.dockBottomEndCornerRadius,
             onDismissRequest = {
-                showDockPaddingDialog = false
+                showDockCornerRadiusDialog = false
             },
-            onUpdatePadding = {
+            onUpdateCorner = { top, start, bottom, end ->
                 onUpdateHomeSettings(
                     homeSettings.copy(
-                        dockPadding = it,
+                        dockTopStartCornerRadius = top + start,
+                        dockTopEndCornerRadius = top + end,
+                        dockBottomStartCornerRadius = bottom + start,
+                        dockBottomEndCornerRadius = bottom + end,
                     ),
                 )
             },
         )
     }
 
-    if (showDockCornerRadiusDialog) {
-        EditDockCornerRadiusDialog(
-            dockTopStartCornerRadius = homeSettings.dockTopStartCornerRadius,
-            dockTopEndCornerRadius = homeSettings.dockTopEndCornerRadius,
-            dockBottomStartCornerRadius = homeSettings.dockBottomStartCornerRadius,
-            dockBottomEndCornerRadius = homeSettings.dockBottomEndCornerRadius,
+    if (showDockCornerPaddingDialog) {
+        EditCornerDialog(
+            top = homeSettings.dockTopCornerPadding,
+            start = homeSettings.dockStartCornerPadding,
+            bottom = homeSettings.dockBottomCornerPadding,
+            end = homeSettings.dockEndCornerPadding,
             onDismissRequest = {
-                showDockCornerRadiusDialog = false
+                showDockCornerPaddingDialog = false
             },
-            onUpdateCornerRadius = { dockTopStartCornerRadius, dockTopEndCornerRadius, dockBottomStartCornerRadius, dockBottomEndCornerRadius ->
+            onUpdateCorner = { top, start, bottom, end ->
                 onUpdateHomeSettings(
                     homeSettings.copy(
-                        dockTopStartCornerRadius = dockTopStartCornerRadius,
-                        dockTopEndCornerRadius = dockTopEndCornerRadius,
-                        dockBottomStartCornerRadius = dockBottomStartCornerRadius,
-                        dockBottomEndCornerRadius = dockBottomEndCornerRadius,
+                        dockTopCornerPadding = top,
+                        dockStartCornerPadding = start,
+                        dockBottomCornerPadding = bottom,
+                        dockEndCornerPadding = end,
                     ),
                 )
             },
-
         )
     }
 }
@@ -521,17 +525,17 @@ private fun buildDockHomeSettingsItems(
 
     add(
         SettingsItem.Column(
-            title = stringResource(R.string.dock_padding),
-            subtitle = "${homeSettings.dockPadding}",
-            onClick = onDockPaddingClick,
+            title = stringResource(R.string.dock_corner_radius),
+            subtitle = stringResource(R.string.set_the_radius_for_each_dock_corner),
+            onClick = onDockCornerRadiusClick,
         ),
     )
 
     add(
         SettingsItem.Column(
-            title = stringResource(R.string.dock_corner_radius),
-            subtitle = stringResource(R.string.set_the_radius_for_each_dock_corner),
-            onClick = onDockCornerRadiusClick,
+            title = stringResource(R.string.dock_corner_padding),
+            subtitle = stringResource(R.string.set_the_padding_for_each_dock_corner),
+            onClick = onDockPaddingClick,
         ),
     )
 }

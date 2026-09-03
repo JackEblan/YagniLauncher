@@ -27,9 +27,12 @@ message HomeSettingsProto {
   int32 maxFolderRows = 21;
   optional bool showPageIndicator = 22;
   int32 dockCustomBackgroundColor = 23;
-  int32 dockPadding = 24;
   int32 dockTopStartCornerRadius = 25;
   int32 dockTopEndCornerRadius = 26;
   int32 dockBottomStartCornerRadius = 27;
   int32 dockBottomEndCornerRadius = 28;
+  int32 dockTopCornerPadding = 29;
+  int32 dockStartCornerPadding = 30;
+  int32 dockBottomCornerPadding = 31;
+  int32 dockEndCornerPadding = 32;
 }

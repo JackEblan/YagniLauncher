@@ -39,9 +39,12 @@ data class HomeSettings(
     val maxFolderRows: Int,
     val showPageIndicator: Boolean,
     val dockCustomBackgroundColor: Int,
-    val dockPadding: Int,
     val dockTopStartCornerRadius: Int,
     val dockTopEndCornerRadius: Int,
     val dockBottomStartCornerRadius: Int,
     val dockBottomEndCornerRadius: Int,
+    val dockTopCornerPadding: Int,
+    val dockStartCornerPadding: Int,
+    val dockBottomCornerPadding: Int,
+    val dockEndCornerPadding: Int,
 )
