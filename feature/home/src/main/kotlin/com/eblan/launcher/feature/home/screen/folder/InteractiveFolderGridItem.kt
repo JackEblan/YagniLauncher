@@ -35,6 +35,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -72,12 +73,14 @@ import coil3.request.ImageRequest.Builder
 import coil3.request.addLastModifiedToFileCacheKey
 import coil3.size.Size
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
+import com.eblan.launcher.domain.model.BackgroundColor
 import com.eblan.launcher.domain.model.FolderPopupEntry
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.GridItemSettings
 import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.domain.model.PreviewFolder
+import com.eblan.launcher.domain.model.TextColor
 import com.eblan.launcher.domain.usecase.grid.FOLDER_PREVIEW_COLUMNS
 import com.eblan.launcher.domain.usecase.grid.FOLDER_PREVIEW_ROWS
 import com.eblan.launcher.feature.home.component.PreviewFolderGridLayout
@@ -86,6 +89,8 @@ import com.eblan.launcher.feature.home.component.swipeGestures
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.SharedElementKey
 import com.eblan.launcher.feature.home.util.getHorizontalAlignment
+import com.eblan.launcher.feature.home.util.getTextColor
+import com.eblan.launcher.feature.home.util.getTextColorFromBackgroundColor
 import com.eblan.launcher.feature.home.util.getVerticalArrangement
 import com.eblan.launcher.feature.home.util.handleOnPress
 import com.eblan.launcher.feature.home.util.onDoubleTap
@@ -116,6 +121,11 @@ internal fun InteractiveFolderGridItem(
     isInProgress: Boolean,
     iconPackInfoFilePaths: Map<String, String?>,
     animations: Boolean,
+    systemTextColor: TextColor,
+    systemCustomTextColor: Int,
+    folderCornerRadius: Int,
+    folderBackgroundColor: BackgroundColor,
+    customFolderBackgroundColor: Int,
     onOpenAppDrawer: () -> Unit,
     onUpdateImageBitmap: (ImageBitmap) -> Unit,
     onUpdateIsDragging: (Boolean) -> Unit,
@@ -144,6 +154,22 @@ internal fun InteractiveFolderGridItem(
         gridItem.gridItemSettings
     } else {
         gridItemSettings
+    }
+
+    val currentTextColor = if (gridItem.override) {
+        getTextColorFromBackgroundColor(
+            backgroundColor = folderBackgroundColor,
+            customBackgroundColor = customFolderBackgroundColor,
+            textColor = currentGridItemSettings.textColor,
+            customTextColor = currentGridItemSettings.customTextColor,
+            systemTextColor = systemTextColor,
+            systemCustomTextColor = systemCustomTextColor,
+        )
+    } else {
+        getTextColor(
+            customTextColor = currentGridItemSettings.customTextColor,
+            textColor = systemTextColor,
+        )
     }
 
     val padding = if (animations) {
@@ -208,6 +234,7 @@ internal fun InteractiveFolderGridItem(
                 isInProgress = isInProgress,
                 iconPackInfoFilePaths = iconPackInfoFilePaths,
                 animations = animations,
+                textColor = currentTextColor,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
                 onUpdateImageBitmap = onUpdateImageBitmap,
@@ -235,6 +262,7 @@ internal fun InteractiveFolderGridItem(
                 sourceBounds = sourceBounds,
                 isInProgress = isInProgress,
                 animations = animations,
+                textColor = currentTextColor,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
                 onUpdateImageBitmap = onUpdateImageBitmap,
@@ -260,6 +288,7 @@ internal fun InteractiveFolderGridItem(
                 iconSize = iconSize,
                 isInProgress = isInProgress,
                 animations = animations,
+                textColor = currentTextColor,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
                 onUpdateImageBitmap = onUpdateImageBitmap,
@@ -290,6 +319,10 @@ internal fun InteractiveFolderGridItem(
                 isInProgress = isInProgress,
                 iconPackInfoFilePaths = iconPackInfoFilePaths,
                 animations = animations,
+                textColor = currentTextColor,
+                folderCornerRadius = folderCornerRadius,
+                folderBackgroundColor = folderBackgroundColor,
+                customFolderBackgroundColor = customFolderBackgroundColor,
                 onUpdateIsCloseFolderGridItemPopup = onUpdateIsCloseFolderGridItemPopup,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
@@ -326,6 +359,7 @@ private fun InteractiveFolderApplicationInfoGridItem(
     isInProgress: Boolean,
     iconPackInfoFilePaths: Map<String, String?>,
     animations: Boolean,
+    textColor: Color,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
         intOffset: IntOffset,
@@ -504,6 +538,7 @@ private fun InteractiveFolderApplicationInfoGridItem(
             Text(
                 modifier = Modifier.alpha(alpha),
                 text = data.customLabel ?: data.label,
+                color = textColor,
                 textAlign = TextAlign.Center,
                 maxLines = maxLines,
                 fontSize = gridItemSettings.textSize.sp,
@@ -531,6 +566,7 @@ private fun InteractiveFolderShortcutInfoGridItem(
     sourceBounds: Rect,
     isInProgress: Boolean,
     animations: Boolean,
+    textColor: Color,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
         intOffset: IntOffset,
@@ -711,6 +747,7 @@ private fun InteractiveFolderShortcutInfoGridItem(
             Text(
                 modifier = Modifier.alpha(alpha),
                 text = customShortLabel,
+                color = textColor,
                 textAlign = TextAlign.Center,
                 maxLines = maxLines,
                 fontSize = gridItemSettings.textSize.sp,
@@ -736,6 +773,7 @@ private fun InteractiveFolderShortcutConfigGridItem(
     iconSize: Dp,
     isInProgress: Boolean,
     animations: Boolean,
+    textColor: Color,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
         intOffset: IntOffset,
@@ -894,6 +932,7 @@ private fun InteractiveFolderShortcutConfigGridItem(
             Text(
                 modifier = Modifier.alpha(alpha),
                 text = label.toString(),
+                color = textColor,
                 textAlign = TextAlign.Center,
                 maxLines = maxLines,
                 fontSize = gridItemSettings.textSize.sp,
@@ -924,6 +963,10 @@ private fun InteractiveNestedFolderGridItem(
     isInProgress: Boolean,
     iconPackInfoFilePaths: Map<String, String?>,
     animations: Boolean,
+    textColor: Color,
+    folderCornerRadius: Int,
+    folderBackgroundColor: BackgroundColor,
+    customFolderBackgroundColor: Int,
     onUpdateIsCloseFolderGridItemPopup: (Boolean) -> Unit,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
@@ -1091,14 +1134,18 @@ private fun InteractiveNestedFolderGridItem(
                 modifier = commonModifier,
             )
         } else {
-            Box(
-                modifier = commonModifier.background(
-                    color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
-                    shape = RoundedCornerShape(5.dp),
-                ),
+            Surface(
+                modifier = commonModifier,
+                shape = RoundedCornerShape(folderCornerRadius.dp),
+                color = when (folderBackgroundColor) {
+                    BackgroundColor.System -> MaterialTheme.colorScheme.surface
+                    BackgroundColor.Light -> Color.White
+                    BackgroundColor.Dark -> Color.Black
+                    BackgroundColor.Custom -> Color(customFolderBackgroundColor)
+                },
             ) {
                 PreviewFolderGridLayout(
-                    modifier = Modifier.matchParentSize(),
+                    modifier = Modifier.fillMaxSize(),
                     gridItems = previewFolderGridItems[gridItem.id]?.previewFolderGridItems,
                     content = {
                         PreviewNestedFolderGridItem(
@@ -1116,6 +1163,7 @@ private fun InteractiveNestedFolderGridItem(
             Text(
                 modifier = Modifier.alpha(alpha),
                 text = data.label,
+                color = textColor,
                 textAlign = TextAlign.Center,
                 maxLines = maxLines,
                 fontSize = gridItemSettings.textSize.sp,

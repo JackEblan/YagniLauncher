@@ -75,6 +75,7 @@ import com.eblan.launcher.domain.model.GridItemSettings
 import com.eblan.launcher.domain.model.HomeSettings
 import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.domain.model.PreviewFolder
+import com.eblan.launcher.domain.model.TextColor
 import com.eblan.launcher.domain.usecase.grid.FOLDER_PREVIEW_COLUMNS
 import com.eblan.launcher.domain.usecase.grid.FOLDER_PREVIEW_ROWS
 import com.eblan.launcher.feature.home.component.FolderGridLayout
@@ -113,6 +114,8 @@ internal fun FolderScreen(
     previewFolderGridItems: Map<String, PreviewFolder>,
     iconPackInfoFilePaths: Map<String, String?>,
     animations: Boolean,
+    systemTextColor: TextColor,
+    systemCustomTextColor: Int,
     onDeleteFolderPopupEntry: (FolderPopupEntry) -> Unit,
     onMoveFolderGridItemOutsideFolder: (GridItem) -> Unit,
     onOpenAppDrawer: () -> Unit,
@@ -462,6 +465,11 @@ internal fun FolderScreen(
                                 isInProgress = isInProgress,
                                 iconPackInfoFilePaths = iconPackInfoFilePaths,
                                 animations = animations,
+                                systemTextColor = systemTextColor,
+                                systemCustomTextColor = systemCustomTextColor,
+                                folderCornerRadius = homeSettings.folderCornerRadius,
+                                folderBackgroundColor = homeSettings.folderBackgroundColor,
+                                customFolderBackgroundColor = homeSettings.customFolderBackgroundColor,
                                 onOpenAppDrawer = onOpenAppDrawer,
                                 onUpdateImageBitmap = onUpdateImageBitmap,
                                 onUpdateIsDragging = onUpdateIsDragging,

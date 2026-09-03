@@ -610,7 +610,7 @@ private fun buildFolderHomeSettingsItems(
 
     add(
         SettingsItem.Column(
-            title = "Folder Corner Radius",
+            title = stringResource(R.string.folder_corner_radius),
             subtitle = "${homeSettings.folderCornerRadius}",
             onClick = onFolderCornerRadiusClick,
         ),

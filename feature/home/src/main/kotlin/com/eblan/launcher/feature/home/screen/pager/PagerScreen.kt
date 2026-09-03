@@ -1020,6 +1020,8 @@ internal fun PagerScreen(
                     previewFolderGridItems = previewFolderGridItems,
                     iconPackInfoFilePaths = iconPackInfoFilePaths,
                     animations = experimentalSettings.gridItemAnimation,
+                    systemTextColor = textColor,
+                    systemCustomTextColor = homeSettings.gridItemSettings.customTextColor,
                     onDeleteFolderPopupEntry = onDeleteFolderPopupEntry,
                     onMoveFolderGridItemOutsideFolder = onMoveFolderGridItemOutsideFolder,
                     onOpenAppDrawer = pagerScreenState::openApplicationScreen,
