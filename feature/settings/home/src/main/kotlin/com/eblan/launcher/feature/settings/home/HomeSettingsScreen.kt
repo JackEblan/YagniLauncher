@@ -51,6 +51,7 @@ import com.eblan.launcher.feature.settings.home.dialog.EditFolderMaxGridDialog
 import com.eblan.launcher.feature.settings.home.dialog.EditGridDialog
 import com.eblan.launcher.feature.settings.home.model.HomeSettingsUiState
 import com.eblan.launcher.ui.dialog.ColorPickerDialog
+import com.eblan.launcher.ui.dialog.EditCornerRadiusDialog
 import com.eblan.launcher.ui.model.SettingsItem
 import com.eblan.launcher.ui.settings.GridItemSettings
 import com.eblan.launcher.ui.settings.SettingsCategoryText
@@ -130,6 +131,8 @@ private fun Success(
 
     var showFolderMaxGridDialog by remember { mutableStateOf(false) }
 
+    var showFolderCornerRadiusGridDialog by remember { mutableStateOf(false) }
+
     var showDockCustomBackgroundColorDialog by remember { mutableStateOf(false) }
 
     var showDockPaddingDialog by remember { mutableStateOf(false) }
@@ -172,6 +175,9 @@ private fun Success(
         onFolderMaxGridClick = {
             showFolderMaxGridDialog = true
         },
+        onFolderCornerRadiusClick = {
+
+        }
     )
 
     Column(
@@ -303,6 +309,22 @@ private fun Success(
                     homeSettings.copy(
                         maxFolderColumns = maxFolderColumns,
                         maxFolderRows = maxFolderRows,
+                    ),
+                )
+            },
+        )
+    }
+
+    if (showFolderCornerRadiusGridDialog) {
+        EditCornerRadiusDialog(
+            cornerRadius = homeSettings.folderCornerRadius,
+            onDismissRequest = {
+                showFolderCornerRadiusGridDialog = false
+            },
+            onUpdateCornerRadius = {
+                onUpdateHomeSettings(
+                    homeSettings.copy(
+                        folderCornerRadius = it,
                     ),
                 )
             },
@@ -541,6 +563,7 @@ private fun buildFolderHomeSettingsItems(
     homeSettings: HomeSettings,
     onFolderCellDimensionClick: () -> Unit,
     onFolderMaxGridClick: () -> Unit,
+    onFolderCornerRadiusClick: () -> Unit,
 ): List<SettingsItem> = buildList {
     add(
         SettingsItem.Column(
@@ -555,6 +578,14 @@ private fun buildFolderHomeSettingsItems(
             title = stringResource(R.string.folder_max_grid),
             subtitle = "${homeSettings.maxFolderColumns}x${homeSettings.maxFolderRows}",
             onClick = onFolderMaxGridClick,
+        ),
+    )
+
+    add(
+        SettingsItem.Column(
+            title = "Folder Corner Radius",
+            subtitle = "${homeSettings.folderCornerRadius}",
+            onClick = onFolderCornerRadiusClick,
         ),
     )
 }

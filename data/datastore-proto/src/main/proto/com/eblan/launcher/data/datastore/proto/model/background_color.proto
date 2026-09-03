@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option java_package = "com.eblan.launcher.data.datastore.proto.appdrawer";
+option java_package = "com.eblan.launcher.data.datastore.proto.model";
 option java_multiple_files = true;
 
 enum BackgroundColorProto {

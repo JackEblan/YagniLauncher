@@ -123,6 +123,7 @@ internal fun InteractiveGridItem(
     sharedElementKey: SharedElementKey,
     iconPackInfoFilePaths: Map<String, String?>,
     animations: Boolean,
+    folderCornerRadius: Int,
     onOpenAppDrawer: () -> Unit,
     onUpsertFolderPopupEntry: (FolderPopupEntry) -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
@@ -300,6 +301,7 @@ internal fun InteractiveGridItem(
                 hasShortcutHostPermission = hasShortcutHostPermission,
                 iconPackInfoFilePaths = iconPackInfoFilePaths,
                 animations = animations,
+                folderCornerRadius = folderCornerRadius,
                 onOpenAppDrawer = onOpenAppDrawer,
                 onShowGridItemPopup = onShowGridItemPopup,
                 onUpsertFolderPopupEntry = onUpsertFolderPopupEntry,
@@ -403,9 +405,9 @@ private fun InteractiveApplicationInfoGridItem(
 
     val hasNotifications =
         statusBarNotifications[data.packageName] != null && (
-            statusBarNotifications[data.packageName]
-                ?: 0
-            ) > 0
+                statusBarNotifications[data.packageName]
+                    ?: 0
+                ) > 0
 
     val alpha = if (hasInteraction) 0f else 1f
 
@@ -957,6 +959,7 @@ private fun InteractiveFolderGridItem(
     hasShortcutHostPermission: Boolean,
     iconPackInfoFilePaths: Map<String, String?>,
     animations: Boolean,
+    folderCornerRadius: Int,
     onOpenAppDrawer: () -> Unit,
     onShowGridItemPopup: (
         intOffset: IntOffset,
@@ -1152,7 +1155,7 @@ private fun InteractiveFolderGridItem(
             PreviewFolderGridLayout(
                 modifier = commonModifier.background(
                     color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
-                    shape = RoundedCornerShape(5.dp),
+                    shape = RoundedCornerShape(folderCornerRadius.dp),
                 ),
                 gridItems = previewFolderGridItems[gridItem.id]?.previewFolderGridItems,
                 content = {
@@ -1415,7 +1418,7 @@ private fun PreviewFolderGridItem(
             is GridItemData.Folder,
             is GridItemData.ShortcutConfig,
             is GridItemData.Widget,
-            -> if (hasInteraction) 0f else 1f
+                -> if (hasInteraction) 0f else 1f
 
             is GridItemData.ShortcutInfo -> {
                 if (hasInteraction) {
