@@ -29,6 +29,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
@@ -72,6 +73,7 @@ internal fun GridItemContent(
     customFolderBackgroundColor: Int,
     systemTextColor: TextColor,
     systemCustomTextColor: Int,
+    folderCornerRadius: Int,
 ) {
     val currentGridItemSettings = if (gridItem.override) {
         gridItem.gridItemSettings
@@ -142,6 +144,7 @@ internal fun GridItemContent(
                 customFolderBackgroundColor = customFolderBackgroundColor,
                 systemTextColor = systemTextColor,
                 systemCustomTextColor = systemCustomTextColor,
+                folderCornerRadius = folderCornerRadius,
             )
 
         is GridItemData.ShortcutConfig ->
@@ -301,6 +304,7 @@ private fun FolderGridItem(
     customFolderBackgroundColor: Int,
     systemTextColor: TextColor,
     systemCustomTextColor: Int,
+    folderCornerRadius: Int,
 ) {
     val commonModifier = Modifier.size(gridItemSettings.iconSize.dp)
 
@@ -322,14 +326,18 @@ private fun FolderGridItem(
                 modifier = commonModifier,
             )
         } else {
-            Box(
-                modifier = commonModifier.background(
-                    color = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f),
-                    shape = RoundedCornerShape(5.dp),
-                ),
+            Surface(
+                modifier = commonModifier,
+                shape = RoundedCornerShape(folderCornerRadius.dp),
+                color = when (folderBackgroundColor) {
+                    BackgroundColor.System -> MaterialTheme.colorScheme.surface
+                    BackgroundColor.Light -> Color.White
+                    BackgroundColor.Dark -> Color.Black
+                    BackgroundColor.Custom -> Color(customFolderBackgroundColor)
+                },
             ) {
                 PreviewFolderGridLayout(
-                    modifier = Modifier.matchParentSize(),
+                    modifier = Modifier.fillMaxSize(),
                     gridItems = previewFolderGridItems[gridItem.id]?.previewFolderGridItems,
                     content = {
                         PreviewFolderGridItemContent(

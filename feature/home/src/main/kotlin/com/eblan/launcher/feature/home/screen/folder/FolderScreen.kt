@@ -525,29 +525,28 @@ internal fun FolderTitle(
         customTextColor = customTextColor,
         systemTextColor = systemTextColor,
         systemCustomTextColor = systemCustomTextColor,
+        defaultColor = MaterialTheme.colorScheme.onSurface,
     )
 
-    Row(
+    Box(
         modifier = modifier
             .alpha(if (progress > 0.5) 1f else 0f)
             .fillMaxWidth()
             .height(PAGE_INDICATOR_HEIGHT)
             .padding(horizontal = 10.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = if (gridItemsByPage.size > 1) {
-            Arrangement.SpaceBetween
-        } else {
-            Arrangement.Center
-        },
     ) {
-        Text(
-            text = label,
-            color = color,
-            style = MaterialTheme.typography.bodySmall,
-        )
-
         if (gridItemsByPage.size > 1) {
-            Box(contentAlignment = Alignment.Center) {
+            Row(
+                modifier = Modifier.matchParentSize(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Text(
+                    text = label,
+                    color = color,
+                    style = MaterialTheme.typography.bodySmall,
+                )
+
                 PageIndicator(
                     color = color,
                     gridHorizontalPagerState = folderGridHorizontalPagerState,
@@ -555,6 +554,13 @@ internal fun FolderTitle(
                     pageCount = gridItemsByPage.size,
                 )
             }
+        } else {
+            Text(
+                modifier = Modifier.align(Alignment.Center),
+                text = label,
+                color = color,
+                style = MaterialTheme.typography.bodySmall,
+            )
         }
     }
 }

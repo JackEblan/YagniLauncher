@@ -221,6 +221,7 @@ internal fun EditGridPageScreen(
                                 customFolderBackgroundColor = customFolderBackgroundColor,
                                 systemTextColor = systemTextColor,
                                 systemCustomTextColor = systemCustomTextColor,
+                                folderCornerRadius = homeSettings.folderCornerRadius,
                             )
                         },
                     )
@@ -446,6 +447,7 @@ internal fun EditDockGridPageScreen(
                                     customFolderBackgroundColor = customFolderBackgroundColor,
                                     systemTextColor = systemTextColor,
                                     systemCustomTextColor = systemCustomTextColor,
+                                    folderCornerRadius = homeSettings.folderCornerRadius,
                                 )
                             },
                         )

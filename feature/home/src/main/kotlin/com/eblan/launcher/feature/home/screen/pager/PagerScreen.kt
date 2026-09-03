@@ -60,6 +60,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
@@ -68,14 +69,19 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draganddrop.mimeTypes
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
@@ -95,8 +101,11 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.AppDrawerSettings
 import com.eblan.launcher.domain.model.Associate
+import com.eblan.launcher.domain.model.EblanAction
+import com.eblan.launcher.domain.model.EblanActionType
 import com.eblan.launcher.domain.model.EblanAppWidgetProviderInfo
 import com.eblan.launcher.domain.model.EblanApplicationInfo
 import com.eblan.launcher.domain.model.EblanApplicationInfoGroup
@@ -118,8 +127,8 @@ import com.eblan.launcher.domain.model.PinItemRequestType
 import com.eblan.launcher.domain.model.PreviewFolder
 import com.eblan.launcher.domain.model.TextColor
 import com.eblan.launcher.feature.home.component.GridLayout
-import com.eblan.launcher.feature.home.component.GridPagerIndicator
 import com.eblan.launcher.feature.home.component.HomeHandler
+import com.eblan.launcher.feature.home.component.PageIndicator
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
@@ -144,7 +153,12 @@ import com.eblan.launcher.ui.local.LocalImageSerializer
 import com.eblan.launcher.ui.local.LocalLauncherApps
 import com.eblan.launcher.ui.local.LocalPinItemRequest
 import com.eblan.launcher.ui.local.LocalUserManager
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.milliseconds
 
 @OptIn(ExperimentalSharedTransitionApi::class, ExperimentalLayoutApi::class)
 @Composable
@@ -1461,6 +1475,56 @@ private fun rememberManagedProfileResult(): State<ManagedProfileResult?> {
 
         awaitDispose {
             context.unregisterReceiver(receiver)
+        }
+    }
+}
+
+@OptIn(FlowPreview::class)
+@Composable
+private fun GridPagerIndicator(
+    modifier: Modifier = Modifier,
+    color: Color,
+    gridHorizontalPagerState: PagerState,
+    infiniteScroll: Boolean,
+    pageCount: Int,
+    swipeUp: EblanAction,
+    swipeDown: EblanAction,
+    showPageIndicator: Boolean,
+) {
+    if (!showPageIndicator) return
+
+    var isScrollInProgress by remember { mutableStateOf(false) }
+
+    LaunchedEffect(key1 = gridHorizontalPagerState) {
+        snapshotFlow { gridHorizontalPagerState.isScrollInProgress }
+            .debounce(100L.milliseconds)
+            .onEach { isScrollInProgress = it }
+            .collect()
+    }
+
+    Box(
+        modifier = modifier,
+        contentAlignment = Alignment.Center,
+    ) {
+        if (isScrollInProgress) {
+            PageIndicator(
+                color = color,
+                gridHorizontalPagerState = gridHorizontalPagerState,
+                infiniteScroll = infiniteScroll,
+                pageCount = pageCount,
+            )
+        } else if (swipeUp.eblanActionType == EblanActionType.OpenAppDrawer) {
+            Image(
+                imageVector = EblanLauncherIcons.KeyboardArrowUp,
+                contentDescription = null,
+                colorFilter = ColorFilter.tint(color = color),
+            )
+        } else if (swipeDown.eblanActionType == EblanActionType.OpenAppDrawer) {
+            Image(
+                imageVector = EblanLauncherIcons.KeyboardArrowDown,
+                contentDescription = null,
+                colorFilter = ColorFilter.tint(color = color),
+            )
         }
     }
 }
