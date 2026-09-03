@@ -17,7 +17,6 @@
  */
 package com.eblan.launcher.feature.home.screen.pager
 
-import android.R.attr.textColor
 import android.content.Intent.parseUri
 import android.graphics.Paint
 import android.graphics.Rect
@@ -74,6 +73,7 @@ import coil3.request.addLastModifiedToFileCacheKey
 import coil3.size.Size
 import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.BackgroundColor
+import com.eblan.launcher.domain.model.FolderPopup
 import com.eblan.launcher.domain.model.FolderPopupEntry
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
@@ -130,6 +130,7 @@ internal fun InteractiveGridItem(
     folderBackgroundColor: BackgroundColor,
     customFolderBackgroundColor: Int,
     systemCustomTextColor: Int,
+    folderPopups: List<FolderPopup>,
     onOpenAppDrawer: () -> Unit,
     onUpsertFolderPopupEntry: (FolderPopupEntry) -> Unit,
     onUpdateGridItemSource: (GridItemSource) -> Unit,
@@ -181,6 +182,14 @@ internal fun InteractiveGridItem(
         leftPadding = leftPadding,
         topOffset = topOffset,
     )
+
+    val isFolderSelected = remember(
+        key1 = gridItem,
+        key2 = folderPopups,
+        key3 = isVisibleFolder,
+    ) {
+        isVisibleFolder && folderPopups.any { it.folderPopupEntry.id == gridItem.id }
+    }
 
     LaunchedEffect(
         key1 = drag,
@@ -287,7 +296,7 @@ internal fun InteractiveGridItem(
                 gridItem = gridItem,
                 gridItemSettings = currentGridItemSettings,
                 isScrollInProgress = isScrollInProgress,
-                isVisibleFolder = isVisibleFolder,
+                isFolderSelected = isFolderSelected,
                 isVisibleOverlay = isVisibleOverlay,
                 sharedElementKey = sharedElementKey,
                 textColor = currentTextColor,
@@ -408,9 +417,9 @@ private fun InteractiveApplicationInfoGridItem(
 
     val hasNotifications =
         statusBarNotifications[data.packageName] != null && (
-            statusBarNotifications[data.packageName]
-                ?: 0
-            ) > 0
+                statusBarNotifications[data.packageName]
+                    ?: 0
+                ) > 0
 
     val alpha = if (hasInteraction) 0f else 1f
 
@@ -949,7 +958,7 @@ private fun InteractiveFolderGridItem(
     gridItem: GridItem,
     gridItemSettings: GridItemSettings,
     isScrollInProgress: Boolean,
-    isVisibleFolder: Boolean,
+    isFolderSelected: Boolean,
     isVisibleOverlay: Boolean,
     sharedElementKey: SharedElementKey,
     textColor: Color,
@@ -1009,7 +1018,7 @@ private fun InteractiveFolderGridItem(
 
     val maxLines = if (gridItemSettings.singleLineLabel) 1 else Int.MAX_VALUE
 
-    val alpha = if (hasInteraction) 0f else 1f
+    val alpha = if (hasInteraction || isFolderSelected) 0f else 1f
 
     val currentDrag = rememberUpdatedState(drag)
     val currentIsDragging = rememberUpdatedState(isDragging)
@@ -1063,7 +1072,7 @@ private fun InteractiveFolderGridItem(
             )
             .whiteBox(
                 textColor = textColor,
-                visible = isVisibleWhiteBox && !isVisibleFolder,
+                visible = isVisibleWhiteBox && !isFolderSelected,
             )
             .pointerInput(key1 = isVisibleOverlay) {
                 detectTapGestures(
@@ -1182,7 +1191,7 @@ private fun InteractiveFolderGridItem(
                             moveGridItemResult = moveGridItemResult,
                             drag = drag,
                             folderGridItems = previewFolderGridItems[gridItem.id]?.folderGridItems,
-                            isVisibleFolder = isVisibleFolder,
+                            isVisibleFolder = isFolderSelected,
                             hasShortcutHostPermission = hasShortcutHostPermission,
                             iconPackInfoFilePaths = iconPackInfoFilePaths,
                             gridItemSettings = gridItemSettings,
@@ -1441,7 +1450,7 @@ private fun PreviewFolderGridItem(
             is GridItemData.Folder,
             is GridItemData.ShortcutConfig,
             is GridItemData.Widget,
-            -> if (hasInteraction) 0f else 1f
+                -> if (hasInteraction) 0f else 1f
 
             is GridItemData.ShortcutInfo -> {
                 if (hasInteraction) {
