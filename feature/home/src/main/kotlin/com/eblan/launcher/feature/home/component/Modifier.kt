@@ -23,15 +23,13 @@ import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.offset
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.layer.GraphicsLayer
-import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalContext
@@ -157,30 +155,17 @@ internal fun Modifier.popup(
 }
 
 @Composable
-internal fun Modifier.gridItemAnimation(
-    alpha: Float = 1f,
+internal fun Modifier.gridItemSharedElement(
     enabled: Boolean = true,
-    graphicsLayer: GraphicsLayer,
-    scale: Animatable<Float, AnimationVector1D>,
     sharedElementKey: SharedElementKey,
     sharedTransitionScope: SharedTransitionScope,
     visible: Boolean,
 ): Modifier = this
     .run {
-        if (enabled) {
-            graphicsLayer {
-                scaleX = scale.value
-                scaleY = scale.value
-            }
-        } else {
-            this
-        }
-    }
-    .run {
         if (enabled && visible) {
             with(sharedTransitionScope) {
                 sharedElementWithCallerManagedVisibility(
-                    rememberSharedContentState(key = sharedElementKey),
+                    sharedContentState = rememberSharedContentState(key = sharedElementKey),
                     visible = true,
                 )
             }
@@ -188,14 +173,28 @@ internal fun Modifier.gridItemAnimation(
             this
         }
     }
-    .drawWithContent {
-        graphicsLayer.apply {
-            this.alpha = alpha
-        }
 
-        graphicsLayer.record {
-            this@drawWithContent.drawContent()
+@Composable
+internal fun Modifier.gridItemScaleAnimation(
+    isVisibleOverlay: Boolean,
+    animations: Boolean,
+    scale: Animatable<Float, AnimationVector1D>,
+): Modifier {
+    LaunchedEffect(
+        key1 = isVisibleOverlay,
+        key2 = animations,
+    ) {
+        if (isVisibleOverlay && animations) {
+            scale.snapTo(1f)
         }
-
-        drawLayer(graphicsLayer)
     }
+
+    return if (animations) {
+        graphicsLayer {
+            scaleX = scale.value
+            scaleY = scale.value
+        }
+    } else {
+        this
+    }
+}

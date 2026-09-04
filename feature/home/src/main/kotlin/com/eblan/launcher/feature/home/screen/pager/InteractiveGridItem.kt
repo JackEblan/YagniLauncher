@@ -51,8 +51,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.graphics.toArgb
@@ -83,7 +85,8 @@ import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.domain.model.PreviewFolder
 import com.eblan.launcher.domain.model.TextColor
 import com.eblan.launcher.feature.home.component.PreviewFolderGridLayout
-import com.eblan.launcher.feature.home.component.gridItemAnimation
+import com.eblan.launcher.feature.home.component.gridItemScaleAnimation
+import com.eblan.launcher.feature.home.component.gridItemSharedElement
 import com.eblan.launcher.feature.home.component.swipeGestures
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
@@ -446,15 +449,6 @@ private fun InteractiveApplicationInfoGridItem(
     val currentOnUpdateOverlayBounds by rememberUpdatedState(onUpdateOverlayBounds)
     val currentOnUpdateSharedElementKey by rememberUpdatedState(onUpdateSharedElementKey)
 
-    LaunchedEffect(
-        key1 = isVisibleOverlay,
-        key2 = animations,
-    ) {
-        if (isVisibleOverlay && animations) {
-            scale.snapTo(targetValue = 1f)
-        }
-    }
-
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -548,14 +542,24 @@ private fun InteractiveApplicationInfoGridItem(
 
                         intSize = it.size
                     }
-                    .gridItemAnimation(
-                        enabled = animations,
-                        graphicsLayer = graphicsLayer,
+                    .gridItemScaleAnimation(
+                        isVisibleOverlay = isVisibleOverlay,
+                        animations = animations,
                         scale = scale,
+                    )
+                    .gridItemSharedElement(
+                        enabled = animations,
                         sharedElementKey = sharedElementKey,
                         sharedTransitionScope = sharedTransitionScope,
                         visible = !isScrollInProgress && !hasInteraction,
-                    ),
+                    )
+                    .drawWithContent {
+                        graphicsLayer.record {
+                            this@drawWithContent.drawContent()
+                        }
+
+                        drawLayer(graphicsLayer)
+                    },
             )
 
             if (isNotificationAccessGranted && hasNotifications) {
@@ -636,15 +640,6 @@ private fun InteractiveWidgetGridItem(
     val currentOnUpdateOverlayBounds by rememberUpdatedState(onUpdateOverlayBounds)
     val currentOnUpdateSharedElementKey by rememberUpdatedState(onUpdateSharedElementKey)
 
-    LaunchedEffect(
-        key1 = isVisibleOverlay,
-        key2 = animations,
-    ) {
-        if (isVisibleOverlay && animations) {
-            scale.snapTo(targetValue = 1f)
-        }
-    }
-
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -657,14 +652,24 @@ private fun InteractiveWidgetGridItem(
 
                 intSize = it.size
             }
-            .gridItemAnimation(
-                enabled = animations,
-                graphicsLayer = graphicsLayer,
+            .gridItemScaleAnimation(
+                isVisibleOverlay = isVisibleOverlay,
+                animations = animations,
                 scale = scale,
+            )
+            .gridItemSharedElement(
+                enabled = animations,
                 sharedElementKey = sharedElementKey,
                 sharedTransitionScope = sharedTransitionScope,
                 visible = !isScrollInProgress && !hasInteraction,
             )
+            .drawWithContent {
+                graphicsLayer.record {
+                    this@drawWithContent.drawContent()
+                }
+
+                drawLayer(graphicsLayer)
+            }
             .alpha(alpha)
 
         if (appWidgetInfo != null) {
@@ -812,15 +817,6 @@ private fun InteractiveShortcutInfoGridItem(
     val currentOnUpdateOverlayBounds by rememberUpdatedState(onUpdateOverlayBounds)
     val currentOnUpdateSharedElementKey by rememberUpdatedState(onUpdateSharedElementKey)
 
-    LaunchedEffect(
-        key1 = isVisibleOverlay,
-        key2 = animations,
-    ) {
-        if (isVisibleOverlay && animations) {
-            scale.snapTo(targetValue = 1f)
-        }
-    }
-
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -918,15 +914,28 @@ private fun InteractiveShortcutInfoGridItem(
 
                         intSize = it.size
                     }
-                    .gridItemAnimation(
-                        alpha = alpha,
-                        enabled = animations,
-                        graphicsLayer = graphicsLayer,
+                    .gridItemScaleAnimation(
+                        isVisibleOverlay = isVisibleOverlay,
+                        animations = animations,
                         scale = scale,
+                    )
+                    .gridItemSharedElement(
+                        enabled = animations,
                         sharedElementKey = sharedElementKey,
                         sharedTransitionScope = sharedTransitionScope,
                         visible = !isScrollInProgress && !hasInteraction,
-                    ),
+                    )
+                    .drawWithContent {
+                        graphicsLayer.apply {
+                            this.alpha = alpha
+                        }
+
+                        graphicsLayer.record {
+                            this@drawWithContent.drawContent()
+                        }
+
+                        drawLayer(graphicsLayer)
+                    },
                 contentDescription = null,
             )
 
@@ -1039,15 +1048,6 @@ private fun InteractiveFolderGridItem(
 
     val scale = remember { Animatable(1f) }
 
-    LaunchedEffect(
-        key1 = isVisibleOverlay,
-        key2 = animations,
-    ) {
-        if (isVisibleOverlay && animations) {
-            scale.snapTo(targetValue = 1f)
-        }
-    }
-
     LaunchedEffect(key1 = moveGridItemResult) {
         handleConflictingGridItem(
             drag = currentDrag,
@@ -1154,14 +1154,24 @@ private fun InteractiveFolderGridItem(
 
                 intSize = it.size
             }
-            .gridItemAnimation(
-                enabled = animations,
-                graphicsLayer = graphicsLayer,
+            .gridItemScaleAnimation(
+                isVisibleOverlay = isVisibleOverlay,
+                animations = animations,
                 scale = scale,
+            )
+            .gridItemSharedElement(
+                enabled = animations,
                 sharedElementKey = sharedElementKey,
                 sharedTransitionScope = sharedTransitionScope,
                 visible = !isScrollInProgress && !hasInteraction,
             )
+            .drawWithContent {
+                graphicsLayer.record {
+                    this@drawWithContent.drawContent()
+                }
+
+                drawLayer(graphicsLayer)
+            }
             .alpha(alpha)
 
         if (data.icon != null) {
@@ -1293,15 +1303,6 @@ private fun InteractiveShortcutConfigGridItem(
     val currentOnUpdateOverlayBounds by rememberUpdatedState(onUpdateOverlayBounds)
     val currentOnUpdateSharedElementKey by rememberUpdatedState(onUpdateSharedElementKey)
 
-    LaunchedEffect(
-        key1 = isVisibleOverlay,
-        key2 = animations,
-    ) {
-        if (isVisibleOverlay && animations) {
-            scale.snapTo(targetValue = 1f)
-        }
-    }
-
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -1389,14 +1390,24 @@ private fun InteractiveShortcutConfigGridItem(
 
                     intSize = it.size
                 }
-                .gridItemAnimation(
-                    enabled = animations,
-                    graphicsLayer = graphicsLayer,
+                .gridItemScaleAnimation(
+                    isVisibleOverlay = isVisibleOverlay,
+                    animations = animations,
                     scale = scale,
+                )
+                .gridItemSharedElement(
+                    enabled = animations,
                     sharedElementKey = sharedElementKey,
                     sharedTransitionScope = sharedTransitionScope,
                     visible = !isScrollInProgress && !hasInteraction,
                 )
+                .drawWithContent {
+                    graphicsLayer.record {
+                        this@drawWithContent.drawContent()
+                    }
+
+                    drawLayer(graphicsLayer)
+                }
                 .alpha(alpha),
         )
 

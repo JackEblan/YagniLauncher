@@ -64,9 +64,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.input.pointer.pointerInput
@@ -103,7 +105,8 @@ import com.eblan.launcher.domain.model.ManagedProfileResult
 import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.domain.model.TextColor
 import com.eblan.launcher.feature.home.component.OffsetNestedScrollConnection
-import com.eblan.launcher.feature.home.component.gridItemAnimation
+import com.eblan.launcher.feature.home.component.gridItemScaleAnimation
+import com.eblan.launcher.feature.home.component.gridItemSharedElement
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
@@ -781,15 +784,6 @@ private fun EblanApplicationInfoListItem(
     val scale = remember { Animatable(1f) }
 
     LaunchedEffect(
-        key1 = isVisibleOverlay,
-        key2 = animations,
-    ) {
-        if (isVisibleOverlay && animations) {
-            scale.snapTo(targetValue = 1f)
-        }
-    }
-
-    LaunchedEffect(
         key1 = drag,
         key2 = isLongPress,
     ) {
@@ -885,14 +879,24 @@ private fun EblanApplicationInfoListItem(
 
                     intSize = it.size
                 }
-                .gridItemAnimation(
-                    enabled = animations,
-                    graphicsLayer = graphicsLayer,
+                .gridItemScaleAnimation(
+                    isVisibleOverlay = isVisibleOverlay,
+                    animations = animations,
                     scale = scale,
+                )
+                .gridItemSharedElement(
+                    enabled = animations,
                     sharedElementKey = sharedElementKey,
                     sharedTransitionScope = sharedTransitionScope,
                     visible = !isScrollInProgress && !isLongPress && !isVisibleOverlay,
                 )
+                .drawWithContent {
+                    graphicsLayer.record {
+                        this@drawWithContent.drawContent()
+                    }
+
+                    drawLayer(graphicsLayer)
+                }
                 .alpha(alpha),
         )
 

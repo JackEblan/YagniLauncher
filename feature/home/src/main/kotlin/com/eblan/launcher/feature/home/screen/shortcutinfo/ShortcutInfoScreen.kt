@@ -29,7 +29,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,7 +37,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.rememberGraphicsLayer
@@ -58,6 +56,7 @@ import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.GridItemSettings
 import com.eblan.launcher.domain.model.MoveGridItemResult
+import com.eblan.launcher.feature.home.component.gridItemScaleAnimation
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
 import com.eblan.launcher.feature.home.util.SCALE
@@ -178,15 +177,6 @@ private fun ShortcutInfoMenuItem(
 
     val scale = remember { Animatable(1f) }
 
-    LaunchedEffect(
-        key1 = isVisibleOverlay,
-        key2 = animations,
-    ) {
-        if (isVisibleOverlay && animations) {
-            scale.snapTo(targetValue = 1f)
-        }
-    }
-
     ListItem(
         modifier = modifier
             .clickable {
@@ -210,16 +200,11 @@ private fun ShortcutInfoMenuItem(
 
                         intSize = it.size
                     }
-                    .run {
-                        if (animations) {
-                            graphicsLayer {
-                                scaleX = scale.value
-                                scaleY = scale.value
-                            }
-                        } else {
-                            this
-                        }
-                    }
+                    .gridItemScaleAnimation(
+                        isVisibleOverlay = isVisibleOverlay,
+                        animations = animations,
+                        scale = scale,
+                    )
                     .drawWithContent {
                         graphicsLayer.record {
                             this@drawWithContent.drawContent()

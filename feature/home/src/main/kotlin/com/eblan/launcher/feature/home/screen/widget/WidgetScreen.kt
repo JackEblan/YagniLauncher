@@ -91,6 +91,7 @@ import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.feature.home.R
 import com.eblan.launcher.feature.home.component.HomeHandler
 import com.eblan.launcher.feature.home.component.OffsetNestedScrollConnection
+import com.eblan.launcher.feature.home.component.gridItemScaleAnimation
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
@@ -396,15 +397,6 @@ private fun EblanAppWidgetProviderInfoItem(
 
     val scale = remember { Animatable(1f) }
 
-    LaunchedEffect(
-        key1 = isVisibleOverlay,
-        key2 = animations,
-    ) {
-        if (isVisibleOverlay && animations) {
-            scale.snapTo(targetValue = 1f)
-        }
-    }
-
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -451,16 +443,11 @@ private fun EblanAppWidgetProviderInfoItem(
 
                     intSize = it.size
                 }
-                .run {
-                    if (animations) {
-                        graphicsLayer {
-                            scaleX = scale.value
-                            scaleY = scale.value
-                        }
-                    } else {
-                        this
-                    }
-                }
+                .gridItemScaleAnimation(
+                    isVisibleOverlay = isVisibleOverlay,
+                    animations = animations,
+                    scale = scale,
+                )
                 .drawWithContent {
                     graphicsLayer.record {
                         this@drawWithContent.drawContent()
