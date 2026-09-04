@@ -1030,7 +1030,8 @@ private fun InteractiveFolderGridItem(
 
     val scope = rememberCoroutineScope()
 
-    val alpha = if (hasInteraction || isVisibleFolder) 0f else 1f
+    val textAlpha = if (hasInteraction) 0f else 1f
+    val iconAlpha = if (hasInteraction || isVisibleFolder) 0f else 1f
 
     val currentDrag = rememberUpdatedState(drag)
     val currentIsDragging = rememberUpdatedState(isDragging)
@@ -1172,7 +1173,7 @@ private fun InteractiveFolderGridItem(
 
                 drawLayer(graphicsLayer)
             }
-            .alpha(alpha)
+            .alpha(iconAlpha)
 
         if (data.icon != null) {
             AsyncImage(
@@ -1221,7 +1222,7 @@ private fun InteractiveFolderGridItem(
 
         if (gridItemSettings.showLabel) {
             Text(
-                modifier = Modifier.alpha(alpha),
+                modifier = Modifier.alpha(textAlpha),
                 text = data.label,
                 color = textColor,
                 textAlign = TextAlign.Center,

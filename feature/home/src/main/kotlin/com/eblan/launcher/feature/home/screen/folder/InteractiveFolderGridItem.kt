@@ -1020,7 +1020,8 @@ private fun InteractiveNestedFolderGridItem(
 
     val hasInteraction = isSelected && isVisibleOverlay
 
-    val alpha = if (hasInteraction || isVisibleFolder) 0f else 1f
+    val textAlpha = if (hasInteraction) 0f else 1f
+    val iconAlpha = if (hasInteraction || isVisibleFolder) 0f else 1f
 
     val scale = remember { Animatable(1f) }
 
@@ -1140,7 +1141,7 @@ private fun InteractiveNestedFolderGridItem(
 
                 drawLayer(graphicsLayer)
             }
-            .alpha(alpha)
+            .alpha(iconAlpha)
 
         if (data.icon != null) {
             AsyncImage(
@@ -1164,7 +1165,7 @@ private fun InteractiveNestedFolderGridItem(
                     gridItems = previewFolderGridItems[gridItem.id]?.previewFolderGridItems,
                     content = {
                         PreviewNestedFolderGridItem(
-                            alpha = alpha,
+                            alpha = iconAlpha,
                             gridItem = it,
                             hasShortcutHostPermission = hasShortcutHostPermission,
                             iconPackInfoFilePaths = iconPackInfoFilePaths,
@@ -1181,7 +1182,7 @@ private fun InteractiveNestedFolderGridItem(
 
         if (gridItemSettings.showLabel) {
             Text(
-                modifier = Modifier.alpha(alpha),
+                modifier = Modifier.alpha(textAlpha),
                 text = data.label,
                 color = textColor,
                 textAlign = TextAlign.Center,
