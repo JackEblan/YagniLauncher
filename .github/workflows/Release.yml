@@ -8,7 +8,7 @@ on:
 jobs:
   build_release_apk:
     name: "Build Release APK"
-    if: github.repository == 'JackEblan/YagniLauncher'
+    if: github.repository == 'T31n/YagniLauncher'
     runs-on: ubuntu-latest
     timeout-minutes: 120
 
