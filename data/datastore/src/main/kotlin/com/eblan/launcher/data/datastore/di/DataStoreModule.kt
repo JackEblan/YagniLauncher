@@ -23,7 +23,6 @@ import androidx.datastore.core.DataStoreFactory
 import androidx.datastore.dataStoreFile
 import com.eblan.launcher.data.datastore.UserDataSerializer
 import com.eblan.launcher.data.datastore.migration.DataStoreMigration
-import com.eblan.launcher.data.datastore.migration.DataStoreMigration2
 import com.eblan.launcher.data.datastore.proto.UserDataProto
 import com.eblan.launcher.domain.common.Dispatcher
 import com.eblan.launcher.domain.common.EblanDispatchers.IO
@@ -51,7 +50,6 @@ object DataStoreModule {
         scope = CoroutineScope(ioDispatcher),
         migrations = listOf(
             DataStoreMigration(),
-            DataStoreMigration2(),
         ),
     ) {
         context.dataStoreFile("user_data.pb")
