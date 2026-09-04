@@ -42,6 +42,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -70,6 +71,7 @@ import com.eblan.launcher.domain.model.GridItemSettings
 import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.feature.home.component.HomeHandler
 import com.eblan.launcher.feature.home.component.gridItemScaleAnimation
+import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.GridItemSource
 import com.eblan.launcher.feature.home.model.SharedElementKey
 import com.eblan.launcher.feature.home.util.SCALE
@@ -93,6 +95,7 @@ internal fun AppWidgetScreen(
     swipeY: Float,
     animations: Boolean,
     isVisibleOverlay: Boolean,
+    drag: Drag,
     onDismiss: () -> Unit,
     onDismissApplicationScreen: () -> Unit,
     onUpdateOverlayBounds: (
@@ -109,6 +112,15 @@ internal fun AppWidgetScreen(
     onUpdateMoveGridItemResult: (MoveGridItemResult) -> Unit,
 ) {
     requireNotNull(eblanApplicationInfoGroup)
+
+    LaunchedEffect(
+        key1 = isVisibleOverlay,
+        key2 = drag,
+    ) {
+        if (isVisibleOverlay && (drag == Drag.Cancel || drag == Drag.End)) {
+            onUpdateIsVisibleOverlay(false)
+        }
+    }
 
     BackHandler(enabled = swipeY < screenHeight.toFloat()) {
         onDismiss()
